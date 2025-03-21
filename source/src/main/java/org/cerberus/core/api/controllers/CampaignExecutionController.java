@@ -108,10 +108,10 @@ public class CampaignExecutionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request, login);
-        
+
         return ResponseWrapper.wrap(
                 this.campaignExecutionMapper
                         .toDto(
@@ -134,11 +134,11 @@ public class CampaignExecutionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
         LOG.debug("pdf Called.");
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/pdf called with URL: %s", request.getRequestURL()), request, login);
-        
+
         try {
             Tag campaignExeIdTag = this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, null);
 
@@ -202,19 +202,28 @@ public class CampaignExecutionController {
                     .contentLength(zipFilePath.toFile().length())
                     .header("Content-Disposition", "attachment; filename=CampaignReport-" + filePostName + ".zip")
                     .body(new InputStreamResource(Files.newInputStream(zipFilePath)));
-        } catch (EntityNotFoundException exception) {
+        } catch (EntityNotFoundException ex) {
+            LOG.error(ex, ex);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(null);
-        } catch (FailedReadOperationException exception) {
+        } catch (FailedReadOperationException ex) {
+            LOG.error(ex, ex);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         } catch (FileNotFoundException ex) {
+            LOG.error(ex, ex);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         } catch (IOException ex) {
+            LOG.error(ex, ex);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
@@ -235,10 +244,10 @@ public class CampaignExecutionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request, login);
-        
+
         return ResponseWrapper.wrap(
                 this.campaignExecutionMapper
                         .toDto(
@@ -261,10 +270,10 @@ public class CampaignExecutionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request, login);
-        
+
         CICampaignResult ciCampaignResult = this.ciService.getCIResultApi(campaignExecutionId, "");
         logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for tag '%s' result [%s]", ciCampaignResult.getCampaignExecutionId(), ciCampaignResult.getGlobalResult()), request, login);
         return ResponseWrapper.wrap(
@@ -288,10 +297,10 @@ public class CampaignExecutionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request, login);
-        
+
         CICampaignResult ciCampaignResult = this.ciService.getCIResultApi("", campaignId);
         logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for campaign '%s' result [%s]", campaignId, ciCampaignResult.getGlobalResult()), request, login);
         return ResponseWrapper.wrap(
@@ -313,7 +322,7 @@ public class CampaignExecutionController {
     public ResponseEntity<String> findCiSvgCampaignExecutionById(
             @PathVariable("campaignExecutionId") String campaignExecutionId,
             HttpServletRequest request) {
-        
+
         logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/ci/svg called with URL: %s", request.getRequestURL()), request);
         try {
             CICampaignResult ciCampaignResult = this.ciService.getCIResultApi(campaignExecutionId, "");
@@ -345,7 +354,7 @@ public class CampaignExecutionController {
     public ResponseEntity<String> findLastCiSvgCampaignExecutionByCampaignId(
             @PathVariable("campaignId") String campaignId,
             HttpServletRequest request) {
-        
+
         logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/ci/svg called with URL: %s", request.getRequestURL()), request);
         try {
             CICampaignResult ciCampaignResult = this.ciService.getCIResultApi("", campaignId);
