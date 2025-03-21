@@ -132,7 +132,10 @@ public class LabelService implements ILabelService {
 
             // Sort Label List
             Collections.sort(val, (Label label1, Label label2) -> {
-                int compareResult = label1.getLabel().compareTo(label2.getLabel());
+                String val1 = addParent(label1, labelsMap, 0);
+                String val2 = addParent(label2, labelsMap, 0);
+//                LOG.debug("Compare : '{}'   -  '{}'", val1, val2);
+                int compareResult = val1.compareTo(val2);
                 return compareResult;
             });
 
@@ -141,6 +144,17 @@ public class LabelService implements ILabelService {
         }
 
         return labelsToReturn;
+    }
+
+    private String addParent(Label label, HashMap<Integer, Label> labelsMap, int protection) {
+        if (label.getParentLabelID() == 0) {
+            return label.getLabel();
+        } else if (protection >= 6) {
+            LOG.warn("Reached maximum recursive label hierarchy : " + protection);
+            return label.getLabel();
+        } else {
+            return addParent(labelsMap.get(label.getParentLabelID()), labelsMap, ++protection) + "/" + label.getLabel();
+        }
     }
 
     @Override
