@@ -225,7 +225,7 @@ $.when($.getScript("js/global/global.js")
                                 value1: "",
                                 value2: "",
                                 value3: "value",
-                                length: 0,
+                                length: "0",
                                 rowLimit: 0,
                                 cacheExpire: 0,
                                 nature: "STATIC",

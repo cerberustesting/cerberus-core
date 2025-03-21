@@ -967,7 +967,7 @@ function addPropertyWithAce(keywordValue) {
                 value1: "",
                 value2: "",
                 value3: "value",
-                length: 0,
+                length: "0",
                 rowLimit: 0,
                 nature: "STATIC",
                 retryNb: "",
