@@ -644,14 +644,26 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
         try {
             LOG.info("Starting to add Headers on PDF Report :" + pdfFilePathSrc + " To : " + destinationFile);
 
-            String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
-            // Tittle
+            // Default logo value that should always be available no matter what.
+            String cerberusURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_url, "", "");
+            cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
+            String cerberusDefaultLogo = cerberusURL + "images/Logo-cerberus_250.png";
+
+            String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", cerberusDefaultLogo);
             ImageData imageDataLogo;
-            if (StringUtil.isNotEmptyOrNULLString(logoURL)) {
-                imageDataLogo = ImageDataFactory.create(logoURL);
-            } else {
-                imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");
+
+            if (StringUtil.isEmptyOrNULLString(logoURL)) {
+                logoURL = cerberusDefaultLogo;
+                LOG.info("No Logo defined on parameter '" + Parameter.VALUE_cerberus_instancelogo_url + "' --> using default : '" + cerberusDefaultLogo + "'");
             }
+
+            try {
+                imageDataLogo = ImageDataFactory.create(logoURL);
+            } catch (Exception e) {
+                LOG.error(e, e);
+                imageDataLogo = ImageDataFactory.create(cerberusDefaultLogo);
+            }
+
             Image image = new Image(imageDataLogo).scaleToFit(50, 25);
 
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
