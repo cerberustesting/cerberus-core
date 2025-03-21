@@ -280,29 +280,18 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
 
-            // SetUp Proxy
-            String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
-                            execution.getSession().getHostUser(),
-                            execution.getSession().getHostPassword(),
-                            session.getHost()),
-                    session.getPort()));
+            // TODO #FIXME SELENIUM
 
-            //Even if /wd/hub is not the standard anymore with Selenium 4, BS still continue to use it.
-            if (execution.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK)) {
-                hubUrl += "/wd/hub";
-            }
-
-            LOG.debug("Hub URL :{}", hubUrl);
+            // SetUp HubURL
+            String hubUrl = generateHubUrl(execution, session);
             URL url = new URL(hubUrl);
-
-            boolean isProxy = proxyService.useProxy(hubUrl, system);
 
             // Timeout Management
             int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
 
-            ClientConfig clientConfig;
-
             // Proxy Management
+            boolean isProxy = proxyService.useProxy(hubUrl, system);
+            ClientConfig clientConfig;
             if (isProxy) {
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
@@ -1466,4 +1455,22 @@ public class RobotServerService implements IRobotServerService {
         }
     }
 
+    private String generateHubUrl(TestCaseExecution execution, Session session) {
+        String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
+                        execution.getSession().getHostUser(),
+                        execution.getSession().getHostPassword(),
+                        session.getHost()),
+                session.getPort())+"/wd/hub");
+
+        //Only remove /wd/hub on app because not supported anymore on Appium 2.
+        if ((execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA))) {
+            //Cloud robot provider supports only /wd/hub even on Appium 2. So we remove only if we are on prem.
+            if (guessRobotProvider(session.getHost()).equals(TestCaseExecution.ROBOTPROVIDER_NONE)) {
+                hubUrl = hubUrl.replace("/wd/hub", "");
+            }
+        }
+
+        LOG.debug("Hub URL :{}", hubUrl);
+        return hubUrl;
+    }
 }
