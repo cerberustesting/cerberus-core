@@ -185,59 +185,26 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList<Long> readMaxIdListByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
-        List<String> individalColumnSearchValues = new ArrayList<>();
-
+        AnswerList<Long> answer = new AnswerList<>();
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT * FROM testcaseexecutionqueue exq ");
-        query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
-        query.append("left join application app on tec.application = app.application ");
-        query.append("where exq.ID IN ");
-        query.append("(select MAX(exq.ID) from testcaseexecutionqueue exq ");
-
+        query.append("SELECT MAX(exq.ID) from testcaseexecutionqueue exq ");
         query.append("where 1=1 ");
         if (!StringUtil.isEmptyOrNull(tag)) {
             query.append("and exq.tag = ? ");
         }
-
-        query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country) ");
-        if (!StringUtil.isEmptyOrNull(searchTerm)) {
-            query.append("and (exq.`test` like ? ");
-            query.append(" or exq.`testCase` like ? ");
-            query.append(" or tec.`application` like ? ");
-            query.append(" or tec.`bugs` like ? ");
-            query.append(" or tec.`priority` like ? ");
-            query.append(" or tec.`description` like ? )");
-        }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
-            query.append(" and ( 1=1 ");
-            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                query.append(" and ");
-                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
-            }
-            query.append(" ) ");
-        }
-
-        if (!StringUtil.isEmptyOrNull(sort)) {
-            query.append(" order by ").append(sort);
-        }
-
-        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
-            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
-        } else {
-            query.append(" limit ").append(start).append(" , ").append(amount);
-        }
+        query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country ");
+        query.append(" limit ").append(MAX_ROW_SELECTED);
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.tag : " + tag);
         }
 
-        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
+        List<Long> testCaseExecutionInQueueList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -246,17 +213,75 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             if (!StringUtil.isEmptyOrNull(tag)) {
                 preStat.setString(i++, tag);
             }
-            if (!StringUtil.isEmptyOrNull(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionInQueueList.add(resultSet.getLong(1));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
+                    answer.setDataList(testCaseExecutionInQueueList);
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionInQueueList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionInQueueList = null;
+            } finally {
+                preStat.close();
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionInQueueList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             }
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public AnswerList<TestCaseExecutionQueue> readByQueueIdList(List<Long> queueIDList) throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList<TestCaseExecutionQueue> answer = new AnswerList<>();
+
+        final StringBuilder query = new StringBuilder();
+
+        query.append("SELECT * FROM testcaseexecutionqueue exq ");
+        query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
+        query.append("left join application app on tec.application = app.application ");
+        query.append("where ");
+        query.append(SqlUtil.createWhereInClauseLong("exq.ID", queueIDList, "", ""));
+        query.append(" limit 10000");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
+        Connection connection = this.databaseSpring.connect();
+
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             try {
                 ResultSet resultSet = preStat.executeQuery();

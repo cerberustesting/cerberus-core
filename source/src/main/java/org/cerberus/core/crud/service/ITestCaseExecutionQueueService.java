@@ -56,15 +56,10 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      * @param tag
-     * @param start
-     * @param amount
-     * @param sort
-     * @param searchTerm
-     * @param individualSearch
      * @return
      * @throws CerberusException
      */
-    AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readMaxIdByTag(String tag) throws CerberusException;
 
     /**
      * @param tag tag to filter.

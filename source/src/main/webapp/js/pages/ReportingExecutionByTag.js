@@ -1422,20 +1422,6 @@ function loadReportTestFolderChart(dataset) {
 
 /*** EXPORT OPTIONS***/
 
-function exportReport() {
-    //open file chooser and then export
-    var selectTag = $("#selectTag option:selected").text();
-    var statusFilter = $("#statusFilter input");
-    var countryFilter = $("#countryFilter input");
-    var exportDataFilter = $("#exportData input");
-
-    var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() +
-            "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
-    $.when(jqxhr).then(function (data) {
-        alert(data);
-    });
-}
-
 function controlExportRadioButtons() {
     //control radiobuttons
     var isChecked = $(this).prop("checked");

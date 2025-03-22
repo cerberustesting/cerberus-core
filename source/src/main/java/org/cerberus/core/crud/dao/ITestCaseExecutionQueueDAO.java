@@ -49,15 +49,17 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      * @param tag
-     * @param start
-     * @param amount
-     * @param sort
-     * @param searchTerm
-     * @param individualSearch
      * @return
      * @throws CerberusException
      */
-    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    public AnswerList<Long> readMaxIdListByTag(String tag) throws CerberusException;
+
+    /**
+     * @param queueIDList
+     * @return
+     * @throws CerberusException
+     */
+    public AnswerList<TestCaseExecutionQueue> readByQueueIdList(List<Long> queueIDList) throws CerberusException;
 
     /**
      * Read TestCaseExecutionInQueue By Tag
@@ -300,8 +302,8 @@ public interface ITestCaseExecutionQueueDAO {
     AnswerItem<Integer> updateToPausedPendingRecord(String tag, String user, String comment);
 
     /**
-     * This method removes queue State from -PAUSED any queue entry that belong to
-     * tag and that has been paused (*-PAUSED)
+     * This method removes queue State from -PAUSED any queue entry that belong
+     * to tag and that has been paused (*-PAUSED)
      *
      * @param tag
      * @param user

@@ -202,7 +202,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();
         if (StringUtil.isNotEmptyOrNull(tag)) {
             LOG.debug("We don't have the list of all already inserted entries. Let's get it from tag value : " + tag);
-            List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readByTagByCriteria(tag, 0, 0, null, null, null));
+            List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readMaxIdByTag(tag));
             for (TestCaseExecutionQueue tceQueue : queueFromTag) {
                 queueAlreadyInsertedInTag.put(executionQueueService.getUniqKey(tceQueue.getTest(), tceQueue.getTestCase(), tceQueue.getCountry(), tceQueue.getEnvironment()), tceQueue);
             }
