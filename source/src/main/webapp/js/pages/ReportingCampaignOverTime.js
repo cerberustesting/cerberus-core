@@ -643,6 +643,7 @@ function buildTagGraphs(data) {
             label: lab + " Threshold",
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            borderDash:[10, 10],
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
@@ -705,6 +706,7 @@ function buildTagGraphs(data) {
         var dataset3b = {
             label: lab + " Total",
             backgroundColor: "white",
+            borderDash:[10, 10],
             borderColor: get_Color_fromindex(i),
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
