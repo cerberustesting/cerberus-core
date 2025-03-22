@@ -3033,15 +3033,15 @@ function comboConfigTag_format(tag) {
             "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
     markup += "<div class='select2-result-tag__statistics'>";
-    if (tag.campaign) {
-        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
-    }
     if (tag.DateCreated) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
     }
     if (tag.nbExeUsefull > 0) {
         markup += "<div class='select2-result-tag__detail'> " + tag.nbExeUsefull + " Exe(s)</div>";
         markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.ciResult + "</div>";
+    }
+    if (tag.campaign) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
     }
     markup += "</div>";
     markup += "</div>";
