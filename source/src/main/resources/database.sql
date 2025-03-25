@@ -6611,3 +6611,7 @@ ALTER TABLE testcaseexecutionqueue MODIFY COLUMN `State` VARCHAR(20) NOT NULL DE
 
 -- 1883
 ALTER TABLE `tag` ADD COLUMN `CIScoreMax` INT DEFAULT 0 AFTER `CIScoreThreshold`;
+
+-- 1884-1885
+UPDATE testcasestepactioncontrol SET Control='verifyUrlEqual' WHERE Control='verifyUrl';
+UPDATE testcasestepactioncontrol SET Control='verifyTitleEqual' WHERE Control='verifyTitle';

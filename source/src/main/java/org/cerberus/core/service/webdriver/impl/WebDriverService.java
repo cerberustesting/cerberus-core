@@ -814,14 +814,13 @@ public class WebDriverService implements IWebDriverService {
         // We remove from current url the host part of the application.
         String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replace("%HOST%", applicationUrl));
-            msg.setDescription(msg.getDescription().replace("%CURRENTURL%", currentURL));
-            LOG.debug(msg.getDescription());
-            throw new CerberusEventException(msg);
+            // We return a full version of the URL including the host.
+            return currentURL;
+        } else {
+            // We return a cleaned version of the URL without the host.
+            String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");
+            return result;
         }
-        String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");
-        return result;
     }
 
     @Override

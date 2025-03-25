@@ -8,6 +8,7 @@
 * Display first Execution start time, Last execution start and end time on Campaign execution report.
 * Ace editor layout improvement (Readonly when necessary and bigger font)
 * Sort label on testcase list and campaign execution report pages. #2581
+* Added operator : different, contains, notContains and matchRegex on both controls : verifyTitle and verifyUrl #2585
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

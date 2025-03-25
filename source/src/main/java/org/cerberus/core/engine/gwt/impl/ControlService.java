@@ -391,11 +391,19 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
                     res = this.verifyTextNotInPage(execution, value1);
                     break;
-                case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
-                    res = this.verifyTitle(execution, value1, controlExecution.getValue3());
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEEQUAL:
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEDIFFERENT:
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLECONTAINS:
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLENOTCONTAINS:
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEMATCHREGEX:
+                    res = this.verifyTitle(execution, controlExecution.getControl(), value1, controlExecution.getValue3());
                     break;
-                case TestCaseStepActionControl.CONTROL_VERIFYURL:
-                    res = this.verifyUrl(execution, value1);
+                case TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL:
+                case TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT:
+                case TestCaseStepActionControl.CONTROL_VERIFYURLCONTAINS:
+                case TestCaseStepActionControl.CONTROL_VERIFYURLNOTCONTAINS:
+                case TestCaseStepActionControl.CONTROL_VERIFYURLMATCHREGEX:
+                    res = this.verifyUrl(execution, controlExecution.getControl(), value1, controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
                     res = this.verifyTextInDialog(execution, value1, controlExecution.getValue2());
@@ -483,7 +491,6 @@ public class ControlService implements IControlService {
             // Only Value1
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
-            case TestCaseStepActionControl.CONTROL_VERIFYURL:
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
             case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT:
@@ -500,7 +507,16 @@ public class ControlService implements IControlService {
                 controlExecution.setValue3Init("");
                 break;
             // Only Value 1 and Value 3
-            case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
+            case TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYURLCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYURLNOTCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYURLMATCHREGEX:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLEEQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLEDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLECONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLENOTCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLEMATCHREGEX:
                 controlExecution.setValue2("");
                 controlExecution.setValue2Init("");
                 break;
@@ -888,7 +904,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(execution, responseBody, null, elementPath,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
+                                if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -1235,7 +1251,7 @@ public class ControlService implements IControlService {
 
                 case Application.TYPE_SRV:
                     if (tCExecution.getLastServiceCalled() != null && tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType() != null) {
-                            
+
                         String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                         switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
 
@@ -1259,7 +1275,7 @@ public class ControlService implements IControlService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                                 try {
-                                    actual = jsonService.getFromJson(tCExecution, responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
+                                    actual = jsonService.getFromJson(tCExecution, responseBody, null, path, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                                 } catch (Exception ex) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                                     mes.resolveDescription("ERROR", ex.toString());
@@ -1473,7 +1489,7 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(tCExecution, responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
+                            pathContent = jsonService.getFromJson(tCExecution, responseBody, null, path, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                         } catch (Exception ex) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                             mes.resolveDescription("ERROR", ex.toString());
@@ -1711,92 +1727,223 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyUrl(TestCaseExecution tCExecution, String value1) throws CerberusEventException {
+    private MessageEvent verifyUrl(TestCaseExecution tCExecution, String control, String value1, String isCaseSensitive) throws CerberusEventException {
         LOG.debug("Control: verifyUrl on: {}", value1);
 
         MessageEvent mes;
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
 
-            String url;
             // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
             //  already have that control but value1 is specified by user and could miss it.
-            final String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
+            String expectedValue = value1;
+
+            String url = "";
             try {
-                LOG.debug("Before wait: {}", System.currentTimeMillis());
-                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
-                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+                url = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
+                LOG.debug("Get new url: {} >> Expected url: {}", url, expectedValue);
 
-                //Wait until the url is the expected one
-                wait.until(new Function<WebDriver, Boolean>() {
-                    final String expectedValue = controlUrl;
-
-                    @Override
-                    public Boolean apply(WebDriver driver) {
-                        String value = "";
-                        try {
-                            value = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-                            LOG.debug("Get new url: {} >> Expected url: {}", value, expectedValue);
-                        } catch (CerberusEventException ex) {
-                            LOG.warn(ex.getMessageError().getDescription());
-                        }
-                        return value.equalsIgnoreCase(expectedValue);
+                if (url.startsWith("/")) {
+                    if ((TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL.equals(control)) || (TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT.equals(control))) {
+                        expectedValue = StringUtil.addPrefixIfNotAlready(value1, "/");
                     }
-                });
-                LOG.debug("After wait: {}", System.currentTimeMillis());
-                url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
-                mes.resolveDescription("STRING1", url);
-            } catch (TimeoutException exception) {
-                url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
-                mes.resolveDescription("STRING1", url);
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
+                }
+
+            } catch (CerberusEventException ex) {
+                LOG.warn(ex.getMessageError().getDescription());
             }
-            mes.resolveDescription("STRING2", controlUrl);
+
+            boolean result;
+            switch (control) {
+                case TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? url.equals(expectedValue) : url.equalsIgnoreCase(expectedValue);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !url.equals(expectedValue) : !url.equalsIgnoreCase(expectedValue);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYURLCONTAINS:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? url.contains(expectedValue) : url.toLowerCase().contains(expectedValue.toLowerCase());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYURLNOTCONTAINS:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !url.contains(expectedValue) : !url.toLowerCase().contains(expectedValue.toLowerCase());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYURLMATCHREGEX:
+                    Pattern pattern;
+                    if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+                        pattern = Pattern.compile(expectedValue);
+                    } else {
+                        pattern = Pattern.compile(expectedValue, Pattern.CASE_INSENSITIVE);
+                    }
+                    Matcher matcher = pattern.matcher(url);
+                    result = matcher.find();
+                    break;
+                default:
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                    mes.resolveDescription("CONTROL", control);
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    return mes;
+            }
+
+            if (result) {
+
+                switch (control) {
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL_EQUAL);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL_DIFFERENT);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL_CONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLNOTCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL_NOTCONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLMATCHREGEX:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL_MATCHREGEX);
+                        break;
+                    default:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                        mes.resolveDescription("CONTROL", control);
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        return mes;
+                }
+            } else {
+
+                switch (control) {
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLEQUAL:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_EQUAL);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLDIFFERENT:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_DIFFERENT);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_CONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLNOTCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOTCONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYURLMATCHREGEX:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_MATCHREGEX);
+                        break;
+                    default:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                        mes.resolveDescription("CONTROL", control);
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        return mes;
+                }
+            }
+            mes.resolveDescription("STRING1", url);
+            mes.resolveDescription("STRING2", expectedValue);
+            mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYURL);
+            mes.resolveDescription("CONTROL", control);
             mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
         }
         return mes;
     }
 
-    private MessageEvent verifyTitle(TestCaseExecution tCExecution, String title, String isCaseSensitive) {
+    private MessageEvent verifyTitle(TestCaseExecution tCExecution, String control, String title, String isCaseSensitive) throws CerberusEventException {
         LOG.debug("Control: verifyTitle on: {}", title);
+
         MessageEvent mes;
         if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
-            String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
-            try {
-                LOG.debug("Before wait {}", System.currentTimeMillis());
-                WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
-                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
 
-                //Wait until the title is the expected one
-                wait.until(new Function<WebDriver, Boolean>() {
-                    final String expectedValue = title;
+            // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
+            //  already have that control but value1 is specified by user and could miss it.
+            String expectedValue = title;
 
-                    @Override
-                    public Boolean apply(WebDriver driver) {
-                        String value = webdriverService.getTitle(tCExecution.getSession());
-                        LOG.debug("Get new title: {} >> Expected title: {}", value, expectedValue);
-                        return ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? expectedValue.equals(value) : expectedValue.equalsIgnoreCase(value);
+            String pageTitle = "";
+
+            pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
+            LOG.debug("Get Title: {} >> Expected Title: {}", pageTitle, expectedValue);
+
+            boolean result;
+            switch (control) {
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEEQUAL:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? expectedValue.equals(pageTitle) : expectedValue.equalsIgnoreCase(pageTitle);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEDIFFERENT:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !expectedValue.equals(pageTitle) : !expectedValue.equalsIgnoreCase(pageTitle);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLECONTAINS:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? pageTitle.contains(expectedValue) : pageTitle.toLowerCase().contains(expectedValue.toLowerCase());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLENOTCONTAINS:
+                    result = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !pageTitle.contains(expectedValue) : !pageTitle.toLowerCase().contains(expectedValue.toLowerCase());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLEMATCHREGEX:
+                    Pattern pattern;
+                    if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+                        pattern = Pattern.compile(expectedValue);
+                    } else {
+                        pattern = Pattern.compile(expectedValue, Pattern.CASE_INSENSITIVE);
                     }
-                });
-                LOG.debug("After wait {}", System.currentTimeMillis());
-                pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
-            } catch (TimeoutException exception) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
+                    Matcher matcher = pattern.matcher(pageTitle);
+                    result = matcher.find();
+                    break;
+                default:
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                    mes.resolveDescription("CONTROL", control);
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    return mes;
+            }
+
+            if (result) {
+
+                switch (control) {
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEEQUAL:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE_EQUAL);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEDIFFERENT:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE_DIFFERENT);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLECONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE_CONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLENOTCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE_NOTCONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEMATCHREGEX:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE_MATCHREGEX);
+                        break;
+                    default:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                        mes.resolveDescription("CONTROL", control);
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        return mes;
+                }
+            } else {
+
+                switch (control) {
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEEQUAL:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE_EQUAL);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEDIFFERENT:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE_DIFFERENT);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLECONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE_CONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLENOTCONTAINS:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE_NOTCONTAINS);
+                        break;
+                    case TestCaseStepActionControl.CONTROL_VERIFYTITLEMATCHREGEX:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE_MATCHREGEX);
+                        break;
+                    default:
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                        mes.resolveDescription("CONTROL", control);
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        return mes;
+                }
             }
             mes.resolveDescription("STRING1", pageTitle);
-            mes.resolveDescription("STRING2", title);
+            mes.resolveDescription("STRING2", expectedValue);
             mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYTITLE);
+            mes.resolveDescription("CONTROL", control);
             mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
         }
         return mes;
