@@ -153,7 +153,7 @@ public class CampaignExecutionPrivateController {
                     }
                 }
             }
-            response.put("globalGroup1List", campaignGroups1);
+            response.put("group1List", new HashSet<>(campaignGroups1.values())); //Hashset has only unique values
             response.put("campaignStatistics", aggregateListByCampaign);
             return ResponseEntity.ok(response.toString());
         } catch (JSONException exception) {

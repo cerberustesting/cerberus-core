@@ -245,14 +245,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             if (propJson.has("value3")) {
                 value3 = propJson.getString("value3");
             }
-
-            String length = "";
-            if (propJson.get("length") instanceof Number) { //Default value at property creation is integer with value 0.
-                length = String.valueOf(propJson.getInt("length"));
-            } else if (propJson.get("length") instanceof String) {
-                length = propJson.getString("length");
-            }
-
+            String length = propJson.getString("length");
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
             int retryPeriod = propJson.optInt("retryPeriod");
