@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="testTestCase col-lg-4 col-xs-6 pull-right" style="margin-top:4px; margin-bottom: 4px;">
                                             <img id="AppLogo"  class="pull-right" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0; margin-left: 10px"></img>
-                                            <span id="AppName" class="pull-right"> </span>
+                                            <span id="AppName" class="pull-right" style="white-space: nowrap ;"> </span>
                                         </div>
                                     </div>
 
