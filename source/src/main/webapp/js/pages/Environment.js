@@ -534,6 +534,8 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
     var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, undefined, "#lastChangeList", undefined, true);
+    refreshPopoverDocumentation("lastChangeList");
+
     return table;
 }
 
@@ -549,6 +551,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
     var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, undefined, "#lastEventList", undefined, true);
+    refreshPopoverDocumentation("lastEventList");
     return table;
 }
 
@@ -560,7 +563,9 @@ function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
             obj.toDelete = false;
             appendDatabaseRow(obj);
         });
+        refreshPopoverDocumentation("listPanelDatabase");
     }).fail(handleErrorAjaxAfterTimeout);
+
 }
 
 function appendDatabaseRow(dtb) {
@@ -618,6 +623,7 @@ function addNewDatabaseRow() {
         toDelete: false
     };
     appendDatabaseRow(newDatabase);
+    refreshPopoverDocumentation("listPanelDatabase");
 }
 
 function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
@@ -628,6 +634,7 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
             obj.toDelete = false;
             appendApplicationRow(obj, selectSystem);
         });
+        refreshPopoverDocumentation("listPanelApplication");
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -679,13 +686,13 @@ function appendApplicationRow(app, selectSystem) {
     var secret2Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret2'>" + doc.getDocOnline("countryenvironmentparameters", "secret2") + "</label>").append(secret2Input);
     var mobileActivityName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
     var mobilePackageName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
-    
+
     var drow1 = $("<div class='row'></div>").append(activeName).append(ipName).append(urlName).append(poolSizeName);
     var drow2 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(secret1Name).append(expandName);
     var drow3 = $("<div class='row'></div>").append(loginName).append(domainName);
     var drow4 = $("<div class='row'></div>").append(var3Name).append(var4Name).append(secret2Name);
     var drow5 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
-    
+
     var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow3).append(drow4).append(drow5);
 
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
@@ -773,6 +780,7 @@ function addNewApplicationRow(selectSystem) {
         toDelete: false
     };
     appendApplicationRow(newApplication, selectSystem);
+    refreshPopoverDocumentation("listPanelApplication");
 }
 
 function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
@@ -784,6 +792,7 @@ function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
             appendDependenciesRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
+    refreshPopoverDocumentation("listPanelDependencies");
 }
 
 function appendDependenciesRow(env) {
@@ -838,6 +847,7 @@ function addNewDependenciesRow() {
         toDelete: false
     };
     appendDependenciesRow(newDependencies);
+    refreshPopoverDocumentation("listPanelDependencies");
 }
 
 function loadDeployTypeTable(selectSystem, selectCountry, selectEnvironment) {

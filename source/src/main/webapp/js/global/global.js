@@ -3319,9 +3319,9 @@ function cleanErratum(oldValue) {
 
 function refreshPopoverDocumentation(containerid) {
     //As the executors list is dynamically generated after the global popover initialization, need to init popover again on executors list only.
-    let popDefinition = {
-        'placement': 'auto',
-        'container': '#editApplicationModalForm'};
+    let popDefinition = {};
+    popDefinition.placement = "auto";
+    popDefinition.container = "#" + containerid;
     $('#' + containerid + ' [data-toggle="popover"]').popover(popDefinition);
 }
 

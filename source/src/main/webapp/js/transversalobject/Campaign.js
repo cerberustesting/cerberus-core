@@ -248,7 +248,7 @@ function viewEntryClick(param) {
         formEdit.modal('show');
 
     });
-
+    refreshPopoverDocumentation("editTestcampaignModal");
 }
 
 function viewStatEntryClick(param) {
@@ -1147,7 +1147,7 @@ function loadSchedulerTable(name) {
             appendSchedulerRow(obj);
         });
     }
-
+    refreshPopoverDocumentation("schedulerTable");
 }
 
 function loadEventHookTable(name) {
@@ -1159,7 +1159,7 @@ function loadEventHookTable(name) {
             appendEventHookRow(obj);
         });
     }
-
+    refreshPopoverDocumentation("eventHookTable");
 }
 
 
@@ -1361,6 +1361,7 @@ function addNewSchedulerRow() {
         toDelete: false
     };
     appendSchedulerRow(newScheduler);
+    refreshPopoverDocumentation("schedulerTable");
 
 }
 
@@ -1378,5 +1379,6 @@ function addNewEventHookRow() {
         toDelete: false
     };
     appendEventHookRow(newEventHook);
+    refreshPopoverDocumentation("eventHookTable");
 
 }

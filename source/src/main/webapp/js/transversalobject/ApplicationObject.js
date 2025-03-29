@@ -52,6 +52,8 @@ function initModalApplicationObject(page, application) {
     $("[name='objectField']").html(doc.getDocOnline("page_applicationObject", "Object"));
     $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
+    $("[name='xOffsetField']").html(doc.getDocOnline("page_applicationObject", "XOffset"));
+    $("[name='yOffsetField']").html(doc.getDocOnline("page_applicationObject", "YOffset"));
 
     //displayApplicationList('application', undefined, application, undefined);
     $('[name="application"]').select2(getComboConfigApplication(false));
@@ -67,6 +69,9 @@ function initModalApplicationObject(page, application) {
     });
 
     setUpDragAndDrop('#editApplicationObjectModal');
+    
+    refreshPopoverDocumentation("editApplicationObjectModal");
+    
 }
 
 function editApplicationObjectClick(applicationObject, value) {
@@ -151,12 +156,12 @@ function confirmApplicationObjectModalHandler(page, mode) {
             // data = JSON.parse(data);
             if (getAlertType(data.messageType) === "success") {
                 if (page == "applicationObject") {
-                    
+
                     var oTable = $("#applicationObjectsTable").dataTable();
                     oTable.fnDraw(false);
-                    
+
                 } else if (page == "testCaseScript") {
-                    
+
                     //TestCaseScript.js must be loaded so getTags exist
                     var Tags = getTags();
                     for (var i = 0; i < Tags.length; i++) {
@@ -165,7 +170,7 @@ function confirmApplicationObjectModalHandler(page, mode) {
                         }
                     }
                     $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-                    
+
                 }
                 $('#editApplicationObjectModal').data("Saved", true);
                 $('#editApplicationObjectModal').modal('hide');
