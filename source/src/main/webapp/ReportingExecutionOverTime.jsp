@@ -35,7 +35,7 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js"></script>
-        <title id="pageTitle">Execution Over Time</title>
+        <title id="pageTitle">Execution History</title>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -45,7 +45,7 @@
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
 
-            <h1 class="page-title-line" id="title">Execution Over Time</h1>
+            <h1 class="page-title-line" id="title">Execution History</h1>
 
             <div class="row" >
 

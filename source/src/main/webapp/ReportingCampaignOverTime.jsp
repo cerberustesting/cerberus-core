@@ -35,14 +35,14 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingCampaignOverTime.js"></script>
-        <title id="pageTitle">Execution Over Time</title>
+        <title id="pageTitle">Campaign History</title>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
 
-            <h1 class="page-title-line" id="title">Campaign Over Time</h1>
+            <h1 class="page-title-line" id="title">Campaign History</h1>
 
             <div class="row" >
                 

@@ -168,7 +168,7 @@
                                         </a>
                                         <a id="buttonSeeStatsCampaign" class="pull-left marginTop10">
                                             <button type="button" class="btn btn-default marginRight10">
-                                                <span class="glyphicon glyphicon-stats"></span> Campaign Over Time
+                                                <span class="glyphicon glyphicon-stats"></span> Campaign History
                                             </button>
                                         </a>
                                         <a id="buttonRunCampaign" class="pull-left marginTop10">
