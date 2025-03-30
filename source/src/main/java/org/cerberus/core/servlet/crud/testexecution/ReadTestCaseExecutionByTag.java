@@ -559,6 +559,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     JSONObject val = entry.getValue();
                     if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
                             || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
+                            || ((val.getInt("NbExeUsefullHasBug") == 0) && (val.getInt("NbRetry") > 0)) // No bug to report by retry was needed --> Flaky test.
                             ) {
                         newttc.put(key, val);
                     }

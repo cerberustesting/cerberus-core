@@ -667,8 +667,8 @@ function createHeaderCheckboxes() {
             filterCol[index].style.textAlign = "center";
             //Fill or don't fill the checkbox depending if checkbox index is in the array or not
             filterCol[index].innerHTML = checkedColCheckboxes.indexOf(index.toString()) >= 0
-                    ? filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "' checked/>"
-                    : filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "'/>";
+                    ? filterCol[index].innerHTML = "<input type='checkbox' title='Select Column' class='selectByColumn' id='" + index + "' checked/>"
+                    : filterCol[index].innerHTML = "<input type='checkbox' title='Select Column' class='selectByColumn' id='" + index + "'/>";
         }
     }
 }
@@ -1029,13 +1029,6 @@ function loadBugReportByStatusTable(data, selectTag) {
         //calculate totaltest nb
         for (var index = 0; index < len; index++) {
             // increase the total execution
-//            var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
-//            var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
-//                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-//                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
-//                                <span class="glyphicon glyphicon-pencil"></span></button>' + data.BugTrackerStat[index].testCaseFirst;
-//            var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
-
             var tr = $('<tr>');
             tr.append($('<td>').text(data.bugSummary[index].bug).css("text-align", "center"));
             tr.append($('<td>').text(data.bugSummary[index].test).css("text-align", "center"));
@@ -1049,47 +1042,8 @@ function loadBugReportByStatusTable(data, selectTag) {
 
         $("#BugReportTable").append(data.nbBugs + " bugs<br>" + data.nbTOCLEAN + " TestCases / Bugs to Clean<br>" + data.nbPENDING + " TestCases / Bugs Still Running<br>" + data.nbTOREPORT + " TestCases / Bugs To report<br>");
 
-
-//        if (data.totalBugToReport > 0) {
-//            if (data.totalBugToReportReported !== data.totalBugToReport) {
-//                $("#BugReportTable").append(
-//                        $("<div class='panel panel-primary'></div>").append(
-//                        $('<div class="panel-heading"></div>').append(
-//                        $('<div class="row"></div>').append(
-//                        $('<div class="col-xs-8 status"></div>').text("Bugs to Report").prepend(
-//                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
-//                        $('<div class="col-xs-4 text-right"></div>').append(
-//                        $('<div class="total"></div>').text(data.totalBugToReport))
-//                        ))));
-//            }
-//            if (data.totalBugToReportReported !== 0) {
-//                $("#BugReportTable").append(
-//                        $("<div class='panel panel-primary'></div>").append(
-//                        $('<div class="panel-heading"></div>').append(
-//                        $('<div class="row"></div>').append(
-//                        $('<div class="col-xs-8 status"></div>').text("Bugs Reported").prepend(
-//                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
-//                        $('<div class="col-xs-4 text-right"></div>').append(
-//                        $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
-//                        $('<div class="row"></div>').append(
-//                        $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
-//                        )
-//                        ))));
-//            }
-//        }
-//
-//        if (data.totalBugToClean !== 0) {
-//            $("#BugReportTable").append(
-//                    $("<div class='panel panelTOCLEAN'></div>").append(
-//                    $('<div class="panel-heading"></div>').append(
-//                    $('<div class="row"></div>').append(
-//                    $('<div class="col-xs-8 status"></div>').text("Bugs to Clean").prepend(
-//                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
-//                    $('<div class="col-xs-4 text-right"></div>').append(
-//                    $('<div class="total"></div>').text(data.totalBugToClean))
-//                    ))));
-//        }
     } else {
+
         $("#BugReportByStatusPanel").hide();
     }
 
@@ -1654,7 +1608,7 @@ function generateTooltip(data) {
     return htmlRes;
 }
 
-function openModalTestCase_FromRepTag(element, test, testcase, mode) {
+function openModalTestCase_FromRepTag_withBug(element, test, testcase, mode) {
     openModalTestCase(test, testcase, mode, "tabTCBugReport");
     $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
@@ -1674,6 +1628,28 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
         }
     });
 }
+
+function openModalTestCase_FromRepTag(element, test, testcase, mode) {
+    openModalTestCase(test, testcase, mode, "tabTCDefinition");
+    $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
+        $('#editTestCaseModal').unbind("hidden.bs.modal");
+
+        var testcaseobj = $('#editTestCaseModal').data("testcase");
+        if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
+            // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
+            var newComment = $('#editTestCaseModal').data("testcase").comment;
+            $(element).parent().parent().find('td.comment').text(decodeURI(newComment).replace(/\+/g, ' ').replace(/%2B/g, '+'));
+
+            var newBugId = $('#editTestCaseModal').data("bug");
+            var link = "";
+            var appurl = $('#editTestCaseModal').data("appURL");
+            link = getBugIdList(newBugId, appurl);
+
+            $(element).parent().parent().find('td.bugid').html(link);
+        }
+    });
+}
+
 
 function selectAllQueue(checkboxid, manualExecution, status) {
     if ($('#' + checkboxid).prop("checked")) {
@@ -1942,14 +1918,16 @@ function aoColumnsFunc(Columns) {
             "sWidth": "20px",
             "sClass": "selectLineCell",
             "mRender": function (row) {
-                return "<input type='checkbox' class='selectByLine'/>";
+                return "<input type='checkbox' title='Select Line' class='selectByLine'/>";
             }
         }
     ];
+    let col = {};
+
     for (var i = 0; i < colNb; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].robotDecli;
 
-        var col = {
+        col = {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
@@ -2036,7 +2014,7 @@ function aoColumnsFunc(Columns) {
         };
         aoColumns.push(col);
     }
-    var col =
+    col =
             {
                 "data": "priority",
                 "sName": "tec.priority",
@@ -2045,7 +2023,7 @@ function aoColumnsFunc(Columns) {
                 "title": doc.getDocLabel("invariant", "PRIORITY")
             };
     aoColumns.push(col);
-    var col =
+    col =
             {
                 "data": "comment",
                 "sName": "tec.comment",
@@ -2054,7 +2032,7 @@ function aoColumnsFunc(Columns) {
                 "title": doc.getDocLabel("testcase", "Comment")
             };
     aoColumns.push(col);
-    var col =
+    col =
             {
                 "data": "firstExeStart",
                 "sName": "tec.firstExeStart",
@@ -2067,7 +2045,7 @@ function aoColumnsFunc(Columns) {
                 "title": "First Exe Start"
             };
     aoColumns.push(col);
-    var col =
+    col =
             {
                 "data": "lastExeStart",
                 "sName": "tec.lastExeStart",
@@ -2080,7 +2058,7 @@ function aoColumnsFunc(Columns) {
                 "title": "Last Exe Start"
             };
     aoColumns.push(col);
-    var col =
+    col =
             {
                 "data": "lastExeEnd",
                 "sName": "tec.lastExeEnd",
@@ -2093,12 +2071,21 @@ function aoColumnsFunc(Columns) {
                 "title": "Last Exe End"
             };
     aoColumns.push(col);
-    var col =
+    col =
             {
                 "data": "bugs",
                 "bSearchable": false,
                 "mRender": function (data, type, obj) {
-                    return getBugIdList(data, obj.AppBugURL);
+                    let renderBug = "";
+                    let bugList = getBugIdList(data, obj.AppBugURL);
+                    let editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag_withBug(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" type="button">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button><br>';
+                    if ((obj.NbExeUsefullHasBug > 0) || (bugList !== "")) {
+                        return editEntry + bugList;
+                    }
+                    return "";
                 },
                 "sName": "tec.bugs",
                 "sClass": "bugid",
@@ -2106,14 +2093,30 @@ function aoColumnsFunc(Columns) {
                 "title": doc.getDocLabel("testcase", "BugID")
             };
     aoColumns.push(col);
-
-    var col =
+    col =
             {
                 "data": "NbRetry",
                 "sName": "NbRetry",
                 "sClass": "NbRetry",
                 "sWidth": "40px",
-                "title": "Total nb of Retries"
+                "title": "Total nb of Retries",
+                "mRender": function (data, type, obj) {
+                    if ((obj.NbExeUsefullHasBug === 0) && (obj.NbExeUsefullIsPending === 0)) {
+                        if (obj.NbRetry > 2) {
+                            console.info(obj);
+                            return "<span class='label label-danger'>Flaky (" + obj.NbRetry + ")</span>";
+                            console.info("Flaky test");
+                        } else if (obj.NbRetry > 0) {
+                            console.info(obj);
+                            return "<span class='label label-warning'>Flaky (" + obj.NbRetry + ")</span>";
+                        }
+                    } else {
+                        if (obj.NbRetry > 0) {
+                            return obj.NbRetry;
+                        }
+                    }
+                    return "";
+                }
             };
     aoColumns.push(col);
 
