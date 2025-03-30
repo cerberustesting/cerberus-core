@@ -233,12 +233,11 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
             '</button>' +
             '</div>' +
             '</td>' +
-            '<td>' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
-//            '<input class="form-control input-sm" style="width: 150px;" name="type" value="' + type + '"/></td>' +
+            '<td style="font-size: 14px">' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
             '</td>' +
             '<td style="width: 50px;">  <input class="form-control input-xs"  type="checkbox"  name="activate" ' + checked + '/></td>' +
-            '<td style="width: 60px;">  <input class="form-control input-sm" name="depDelay" value="' + delay + '"/></td>' +
-            '<td>  <input class="form-control input-sm" name="depDescription" value="' + description + '"/></td>' +
+            '<td style="width: 60px;">  <input class="form-control" name="depDelay" value="' + delay + '"/></td>' +
+            '<td>  <input class="form-control" name="depDescription" value="' + description + '"/></td>' +
             '</tr>'
             );
 }
@@ -253,7 +252,7 @@ function depTypeSelect(value) {
     } else {
         selectedOK = "";
     }
-    return "<select type='text' class='form-control input-sm marginTop5' name='type'>" +
+    return "<select type='text' class='form-control marginTop5' name='type'>" +
             "<option value='TCEXEEND' " + selected + ">" + desc + "</option>" +
             "<option value='TCEXEENDOK' " + selectedOK + ">" + descOK + "</option>" +
             "</select>";
@@ -1121,8 +1120,8 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var row = $("<tr></tr>");
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
-    var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control input-sm").val(obj.id);
-    var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
+    var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control").val(obj.id);
+    var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control").val(obj.desc);
     var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated));
     var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed));
     if (newbugTrackerUrl !== "") {

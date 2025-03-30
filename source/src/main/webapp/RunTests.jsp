@@ -192,25 +192,25 @@
                                         <div class="form-group">
                                             <label for="myhost" class="col-sm-3 control-label bold">My Host</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="myhost" name="myhost"/>
+                                                <input type="text" class="form-control" id="myhost" name="myhost"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="mycontextroot" class="col-sm-3 control-label bold">My Context Root</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="mycontextroot" name="mycontextroot"/>
+                                                <input type="text" class="form-control" id="mycontextroot" name="mycontextroot"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="myloginrelativeurl" class="col-sm-3 control-label bold">My Login Relative URL</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="myloginrelativeurl" name="myloginrelativeurl"/>
+                                                <input type="text" class="form-control" id="myloginrelativeurl" name="myloginrelativeurl"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="myenvdata" class="col-sm-3 control-label bold">My Data Environment</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="myenvdata" name="environment"></select>
+                                                <select class="form-control" id="myenvdata" name="environment"></select>
                                             </div>
                                         </div>
                                     </form>
@@ -255,7 +255,7 @@
                                         <div class="form-group">
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
                                             <div class="col-sm-6">
-                                                <select class="form-control input-sm" id="robot" name="robot" multiple></select>
+                                                <select class="form-control" id="robot" name="robot" multiple></select>
                                                 <button type="button" id="robotEdit" class="glyphicon glyphicon-edit btn" title="Edit Robot"></button>
                                                 <button type="button" id="robotCreate" class="glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
                                             </div>
@@ -267,19 +267,19 @@
                                         <div class="form-group">
                                             <label for="seleniumIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="seleniumIP" name="ss_ip"/>
+                                                <input type="text" class="form-control" id="seleniumIP" name="ss_ip"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="seleniumPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="seleniumPort" name="ss_p"/>
+                                                <input type="text" class="form-control" id="seleniumPort" name="ss_p"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="browser" class="col-sm-3 control-label bold">Browser</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="browser" name="browser"></select>
+                                                <select class="form-control" id="browser" name="browser"></select>
                                             </div>
                                         </div>
                                     </form>
@@ -301,68 +301,68 @@
                                         <div class="form-group">
                                             <label for="tag" class="col-sm-3 control-label bold">Tag</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="tag" name="Tag" maxlength="255"/>
+                                                <input type="text" class="form-control" id="tag" name="Tag" maxlength="255"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
                                             <!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="verbose" name="Verbose"></select>
+                                                <select class="form-control" id="verbose" name="Verbose"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="screenshot" class="col-sm-3 control-label bold">Screenshot</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="screenshot" name="Screenshot"></select>
+                                                <select class="form-control" id="screenshot" name="Screenshot"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="video" class="col-sm-3 control-label bold">Video</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="video" name="Video"></select>
+                                                <select class="form-control" id="video" name="Video"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="pageSource" name="PageSource"></select>
+                                                <select class="form-control" id="pageSource" name="PageSource"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="seleniumLog" class="col-sm-3 control-label bold">Robot Log</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="seleniumLog" name="SeleniumLog"></select>
+                                                <select class="form-control" id="seleniumLog" name="SeleniumLog"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="consoleLog" class="col-sm-3 control-label bold">Console Log</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="consoleLog" name="ConsoleLog"></select>
+                                                <select class="form-control" id="consoleLog" name="ConsoleLog"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="timeout" class="col-sm-3 control-label bold">Timeout</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="timeout" name="timeout"/>
+                                                <input type="text" class="form-control" id="timeout" name="timeout"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="retries" class="col-sm-3 control-label bold">Retries</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="retries" name="retries"></select>
+                                                <select class="form-control" id="retries" name="retries"></select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="priority" class="col-sm-3 control-label bold">Priority</label>
                                             <div class="col-sm-9">
-                                                <input type="text"  class="form-control input-sm" id="priority" name="priority"/>
+                                                <input type="text"  class="form-control" id="priority" name="priority"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="manualExecution" class="col-sm-3 control-label bold">Manual Execution</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="manualExecution" name="manualExecution"></select>
+                                                <select class="form-control" id="manualExecution" name="manualExecution"></select>
                                             </div>
                                         </div>
                                     </form>

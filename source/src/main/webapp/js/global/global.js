@@ -781,7 +781,7 @@ function getSelectInvariant(idName, forceReload, async = true, addValue) {
     }
 
     let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    let select = $("<select></select>").addClass("form-control input-sm");
+    let select = $("<select></select>").addClass("form-control");
     if (addValue !== undefined) {
         select.append($("<option></option>").text(addValue).val(addValue));
     }
@@ -838,7 +838,7 @@ function getSelectRobot(forceReload, notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -888,7 +888,7 @@ function getSelectLabel(system, forceReload, notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -922,7 +922,7 @@ function getSelectApplication(system, forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -955,7 +955,7 @@ function getSelectApplicationWithoutSystem() {
 
     var list = [];
 
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     $.ajax({
         url: "ReadApplication",
@@ -977,7 +977,7 @@ function getSelectFolder() {
 
     var list = [];
 
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     $.ajax({
         url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test",
@@ -1001,7 +1001,7 @@ function getSelectDeployType(forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({

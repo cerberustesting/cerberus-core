@@ -200,7 +200,7 @@ Action.prototype.generateContent = function () {
 // END OF ACTION FIELD
 
 //VALUE1 FIELD
-    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
+    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control v1");
     value1Field.val(cleanErratum(this.value1));
     value1Field.on("change", function () {
         action.value1 = convertValueWithErratum(action.value1, value1Field.val());
@@ -214,7 +214,7 @@ Action.prototype.generateContent = function () {
 //END OF VALUE1 FIELD
 
 //VALUE2 FIELD
-    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
+    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control v2");
     value2Field.val(cleanErratum(this.value2));
     value2Field.on("change", function () {
         action.value2 = convertValueWithErratum(action.value2, value2Field.val());
@@ -228,7 +228,7 @@ Action.prototype.generateContent = function () {
 //END OF VALUE2 FIELD
 
 //VALUE3 FIELD
-    var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
+    var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control v3");
     value3Field.val(cleanErratum(this.value3));
     value3Field.on("change", function () {
         action.value3 = convertValueWithErratum(action.value3, value3Field.val());

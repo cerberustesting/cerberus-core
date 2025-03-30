@@ -190,8 +190,8 @@ function changeLabelParent(modal) {
 
     var par = $('#' + modal + ' #parentLabel').val();
     if (!isEmpty(par) && par !== 0) {
-        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
-            class="buttonObject btn btn-default " \n\
+        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" style="margin-left: 10px;" onclick="emptyService();"\n\
+            class="buttonObject btn btn-sm btn-default " \n\
            title="Empty" type="button">\n\
             <span class="glyphicon glyphicon-remove"></span></button></span>';
         $('#' + modal + ' #parentLabel').parent().append(emptyEntry);

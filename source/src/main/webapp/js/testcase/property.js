@@ -356,12 +356,12 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     var row3 = $("<div class='row' name='masterProp'></div>");
 
     //PROP NAME
-    var propertyInput = $("<input onkeypress='return tec_keyispressed(event);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
+    var propertyInput = $("<input onkeypress='return tec_keyispressed(event);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control").val(property.property);
     propertyInput.prop("readonly", !canUpdate);
     var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
 
     //DESC
-    var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
+    var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control").val(property.description);
     descriptionInput.prop("readonly", !canUpdate);
     var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
 
@@ -388,7 +388,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyDatabaseContainer = $("<div class='database'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyDatabaseContainer);
 
     //VALUE1
-    var propertyValue1Field = $("<pre>").attr("data-toggle", "tooltip").attr("name", "propertyValue").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyValue1Field = $("<pre>").attr("data-toggle", "tooltip").attr("name", "propertyValue").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyValue1Field.val(property.value1);
     propertyValue1Field.prop("readonly", !canUpdate);
     var propertyValue1Container = $("<div class='input-group'></div>");
@@ -402,7 +402,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     //propertyValue1Container.append(editDatalibButton);
 
 
-    var propertyValue1InputField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyValue1InputField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyValue1InputField.val(property.value1);
     propertyValue1InputField.prop("readonly", !canUpdate);
     var propertyValue1InputContainer = $("<div class='input-group'></div>");
@@ -413,7 +413,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue1InputContainer = $("<div class='valueInput1'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue1InputContainer);
 
     //VALUE2
-    var propertyValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyValue2Field.val(property.value2);
     propertyValue2Field.prop("readonly", !canUpdate);
     var propertyValue2Container = $("<div class='input-group'></div>");
@@ -424,7 +424,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue2Container = $("<div class='value2'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue2Container);
 
     //VALUE3
-    var propertyValue3Field = $("<select></select>").addClass("form-control input-sm");
+    var propertyValue3Field = $("<select></select>").addClass("form-control");
     propertyValue3Field.prop("readonly", !canUpdate);
     var propertyValue3Container = $("<div class='input-group'></div>");
     var propertyValue3Addon = $("<span></span>").attr("id", "propertyValue3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
@@ -434,7 +434,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue3Container = $("<div class='value3'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue3Container);
 
     //LENGHT
-    var propertyLengthField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyLengthField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyLengthField.val(property.length);
     propertyLengthField.prop("readonly", !canUpdate);
     var propertyLengthContainer = $("<div class='input-group'></div>");
@@ -445,7 +445,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyLengthContainer = $("<div class='length'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyLengthContainer);
 
     //ROW LIMIT
-    var propertyRowLimitField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyRowLimitField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyRowLimitField.val(property.rowLimit);
     propertyRowLimitField.prop("readonly", !canUpdate);
     var propertyRowLimitContainer = $("<div class='input-group'></div>");
@@ -456,7 +456,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRowLimitContainer = $("<div class='rowLimit'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRowLimitContainer);
 
     //CACHE EXPIRE
-    var propertyCacheExpireField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyCacheExpireField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyCacheExpireField.val(property.cacheExpire);
     propertyCacheExpireField.prop("readonly", !canUpdate);
     var propertyCacheExpireContainer = $("<div class='input-group'></div>");
@@ -467,7 +467,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyCacheExpireContainer = $("<div class='cacheExpire'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyCacheExpireContainer);
 
     //NATURE
-    var propertyNatureField = $("<select></select>").addClass("form-control input-sm");
+    var propertyNatureField = $("<select></select>").addClass("form-control");
     propertyNatureField.prop("readonly", !canUpdate);
     var propertyNatureContainer = $("<div class='input-group'></div>");
     var propertyNatureAddon = $("<span></span>").attr("id", "propertyNatureAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
@@ -477,7 +477,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyNatureContainer = $("<div class='nature'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyNatureContainer);
 
     //NB RETRY
-    var propertyRetryNbField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyRetryNbField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyRetryNbField.val(property.retryNb);
     propertyRetryNbField.prop("readonly", !canUpdate);
     var propertyRetryNbContainer = $("<div class='input-group'></div>");
@@ -488,7 +488,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRetryNbContainer = $("<div class='retryNb'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRetryNbContainer);
 
     // RETRY PERIOD
-    var propertyRetryPeriodField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyRetryPeriodField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyRetryPeriodField.val(property.retryPeriod);
     propertyRetryPeriodField.prop("readonly", !canUpdate);
     var propertyRetryPeriodContainer = $("<div class='input-group'></div>");
@@ -499,7 +499,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRetryPeriodContainer = $("<div class='retryPeriod'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRetryPeriodContainer);
 
     // RANK
-    var propertyRankField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var propertyRankField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyRankField.val(property.rank);
     propertyRankField.prop("readonly", !canUpdate);
     var propertyRankContainer = $("<div class='input-group'></div>");
@@ -756,11 +756,11 @@ function drawInheritedProperty(propList) {
         var placeHolders = newPropertyPlaceholder[property.type];
 
         //PROP NAME
-        var propertyInput = $("<input id='propName' name='propName' style='width: 100%; font-size: 16px; font-weight: 600;' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.property);
+        var propertyInput = $("<input id='propName' name='propName' style='width: 100%; font-size: 16px; font-weight: 600;' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control").val(property.property);
         var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
 
         //DESC
-        var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.description);
+        var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' readonly='readonly'>").addClass("form-control").val(property.description);
         var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
 
         //COUNTRY
@@ -778,7 +778,7 @@ function drawInheritedProperty(propList) {
         }
 
         //VALUE1
-        var valueInput = $("<pre id='inheritPropertyValue" + index + "' style='min-height:150px'  rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").text(property.value1);
+        var valueInput = $("<pre id='inheritPropertyValue" + index + "' style='min-height:150px'  rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control").text(property.value1);
         var value = $("<div class='form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
         if (typeof placeHolders.value1 !== 'undefined') {
             value.addClass(placeHolders.value1.class);
@@ -787,7 +787,7 @@ function drawInheritedProperty(propList) {
         }
 
         //VALUE2
-        var value2Input = $("<textarea name='inheritPropertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value2);
+        var value2Input = $("<textarea name='inheritPropertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control").val(property.value2);
         var value2 = $("<div class='form-group' name='fieldValue2'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
         if (typeof placeHolders.value2 !== 'undefined') {
             value2.addClass(placeHolders.value2.class);
@@ -796,7 +796,7 @@ function drawInheritedProperty(propList) {
         }
 
         //VALUE3
-        var value3Input = $("<input name='inheritPropertyValue3' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.value3);
+        var value3Input = $("<input name='inheritPropertyValue3' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'>").addClass("form-control").val(property.value3);
         var value3 = $("<div class='form-group' name='fieldValue3'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Input);
         if (typeof placeHolders.value3 !== 'undefined') {
             value3.addClass(placeHolders.value3.class);
@@ -805,7 +805,7 @@ function drawInheritedProperty(propList) {
         }
 
         //LENGTH
-        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.length);
+        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' readonly='readonly'>").addClass("form-control").val(property.length);
         var length = $("<div class='form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         if (typeof placeHolders.length !== 'undefined') {
             length.addClass(placeHolders.length.class);
@@ -814,7 +814,7 @@ function drawInheritedProperty(propList) {
         }
 
         //NATURE
-        var natureInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "nature") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.nature);
+        var natureInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "nature") + "' readonly='readonly'>").addClass("form-control").val(property.nature);
         var nature = $("<div class='form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(natureInput);
         if (typeof placeHolders.nature !== 'undefined') {
             nature.addClass(placeHolders.nature.class);
@@ -823,7 +823,7 @@ function drawInheritedProperty(propList) {
         }
 
         //Row Limit
-        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rowLimit);
+        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control").val(property.rowLimit);
         var rowLimit = $("<div class='form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         if (typeof placeHolders.rowLimit !== 'undefined') {
             rowLimit.addClass(placeHolders.rowLimit.class);
@@ -832,7 +832,7 @@ function drawInheritedProperty(propList) {
         }
 
         //Cache Expire
-        var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control input-sm").val(property.cacheExpire);
+        var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control").val(property.cacheExpire);
         var cacheExpire = $("<div class='form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         if (typeof placeHolders.cacheExpire !== 'undefined') {
             cacheExpire.addClass(placeHolders.cacheExpire.class);
@@ -841,7 +841,7 @@ function drawInheritedProperty(propList) {
         }
 
         //Retry
-        var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
+        var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control").val(property.retryNb);
         var retryNb = $("<div class='form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
         if (typeof placeHolders.retryNb !== 'undefined') {
             retryNb.addClass(placeHolders.retryNb.class);
@@ -850,7 +850,7 @@ function drawInheritedProperty(propList) {
         }
 
         //Rank
-        var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rank);
+        var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "' readonly='readonly'>").addClass("form-control").val(property.rank);
         var rank = $("<div class='form-group' name='Rank'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "Rank"))).append(rankInput);
         if (typeof placeHolders.rank !== 'undefined') {
             rank.addClass(placeHolders.rank.class);
@@ -859,7 +859,7 @@ function drawInheritedProperty(propList) {
         }
 
         //retryPeriod
-        var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
+        var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control").val(property.retryPeriod);
         var retryPeriod = $("<div class='form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
         if (typeof placeHolders.retryPeriod !== 'undefined') {
             retryPeriod.addClass(placeHolders.retryPeriod.class);

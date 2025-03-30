@@ -1174,9 +1174,9 @@ function appendSchedulerRow(scheduler) {
 
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control").val(scheduler.cronDefinition);
     loadCronList(cronInput);
-    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
+    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control").val(scheduler.description);
     var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
     var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(getDate(scheduler.lastExecution));
     var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrCreated);
@@ -1234,17 +1234,17 @@ function appendEventHookRow(eventHook) {
     var doc = new Doc();
 
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs col-sm-12 marginBottom20").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var eventRefInput = $("<select></select>").addClass("form-control input-sm");
+    var eventRefInput = $("<select></select>").addClass("form-control");
     eventRefInput.append($("<option></option>").text("CAMPAIGN_START").val("CAMPAIGN_START"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END").val("CAMPAIGN_END"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END_CIKO").val("CAMPAIGN_END_CIKO"));
     eventRefInput.val(eventHook.eventReference);
     var activeInput = $("<input name=\"eventActive\" type='checkbox'>").addClass("form-control").prop("checked", eventHook.isActive);
-    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(eventHook.description);
+    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control").val(eventHook.description);
     var hookConnectorInput = getSelectInvariant("EVENTCONNECTOR", false);
     hookConnectorInput.val(eventHook.hookConnector);
-    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control input-sm").val(eventHook.hookRecipient);
-    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control input-sm").val(eventHook.hookChannel);
+    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control").val(eventHook.hookRecipient);
+    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control").val(eventHook.hookChannel);
     var userCreateInput = $("<input name=\"eventUserCreateInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrCreated);
     var userModifInput = $("<input name=\"eventUserModifInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrModif);
 

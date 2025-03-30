@@ -608,6 +608,14 @@ select[multiple] {
     height: auto;
 }
 
+.select2-selection__rendered{
+    font-size:14px;
+}
+
+.select2-results__option{
+    font-size:14px;
+}
+
 a {
     color: var(--crb-blue-color);
     text-decoration: none;
@@ -639,7 +647,7 @@ a {
     font-weight: bold;
 }
 
-.color-box {   
+.color-box {
     float: left;
     width: 10px;
     height: 10px;
@@ -650,7 +658,7 @@ a {
 
 .toggle {
     cursor: pointer;
-    color: #008CDA; 
+    color: #008CDA;
 }
 
 .nodoc{
@@ -687,16 +695,16 @@ textarea{
 td#wob {
     border-width:0px;
 }
-select#wob { 
+select#wob {
     border-width:0px;
 }
-textarea#wob { 
+textarea#wob {
     border-width:0px;
 }
-input#wob { 
+input#wob {
     border-width:0px;
 }
-.wob { 
+.wob {
     border-width:0px;
 }
 /**Title of the parts in pages*/
@@ -709,8 +717,8 @@ input#wob {
 
 /** */
 .filters{
-    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
-    background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC);
+    background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC);
     font-weight:bold;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
     color:#555555;
@@ -718,8 +726,8 @@ input#wob {
 }
 
 .backDiv{
-    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8);
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8);
     font-weight:bold;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
     color:#555555;
@@ -734,8 +742,8 @@ div#header {
 }
 
 .tableHeader{
-    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8);
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8);
     font-weight:bold;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
     color:#555555;
@@ -826,17 +834,17 @@ table#testcaseproperties_table {
 
 }
 tr#header {
-    background-color:#cad3f1; 
-    font-weight:bold;   
+    background-color:#cad3f1;
+    font-weight:bold;
 
 }
 tr#tableheader {
-    background-color:#cad3f1; 
-    font-weight:bold; 
+    background-color:#cad3f1;
+    font-weight:bold;
     text-align: center;
 
 }
-td#leftlined { 
+td#leftlined {
     border-bottom-style: groove;
     border-bottom-color:black ;
     border-right: 0px;
@@ -844,7 +852,7 @@ td#leftlined {
     border-left-style: groove;
     border-left-color: #8999c4;
 }
-td#underlined { 
+td#underlined {
     border-bottom-style: groove;
     border-bottom-color:black ;
     border-right: 0px;
@@ -852,7 +860,7 @@ td#underlined {
     border-left: 0px;
 }
 
-.separation { 
+.separation {
     border-bottom-style: dashed;
     border-bottom-color:#8999c4 ;
     border-right: 0px;
@@ -871,23 +879,23 @@ h4 {
 }
 td#toto {
     border-width:1px;
-    border-style:groove; 
-    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
+    border-style:groove;
+    border-color:#ffffff #cfcfcf #cfcfcf #ffffff;
 }
 #tableau {
-    vertical-align: top; 
+    vertical-align: top;
     border-style-inner:groove;
     border-spacing: 0px;
     border-width:thin;
 }
 table#tableau {
-    vertical-align: top; 
+    vertical-align: top;
     border-style-inner:groove;
     border-spacing: 0px;
     border-width:thin;
 }
 td#repsynthesis1 {
-    vertical-align: top; 
+    vertical-align: top;
     border-style-inner:groove;
     border-spacing: 0px;
     border-width:thin;
@@ -895,14 +903,14 @@ td#repsynthesis1 {
     border-left-color: #cfcfcf;
 }
 td#repsynthesis2 {
-    vertical-align: top; 
+    vertical-align: top;
     border-style-inner:groove;
     border-spacing: 0px;
     border-width:thin;
     border-bottom-color: #cfcfcf;
 }
 td#repsynthesis3 {
-    vertical-align: top; 
+    vertical-align: top;
     border-style-inner:groove;
     border-spacing: 0px;
     border-width:thin;
@@ -938,9 +946,9 @@ td#repsynthesis3 {
 }
 
 
-input#submitButtonDuplicate {   
-    background-color: #cad3f1;  
-    border-color:#DCDCDC #696969 #696969 #DCDCDC;       
+input#submitButtonDuplicate {
+    background-color: #cad3f1;
+    border-color:#DCDCDC #696969 #696969 #DCDCDC;
 }
 
 .filterTable {
@@ -953,7 +961,7 @@ input#submitButtonDuplicate {
 /** 3 - HEADER */
 
 .navbar-nav > li > a, .navbar-brand {
-    padding-top:4px !important; 
+    padding-top:4px !important;
     padding-bottom:0 !important;
     height: 28px;
 }
@@ -975,7 +983,7 @@ input#submitButtonDuplicate {
 }
 
 ul.nav li.dropdown:hover > ul.dropdown-menu {
-    display: block;    
+    display: block;
 }
 
 .navlist li {
@@ -987,7 +995,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     background-color: #3071A9;
 }
 
-.navlist li.selected { 
+.navlist li.selected {
     color: #FFFFFF;
     background-color: #3071A9;
 }
@@ -1157,7 +1165,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     background: url("images/ui-bg_glass_75_dadada_1x400.png") repeat-x scroll 50% 50% #DADADA;
     border: 1px solid #999999;
     color: #212121;
-    font-weight: normal;  
+    font-weight: normal;
 }
 .button:disabled{
     background-image: none;
@@ -1325,7 +1333,7 @@ table.wrapAll th {
     padding-left: 0;
 }
 span.editable-empty,.editable-empty:hover,.editable-empty:focus {
-    color: black;  
+    color: black;
 }
 
 .editable-click, a.editable-click, a.editable-click:hover{
@@ -1337,7 +1345,7 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
 *Specifc for Alert Message Button size
 */
 .filterMessageButtons{
-    font-size : 130%;  
+    font-size : 130%;
 }
 
 
@@ -1421,10 +1429,14 @@ table.dataTable thead th {
 
 
 .blink {
-  animation: blink 2s ease-in infinite;
+    animation: blink 2s ease-in infinite;
 }
 
 @keyframes blink {
-  from, to { opacity: 1 }
-  50% { opacity: 0 }
+    from, to {
+        opacity: 1
+    }
+    50% {
+        opacity: 0
+    }
 }
