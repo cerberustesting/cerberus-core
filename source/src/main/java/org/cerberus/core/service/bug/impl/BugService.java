@@ -30,13 +30,14 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.scheduling.annotation.Async;
+import org.cerberus.core.service.bug.azuredevops.IAzureDevopsService;
 import org.cerberus.core.service.bug.github.IGithubService;
 import org.cerberus.core.service.bug.jira.IJiraService;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -54,6 +55,8 @@ public class BugService implements IBugService {
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
+    private IAzureDevopsService azureDevopsService;
+    @Autowired
     private IGithubService githubService;
     @Autowired
     private IJiraService jiraService;
@@ -70,8 +73,9 @@ public class BugService implements IBugService {
     public JSONObject createBug(TestCaseExecution execution, boolean forceCreation) {
         JSONObject newBugCreated = new JSONObject();
         try {
+            LOG.debug("Bug Creation requested : {}", forceCreation);
 
-            if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
+            if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false) && !forceCreation) {
                 LOG.debug("Not creating bug due to parameter.");
                 newBugCreated.put("message", "Not creating bug due to parameter : " + Parameter.VALUE_cerberus_autobugcreation_enable);
                 newBugCreated.put("statusCode", 400);
@@ -81,8 +85,13 @@ public class BugService implements IBugService {
             execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Trying To create the bug.");
             // Testcase should have a priority defined and in WORKING status
             if (((execution.getTestCasePriority() >= 1) && !"OK".equalsIgnoreCase(execution.getControlStatus())) || forceCreation) {
-                LOG.debug("Execution is not OK, with prio > 0.");
-                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, with prio > 0.");
+                if (forceCreation) {
+                    LOG.debug("Forcing bug Creation.");
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Forcing bug creation.");
+                } else {
+                    LOG.debug("Execution is not OK, with prio > 0.");
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, with prio > 0.");
+                }
                 TestCase tc = null;
                 try {
                     tc = testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase());
@@ -109,6 +118,10 @@ public class BugService implements IBugService {
                                     break;
                                 case Application.BUGTRACKER_GITHUB:
                                     newBugCreated = githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+
+                                    break;
+                                case Application.BUGTRACKER_AZUREDEVOPS:
+                                    newBugCreated = azureDevopsService.createAzureDevopsWorkItem(tc, execution, currentAppli.getBugTrackerParam1());
 
                                     break;
                                 default:

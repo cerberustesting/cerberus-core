@@ -6615,3 +6615,12 @@ ALTER TABLE `tag` ADD COLUMN `CIScoreMax` INT DEFAULT 0 AFTER `CIScoreThreshold`
 -- 1884-1885
 UPDATE testcasestepactioncontrol SET Control='verifyUrlEqual' WHERE Control='verifyUrl';
 UPDATE testcasestepactioncontrol SET Control='verifyTitleEqual' WHERE Control='verifyTitle';
+
+-- 1886
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'AZUREDEVOPS', 250, 'Azure Devops Bug Tracker connector') ;
+
+-- 1887
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_azuredevops_accesstoken', '', 'Azure Devops Personal Access Token that will be used to create issues from API.');
+

@@ -363,14 +363,14 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
 function updateBugTrackerConnector() {
     let connector = $('#editApplicationModal #bugtrackerconnector').val();
     if (connector === 'REDIRECT') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png");
         $('#editApplicationModal #btP1').hide();
         $('#editApplicationModal #btP2').hide();
         $('#editApplicationModal #btP3').hide();
         $('#editApplicationModal #btP3').hide();
 
     } else if (connector === 'JIRA') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png");
         $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
@@ -392,7 +392,7 @@ function updateBugTrackerConnector() {
         });
 
     } else if (connector === 'GITHUB') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png");
         $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
@@ -402,6 +402,28 @@ function updateBugTrackerConnector() {
         //<i class="fa fa-external-link" aria-hidden="true"></i>
         $('#editApplicationModal #bugtrackerparam2').autocomplete({
             source: ["bug"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+
+    } else if (connector === 'AZUREDEVOPS') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-AZUREDEVOPS.png");
+        $('#editApplicationModal #TrackerLogo').show();
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').hide();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("organisation/project");
+        $("[name='bugtrackerparam2Field']").html("Label");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: [""],
             minLength: 0,
             messages: {
                 noResults: '',

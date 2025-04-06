@@ -10,6 +10,7 @@
 * Sort label on testcase list and campaign execution report pages. #2581
 * Added operator : different, contains, notContains and matchRegex on both controls : verifyTitle and verifyUrl #2585
 * On Report by campaign screen, identify flaky test cases and direct button display to edit bug.
+* Added Azure DevOps Work Item connector. #2532
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
