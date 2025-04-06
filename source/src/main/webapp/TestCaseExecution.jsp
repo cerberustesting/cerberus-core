@@ -171,24 +171,24 @@
                                             </div>
                                             <div class="btn-group ">
                                                 <a>
-                                                    <button class="btn btn-default" id="editTcHeader"
-                                                            style="margin-left: 5px; margin-left: 5px;">
-                                                        <span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header
+                                                    <button class="btn btn-default" id="editTcStepInfo"
+                                                            style="margin-left: 5px;">
+                                                        <span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group ">
                                                 <a>
-                                                    <button class="btn btn-default" id="editTcStepInfo"
-                                                            style="margin-left: 5px; margin-left: 5px;">
-                                                        <span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step
+                                                    <button class="btn btn-default" id="editTcHeader"
+                                                            style="margin-left: 5px; margin-right: 5px;">
+                                                        <span class="glyphicon glyphicon-edit"></span> Edit Test Case Header
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group" id="runTestCasePopover">
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="runTestCase"
-                                                            style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip">
+                                                            style="margin-left: 5px;" data-toggle="tooltip">
                                                         <span class="glyphicon glyphicon-play"></span>
                                                     </button>
                                                 </a>
@@ -196,7 +196,7 @@
                                             <div class="btn-group">
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="rerunFromQueueandSee"
-                                                            style="margin-left: 5px; margin-left: 5px;">
+                                                            style="margin-left: 5px;">
                                                         <span class="glyphicon glyphicon-forward"></span>
                                                     </button>
                                                 </a>
