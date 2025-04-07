@@ -20,7 +20,6 @@
 package org.cerberus.core.service.xray.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import org.cerberus.core.crud.entity.Parameter;
@@ -135,7 +134,7 @@ public class XRayGenerationService implements IXRayGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject slackMessage = new JSONObject();
         JSONObject attachementObj = new JSONObject();

@@ -1,6 +1,8 @@
 *Bug fixes*
 [square]
 * Numeric comparison allow negative values.
+* Fixed regression on space character encoding on notifications.
+* Fixed regression that could duplicate notification on campaign definition.
 
 *Improvements / New features*
 [square]

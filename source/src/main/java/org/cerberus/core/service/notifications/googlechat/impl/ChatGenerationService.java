@@ -20,7 +20,6 @@
 package org.cerberus.core.service.notifications.googlechat.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import org.cerberus.core.crud.entity.EventHook;
@@ -60,7 +59,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 
@@ -99,7 +98,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 
@@ -145,7 +144,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 

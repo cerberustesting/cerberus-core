@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.engine.scheduler;
 
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -109,7 +108,7 @@ public class ScheduledJob implements Job {
                                 httpclientBuilder = HttpClientBuilder.create();
                                 httpclient = httpclientBuilder.build();
                                 String request = new String();
-                                String encodeName = URLEncoder.encode(scheduleName, "UTF-8");
+                                String encodeName = StringUtil.encodeURL(scheduleName);
                                 request = parameterService.getParameterStringByKey("cerberus_url", "", "") + SERVLET_ADDTOEXECUTION + "?campaign=" + encodeName + "&outputformat=json";
                                 HttpGet requesthttp = new HttpGet(request);
                                 requesthttp.setHeader("apikey", apiKeyService.getServiceAccountAPIKey());

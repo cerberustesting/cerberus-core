@@ -20,7 +20,6 @@
 package org.cerberus.core.service.bug.azuredevops.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -60,8 +59,8 @@ public class AzureDevopsGenerationService implements IAzureDevopsGenerationServi
             cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
             String cerberusUrlExe = cerberusUrl + "TestCaseExecution.jsp?executionId=" + String.valueOf(execution.getId());
-            String cerberusUrlTag = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(execution.getTag(), "UTF-8");
-            String cerberusUrlExeHisto = cerberusUrl + "ReportingExecutionOverTime.jsp?tests=" + URLEncoder.encode(execution.getTest(), "UTF-8") + "&testcases=" + URLEncoder.encode(execution.getTestCase(), "UTF-8");
+            String cerberusUrlTag = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(execution.getTag());
+            String cerberusUrlExeHisto = cerberusUrl + "ReportingExecutionOverTime.jsp?tests=" + StringUtil.encodeURL(execution.getTest()) + "&testcases=" + StringUtil.encodeURL(execution.getTestCase());
 
             JSONObject op1Object = new JSONObject();
 

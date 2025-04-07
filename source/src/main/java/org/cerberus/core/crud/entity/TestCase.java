@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -296,7 +295,7 @@ public class TestCase {
         try {
             testCaseJson.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + URLEncoder.encode(this.getTest(), "UTF-8") + "&testcase=" + URLEncoder.encode(this.getTestcase(), "UTF-8"));
+            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + StringUtil.encodeURL(this.getTest()) + "&testcase=" + StringUtil.encodeURL(this.getTestcase()));
             testCaseJson.put("testFolder", this.getTest());
             testCaseJson.put("testcase", this.getTestcase());
             testCaseJson.put("application", this.getApplication());

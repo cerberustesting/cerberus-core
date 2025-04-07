@@ -30,7 +30,6 @@ import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -191,7 +190,7 @@ public class Tag {
         try {
             result.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, "UTF-8"));
+            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(this.tag));
             result.put("tag", this.tag);
             if (this.dateEndQueue != null && this.dateStartExe != null) {
                 result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateStartExe.getTime()));
