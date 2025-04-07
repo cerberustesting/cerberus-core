@@ -125,8 +125,8 @@ function initModalRobot() {
     getSelectInvariant('PROXYTYPE', false);
 
     // Adding rows in modals.
-    $("#addEditCapability").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
-    $("#addEditExecutor").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
+    $("#addEditCapability").off("click").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
+    $("#addEditExecutor").off("click").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
 
 
     $("#editRobotButton").off("click");
@@ -492,7 +492,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val(robot.type);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
         formEdit.find("#extraParam").val(robot.extraParam);
-        formEdit.find("#acceptNotifications").find("input[data-accnotif='" + robot.acceptNotifications + "']").click();
+        formEdit.find("#acceptNotifications").find("input[data-accnotif='" + robot.acceptNotifications + "']").off("click").click();
         formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);

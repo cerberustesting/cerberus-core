@@ -100,6 +100,7 @@ function initModalApplication(application, mode, page) {
     $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     // Adding rows in edit Modal.
+    $("#addEnvironment").off("click");
     $("#addEnvironment").click(addNewEnvironmentRow);
 
     // Load the select needed in localStorage cache.

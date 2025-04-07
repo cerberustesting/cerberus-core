@@ -317,7 +317,9 @@ function editEntryClick(param) {
     $('#editTestcampaignButton').removeAttr('hidden');
 
     // handle the click for specific action buttons
+    $("#editTestcampaignButton").off("click");
     $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").off("click");
     $("#addTestcampaignButton").click(addEntryModalSaveHandler);
 
     //clear the modals fields when closed
@@ -460,12 +462,9 @@ function editEntryClick(param) {
         $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
 
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-//        $('#addscheduler').off('click');
-//        $('#addscheduler').click(addNewSchedulerRow);
         $('#addScheduleEntry').off('click');
         $('#addScheduleEntry').click(addNewSchedulerRow);
-//        $('#schedulerinput').val('0 0 12 1/1 * ? *');
-//        loadCronList();
+
         loadSchedulerTable(obj);
 
         /* EVENTHOOK */
@@ -612,7 +611,9 @@ function addEntryClick() {
     $('#addTestcampaignButton').removeAttr('hidden');
 
     // handle the click for specific action buttons
+    $("#editTestcampaignButton").off("click");
     $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").off("click");
     $("#addTestcampaignButton").click(addEntryModalSaveHandler);
 
     //clear the modals fields when closed
@@ -661,12 +662,9 @@ function addEntryClick() {
     /* SCHEDULER */
     var doc = new Doc();
     $('#schedulerTableBody tr').remove();
-//    $('#addscheduler').off('click');
-//    $('#addscheduler').click(addNewSchedulerRow);
     $('#addScheduleEntry').off('click');
     $('#addScheduleEntry').click(addNewSchedulerRow);
-//    $('#schedulerinput').val('0 0 12 1/1 * ? *');
-//    loadCronList();
+    //    
     loadSchedulerTable("");
 
     /* EVENTHOOK */

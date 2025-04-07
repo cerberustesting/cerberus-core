@@ -632,7 +632,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editTestDataLibModal #messagePrivate').html("This data is modifiable by " + obj.creator + " Only");
         }
 
-        $('#editTestDataLibModal #privateData').click(function () {
+        $('#editTestDataLibModal #privateData').off("click").click(function () {
             if ($('#editTestDataLibModal #privateData').prop("checked")) {
                 if (obj.creator !== undefined) {
                     $('#messagePrivate').html("This data can only be modified by <b><i>" + obj.creator + "</i></b>");

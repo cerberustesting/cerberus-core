@@ -201,7 +201,7 @@ function initModalTestCase() {
         $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
-    $("#addTestCaseDependencyButton").click(function () {
+    $("#addTestCaseDependencyButton").off("click").click(function () {
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
         var testCaseTxt = $("#selectTestCase option:selected").text();
@@ -1279,7 +1279,7 @@ function appendTestCaseCountries(testCase, isReadOnly) {
                                 <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
-        $("[class='countrycb']").click(function () {
+        $("[class='countrycb']").off("click").click(function () {
             //uncheck "select all", if one of the listed checkbox item is unchecked
             if (false == $(this).prop("checked")) { //if this item is unchecked
                 $("#select_all").prop('checked', false); //change "select all" checked status to false

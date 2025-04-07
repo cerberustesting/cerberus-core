@@ -87,11 +87,11 @@ function initModalInvariant() {
     });
     // We add an attribute button by clicking on add button
     // Click on close modal will reinitialize i  
-    $('[name="buttonClose"],[class="close"]').click(function () {
+    $('[name="buttonClose"],[class="close"]').off("click").click(function () {
         // Clear last added attribute index back to 1 when modal is closed.
         modalInvariantAttributeNB = 1;
     });
-    $('#AddInvButton').click(function () {
+    $('#AddInvButton').off("click").click(function () {
         modalInvariantAttributeNB++;
         if ($('#Grpgp' + modalInvariantAttributeNB).is(":visible")) {
             modalInvariantAttributeNB++;

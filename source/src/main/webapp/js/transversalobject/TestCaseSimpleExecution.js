@@ -264,7 +264,7 @@ function afterSuccessSubmit(data, dataMessage) {
         elementAlert.slideUp(500);
     });
 
-    $('editTestCaseButton').click(function () {
+    $('editTestCaseButton').off("click").click(function () {
         window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' '));
     });
 
