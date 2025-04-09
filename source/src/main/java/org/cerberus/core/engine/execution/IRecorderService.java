@@ -33,6 +33,8 @@ import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionFile;
 import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.MutableCapabilities;
 
 /**
  * @author bcivel
@@ -177,11 +179,32 @@ public interface IRecorderService {
      * robot and the final ones set to the Selenium/Appium driver.
      *
      * @param testCaseExecution
+     * @param requestedCapabilities
+     * @param finalCapabilities
+     * @return
+     */
+    TestCaseExecutionFile recordCapabilities(TestCaseExecution testCaseExecution, MutableCapabilities requestedCapabilities, MutableCapabilities finalCapabilities);
+
+    /**
+     * records into a file in a JSON format the requested capability from the
+     * robot and the final ones set to the Selenium/Appium driver.
+     *
+     * @param testCaseExecution
      * @param capsInputList
      * @param capsFinalList
      * @return
      */
     TestCaseExecutionFile recordCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsInputList, List<RobotCapability> capsFinalList);
+
+    /**
+     * records into a file in a JSON format the capabilities reported from the
+     * server.
+     *
+     * @param testCaseExecution
+     * @param serverCapabilities
+     * @return
+     */
+    TestCaseExecutionFile recordServerCapabilities(TestCaseExecution testCaseExecution, Capabilities serverCapabilities);
 
     /**
      * records into a file in a JSON format the capabilities reported from the

@@ -19,6 +19,9 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -47,6 +50,8 @@ import org.cerberus.core.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,9 +71,8 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
 import org.cerberus.core.engine.entity.ExecutionLog;
 
 /**
@@ -1045,6 +1049,37 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordCapabilities(TestCaseExecution execution, MutableCapabilities requestedCapabilities, MutableCapabilities finalCapabilities) {
+        LOG.debug("Starting to save Robot caps file.");
+
+        TestCaseExecutionFile object = null;
+        Map<String, JsonNode> outputMessage = new HashMap<>();
+
+        try {
+
+            //Build the output file
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            JsonNode requestedCapabilitiesJson = objectMapper.valueToTree(requestedCapabilities.toJson());
+            JsonNode finalCapabilitiesJson = objectMapper.valueToTree(finalCapabilities.toJson());
+            outputMessage.put("RequestedCapabilities", requestedCapabilitiesJson);
+            outputMessage.put("FinalCapabilities", finalCapabilitiesJson);
+
+            Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "robot_caps", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), objectMapper.valueToTree(outputMessage).toPrettyString(), execution.getSecrets());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Robot Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordServerCapabilities(TestCaseExecution execution, List<RobotCapability> capFinalList) {
         TestCaseExecutionFile object = null;
 
@@ -1081,6 +1116,41 @@ public class RecorderService implements IRecorderService {
 
         return object;
     }
+
+    @Override
+    public TestCaseExecutionFile recordServerCapabilities(TestCaseExecution execution, Capabilities serverCapabilities) {
+        TestCaseExecutionFile object = null;
+
+        LOG.debug("Starting to save Server Robot caps file.");
+
+        if ((serverCapabilities == null)) {
+            LOG.debug("No caps to record.");
+            return null;
+        }
+        Map<String, JsonNode> outputMessage = new HashMap<>();
+        try {
+
+            //Build the output file
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            JsonNode serverCapabilitiesJson = objectMapper.valueToTree(new MutableCapabilities(serverCapabilities).toJson());
+            outputMessage.put("ServerCapabilities", serverCapabilitiesJson);
+
+            // RESULT.
+            Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "robot_server_caps", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), objectMapper.valueToTree(outputMessage).toPrettyString(), execution.getSecrets());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Robot Server Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+
+        return object;
+    }
+
 
     @Override
     public TestCaseExecutionFile recordHar(TestCaseExecution execution, JSONObject har) {

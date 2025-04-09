@@ -285,7 +285,11 @@ public class ExecutionRunService implements IExecutionRunService {
                     //Start Robot server (Selenium/Appium/Sikuli)
                     LOG.debug("{}Starting Robot Server.", logPrefix);
                     try {
-                        this.robotServerService.startServer(execution);
+                        if (execution.getRobot().contains("capabilityV2")) {
+                            this.robotServerService.startServerV2(execution);
+                        } else {
+                            this.robotServerService.startServer(execution);
+                        }
                         LOG.debug("{}Robot Server Started.", logPrefix);
                     } catch (CerberusException ex) {
                         // No need to report exception message as it will be catched and reported later

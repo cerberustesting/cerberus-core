@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
@@ -58,6 +60,7 @@ import org.json.JSONObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerOptions;
@@ -77,6 +80,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Invariant;
@@ -130,6 +134,10 @@ public class RobotServerService implements IRobotServerService {
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
+
+    private static final String LT_PREFIX = "lt";
+    private static final String BS_PREFIX = "bstack";
+    private static final String KOBITON_PREFIX = "kobiton";
 
     public static final String OPTIONS_TIMEOUT_SYNTAX = "timeout";
     public static final String OPTIONS_HIGHLIGHTELEMENT_SYNTAX = "highlightElement";
@@ -280,8 +288,6 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
 
-            // TODO #FIXME SELENIUM
-
             // SetUp HubURL
             String hubUrl = generateHubUrl(execution, session);
             URL url = new URL(hubUrl);
@@ -425,6 +431,351 @@ public class RobotServerService implements IRobotServerService {
                     && !caps.getPlatformName().equals(Platform.MAC)) {
                 // Maximize is not supported on Opera.
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
+                    driver.manage().window().maximize();
+                }
+
+                //Retrieve the IP of node only if we are on our own infrastructure (no sense to do it when robot cloud provider is used.)
+                if (execution.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_NONE)) {
+                    getIPOfNode(execution);
+                }
+
+                // If screenSize is defined, set the size of the screen.
+                String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
+                LOG.debug("Selenium resolution : {}", targetScreensize);
+
+                if (!execution.getBrowser().equalsIgnoreCase(Browser.CHROME.browserName())) {
+                    // For chrome the resolution has already been defined at capabilities level.
+                    if ((!StringUtil.isEmptyOrNull(targetScreensize)) && targetScreensize.contains("*")) {
+                        Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                        Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                        setScreenSize(driver, screenWidth, screenLength);
+                        LOG.debug("Selenium resolution Activated : {}*{}", screenWidth, screenLength);
+                    }
+                }
+                // Getting windows size Not supported on Opera.
+                if (!execution.getBrowser().equalsIgnoreCase("opera")) {
+                    execution.setScreenSize(getScreenSize(driver));
+                }
+                execution.setRobotDecli(execution.getRobotDecli().replace("%SCREENSIZE%", execution.getScreenSize()));
+
+                String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
+                execution.setUserAgent(userAgent);
+
+            }
+
+            // unlock device if deviceLockUnlock is active
+            if (execution.getRobotExecutorObj() != null && appiumDriver instanceof LocksDevice
+                    && execution.getRobotExecutorObj().isDeviceLockUnlock()) {
+                ((LocksDevice) appiumDriver).unlockDevice();
+            }
+
+            // Check if Sikuli is available on node. (only if robot is not provided by cloud services)
+            if ((driver != null) && (TestCaseExecution.ROBOTPROVIDER_NONE.equals(execution.getRobotProvider()))) {
+                execution.getSession().setSikuliAvailable(sikuliService.isSikuliServerReachableOnNode(execution.getSession()));
+            } else {
+                execution.getSession().setSikuliAvailable(false);
+            }
+
+            execution.getSession().setStarted(true);
+
+        } catch (CerberusException exception) {
+            LOG.error(exception.toString(), exception);
+            throw new CerberusException(exception.getMessageError(), exception);
+        } catch (MalformedURLException exception) {
+            LOG.warn(exception.toString(), exception);
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
+            mes.setDescription(mes.getDescription().replace("%URL%", execution.getSession().getHost() + ":" + execution.getSession().getPort()));
+            throw new CerberusException(mes, exception);
+        } catch (UnreachableBrowserException exception) {
+            LOG.warn("Could not connect to Robot : {}:{}", execution.getSeleniumIP(), execution.getSeleniumPort());
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
+            mes.setDescription(mes.getDescription().replace("%SSIP%", execution.getSeleniumIP()));
+            mes.setDescription(mes.getDescription().replace("%SSPORT%", execution.getSeleniumPort()));
+            mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
+            throw new CerberusException(mes, exception);
+        } catch (Exception exception) {
+            LOG.error(exception.toString(), exception);
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.resolveDescription("MES", getExceptionCauseFromString(exception));
+            executorService.stopRemoteProxy(execution);
+            throw new CerberusException(mes, exception);
+        } finally {
+            executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+        }
+    }
+
+    @Override
+    public void startServerV2(TestCaseExecution execution) throws CerberusException {
+        try {
+
+            LOG.info("Start Robot Server (Selenium, Appium or Sikuli)");
+
+            // Set Session
+            LOG.debug("Setting the session.");
+            String system = execution.getApplicationObj().getSystem();
+
+            /*
+             * Get the parameters that will be used to set the servers
+             * (selenium/appium) If timeout has been defined at the execution
+             * level, set the selenium & appium wait element with this value,
+             * else, take the one from parameter
+             */
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout,
+                    cerberus_selenium_wait_element, cerberus_sikuli_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout,
+                    cerberus_appium_action_longpress_wait, cerberus_selenium_autoscroll_vertical_offset, cerberus_selenium_autoscroll_horizontal_offset,
+                    cerberus_selenium_highlightElement, cerberus_sikuli_highlightElement;
+            boolean cerberus_selenium_autoscroll;
+            String cerberus_sikuli_minSimilarity;
+            String cerberus_sikuli_typeDelay;
+
+            if (!execution.getTimeout().isEmpty()) {
+                cerberus_selenium_wait_element = Integer.valueOf(execution.getTimeout());
+                cerberus_sikuli_wait_element = Integer.valueOf(execution.getTimeout());
+                cerberus_appium_wait_element = Integer.valueOf(execution.getTimeout());
+            } else {
+                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 30000);
+                cerberus_sikuli_wait_element = parameterService.getParameterIntegerByKey("cerberus_sikuli_wait_element", system, 30000);
+                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 30000);
+            }
+
+            cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
+            cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
+            cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
+            cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
+            cerberus_selenium_autoscroll = parameterService.getParameterBooleanByKey("cerberus_selenium_autoscroll", system, false);
+            cerberus_selenium_autoscroll_vertical_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_vertical_offset", system, 0);
+            cerberus_selenium_autoscroll_horizontal_offset = parameterService.getParameterIntegerByKey("cerberus_selenium_autoscroll_horizontal_offset", system, 0);
+            cerberus_appium_action_longpress_wait = parameterService.getParameterIntegerByKey("cerberus_appium_action_longpress_wait", system, 8000);
+            cerberus_selenium_highlightElement = parameterService.getParameterIntegerByKey("cerberus_selenium_highlightElement", "", 0);
+            cerberus_sikuli_highlightElement = parameterService.getParameterIntegerByKey("cerberus_sikuli_highlightElement", "", 0);
+            cerberus_sikuli_minSimilarity = parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", "");
+            cerberus_sikuli_typeDelay = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_sikuli_typeDelay, "", "0.1");
+
+            LOG.debug("TimeOut defined on session : {}", cerberus_selenium_wait_element);
+
+            Session session = new Session();
+            session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
+
+            session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
+            session.setCerberus_selenium_pageLoadTimeout_default(cerberus_selenium_pageLoadTimeout);
+
+            session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
+            session.setCerberus_selenium_setScriptTimeout_default(cerberus_selenium_setScriptTimeout);
+
+            // _wait_element parameters
+            session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
+            session.setCerberus_selenium_wait_element_default(cerberus_selenium_wait_element);
+            session.setCerberus_sikuli_wait_element(cerberus_sikuli_wait_element);
+            session.setCerberus_sikuli_wait_element_default(cerberus_sikuli_wait_element);
+            session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
+            session.setCerberus_appium_wait_element_default(cerberus_appium_wait_element);
+
+            // minSimilarity parameters
+            session.setCerberus_sikuli_minSimilarity(cerberus_sikuli_minSimilarity);
+            session.setCerberus_sikuli_minSimilarity_default(cerberus_sikuli_minSimilarity);
+
+            // highlightElement parameters
+            session.setCerberus_selenium_highlightElement(cerberus_selenium_highlightElement);
+            session.setCerberus_selenium_highlightElement_default(cerberus_selenium_highlightElement);
+            session.setCerberus_sikuli_highlightElement(cerberus_sikuli_highlightElement);
+            session.setCerberus_sikuli_highlightElement_default(cerberus_sikuli_highlightElement);
+
+            // typeDelay parameters
+            session.setCerberus_sikuli_typeDelay(cerberus_sikuli_typeDelay);
+            session.setCerberus_sikuli_typeDelay_default(cerberus_sikuli_typeDelay);
+
+            // auto scroll parameters
+            session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
+            session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
+            session.setCerberus_selenium_autoscroll_horizontal_offset(cerberus_selenium_autoscroll_horizontal_offset);
+
+            session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
+            session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
+            session.setHost(execution.getSeleniumIP());
+            session.setPort(execution.getRobotPort());
+            session.setHostUser(execution.getSeleniumIPUser());
+            session.setHostPassword(execution.getSeleniumIPPassword());
+            session.setNodeHost(execution.getSeleniumIP());
+            session.setNodePort(execution.getSeleniumPort());
+            if (execution.getRobotExecutorObj() != null) {
+                LOG.debug("Session node proxy set : {}", execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
+                session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
+                LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
+                session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
+            } else {
+                session.setExecutorExtensionProxyPort(0);
+                session.setExecutorExtensionPort(0);
+            }
+            session.setConsoleLogs(new JSONArray());
+
+            execution.setSession(session);
+            execution.setRobotProvider(guessRobotProvider(session.getHost()));
+            LOG.debug("Session is set.");
+
+            /*
+             * Starting Cerberus Executor Proxy if it has been activated at
+             * robot level.
+             */
+            if (execution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())) {
+                LOG.debug("Start Remote Proxy");
+                executorService.startRemoteProxy(execution);
+                LOG.debug("Started Remote Proxy on port: {}", execution.getRemoteProxyPort());
+            }
+
+            // SetUp Capabilities
+            LOG.debug("Set Capabilities");
+            MutableCapabilities finalCapabilities = this.setCapabilitiesV2(execution).get("finalCapabilities");
+            session.setDesiredCapabilities(finalCapabilities);
+            MutableCapabilities requestedCapabilities = this.setCapabilitiesV2(execution).get("requestedCapabilities");
+            LOG.debug("Set Capabilities - retrieved");
+
+            // We record Caps list at the execution level.
+            try {
+                execution.addFileList(recorderService.recordCapabilities(execution, requestedCapabilities, finalCapabilities));
+            } catch (Exception ex) {
+                LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
+            }
+
+
+            // SetUp HubURL
+            String hubUrl = generateHubUrl(execution, session);
+            URL url = new URL(hubUrl);
+
+            // Timeout Management
+            int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
+
+            // Proxy Management
+            boolean isProxy = proxyService.useProxy(hubUrl, system);
+            ClientConfig clientConfig;
+            if (isProxy) {
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
+
+                // user and password are never used yet
+                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+                }
+                clientConfig = ClientConfig.defaultConfig()
+                        .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .baseUri(url.toURI())
+                        .proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
+
+            } else {
+                clientConfig = ClientConfig.defaultConfig()
+                        .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .baseUri(url.toURI());
+            }
+
+            HttpCommandExecutor executor = new HttpCommandExecutor(clientConfig);
+
+            // SetUp Driver
+            LOG.debug("Set Driver");
+            WebDriver driver = null;
+            AppiumDriver appiumDriver = null;
+            switch (execution.getApplicationObj().getType().toUpperCase()) {
+                case Application.TYPE_GUI:
+                    if (finalCapabilities.getPlatformName() != null && finalCapabilities.getPlatformName().is(Platform.ANDROID)) {
+                        // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
+                        appiumDriver = new AndroidDriver(url, finalCapabilities);
+                    } else if (finalCapabilities.getPlatformName() != null && (finalCapabilities.getPlatformName().is(Platform.IOS) || finalCapabilities.getPlatformName().is(Platform.MAC))) {
+                        appiumDriver = new IOSDriver(url, finalCapabilities);
+                    }
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, finalCapabilities) : appiumDriver;
+
+                    execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
+                    execution.setRobotSessionID(getSession(driver));
+                    break;
+
+                case Application.TYPE_APK:
+                    // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
+                    String appUrl = null;
+                    if (finalCapabilities.getCapability("appium:app") != null) {
+                        appUrl = finalCapabilities.getCapability("appium:app").toString();
+                    }
+
+                    if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
+                        synchronized (this) {
+                            // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
+                            // provoque a latency if first test is already running and apk don't finish to be prepared
+                            if (apkAlreadyPrepare.containsKey(appUrl) && Boolean.TRUE.equals(!apkAlreadyPrepare.get(appUrl))) {
+                                Thread.sleep(10000);
+                            } else {
+                                apkAlreadyPrepare.put(appUrl, false);
+                            }
+                        }
+                    }
+                    appiumDriver = new AndroidDriver(url, finalCapabilities);
+                    if (apkAlreadyPrepare.containsKey(appUrl)) {
+                        apkAlreadyPrepare.put(appUrl, true);
+                    }
+
+                    driver = appiumDriver;
+                    execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
+                    execution.setRobotSessionID(getSession(driver));
+                    break;
+
+                case Application.TYPE_IPA:
+                    appiumDriver = new IOSDriver(url, finalCapabilities);
+                    driver = appiumDriver;
+                    execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
+                    execution.setRobotSessionID(getSession(driver));
+                    break;
+
+                case Application.TYPE_FAT:
+                    //  Check sikuli extension is reachable
+                    if (!sikuliService.isSikuliServerReachableOnRobot(session)) {
+                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
+                        mes.setDescription(mes.getDescription().replace("%SSIP%", execution.getSession().getHost()));
+                        mes.setDescription(mes.getDescription().replace("%SSPORT%", execution.getSession().getPort()));
+                        throw new CerberusException(mes);
+                    }
+                    // If CountryEnvParameter IP is set, open the App
+                    if (!execution.getCountryEnvApplicationParam().getIp().isEmpty()) {
+                        sikuliService.doSikuliActionOpenApp(session, execution.getCountryEnvApplicationParam().getIp());
+                    }
+                    break;
+            }
+
+            // We record Server Side Caps.
+            if (driver != null) {
+                try {
+                    // Init additionalFinalCapabilities and set it from real caps.
+                    Capabilities serverCapabilities = ((HasCapabilities) driver).getCapabilities();
+                    execution.addFileList(recorderService.recordServerCapabilities(execution, serverCapabilities));
+                } catch (Exception ex) {
+                    LOG.error("Exception Saving Server Robot Caps " + execution.getId(), ex);
+                }
+            }
+
+            /*
+             * Defining the timeout at the driver level. Only in case of no
+             * Appium Driver (see
+             * https://github.com/vertigo17/Cerberus/issues/754)
+             */
+            if (driver != null && appiumDriver == null) {
+                driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(cerberus_selenium_pageLoadTimeout));
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(cerberus_selenium_implicitlyWait));
+                driver.manage().timeouts().scriptTimeout(Duration.ofMillis(cerberus_selenium_setScriptTimeout));
+            }
+            if (appiumDriver != null) {
+                appiumDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(cerberus_appium_wait_element));
+            }
+            execution.getSession().setDriver(driver);
+            execution.getSession().setAppiumDriver(appiumDriver);
+
+            /*
+             * If Gui application, maximize window Get IP of Node in case of
+             * remote Server. Maximize does not work for chrome browser We also
+             * get the Real UserAgent from the browser.
+             */
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    && !finalCapabilities.getPlatformName().equals(Platform.ANDROID) && !finalCapabilities.getPlatformName().equals(Platform.IOS)
+                    && !finalCapabilities.getPlatformName().equals(Platform.MAC)) {
+                // Maximize is not supported on Opera.
+                if (!finalCapabilities.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
 
@@ -767,6 +1118,273 @@ public class RobotServerService implements IRobotServerService {
     }
 
     /**
+     * Verify if a capability is already defined in a HashMap
+     * @param caps HashMap to search in
+     * @param capability Capability to search
+     * @return true if the capability is not defined in the HashMap
+     */
+    private boolean isNotAlreadyDefined(Map<String, Object> caps, String capability) {
+        return !caps.containsKey(capability);
+    }
+
+    /**
+     * Parse the capabilities list entered by the user and build a MutableCapabilities object according to the W3C protocol.
+     * @param caps Capabilities list entered by the user
+     * @return MutableCapabilities built according to the W3C protocol.
+     */
+    private MutableCapabilities getCapabilitiesFromUser(List<RobotCapability> caps) {
+        MutableCapabilities capabilities = new MutableCapabilities();
+        Map<String, Object> subCapabilities = new HashMap<>();
+
+        for (RobotCapability capability : caps) {
+            String[] labels = capability.getCapability().split(":");
+            if (labels.length == 1) capabilities.setCapability(labels[0], castCapability(capability));
+
+            if (labels.length == 2) {
+                String prefix = labels[0];
+                //Specific capabilities that needs to be encapsulated in an "option" object. For Kobiton, capabilities are put at root level with prefix kobiton.
+                if (prefix.equalsIgnoreCase(BS_PREFIX) || prefix.equalsIgnoreCase(LT_PREFIX)) {
+                    subCapabilities.put(labels[1], castCapability(capability));
+                    if (prefix.equalsIgnoreCase(LT_PREFIX)) {
+                        capabilities.setCapability(LT_PREFIX + ":options", subCapabilities);
+                    } else {
+                        capabilities.setCapability(BS_PREFIX + ":options", subCapabilities);
+                    }
+                } else {
+                    capabilities.setCapability(String.format("%s:%s", prefix, labels[1]), castCapability(capability));
+                }
+            }
+
+        }
+        return capabilities;
+    }
+
+    private Object castCapability(RobotCapability capability) {
+        if (StringUtil.isBoolean(capability.getValue())) {
+            return StringUtil.parseBoolean(capability.getValue());
+        } else if (StringUtil.isInteger(capability.getValue())) {
+            return Integer.valueOf(capability.getValue());
+        } else {
+            return capability.getValue();
+        }
+    }
+
+    private Map<String, MutableCapabilities> setCapabilitiesV2(TestCaseExecution execution) throws CerberusException {
+
+        MutableCapabilities browserCapabilities = new MutableCapabilities();
+        MutableCapabilities requestedCapabilities = new MutableCapabilities();
+        MutableCapabilities finalCapabilities = new MutableCapabilities();
+
+        // In case browser is not defined at that level, we force it to empty browser.
+        if (StringUtil.isEmptyOrNull(execution.getBrowser())) {
+            execution.setBrowser("");
+        }
+
+        // Set Browser Capabilities
+        browserCapabilities = this.setCapabilityBrowser(browserCapabilities, execution.getBrowser(), execution);
+
+        if (execution.getRobotObj() != null) {
+            requestedCapabilities = getCapabilitiesFromUser(execution.getRobotObj().getCapabilitiesDecoded());
+            finalCapabilities = requestedCapabilities.merge(browserCapabilities);
+        }
+
+        // Feed DesiredCapabilities with values get from Robot
+        if (!StringUtil.isEmptyOrNull(execution.getPlatform()) && isNotAlreadyDefined(finalCapabilities, "platformName")) {
+            finalCapabilities.setCapability("platformName", execution.getPlatform());
+        }
+
+        if (!StringUtil.isEmptyOrNull(execution.getVersion()) && isNotAlreadyDefined(finalCapabilities, "browserVersion")) {
+            finalCapabilities.setCapability("browserVersion", execution.getVersion());
+        }
+
+        // if application is a mobile one, then set the "app" capability to the application binary path
+
+        if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getRobotExecutorObj() != null) {
+                // Setting deviceUdid and device name from executor.
+                if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceUuid()) && isNotAlreadyDefined(finalCapabilities, "appium:udid")) {
+                    finalCapabilities.setCapability("appium:udid", execution.getRobotExecutorObj().getDeviceUuid());
+                }
+
+                if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceName()) && isNotAlreadyDefined(finalCapabilities, "appium:deviceName")) {
+                    finalCapabilities.setCapability("appium:deviceName", execution.getRobotExecutorObj().getDeviceName());
+                }
+
+                if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceName())) {
+                    if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                        if (isNotAlreadyDefined(finalCapabilities, "appium:systemPort")) {
+                            finalCapabilities.setCapability("appium:systemPort", execution.getRobotExecutorObj().getDevicePort());
+                        }
+                    } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                        if (isNotAlreadyDefined(finalCapabilities, "appium:wdaLocalPort")) {
+                            finalCapabilities.setCapability("appium:wdaLocalPort", execution.getRobotExecutorObj().getDevicePort());
+                        }
+                    }
+                }
+            }
+
+            // Set the app capability with the application path
+            if (!StringUtil.isEmptyOrNull(execution.getMyHost())
+                    && (isNotAlreadyDefined(finalCapabilities, "appium:app"))) {
+                finalCapabilities.setCapability("appium:app", execution.getMyHost());
+            } else if (isNotAlreadyDefined(finalCapabilities, "appium:app")) {
+                finalCapabilities.setCapability("appium:app", execution.getCountryEnvApplicationParam().getIp());
+            }
+
+            if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getMobileActivity())
+                    && (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    && isNotAlreadyDefined(finalCapabilities, "appium:appWaitActivity"))) {
+
+                LOG.info("Mobile activity is not null");
+                finalCapabilities.setCapability("appium:appWaitActivity", execution.getCountryEnvApplicationParam().getMobileActivity());
+            }
+
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    && (isNotAlreadyDefined(finalCapabilities, "appium:automationName"))) {
+                finalCapabilities.setCapability("appium:automationName", "UIAutomator2"); // use UIAutomator2 by default
+            }
+
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                    && (isNotAlreadyDefined(finalCapabilities, "appium:automationName"))) {
+                finalCapabilities.setCapability("appium:automationName", "XCUITest"); // use XCUITest by default
+            }
+        }
+
+        // Setting specific capabilities of external cloud providers.
+        switch (execution.getRobotProvider()) {
+            case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                Map<String, Object> browserstackCapabilities = getUserDefinedCloudCapabilities(finalCapabilities, BS_PREFIX + ":options");
+                if (isNotAlreadyDefined(browserstackCapabilities, "buildName") && !StringUtil.isEmptyOrNull(execution.getTag())) {
+                    browserstackCapabilities.put("buildName", execution.getTag());
+                }
+
+                if (isNotAlreadyDefined(browserstackCapabilities, "projectName")) {
+                    browserstackCapabilities.put("projectName", execution.getApplication());
+                }
+
+                if (isNotAlreadyDefined(browserstackCapabilities, "sessionName")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_browserstack_defaultexename", execution.getSystem(), "Exe : %EXEID%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(execution.getId()));
+                    externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(execution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTID%", String.valueOf(execution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(execution.getDescription()));
+                    browserstackCapabilities.put("sessionName", externalExeName);
+                }
+
+                if (execution.getVerbose() >= 2) {
+                    if (isNotAlreadyDefined(browserstackCapabilities,"debug")) {
+                        browserstackCapabilities.put("debug", true);
+                    }
+                    if (isNotAlreadyDefined(browserstackCapabilities,"consoleLogs")) {
+                        browserstackCapabilities.put("consoleLogs", "warnings");
+                    }
+                    if (isNotAlreadyDefined(browserstackCapabilities,"networkLogs")) {
+                        browserstackCapabilities.put("networkLogs", true);
+                    }
+                }
+
+                //Create or override these capabilities if proxy required.
+                if (StringUtil.parseBoolean(execution.getRobotExecutorObj().getExecutorProxyType())) {
+                    browserstackCapabilities.put("local", true);
+                    browserstackCapabilities.put("userName", execution.getRobotExecutorObj().getHostUser());
+                    browserstackCapabilities.put("accessKey", execution.getRobotExecutorObj().getHostPassword());
+                    browserstackCapabilities.put("localIdentifier", execution.getExecutionUUID());
+                }
+                finalCapabilities.setCapability(BS_PREFIX + ":options", browserstackCapabilities);
+                break;
+
+            case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
+                Map<String, Object> lambdatestCapabilities = getUserDefinedCloudCapabilities(finalCapabilities, LT_PREFIX + ":options");
+                if (!StringUtil.isEmptyOrNull(execution.getTag()) && isNotAlreadyDefined(lambdatestCapabilities, "build")) {
+                    lambdatestCapabilities.put("build", execution.getTag());
+                }
+                if (isNotAlreadyDefined(lambdatestCapabilities, "name")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_lambdatest_defaultexename", execution.getSystem(), "Exe : %EXEID% - %TESTDESCRIPTION%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(execution.getId()));
+                    externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(execution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTID%", String.valueOf(execution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(execution.getDescription()));
+                    lambdatestCapabilities.put("name", externalExeName);
+                }
+                if (execution.getVerbose() >= 2) {
+                    if (isNotAlreadyDefined(lambdatestCapabilities, "video")) {
+                        lambdatestCapabilities.put("video", true);
+                    }
+                    if (isNotAlreadyDefined(lambdatestCapabilities, "visual")) {
+                        lambdatestCapabilities.put("visual", true);
+                    }
+                    if (isNotAlreadyDefined(lambdatestCapabilities, "network")) {
+                        lambdatestCapabilities.put("network", true);
+                    }
+                    if (isNotAlreadyDefined(lambdatestCapabilities, "console")) {
+                        lambdatestCapabilities.put("console", true);
+                    }
+                }
+                finalCapabilities.setCapability(LT_PREFIX + ":options", lambdatestCapabilities);
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                //Kobiton options are not in a specific object, capabilities are at root level, so no need to put into kobiton:options as we do with browserstack and lamndatest
+                if (isNotAlreadyDefined(finalCapabilities, KOBITON_PREFIX + ":sessionName")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessionname", execution.getSystem(), "%EXEID% : %TEST% - %TESTCASE%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(execution.getId()));
+                    externalExeName = externalExeName.replace("%APPLI%", String.valueOf(execution.getApplication()));
+                    externalExeName = externalExeName.replace("%TAG%", String.valueOf(execution.getTag()));
+                    externalExeName = externalExeName.replace("%TEST%", String.valueOf(execution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(execution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(execution.getTestCaseObj().getDescription()));
+                    finalCapabilities.setCapability(KOBITON_PREFIX + ":sessionName", externalExeName);
+                }
+                if (isNotAlreadyDefined(finalCapabilities, KOBITON_PREFIX + ":sessionDescription")) {
+                    String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessiondescription", execution.getSystem(), "%TESTCASEDESC%");
+                    externalExeName = externalExeName.replace("%EXEID%", String.valueOf(execution.getId()));
+                    externalExeName = externalExeName.replace("%APPLI%", String.valueOf(execution.getApplication()));
+                    externalExeName = externalExeName.replace("%TAG%", String.valueOf(execution.getTag()));
+                    externalExeName = externalExeName.replace("%TEST%", String.valueOf(execution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(execution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(execution.getTestCaseObj().getDescription()));
+                    finalCapabilities.setCapability(KOBITON_PREFIX + ":sessionDescription", externalExeName);
+                }
+
+                if (isNotAlreadyDefined(finalCapabilities, KOBITON_PREFIX + ":deviceGroup")) {
+                    finalCapabilities.setCapability(KOBITON_PREFIX + ":deviceGroup", "KOBITON");
+                }
+                break;
+            case TestCaseExecution.ROBOTPROVIDER_NONE:
+                break;
+            default:
+        }
+
+        Map<String, MutableCapabilities> capabilitiesMap = new HashMap<>();
+        capabilitiesMap.put("requestedCapabilities", sortCapabilities(requestedCapabilities));
+        capabilitiesMap.put("finalCapabilities", sortCapabilities(finalCapabilities));
+
+        return capabilitiesMap;
+    }
+
+    private MutableCapabilities sortCapabilities(MutableCapabilities capsToSort) {
+        Map<String, Object> map = capsToSort.asMap().entrySet()
+            .stream()
+            .sorted(Map.Entry.<String, Object>comparingByKey())
+            .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (oldValue, newValue) -> oldValue, LinkedHashMap::new
+            ));
+        return new MutableCapabilities(map);
+    }
+
+    private Map<String, Object> getUserDefinedCloudCapabilities(MutableCapabilities capabilities, String providerCapabilityObject) {
+        if (capabilities.getCapability(providerCapabilityObject) != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper
+                    .convertValue(capabilities.asMap().get(providerCapabilityObject), new TypeReference<>() {
+                    });
+        } else {
+            return new HashMap<>();
+        }
+    }
+
+    /**
      * Instantiate DesiredCapabilities regarding the browser
      *
      * @param capabilities
@@ -838,7 +1456,7 @@ public class RobotServerService implements IRobotServerService {
                     optionsFF.setAcceptInsecureCerts(tCExecution.getRobotObj() == null || tCExecution.getRobotObj().isAcceptInsecureCerts());
 
                     // Collect Logs on Selenium side.
-                    optionsFF.setCapability("goog:loggingPrefs", logPrefs);
+                    optionsFF.setLogLevel(FirefoxDriverLogLevel.fromLevel(Level.ALL));
 
                     // Extra Browser Parameters.
                     if (tCExecution.getRobotObj() != null && !StringUtil.isEmptyOrNull(tCExecution.getRobotObj().getExtraParam())) {
