@@ -96,10 +96,11 @@ public class Parameter {
     public static final String VALUE_cerberus_autobugcreation_enable = "cerberus_autobugcreation_enable";
     public static final String VALUE_cerberus_github_apitoken = "cerberus_github_apitoken";
     public static final String VALUE_cerberus_azuredevops_accesstoken = "cerberus_azuredevops_accesstoken";
+    public static final String VALUE_cerberus_gitlab_apitoken = "cerberus_gitlab_apitoken";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
             + "\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\",\"cerberus_xraycloud_clientsecret\",\"cerberus_xraycloud_clientid\",\"cerberus_xraydc_token\","
-            + "\"cerberus_jiracloud_apiuser_apitoken\",\"cerberus_github_apitoken\",\"cerberus_azuredevops_accesstoken\")";
+            + "\"cerberus_jiracloud_apiuser_apitoken\",\"cerberus_github_apitoken\",\"cerberus_azuredevops_accesstoken\",\"cerberus_gitlab_apitoken\")";
 
     public static final Integer CACHE_DURATION = 60;
     public static final Integer SHORT_CACHE_DURATION = 2;

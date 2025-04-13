@@ -228,7 +228,7 @@
                             <ul id="tabsScriptEdit" class="nav nav-tabs" style="background-color:#f5f6fa" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties" name="tabProperties">Properties</a></li>
-                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Execution Details</a></li>
+                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Bugs</a></li>
                                 <li><a data-toggle="tab" href="#tabEnv" class="tabSteps" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" class="tabSteps" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" class="tabSteps" id="editTabDep" name="tabDep">Dependencies</a></li>
@@ -415,7 +415,7 @@
                                 <div id="bugsSection" class="col-lg-6">
                                     <div class="form-group">
                                         <label>Bugs</label>
-                                        <div id="bugs"></div>
+                                        <div id="bugs" style="font-size:14px"></div>
                                         <div id="bugButtons"></div>
                                     </div>
                                 </div>

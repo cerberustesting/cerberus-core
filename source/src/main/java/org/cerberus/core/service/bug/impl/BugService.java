@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.cerberus.core.service.bug.gitlab.IGitlabService;
 
 /**
  *
@@ -58,6 +59,8 @@ public class BugService implements IBugService {
     private IAzureDevopsService azureDevopsService;
     @Autowired
     private IGithubService githubService;
+    @Autowired
+    private IGitlabService gitlabService;
     @Autowired
     private IJiraService jiraService;
 
@@ -118,6 +121,10 @@ public class BugService implements IBugService {
                                     break;
                                 case Application.BUGTRACKER_GITHUB:
                                     newBugCreated = githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+
+                                    break;
+                                case Application.BUGTRACKER_GITLAB:
+                                    newBugCreated = gitlabService.createGitlabIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
                                 case Application.BUGTRACKER_AZUREDEVOPS:

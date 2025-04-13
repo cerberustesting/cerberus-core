@@ -6624,3 +6624,11 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_azuredevops_accesstoken', '', 'Azure Devops Personal Access Token that will be used to create issues from API.');
 
+-- 1888
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'GITLAB', 220, 'Gitlab Bug Tracker connector') ;
+
+-- 1889
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_gitlab_apitoken', '', 'Gitlab Personal Access Token that will be used to create issues from API.');
+

@@ -17,14 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.bug.github.impl;
+package org.cerberus.core.service.bug.gitlab.impl;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -34,7 +32,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -55,23 +52,23 @@ import org.cerberus.core.service.proxy.IProxyService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.core.service.bug.github.IGithubService;
-import org.cerberus.core.service.bug.github.IGithubGenerationService;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.service.bug.gitlab.IGitlabService;
+import org.cerberus.core.service.bug.gitlab.IGitlabGenerationService;
 
 /**
  *
  * @author vertigo17
  */
 @Service
-public class GithubService implements IGithubService {
+public class GitlabService implements IGitlabService {
 
     @Autowired
     private IParameterService parameterService;
     @Autowired
     private IProxyService proxyService;
     @Autowired
-    private IGithubGenerationService githubGenerationService;
+    private IGitlabGenerationService gitlabGenerationService;
     @Autowired
     private IApplicationService applicationService;
     @Autowired
@@ -79,7 +76,7 @@ public class GithubService implements IGithubService {
     @Autowired
     private ITestCaseService testCaseService;
 
-    private static final Logger LOG = LogManager.getLogger(GithubService.class);
+    private static final Logger LOG = LogManager.getLogger(GitlabService.class);
 
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
     private static final String DEFAULT_PROXY_HOST = "proxy";
@@ -88,31 +85,24 @@ public class GithubService implements IGithubService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    private static final String GITHUB_ISSUECREATION_URL_DEFAULT = "https://api.github.com/repos";
-    private static final String GITHUB_ISSUECREATION_URLPATH = "issues";
-    private static final String GITHUB_API_VERSION = "2022-11-28";
-
-    private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
+    private static final String GITLAB_ISSUECREATION_URL_DEFAULT = "https://gitlab.com/api/v4/projects";
+    private static final String GITLAB_ISSUECREATION_URLPATH = "issues";
 
     @Override
-    public JSONObject createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String issueType) {
+    public JSONObject createGitlabIssue(TestCase tc, TestCaseExecution execution, String repoName, String issueType) {
         JSONObject newBugCreated = new JSONObject();
 
         try {
 
-            JSONObject githubRequest = new JSONObject();
+            LOG.debug("call GITLAB Issue creation following execution {}", execution.getId());
 
-            LOG.debug("call GITHUB Issue creation following execution {}", execution.getId());
-
-            githubRequest = githubGenerationService.generateGithubIssue(execution, issueType);
-
-            // Builf Github URL.
-            String githubUrl = GITHUB_ISSUECREATION_URL_DEFAULT + StringUtil.addPrefixIfNotAlready(StringUtil.addSuffixIfNotAlready(repoName, "/"), "/") + GITHUB_ISSUECREATION_URLPATH;
+            // Build Gitlab URL.
+            String gitlabUrl = GITLAB_ISSUECREATION_URL_DEFAULT + StringUtil.addPrefixIfNotAlready(StringUtil.addSuffixIfNotAlready(StringUtil.encodeURL(repoName), "/"), "/") + GITLAB_ISSUECREATION_URLPATH;
 
             CloseableHttpClient httpclient = null;
             HttpClientBuilder httpclientBuilder;
 
-            if (proxyService.useProxy(githubUrl, "")) {
+            if (proxyService.useProxy(gitlabUrl, "")) {
 
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "", DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "", DEFAULT_PROXY_PORT);
@@ -159,73 +149,76 @@ public class GithubService implements IGithubService {
 
             httpclient = httpclientBuilder.build();
 
-            HttpPost post = new HttpPost(githubUrl);
-            StringEntity entity = new StringEntity(githubRequest.toString(), StandardCharsets.UTF_8);
-            post.setEntity(entity);
-            post.setHeader("Accept", "application/vnd.github+json");
+            gitlabUrl += "?title=" + StringUtil.encodeURL(gitlabGenerationService.generateGitlabTitleIssue(execution, issueType));
+            gitlabUrl += "&labels=" + StringUtil.encodeURL(issueType);
+            gitlabUrl += "&description=" + StringUtil.encodeURL(gitlabGenerationService.generateGitlabDescriptionIssue(execution, issueType));
+
+//            gitlabUrl += "?title=title";
+//            gitlabUrl += "&labels=cerberus";
+//            gitlabUrl += "&description=description";
+            HttpPost post = new HttpPost(gitlabUrl);
+
+            post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
-            post.setHeader("X-GitHub-Api-Version", GITHUB_API_VERSION);
             //
             // TODO Make auth based on parameters
 
-            String bearerAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_github_apitoken, "", "");
-            post.setHeader("Authorization", "Bearer " + bearerAuth);
+            String bearerAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_gitlab_apitoken, "", "");
+            post.setHeader("PRIVATE-TOKEN", bearerAuth);
 
             if (StringUtil.isEmptyOrNull(bearerAuth)) {
-                newBugCreated.put("message", "Mandatory parameter value not defined for parameter : '" + Parameter.VALUE_cerberus_github_apitoken + "'");
+                newBugCreated.put("message", "Mandatory parameter value not defined for parameter : '" + Parameter.VALUE_cerberus_gitlab_apitoken + "'");
                 newBugCreated.put("statusCode", 500);
             } else {
 
                 try {
 
-                    LOG.debug("Calling {} with Authent {}", githubUrl, bearerAuth);
+                    LOG.debug("Calling {} with Authent {}", gitlabUrl, bearerAuth);
                     HttpResponse response = httpclient.execute(post);
 
                     int rc = response.getStatusLine().getStatusCode();
                     if (rc >= 200 && rc < 300) {
-                        LOG.debug("Github Issue Creation request http return code : " + rc);
+                        LOG.debug("Gitlab Issue Creation request http return code : " + rc);
                         String responseString = EntityUtils.toString(response.getEntity());
                         LOG.debug("Response : {}", responseString);
-                        JSONObject githubResponse = new JSONObject(responseString);
-                        String newGithubBugURL = "";
-                        int githubIssueKey = 0;
-                        if (githubResponse.has("number")) {
-                            githubIssueKey = githubResponse.getInt("number");
-                            if (githubResponse.has("html_url")) {
-                                URL ghURL = new URL(githubResponse.getString("html_url"));
-                                newGithubBugURL = ghURL.toString();
+                        JSONObject gitlabResponse = new JSONObject(responseString);
+                        String newGitlabBugURL = "";
+                        int gitlabIssueKey = 0;
+                        if (gitlabResponse.has("iid")) {
+                            gitlabIssueKey = gitlabResponse.getInt("iid");
+                            if (gitlabResponse.has("web_url")) {
+                                URL glURL = new URL(gitlabResponse.getString("web_url"));
+                                newGitlabBugURL = glURL.toString();
                             }
                             // Update here the test case with new issue.
-                            newBugCreated.put("bug", testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Execution " + execution.getId()));
-                            newBugCreated.put("message", "Bug '" + String.valueOf(githubIssueKey) + "' successfully created on Test case : '" + execution.getTest() + "' - '" + execution.getTestCase() + "' from execution : " + execution.getId());
+                            newBugCreated.put("bug", testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(gitlabIssueKey), newGitlabBugURL, "Created from Execution " + execution.getId()));
+                            newBugCreated.put("message", "Bug '" + String.valueOf(gitlabIssueKey) + "' successfully created on Test case : '" + execution.getTest() + "' - '" + execution.getTestCase() + "' from execution : " + execution.getId());
                             newBugCreated.put("statusCode", 200);
-                            LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
+                            LOG.debug("Setting new GITLAB Issue '{}' to test case '{} - {}'", gitlabResponse.getInt("iid"), execution.getTest() + execution.getTestCase());
                         } else {
-                            LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);
-                            String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". and no 'number' entry. " + responseString;
-                            logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
-                            LOG.warn("Message sent to " + githubUrl + " :");
-                            LOG.warn(githubRequest.toString(1));
+                            LOG.warn("Gitlab Issue creation request http return code : {} is missing 'iid' entry.", rc);
+                            String message = "Gitlab Issue creation request to '" + gitlabUrl + "' failed with http return code : " + rc + ". and no 'iid' entry. " + responseString;
+                            logEventService.createForPrivateCalls("GITLAB", "APICALL", LogEvent.STATUS_WARN, message);
+                            LOG.warn("Message sent to " + gitlabUrl + " :");
                             LOG.warn("Response : {}", responseString);
                             newBugCreated.put("message", message);
                             newBugCreated.put("statusCode", 500);
                         }
                     } else {
-                        LOG.warn("Github Issue creation request http return code : " + rc);
+                        LOG.warn("Gitlab Issue creation request http return code : " + rc);
                         String responseString = EntityUtils.toString(response.getEntity());
-                        String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". " + responseString;
-                        logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
-                        LOG.warn("Message sent to " + githubUrl + " :");
-                        LOG.warn(githubRequest.toString(1));
+                        String message = "Gitlab Issue creation request to '" + gitlabUrl + "' failed with http return code : " + rc + ". " + responseString;
+                        logEventService.createForPrivateCalls("GITLAB", "APICALL", LogEvent.STATUS_WARN, message);
+                        LOG.warn("Message sent to " + gitlabUrl + " :");
                         LOG.warn("Response : {}", responseString);
                         newBugCreated.put("message", message);
                         newBugCreated.put("statusCode", 500);
                     }
 
                 } catch (IOException e) {
-                    LOG.warn("Github Issue creation request Exception : " + e, e);
-                    logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, "GITHUB Issue creation request to '" + githubUrl + "' failed : " + e.toString() + ".");
-                    newBugCreated.put("message", "GITHUB Issue creation request Exception : " + e.toString());
+                    LOG.warn("Gitlab Issue creation request Exception : " + e, e);
+                    logEventService.createForPrivateCalls("GITLAB", "APICALL", LogEvent.STATUS_WARN, "GITLAB Issue creation request to '" + gitlabUrl + "' failed : " + e.toString() + ".");
+                    newBugCreated.put("message", "GITLAB Issue creation request Exception : " + e.toString());
                     newBugCreated.put("statusCode", 500);
                 }
             }

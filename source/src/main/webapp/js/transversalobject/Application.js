@@ -402,7 +402,29 @@ function updateBugTrackerConnector() {
         $("[name='bugtrackerparam2Field']").html("Label");
         //<i class="fa fa-external-link" aria-hidden="true"></i>
         $('#editApplicationModal #bugtrackerparam2').autocomplete({
-            source: ["bug"],
+            source: ["bug","cerberus"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+
+    } else if (connector === 'GITLAB') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITLAB.png");
+        $('#editApplicationModal #TrackerLogo').show();
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').show();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("organisation/repo");
+        $("[name='bugtrackerparam2Field']").html("Label");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: ["bug","cerberus"],
             minLength: 0,
             messages: {
                 noResults: '',

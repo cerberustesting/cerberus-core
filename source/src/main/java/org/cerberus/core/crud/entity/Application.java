@@ -88,6 +88,7 @@ public class Application {
     public static final String BUGTRACKER_NONE = "NONE";
     public static final String BUGTRACKER_JIRA = "JIRA";
     public static final String BUGTRACKER_GITHUB = "GITHUB";
+    public static final String BUGTRACKER_GITLAB = "GITLAB";
     public static final String BUGTRACKER_AZUREDEVOPS = "AZUREDEVOPS";
 
     public boolean hasSameKey(Application obj) {
