@@ -986,9 +986,11 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ToMajor','','en','To Major',' ','_testcase')");
         b.append(",('testcase','ToMajor','','fr','A Majeure','','_cas_de_test')");
         b.append(",('testcase','ToMajor','','fa','به اصلی',' ','_testcase')");
-        b.append(",('testcase','ToMinor','','en','To Minor',' ','_testcase')");
+        b.append(",('testcase','ToMinor','','en','To Minor','','_testcase')");
         b.append(",('testcase','ToMinor','','fr','A Mineure','','_cas_de_test')");
         b.append(",('testcase','ToMinor','','fa','به جزئی',' ','_testcase')");
+        b.append(",('testcase','DateLastExecuted','','en','Last Executed','','_testcase')");
+        b.append(",('testcase','DateLastExecuted','','fr','Dernière Execution','','_cas_de_test')");
         b.append(",('testcase','versionActivation','','en','Version Activation','Activation parameters for specific versions','_testcase')");
         b.append(",('testcase','versionActivation','','fr','Version Activation','Paramètres pour activation suivant les version d\\'application  ','_cas_de_test')");
         b.append(",('testcase','versionActivation','','fa','فعالسازی نسخه','پارامترهای فعالسازی برای یک نسخه خاص','_testcase')");

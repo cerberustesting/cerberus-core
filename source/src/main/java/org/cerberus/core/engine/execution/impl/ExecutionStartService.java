@@ -597,6 +597,9 @@ public class ExecutionStartService implements IExecutionStartService {
                 }
 
                 tagService.manageCampaignStartOfExecution(execution.getTag(), new Timestamp(executionStart));
+                
+                // Update the testcase with timestamp of last execution.
+                testCaseService.updateLastExecuted(execution.getTest(), execution.getTestCase(), new Timestamp(executionStart));
 
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, execution, null, null, null);
 
@@ -615,7 +618,6 @@ public class ExecutionStartService implements IExecutionStartService {
 
         LOG.debug("Execution ID registered on database : {}", execution.getId());
 
-        //top the browser if executionID is equal to zero (to prevent database instabilities)
         if (execution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
             // Set execution executor from testcase executor (only for manual execution).
             execution.setExecutor(execution.getTestCaseObj().getExecutor());

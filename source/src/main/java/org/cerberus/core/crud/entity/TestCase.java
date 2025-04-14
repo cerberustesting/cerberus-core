@@ -79,6 +79,8 @@ public class TestCase {
     private String userAgent;
     private String screenSize;
     @EqualsAndHashCode.Exclude
+    private Timestamp dateLastExecuted;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
     @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
@@ -225,6 +227,7 @@ public class TestCase {
             testCaseJson.put("executor", this.getExecutor());
             testCaseJson.put("version", this.getVersion());
             testCaseJson.put("dateCreated", this.getDateCreated());
+            testCaseJson.put("dateLastExecuted", this.getDateLastExecuted());
             testCaseJson.put("usrCreated", this.getUsrCreated());
             testCaseJson.put("dateModif", this.getDateModif());
             testCaseJson.put("usrModif", this.getUsrModif());
@@ -323,6 +326,7 @@ public class TestCase {
             testCaseJson.put("implementer", this.getImplementer());
             testCaseJson.put("executor", this.getExecutor());
             testCaseJson.put("version", this.getVersion());
+            testCaseJson.put("dateLastExecuted", this.getDateLastExecuted());
             testCaseJson.put("dateCreated", this.getDateCreated());
             testCaseJson.put("usrCreated", this.getUsrCreated());
             testCaseJson.put("dateModif", this.getDateModif());

@@ -1165,6 +1165,18 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
+            "data": "dateLastExecuted",
+            "visible": false,
+            "sName": "tec.dateLastExecuted",
+            "like": true,
+            "title": doc.getDocOnline("testcase", "DateLastExecuted"),
+            "sWidth": "150px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateLastExecuted"]);
+            }
+        },
+        {
             "data": "usrCreated",
             "visible": false,
             "sName": "tec.usrCreated",

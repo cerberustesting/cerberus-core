@@ -1068,6 +1068,31 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
+    public void updateLastExecuted(String test, String testcase, Timestamp lastExecuted) throws CerberusException {
+        final String query = new StringBuilder("UPDATE testcase tc ")
+                .append("SET tc.DateLastExecuted=? ")
+                .append("where tc.test = ? and tc.testcase = ?;")
+                .toString();
+
+        LOG.debug("SQL " + query);
+        LOG.debug("SQL.param.service " + test);
+        LOG.debug("SQL.param.service " + testcase);
+        LOG.debug("SQL.param.service " + lastExecuted);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            int i = 1;
+            preStat.setTimestamp(i++, lastExecuted);
+            preStat.setString(i++, test);
+            preStat.setString(i++, testcase);
+
+            preStat.executeUpdate();
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+    }
+
+    @Override
     public void updateBugList(String test, String testcase, String newBugList) throws CerberusException {
         final String query = new StringBuilder("UPDATE testcase tc ")
                 .append("SET tc.Bugs=?, tc.`dateModif` = CURRENT_TIMESTAMP , tc.`UsrModif` = 'Cerberus-Engine' ")
@@ -1844,6 +1869,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean isActiveUAT = resultSet.getBoolean("tec.isActiveUAT");
         boolean isActivePROD = resultSet.getBoolean("tec.isActivePROD");
         String usrCreated = resultSet.getString("tec.UsrCreated");
+        Timestamp dateLastExecuted = resultSet.getTimestamp("tec.DateLastExecuted");
         Timestamp dateCreated = resultSet.getTimestamp("tec.DateCreated");
         String usrModif = resultSet.getString("tec.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tec.DateModif");
@@ -1861,6 +1887,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 status, description, detailedDescription, isActive, conditionOperator, conditionValue1, conditionValue2, conditionValue3, condOpts, fromMajor, fromMinor, toMajor,
                 toMinor, status, bugs, targetMajor, targetMinor, comment, dateCreated, userAgent, screenSize, dateModif, version);
         newTestCase.setSystem(system);
+        newTestCase.setDateLastExecuted(dateLastExecuted);
         return newTestCase;
     }
 

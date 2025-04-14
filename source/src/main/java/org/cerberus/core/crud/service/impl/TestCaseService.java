@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -548,6 +549,15 @@ public class TestCaseService implements ITestCaseService {
             testCaseDao.updateApplicationObject("ConditionValue3", application, oldObject, newObject);
 
             testCaseDao.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
+    }
+
+    @Override
+    public void updateLastExecuted(String test, String testCase, Timestamp lastExecuted) {
+        try {
+            testCaseDao.updateLastExecuted(test, testCase, lastExecuted);
         } catch (CerberusException ex) {
             LOG.warn(ex, ex);
         }

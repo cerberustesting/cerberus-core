@@ -6632,3 +6632,11 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_gitlab_apitoken', '', 'Gitlab Personal Access Token that will be used to create issues from API.');
 
+-- 1890
+ALTER TABLE testcase ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER Version;
+
+-- 1891
+UPDATE testcase a
+    INNER JOIN (select test, testcase, max(DateCreated) maxexe from cerberusqa.testcaseexecution t group by test, testcase) b 
+    ON a.test = b.test and a.testcase = b.testcase
+    SET DateLastExecuted = maxexe ;
