@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.service.bug.gitlab.IGitlabService;
+import org.cerberus.core.util.StringUtil;
 
 /**
  *
@@ -113,7 +114,7 @@ public class BugService implements IBugService {
                             newBugCreated.put("statusCode", 500);
                         }
 
-                        if (currentAppli != null) {
+                        if ((currentAppli != null) && (StringUtil.isNotEmptyOrNull(currentAppli.getBugTrackerConnector()))) {
                             switch (currentAppli.getBugTrackerConnector()) {
                                 case Application.BUGTRACKER_JIRA:
                                     newBugCreated = jiraService.createJiraIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
@@ -132,7 +133,10 @@ public class BugService implements IBugService {
 
                                     break;
                                 default:
-                                    throw new AssertionError();
+                                    LOG.warn("Unknown Bug Connector '{}' configured on application '{}'", currentAppli.getBugTrackerConnector(), execution.getApplication());
+                                    newBugCreated.put("message", "Issue not created because connector '" + currentAppli.getBugTrackerConnector() + "' configured on application '" + execution.getApplication() + "' is not valid or not supported.");
+                                    newBugCreated.put("statusCode", 400);
+                                    execution.addExecutionLog(ExecutionLog.STATUS_WARN, "Bug creation - Unknown Bug Connector '" + currentAppli.getBugTrackerConnector() + "' configured on application '" + execution.getApplication() + "'.");
                             }
                         }
                     } else {
