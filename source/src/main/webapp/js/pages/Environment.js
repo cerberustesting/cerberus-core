@@ -774,7 +774,7 @@ function addNewApplicationRow(selectSystem) {
         var4: "",
         secret1: "",
         secret2: "",
-        poolSize: "",
+        poolSize: 0,
         mobileActivity: "",
         mobilePackage: "",
         toDelete: false
