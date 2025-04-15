@@ -6637,6 +6637,6 @@ ALTER TABLE testcase ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01
 
 -- 1891
 UPDATE testcase a
-    INNER JOIN (select test, testcase, max(DateCreated) maxexe from cerberusqa.testcaseexecution t group by test, testcase) b 
+    INNER JOIN (select test, testcase, max(DateCreated) maxexe from testcaseexecution t group by test, testcase) b 
     ON a.test = b.test and a.testcase = b.testcase
     SET DateLastExecuted = maxexe ;
