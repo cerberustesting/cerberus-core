@@ -58,6 +58,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.cerberus.core.util.StringUtil;
 
 /**
@@ -66,7 +68,10 @@ import org.cerberus.core.util.StringUtil;
 @WebServlet(name = "ReadAppService", urlPatterns = {"/ReadAppService"})
 public class ReadAppService extends HttpServlet {
 
+    public static final Pattern ALL_VARIABLE_PATTERN = Pattern.compile("%datalib\\..*%|%property\\..*%|%system\\..*%");
+
     private static final Logger LOG = LogManager.getLogger(ReadAppService.class);
+
     private IAppServiceService appServiceService;
     private IApplicationService applicationService;
     private ICountryEnvironmentParametersService cepService;
@@ -371,6 +376,7 @@ public class ReadAppService extends HttpServlet {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject();
+
         if (appservice != null) {
             result = new JSONObject(gson.toJson(appservice));
             result.remove("map");
@@ -380,7 +386,12 @@ public class ReadAppService extends HttpServlet {
                 result.put("servicePath", result.getString("servicePath").replace(pass, StringUtil.SECRET_STRING));
             }
             if (StringUtil.isNotEmptyOrNull(appservice.getAuthPassword())) {
-                result.put("authPassword", StringUtil.SECRET_STRING);
+                Matcher datalibMatcher = ALL_VARIABLE_PATTERN.matcher(appservice.getAuthPassword());
+                if (datalibMatcher.find()) {
+                    result.put("authPassword", appservice.getAuthPassword());
+                } else {
+                    result.put("authPassword", StringUtil.SECRET_STRING);
+                }
             }
         }
         return result;

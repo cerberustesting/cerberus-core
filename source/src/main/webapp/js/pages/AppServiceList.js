@@ -296,6 +296,18 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "operation")
         }, {
+            "sName": "srv.Description",
+            "like": true,
+            "data": "description",
+            "sWidth": "200px",
+            "title": doc.getDocLabel("appservice", "description")
+        }, {
+            "sName": "srv.authType",
+            "visible": false,
+            "data": "authType",
+            "sWidth": "100px",
+            "title": doc.getDocLabel("appservice", "authType")
+        }, {
             "sName": "srv.kafkaTopic",
             "visible": false,
             "data": "kafkaTopic",
@@ -373,12 +385,6 @@ function aoColumnsFunc(tableId) {
             "data": "parentContentService",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "parentContentService")
-        }, {
-            "sName": "srv.Description",
-            "like": true,
-            "data": "description",
-            "sWidth": "200px",
-            "title": doc.getDocLabel("appservice", "description")
         }, {
             "sName": "srv.DateCreated",
             "visible": false,

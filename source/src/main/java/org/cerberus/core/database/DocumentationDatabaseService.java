@@ -184,6 +184,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','servicePath','','fa','مسیر سرویس','این فیلد برای تعیین مکان سرویس شما استفاده می شود. شما می توانید مطابق زیر آدرس  <b>URL</b>را درج نمایید : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  همچنین شما می توانید <b>مسیر نسبی</b> را مطابق زیر درج نمایید : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_service_library')");
         b.append(",('appservice','bodyType','','en','Body Type','','_service_library')");
         b.append(",('appservice','bodyType','','fr','Type de Requête','','_librairie_de_services')");
+        b.append(",('appservice','authType','','en','Authent Type','','_service_library')");
+        b.append(",('appservice','authType','','fr','Type d\\'authent','','_librairie_de_services')");
         b.append(",('appservice','srvRequest','','en','Request','','_service_library')");
         b.append(",('appservice','srvRequest','','ru','Запрос','','_service_library')");
         b.append(",('appservice','srvRequest','','fr','Requête','','_librairie_de_services')");

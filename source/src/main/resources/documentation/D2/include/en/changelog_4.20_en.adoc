@@ -16,6 +16,7 @@
 * Added Azure DevOps Work Item connector. #2532
 * Added Gitlab issue creation connector. #2587
 * Allow to view and sort test cases with timestamp of latest execution triggered
+* Password and Authorization key on service calls can now include variables.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
