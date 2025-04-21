@@ -918,8 +918,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 xRayService.createXRayTestExecution(execution);
             }
 
-            // JIRA Issue creation Connector is triggered at the end of every execution..
-            // TODO Add conditions in order to create it only when testcase is stable enought.
+            // Bug creation Connector is triggered at the end of every execution.
             if (!willBeRetried) {
                 bugService.createBugAsync(execution, false);
             }

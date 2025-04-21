@@ -180,6 +180,7 @@ public class ExecutionStartService implements IExecutionStartService {
 
                 execution.setTestCaseVersion(tCase.getVersion());
                 execution.setTestCasePriority(tCase.getPriority());
+                execution.setTestCaseIsMuted(tCase.isMuted());
                 execution.setConditionOptions(tCase.getConditionOptionsActive());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

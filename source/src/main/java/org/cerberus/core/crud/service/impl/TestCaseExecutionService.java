@@ -407,6 +407,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                 testCaseExecution.setLastExeEnd(testCaseExecution.getEnd() > testCaseExecutionsList.get(key).getLastExeEnd() ? testCaseExecution.getEnd() : testCaseExecutionsList.get(key).getLastExeEnd());
 
                 testCaseExecution.setNbExecutions(testCaseExecutionsList.get(key).getNbExecutions() + 1);
+                if ((TestCaseExecution.CONTROLSTATUS_OK.equalsIgnoreCase(testCaseExecution.getControlStatus()))
+                        && (testCaseExecution.getNbExecutions() > 1)) {
+                    testCaseExecution.setFlaky(true);
+                }
+
                 if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())
                         && testCaseExecutionsList.get(key) != null) {
                     testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
@@ -427,10 +432,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTest() + "_"
                     + testCaseExecution.getTestCase();
             if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())
-                        && testCaseExecutionsList.get(key) != null) {
-                    testCaseExecution.setFirstExeStart(testCaseExecutionsList.get(key).getFirstExeStart());
-                    testCaseExecution.setLastExeStart(testCaseExecutionsList.get(key).getLastExeStart());
-                    testCaseExecution.setLastExeEnd(testCaseExecutionsList.get(key).getLastExeEnd());
+                    && testCaseExecutionsList.get(key) != null) {
+                testCaseExecution.setFirstExeStart(testCaseExecutionsList.get(key).getFirstExeStart());
+                testCaseExecution.setLastExeStart(testCaseExecutionsList.get(key).getLastExeStart());
+                testCaseExecution.setLastExeEnd(testCaseExecutionsList.get(key).getLastExeEnd());
             }
             if (!testCaseExecutionsList.containsKey(key) || testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime()) {
                 if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())

@@ -239,6 +239,11 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("firstExeStart", testCaseExecution.getFirstExeStart());
         result.put("lastExeStart", testCaseExecution.getLastExeStart());
         result.put("lastExeEnd", testCaseExecution.getLastExeEnd());
+        result.put("isMuted", testCaseExecution.isTestCaseIsMuted());
+        result.put("isFlaky", testCaseExecution.isFlaky());
+        result.put("isFalseNegative", testCaseExecution.isFalseNegative());
+        result.put("isFalseNegativeRootcause", testCaseExecution.isFalseNegative());
+        result.put("priority", testCaseExecution.getTestCasePriority());
         if (testCaseExecution.getPreviousExeStatus() != null) {
             result.put("previousExeControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getPreviousExeStatus()));
         }
@@ -367,6 +372,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
+                        ttcObject.put("isMuted", testCaseExecution.isTestCaseIsMuted());
                         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                                 && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
                             ttcObject.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
@@ -559,7 +565,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     JSONObject val = entry.getValue();
                     if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
                             || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
-                            || ((val.getInt("NbExeUsefullHasBug") == 0) && (val.getInt("NbRetry") > 0)) // No bug to report by retry was needed --> Flaky test.
+                            || ((val.getInt("NbExeUsefullHasBug") == 0) && (val.getInt("NbRetry") > 0)) // No bug to report but retry was needed --> Flaky test.
                             ) {
                         newttc.put(key, val);
                     }

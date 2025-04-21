@@ -223,6 +223,8 @@ public class TagService implements ITagService {
             mytag.setNbQE(jsonResponse.getInt("status_QE_nbOfExecution"));
             mytag.setNbCA(jsonResponse.getInt("status_CA_nbOfExecution"));
             mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
+            mytag.setNbFlaky(jsonResponse.getInt("TOTAL_nbOfFlaky"));
+            mytag.setNbMuted(jsonResponse.getInt("TOTAL_nbOfMuted"));
 
             if (!StringUtil.isEmptyOrNull(mytag.getCampaign())) {
                 // We get the campaign here and potencially trigger the event.

@@ -1103,6 +1103,20 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "isMuted",
+            "visible": false,
+            "sName": "tec.isMuted",
+            "title": doc.getDocOnline("testcase", "IsMuted"),
+            "sWidth": "20px",
+                "mRender": function (data, type, obj) {
+                    if (obj.isMuted) {
+                        return '<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>';
+                    }
+                    return "";
+                },
+            "sDefaultContent": ""
+        },
+        {
             "data": "type",
             "visible": false,
             "sName": "tec.type",

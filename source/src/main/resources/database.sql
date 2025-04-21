@@ -6640,3 +6640,15 @@ UPDATE testcase a
     INNER JOIN (select test, testcase, max(DateCreated) maxexe from testcaseexecution t group by test, testcase) b 
     ON a.test = b.test and a.testcase = b.testcase
     SET DateLastExecuted = maxexe ;
+
+-- 1892
+ALTER TABLE `tag` 
+    ADD `nbFlaky` int DEFAULT 0 AFTER `FalseNegative`,
+    ADD `nbMuted` int DEFAULT 0 AFTER `NbFlaky`,
+    ADD `FalseNegativeRootCause` varchar(200) DEFAULT '' AFTER `FalseNegative`;
+
+-- 1893-1895
+ALTER TABLE `testcase` ADD `isMuted` BOOLEAN DEFAULT 0 AFTER `Priority`;
+UPDATE testcase SET `isMuted` = 1 WHERE `Priority`=0;
+ALTER TABLE `testcaseexecution` ADD `TestCaseIsMuted` BOOLEAN DEFAULT 0 AFTER `TestCasePriority`;
+UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;

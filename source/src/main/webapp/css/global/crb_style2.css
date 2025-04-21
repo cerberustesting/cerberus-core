@@ -1432,6 +1432,10 @@ table.dataTable thead th {
     animation: blink 2s ease-in infinite;
 }
 
+.falseNegative {
+    border-top : 5px solid var(--crb-green-color);
+}
+
 @keyframes blink {
     from, to {
         opacity: 1

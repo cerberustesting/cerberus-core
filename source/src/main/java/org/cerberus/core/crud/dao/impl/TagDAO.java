@@ -756,7 +756,7 @@ public class TagDAO implements ITagDAO {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, ");
-        query.append("  nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, ");
+        query.append("  nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, nbFlaky = ?, nbMuted = ?, ");
         query.append("  CIScore = ?, CIScoreThreshold = ?, CIScoreMax = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, ");
         query.append("  RobotDecliList = ?, SystemList = ?, ApplicationList = ?  ");
         query.append("WHERE Tag = ?");
@@ -780,6 +780,8 @@ public class TagDAO implements ITagDAO {
             preStat.setInt(i++, tag.getNbQU());
             preStat.setInt(i++, tag.getNbQE());
             preStat.setInt(i++, tag.getNbCA());
+            preStat.setInt(i++, tag.getNbFlaky());
+            preStat.setInt(i++, tag.getNbMuted());
             preStat.setInt(i++, tag.getCiScore());
             preStat.setInt(i++, tag.getCiScoreThreshold());
             preStat.setInt(i++, tag.getCiScoreMax());
@@ -944,6 +946,8 @@ public class TagDAO implements ITagDAO {
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
         int ciScoreMax = rs.getInt("tag.ciScoreMax");
+        int nbFlaky = rs.getInt("tag.nbFlaky");
+        int nbMuted = rs.getInt("tag.nbMuted");
         String ciResult = rs.getString("tag.ciResult");
         boolean falseNegative = rs.getBoolean("tag.FalseNegative");
         String environmentList = rs.getString("tag.EnvironmentList");
@@ -973,6 +977,7 @@ public class TagDAO implements ITagDAO {
                 .browserstackBuildHash(browserstackBuildHash).browserstackAppBuildHash(browserstackAppBuildHash)
                 .lambdaTestBuild(lambdaTestBuild)
                 .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL).xRayMessage(xRayMEssage)
+                .nbFlaky(nbFlaky).nbMuted(nbMuted)
                 .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif)
                 .dateModif(dateModif).build();
     }

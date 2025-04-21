@@ -577,6 +577,7 @@ function confirmTestCaseModalHandler(mode) {
         };
         table_label.push(newLabel1);
     }
+    let dataIsMuted = ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off"));
 
 
     // Getting Dependency data
@@ -665,6 +666,7 @@ function confirmTestCaseModalHandler(mode) {
             toMajor: data.toMajor,
             userAgent: data.userAgent,
             screenSize: data.screenSize,
+            isMuted: dataIsMuted,
             labels: JSON.stringify(table_label),
             countries: JSON.stringify(table_country),
             dependencies: JSON.stringify(testcaseDependencies)},
@@ -925,6 +927,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
         }
     }
+    formEdit.find("#isMuted .glyphicon").removeClass("glyphicon-volume-up glyphicon-volume-off");
     if (isEmpty(testCase)) {
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
@@ -946,6 +949,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#comment").prop("value", "");
         formEdit.find("#origin").prop("value", "");
         formEdit.find("#refOrigin").prop("value", "");
+        formEdit.find("#isMuted").addClass("glyphicon-volume-up");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
@@ -965,6 +969,11 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActive").prop("checked", testCase.isActive);
         formEdit.find("#origin").prop("value", testCase.origine);
         formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
+        if (testCase.isMuted) {
+            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-off");
+        } else {
+            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-up");
+        }
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
@@ -1393,4 +1402,12 @@ function appendTestList(defautValue) {
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
     $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
 
+}
+
+function toggleIsMuted() {
+    if ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off")) {
+        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-off").addClass("glyphicon-volume-up");
+    } else {
+        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-up").addClass("glyphicon-volume-off");
+    }
 }

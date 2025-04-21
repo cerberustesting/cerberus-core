@@ -71,6 +71,9 @@ public class Tag {
     private int ciScoreMax;
     private String ciResult;
     private boolean falseNegative;
+    private String falseNegativeRootCause;
+    private int nbFlaky;
+    private int nbMuted;
     private String environmentList;
     private String countryList;
     private String robotDecliList;
@@ -151,6 +154,9 @@ public class Tag {
             result.put("ciScoreMax", this.ciScoreMax);
             result.put("ciResult", this.ciResult);
             result.put("falseNegative", this.falseNegative);
+            result.put("falseNegativeRootCause", this.falseNegativeRootCause);
+            result.put("nbFlaky", this.nbFlaky);
+            result.put("nbMuted", this.nbMuted);
             result.put("environmentList", this.environmentList);
             result.put("countryList", this.countryList);
             result.put("robotDecliList", this.robotDecliList);

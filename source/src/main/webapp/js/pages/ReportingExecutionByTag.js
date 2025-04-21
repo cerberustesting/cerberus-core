@@ -499,6 +499,8 @@ function loadReportingData(selectTag) {
 
             buildDetailCI(data.tagObject);
 
+            buildExtraKPI(data.tagObject);
+
             hideLoader($("#TagInfo"));
 
             // Report By Status
@@ -780,6 +782,24 @@ function buildDetailCI(obj) {
 
 }
 
+function buildExtraKPI(obj) {
+
+    $("#extraKPI").empty();
+    let kpiBar = "";
+    console.info(obj);
+
+    if (obj.nbMuted > 0) {
+        kpiBar += '<span class=\'label label-warning\' style=\'font-size : 15px; margin-right:15px\'>MUTED ' + ' <span class=\'glyphicon glyphicon-volume-off\' aria-hidden=\'true\'></span> : ' + obj.nbMuted + '</span>';
+    }
+    if (obj.nbFlaky > 0) {
+        kpiBar += '<span class=\'label label-danger\' style=\'font-size : 15px\'>FLAKY : ' + obj.nbFlaky + '</span>';
+    }
+
+//    let kpiBar = '<div style="display: inline; color: ' + getExeStatusRowColor(obj.ciResult) + '"><b>' + obj.ciResult + ' (Score : ' + obj.ciScore + ' / ' + obj.ciScoreThreshold + ')</b></div>';
+    $("#extraKPI").append(kpiBar);
+
+}
+
 function buildTagBar(obj) {
     var buildBar;
 
@@ -788,8 +808,18 @@ function buildTagBar(obj) {
     //Build the title to show at the top of the bar by checking the value of the checkbox
 
     var tooltip = generateTagBarTooltip(obj);
-    buildBar = '<div class="row"><div class="col-sm-12 pull-right marginTop-10" style="display: inline;">Total executions : ' + obj.nbExeUsefull + '</div>';
-    buildBar += '</div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
+    buildBar = '<div class="row">';
+    buildBar += '<div class="col-sm-12 pull-right marginTop-10" style="display: inline;">Total executions : ' + obj.nbExeUsefull + '</div>';
+
+    buildBar += '</div>';
+    // False Negative Bar
+    buildBar += '<div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">';
+    buildBar += ' <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">';
+    buildBar += '  <span class="sr-only"></span>FALSE NEGATIVE';
+    buildBar += ' </div>';
+
+    buildBar += '</div>';
+    buildBar += '<div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
     for (var i = 0; i < len; i++) {
         var status = "nb" + statusOrder[i];
@@ -1565,11 +1595,20 @@ function createShortDescRow(row, data, index) {
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
     $(row).children('.selectLineCell').attr('rowspan', '3').attr('style', 'vertical-align: middle; text-align: center;');
-    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
-    var labelValue = '';
+    $($(createdRow.child())[0]).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
+    $($(createdRow.child())[1]).children('td').attr('colspan', '3').attr('class', 'labels');
+    let labelValue = '';
+    let popupmess = "";
     $.each(data.labels, function (i, e) {
         labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
     });
+    if (data.isMuted) {
+        labelValue += '<div style="float:right"><span class="glyphicon glyphicon-volume-off"</span></div>';
+        popupmess = "Test case is muted!!";
+    }
+    if (popupmess !== "") {
+        $($(createdRow.child())[1]).children('td').attr('data-toggle', 'tooltip').attr('data-original-title', popupmess);
+    }
     $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
 }
@@ -1604,6 +1643,15 @@ function generateTooltip(data) {
         htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.End) + '</div>';
     }
     htmlRes += '<div>' + ctrlmessage + '</div>';
+    if (data.isMuted) {
+        htmlRes += '<div><span class=\'glyphicon glyphicon-volume-off\' aria-hidden=\'true\'></span> Muted!!</div>';
+    }
+    if (data.isFlaky) {
+        htmlRes += '<div><span class=\'label label-danger\'>FLAKY</span></div>';
+    }
+    if (data.isFalseNegative) {
+        htmlRes += '<div><span class=\'color-box statusOK\'></span> False Negative!!</div>';
+    }
 
     return htmlRes;
 }
@@ -1945,11 +1993,15 @@ function aoColumnsFunc(Columns) {
             "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
-                    var glyphClass = getRowClass(data.ControlStatus);
-                    var tooltip = generateTooltip(data);
+                    let glyphClass = getRowClass(data.ControlStatus);
+                    let tooltip = generateTooltip(data);
                     let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment, data.RobotDecli);
-                    var cell = "";
-                    cell += '<div class="input-group mainCell" id="' + idProgressBar + '">';
+                    let cell = "";
+                    let myClass = "";
+                    if (data.isFalseNegative) {
+                        myClass = " falseNegative";
+                    }
+                    cell += '<div class="input-group mainCell' + myClass + '" id="' + idProgressBar + '">';
                     cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
@@ -2021,6 +2073,22 @@ function aoColumnsFunc(Columns) {
                 "sClass": "priority",
                 "sWidth": "20px",
                 "title": doc.getDocLabel("invariant", "PRIORITY")
+            };
+    aoColumns.push(col);
+    col =
+            {
+                "data": "isMuted",
+                "sName": "tec.isMuted",
+                "sClass": "isMuted",
+                "visible": false,
+                "mRender": function (data, type, obj) {
+                    if (obj.isMuted) {
+                        return '<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>';
+                    }
+                    return "";
+                },
+                "sWidth": "20px",
+                "title": doc.getDocLabel("testcase", "IsMuted")
             };
     aoColumns.push(col);
     col =
@@ -2102,13 +2170,8 @@ function aoColumnsFunc(Columns) {
                 "title": "Total nb of Retries",
                 "mRender": function (data, type, obj) {
                     if ((obj.NbExeUsefullHasBug === 0) && (obj.NbExeUsefullIsPending === 0)) {
-                        if (obj.NbRetry > 2) {
-                            console.info(obj);
+                        if (obj.NbRetry > 0) {
                             return "<span class='label label-danger'>Flaky (" + obj.NbRetry + ")</span>";
-                            console.info("Flaky test");
-                        } else if (obj.NbRetry > 0) {
-                            console.info(obj);
-                            return "<span class='label label-warning'>Flaky (" + obj.NbRetry + ")</span>";
                         }
                     } else {
                         if (obj.NbRetry > 0) {

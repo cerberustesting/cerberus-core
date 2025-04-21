@@ -50,6 +50,7 @@ public class TestCase {
     private String description;
     private String detailedDescription;
     private int priority;
+    private boolean isMuted;
     private int version;
     private String status;
     private boolean isActive;
@@ -88,6 +89,7 @@ public class TestCase {
     private String usrModif;
     @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
+
     /**
      * Not included in table.
      */
@@ -202,6 +204,7 @@ public class TestCase {
             testCaseJson.put("status", this.getStatus());
             testCaseJson.put("type", this.getType());
             testCaseJson.put("priority", this.getPriority());
+            testCaseJson.put("isMuted", this.isMuted());
             testCaseJson.put("description", this.getDescription());
             testCaseJson.put("detailedDescription", this.getDetailedDescription());
             testCaseJson.put("isActive", this.isActive());

@@ -266,17 +266,14 @@
                                             <label for="tagDetailCI">CI Result :</label>
                                             <div class="marginTop10" id="tagDetailCI">
                                             </div>
-                                            <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
-                                                <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                                    <span class="sr-only"></span>FALSE NEGATIVE
-                                                </div>
-                                            </div>
                                         </div>
                                         <div class="col-xs-5 marginTop20">
                                             <span class="input-group-btn">
                                                 <button id="falseNegative" class="btn btn-default" title="Declare/Undeclare this campaign execution as a False Negative"><span class="glyphicon glyphicon-ok"></span></button>
                                             </span>
                                         </div>
+                                    </div>
+                                    <div class="marginTop10" id="extraKPI" >
                                     </div>
 
                                 </div>

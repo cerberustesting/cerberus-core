@@ -295,6 +295,9 @@ public class ReadTagStat extends HttpServlet {
                     pointObj.put("ciRes", exeCur.getCiResult());
                     pointObj.put("ciSc", exeCur.getCiScore());
                     pointObj.put("ciScT", exeCur.getCiScoreThreshold());
+                    pointObj.put("ciScM", exeCur.getCiScoreMax());
+                    pointObj.put("nbFlaky", exeCur.getNbFlaky());
+                    pointObj.put("nbMuted", exeCur.getNbMuted());
                     pointObj.put("nbExe", exeCur.getNbExe());
                     pointObj.put("nbExeU", exeCur.getNbExeUsefull());
                     pointObj.put("description", exeCur.getDescription());

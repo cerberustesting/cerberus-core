@@ -114,6 +114,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setActiveQA(ParameterParserUtil.parseBooleanParam(request.getParameter("isActiveQA"), tc.isActiveQA()));
             tc.setActiveUAT(ParameterParserUtil.parseBooleanParam(request.getParameter("isActiveUAT"), tc.isActiveUAT()));
             tc.setActivePROD(ParameterParserUtil.parseBooleanParam(request.getParameter("isActivePROD"), tc.isActivePROD()));
+            tc.setMuted(ParameterParserUtil.parseBooleanParam(request.getParameter("isMuted"), tc.isMuted()));
             tc.setFromMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMajor"), tc.getFromMajor(), charset));
             tc.setFromMinor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromMinor"), tc.getFromMinor(), charset));
             tc.setToMajor(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toMajor"), tc.getToMajor(), charset));
