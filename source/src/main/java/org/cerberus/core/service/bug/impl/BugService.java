@@ -88,13 +88,13 @@ public class BugService implements IBugService {
             LOG.debug("Trying to create bug.");
             execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Trying To create the bug.");
             // Testcase should have a priority defined and in WORKING status
-            if (((execution.getTestCasePriority() >= 1) && !"OK".equalsIgnoreCase(execution.getControlStatus())) || forceCreation) {
+            if (((!execution.isTestCaseIsMuted()) && !"OK".equalsIgnoreCase(execution.getControlStatus())) || forceCreation) {
                 if (forceCreation) {
                     LOG.debug("Forcing bug Creation.");
                     execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Forcing bug creation.");
                 } else {
-                    LOG.debug("Execution is not OK, with prio > 0.");
-                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, with prio > 0.");
+                    LOG.debug("Execution is not OK, and not muted.");
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, and not muted.");
                 }
                 TestCase tc = null;
                 try {

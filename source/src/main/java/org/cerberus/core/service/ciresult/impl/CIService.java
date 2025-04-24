@@ -174,7 +174,7 @@ public class CIService implements ICIService {
                 if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
                         && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")
                         && !curExe.isTestCaseIsMuted()) {
-                    switch (curExe.getTestCaseObj().getPriority()) {
+                    switch (curExe.getTestCasePriority()) {
                         case 0:
                             nbkop0++;
                             break;
@@ -197,7 +197,7 @@ public class CIService implements ICIService {
                 }
 
                 if (!curExe.isTestCaseIsMuted()) {
-                    switch (curExe.getTestCaseObj().getPriority()) {
+                    switch (curExe.getTestCasePriority()) {
                         case 0:
                             nbp0++;
                             break;
