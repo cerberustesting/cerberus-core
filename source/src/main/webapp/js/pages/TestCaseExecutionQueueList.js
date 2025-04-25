@@ -861,11 +861,21 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';
+                var editApplication = '<button id="editApplication' + data + '"  onclick="openModalApplication(\'' + data[4] + '\', \'EDIT\', \'ApplicationList\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
 
                 var buttons = "";
                 if ((data[0] === "constrain1_global") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     buttons += editGlobalParam;
+                }
+                if (((data[0] === "constrain2_applienvironment") || (data[0] === "constrain3_application")) && (data[9]))
+                {
+                    console.info(data);
+                    // Constrain is global and hasPermitionUpdate is true.
+                    buttons += editApplication;
                 }
                 if ((data[0] === "constrain4_robot") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
@@ -878,7 +888,7 @@ function aoColumnsFunc_followUp() {
                         buttons += addRobotInvariant;
                     }
                 }
-                if ((data[0] === "constrain5_executorextension") && (data[9])) {
+                if ((data[0] === "constrain5_proxyservice") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     if (data[10]) {
                         // Invariant exist. We can edit it.
