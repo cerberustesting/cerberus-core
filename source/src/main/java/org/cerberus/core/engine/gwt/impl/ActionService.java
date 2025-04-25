@@ -653,7 +653,7 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
-            LOG.debug("Exception Running " + TestCaseStepAction.ACTION_CLEANROBOTFILE + "  :" + messageString, e);
+            LOG.error("Exception Running " + TestCaseStepAction.ACTION_CLEANROBOTFILE + "  :" + messageString, e);
             return message;
 
         }
@@ -777,7 +777,7 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
-            LOG.debug("Exception Running " + TestCaseStepAction.ACTION_GETROBOTFILE + " :" + messageString, e);
+            LOG.error("Exception Running " + TestCaseStepAction.ACTION_GETROBOTFILE + " :" + messageString, e);
             return message;
 
         }
@@ -805,7 +805,7 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
-            LOG.debug("Exception Running install app  :" + messageString, e);
+            LOG.error("Exception Running " + TestCaseStepAction.ACTION_UPLOADROBOTFILE + " :" + messageString, e);
             return message;
 
         }
@@ -886,6 +886,7 @@ public class ActionService implements IActionService {
             return message;
 
         } catch (Exception e) {
+            
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = "";
             if (e.getMessage() != null) {
