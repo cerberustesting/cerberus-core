@@ -235,7 +235,7 @@ public class TagService implements ITagService {
             }
 
             //TagStatistics, only if it's a campaign and if parameter is activated
-            if (StringUtil.isNotEmptyOrNull(mytag.getCampaign()) && parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_featureflipping_tagstatistics_enable, "", false)) {
+            if (StringUtil.isNotEmptyOrNull(mytag.getCampaign())) {
                 LOG.info("TagStatistics creation for tag {} started.", tag);
                 tagStatisticService.populateTagStatisticsMap(
                         tagStatisticService.initTagStatistics(mytag, executions),

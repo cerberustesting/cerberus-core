@@ -6647,8 +6647,11 @@ ALTER TABLE `tag`
     ADD `nbMuted` int DEFAULT 0 AFTER `NbFlaky`,
     ADD `FalseNegativeRootCause` varchar(200) DEFAULT '' AFTER `FalseNegative`;
 
--- 1893-1895
+-- 1893-1896
 ALTER TABLE `testcase` ADD `isMuted` BOOLEAN DEFAULT 0 AFTER `Priority`;
 UPDATE testcase SET `isMuted` = 1 WHERE `Priority`=0;
 ALTER TABLE `testcaseexecution` ADD `TestCaseIsMuted` BOOLEAN DEFAULT 0 AFTER `TestCasePriority`;
 UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;
+
+-- 1897
+DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_enable';

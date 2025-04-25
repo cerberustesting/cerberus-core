@@ -228,7 +228,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_EXECUTEJS(200, "OK", "Javascript executed successfully and returned Value '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SCROLLTO(200, "OK", "Scroll to '%VALUE%' successful.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_INSTALLAPP(200, "OK", "Install application with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove applcation with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove application with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_DRAGANDDROP(200, "OK", "Drag and drop from %SOURCE% to %TARGET% with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_LONG_CLICK(200, "OK", "Element '%ELEMENT%' long clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLEAR(200, "OK", "Field has been cleared.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
