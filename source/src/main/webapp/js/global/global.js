@@ -2644,6 +2644,8 @@ function setTimeRange(id) {
     toD.setHours(24);
     toD.setMinutes(00);
     toD.setSeconds(00);
+    
+    let now = new Date();
 
 //    fromD ;
     if (id === 1) { // Previous Month
@@ -2669,7 +2671,11 @@ function setTimeRange(id) {
         fromD.setDate(1);
         toD.setMonth(toD.getMonth() - 1);
         toD.setDate(1);
-    }
+    } else if (id === 10) { // Previous Hour
+        fromD.setHours(now.getHours()-1, now.getMinutes());
+    } else if (id === 11) { // Previous 6 Hours
+        fromD.setHours(now.getHours()-6, now.getMinutes());
+    }    
 
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));

@@ -1098,33 +1098,3 @@ function getColorQueueStat(name) {
     return "red";
 
 }
-function setTimeRange(id) {
-    let fromD;
-    let toD = new Date();
-    toD.setHours(23);
-    toD.setMinutes(59);
-    fromD = new Date();
-    fromD.setHours(23);
-    fromD.setMinutes(59);
-    if (id === 1) { // 1 month
-        fromD.setMonth(fromD.getMonth() - 1);
-    } else if (id === 2) { // 3 months
-        fromD.setMonth(fromD.getMonth() - 3);
-    } else if (id === 3) { // 6 months
-        fromD.setMonth(fromD.getMonth() - 6);
-    } else if (id === 4) { //
-        fromD.setMonth(fromD.getMonth() - 12);
-    } else if (id === 5) {
-        fromD.setHours(fromD.getHours() - 168);
-    } else if (id === 6) {
-        fromD.setHours(fromD.getHours() - 24);
-    } else if (id === 7) {
-        fromD = new Date();
-        fromD.setHours(fromD.getHours() - 6);
-    } else if (id === 8) {
-        fromD = new Date();
-        fromD.setHours(fromD.getHours() - 1);
-    }
-    $('#frompicker').data("DateTimePicker").date(moment(fromD));
-    $('#topicker').data("DateTimePicker").date(moment(toD));
-}

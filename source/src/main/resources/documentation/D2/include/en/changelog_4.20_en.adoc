@@ -4,6 +4,7 @@
 * Fixed regression on space character encoding on notifications.
 * Fixed regression that could duplicate notification on campaign definition.
 * Fixed issue when adding a new application on Environment modal
+* Fixed date/Time picker on queue follow-up screen for Last Hour and Last 6 Hours
 
 *Improvements / New features*
 [square]
