@@ -181,11 +181,11 @@ function refreshToggleButtons(buttonElement, reportPanelElement, doDisplay) {
     if (doDisplay === "true") {
         $(buttonElement).find('.btn-ON').addClass('btn-primary');
         $(buttonElement).find('.btn-OFF').removeClass('btn-info');
-        $(reportPanelElement).show()
+        $(reportPanelElement).show();
     } else {
         $(buttonElement).find('.btn-ON').removeClass('btn-primary');
         $(buttonElement).find('.btn-OFF').addClass('btn-info');
-        $(reportPanelElement).hide()
+        $(reportPanelElement).hide();
     }
 //            }
 
@@ -1872,6 +1872,8 @@ function massAction_copyQueue(option) {
         showMessage(localMessage, null);
     } else {
 
+        showLoader($("#listReport"));
+
         var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&tag=" + encodeURIComponent(tag) + "&actionSave=save", "json");
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns
@@ -1891,7 +1893,12 @@ function massAction_copyQueue(option) {
             } else {
                 showMessage(data);
             }
+            hideLoader($("#listReport"));
+
+            loadReportingData(tag);
+
         }).fail(handleErrorAjaxAfterTimeout);
+
     }
 
 }
