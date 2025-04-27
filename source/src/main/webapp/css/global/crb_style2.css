@@ -1436,6 +1436,10 @@ table.dataTable thead th {
     border-top : 5px solid var(--crb-green-color);
 }
 
+.muted {
+    background-color:  #f8f8f8;
+}
+
 @keyframes blink {
     from, to {
         opacity: 1

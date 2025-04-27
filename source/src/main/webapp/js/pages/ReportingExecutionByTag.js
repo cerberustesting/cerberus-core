@@ -273,7 +273,7 @@ function loadCountryFilter() {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
 
-                //Load the filters depenbding on the preferences retrieved from session storage
+                //Load the filters depending on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n<input type="checkbox" name="' + data[i].value + '"/>\n' + data[i].value + '</label>';
                 } else {
@@ -1589,12 +1589,20 @@ function createShortDescRow(row, data, index) {
     var tableAPI = $("#listTable").DataTable();
 
     var createdRow = tableAPI.row(row);
-
+    if (data.isMuted) {
+        $(row).addClass('muted');
+    }
     createdRow.child([data.shortDesc, "labels"]);
     $(row).children('.center').attr('rowspan', '3');
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
+    $(row).children('.comment').attr('rowspan', '3');
+    $(row).children('.NbRetry').attr('rowspan', '3');
     $(row).children('.selectLineCell').attr('rowspan', '3').attr('style', 'vertical-align: middle; text-align: center;');
+    if (data.isMuted) {
+        $($(createdRow.child())[0]).addClass('muted');
+        $($(createdRow.child())[1]).addClass('muted');
+    }
     $($(createdRow.child())[0]).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
     $($(createdRow.child())[1]).children('td').attr('colspan', '3').attr('class', 'labels');
     let labelValue = '';
@@ -2002,7 +2010,7 @@ function aoColumnsFunc(Columns) {
                     // Getting selected Tag;
                     let glyphClass = getRowClass(data.ControlStatus);
                     let tooltip = generateTooltip(data);
-                    let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment, data.RobotDecli);
+                    let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment);
                     let cell = "";
                     let myClass = "";
                     if (data.isFalseNegative) {
@@ -2200,7 +2208,7 @@ function renderDependency(id, dependencyArray) {
 
     $(".mainCell").parent().removeClass("info");
     dependencyArray.forEach(dep => {
-        let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.environment, dep.robotdecli);
+        let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.environment);
         let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
         text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
         // Add background of mainCell that are dependent.
@@ -2214,8 +2222,8 @@ function renderDependency(id, dependencyArray) {
             .popover('show');
 }
 
-function generateAnchor(test, testcase, country, env, robot) {
-    return (test.replace("\/", "_") + "_" + testcase.replace("\/", "_") + "_" + country + "_" + env + "_" + robot.replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_'));
+function generateAnchor(test, testcase, country, env) {
+    return (encodeURIComponent(test).replace("%", "") + "_" + encodeURIComponent(testcase).replace("%", "") + "_" + encodeURIComponent(country).replace("%", "") + "_" + encodeURIComponent(env).replace("%", "") + "_");
 }
 
 function customConfig(config) {
