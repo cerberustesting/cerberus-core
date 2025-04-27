@@ -668,7 +668,8 @@ public class ActionService implements IActionService {
 
                 AnswerItem<JSONObject> ans = new AnswerItem<>();
 
-                ans = filemanagementService.doFilemanagementActionGetRobotFile(execution.getSession(), filename, Integer.valueOf(nbFiles), option);
+                Integer nbFilesInt = ParameterParserUtil.parseIntegerParam(nbFiles, 1);
+                ans = filemanagementService.doFilemanagementActionGetRobotFile(execution.getSession(), filename, nbFilesInt, option);
 
                 JSONObject contentJSON = ans.getItem();
                 if (contentJSON == null) {
