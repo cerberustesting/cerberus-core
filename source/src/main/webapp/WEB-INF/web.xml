@@ -132,6 +132,7 @@
         </description>
         <role-name>Administrator</role-name>
     </security-role>
+    
     <security-constraint>
         <display-name>TestRO</display-name>
         <web-resource-collection>
@@ -184,6 +185,7 @@
             <role-name>TestRO</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>Test</display-name>
         <web-resource-collection>
@@ -227,6 +229,7 @@
             <role-name>Test</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>Label</display-name>
         <web-resource-collection>
@@ -246,6 +249,7 @@
             <role-name>Label</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>TestStepLibrary</display-name>
         <web-resource-collection>
@@ -258,6 +262,7 @@
             <role-name>TestStepLibrary</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>TestAdmin</display-name>
         <web-resource-collection>
@@ -277,6 +282,7 @@
             <role-name>TestAdmin</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>RunTest</display-name>
         <web-resource-collection>
@@ -314,6 +320,7 @@
             <role-name>RunTest</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>TestDataManager</display-name>
         <web-resource-collection>
@@ -332,6 +339,7 @@
             <role-name>TestDataManager</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>IntegratorRO</display-name>
         <web-resource-collection>
@@ -375,6 +383,7 @@
             <role-name>IntegratorRO</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>Integrator</display-name>
         <web-resource-collection>
@@ -422,6 +431,7 @@
             <role-name>Integrator</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>IntegratorNewChain</display-name>
         <web-resource-collection>
@@ -434,6 +444,7 @@
             <role-name>IntegratorNewChain</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>IntegratorDeploy</display-name>
         <web-resource-collection>
@@ -448,6 +459,7 @@
             <role-name>IntegratorDeploy</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>Administrator</display-name>
         <web-resource-collection>
@@ -480,12 +492,14 @@
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
             <url-pattern>/ChangeUserPasswordAdmin</url-pattern>
+            <url-pattern>/api/swagger-ui.html</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>
             <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <security-constraint>
         <display-name>NONE</display-name>
         <web-resource-collection>
@@ -536,6 +550,7 @@
             <url-pattern>/DummyRESTCallEmpty</url-pattern>
         </web-resource-collection>
     </security-constraint>
+    
     <security-constraint>
         <display-name>ANY</display-name>
         <web-resource-collection>
@@ -595,6 +610,7 @@
             <role-name>Administrator</role-name>
         </auth-constraint>
     </security-constraint>
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
