@@ -533,14 +533,25 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 bugRes.put("nbBugs", bugMapUniq.size());
                 testCaseExecutionTable.put("bugContent", bugRes);
 
-                Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
-                testCaseExecutionTable.put("tableColumns", treeMap.values());
-
             } catch (JSONException ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             } catch (Exception ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             }
+        }
+
+        // Sort and Feed colomn list
+        Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
+        List<JSONObject> treeMapList = new ArrayList<>();
+        for (Map.Entry<String, JSONObject> entry : treeMap.entrySet()) {
+            JSONObject val = entry.getValue();
+            if (!treeMapList.contains(val)) {
+                treeMapList.add(val);
+            }
+        }
+        Collections.sort(treeMapList, new SortColumns());
+        for (JSONObject jSONObject : treeMapList) {
+            testCaseExecutionTable.append("tableColumns", jSONObject);
         }
 
         try {
@@ -583,6 +594,28 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
 
         return testCaseExecutionTable;
+    }
+
+    class SortColumns implements Comparator<JSONObject> {
+        // Used for sorting in ascending order of
+        // name value.
+
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+            if (a != null && b != null) {
+                try {
+                    String aS = a.getString("environment") + "-" + a.getString("country") + "-" + a.getString("robotDecli");
+                    String bS = b.getString("environment") + "-" + b.getString("country") + "-" + b.getString("robotDecli");
+
+                    return aS.compareToIgnoreCase(bS);
+                } catch (JSONException ex) {
+                    LOG.error("JSON Error Exception", ex);
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+        }
     }
 
     // We hide is status is QU of OK and there were no previous execution.

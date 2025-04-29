@@ -11,6 +11,7 @@
 * On Campaign execution report, you can now cancel, pause and resume the campaign execution #2211
 * On Campaign execution report, display first Execution start time, Last execution start and end time.
 * On Campaign execution report, identify flaky test cases and direct button display to edit bug.
+* On Campaign execution report, Sort columns by environment, country and then robot declination.
 * Ace editor layout improvement (Readonly when necessary and bigger font)
 * Sort label on testcase list and campaign execution report pages. #2581
 * Added operator : different, contains, notContains and matchRegex on both controls : verifyTitle and verifyUrl #2585
