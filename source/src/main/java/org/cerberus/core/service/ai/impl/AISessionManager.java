@@ -38,7 +38,7 @@ public class AISessionManager {
 
     @PostConstruct
     public void init(){
-        LOG.warn("init AISessionManager");
+        LOG.debug("init AISessionManager");
         this.listOfSessionsByUser = new HashMap<String, HashMap<String, List<MessageParam>>>();
     }
 
