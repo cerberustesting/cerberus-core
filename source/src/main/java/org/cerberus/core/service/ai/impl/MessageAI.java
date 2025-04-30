@@ -17,38 +17,34 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket.decoders;
+package org.cerberus.core.service.ai.impl;
 
-import com.google.gson.Gson;
-import org.cerberus.core.crud.entity.TestCaseExecution;
+public class MessageAI {
+    private String sender;
+    private String content;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
-
-/**
- * Created by corentin on 31/10/16.
- */
-public class TestCaseExecutionDecoder implements Decoder.Text<TestCaseExecution> {
-
-    @Override
-    public TestCaseExecution decode(String s) throws DecodeException {
-        Gson gson = new Gson();
-        return gson.fromJson(s, TestCaseExecution.class);
+    public MessageAI() {
     }
 
-    @Override
-    public boolean willDecode(String s) {
-        return false;
+    public MessageAI(String sender, String content) {
+        this.sender = sender;
+        this.content = content;
     }
 
-    @Override
-    public void init(EndpointConfig endpointConfig) {
-
+    public String getSender() {
+        return sender;
     }
 
-    @Override
-    public void destroy() {
-
+    public void setSender(String sender) {
+        this.sender = sender;
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }

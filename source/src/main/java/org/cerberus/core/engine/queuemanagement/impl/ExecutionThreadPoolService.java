@@ -19,32 +19,18 @@
  */
 package org.cerberus.core.engine.queuemanagement.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.factory.IFactoryQueueStat;
 import org.cerberus.core.crud.factory.IFactoryRobotExecutor;
-import org.cerberus.core.crud.service.IInvariantService;
-import org.cerberus.core.engine.execution.IRetriesService;
-import org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
-import org.cerberus.core.crud.service.IMyVersionService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.IQueueStatService;
-import org.cerberus.core.crud.service.IRobotExecutorService;
-import org.cerberus.core.crud.service.IRobotService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.ExecutionUUID;
+import org.cerberus.core.engine.execution.IRetriesService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.authentification.impl.APIKeyService;
 import org.cerberus.core.servlet.zzpublic.ManageV001;
@@ -53,10 +39,13 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusEndPoint;
+import org.cerberus.core.websocket.QueueStatusWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.concurrent.Future;
 
 /**
  * {@link IExecutionThreadPoolService} default implementation
@@ -108,6 +97,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IFactoryQueueStat factoryQueueStat;
     @Autowired
     private IQueueStatService queueStatService;
+    @Autowired
+    private QueueStatusWebSocket queueStatusWebSocket;
 
     @Override
     public boolean isInstanceActive() {
@@ -674,7 +665,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             .globalLimit(poolSizeGeneral)
                             .running(const01_current)
                             .queueSize(executionsInQueue.size()).build();
-                    QueueStatusEndPoint.getInstance().send(queueS, true);
+                    queueStatusWebSocket.send(queueS, true);
                 }
 
                 queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));

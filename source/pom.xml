@@ -44,8 +44,8 @@
         <!-- JSON Lib Version -->
         <json.version>20240303</json.version>
         <gson.version>2.9.0</gson.version>
-        <jackson-databind.version>2.14.0-rc1</jackson-databind.version>
-        <jackson-datatype-jsr310.version>2.13.2</jackson-datatype-jsr310.version>
+        <jackson-databind.version>2.18.3</jackson-databind.version>
+        <jackson-datatype-jsr310.version>2.18.3</jackson-datatype-jsr310.version>
         <!-- jsonpath -->
         <jsonxpath.version>2.9.0</jsonxpath.version>
         <minidev.version>2.5.1</minidev.version>
@@ -72,6 +72,8 @@
         <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
         <jaxb.version>2.3.0</jaxb.version>
         <saaj.version>1.5.1</saaj.version>
+        <!-- IA Dep -->
+        <anthropic.version>1.2.0</anthropic.version>
         <!--        <jaxws.version>2.2.6</jaxws.version>-->
         <!-- Kafka -->
         <kafka-clients.version>3.7.2</kafka-clients.version>
@@ -168,6 +170,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
@@ -376,6 +388,18 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb.version}</version>
+        </dependency>
+
+        <!-- IA Dependencies -->
+        <dependency>
+            <groupId>com.anthropic</groupId>
+            <artifactId>anthropic-java</artifactId>
+            <version>${anthropic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.9.0</version>
         </dependency>
 
         <!-- General usage scope -->

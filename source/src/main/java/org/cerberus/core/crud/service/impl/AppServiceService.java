@@ -19,9 +19,6 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -48,8 +45,12 @@ import org.cerberus.core.util.XmlUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +62,13 @@ import java.util.Map;
 public class AppServiceService implements IAppServiceService {
 
     private static final Logger LOG = LogManager.getLogger(AppServiceService.class);
+    @Autowired
     private IAppServiceDAO appServiceDao;
+    @Autowired
     private IAppServiceContentService appServiceContentService;
+    @Autowired
     private IAppServiceHeaderService appServiceHeaderService;
+    @Autowired
     private ITestCaseStepActionService actionService;
 
     @Override

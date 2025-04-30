@@ -19,10 +19,16 @@
  */
 package org.cerberus.core.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -30,7 +36,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @EnableWebMvc
+@ComponentScan(basePackages = {
+        "org.cerberus.core.api",
+        "org.cerberus.core.apiprivate"
+})
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
+    //@Override
+    //public void configurePathMatch(PathMatchConfigurer configurer) {
+    //    configurer.addPathPrefix("/api", c -> true);  // 👈 force prefix /api to all controllers
+    //}
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -39,5 +54,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    @Autowired
+    @Qualifier("requestMappingHandlerMapping")
+    private RequestMappingHandlerMapping handlerMapping;
+
+    @PostConstruct
+    public void logAllEndpoints() {
+        handlerMapping.getHandlerMethods().forEach((k, v) -> {
+            System.out.println("Mapped endpoint: " + k + " -> " + v);
+        });
     }
 }

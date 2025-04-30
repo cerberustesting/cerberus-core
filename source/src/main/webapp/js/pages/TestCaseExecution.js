@@ -214,7 +214,7 @@ function loadExecutionInformation(executionId, steps, sockets) {
                         protocol = "wss:";
                     }
                     var path = parser.pathname.split("TestCaseExecution")[0];
-                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var new_uri = protocol + parser.host + path + "api/ws/execution/" + executionId;
 
                     var socket = new WebSocket(new_uri);
 
@@ -222,6 +222,7 @@ function loadExecutionInformation(executionId, steps, sockets) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                     socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
+                        console.log(data);
                         updatePage(data, steps);
                     } //on récupère les messages provenant du serveur websocket
                     socket.onclose = function (e) {

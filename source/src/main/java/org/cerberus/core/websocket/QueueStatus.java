@@ -19,26 +19,16 @@
  */
 package org.cerberus.core.websocket;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import javax.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * @author bcivel
@@ -56,7 +46,6 @@ public class QueueStatus {
     private int running;
     private int queueSize;
     private int globalLimit;
-
     private long lastWebsocketPush;
 
     /**
@@ -76,14 +65,6 @@ public class QueueStatus {
 
     public void setExecutionUUID(String UUID, TestCaseExecution execution) {
         executionHashMap.put(UUID, execution);
-    }
-
-    public long getLastWebsocketPush() {
-        return lastWebsocketPush;
-    }
-
-    public void setLastWebsocketPush(long lastWebsocketPush) {
-        this.lastWebsocketPush = lastWebsocketPush;
     }
 
     public JSONObject toJson(boolean fatVersion) {

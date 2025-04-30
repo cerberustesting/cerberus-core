@@ -19,35 +19,11 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.CountryEnvParam;
-import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Invariant;
-import org.cerberus.core.crud.entity.Robot;
-import org.cerberus.core.crud.entity.RobotExecutor;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
-import org.cerberus.core.crud.service.IApplicationService;
-import org.cerberus.core.crud.service.ICountryEnvParamService;
-import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
-import org.cerberus.core.crud.service.IInvariantService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.IRobotExecutorService;
-import org.cerberus.core.crud.service.IRobotService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.crud.service.ITestCaseExecutionService;
-import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.crud.service.ITestService;
-import org.cerberus.core.crud.service.impl.TagService;
+import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.execution.IConditionService;
@@ -60,11 +36,14 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusEndPoint;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.cerberus.core.websocket.QueueStatusWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author bcivel
@@ -108,6 +87,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private QueueStatusWebSocket queueStatusWebSocket;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -590,7 +571,7 @@ public class ExecutionStartService implements IExecutionStartService {
                         .globalLimit(executionUUIDObject.getGlobalLimit())
                         .running(executionUUIDObject.getRunning())
                         .queueSize(executionUUIDObject.getQueueSize()).build();
-                QueueStatusEndPoint.getInstance().send(queueS, true);
+                queueStatusWebSocket.send(queueS, true);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);

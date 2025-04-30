@@ -22,52 +22,11 @@ package org.cerberus.core.engine.execution.impl;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.CountryEnvLink;
-import org.cerberus.core.crud.entity.CountryEnvParam;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.RobotCapability;
-import org.cerberus.core.crud.entity.Tag;
-import org.cerberus.core.crud.entity.Test;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionData;
-import org.cerberus.core.crud.entity.TestCaseExecutionSysVer;
-import org.cerberus.core.crud.entity.TestCaseStep;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.core.crud.entity.TestCaseStepExecution;
-import org.cerberus.core.crud.factory.IFactoryRobotCapability;
-import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionSysVer;
-import org.cerberus.core.crud.factory.IFactoryTestCaseStepActionControlExecution;
-import org.cerberus.core.crud.factory.IFactoryTestCaseStepActionExecution;
-import org.cerberus.core.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.core.crud.service.ICountryEnvLinkService;
-import org.cerberus.core.crud.service.ICountryEnvParamService;
-import org.cerberus.core.crud.service.ILoadTestCaseService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.crud.service.ITestCaseExecutionService;
-import org.cerberus.core.crud.service.ITestCaseExecutionSysVerService;
-import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.core.crud.service.ITestCaseStepActionExecutionService;
-import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
-import org.cerberus.core.engine.entity.ExecutionUUID;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.engine.entity.MessageGeneral;
-import org.cerberus.core.engine.execution.IConditionService;
-import org.cerberus.core.engine.execution.IExecutionRunService;
-import org.cerberus.core.engine.execution.IRecorderService;
-import org.cerberus.core.engine.execution.IRetriesService;
-import org.cerberus.core.engine.execution.IRobotServerService;
+import org.cerberus.core.crud.entity.*;
+import org.cerberus.core.crud.factory.*;
+import org.cerberus.core.crud.service.*;
+import org.cerberus.core.engine.entity.*;
+import org.cerberus.core.engine.execution.*;
 import org.cerberus.core.engine.execution.enums.ConditionOperatorEnum;
 import org.cerberus.core.engine.execution.video.VideoRecorder;
 import org.cerberus.core.engine.gwt.IActionService;
@@ -80,18 +39,23 @@ import org.cerberus.core.enums.Video;
 import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.service.kafka.IKafkaService;
+import org.cerberus.core.service.robotextension.ISikuliService;
+import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.robotproviders.IBrowserstackService;
 import org.cerberus.core.service.robotproviders.IKobitonService;
 import org.cerberus.core.service.robotproviders.ILambdaTestService;
-import org.cerberus.core.service.robotextension.ISikuliService;
+import org.cerberus.core.service.robotproxy.IRobotProxyService;
+import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.websocket.TestCaseExecutionEndPoint;
+import org.cerberus.core.websocket.TestCaseExecutionWebSocket;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -102,13 +66,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.cerberus.core.engine.entity.ExecutionLog;
-import org.cerberus.core.engine.entity.Identifier;
-import org.cerberus.core.engine.execution.IIdentifierService;
-import org.cerberus.core.service.bug.IBugService;
-import org.cerberus.core.service.robotextension.impl.SikuliService;
-import org.cerberus.core.service.xray.IXRayService;
-import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -160,6 +117,9 @@ public class ExecutionRunService implements IExecutionRunService {
     private IXRayService xRayService;
     private IBugService bugService;
     private IIdentifierService identifierService;
+
+    @Autowired
+    TestCaseExecutionWebSocket testCaseExecutionWebSocket;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution execution) throws CerberusException {
@@ -974,7 +934,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private void updateExecutionWebSocketOnly(TestCaseExecution execution, boolean forcePush) {
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(execution, forcePush);
+            testCaseExecutionWebSocket.send(execution, forcePush);
         }
 
     }
@@ -1001,8 +961,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(execution, true);
-            TestCaseExecutionEndPoint.getInstance().end(execution);
+            testCaseExecutionWebSocket.send(execution, true);
+            testCaseExecutionWebSocket.end(execution);
         }
 
         return execution;
