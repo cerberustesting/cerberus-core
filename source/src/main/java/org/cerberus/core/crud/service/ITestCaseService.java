@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.dto.TestListDTO;
 import org.cerberus.core.exception.CerberusException;
@@ -315,9 +316,16 @@ public interface ITestCaseService {
      * @param keyTest
      * @param keyTestCase
      * @param testCase
-     * @return
+     * @return 
      */
     public Answer update(String keyTest, String keyTestCase, TestCase testCase);
+
+    /**
+     * @param keyTest
+     * @param keyTestCase
+     * @param lastExecuted
+     */
+    public void updateLastExecuted(String keyTest, String keyTestCase, Timestamp lastExecuted);
 
     /**
      * @param testCase

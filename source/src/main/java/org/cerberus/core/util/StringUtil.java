@@ -24,8 +24,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -446,6 +448,17 @@ public final class StringUtil {
             result = url + "?" + queryString;
         }
         return result;
+    }
+
+    /**
+     * This method is converting any part of an url string to encoded
+     * considering the partial conversion of + character.
+     *
+     * @param url
+     * @return URL correctly encoded.
+     */
+    public static String encodeURL(String url) throws UnsupportedEncodingException {
+        return URLEncoder.encode(url, "UTF-8").replace("+", "%20");
     }
 
     public static String formatURLCredential(String user, String pass, String url) {

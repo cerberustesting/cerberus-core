@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +50,7 @@ public class TestCase {
     private String description;
     private String detailedDescription;
     private int priority;
+    private boolean isMuted;
     private int version;
     private String status;
     private boolean isActive;
@@ -80,6 +80,8 @@ public class TestCase {
     private String userAgent;
     private String screenSize;
     @EqualsAndHashCode.Exclude
+    private Timestamp dateLastExecuted;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
     @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
@@ -87,6 +89,7 @@ public class TestCase {
     private String usrModif;
     @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
+
     /**
      * Not included in table.
      */
@@ -201,6 +204,7 @@ public class TestCase {
             testCaseJson.put("status", this.getStatus());
             testCaseJson.put("type", this.getType());
             testCaseJson.put("priority", this.getPriority());
+            testCaseJson.put("isMuted", this.isMuted());
             testCaseJson.put("description", this.getDescription());
             testCaseJson.put("detailedDescription", this.getDetailedDescription());
             testCaseJson.put("isActive", this.isActive());
@@ -226,6 +230,7 @@ public class TestCase {
             testCaseJson.put("executor", this.getExecutor());
             testCaseJson.put("version", this.getVersion());
             testCaseJson.put("dateCreated", this.getDateCreated());
+            testCaseJson.put("dateLastExecuted", this.getDateLastExecuted());
             testCaseJson.put("usrCreated", this.getUsrCreated());
             testCaseJson.put("dateModif", this.getDateModif());
             testCaseJson.put("usrModif", this.getUsrModif());
@@ -296,7 +301,7 @@ public class TestCase {
         try {
             testCaseJson.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + URLEncoder.encode(this.getTest(), "UTF-8") + "&testcase=" + URLEncoder.encode(this.getTestcase(), "UTF-8"));
+            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + StringUtil.encodeURL(this.getTest()) + "&testcase=" + StringUtil.encodeURL(this.getTestcase()));
             testCaseJson.put("testFolder", this.getTest());
             testCaseJson.put("testcase", this.getTestcase());
             testCaseJson.put("application", this.getApplication());
@@ -324,6 +329,7 @@ public class TestCase {
             testCaseJson.put("implementer", this.getImplementer());
             testCaseJson.put("executor", this.getExecutor());
             testCaseJson.put("version", this.getVersion());
+            testCaseJson.put("dateLastExecuted", this.getDateLastExecuted());
             testCaseJson.put("dateCreated", this.getDateCreated());
             testCaseJson.put("usrCreated", this.getUsrCreated());
             testCaseJson.put("dateModif", this.getDateModif());

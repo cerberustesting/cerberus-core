@@ -88,8 +88,8 @@ public class GithubService implements IGithubService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    private static final String GITHUB_ISSUECREATION_URL_DEFAULT = "https://api.github.com/repos/";
-    private static final String GITHUB_ISSUECREATION_URLPATH = "/issues";
+    private static final String GITHUB_ISSUECREATION_URL_DEFAULT = "https://api.github.com/repos";
+    private static final String GITHUB_ISSUECREATION_URLPATH = "issues";
     private static final String GITHUB_API_VERSION = "2022-11-28";
 
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;

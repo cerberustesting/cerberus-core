@@ -42,6 +42,8 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide(
             "applicationObjectsTable", "ReadApplicationObject", "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
+    refreshPopoverDocumentation("applicationObjectList");
+
 
     if (application !== null) {
         clearIndividualFilter("applicationObjectsTable", undefined, true);
@@ -247,7 +249,7 @@ function aoColumnsFunc(tableId) {
                 var currentCase = "<image "
                         + "onclick ='displayPictureOfMinitature(this)' "
                         + "style ='height: 25px;cursor:  pointer;'"
-                        + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() 
+                        + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime()
                         + "'></image>"
                 return currentCase;
             }

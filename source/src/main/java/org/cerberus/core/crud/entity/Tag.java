@@ -30,7 +30,6 @@ import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -69,8 +68,12 @@ public class Tag {
     private int nbCA;
     private int ciScore;
     private int ciScoreThreshold;
+    private int ciScoreMax;
     private String ciResult;
     private boolean falseNegative;
+    private String falseNegativeRootCause;
+    private int nbFlaky;
+    private int nbMuted;
     private String environmentList;
     private String countryList;
     private String robotDecliList;
@@ -148,8 +151,12 @@ public class Tag {
             result.put("nbCA", this.nbCA);
             result.put("ciScore", this.ciScore);
             result.put("ciScoreThreshold", this.ciScoreThreshold);
+            result.put("ciScoreMax", this.ciScoreMax);
             result.put("ciResult", this.ciResult);
             result.put("falseNegative", this.falseNegative);
+            result.put("falseNegativeRootCause", this.falseNegativeRootCause);
+            result.put("nbFlaky", this.nbFlaky);
+            result.put("nbMuted", this.nbMuted);
             result.put("environmentList", this.environmentList);
             result.put("countryList", this.countryList);
             result.put("robotDecliList", this.robotDecliList);
@@ -189,7 +196,7 @@ public class Tag {
         try {
             result.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, "UTF-8"));
+            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(this.tag));
             result.put("tag", this.tag);
             if (this.dateEndQueue != null && this.dateStartExe != null) {
                 result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateStartExe.getTime()));

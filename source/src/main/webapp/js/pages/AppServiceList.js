@@ -296,6 +296,18 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "operation")
         }, {
+            "sName": "srv.Description",
+            "like": true,
+            "data": "description",
+            "sWidth": "200px",
+            "title": doc.getDocLabel("appservice", "description")
+        }, {
+            "sName": "srv.authType",
+            "visible": false,
+            "data": "authType",
+            "sWidth": "100px",
+            "title": doc.getDocLabel("appservice", "authType")
+        }, {
             "sName": "srv.kafkaTopic",
             "visible": false,
             "data": "kafkaTopic",
@@ -374,41 +386,35 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "parentContentService")
         }, {
-            "sName": "srv.Description",
-            "like": true,
-            "data": "description",
-            "sWidth": "200px",
-            "title": doc.getDocLabel("appservice", "description")
-        }, {
-            "sName": "srv.dateCreated",
+            "sName": "srv.DateCreated",
             "visible": false,
             "like": true,
-            "data": "dateCreated",
+            "data": "DateCreated",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["DateCreated"]);
             }
         }, {
-            "sName": "srv.usrCreated",
+            "sName": "srv.UsrCreated",
             "visible": false,
-            "data": "usrCreated",
+            "data": "UsrCreated",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrCreated")
         }, {
-            "sName": "srv.dateModif",
+            "sName": "srv.DateModif",
             "visible": false,
             "like": true,
-            "data": "dateModif",
+            "data": "DateModif",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["DateModif"]);
             }
         }, {
-            "sName": "srv.usrModif",
+            "sName": "srv.UsrModif",
             "visible": false,
-            "data": "usrModif",
+            "data": "UsrModif",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrModif")
         }];

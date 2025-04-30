@@ -244,7 +244,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 tag = URLDecoder.decode(tag, "UTF-8");
             } catch (Exception ex) {
                 // In case exception is raized, we keep the original string.
-                LOG.debug(ex, ex);
+                LOG.debug("Failed to decode :'" + tag + "' - " + ex, ex);
             }
 
             int screenshot = DEFAULT_VALUE_SCREENSHOT;

@@ -131,7 +131,7 @@ Control.prototype.generateContent = function () {
 // END OF CONTROL FIELD
 
 //VALUE1 FIELD
-    var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v1");
+    var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control v1");
     controlValue1Field.val(cleanErratum(this.value1));
     controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
@@ -146,7 +146,7 @@ Control.prototype.generateContent = function () {
 //END OF VALUE1 FIELD
 
 //VALUE2 FIELD
-    var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v2").css("width", "100%");
+    var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control v2").css("width", "100%");
     controlValue2Field.val(cleanErratum(this.value2));
     controlValue2Field.css("width", "84%");
     controlValue2Field.on("change", function () {
@@ -161,7 +161,7 @@ Control.prototype.generateContent = function () {
 //END OF VALUE2 FIELD
 
 //VALUE3 FIELD
-    var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v3").css("width", "100%");
+    var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control v3").css("width", "100%");
     controlValue3Field.val(this.value3);
     controlValue3Field.css("width", "84%");
     controlValue3Field.on("change", function () {
@@ -418,7 +418,7 @@ function displayControlCombo(object) {
         $(this).find(".controlSelectContainer").empty();
         $(this).find(".controlSelectContainer").append(controls);
 
-        var operator = $("<select></select>").addClass("form-control input-sm operator");
+        var operator = $("<select></select>").addClass("form-control operator");
         if (typeof convertToGui[controlItem.control] !== 'undefined') {
             controls.val(convertToGui[controlItem.control].control);
 

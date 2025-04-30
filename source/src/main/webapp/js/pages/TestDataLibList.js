@@ -54,6 +54,7 @@ function initPage() {
     //creates the main table and draws the management buttons if the user has the permissions
     $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
+        refreshPopoverDocumentation("testDataLibList");
     });
 
 }

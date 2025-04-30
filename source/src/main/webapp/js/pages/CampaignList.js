@@ -152,7 +152,7 @@ function aoColumnsFunc(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": "170px",
-            "title": doc.getDocLabel("page_testcampaign", "button_col"),
+            "title": doc.getDocOnline("page_testcampaign", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -185,125 +185,125 @@ function aoColumnsFunc(tableId) {
             "data": "campaign",
             "sName": "campaign",
             "sWidth": "80px",
-            "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")
+            "title": doc.getDocOnline("page_testcampaign", "testcampaign_col")
         },
         {
             "data": "description",
             "sName": "description",
             "sWidth": "180px",
-            "title": doc.getDocLabel("page_testcampaign", "description_col")
+            "title": doc.getDocOnline("page_testcampaign", "description_col")
         },
         {
             "data": "longDescription",
             "visible": false,
             "sName": "longDescription",
             "sWidth": "180px",
-            "title": doc.getDocLabel("campaign", "longDescription")
+            "title": doc.getDocOnline("campaign", "longDescription")
         },
         {
             "data": "CIScoreThreshold",
             "visible": false,
             "sName": "CIScoreThreshold",
             "sWidth": "180px",
-            "title": doc.getDocLabel("campaign", "CIScoreThreshold")
+            "title": doc.getDocOnline("campaign", "CIScoreThreshold")
         },
         {
             "data": "group1",
             "visible": false,
             "sName": "group1",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Group1")
+            "title": doc.getDocOnline("campaign", "Group1")
         },
         {
             "data": "group2",
             "visible": false,
             "sName": "group2",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Group2")
+            "title": doc.getDocOnline("campaign", "Group2")
         },
         {
             "data": "group3",
             "visible": false,
             "sName": "group3",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Group3")
+            "title": doc.getDocOnline("campaign", "Group3")
         },
         {
             "data": "Tag",
             "visible": false,
             "sName": "Tag",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "tag")
+            "title": doc.getDocOnline("campaign", "tag")
         },
         {
             "data": "Verbose",
             "visible": false,
             "sName": "Verbose",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Verbose")
+            "title": doc.getDocOnline("campaign", "Verbose")
         },
         {
             "data": "Screenshot",
             "visible": false,
             "sName": "Screenshot",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Screenshot")
+            "title": doc.getDocOnline("campaign", "Screenshot")
         },
         {
             "data": "Video",
             "visible": false,
             "sName": "Video",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Video")
+            "title": doc.getDocOnline("campaign", "Video")
         },
         {
             "data": "PageSource",
             "visible": false,
             "sName": "PageSource",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "PageSource")
+            "title": doc.getDocOnline("campaign", "PageSource")
         },
         {
             "data": "RobotLog",
             "visible": false,
             "sName": "RobotLog",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "RobotLog")
+            "title": doc.getDocOnline("campaign", "RobotLog")
         },
         {
             "data": "ConsoleLog",
             "visible": false,
             "sName": "ConsoleLog",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "ConsoleLog")
+            "title": doc.getDocOnline("campaign", "ConsoleLog")
         },
         {
             "data": "Timeout",
             "visible": false,
             "sName": "Timeout",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Timeout")
+            "title": doc.getDocOnline("campaign", "Timeout")
         },
         {
             "data": "Retries",
             "visible": false,
             "sName": "Retries",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Retries")
+            "title": doc.getDocOnline("campaign", "Retries")
         },
         {
             "data": "Priority",
             "visible": false,
             "sName": "Priority",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "Priority")
+            "title": doc.getDocOnline("campaign", "Priority")
         },
         {
             "data": "ManualExecution",
             "visible": false,
             "sName": "ManualExecution",
             "sWidth": "80px",
-            "title": doc.getDocLabel("campaign", "ManualExecution")
+            "title": doc.getDocOnline("campaign", "ManualExecution")
         },
         {
             "data": "UsrCreated",

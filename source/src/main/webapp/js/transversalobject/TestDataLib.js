@@ -634,7 +634,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editTestDataLibModal #messagePrivate').html("This data is modifiable by " + obj.creator + " Only");
         }
 
-        $('#editTestDataLibModal #privateData').click(function () {
+        $('#editTestDataLibModal #privateData').off("click").click(function () {
             if ($('#editTestDataLibModal #privateData').prop("checked")) {
                 if (obj.creator !== undefined) {
                     $('#messagePrivate').html("This data can only be modified by <b><i>" + obj.creator + "</i></b>");
@@ -755,19 +755,19 @@ function appendSubDataRow(subdata, targetTableBody) {
     }
     if (isKey) {
         var deleteBtn = $("<button type=\"button\" disabled=\"disabled\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-        var subDataInput = $("<input  maxlength=\"200\" disabled=\"disabled\">").addClass("form-control input-sm").val(subdata.subData);
+        var subDataInput = $("<input  maxlength=\"200\" disabled=\"disabled\">").addClass("form-control").val(subdata.subData);
     } else {
         var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-        var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
+        var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control").val(subdata.subData);
     }
     subdata.encrypt === "Y" ? subdata.encrypt = true : subdata.encrypt = false;
     var encryptInput = $("<input type='checkbox' \">").prop("checked", subdata.encrypt).addClass("form-control input-sm");
     var typeStyle = subdata.encrypt === true ? "password" : "";
-    var valueInput = $("<input type=\"" + typeStyle + "\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
-    var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control input-sm").val(subdata.column);
-    var parsingAnswerInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "parsingAnswer") + " --\">").addClass("form-control input-sm").val(subdata.parsingAnswer);
-    var columnPositionInput = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "columnPosition") + " --\">").addClass("form-control input-sm").val(subdata.columnPosition);
-    var descriptionInput = $("<input  maxlength=\"1000\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "description") + " --\">").addClass("form-control input-sm").val(subdata.description);
+    var valueInput = $("<input type=\"" + typeStyle + "\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control").val(subdata.value);
+    var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control").val(subdata.column);
+    var parsingAnswerInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "parsingAnswer") + " --\">").addClass("form-control").val(subdata.parsingAnswer);
+    var columnPositionInput = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "columnPosition") + " --\">").addClass("form-control").val(subdata.columnPosition);
+    var descriptionInput = $("<input  maxlength=\"1000\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "description") + " --\">").addClass("form-control").val(subdata.description);
     var table = $("#" + targetTableBody);
 
 

@@ -45,14 +45,14 @@ function initModalEventHook() {
     $("[name='tabEH1']").html(doc.getDocLabel("page_eventhook", "title"));
     $("[name='tabsEH25']").html(doc.getDocLabel("page_global", "traca"));
 
-    $("[name='eventReferenceField']").html(doc.getDocLabel("page_eventhook", "eventReference"));
-    $("[name='isActiveField']").html(doc.getDocLabel("page_eventhook", "isActive"));
-    $("[name='objectKey1Field']").html(doc.getDocLabel("page_eventhook", "objectKey1"));
-    $("[name='objectKey2Field']").html(doc.getDocLabel("page_eventhook", "objectKey2"));
-    $("[name='hookConnectorField']").html(doc.getDocLabel("page_eventhook", "hookConnector"));
-    $("[name='hookRecipientField']").html(doc.getDocLabel("page_eventhook", "hookRecipient"));
-    $("[name='hookChannelField']").html(doc.getDocLabel("page_eventhook", "hookChannel"));
-    $("[name='descriptionField']").html(doc.getDocLabel("page_eventhook", "description"));
+    $("[name='eventReferenceField']").html(doc.getDocOnline("page_eventhook", "eventReference"));
+    $("[name='isActiveField']").html(doc.getDocOnline("page_eventhook", "isActive"));
+    $("[name='objectKey1Field']").html(doc.getDocOnline("page_eventhook", "objectKey1"));
+    $("[name='objectKey2Field']").html(doc.getDocOnline("page_eventhook", "objectKey2"));
+    $("[name='hookConnectorField']").html(doc.getDocOnline("page_eventhook", "hookConnector"));
+    $("[name='hookRecipientField']").html(doc.getDocOnline("page_eventhook", "hookRecipient"));
+    $("[name='hookChannelField']").html(doc.getDocOnline("page_eventhook", "hookChannel"));
+    $("[name='descriptionField']").html(doc.getDocOnline("page_eventhook", "description"));
 
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
@@ -234,6 +234,7 @@ function feedEventHookModal(eventid, modalId, mode) {
                 } else {
                     showUnexpectedError();
                 }
+                refreshPopoverDocumentation("editEventHookModal");
             },
             error: showUnexpectedError
         });

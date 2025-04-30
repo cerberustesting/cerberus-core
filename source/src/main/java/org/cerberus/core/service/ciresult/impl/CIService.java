@@ -87,8 +87,8 @@ public class CIService implements ICIService {
             jsonResponse.put("system_list", generateSystemList(executions));
             jsonResponse.put("application_list", generateApplicationList(executions));
 
-            jsonResponse.put("nb_of_retry", executions.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
-
+            // Semms not necessary as already in 'TOTAL_nbOfExecution'
+//            jsonResponse.put("nb_of_retry", executions.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
             return jsonResponse;
         } catch (CerberusException | JSONException ex) {
             LOG.error(ex, ex);
@@ -100,23 +100,16 @@ public class CIService implements ICIService {
         try {
             JSONObject jsonResponse = new JSONObject();
 
-            int nbok = 0;
-            int nbko = 0;
-            int nbfa = 0;
-            int nbpe = 0;
-            int nbne = 0;
-            int nbwe = 0;
-            int nbna = 0;
-            int nbca = 0;
-            int nbqu = 0;
-            int nbqe = 0;
-            int nbtotal = 0;
+            int nbok = 0, nbko = 0, nbfa = 0, nbpe = 0, nbne = 0, nbwe = 0, nbna = 0, nbca = 0, nbqu = 0, nbqe = 0;
 
-            int nbkop1 = 0;
-            int nbkop2 = 0;
-            int nbkop3 = 0;
-            int nbkop4 = 0;
-            int nbkop5 = 0;
+            int nbtotal = 0;
+            int nbflaky = 0;
+            int nbismuted = 0;
+
+            // Used for CICD Score calculation (Muted execution ignored)
+            int nbkop0 = 0, nbkop1 = 0, nbkop2 = 0, nbkop3 = 0, nbkop4 = 0, nbkop5 = 0;
+            // Used for CICD Max Score calculation (Muted execution ignored)
+            int nbp0 = 0, nbp1 = 0, nbp2 = 0, nbp3 = 0, nbp4 = 0, nbp5 = 0;
 
             long longStart = 0;
             long longEnd = 0;
@@ -138,6 +131,12 @@ public class CIService implements ICIService {
                 }
 
                 nbtotal++;
+                if (curExe.isFlaky()) {
+                    nbflaky++;
+                }
+                if (curExe.isTestCaseIsMuted()) {
+                    nbismuted++;
+                }
 
                 switch (curExe.getControlStatus()) {
                     case TestCaseExecution.CONTROLSTATUS_KO:
@@ -173,8 +172,12 @@ public class CIService implements ICIService {
                 }
 
                 if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
-                        && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")) {
-                    switch (curExe.getTestCaseObj().getPriority()) {
+                        && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")
+                        && !curExe.isTestCaseIsMuted()) {
+                    switch (curExe.getTestCasePriority()) {
+                        case 0:
+                            nbkop0++;
+                            break;
                         case 1:
                             nbkop1++;
                             break;
@@ -189,6 +192,29 @@ public class CIService implements ICIService {
                             break;
                         case 5:
                             nbkop5++;
+                            break;
+                    }
+                }
+
+                if (!curExe.isTestCaseIsMuted()) {
+                    switch (curExe.getTestCasePriority()) {
+                        case 0:
+                            nbp0++;
+                            break;
+                        case 1:
+                            nbp1++;
+                            break;
+                        case 2:
+                            nbp2++;
+                            break;
+                        case 3:
+                            nbp3++;
+                            break;
+                        case 4:
+                            nbp4++;
+                            break;
+                        case 5:
+                            nbp5++;
                             break;
                     }
                 }
@@ -229,6 +255,8 @@ public class CIService implements ICIService {
                 result = getFinalResult(resultCal, resultCalThreshold, nbtotal, nbok);
             }
 
+            int resultCalMax = (nbp1 * pond1) + (nbp2 * pond2) + (nbp3 * pond3) + (nbp4 * pond4) + (nbp5 * pond5);
+
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "CI result calculated with success.");
             jsonResponse.put("tag", tag);
@@ -238,7 +266,9 @@ public class CIService implements ICIService {
             jsonResponse.put("CI_OK_prio4", pond4);
             jsonResponse.put("CI_OK_prio5", pond5);
             jsonResponse.put("CI_finalResult", resultCal);
+            jsonResponse.put("CI_finalResultMax", resultCalMax);
             jsonResponse.put("CI_finalResultThreshold", resultCalThreshold);
+            jsonResponse.put("NonOK_prio0_nbOfExecution", nbkop0);
             jsonResponse.put("NonOK_prio1_nbOfExecution", nbkop1);
             jsonResponse.put("NonOK_prio2_nbOfExecution", nbkop2);
             jsonResponse.put("NonOK_prio3_nbOfExecution", nbkop3);
@@ -255,6 +285,8 @@ public class CIService implements ICIService {
             jsonResponse.put("status_QU_nbOfExecution", nbqu);
             jsonResponse.put("status_QE_nbOfExecution", nbqe);
             jsonResponse.put("TOTAL_nbOfExecution", nbtotal);
+            jsonResponse.put("TOTAL_nbOfFlaky", nbflaky);
+            jsonResponse.put("TOTAL_nbOfMuted", nbismuted);
             jsonResponse.put("result", result);
             jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));
             jsonResponse.put("ExecutionEnd", String.valueOf(new Timestamp(longEnd)));
@@ -312,12 +344,10 @@ public class CIService implements ICIService {
             Map<Integer, Long> statusKoCountPriority = executions
                     .stream()
                     .filter(
-                            testCaseExecution -> (
-                                    !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_NE) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_PE) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU)
-                            )
+                            testCaseExecution -> (!testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_NE)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_PE)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU))
                     )
                     .collect(Collectors.groupingBy(testCaseExecution -> testCaseExecution.getTestCaseObj().getPriority(), Collectors.counting()));
 
@@ -330,7 +360,6 @@ public class CIService implements ICIService {
             int resultCalThreshold = convertCIScoreThreshold(campaign);
             int resultCal = (nbKoPriority1 * coefficientLevel1) + (nbKoPriority2 * coefficientLevel2) + (nbKoPriority3 * coefficientLevel3) + (nbKoPriority4 * coefficientLevel4) + (nbKoPriority5 * coefficientLevel5);
             String globalResult = ((nbTotal > 0) && nbQu + nbPe > 0) ? "PE" : this.getFinalResult(resultCal, resultCalThreshold, nbTotal, nbOk);
-
 
             CampaignExecutionResult campaignResult = CampaignExecutionResult.builder()
                     .ok(nbOk)

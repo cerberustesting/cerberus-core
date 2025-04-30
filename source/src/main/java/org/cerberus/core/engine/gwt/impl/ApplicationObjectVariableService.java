@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -43,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.cerberus.core.util.StringUtil;
 
 /**
  * {Insert class description here}
@@ -110,8 +110,8 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     } else if ("pictureurl".equals(valueA[2])) {
                         try {
                             val = parameterService.getParameterStringByKey("cerberus_url", system, "")
-                                    + "/ReadApplicationObjectImage?application=" + URLEncoder.encode(ao.getApplication(), "UTF-8")
-                                    + "&object=" + URLEncoder.encode(ao.getObject(), "UTF-8")
+                                    + "/ReadApplicationObjectImage?application=" + StringUtil.encodeURL(ao.getApplication())
+                                    + "&object=" + StringUtil.encodeURL(ao.getObject())
                                     + "#xoffset=" + ao.getXOffset() + "|yoffset=" + ao.getYOffset();
                         } catch (UnsupportedEncodingException ex) {
                             LOG.error("Error when encoding string in URL : ", ex);

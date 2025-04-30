@@ -811,7 +811,7 @@ Will allow you to calculate a *[red]#Property#* defined in the property section 
 | *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
 |=== 
-Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+Retrieve the network traffic from Cerberus Robot Proxy (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
 *[blue]#Value1#* : URL to filter. Network requests will be filtered based on that value. Any url that contain the value1 will be included in the network traffic.
 

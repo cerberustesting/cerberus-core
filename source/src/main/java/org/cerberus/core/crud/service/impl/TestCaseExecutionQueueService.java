@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.engine.entity.MessageEvent;
 
 /**
  * Default {@link ITestCaseExecutionQueueService} implementation
@@ -91,8 +92,19 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
-        return testCaseExecutionInQueueDAO.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
+    public AnswerList<TestCaseExecutionQueue> readMaxIdByTag(String tag) throws CerberusException {
+        LOG.debug("Call Queue List readMaxIdByTag");
+        AnswerList<Long> answer = testCaseExecutionInQueueDAO.readMaxIdListByTag(tag);
+        LOG.debug(answer.getDataList().toString());
+        if (answer.getDataList() != null && !answer.getDataList().isEmpty()) {
+            return testCaseExecutionInQueueDAO.readByQueueIdList(answer.getDataList());
+        } else {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
+            AnswerList<TestCaseExecutionQueue> answer1 = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+            answer1.setResultMessage(msg);
+            return answer1;
+        }
     }
 
     @Override
@@ -433,11 +445,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUWITHDEP.name())
                 || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.STARTING.name())) {
             controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
-            
+
         } else if (testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUEUED_PAUSED.name())
                 || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUWITHDEP_PAUSED.name())) {
             controlStatus = TestCaseExecution.CONTROLSTATUS_PA;
-            
+
         } else {
             controlStatus = TestCaseExecution.CONTROLSTATUS_QE;
         }

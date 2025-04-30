@@ -25,7 +25,7 @@ var allDelete = false;
 var Tags = [];
 var exeId = 0;
 var lastExecutedQueueId = 0;
-var uniqid = 1000;
+var lastExecutedTag = "";
 
 $.when($.getScript("js/global/global.js")
         , $.getScript("js/global/autocomplete.js")
@@ -225,7 +225,7 @@ $.when($.getScript("js/global/global.js")
                                 value1: "",
                                 value2: "",
                                 value3: "value",
-                                length: 0,
+                                length: "0",
                                 rowLimit: 0,
                                 cacheExpire: 0,
                                 nature: "STATIC",
@@ -358,9 +358,10 @@ $.when($.getScript("js/global/global.js")
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueueandSee").off("click");
                             $("#rerunFromQueueandSee").click(function () {
-                                triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId);
+                                triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId, data.contentTable.tag);
                             });
                             lastExecutedQueueId = data.contentTable.queueId;
+                            lastExecutedTag = data.contentTable.tag;
                         } else {
                             $("#rerunFromQueueandSee").attr("disabled", true);
                         }
@@ -463,14 +464,14 @@ function displayPageLabel(doc) {
 
     // CONTEXT MENU
     $("#btnGroupDrop1").html("<span class='glyphicon glyphicon-option-horizontal'></span>");
-    $("#seeLastExecUniq").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexecuniq")).html("<span class='glyphicon glyphicon-saved'></span> " + doc.getDocLabel('page_testcasescript', 'see_lastexecuniq'));
+    $("#seeLastExecUniq").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexecuniq")).html("<span class='glyphicon glyphicon-cog'></span> " + doc.getDocLabel('page_testcasescript', 'see_lastexecuniq'));
     $("#seeLastExec").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexec")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
     $("#seeTest").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_test")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_test"));
     $("#seeLogs").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_logs")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
     $("#btnGroupDrop2").html(doc.getDocLabel("page_testcasescript", "run") + " <span class='caret'></span>");
     $("#runTestCase").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "run_testcase")).html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunFromQueueandSee").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "rerunqueueandsee_testcase")).html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
-    $("#editTcInfo").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "edit_testcase")).html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#editTcInfo").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "edit_testcase")).html("<span class='glyphicon glyphicon-edit'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#saveScript").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "save_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
     $("#saveScriptAs").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "saveas_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
     $("#deleteTestCase").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "delete")).html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
@@ -534,7 +535,7 @@ function displayPageLabel(doc) {
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
 }
 
-function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
+function triggerTestCaseExecutionQueueandSeeFromTC(queueId, tag) {
     $.ajax({
         url: "CreateTestCaseExecutionQueue",
         async: true,
@@ -542,7 +543,8 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
         data: {
             id: queueId,
             actionState: "toQUEUED",
-            actionSave: "save"
+            actionSave: "save",
+            tag: tag
         },
         success: function (data) {
             if (getAlertType(data.messageType) === "success") {
@@ -622,7 +624,7 @@ function setAllSort() {
     return stepArr;
 }
 
-function saveScript(queueid = 0) {
+function saveScript(queueid = 0, tag = "") {
     // If queueid != 0, rerun will be triggered
 
     // Disable the save button to avoid double click.
@@ -695,7 +697,7 @@ function saveScript(queueid = 0) {
 
                 if (queueid !== 0) {
                     // ReRun the execution
-                    triggerTestCaseExecutionQueueandSeeFromTC(queueid);
+                    triggerTestCaseExecutionQueueandSeeFromTC(queueid, tag);
 
                 } else {
                     // Force reload of the page once save has been done
@@ -872,7 +874,7 @@ var getModif, setModif, initModification;
                 $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "savererunqueueandsee_testcase"));
                 $("#rerunFromQueueandSee").off("click");
                 $("#rerunFromQueueandSee").click(function () {
-                    saveScript(lastExecutedQueueId);
+                    saveScript(lastExecutedQueueId, lastExecutedTag);
                 });
 
 

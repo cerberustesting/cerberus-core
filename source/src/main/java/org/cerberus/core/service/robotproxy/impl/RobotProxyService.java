@@ -77,7 +77,7 @@ public class RobotProxyService implements IRobotProxyService {
             url += "&bsKey=" + tce.getRobotExecutorObj().getHostPassword();
             url += "&bsLocalIdentifier=" + tce.getExecutionUUID();
         }
-        LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
+        LOG.debug("Starting Cerberus Robot Proxy calling : '{}'", url);
 
         try (InputStream is = new URL(url).openStream()) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -93,7 +93,7 @@ public class RobotProxyService implements IRobotProxyService {
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
 
-            LOG.debug("Cerberus Executor Proxy extention started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
+            LOG.debug("Cerberus Robot Proxy started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
 
         } catch (Exception ex) {
             logEventService.createForPrivateCalls("", "EXEC", LogEvent.STATUS_ERROR, "Error when trying to open a remote proxy on Cerberus Robot Proxy. " + ex.toString());
@@ -108,7 +108,7 @@ public class RobotProxyService implements IRobotProxyService {
         if (tce.isRemoteProxyStarted()) {
             tce.setRemoteProxyStarted(false);
             /**
-             * We Stop the Proxy on Cerberus Executor.
+             * We Stop the Cerberus Robot Proxy.
              */
             try {
                 // Ask the Proxy to stop.
@@ -116,17 +116,17 @@ public class RobotProxyService implements IRobotProxyService {
 
                     String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
 
-                    LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
+                    LOG.debug("Shutting down of Cerberus Robot Proxy calling : '{}'", urlStop);
 
                     InputStream is = new URL(urlStop).openStream();
                     is.close();
 
-                    LOG.debug("Cerberus Executor Proxy extention shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
+                    LOG.debug("Cerberus Robot Proxy shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
 
                 }
 
             } catch (Exception ex) {
-                LOG.error("Exception when asking Cerberus Executor proxy to stop " + tce.getId(), ex);
+                LOG.error("Exception when asking Cerberus Robot proxy to stop " + tce.getId(), ex);
             }
         }
 

@@ -1103,6 +1103,20 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "isMuted",
+            "visible": false,
+            "sName": "tec.isMuted",
+            "title": doc.getDocOnline("testcase", "IsMuted"),
+            "sWidth": "20px",
+                "mRender": function (data, type, obj) {
+                    if (obj.isMuted) {
+                        return '<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>';
+                    }
+                    return "";
+                },
+            "sDefaultContent": ""
+        },
+        {
             "data": "type",
             "visible": false,
             "sName": "tec.type",
@@ -1162,6 +1176,18 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["dateCreated"]);
+            }
+        },
+        {
+            "data": "dateLastExecuted",
+            "visible": false,
+            "sName": "tec.dateLastExecuted",
+            "like": true,
+            "title": doc.getDocOnline("testcase", "DateLastExecuted"),
+            "sWidth": "150px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateLastExecuted"]);
             }
         },
         {

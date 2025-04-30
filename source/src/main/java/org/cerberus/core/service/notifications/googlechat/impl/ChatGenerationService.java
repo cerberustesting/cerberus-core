@@ -20,7 +20,6 @@
 package org.cerberus.core.service.notifications.googlechat.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import org.cerberus.core.crud.entity.EventHook;
@@ -60,7 +59,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 
@@ -99,7 +98,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 
@@ -145,7 +144,7 @@ public class ChatGenerationService implements IChatGenerationService {
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
-        String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject chatMessage = new JSONObject();
 
@@ -176,7 +175,7 @@ public class ChatGenerationService implements IChatGenerationService {
         for (TestCaseExecution execution : tag.getExecutionsNew()) {
             LOG.debug(execution.getControlStatus() + " - " + execution.getControlMessage() + execution.getApplication() + " - " + execution.getDescription());
             totallines++;
-            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && execution.getTestCasePriority() > 0) {
+            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && !execution.isTestCaseIsMuted()) {
                 totaltodisplay++;
                 if (maxlines > totaldisplayed) {
                     totaldisplayed++;
@@ -195,20 +194,26 @@ public class ChatGenerationService implements IChatGenerationService {
             executionText += "... Hidden more " + (totaltodisplay - totaldisplayed) + " line(s).";
         }
 
-        textContent = new JSONObject();
-        textContent.put("text", executionText);
-        textParaContent = new JSONObject();
-        textParaContent.put("textParagraph", textContent);
-        widgets.put(textParaContent);
-
-        JSONArray sections = new JSONArray();
         JSONObject widget = new JSONObject();
 
-        widget.put("widgets", widgets);
-        widget.put("collapsible", true);
-        widget.put("uncollapsibleWidgetsCount", 1);
+        if (totaldisplayed > 0) {
+            textContent = new JSONObject();
+            textContent.put("text", executionText);
+
+            textParaContent = new JSONObject();
+            textParaContent.put("textParagraph", textContent);
+            widgets.put(textParaContent);
+            widget.put("widgets", widgets);
+            widget.put("collapsible", true);
+            widget.put("uncollapsibleWidgetsCount", 1);
+        } else {
+            widget.put("widgets", widgets);
+
+        }
 
         widget.put("header", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.");
+
+        JSONArray sections = new JSONArray();
         sections.put(widget);
         card.put("sections", sections);
 

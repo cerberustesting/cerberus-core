@@ -248,7 +248,7 @@ function viewEntryClick(param) {
         formEdit.modal('show');
 
     });
-
+    refreshPopoverDocumentation("editTestcampaignModal");
 }
 
 function viewStatEntryClick(param) {
@@ -317,7 +317,9 @@ function editEntryClick(param) {
     $('#editTestcampaignButton').removeAttr('hidden');
 
     // handle the click for specific action buttons
+    $("#editTestcampaignButton").off("click");
     $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").off("click");
     $("#addTestcampaignButton").click(addEntryModalSaveHandler);
 
     //clear the modals fields when closed
@@ -460,12 +462,9 @@ function editEntryClick(param) {
         $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
 
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-//        $('#addscheduler').off('click');
-//        $('#addscheduler').click(addNewSchedulerRow);
         $('#addScheduleEntry').off('click');
         $('#addScheduleEntry').click(addNewSchedulerRow);
-//        $('#schedulerinput').val('0 0 12 1/1 * ? *');
-//        loadCronList();
+
         loadSchedulerTable(obj);
 
         /* EVENTHOOK */
@@ -612,7 +611,9 @@ function addEntryClick() {
     $('#addTestcampaignButton').removeAttr('hidden');
 
     // handle the click for specific action buttons
+    $("#editTestcampaignButton").off("click");
     $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").off("click");
     $("#addTestcampaignButton").click(addEntryModalSaveHandler);
 
     //clear the modals fields when closed
@@ -661,12 +662,9 @@ function addEntryClick() {
     /* SCHEDULER */
     var doc = new Doc();
     $('#schedulerTableBody tr').remove();
-//    $('#addscheduler').off('click');
-//    $('#addscheduler').click(addNewSchedulerRow);
     $('#addScheduleEntry').off('click');
     $('#addScheduleEntry').click(addNewSchedulerRow);
-//    $('#schedulerinput').val('0 0 12 1/1 * ? *');
-//    loadCronList();
+    //    
     loadSchedulerTable("");
 
     /* EVENTHOOK */
@@ -1147,7 +1145,7 @@ function loadSchedulerTable(name) {
             appendSchedulerRow(obj);
         });
     }
-
+    refreshPopoverDocumentation("schedulerTable");
 }
 
 function loadEventHookTable(name) {
@@ -1159,7 +1157,7 @@ function loadEventHookTable(name) {
             appendEventHookRow(obj);
         });
     }
-
+    refreshPopoverDocumentation("eventHookTable");
 }
 
 
@@ -1174,9 +1172,9 @@ function appendSchedulerRow(scheduler) {
 
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control").val(scheduler.cronDefinition);
     loadCronList(cronInput);
-    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
+    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control").val(scheduler.description);
     var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
     var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(getDate(scheduler.lastExecution));
     var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrCreated);
@@ -1234,17 +1232,17 @@ function appendEventHookRow(eventHook) {
     var doc = new Doc();
 
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs col-sm-12 marginBottom20").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var eventRefInput = $("<select></select>").addClass("form-control input-sm");
+    var eventRefInput = $("<select></select>").addClass("form-control");
     eventRefInput.append($("<option></option>").text("CAMPAIGN_START").val("CAMPAIGN_START"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END").val("CAMPAIGN_END"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END_CIKO").val("CAMPAIGN_END_CIKO"));
     eventRefInput.val(eventHook.eventReference);
     var activeInput = $("<input name=\"eventActive\" type='checkbox'>").addClass("form-control").prop("checked", eventHook.isActive);
-    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(eventHook.description);
+    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control").val(eventHook.description);
     var hookConnectorInput = getSelectInvariant("EVENTCONNECTOR", false);
     hookConnectorInput.val(eventHook.hookConnector);
-    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control input-sm").val(eventHook.hookRecipient);
-    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control input-sm").val(eventHook.hookChannel);
+    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control").val(eventHook.hookRecipient);
+    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control").val(eventHook.hookChannel);
     var userCreateInput = $("<input name=\"eventUserCreateInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrCreated);
     var userModifInput = $("<input name=\"eventUserModifInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrModif);
 
@@ -1361,6 +1359,7 @@ function addNewSchedulerRow() {
         toDelete: false
     };
     appendSchedulerRow(newScheduler);
+    refreshPopoverDocumentation("schedulerTable");
 
 }
 
@@ -1378,5 +1377,6 @@ function addNewEventHookRow() {
         toDelete: false
     };
     appendEventHookRow(newEventHook);
+    refreshPopoverDocumentation("eventHookTable");
 
 }

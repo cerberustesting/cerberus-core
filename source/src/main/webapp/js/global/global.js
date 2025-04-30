@@ -781,7 +781,7 @@ function getSelectInvariant(idName, forceReload, async = true, addValue) {
     }
 
     let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    let select = $("<select></select>").addClass("form-control input-sm");
+    let select = $("<select></select>").addClass("form-control");
     if (addValue !== undefined) {
         select.append($("<option></option>").text(addValue).val(addValue));
     }
@@ -838,7 +838,7 @@ function getSelectRobot(forceReload, notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -888,7 +888,7 @@ function getSelectLabel(system, forceReload, notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -922,7 +922,7 @@ function getSelectApplication(system, forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -955,7 +955,7 @@ function getSelectApplicationWithoutSystem() {
 
     var list = [];
 
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     $.ajax({
         url: "ReadApplication",
@@ -977,7 +977,7 @@ function getSelectFolder() {
 
     var list = [];
 
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     $.ajax({
         url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test",
@@ -1001,7 +1001,7 @@ function getSelectDeployType(forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    var select = $("<select></select>").addClass("form-control");
 
     if (list === null) {
         $.ajax({
@@ -2674,6 +2674,8 @@ function setTimeRange(id) {
     toD.setHours(24);
     toD.setMinutes(00);
     toD.setSeconds(00);
+    
+    let now = new Date();
 
 //    fromD ;
     if (id === 1) { // Previous Month
@@ -2699,7 +2701,11 @@ function setTimeRange(id) {
         fromD.setDate(1);
         toD.setMonth(toD.getMonth() - 1);
         toD.setDate(1);
-    }
+    } else if (id === 10) { // Previous Hour
+        fromD.setHours(now.getHours()-1, now.getMinutes());
+    } else if (id === 11) { // Previous 6 Hours
+        fromD.setHours(now.getHours()-6, now.getMinutes());
+    }    
 
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
@@ -3063,15 +3069,15 @@ function comboConfigTag_format(tag) {
             "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
     markup += "<div class='select2-result-tag__statistics'>";
-    if (tag.campaign) {
-        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
-    }
     if (tag.DateCreated) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
     }
     if (tag.nbExeUsefull > 0) {
         markup += "<div class='select2-result-tag__detail'> " + tag.nbExeUsefull + " Exe(s)</div>";
         markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.ciResult + "</div>";
+    }
+    if (tag.campaign) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
     }
     markup += "</div>";
     markup += "</div>";
@@ -3252,9 +3258,7 @@ function comboConfigApplication_format(application) {
 function getBugIdList(data, appUrl) {
     let link = "";
     $.each(data, function (_, obj) {
-
         link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl);
-
     });
     return link;
 }
@@ -3345,5 +3349,13 @@ function cleanErratum(oldValue) {
         return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
     }
     return oldValue;
+}
+
+function refreshPopoverDocumentation(containerid) {
+    //As the executors list is dynamically generated after the global popover initialization, need to init popover again on executors list only.
+    let popDefinition = {};
+    popDefinition.placement = "auto";
+    popDefinition.container = "#" + containerid;
+    $('#' + containerid + ' [data-toggle="popover"]').popover(popDefinition);
 }
 

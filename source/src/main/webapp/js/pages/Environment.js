@@ -534,6 +534,8 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
     var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, undefined, "#lastChangeList", undefined, true);
+    refreshPopoverDocumentation("lastChangeList");
+
     return table;
 }
 
@@ -549,6 +551,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
     var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, undefined, "#lastEventList", undefined, true);
+    refreshPopoverDocumentation("lastEventList");
     return table;
 }
 
@@ -560,16 +563,18 @@ function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
             obj.toDelete = false;
             appendDatabaseRow(obj);
         });
+        refreshPopoverDocumentation("listPanelDatabase");
     }).fail(handleErrorAjaxAfterTimeout);
+
 }
 
 function appendDatabaseRow(dtb) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDatabase = getSelectInvariant("PROPERTYDATABASE", false);
-    var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
-    var soapUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control input-sm").val(dtb.soapUrl);
-    var csvUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "CsvUrl") + " --\">").addClass("form-control input-sm").val(dtb.csvUrl);
+    var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control").val(dtb.connectionPoolName);
+    var soapUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control").val(dtb.soapUrl);
+    var csvUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "CsvUrl") + " --\">").addClass("form-control").val(dtb.csvUrl);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");
@@ -618,6 +623,7 @@ function addNewDatabaseRow() {
         toDelete: false
     };
     appendDatabaseRow(newDatabase);
+    refreshPopoverDocumentation("listPanelDatabase");
 }
 
 function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
@@ -628,6 +634,7 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
             obj.toDelete = false;
             appendApplicationRow(obj, selectSystem);
         });
+        refreshPopoverDocumentation("listPanelApplication");
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -637,21 +644,21 @@ function appendApplicationRow(app, selectSystem) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectApplication = getSelectApplication(selectSystem, false);
-    var ipInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
-    var urlInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
-    var poolSizeInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
+    var ipInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control").val(app.ip);
+    var urlInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control").val(app.url);
+    var poolSizeInput = $("<input maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control").val(app.poolSize);
 
-    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
-    var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
-    var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.var1);
-    var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(app.var2);
-    var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.var3);
-    var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.var4);
-    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control input-sm").val(app.secret1);
-    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control input-sm").val(app.secret2);
+    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control").val(app.domain);
+    var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control").val(app.urlLogin);
+    var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control").val(app.var1);
+    var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control").val(app.var2);
+    var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control").val(app.var3);
+    var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control").val(app.var4);
+    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control").val(app.secret1);
+    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control").val(app.secret2);
     var activeInput = $("<input  type=\"checkbox\">").addClass("form-control input-sm").prop("checked", app.isActive);
-    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(app.mobileActivity);
-    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(app.mobilePackage);
+    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control").val(app.mobileActivity);
+    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control").val(app.mobilePackage);
 
     var table = $("#applicationTableBody");
 
@@ -679,13 +686,13 @@ function appendApplicationRow(app, selectSystem) {
     var secret2Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret2'>" + doc.getDocOnline("countryenvironmentparameters", "secret2") + "</label>").append(secret2Input);
     var mobileActivityName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
     var mobilePackageName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
-    
+
     var drow1 = $("<div class='row'></div>").append(activeName).append(ipName).append(urlName).append(poolSizeName);
     var drow2 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(secret1Name).append(expandName);
     var drow3 = $("<div class='row'></div>").append(loginName).append(domainName);
     var drow4 = $("<div class='row'></div>").append(var3Name).append(var4Name).append(secret2Name);
     var drow5 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
-    
+
     var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow3).append(drow4).append(drow5);
 
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
@@ -767,12 +774,13 @@ function addNewApplicationRow(selectSystem) {
         var4: "",
         secret1: "",
         secret2: "",
-        poolSize: "",
+        poolSize: 0,
         mobileActivity: "",
         mobilePackage: "",
         toDelete: false
     };
     appendApplicationRow(newApplication, selectSystem);
+    refreshPopoverDocumentation("listPanelApplication");
 }
 
 function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
@@ -784,6 +792,7 @@ function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
             appendDependenciesRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
+    refreshPopoverDocumentation("listPanelDependencies");
 }
 
 function appendDependenciesRow(env) {
@@ -838,6 +847,7 @@ function addNewDependenciesRow() {
         toDelete: false
     };
     appendDependenciesRow(newDependencies);
+    refreshPopoverDocumentation("listPanelDependencies");
 }
 
 function loadDeployTypeTable(selectSystem, selectCountry, selectEnvironment) {
@@ -855,7 +865,7 @@ function appendDeployTypeRow(depTyp) {
     var doc = new Doc();
     var deleteBtn = $("<button  type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDeployType = getSelectDeployType();
-    var jenkinsAgentInput = $("<input  maxlength=\"50\" placeholder=\"-- " + doc.getDocLabel("countryenvdeploytype", "JenkinsAgent") + " --\">").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
+    var jenkinsAgentInput = $("<input  maxlength=\"50\" placeholder=\"-- " + doc.getDocLabel("countryenvdeploytype", "JenkinsAgent") + " --\">").addClass("form-control").val(depTyp.jenkinsAgent);
     var table = $("#deployTypeTableBody");
 
     var row = $("<tr></tr>");

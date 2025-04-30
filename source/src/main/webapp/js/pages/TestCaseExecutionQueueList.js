@@ -861,11 +861,21 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';
+                var editApplication = '<button id="editApplication' + data + '"  onclick="openModalApplication(\'' + data[4] + '\', \'EDIT\', \'ApplicationList\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
 
                 var buttons = "";
                 if ((data[0] === "constrain1_global") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     buttons += editGlobalParam;
+                }
+                if (((data[0] === "constrain2_applienvironment") || (data[0] === "constrain3_application")) && (data[9]))
+                {
+                    console.info(data);
+                    // Constrain is global and hasPermitionUpdate is true.
+                    buttons += editApplication;
                 }
                 if ((data[0] === "constrain4_robot") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
@@ -878,7 +888,7 @@ function aoColumnsFunc_followUp() {
                         buttons += addRobotInvariant;
                     }
                 }
-                if ((data[0] === "constrain5_executorextension") && (data[9])) {
+                if ((data[0] === "constrain5_proxyservice") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     if (data[10]) {
                         // Invariant exist. We can edit it.
@@ -1097,34 +1107,4 @@ function getColorQueueStat(name) {
     }
     return "red";
 
-}
-function setTimeRange(id) {
-    let fromD;
-    let toD = new Date();
-    toD.setHours(23);
-    toD.setMinutes(59);
-    fromD = new Date();
-    fromD.setHours(23);
-    fromD.setMinutes(59);
-    if (id === 1) { // 1 month
-        fromD.setMonth(fromD.getMonth() - 1);
-    } else if (id === 2) { // 3 months
-        fromD.setMonth(fromD.getMonth() - 3);
-    } else if (id === 3) { // 6 months
-        fromD.setMonth(fromD.getMonth() - 6);
-    } else if (id === 4) { //
-        fromD.setMonth(fromD.getMonth() - 12);
-    } else if (id === 5) {
-        fromD.setHours(fromD.getHours() - 168);
-    } else if (id === 6) {
-        fromD.setHours(fromD.getHours() - 24);
-    } else if (id === 7) {
-        fromD = new Date();
-        fromD.setHours(fromD.getHours() - 6);
-    } else if (id === 8) {
-        fromD = new Date();
-        fromD.setHours(fromD.getHours() - 1);
-    }
-    $('#frompicker').data("DateTimePicker").date(moment(fromD));
-    $('#topicker').data("DateTimePicker").date(moment(toD));
 }

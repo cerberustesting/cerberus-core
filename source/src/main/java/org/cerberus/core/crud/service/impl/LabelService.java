@@ -125,7 +125,36 @@ public class LabelService implements ILabelService {
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             }
         });
+
+        for (Map.Entry<String, List<Label>> entry : labelsToReturn.entrySet()) {
+            String key = entry.getKey();
+            List<Label> val = entry.getValue();
+
+            // Sort Label List
+            Collections.sort(val, (Label label1, Label label2) -> {
+                String val1 = addParent(label1, labelsMap, 0);
+                String val2 = addParent(label2, labelsMap, 0);
+//                LOG.debug("Compare : '{}'   -  '{}'", val1, val2);
+                int compareResult = val1.compareTo(val2);
+                return compareResult;
+            });
+
+            labelsToReturn.put(key, val);
+
+        }
+
         return labelsToReturn;
+    }
+
+    private String addParent(Label label, HashMap<Integer, Label> labelsMap, int protection) {
+        if (label.getParentLabelID() == 0) {
+            return label.getLabel();
+        } else if (protection >= 6) {
+            LOG.warn("Reached maximum recursive label hierarchy : " + protection);
+            return label.getLabel();
+        } else {
+            return addParent(labelsMap.get(label.getParentLabelID()), labelsMap, ++protection) + "/" + label.getLabel();
+        }
     }
 
     @Override

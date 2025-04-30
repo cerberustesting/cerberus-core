@@ -236,6 +236,14 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
         result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
         result.put("previousExeId", testCaseExecution.getPreviousExeId());
+        result.put("firstExeStart", testCaseExecution.getFirstExeStart());
+        result.put("lastExeStart", testCaseExecution.getLastExeStart());
+        result.put("lastExeEnd", testCaseExecution.getLastExeEnd());
+        result.put("isMuted", testCaseExecution.isTestCaseIsMuted());
+        result.put("isFlaky", testCaseExecution.isFlaky());
+        result.put("isFalseNegative", testCaseExecution.isFalseNegative());
+        result.put("isFalseNegativeRootcause", testCaseExecution.isFalseNegative());
+        result.put("priority", testCaseExecution.getTestCasePriority());
         if (testCaseExecution.getPreviousExeStatus() != null) {
             result.put("previousExeControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getPreviousExeStatus()));
         }
@@ -349,6 +357,14 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             nbExeTmp = (Integer) ttcObject.get("NbExeUsefullIsPending");
                             ttcObject.put("NbExeUsefullIsPending", ++nbExeTmp);
                         }
+
+                        // first Exe Start
+                        ttcObject.put("firstExeStart", testCaseExecution.getFirstExeStart() < ttcObject.getLong("firstExeStart") && testCaseExecution.getFirstExeStart() > 0 ? testCaseExecution.getFirstExeStart() : ttcObject.getLong("firstExeStart"));
+                        // last Exe Start
+                        ttcObject.put("lastExeStart", testCaseExecution.getLastExeEnd() > ttcObject.getLong("lastExeEnd") ? testCaseExecution.getLastExeStart() : ttcObject.getLong("lastExeStart"));
+                        // last Exe End
+                        ttcObject.put("lastExeEnd", testCaseExecution.getLastExeEnd() > ttcObject.getLong("lastExeEnd") ? testCaseExecution.getLastExeEnd() : ttcObject.getLong("lastExeEnd"));
+
                     } else {
                         // We add a new testcase entry (with The current execution).
                         ttcObject.put("test", testCaseExecution.getTest());
@@ -356,6 +372,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
+                        ttcObject.put("isMuted", testCaseExecution.isTestCaseIsMuted());
                         if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                                 && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugs() != null) {
                             ttcObject.put("AppBugURL", testCaseExecution.getApplicationObj().getBugTrackerUrl());
@@ -375,6 +392,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
                         }
 
+                        // first Exe Start
+                        ttcObject.put("firstExeStart", testCaseExecution.getFirstExeStart());
+                        // last Exe Start
+                        ttcObject.put("lastExeStart", testCaseExecution.getLastExeStart());
+                        // last Exe End
+                        ttcObject.put("lastExeEnd", testCaseExecution.getLastExeEnd());
+
                         // Flag that report if test case still exist.
                         ttcObject.put("testExist", testExist);
 
@@ -393,19 +417,19 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         } else {
                             ttcObject.put("NbExeUsefullToHide", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions with no bug to report
                         if (isNotBug(controlStatus)) {
                             ttcObject.put("NbExeUsefullOK", 1);
                         } else {
                             ttcObject.put("NbExeUsefullOK", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions with bug to report
                         if (isBug(controlStatus)) {
                             ttcObject.put("NbExeUsefullHasBug", 1);
                         } else {
                             ttcObject.put("NbExeUsefullHasBug", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions still to run
                         if (isPending(controlStatus)) {
                             ttcObject.put("NbExeUsefullIsPending", 1);
                         } else {
@@ -509,14 +533,25 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 bugRes.put("nbBugs", bugMapUniq.size());
                 testCaseExecutionTable.put("bugContent", bugRes);
 
-                Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
-                testCaseExecutionTable.put("tableColumns", treeMap.values());
-
             } catch (JSONException ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             } catch (Exception ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             }
+        }
+
+        // Sort and Feed colomn list
+        Map<String, JSONObject> treeMap = new TreeMap<>(columnMap);
+        List<JSONObject> treeMapList = new ArrayList<>();
+        for (Map.Entry<String, JSONObject> entry : treeMap.entrySet()) {
+            JSONObject val = entry.getValue();
+            if (!treeMapList.contains(val)) {
+                treeMapList.add(val);
+            }
+        }
+        Collections.sort(treeMapList, new SortColumns());
+        for (JSONObject jSONObject : treeMapList) {
+            testCaseExecutionTable.append("tableColumns", jSONObject);
         }
 
         try {
@@ -541,6 +576,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     JSONObject val = entry.getValue();
                     if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
                             || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
+                            || ((val.getInt("NbExeUsefullHasBug") == 0) && (val.getInt("NbRetry") > 0)) // No bug to report but retry was needed --> Flaky test.
                             ) {
                         newttc.put(key, val);
                     }
@@ -558,6 +594,28 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
 
         return testCaseExecutionTable;
+    }
+
+    class SortColumns implements Comparator<JSONObject> {
+        // Used for sorting in ascending order of
+        // name value.
+
+        @Override
+        public int compare(JSONObject a, JSONObject b) {
+            if (a != null && b != null) {
+                try {
+                    String aS = a.getString("environment") + "-" + a.getString("country") + "-" + a.getString("robotDecli");
+                    String bS = b.getString("environment") + "-" + b.getString("country") + "-" + b.getString("robotDecli");
+
+                    return aS.compareToIgnoreCase(bS);
+                } catch (JSONException ex) {
+                    LOG.error("JSON Error Exception", ex);
+                    return 1;
+                }
+            } else {
+                return 1;
+            }
+        }
     }
 
     // We hide is status is QU of OK and there were no previous execution.

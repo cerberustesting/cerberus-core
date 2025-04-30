@@ -249,7 +249,7 @@ function getStatistics() {
             updateDatatable($("#tagStatisticTable"), data);
             removeLoadingStatus($("#tagStatisticList"));
             $('#group1Select').prop('disabled', false);
-            setSelectOptions("#group1Select", data.globalGroup1List);
+            setSelectOptions("#group1Select", data.group1List);
         }
     });
 }

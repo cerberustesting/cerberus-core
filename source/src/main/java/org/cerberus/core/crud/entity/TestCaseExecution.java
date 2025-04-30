@@ -96,6 +96,7 @@ public class TestCaseExecution {
     private Timestamp DateModif;
     private int testCaseVersion;
     private int testCasePriority;
+    private boolean testCaseIsMuted;
 
     /**
      * From here are data outside database model.
@@ -158,6 +159,10 @@ public class TestCaseExecution {
     // Used in reporting page to report the previous executions from the same tag.
     private long previousExeId;
     private String previousExeStatus;
+    private long firstExeStart;
+    private long lastExeStart;
+    private long lastExeEnd;
+    private boolean isFlaky;
 
     // Others
     private MessageGeneral resultMessage;
@@ -422,6 +427,8 @@ public class TestCaseExecution {
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
             result.put("testCaseVersion", this.getTestCaseVersion());
+            result.put("testCasePriority", this.getTestCasePriority());
+            result.put("testCaseIsMuted", this.isTestCaseIsMuted());
             result.put("system", this.getSystem());
             result.put("robotDecli", this.getRobotDecli());
             result.put("robotProvider", this.getRobotProvider());

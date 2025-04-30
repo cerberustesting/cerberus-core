@@ -321,11 +321,11 @@ public class TagStatisticService implements ITagStatisticService {
 
             for (JSONObject mapTagEntry : aggregateByTagEntry.getValue().values()) {
                 JSONUtil.jsonArrayAddUniqueElement(
-                        new JSONArray(mapTagEntry.getString("systemList")),
+                        mapTagEntry.getJSONArray("systemList"),
                         systemsByCampaign
                 );
                 JSONUtil.jsonArrayAddUniqueElement(
-                        new JSONArray(mapTagEntry.getString("applicationList")),
+                        mapTagEntry.getJSONArray("applicationList"),
                         applicationsByCampaign
                 );
 
@@ -401,7 +401,7 @@ public class TagStatisticService implements ITagStatisticService {
     }
 
     private String updateMaxCampaignDateEnd(String maxDateEnd, JSONObject mapTagEntry) throws JSONException {
-        String currentEndDate = mapTagEntry.getString("maxTagDateEnd");
+        String currentEndDate = mapTagEntry.get("maxTagDateEnd").toString();
         if (StringUtil.isEmptyOrNull(maxDateEnd) || Timestamp.valueOf(currentEndDate).getTime() > Timestamp.valueOf(maxDateEnd).getTime()) {
             return currentEndDate;
         }
@@ -426,7 +426,7 @@ public class TagStatisticService implements ITagStatisticService {
     }
 
     private String updateMinCampaignDateStart(String minDateStart, JSONObject mapTagEntry) throws JSONException {
-        String currentStartDate = mapTagEntry.getString("minTagDateStart");
+        String currentStartDate = mapTagEntry.get("minTagDateStart").toString();
         if (StringUtil.isEmptyOrNull(minDateStart) || Timestamp.valueOf(currentStartDate).getTime() < Timestamp.valueOf(minDateStart).getTime()) {
             return currentStartDate;
         }

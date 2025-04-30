@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 
 /**
@@ -58,7 +57,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject teamsMessage = new JSONObject();
 
@@ -99,7 +98,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject teamsMessage = new JSONObject();
 

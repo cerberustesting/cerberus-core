@@ -34,6 +34,7 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("eventHooksTable", "ReadEventHook", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForEventHook, "#eventHookList", undefined, true);
+    refreshPopoverDocumentation("eventHookList");
 }
 
 function displayPageLabel() {

@@ -398,14 +398,14 @@ function displayPageLabel(doc) {
     $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueue"));
     $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueueandsee"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
-    $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
-    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
+    $("#editTcHeader").html("<span class='glyphicon glyphicon-edit'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
+    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
 
     $("#ns1Label").text(doc.getDocLabel("page_executiondetail", "ns1"));
     $("#ns2Label").text(doc.getDocLabel("page_executiondetail", "ns2"));
     $("#ns3Label").text(doc.getDocLabel("page_executiondetail", "ns3"));
-
+    
 
     // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
@@ -513,7 +513,7 @@ function updatePage(data, steps) {
         $("#rerunFromQueueandSee").attr("disabled", false);
         $("#rerunFromQueueandSee").unbind("click");
         $("#rerunFromQueueandSee").click(function () {
-            triggerTestCaseExecutionQueueandSee(data.queueId);
+            triggerTestCaseExecutionQueueandSee(data.queueId, data.tag);
         });
     }
 
@@ -555,7 +555,7 @@ function updatePage(data, steps) {
                         newBugURL = newBugURL.replace(/%REV%/g, data.revision);
                         newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
                         newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
-                        link = $('<a target="_blank">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text(" Open a new bug From Applcation Bug Tracker").prepend($(" <span class='glyphicon glyphicon-new-window'></span>")));
+                        link = $('<a target="_blank">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text(" Open a new bug From Application Bug Tracker").prepend($(" <span class='glyphicon glyphicon-new-window'></span>")));
                     } else {
                         link = $('<a>').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
@@ -1480,7 +1480,7 @@ function createVideo(videos) {
 
 }
 
-function triggerTestCaseExecutionQueueandSee(queueId) {
+function triggerTestCaseExecutionQueueandSee(queueId, tag) {
     $.ajax({
         url: "CreateTestCaseExecutionQueue",
         async: true,
@@ -1488,7 +1488,8 @@ function triggerTestCaseExecutionQueueandSee(queueId) {
         data: {
             id: queueId,
             actionState: "toQUEUED",
-            actionSave: "save"
+            actionSave: "save",
+            tag: tag
         },
         success: function (data) {
             if (getAlertType(data.messageType) === "success") {

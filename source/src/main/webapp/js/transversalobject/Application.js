@@ -100,6 +100,7 @@ function initModalApplication(application, mode, page) {
     $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     // Adding rows in edit Modal.
+    $("#addEnvironment").off("click");
     $("#addEnvironment").click(addNewEnvironmentRow);
 
     // Load the select needed in localStorage cache.
@@ -203,9 +204,6 @@ function confirmApplicationModalHandler(mode) {
     for (var i = 0; i < table1.length; i++) {
         table_environment.push($(table1[i]).data("environment"));
     }
-    console.info(table_environment);
-    console.info($(table1[i]));
-    console.info($(table1[i]).data("environment"));
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
@@ -359,19 +357,21 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     }
     updateBugTrackerConnector();
 
+    refreshPopoverDocumentation("editApplicationModalForm");
+
 }
 
 function updateBugTrackerConnector() {
     let connector = $('#editApplicationModal #bugtrackerconnector').val();
     if (connector === 'REDIRECT') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png");
         $('#editApplicationModal #btP1').hide();
         $('#editApplicationModal #btP2').hide();
         $('#editApplicationModal #btP3').hide();
         $('#editApplicationModal #btP3').hide();
 
     } else if (connector === 'JIRA') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png");
         $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
@@ -393,7 +393,7 @@ function updateBugTrackerConnector() {
         });
 
     } else if (connector === 'GITHUB') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png");
         $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
@@ -402,7 +402,51 @@ function updateBugTrackerConnector() {
         $("[name='bugtrackerparam2Field']").html("Label");
         //<i class="fa fa-external-link" aria-hidden="true"></i>
         $('#editApplicationModal #bugtrackerparam2').autocomplete({
-            source: ["bug"],
+            source: ["bug","cerberus"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+
+    } else if (connector === 'GITLAB') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITLAB.png");
+        $('#editApplicationModal #TrackerLogo').show();
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').show();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("organisation/repo");
+        $("[name='bugtrackerparam2Field']").html("Label");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: ["bug","cerberus"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+
+    } else if (connector === 'AZUREDEVOPS') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-AZUREDEVOPS.png");
+        $('#editApplicationModal #TrackerLogo').show();
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').hide();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("organisation/project");
+        $("[name='bugtrackerparam2Field']").html("Label");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: [""],
             minLength: 0,
             messages: {
                 noResults: '',
@@ -457,6 +501,8 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
             obj.toDelete = false;
             appendEnvironmentRow(obj);
         });
+        refreshPopoverDocumentation("editApplicationModalForm");
+
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
@@ -467,20 +513,20 @@ function appendEnvironmentRow(env) {
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
     var selectCountry = getSelectInvariant("COUNTRY", false);
-    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(env.ip);
-    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(env.domain);
-    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(env.url);
-    var urlLoginInput = $("<input  maxlength=\"300\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(env.urlLogin);
-    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(env.var1);
-    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(env.var2);
-    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(env.var3);
-    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(env.var4);
-    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control input-sm").val(env.secret1);
-    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control input-sm").val(env.secret2);
-    var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(env.poolSize);
+    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control").val(env.ip);
+    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control").val(env.domain);
+    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control").val(env.url);
+    var urlLoginInput = $("<input  maxlength=\"300\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control").val(env.urlLogin);
+    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control").val(env.var1);
+    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control").val(env.var2);
+    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control").val(env.var3);
+    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control").val(env.var4);
+    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control").val(env.secret1);
+    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control").val(env.secret2);
+    var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control").val(env.poolSize);
     var activeInput = $("<input  type=\"checkbox\">").addClass("form-control input-sm").prop("checked", env.isActive);
-    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(env.mobileActivity);
-    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(env.mobilePackage);
+    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control").val(env.mobileActivity);
+    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control").val(env.mobilePackage);
 
     var table = $("#environmentTableBody");
 
@@ -610,6 +656,8 @@ function addNewEnvironmentRow() {
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);
+    refreshPopoverDocumentation("editApplicationModalForm");
+
 }
 
 function displayWarningOnChangeApplicationKey() {

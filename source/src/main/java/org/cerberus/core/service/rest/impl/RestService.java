@@ -91,6 +91,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
 import org.cerberus.core.crud.service.IAppServiceHeaderService;
+import org.cerberus.core.engine.gwt.IVariableService;
 import org.cerberus.core.exception.CerberusEventException;
 
 /**
@@ -113,6 +114,8 @@ public class RestService implements IRestService {
     IAppServiceHeaderService AppServiceHeaderService;
     @Autowired
     IProxyService proxyService;
+    @Autowired
+    private IVariableService variableService;
 
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -310,6 +313,36 @@ public class RestService implements IRestService {
             // Timeout setup.
             requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).setConnectionRequestTimeout(timeOutMs)
                     .setSocketTimeout(timeOutMs).build();
+
+            // Decode authPassword.
+            AnswerItem<String> answerDecode = new AnswerItem<>();
+            answerDecode = variableService.decodeStringCompletly(authPassword, tcexecution, null, false);
+            authPassword = answerDecode.getItem();
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICENAME", "")
+                        .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Authentification Password").getDescription());
+                LOG.debug("Service Call interupted due to decode 'Authentification Password'.");
+                result.setResultMessage(message);
+                return result;
+            }
+
+            //Decode authUser
+            if (AppService.AUTHTYPE_APIKEY.equals(authType) || AppService.AUTHTYPE_BASICAUTH.equals(authType)) {
+                // Decode authPassword.
+                answerDecode = variableService.decodeStringCompletly(authUser, tcexecution, null, false);
+                authUser = answerDecode.getItem();
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the action result.
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                            .resolveDescription("SERVICENAME", "")
+                            .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Authentification User").getDescription());
+                    LOG.debug("Service Call interupted due to decode 'Authentification User'.");
+                    result.setResultMessage(message);
+                    return result;
+                }
+            }
 
             AppService responseHttp = null;
             HttpEntity entity = null;

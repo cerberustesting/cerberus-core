@@ -80,10 +80,8 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='DEV' and build is not null and build<>'' and Active='Y' and ");
         query.append(SqlUtil.generateInClause("`System`", system));
         query.append("    GROUP BY Build, Revision) as DEV on DEV.Build=c.Build and DEV.Revision=c.Revision ");
-        query.append("	left outer join buildrevisioninvariant bri1 on c.build = bri1.versionname and bri1.level=1 and ");
-        query.append(SqlUtil.generateInClause("bri1.`System`", system));
-        query.append("	left outer join buildrevisioninvariant bri2 on c.revision = bri2.versionname and bri2.level=2 and ");
-        query.append(SqlUtil.generateInClause("bri2.`System`", system));
+        query.append("	left outer join buildrevisioninvariant bri1 on c.build = bri1.versionname and bri1.level=1 and bri1.`System`=c.`System` ");
+        query.append("	left outer join buildrevisioninvariant bri2 on c.revision = bri2.versionname and bri2.level=2  and bri2.`System`=c.`System` ");
         query.append("WHERE c.build is not null and c.build not in ('','NA') and Active='Y' and ");
         query.append(SqlUtil.generateInClause("c.`System`", system));
         query.append("ORDER BY  isys.sort asc, c.`system` asc, bri1.seq asc, bri2.seq asc;");
@@ -97,7 +95,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                for (int j = 0; j < 7; j++) {
+                for (int j = 0; j < 5; j++) {
                     for (String string : system) {
                         preStat.setString(i++, string);
                     }

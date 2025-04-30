@@ -29,6 +29,7 @@ import org.cerberus.core.util.answer.AnswerList;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,15 @@ public interface ITestCaseDAO {
      * @throws CerberusException
      */
     void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
+
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param lastExecuted
+     * @throws CerberusException
+     */
+    void updateLastExecuted(String test, String testcase, Timestamp lastExecuted) throws CerberusException;
 
     /**
      *

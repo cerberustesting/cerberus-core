@@ -595,19 +595,19 @@ public class WebDriverService implements IWebDriverService {
                     preparedString = StringUtil.prepareToNumeric(select.getFirstSelectedOption().getText());
                     if (!StringUtil.isEmptyOrNull(preparedString)) {
                         resultSum += Double.valueOf(preparedString);
-                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+select.getFirstSelectedOption().getText()+"] to previous sum ["+ resultSum+"].");
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding [" + preparedString + "] from init value [" + select.getFirstSelectedOption().getText() + "] to previous sum [" + resultSum + "].");
                     }
                 } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
                     preparedString = StringUtil.prepareToNumeric(webElement.getAttribute("value"));
                     if (!StringUtil.isEmptyOrNull(preparedString)) {
                         resultSum += Double.valueOf(preparedString);
-                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+webElement.getAttribute("value")+"] to previous sum ["+ resultSum+"].");
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding [" + preparedString + "] from init value [" + webElement.getAttribute("value") + "] to previous sum [" + resultSum + "].");
                     }
                 } else {
                     preparedString = StringUtil.prepareToNumeric(webElement.getText());
                     if (!StringUtil.isEmptyOrNull(preparedString)) {
                         resultSum += Double.valueOf(preparedString);
-                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+webElement.getText()+"] to previous sum ["+ resultSum+"].");
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding [" + preparedString + "] from init value [" + webElement.getText() + "] to previous sum [" + resultSum + "].");
                     }
                 }
             }
@@ -815,14 +815,13 @@ public class WebDriverService implements IWebDriverService {
         // We remove from current url the host part of the application.
         String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replace("%HOST%", applicationUrl));
-            msg.setDescription(msg.getDescription().replace("%CURRENTURL%", currentURL));
-            LOG.debug(msg.getDescription());
-            throw new CerberusEventException(msg);
+            // We return a full version of the URL including the host.
+            return currentURL;
+        } else {
+            // We return a cleaned version of the URL without the host.
+            String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");
+            return result;
         }
-        String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");
-        return result;
     }
 
     @Override
@@ -1984,12 +1983,16 @@ public class WebDriverService implements IWebDriverService {
             getJSONConsoleLog(session);
 
             for (int i = 0; i < session.getConsoleLogs().length(); i++) {
-                result.add(session.getConsoleLogs().getJSONObject(i).getString("timestamp") + " " + session.getConsoleLogs().getJSONObject(i).getString("level") + " " + session.getConsoleLogs().getJSONObject(i).getString("message") + "\n");
-
+                LOG.debug(session.getConsoleLogs().getJSONObject(i));
+                result.add(
+                        session.getConsoleLogs().getJSONObject(i).getString("timestamp") + " "
+                        + session.getConsoleLogs().getJSONObject(i).get("level").toString() + " "
+                        + session.getConsoleLogs().getJSONObject(i).getString("message") + "\n"
+                );
             }
 
         } catch (Exception e) {
-            LOG.debug(e, e);
+            LOG.error(e, e);
             // Unfortunatly that can happen on Firefox See : https://github.com/SeleniumHQ/selenium/issues/7792
             result.add("CRITICAL ERROR when getting the Console logs!!\n");
             result.add(e.getMessage());

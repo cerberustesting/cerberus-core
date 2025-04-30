@@ -882,8 +882,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 xRayService.createXRayTestExecution(execution);
             }
 
-            // JIRA Issue creation Connector is triggered at the end of every execution..
-            // TODO Add conditions in order to create it only when testcase is stable enought.
+            // Bug creation Connector is triggered at the end of every execution.
             if (!willBeRetried) {
                 bugService.createBugAsync(execution, false);
             }
@@ -1574,9 +1573,9 @@ public class ExecutionRunService implements IExecutionRunService {
         // Stopping remote proxy.
         try {
             this.executorService.stopRemoteProxy(execution);
-            LOG.debug("Stop Cerberus Executor Proxy for execution {}", execution.getId());
+            LOG.debug("Stop Cerberus Robot Proxy for execution {}", execution.getId());
         } catch (Exception exception) {
-            LOG.warn("Exception on Cerberus Executor Proxy stop for execution {}", execution.getId(), exception);
+            LOG.warn("Exception on Cerberus Robot Proxy stop for execution {}", execution.getId(), exception);
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.

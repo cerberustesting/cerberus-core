@@ -201,7 +201,7 @@ function initModalTestCase() {
         $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
-    $("#addTestCaseDependencyButton").click(function () {
+    $("#addTestCaseDependencyButton").off("click").click(function () {
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
         var testCaseTxt = $("#selectTestCase option:selected").text();
@@ -233,12 +233,11 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
             '</button>' +
             '</div>' +
             '</td>' +
-            '<td>' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
-//            '<input class="form-control input-sm" style="width: 150px;" name="type" value="' + type + '"/></td>' +
+            '<td style="font-size: 14px">' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
             '</td>' +
             '<td style="width: 50px;">  <input class="form-control input-xs"  type="checkbox"  name="activate" ' + checked + '/></td>' +
-            '<td style="width: 60px;">  <input class="form-control input-sm" name="depDelay" value="' + delay + '"/></td>' +
-            '<td>  <input class="form-control input-sm" name="depDescription" value="' + description + '"/></td>' +
+            '<td style="width: 60px;">  <input class="form-control" name="depDelay" value="' + delay + '"/></td>' +
+            '<td>  <input class="form-control" name="depDescription" value="' + description + '"/></td>' +
             '</tr>'
             );
 }
@@ -253,7 +252,7 @@ function depTypeSelect(value) {
     } else {
         selectedOK = "";
     }
-    return "<select type='text' class='form-control input-sm marginTop5' name='type'>" +
+    return "<select type='text' class='form-control marginTop5' name='type'>" +
             "<option value='TCEXEEND' " + selected + ">" + desc + "</option>" +
             "<option value='TCEXEENDOK' " + selectedOK + ">" + descOK + "</option>" +
             "</select>";
@@ -578,6 +577,7 @@ function confirmTestCaseModalHandler(mode) {
         };
         table_label.push(newLabel1);
     }
+    let dataIsMuted = ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off"));
 
 
     // Getting Dependency data
@@ -666,6 +666,7 @@ function confirmTestCaseModalHandler(mode) {
             toMajor: data.toMajor,
             userAgent: data.userAgent,
             screenSize: data.screenSize,
+            isMuted: dataIsMuted,
             labels: JSON.stringify(table_label),
             countries: JSON.stringify(table_country),
             dependencies: JSON.stringify(testcaseDependencies)},
@@ -926,6 +927,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
         }
     }
+    formEdit.find("#isMuted .glyphicon").removeClass("glyphicon-volume-up glyphicon-volume-off");
     if (isEmpty(testCase)) {
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
@@ -947,6 +949,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#comment").prop("value", "");
         formEdit.find("#origin").prop("value", "");
         formEdit.find("#refOrigin").prop("value", "");
+        formEdit.find("#isMuted").addClass("glyphicon-volume-up");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
@@ -966,6 +969,11 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActive").prop("checked", testCase.isActive);
         formEdit.find("#origin").prop("value", testCase.origine);
         formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
+        if (testCase.isMuted) {
+            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-off");
+        } else {
+            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-up");
+        }
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
@@ -1121,8 +1129,8 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var row = $("<tr></tr>");
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
-    var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control input-sm").val(obj.id);
-    var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
+    var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control").val(obj.id);
+    var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control").val(obj.desc);
     var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated));
     var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed));
     if (newbugTrackerUrl !== "") {
@@ -1280,7 +1288,7 @@ function appendTestCaseCountries(testCase, isReadOnly) {
                                 <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
-        $("[class='countrycb']").click(function () {
+        $("[class='countrycb']").off("click").click(function () {
             //uncheck "select all", if one of the listed checkbox item is unchecked
             if (false == $(this).prop("checked")) { //if this item is unchecked
                 $("#select_all").prop('checked', false); //change "select all" checked status to false
@@ -1394,4 +1402,12 @@ function appendTestList(defautValue) {
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
     $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
 
+}
+
+function toggleIsMuted() {
+    if ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off")) {
+        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-off").addClass("glyphicon-volume-up");
+    } else {
+        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-up").addClass("glyphicon-volume-off");
+    }
 }

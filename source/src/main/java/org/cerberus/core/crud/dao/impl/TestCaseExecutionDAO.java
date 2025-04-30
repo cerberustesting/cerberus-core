@@ -77,9 +77,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("  url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, ");
         query.append("  executor, screensize, conditionOperator, conditionVal1Init, conditionVal2Init, ");
         query.append("  conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, ");
-        query.append("  manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, `system`, robotdecli, ");
+        query.append("  manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, TestCaseIsMuted, `system`, robotdecli, ");
         query.append("  robot, robotexecutor, RobotProvider, RobotProviderSessionId, RobotSessionId, UsrCreated) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", tCExecution.getId());
@@ -121,6 +121,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setLong(i++, tCExecution.getQueueID());
             preStat.setInt(i++, tCExecution.getTestCaseVersion());
             preStat.setInt(i++, tCExecution.getTestCasePriority());
+            preStat.setBoolean(i++, tCExecution.isTestCaseIsMuted());
             preStat.setString(i++, tCExecution.getSystem());
             preStat.setString(i++, tCExecution.getRobotDecli());
             preStat.setString(i++, tCExecution.getRobot());
@@ -153,7 +154,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("  version = ?, platform = ?, executor = ?, screensize = ?, ");
         query.append("  conditionOperator = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ");
         query.append("  ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, ");
-        query.append("  queueId = ?, testCaseVersion = ?, testCasePriority = ?, `system` = ?, ");
+        query.append("  queueId = ?, testCaseVersion = ?, testCasePriority = ?, testCaseIsMuted = ?, `system` = ?, ");
         query.append("  robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, ");
         query.append("  RobotProviderSessionId = ?, UsrModif = ?, DateModif = NOW() ");
         query.append("WHERE id = ?");
@@ -205,6 +206,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setLong(i++, tCExecution.getQueueID());
             preStat.setInt(i++, tCExecution.getTestCaseVersion());
             preStat.setInt(i++, tCExecution.getTestCasePriority());
+            preStat.setBoolean(i++, tCExecution.isTestCaseIsMuted());
             preStat.setString(i++, tCExecution.getSystem());
             preStat.setString(i++, tCExecution.getRobotDecli());
             preStat.setString(i++, tCExecution.getRobot());
@@ -1251,6 +1253,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = resultSet.getInt("exe.testCaseVersion");
         int testCasePriority = resultSet.getInt("exe.testCasePriority");
+        boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
         String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProvider"), "");
         String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotSessionId"), "");
         String robotProviderSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProviderSessionId"), "");
@@ -1267,6 +1270,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         result.setQueueID(queueId);
         result.setRobotProviderSessionID(robotProviderSessionId);
         result.setFalseNegative(falseNegative);
+        result.setTestCaseIsMuted(testCaseIsMuted);
+
         return result;
     }
 

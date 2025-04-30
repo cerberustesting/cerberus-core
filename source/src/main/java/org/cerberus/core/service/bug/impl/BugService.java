@@ -30,13 +30,16 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.scheduling.annotation.Async;
+import org.cerberus.core.service.bug.azuredevops.IAzureDevopsService;
 import org.cerberus.core.service.bug.github.IGithubService;
 import org.cerberus.core.service.bug.jira.IJiraService;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.cerberus.core.service.bug.gitlab.IGitlabService;
+import org.cerberus.core.util.StringUtil;
 
 /**
  *
@@ -54,7 +57,11 @@ public class BugService implements IBugService {
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
+    private IAzureDevopsService azureDevopsService;
+    @Autowired
     private IGithubService githubService;
+    @Autowired
+    private IGitlabService gitlabService;
     @Autowired
     private IJiraService jiraService;
 
@@ -70,8 +77,9 @@ public class BugService implements IBugService {
     public JSONObject createBug(TestCaseExecution execution, boolean forceCreation) {
         JSONObject newBugCreated = new JSONObject();
         try {
+            LOG.debug("Bug Creation requested : {}", forceCreation);
 
-            if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
+            if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false) && !forceCreation) {
                 LOG.debug("Not creating bug due to parameter.");
                 newBugCreated.put("message", "Not creating bug due to parameter : " + Parameter.VALUE_cerberus_autobugcreation_enable);
                 newBugCreated.put("statusCode", 400);
@@ -80,9 +88,14 @@ public class BugService implements IBugService {
             LOG.debug("Trying to create bug.");
             execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Trying To create the bug.");
             // Testcase should have a priority defined and in WORKING status
-            if (((execution.getTestCasePriority() >= 1) && !"OK".equalsIgnoreCase(execution.getControlStatus())) || forceCreation) {
-                LOG.debug("Execution is not OK, with prio > 0.");
-                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, with prio > 0.");
+            if (((!execution.isTestCaseIsMuted()) && !"OK".equalsIgnoreCase(execution.getControlStatus())) || forceCreation) {
+                if (forceCreation) {
+                    LOG.debug("Forcing bug Creation.");
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Forcing bug creation.");
+                } else {
+                    LOG.debug("Execution is not OK, and not muted.");
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - Execution is not OK, and not muted.");
+                }
                 TestCase tc = null;
                 try {
                     tc = testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase());
@@ -101,7 +114,7 @@ public class BugService implements IBugService {
                             newBugCreated.put("statusCode", 500);
                         }
 
-                        if (currentAppli != null) {
+                        if ((currentAppli != null) && (StringUtil.isNotEmptyOrNull(currentAppli.getBugTrackerConnector()))) {
                             switch (currentAppli.getBugTrackerConnector()) {
                                 case Application.BUGTRACKER_JIRA:
                                     newBugCreated = jiraService.createJiraIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
@@ -111,8 +124,19 @@ public class BugService implements IBugService {
                                     newBugCreated = githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
+                                case Application.BUGTRACKER_GITLAB:
+                                    newBugCreated = gitlabService.createGitlabIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+
+                                    break;
+                                case Application.BUGTRACKER_AZUREDEVOPS:
+                                    newBugCreated = azureDevopsService.createAzureDevopsWorkItem(tc, execution, currentAppli.getBugTrackerParam1());
+
+                                    break;
                                 default:
-                                    throw new AssertionError();
+                                    LOG.warn("Unknown Bug Connector '{}' configured on application '{}'", currentAppli.getBugTrackerConnector(), execution.getApplication());
+                                    newBugCreated.put("message", "Issue not created because connector '" + currentAppli.getBugTrackerConnector() + "' configured on application '" + execution.getApplication() + "' is not valid or not supported.");
+                                    newBugCreated.put("statusCode", 400);
+                                    execution.addExecutionLog(ExecutionLog.STATUS_WARN, "Bug creation - Unknown Bug Connector '" + currentAppli.getBugTrackerConnector() + "' configured on application '" + execution.getApplication() + "'.");
                             }
                         }
                     } else {

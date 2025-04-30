@@ -20,7 +20,6 @@
 package org.cerberus.core.service.notifications.slack.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
@@ -33,7 +32,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.service.notifications.slack.ISlackGenerationService;
-import org.json.JSONArray;
 
 /**
  *
@@ -58,7 +56,7 @@ public class SlackGenerationService implements ISlackGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
         slackMessage.put("text", "Execution Tag '" + tag.getTag() + "' Started. <" + cerberusUrl + "|Click here> for details.");
         if (!StringUtil.isEmptyOrNull(channel)) {
             slackMessage.put("channel", channel);
@@ -101,7 +99,7 @@ public class SlackGenerationService implements ISlackGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
         JSONObject slackMessage = new JSONObject();
         JSONObject attachementObj = new JSONObject();
@@ -202,7 +200,7 @@ public class SlackGenerationService implements ISlackGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "TestCaseScript.jsp?test=" + URLEncoder.encode(testCase.getTest(), "UTF-8") + "&testcase=" + URLEncoder.encode(testCase.getTestcase(), "UTF-8");
+        cerberusUrl += "TestCaseScript.jsp?test=" + StringUtil.encodeURL(testCase.getTest()) + "&testcase=" + StringUtil.encodeURL(testCase.getTestcase());
         switch (eventReference) {
             case EventHook.EVENTREFERENCE_TESTCASE_CREATE:
                 slackMessage.put("text", "Testcase '" + testCase.getTest() + " - " + testCase.getTestcase() + "' was Created. <" + cerberusUrl + "|Click here> for details.");

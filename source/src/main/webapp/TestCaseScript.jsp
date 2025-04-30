@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="testTestCase col-lg-4 col-xs-6 pull-right" style="margin-top:4px; margin-bottom: 4px;">
                                             <img id="AppLogo"  class="pull-right" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0; margin-left: 10px"></img>
-                                            <span id="AppName" class="pull-right"> </span>
+                                            <span id="AppName" class="pull-right" style="white-space: nowrap ;"> </span>
                                         </div>
                                     </div>
 
@@ -95,11 +95,11 @@
                                                     <a><button class="btn btn-default pull-left" id="seeLogs" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Logs</button></a>
                                                 </div>
                                             </div>
-                                            <div class="btn-group ">
-                                                <a><button class="btn btn-default pull-right" id="editTcInfo">Edit Test Case Header</button></a>
-                                            </div>
                                             <div class="btn-group">
-                                                <a><button class="btn btn-default pull-left" id="seeLastExecUniq" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-saved"></span></button></a>
+                                                <a><button class="btn btn-default pull-left" id="seeLastExecUniq"><span class="glyphicon glyphicon-cog"></span> Last Exe</button></a>
+                                            </div>
+                                            <div class="btn-group ">
+                                                <a><button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-edit"></span> Test Case Header</button></a>
                                             </div>
                                             <div class="btn-group" id="runTestCasePopover">
                                                 <a><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span></button></a>

@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestCaseExecutionDAO;
@@ -400,12 +402,25 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTest() + "_"
                     + testCaseExecution.getTestCase();
             if ((testCaseExecutionsList.containsKey(key))) {
+                testCaseExecution.setFirstExeStart(testCaseExecution.getStart() < testCaseExecutionsList.get(key).getFirstExeStart() ? testCaseExecution.getStart() : testCaseExecutionsList.get(key).getFirstExeStart());
+                testCaseExecution.setLastExeStart(testCaseExecution.getEnd() > testCaseExecutionsList.get(key).getLastExeEnd() ? testCaseExecution.getStart() : testCaseExecutionsList.get(key).getLastExeStart());
+                testCaseExecution.setLastExeEnd(testCaseExecution.getEnd() > testCaseExecutionsList.get(key).getLastExeEnd() ? testCaseExecution.getEnd() : testCaseExecutionsList.get(key).getLastExeEnd());
+
                 testCaseExecution.setNbExecutions(testCaseExecutionsList.get(key).getNbExecutions() + 1);
+                if ((TestCaseExecution.CONTROLSTATUS_OK.equalsIgnoreCase(testCaseExecution.getControlStatus()))
+                        && (testCaseExecution.getNbExecutions() > 1)) {
+                    testCaseExecution.setFlaky(true);
+                }
+
                 if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())
                         && testCaseExecutionsList.get(key) != null) {
                     testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
                     testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
                 }
+            } else {
+                testCaseExecution.setFirstExeStart(testCaseExecution.getStart());
+                testCaseExecution.setLastExeStart(testCaseExecution.getStart());
+                testCaseExecution.setLastExeEnd(testCaseExecution.getEnd());
             }
             testCaseExecutionsList.put(key, testCaseExecution);
         }
@@ -416,6 +431,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getEnvironment() + "_"
                     + testCaseExecution.getTest() + "_"
                     + testCaseExecution.getTestCase();
+            if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())
+                    && testCaseExecutionsList.get(key) != null) {
+                testCaseExecution.setFirstExeStart(testCaseExecutionsList.get(key).getFirstExeStart());
+                testCaseExecution.setLastExeStart(testCaseExecutionsList.get(key).getLastExeStart());
+                testCaseExecution.setLastExeEnd(testCaseExecutionsList.get(key).getLastExeEnd());
+            }
             if (!testCaseExecutionsList.containsKey(key) || testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime()) {
                 if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())
                         && testCaseExecutionsList.get(key) != null) {

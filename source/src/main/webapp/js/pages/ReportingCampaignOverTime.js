@@ -549,8 +549,11 @@ function buildTagGraphs(data) {
         let d1 = [];
         let d2a = [];
         let d2b = [];
+        let d2c = [];
         let d3a = [];
         let d3b = [];
+        let d3c = [];
+        let d3d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
             let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
@@ -565,12 +568,24 @@ function buildTagGraphs(data) {
             d2b.push(p);
         }
         for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].ciScM, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
+            d2c.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
             let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d3a.push(p);
         }
         for (var j = 0; j < lend; j++) {
             let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d3b.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].nbFlaky, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
+            d3c.push(p);
+        }
+        for (var j = 0; j < lend; j++) {
+            let p = {x: c.points[j].x, y: c.points[j].nbMuted, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
+            d3d.push(p);
         }
         let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);
         // If the nb of characters of the label is too big, we just put an index instead. That avoid to have the legend taking the full size of the graph.
@@ -643,6 +658,7 @@ function buildTagGraphs(data) {
             label: lab + " Threshold",
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            borderDash: [10, 10],
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
@@ -670,6 +686,42 @@ function buildTagGraphs(data) {
             pointStyle: 'line',
             fill: false,
             data: d2b
+        };
+        var dataset2c = {
+            label: lab + " Max",
+            backgroundColor: "white",
+            borderColor: get_Color_fromindex(i),
+            borderWidth: 5,
+//            borderDash:[5, 10],
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+                return value.comment === '' ? 4 : 8;
+            },
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            pointStyle: 'line',
+            tension: 0,
+            fill: false,
+            data: d2c,
+            hidden: true
         };
         var dataset3a = {
             label: lab + " Useful",
@@ -705,6 +757,7 @@ function buildTagGraphs(data) {
         var dataset3b = {
             label: lab + " Total",
             backgroundColor: "white",
+            borderDash: [10, 10],
             borderColor: get_Color_fromindex(i),
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
@@ -723,11 +776,64 @@ function buildTagGraphs(data) {
             fill: false,
             data: d3b
         };
+        var dataset3c = {
+            label: lab + " Flaky",
+            backgroundColor: "white",
+//            borderDash:[10, 10],
+            borderColor: get_Color_fromindex(i),
+            borderWidth: 5,
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+
+                return value.comment === '' ? 4 : 8;
+            },
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            pointStyle: 'line',
+            tension: 0,
+            fill: 'origin',
+            data: d3c,
+            hidden: true
+        };
+        var dataset3d = {
+            label: lab + " Muted",
+            backgroundColor: "white",
+            borderDash: [5, 5],
+            borderColor: get_Color_fromindex(i),
+            borderWidth: 5,
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.ciResult);
+            },
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+
+                return value.comment === '' ? 4 : 8;
+            },
+            pointHoverRadius: 6,
+            hitRadius: 10,
+            pointStyle: 'line',
+            tension: 0,
+            fill: false,
+            data: d3d,
+            hidden: true
+        };
         timedatasets.push(dataset1);
         cidatasets.push(dataset2a);
         cidatasets.push(dataset2b);
+        cidatasets.push(dataset2c);
         exedatasets.push(dataset3a);
         exedatasets.push(dataset3b);
+        exedatasets.push(dataset3c);
+        exedatasets.push(dataset3d);
     }
 
     if (timedatasets.length > 0) {
@@ -992,12 +1098,15 @@ function initGraph() {
     };
 
 
+    // Duration of campaign
     var ctx = document.getElementById('canvasTagDStat').getContext('2d');
     window.myLineTagDur = new Chart(ctx, configTagDur);
 
+    // Score of campaign
     var ctx = document.getElementById('canvasTagSStat').getContext('2d');
     window.myLineTagSco = new Chart(ctx, configTagSco);
 
+    // nb Executions of campaign
     var ctx = document.getElementById('canvasTagEStat').getContext('2d');
     window.myLineTagExe = new Chart(ctx, configTagExe);
 

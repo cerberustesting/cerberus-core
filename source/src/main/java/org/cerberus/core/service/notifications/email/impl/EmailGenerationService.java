@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
-import java.net.URLEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BatchInvariant;
@@ -318,7 +317,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-        urlreporttag.append(URLEncoder.encode(tag.getTag(), "UTF-8"));
+        urlreporttag.append(StringUtil.encodeURL(tag.getTag()));
         body = body.replace("%TAG%", tag.getTag());
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", tag.getCampaign());
@@ -362,7 +361,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             StringBuilder urlreporttag = new StringBuilder();
             urlreporttag.append(cerberusUrl);
             urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-            urlreporttag.append(URLEncoder.encode(URLEncoder.encode(tag.getTag(), "UTF-8"), "UTF-8"));
+            urlreporttag.append(StringUtil.encodeURL(tag.getTag()));
 
             // Body replace.
             body = body.replace("%TAG%", tag.getTag());
@@ -691,9 +690,9 @@ public class EmailGenerationService implements IEmailGenerationService {
         StringBuilder urlTestCase = new StringBuilder();
         urlTestCase.append(cerberusUrl);
         urlTestCase.append("/TestCaseScript.jsp?test=");
-        urlTestCase.append(URLEncoder.encode(testCase.getTest(), "UTF-8"));
+        urlTestCase.append(StringUtil.encodeURL(testCase.getTest()));
         urlTestCase.append("&testcase=");
-        urlTestCase.append(URLEncoder.encode(testCase.getTestcase(), "UTF-8"));
+        urlTestCase.append(StringUtil.encodeURL(testCase.getTestcase()));
 
         switch (eventReference) {
             case EventHook.EVENTREFERENCE_TESTCASE_CREATE:

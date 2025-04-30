@@ -6609,20 +6609,49 @@ UPDATE testcaseexecutionqueuedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND'
 -- 1882
 ALTER TABLE testcaseexecutionqueue MODIFY COLUMN `State` VARCHAR(20) NOT NULL DEFAULT 'QUEUED';
 
--- 1883-1889
-ALTER TABLE robotexecutor RENAME COLUMN executorExtensionHost TO ExecutorProxyServiceHost;
-ALTER TABLE robotexecutor RENAME COLUMN executorExtensionPort TO ExecutorProxyServicePort;
-ALTER TABLE robotexecutor RENAME COLUMN executorProxyHost TO ExecutorBrowserProxyHost;
-ALTER TABLE robotexecutor RENAME COLUMN executorProxyPort TO ExecutorBrowserProxyPort;
-ALTER TABLE robotexecutor RENAME COLUMN NodeProxyPort TO ExecutorExtensionProxyPort;
-ALTER TABLE robotexecutor RENAME COLUMN host_user TO HostUser;
-ALTER TABLE robotexecutor RENAME COLUMN host_password TO HostPassword;
+-- 1883
+ALTER TABLE `tag` ADD COLUMN `CIScoreMax` INT DEFAULT 0 AFTER `CIScoreThreshold`;
+
+-- 1884-1885
+UPDATE testcasestepactioncontrol SET Control='verifyUrlEqual' WHERE Control='verifyUrl';
+UPDATE testcasestepactioncontrol SET Control='verifyTitleEqual' WHERE Control='verifyTitle';
+
+-- 1886
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'AZUREDEVOPS', 250, 'Azure Devops Bug Tracker connector') ;
+
+-- 1887
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_azuredevops_accesstoken', '', 'Azure Devops Personal Access Token that will be used to create issues from API.');
+
+-- 1888
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'GITLAB', 220, 'Gitlab Bug Tracker connector') ;
+
+-- 1889
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_gitlab_apitoken', '', 'Gitlab Personal Access Token that will be used to create issues from API.');
 
 -- 1890
-ALTER TABLE robotexecutor ADD COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER ExecutorBrowserProxyPort;
+ALTER TABLE testcase ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER Version;
 
 -- 1891
-ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER HostPassword;
+UPDATE testcase a
+    INNER JOIN (select test, testcase, max(DateCreated) maxexe from testcaseexecution t group by test, testcase) b 
+    ON a.test = b.test and a.testcase = b.testcase
+    SET DateLastExecuted = maxexe ;
 
 -- 1892
-DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';
+ALTER TABLE `tag` 
+    ADD `nbFlaky` int DEFAULT 0 AFTER `FalseNegative`,
+    ADD `nbMuted` int DEFAULT 0 AFTER `NbFlaky`,
+    ADD `FalseNegativeRootCause` varchar(200) DEFAULT '' AFTER `FalseNegative`;
+
+-- 1893-1896
+ALTER TABLE `testcase` ADD `isMuted` BOOLEAN DEFAULT 0 AFTER `Priority`;
+UPDATE testcase SET `isMuted` = 1 WHERE `Priority`=0;
+ALTER TABLE `testcaseexecution` ADD `TestCaseIsMuted` BOOLEAN DEFAULT 0 AFTER `TestCasePriority`;
+UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;
+
+-- 1897
+DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_enable';

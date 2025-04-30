@@ -171,24 +171,24 @@
                                             </div>
                                             <div class="btn-group ">
                                                 <a>
-                                                    <button class="btn btn-default" id="editTcHeader"
-                                                            style="margin-left: 5px; margin-left: 5px;">
-                                                        <span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header
+                                                    <button class="btn btn-default" id="editTcStepInfo"
+                                                            style="margin-left: 5px;">
+                                                        <span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group ">
                                                 <a>
-                                                    <button class="btn btn-default" id="editTcStepInfo"
-                                                            style="margin-left: 5px; margin-left: 5px;">
-                                                        <span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step
+                                                    <button class="btn btn-default" id="editTcHeader"
+                                                            style="margin-left: 5px; margin-right: 5px;">
+                                                        <span class="glyphicon glyphicon-edit"></span> Edit Test Case Header
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group" id="runTestCasePopover">
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="runTestCase"
-                                                            style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip">
+                                                            style="margin-left: 5px;" data-toggle="tooltip">
                                                         <span class="glyphicon glyphicon-play"></span>
                                                     </button>
                                                 </a>
@@ -196,7 +196,7 @@
                                             <div class="btn-group">
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="rerunFromQueueandSee"
-                                                            style="margin-left: 5px; margin-left: 5px;">
+                                                            style="margin-left: 5px;">
                                                         <span class="glyphicon glyphicon-forward"></span>
                                                     </button>
                                                 </a>
@@ -228,7 +228,7 @@
                             <ul id="tabsScriptEdit" class="nav nav-tabs" style="background-color:#f5f6fa" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties" name="tabProperties">Properties</a></li>
-                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Execution Details</a></li>
+                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Bugs</a></li>
                                 <li><a data-toggle="tab" href="#tabEnv" class="tabSteps" id="editTabEnv" name="tabEnv">Environment</a></li>
                                 <li><a data-toggle="tab" href="#tabRobot" class="tabSteps" id="editTabRobot" name="tabRobot">Robot</a></li>
                                 <li><a data-toggle="tab" href="#tabDep" class="tabSteps" id="editTabDep" name="tabDep">Dependencies</a></li>
@@ -415,7 +415,7 @@
                                 <div id="bugsSection" class="col-lg-6">
                                     <div class="form-group">
                                         <label>Bugs</label>
-                                        <div id="bugs"></div>
+                                        <div id="bugs" style="font-size:14px"></div>
                                         <div id="bugButtons"></div>
                                     </div>
                                 </div>
