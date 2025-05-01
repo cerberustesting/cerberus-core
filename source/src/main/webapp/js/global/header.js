@@ -308,7 +308,10 @@ function displayHeaderLabel(doc) {
         }
 
         // Refresh History Menu
-        refreshHistoryMenu();
+        $("#userDropdownMenu").on("mouseenter", function () {
+            refreshHistoryMenu();
+        });
+
 
         // Refresh Combo user menu
         loadUserSystemCombo();
@@ -448,12 +451,6 @@ function updateUserPreferences(objectWaitingLayer) {
         showLoader(objectWL);
     }
     var tempLocalStorage = localStorage;
-    tempLocalStorage.removeItem("historyTestcases");
-    tempLocalStorage.removeItem("historyExecutions");
-    tempLocalStorage.removeItem("historyCampaigns");
-    tempLocalStorage.removeItem("properties");
-    tempLocalStorage.removeItem("secondaryProperties");
-    tempLocalStorage.removeItem("listReport");
     for (var i = 0; i < tempLocalStorage.length; i++) {
         if (tempLocalStorage.key(i).startsWith("DataTables_")) {
             let temp = JSON.parse(tempLocalStorage.getItem(tempLocalStorage.key(i)));

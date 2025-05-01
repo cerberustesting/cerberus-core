@@ -786,7 +786,6 @@ function buildExtraKPI(obj) {
 
     $("#extraKPI").empty();
     let kpiBar = "";
-    console.info(obj);
 
     if (obj.nbMuted > 0) {
         kpiBar += '<span class=\'label label-warning\' style=\'font-size : 15px; margin-right:15px\'>MUTED ' + ' <span class=\'glyphicon glyphicon-volume-off\' aria-hidden=\'true\'></span> : ' + obj.nbMuted + '</span>';
