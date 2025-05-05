@@ -1440,6 +1440,10 @@ table.dataTable thead th {
     background-color:  #f8f8f8;
 }
 
+.popover{
+    width:  600px;
+}
+
 @keyframes blink {
     from, to {
         opacity: 1
