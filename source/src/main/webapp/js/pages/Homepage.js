@@ -709,10 +709,16 @@ function loadLastTagResultList() {
     }
 
     if (tagList === null || tagList.length === 0) {
-        tagList = readLastTagExec(searchTag);
+        tagList = readLastTagExec(searchTag, reportArea);
     } else {
         nbTagLoadedTarget = tagList.length;
+        refreshTagList(tagList, reportArea);
     }
+
+}
+
+
+function refreshTagList(tagList, reportArea) {
 
     var tagScheduled = readNextTagScheduled();
     if (tagScheduled.length > 0) {
@@ -743,7 +749,10 @@ function loadLastTagResultList() {
         hideLoader($("#LastTagExecPanel"));
     }
     updateNextFireTime();
+
 }
+
+
 
 function hideLoaderTag() {
     if (nbTagLoaded >= nbTagLoadedTarget) {
@@ -751,7 +760,7 @@ function hideLoaderTag() {
     }
 }
 
-function readLastTagExec(searchString) {
+function readLastTagExec(searchString, reportArea) {
     var tagList = [];
 
     var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, true);
@@ -771,13 +780,15 @@ function readLastTagExec(searchString) {
         type: "GET",
         url: myUrl,
 //        data: {tagNumber: nbExe.value},
-        async: false,
+        async: true,
         dataType: 'json',
         success: function (data) {
             nbTagLoadedTarget = data.contentTable.length;
             for (var s = 0; s < data.contentTable.length; s++) {
                 tagList.push(data.contentTable[s].tag);
             }
+            refreshTagList(tagList, reportArea);
+
 //            tagList = data.contentTable;
         }
     });
