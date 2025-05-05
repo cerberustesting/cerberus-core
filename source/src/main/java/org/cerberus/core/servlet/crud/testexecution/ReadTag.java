@@ -32,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.impl.TagService;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -60,6 +62,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTag extends HttpServlet {
 
     private ITagService tagService;
+    private IParameterService parameterService;
     private static final Logger LOG = LogManager.getLogger(ReadTag.class);
 
     /**
@@ -200,7 +203,6 @@ public class ReadTag extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
-        List<String> systems = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -209,8 +211,15 @@ public class ReadTag extends HttpServlet {
                 individualSearch.put(columnToSort[a], search);
             }
         }
+        parameterService = appContext.getBean(IParameterService.class);
 
-        AnswerList<Tag> resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
+        AnswerList<Tag> resp;
+        if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_tagcombofilterpersystem_boolean, null, true)) {
+            List<String> systems = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+            resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
+        } else {
+            resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, null);
+        }
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

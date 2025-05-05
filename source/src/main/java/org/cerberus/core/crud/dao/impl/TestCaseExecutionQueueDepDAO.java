@@ -608,14 +608,15 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     public AnswerItem<Integer> insertFromExeQueueIdDep(long queueId, long fromExeQueueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
-        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId) "
+        final String query = "INSERT INTO testcaseexecutionqueuedep (ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId) "
                 + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId, QueueId FROM testcaseexecutionqueuedep "
                 + "WHERE ExeQueueID=?;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.test : " + fromExeQueueId);
+            LOG.debug("SQL.param.queueId : " + queueId);
+            LOG.debug("SQL.param.fromQueueId : " + fromExeQueueId);
         }
 
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {

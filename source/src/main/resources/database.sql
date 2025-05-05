@@ -6655,3 +6655,7 @@ UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;
 
 -- 1897
 DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_enable';
+
+-- 1898
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_tagcombofilterpersystem_boolean', 'true', 'Define if tag (campaign execution) combo boxes are filtered by system or not. Filtering by system could have some performance issue that can be improved using that parameter.');

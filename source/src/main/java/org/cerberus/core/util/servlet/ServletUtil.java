@@ -87,7 +87,7 @@ public final class ServletUtil {
                 if (headerS != null) {
                     while (headerS.hasMoreElements()) {
                         String h = headerS.nextElement();
-                        LOG.debug("Header : {} - {}", h, request.getHeader(h));
+//                        LOG.debug("Header : {} - {}", h, request.getHeader(h));
                     }
                 }
                 Thread.sleep(timeToWait);
