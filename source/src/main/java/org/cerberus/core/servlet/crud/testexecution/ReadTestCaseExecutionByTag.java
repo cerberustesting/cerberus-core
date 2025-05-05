@@ -258,6 +258,11 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 JSONObject obj = new JSONObject();
                 obj.put("test", tce.getDepTest());
                 obj.put("testcase", tce.getDepTestCase());
+                obj.put("date", tce.getDepDate());
+                obj.put("delayM", tce.getDepTCDelay());
+                obj.put("event", tce.getDepEvent());
+                obj.put("status", tce.getStatus());
+                obj.put("type", tce.getType());
                 testCaseDep.add(obj);
             }
         }
