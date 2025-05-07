@@ -6656,7 +6656,11 @@ UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;
 -- 1897
 DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_enable';
 
--- 1898-1904
+-- 1898
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_tagcombofilterpersystem_boolean', 'true', 'Define if tag (campaign execution) combo boxes are filtered by system or not. Filtering by system could have some performance issue that can be improved using that parameter.');
+
+-- 1899-1905
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionHost TO ExecutorProxyServiceHost;
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionPort TO ExecutorProxyServicePort;
 ALTER TABLE robotexecutor RENAME COLUMN executorProxyHost TO ExecutorBrowserProxyHost;
@@ -6665,11 +6669,11 @@ ALTER TABLE robotexecutor RENAME COLUMN NodeProxyPort TO ExecutorExtensionProxyP
 ALTER TABLE robotexecutor RENAME COLUMN host_user TO HostUser;
 ALTER TABLE robotexecutor RENAME COLUMN host_password TO HostPassword;
 
--- 1905
+-- 1906
 ALTER TABLE robotexecutor ADD COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER ExecutorBrowserProxyPort;
 
--- 1906
+-- 1907
 ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER HostPassword;
 
--- 1907
+-- 1908
 DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';

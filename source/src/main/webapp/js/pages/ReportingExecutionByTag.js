@@ -29,6 +29,9 @@ var displayByEnv = false;
 var displayByLabel = false;
 var falseNegative = false;
 
+var localDepenMap = {};
+var cptDep = 0;
+
 tinyMCE.init({
     selector: ".wysiwyg",
     menubar: false,
@@ -786,7 +789,6 @@ function buildExtraKPI(obj) {
 
     $("#extraKPI").empty();
     let kpiBar = "";
-    console.info(obj);
 
     if (obj.nbMuted > 0) {
         kpiBar += '<span class=\'label label-warning\' style=\'font-size : 15px; margin-right:15px\'>MUTED ' + ' <span class=\'glyphicon glyphicon-volume-off\' aria-hidden=\'true\'></span> : ' + obj.nbMuted + '</span>';
@@ -1919,8 +1921,6 @@ function massAction_copyQueueWithoutDep() {
     massAction_copyQueue("toQUEUED");
 }
 
-var cptDep = 0;
-
 
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
@@ -1987,9 +1987,10 @@ function aoColumnsFunc(Columns) {
     ];
     let col = {};
 
+    localDepenMap = {};
+    cptDep = 0;
     for (var i = 0; i < colNb; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].robotDecli;
-
         col = {
             "title": title,
             "bSortable": true,
@@ -2006,76 +2007,89 @@ function aoColumnsFunc(Columns) {
             },
             "sClass": "center exec",
             "mRender": function (data, type, row, meta) {
-                if (data !== "") {
-                    // Getting selected Tag;
-                    let glyphClass = getRowClass(data.ControlStatus);
-                    let tooltip = generateTooltip(data);
-                    let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment);
-                    let cell = "";
-                    let myClass = "";
-                    if (data.isFalseNegative) {
-                        myClass = " falseNegative";
-                    }
-                    cell += '<div class="input-group mainCell' + myClass + '" id="' + idProgressBar + '">';
-                    cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
-                    var state = data.ControlStatus;
-                    if (!isEmpty(data.QueueState)) {
-                        state += data.QueueState;
-                    }
-                    if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
-                    }
-                    cell += '</span>';
-                    let statWidth = "100";
-                    if (data.previousExeControlStatus !== undefined) {
-                        cell += '<div style="width: 20%;cursor: pointer; height: 40px;" class="progress-bar status' + data.previousExeControlStatus + '"';
-                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.previousExeId + '\')">';
-                        cell += data.previousExeControlStatus;
-                        cell += '</div>';
-                        statWidth = "80";
-                    }
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
-                    } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
-                    }
-                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
-                    cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
-                        cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
-                    } else {
-                        cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
-                    }
-                    cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    if (getUser().login === data.Executor) {
-                        cell += '<span style="color:yellow" name="tcResult">' + data.ControlStatus + '</span>';
-                    } else {
-                        cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
-                    }
-                    if (data.QueueState !== undefined) {
-                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
-                    }
-                    if (data.TestCaseDep.length > 0) {
-                        let button = "";
-                        let txt = "";
-                        let dependencyArray = "";
-                        for (let dep of data.TestCaseDep) {
-                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',country:'" + data.Country + "',environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},";
+                if (type === "display") {
+
+                    if (data !== "") {
+                        // Getting selected Tag;
+                        let glyphClass = getRowClass(data.ControlStatus);
+                        let tooltip = generateTooltip(data);
+                        let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment);
+                        let cell = "";
+                        let myClass = "";
+                        if (data.isFalseNegative) {
+                            myClass = " falseNegative";
                         }
-                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);";
-                    }
-                    cell += '</div>';
-                    if (data.TestCaseDep.length > 0) {
-                        cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
-                        cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
+                        cell += '<div class="input-group mainCell' + myClass + '" id="' + idProgressBar + '">';
+
+                        cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
+                        var state = data.ControlStatus;
+                        if (!isEmpty(data.QueueState)) {
+                            state += data.QueueState;
+                        }
+                        if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
+                            cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
+                        }
                         cell += '</span>';
-                        cptDep++;
+                        let statWidth = "100";
+                        if (data.previousExeControlStatus !== undefined) {
+                            cell += '<div style="width: 20%;cursor: pointer; height: 40px;" class="progress-bar status' + data.previousExeControlStatus + '"';
+                            cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.previousExeId + '\')">';
+                            cell += data.previousExeControlStatus;
+                            cell += '</div>';
+                            statWidth = "80";
+                        }
+
+                        if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
+                            cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                        } else {
+                            cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
+                        }
+                        cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
+                        cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
+                        if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
+                            cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
+                        } else {
+                            cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';
+                        }
+                        cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
+                        if (getUser().login === data.Executor) {
+                            cell += '<span style="color:yellow" name="tcResult">' + data.ControlStatus + '</span>';
+                        } else {
+                            cell += '<span name="tcResult">' + data.ControlStatus + '</span>';
+                        }
+                        if (data.QueueState !== undefined) {
+                            cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
+                        }
+                        cell += '</div>';
+
+                        if (data.TestCaseDep.length > 0) {
+                            let button = "";
+                            let txt = "";
+                            let dependencyArray = "";
+                            for (let dep of data.TestCaseDep) {
+                                dep.id = cptDep;
+                                dep.exeId = data.ID;
+                                dep.country = data.Country;
+                                dep.env = data.Environment;
+                                localDepenMap[data.ID + dep.test + dep.testcase] = dep;
+                            }
+                            var dependency = "renderDependency(" + cptDep + ");";
+                        }
+                        if (data.TestCaseDep.length > 0) {
+                            cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
+                            cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
+                                    '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
+                            cell += '</span>';
+                            cptDep++;
+                        }
+
+                        cell += '</div>';
+                        return cell;
+                    } else {
+                        return data;
                     }
-                    cell += '</div>';
-                    return cell;
                 } else {
-                    return data;
+                    return "";
                 }
             }
         };
@@ -2201,21 +2215,38 @@ function aoColumnsFunc(Columns) {
     return aoColumns;
 }
 
-function renderDependency(id, dependencyArray) {
+function renderDependency(id) {
     let text = "";
+    let textdelay = "";
     // Remove all already open popover
     $(".popover").remove();
 
     $(".mainCell").parent().removeClass("info");
-    dependencyArray.forEach(dep => {
-        let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.environment);
-        let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
-        text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
-        // Add background of mainCell that are dependent.
-        $("#" + idProgressBar).parent().addClass("info");
-    });
-    $("#" + id).attr('title', "Dependency")
+
+    for (var i in localDepenMap) {
+        let dep = localDepenMap[i];
+        if (id === dep.id) {
+            if (dep.test) {
+                let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.env);
+                let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
+                if (dep.delayM > 0) {
+                    textdelay = " + " + dep.delayM + " min";
+                } else {
+                    textdelay = "";
+                }
+                text += "<div class='marginTop5'><a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a>&nbsp;&nbsp;<a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a>" + textdelay + " [" + dep.status + "]<br></div>";
+                // Add background of mainCell that are dependent.
+                $("#" + idProgressBar).parent().addClass("info");
+            } else {
+                text += "<div class='marginTop5'><span class='glyphicon glyphicon-time' aria-hidden='true'></span>&nbsp;" + dep.date + " [" + dep.status + "]</div>";
+            }
+        }
+
+    }
+
+    $("#dep" + id).attr('title', "Dependency")
             .addClass("info")
+            .addClass("popoverdep")
             .popover('fixTitle')
             .attr("data-content", text)
             .attr("data-placement", "right")

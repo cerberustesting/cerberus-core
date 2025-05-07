@@ -20,12 +20,16 @@
 package org.cerberus.core.engine.execution.impl;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.engine.execution.IRetriesService;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,8 +82,24 @@ public class RetriesService implements IRetriesService {
         tCExecutionQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
         tCExecutionQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         tCExecutionQueue.setRetries(newRetry);
-        // Insert execution to the Queue.
-        executionQueueService.create(tCExecutionQueue, false, exeQueue, TestCaseExecutionQueue.State.QUEUED, new HashMap<>());
+        try {
+
+            Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();
+            if (StringUtil.isNotEmptyOrNull(tCExecutionQueue.getTag())) {
+                LOG.debug("We don't have the list of all already inserted entries. Let's get it from tag value : " + tCExecutionQueue.getTag());
+                List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readMaxIdByTag(tCExecutionQueue.getTag()));
+                for (TestCaseExecutionQueue tceQueue : queueFromTag) {
+                    queueAlreadyInsertedInTag.put(executionQueueService.getUniqKey(tceQueue.getTest(), tceQueue.getTestCase(), tceQueue.getCountry(), tceQueue.getEnvironment()), tceQueue);
+                }
+            }
+
+            // Insert execution to the Queue.
+            executionQueueService.create(tCExecutionQueue, false, exeQueue, TestCaseExecutionQueue.State.QUEUED, queueAlreadyInsertedInTag);
+
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+        }
+
         return true;
     }
 }
