@@ -369,12 +369,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
         //if executor proxy active, check cerberus-executor is available
         if (tce.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())) {
 
-            //If ExecutorExtensionHost is null or empty, use the Robot Host
-            if (tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()) {
-                tce.getRobotExecutorObj().setExecutorExtensionHost(tce.getRobotExecutorObj().getHost());
+            //If ExecutorProxyServiceHost is null or empty, use the Robot Host
+            if (tce.getRobotExecutorObj().getExecutorProxyServiceHost() == null || tce.getRobotExecutorObj().getExecutorProxyServiceHost().isEmpty()) {
+                tce.getRobotExecutorObj().setExecutorProxyServiceHost(tce.getRobotExecutorObj().getHost());
             }
 
-            String urlString = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
+            String urlString = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort() + "/check";
             LOG.debug("Url to check Proxy Executor : {}", urlString);
 
             URL url;
@@ -399,16 +399,16 @@ public class ExecutionCheckService implements IExecutionCheckService {
                         return true;
                     }
                 } catch (Exception ex) {
-                    LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
+                    LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), ex.toString());
                 }
 
             } catch (IOException ex) {
-                LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
+                LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), ex.toString());
             }
 
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE);
-            message.resolveDescription("HOST", tce.getRobotExecutorObj().getExecutorExtensionHost())
-                    .resolveDescription("PORT", String.valueOf(tce.getRobotExecutorObj().getExecutorExtensionPort()))
+            message.resolveDescription("HOST", tce.getRobotExecutorObj().getExecutorProxyServiceHost())
+                    .resolveDescription("PORT", String.valueOf(tce.getRobotExecutorObj().getExecutorProxyServicePort()))
                     .resolveDescription("ROBOT", String.valueOf(tce.getRobotExecutorObj().getRobot()))
                     .resolveDescription("ROBOTEXE", String.valueOf(tce.getRobotExecutorObj().getExecutor()));
             return false;

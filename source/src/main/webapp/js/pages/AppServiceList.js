@@ -386,35 +386,41 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "parentContentService")
         }, {
-            "sName": "srv.DateCreated",
+            "sName": "srv.Description",
+            "like": true,
+            "data": "description",
+            "sWidth": "200px",
+            "title": doc.getDocLabel("appservice", "description")
+        }, {
+            "sName": "srv.dateCreated",
             "visible": false,
             "like": true,
-            "data": "DateCreated",
+            "data": "dateCreated",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["DateCreated"]);
             }
         }, {
-            "sName": "srv.UsrCreated",
+            "sName": "srv.usrCreated",
             "visible": false,
-            "data": "UsrCreated",
+            "data": "usrCreated",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrCreated")
         }, {
-            "sName": "srv.DateModif",
+            "sName": "srv.dateModif",
             "visible": false,
             "like": true,
-            "data": "DateModif",
+            "data": "dateModif",
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["DateModif"]);
             }
         }, {
-            "sName": "srv.UsrModif",
+            "sName": "srv.usrModif",
             "visible": false,
-            "data": "UsrModif",
+            "data": "usrModif",
             "sWidth": "70px",
             "title": doc.getDocOnline("transversal", "UsrModif")
         }];

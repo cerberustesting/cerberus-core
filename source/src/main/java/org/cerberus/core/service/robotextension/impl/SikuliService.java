@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.ConnectException;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +46,6 @@ import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -96,6 +96,8 @@ public class SikuliService implements ISikuliService {
 
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
+
+    private static final String SIKULI_EXECUTEACTION_PATH = "/extra/ExecuteSikuliAction";
 
     private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2,
             long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
@@ -182,14 +184,14 @@ public class SikuliService implements ISikuliService {
                         try {
                             xOffset = Integer.valueOf(xOffsetS);
                         } catch (NumberFormatException e) {
-                            LOG.warn("Failed to convert xOffset : " + xOffsetS, e);
+                            LOG.warn("Failed to convert xOffset : {}", xOffsetS, e);
                         }
                     }
                     if (!StringUtil.isEmptyOrNull(yOffsetS)) {
                         try {
                             yOffset = Integer.valueOf(yOffsetS);
                         } catch (NumberFormatException e) {
-                            LOG.warn("Failed to convert xOffset : " + yOffsetS, e);
+                            LOG.warn("Failed to convert xOffset : {}", yOffsetS, e);
                         }
                     }
                 }
@@ -242,24 +244,25 @@ public class SikuliService implements ISikuliService {
         PrintStream os = null;
 
         URL url;
-        String host = StringUtil.cleanHostURL(session.getHost());
-        String urlToConnect = host + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnRobot(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
-            LOG.debug("Trying to connect to: " + urlToConnect);
+            LOG.debug("Trying to connect to: {}.", urlToConnect);
 
             if (connection != null) {
-                LOG.debug("Answer from Server: " + connection.getResponseCode());
+                LOG.debug("Answer from Server: {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 return false;
             }
-
+        } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            LOG.info("Robot extension not reachable at '{}'.", urlToConnect);
+            return false;
         } catch (IOException ex) {
             LOG.warn(ex);
             return false;
@@ -281,8 +284,7 @@ public class SikuliService implements ISikuliService {
         PrintStream os = null;
 
         URL url;
-        String host = StringUtil.cleanHostURL(session.getNodeHost());
-        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnNode(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
@@ -291,19 +293,21 @@ public class SikuliService implements ISikuliService {
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
-            LOG.debug("Trying to connect to: " + urlToConnect);
+            LOG.debug("Trying to connect to: {}", urlToConnect);
 
             if (connection != null) {
-                LOG.debug("Answer from Server: " + connection.getResponseCode());
+                LOG.debug("Answer from Server: {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                LOG.info("Responce code different from 200 when calling '" + urlToConnect + "'. Disable Cerberus extension features.");
+                LOG.warn("Response code different from 200 when calling '{}'", urlToConnect);
                 return false;
             }
-
+        } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            LOG.info("Robot extension not reachable at '{}'.", urlToConnect);
+            return false;
         } catch (IOException ex) {
-            LOG.warn("Exception catch when calling '" + urlToConnect + "' " + ex, ex);
+            LOG.warn("Exception catch when calling '{}' {}", urlToConnect, ex, ex);
             return false;
         } finally {
             if (os != null) {
@@ -326,21 +330,20 @@ public class SikuliService implements ISikuliService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String host = StringUtil.cleanHostURL(session.getNodeHost());
-        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnNode(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
-            if (session.getNodeProxyPort() > 0) {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
+            if (session.getExecutorExtensionProxyPort() > 0) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getExecutorExtensionProxyPort()));
 
-                LOG.info("Open Connection to Robot Node Sikuli (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli (using proxy : {}:{}) : {}", session.getHost(), session.getExecutorExtensionProxyPort(), urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.info("Open Connection to Robot Node Sikuli : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli : {}", urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Sikuli extension the sikuli timeout + 60 s to perform the action/control.
@@ -361,14 +364,14 @@ public class SikuliService implements ISikuliService {
 
             // Send post request
             os = new PrintStream(connection.getOutputStream());
-            LOG.debug("Sending JSON : " + postParameters.toString(1));
+            LOG.debug("Sending JSON : {}", postParameters.toString(1));
             os.println(postParameters.toString());
 //            os.println("|ENDS|");
 
             if (connection == null) {
                 LOG.warn("No response from Robot Node Sikuli !!");
             } else {
-                LOG.debug("Robot Node Sikuli http response status code : " + connection.getResponseCode());
+                LOG.debug("Robot Node Sikuli http response status code : {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
@@ -391,7 +394,7 @@ public class SikuliService implements ISikuliService {
                 }
             }
 
-            LOG.debug("Robot Node Sikuli Answer: " + response.toString());
+            LOG.debug("Robot Node Sikuli Answer: {}", response.toString());
 
             if (response.toString() != null && response.length() > 0) {
                 /**
@@ -434,7 +437,7 @@ public class SikuliService implements ISikuliService {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (JSONException ex) {
-            LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
+            LOG.warn("Exception when converting response to JSON : {}", response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (MimeTypeException ex) {
             LOG.warn(ex, ex);
@@ -877,7 +880,7 @@ public class SikuliService implements ISikuliService {
 
             if (image != null) {
                 //logs for debug purposes
-                LOG.info("Screenshot taken with succes: " + image.getName() + " (size : " + image.length() + " b)");
+                LOG.info("Screenshot taken with success: {} (size : {} b)", image.getName(), image.length());
             } else {
                 LOG.warn("Screenshot returned null: ");
             }
@@ -888,6 +891,16 @@ public class SikuliService implements ISikuliService {
             LOG.warn(ex, ex);
         }
         return image;
+    }
+
+    private String generateSikuliUrlOnRobot(Session session, String path) {
+        int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getPort());
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getHost()), port, path);
+    }
+
+    private String generateSikuliUrlOnNode(Session session, String path) {
+        int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getNodePort());
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getNodeHost()), port, path);
     }
 
 }

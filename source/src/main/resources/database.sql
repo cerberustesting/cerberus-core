@@ -6637,12 +6637,12 @@ ALTER TABLE testcase ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01
 
 -- 1891
 UPDATE testcase a
-    INNER JOIN (select test, testcase, max(DateCreated) maxexe from testcaseexecution t group by test, testcase) b 
+    INNER JOIN (select test, testcase, max(DateCreated) maxexe from testcaseexecution t group by test, testcase) b
     ON a.test = b.test and a.testcase = b.testcase
     SET DateLastExecuted = maxexe ;
 
 -- 1892
-ALTER TABLE `tag` 
+ALTER TABLE `tag`
     ADD `nbFlaky` int DEFAULT 0 AFTER `FalseNegative`,
     ADD `nbMuted` int DEFAULT 0 AFTER `NbFlaky`,
     ADD `FalseNegativeRootCause` varchar(200) DEFAULT '' AFTER `FalseNegative`;
@@ -6659,3 +6659,21 @@ DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_en
 -- 1898
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_tagcombofilterpersystem_boolean', 'true', 'Define if tag (campaign execution) combo boxes are filtered by system or not. Filtering by system could have some performance issue that can be improved using that parameter.');
+
+-- 1899-1905
+ALTER TABLE robotexecutor RENAME COLUMN executorExtensionHost TO ExecutorProxyServiceHost;
+ALTER TABLE robotexecutor RENAME COLUMN executorExtensionPort TO ExecutorProxyServicePort;
+ALTER TABLE robotexecutor RENAME COLUMN executorProxyHost TO ExecutorBrowserProxyHost;
+ALTER TABLE robotexecutor RENAME COLUMN executorProxyPort TO ExecutorBrowserProxyPort;
+ALTER TABLE robotexecutor RENAME COLUMN NodeProxyPort TO ExecutorExtensionProxyPort;
+ALTER TABLE robotexecutor RENAME COLUMN host_user TO HostUser;
+ALTER TABLE robotexecutor RENAME COLUMN host_password TO HostPassword;
+
+-- 1906
+ALTER TABLE robotexecutor ADD COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER ExecutorBrowserProxyPort;
+
+-- 1907
+ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER HostPassword;
+
+-- 1908
+DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';

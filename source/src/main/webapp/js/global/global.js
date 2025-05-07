@@ -2379,6 +2379,36 @@ function bindToggleCollapse() {
     });
 }
 
+/**
+ * Bind the toggle fullscreen to the text input and ace fields
+ * bid is done on all elements with class togglefullscreen
+ * the for attribute point to the div that will move to fullscreen
+ * @returns {void}
+ */
+function bindToggleFullscreen() {
+    $(".togglefullscreen").unbind("click").click(function () {
+        let idTomove = this.getAttribute('for');
+        let myButton = document.getElementById(idTomove);
+        if (myButton.classList.contains("overlay")) {
+            myButton.classList.remove('overlay');
+            $(document).unbind("keydown");
+        } else {
+            myButton.classList.add('overlay');
+
+            $(document).bind("keydown", function (e) {
+                e = e || window.event;
+                var charCode = e.which || e.keyCode;
+                // ESC key will remove fullscreen mode
+                if (charCode == 27) {
+                    myButton.classList.remove('overlay');
+                    $(document).unbind("keydown");
+                }
+            });
+
+        }
+    });
+}
+
 function drawURL(data) {
     return drawHyperlink(data, data);
 }

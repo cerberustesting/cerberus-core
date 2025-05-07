@@ -19,13 +19,10 @@
  */
 package org.cerberus.core.service.appium.impl;
 
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.android.nativekey.PressesKey;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Parameter;
@@ -38,10 +35,13 @@ import org.cerberus.core.util.JSONUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.ScreenOrientation;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -101,7 +101,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-            session.getAppiumDriver().hideKeyboard();
+            ((AndroidDriver) session.getAppiumDriver()).hideKeyboard();
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
         } catch (Exception e) {
             // Instead of http://stackoverflow.com/questions/35030794/soft-keyboard-not-present-cannot-hide-keyboard-appium-android?answertab=votes#tab-top
@@ -123,14 +123,31 @@ public class AndroidAppiumService extends AppiumService {
 
             // Get the parametrized swipe duration
             Parameter duration = parameters.findParameterByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "");
+            int swipeDuration = duration == null
+                    ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION
+                    : Integer.parseInt(duration.getValue());
 
-            // Do the swipe thanks to the Appium driver
-            TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
-                    .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
-            dragNDrop.perform();
+            // Initialize PointerInput for touch gestures
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 0);
 
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
+            // Start point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(0),
+                    PointerInput.Origin.viewport(), direction.getX1(), direction.getY1()));
+            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Move to the end point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(swipeDuration),
+                    PointerInput.Origin.viewport(), direction.getX2(), direction.getY2()));
+
+            // Release touch
+            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Perform the swipe
+            session.getAppiumDriver().perform(Collections.singletonList(swipe));
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE)
+                    .resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
                     .resolveDescription("DIRECTION", action.getActionType().name())
@@ -218,15 +235,9 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
 
-        //return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "']}");
-
         try {
-
-            if (StringUtil.isEmptyOrNull(appPackage)) {
-                session.getAppiumDriver().launchApp();
-            } else {
-                session.getAppiumDriver().activateApp(appPackage);
-            }
+            AndroidDriver appiumDriver = (AndroidDriver) session.getAppiumDriver();
+            appiumDriver.activateApp(appPackage);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
 
@@ -242,7 +253,8 @@ public class AndroidAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-            session.getAppiumDriver().closeApp();
+            AndroidDriver appiumDriver = (AndroidDriver) session.getAppiumDriver();
+            appiumDriver.terminateApp(appiumDriver.getCapabilities().getCapability("appium:bundleId").toString());
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 

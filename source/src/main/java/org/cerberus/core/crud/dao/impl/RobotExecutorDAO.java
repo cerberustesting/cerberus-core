@@ -146,8 +146,8 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             searchSQL.append(" or rbe.`rank` like ?");
             searchSQL.append(" or rbe.`host` like ?");
             searchSQL.append(" or rbe.`port` like ?");
-            searchSQL.append(" or rbe.`host_user` like ?");
-            searchSQL.append(" or rbe.`host_password` like ?");
+            searchSQL.append(" or rbe.`HostUser` like ?");
+            searchSQL.append(" or rbe.`HostPassword` like ?");
             searchSQL.append(" or rbe.`deviceudid` like ?");
             searchSQL.append(" or rbe.`devicename` like ?");
             searchSQL.append(" or rbe.`usrCreated` like ?");
@@ -269,8 +269,8 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     public Answer create(RobotExecutor object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `isactive`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `isdevicelockunlock`, `executorextensionhost`, `executorextensionport`, `executorproxyhost`, `executorproxyport`, `executorproxytype`, `description`, `usrcreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `isactive`, `rank`, `host`, `port`, `HostUser`, `HostPassword`, `deviceudid`, `devicename`, `deviceport`, `isdevicelockunlock`, `ExecutorProxyServiceHost`, `ExecutorProxyServicePort`, `ExecutorBrowserProxyHost`, `ExecutorBrowserProxyPort`, `ExecutorExtensionPort`, `executorproxytype`, `description`, `usrcreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -297,18 +297,19 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                     preStat.setNull(i++, Types.INTEGER);
                 }
                 preStat.setBoolean(i++, object.isDeviceLockUnlock());
-                preStat.setString(i++, object.getExecutorExtensionHost());
-                if (object.getExecutorExtensionPort() != null) {
-                    preStat.setInt(i++, object.getExecutorExtensionPort());
+                preStat.setString(i++, object.getExecutorProxyServiceHost());
+                if (object.getExecutorProxyServicePort() != null) {
+                    preStat.setInt(i++, object.getExecutorProxyServicePort());
                 } else {
                     preStat.setNull(i++, Types.INTEGER);
                 }
-                preStat.setString(i++, object.getExecutorProxyHost());
-                if (object.getExecutorProxyPort() != null) {
-                    preStat.setInt(i++, object.getExecutorProxyPort());
+                preStat.setString(i++, object.getExecutorBrowserProxyHost());
+                if (object.getExecutorBrowserProxyPort() != null) {
+                    preStat.setInt(i++, object.getExecutorBrowserProxyPort());
                 } else {
                     preStat.setNull(i++, Types.INTEGER);
                 }
+                preStat.setInt(i++, object.getExecutorExtensionPort());
                 preStat.setString(i++, object.getExecutorProxyType());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getUsrCreated());
@@ -367,7 +368,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     @Override
     public Answer update(String robot, String executor, RobotExecutor object) {
         MessageEvent msg = null;
-        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, isactive = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `isdevicelockunlock` = ?,  `executorextensionhost` = ?,  `executorextensionport` = ?, `executorproxyhost` = ?,  `executorproxyport` = ?, `executorproxytype` = ?, "
+        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, isactive = ?, `rank` = ?, `host` = ?, `port` = ?, `HostUser` = ?, `HostPassword` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `isdevicelockunlock` = ?,  `ExecutorProxyServiceHost` = ?,  `ExecutorProxyServicePort` = ?, `ExecutorBrowserProxyHost` = ?,  `ExecutorBrowserProxyPort` = ?, `ExecutorExtensionPort` = ?, `executorproxytype` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `robot` = ? and `executor` = ?";
 
         // Debug message on SQL.
@@ -397,18 +398,19 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setNull(i++, Types.INTEGER);
             }
             preStat.setBoolean(i++, object.isDeviceLockUnlock());
-            preStat.setString(i++, object.getExecutorExtensionHost());
-            if (object.getExecutorExtensionPort() != null) {
-                preStat.setInt(i++, object.getExecutorExtensionPort());
+            preStat.setString(i++, object.getExecutorProxyServiceHost());
+            if (object.getExecutorProxyServicePort() != null) {
+                preStat.setInt(i++, object.getExecutorProxyServicePort());
             } else {
                 preStat.setNull(i++, Types.INTEGER);
             }
-            preStat.setString(i++, object.getExecutorProxyHost());
-            if (object.getExecutorProxyPort() != null) {
-                preStat.setInt(i++, object.getExecutorProxyPort());
+            preStat.setString(i++, object.getExecutorBrowserProxyHost());
+            if (object.getExecutorBrowserProxyPort() != null) {
+                preStat.setInt(i++, object.getExecutorBrowserProxyPort());
             } else {
                 preStat.setNull(i++, Types.INTEGER);
             }
+            preStat.setInt(i++, object.getExecutorExtensionPort());
             preStat.setString(i++, object.getExecutorProxyType());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, robot);
@@ -465,17 +467,18 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         int rank = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.rank"), 0);
         String host = ParameterParserUtil.parseStringParam(rs.getString("rbe.host"), "");
         String port = ParameterParserUtil.parseStringParam(rs.getString("rbe.port"), "");
-        int nodeProxyPort = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.nodeProxyPort"), 0);
-        String host_user = ParameterParserUtil.parseStringParam(rs.getString("rbe.host_user"), "");
-        String host_password = ParameterParserUtil.parseStringParam(rs.getString("rbe.host_password"), "");
+        int executorExtensionProxyPort = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.ExecutorExtensionProxyPort"), 0);
+        String hostUser = ParameterParserUtil.parseStringParam(rs.getString("rbe.HostUser"), "");
+        String hostPassword = ParameterParserUtil.parseStringParam(rs.getString("rbe.HostPassword"), "");
         String deviceudid = ParameterParserUtil.parseStringParam(rs.getString("rbe.deviceudid"), "");
         String devicename = ParameterParserUtil.parseStringParam(rs.getString("rbe.devicename"), "");
         Integer deviceport = rs.getInt("rbe.deviceport");
         boolean isDevicelockunlock = rs.getBoolean("rbe.isdevicelockunlock");
-        String executorExtensionHost = rs.getString("rbe.executorextensionhost");
-        Integer executorExtensionPort = rs.getInt("rbe.executorextensionport");
-        String executorProxyHost = rs.getString("rbe.executorproxyhost");
-        Integer executorProxyPort = rs.getInt("rbe.executorproxyport");
+        String executorProxyServiceHost = rs.getString("rbe.ExecutorProxyServiceHost");
+        Integer executorProxyServicePort = rs.getInt("rbe.ExecutorProxyServicePort");
+        String executorBrowserProxyHost = rs.getString("rbe.ExecutorBrowserProxyHost");
+        Integer executorBrowserProxyPort = rs.getInt("rbe.ExecutorBrowserProxyPort");
+        Integer executorExtensionPort = rs.getInt("rbe.ExecutorExtensionPort");
         String executorProxyType = rs.getString("rbe.executorproxytype");
         if(deviceport == 0) {
             deviceport=null;
@@ -489,7 +492,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, hostUser, hostPassword, executorExtensionProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorExtensionPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override

@@ -29,7 +29,7 @@
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label for="service" name="serviceField" class="col">Service</label>
                                     <input type="text" class="form-control" name="service" id="service" aria-describedby="basic-editon1"> </input>
-                                    <input type="text" class="form-control input-sm" name="originalService" id="originalService" style="display:none;"/>
+                                    <input type="text" class="form-control" name="originalService" id="originalService" style="display:none;"/>
                                 </div>
                                 <div class="form-group col-md-4 col-sm-8">
                                     <label for="type" name="typeField">Type</label>
@@ -144,8 +144,9 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" id="keyDiv">
                                         <label for="kafkaKey" name="kafkaKeyField">Kafka Key</label>
+                                        <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="keyDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                         <div name="kafkaKey" id="kafkaKey" aria-describedby="basic-editon1">
                                             <pre id='kfkKey' name='kfkKey' style="min-height: 150px"></pre>
                                         </div>
@@ -154,6 +155,7 @@
                                     </div>
                                     <div class="col-sm-6" id="avrSchemaKeyDiv">
                                         <label for="avroSchemaKey" name="avroSchemaKeyField">Avro Schema Key</label>
+                                        <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="avrSchemaKeyDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                         <img style="height:40px;  border: 0px; padding:0;" class="marginBottom10" id="avroLogoKey" src="./images/logo-AVRO.png" alt="AVRO">
                                         <div name="avroSchemaKey" id="avroSchemaKey" aria-describedby="basic-editon1">
                                             <pre id='avrSchemaKey' name='avrSchemaKey' style="min-height: 150px"></pre>
@@ -171,14 +173,16 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12" id="srvRequestDic">
+                                    <div class="col-xs-12" id="srvRequestDiv">
                                         <label for="serviceRequest" name="serviceRequestField">Service Request</label>
+                                        <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="srvRequestDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                         <div name="serviceRequest" id="serviceRequest" aria-describedby="basic-editon1">
                                             <pre id='srvRequest' name='srvRequest' style="min-height: 150px"></pre>
                                         </div>
                                     </div>
                                     <div class="col-xs-12" id="avrSchemaValueDiv">
                                         <label for="avroSchemaValue" name="avroSchemaValueField">Avro Schema Value</label>
+                                        <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="avrSchemaValueDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                         <img style="height:40px;  border: 0px; padding:0;" class="marginBottom10" id="avroLogoValue" src="./images/logo-AVRO.png" alt="AVRO">
                                         <div name="avroSchemaValue" id="avroSchemaValue" aria-describedby="basic-editon1">
                                             <pre id='avrSchemaValue' name='avrSchemaValue' style="min-height: 150px"></pre>
@@ -372,7 +376,6 @@
                                     <button type="button" id="addSoapLibraryButton" class="btn btn-primary pull-right" name="buttonAdd">Add</button>
                                     <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary pull-right" name="buttonDuplicate">Duplicate</button>
                                     <button type="button" class="btn btn-default pull-right marginLeft5" data-dismiss="modal" name="buttonClose">Close</button>
-                                    <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right" name="buttonCall">Save and Call</button>
                                 </div>
                             </td>
                         </tr>
@@ -387,6 +390,7 @@
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Response Details</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-3" id="tabSimulRequest" name="tabsSimul3">Request</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-5" id="tabSimulRequestDetails" name="tabsSimul5">Request Details</a></li>
+                        <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right marginTop10" name="buttonCall">Call</button>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in" id="tabsSimul-1">
@@ -396,6 +400,7 @@
                             <div class="row">
                                 <div class="col-xs-12" id="srvResponseDiv">
                                     <label for="serviceResponse" name="serviceResponseField">Simulation Response</label>
+                                    <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="srvResponseDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                     <div name="serviceResponse" id="serviceResponse" aria-describedby="basic-editon1">
                                         <pre id='srvResponse' name='srvResponse' style="min-height: 150px"></pre>
                                     </div>
@@ -406,6 +411,7 @@
                             <div class="row">
                                 <div class="col-xs-12" id="srvResponseDetDiv">
                                     <label for="serviceResponseDet" name="serviceResponseDetField">Simulation Response Detail</label>
+                                    <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="srvResponseDetDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                     <div name="serviceResponseDet" id="serviceResponseDet" aria-describedby="basic-editon1">
                                         <pre id='srvResponseDet' name='srvResponseDet' style="min-height: 150px"></pre>
                                     </div>
@@ -416,6 +422,7 @@
                             <div class="row">
                                 <div class="col-xs-12" id="srvCallRequestDiv">
                                     <label for="serviceCallRequest" name="serviceCallRequestField">Simulation Request</label>
+                                    <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="srvCallRequestDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                     <div name="serviceCallRequest" id="serviceCallRequest" aria-describedby="basic-editon1">
                                         <pre id='srvCallRequest' name='srvCallRequest' style="min-height: 150px"></pre>
                                     </div>
@@ -426,6 +433,7 @@
                             <div class="row">
                                 <div class="col-xs-12" id="srvRequestDetDiv">
                                     <label for="serviceRequestDet" name="serviceRequestDetField">Simulation Request Detail</label>
+                                    <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="srvRequestDetDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
                                     <div name="serviceRequestDet" id="serviceRequestDet" aria-describedby="basic-editon1">
                                         <pre id='srvRequestDet' name='srvRequestDet' style="min-height: 150px"></pre>
                                     </div>

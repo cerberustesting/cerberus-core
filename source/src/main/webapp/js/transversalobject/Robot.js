@@ -562,7 +562,12 @@ function loadExecutorsTable(tableBody, executors) {
         executor.toDelete = false;
         appendExecutorRow(tableBody, executor);
     });
-    refreshPopoverDocumentation("editExecutorsTable");
+
+    //As the executors list is dynamically generated after the global popover initialization, need to init popover again on executors list only.
+    $('#' + tableBody + ' [data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': '#listPanelEditExecutors'}
+    );
 }
 
 function appendCapabilityRow(tableBody, capability) {
@@ -623,36 +628,38 @@ function appendExecutorRow(tableBody, executor) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectActive = $("<input  type=\"checkbox\">").addClass("form-control input-sm").prop("checked", executor.isActive);
-    var nameInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executor") + " --\">").addClass("form-control").val(executor.executor);
-    var rankInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "rank") + " --\">").addClass("form-control").val(executor.rank);
-    var hostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host") + " --\">").addClass("form-control").val(executor.host);
-    var portInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "Port") + " --\">").addClass("form-control").val(executor.port);
-    var hostUserInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_user") + " --\">").addClass("form-control").val(executor.hostUser);
-    var hostPasswordInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_password") + " --\">").addClass("form-control").val(executor.hostPassword);
-    var deviceUdidInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUdid") + " --\">").addClass("form-control").val(executor.deviceUdid);
-    var deviceNameInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control").val(executor.deviceName);
-    var devicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control").val(executor.devicePort);
-    var deviceLockUnlockInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceLockUnlock") + " --\">").addClass("form-control").prop("checked", executor.isDeviceLockUnlock);
-    var executorExtensionHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionHost") + " --\">").addClass("form-control").val(executor.executorExtensionHost);
-    var executorExtensionPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionPort") + " --\">").addClass("form-control").val(executor.executorExtensionPort);
-    var executorProxyHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyHost") + " --\">").addClass("form-control").val(executor.executorProxyHost);
-    var executorProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyPort") + " --\">").addClass("form-control").val(executor.executorProxyPort);
+    var nameInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executor") + " --\">").addClass("form-control input-sm").val(executor.executor);
+    var rankInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "rank") + " --\">").addClass("form-control input-sm").val(executor.rank);
+    var hostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host") + " --\">").addClass("form-control input-sm").val(executor.host);
+    var portInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "Port") + " --\">").addClass("form-control input-sm").val(executor.port);
+    var hostUserInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "hostUser") + " --\">").addClass("form-control input-sm").val(executor.hostUser);
+    var hostPasswordInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "hostPassword") + " --\">").addClass("form-control input-sm").val(executor.hostPassword);
+    var deviceUdidInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUdid") + " --\">").addClass("form-control input-sm").val(executor.deviceUdid);
+    var deviceNameInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control input-sm").val(executor.deviceName);
+    var devicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control input-sm").val(executor.devicePort);
+    var deviceLockUnlockInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceLockUnlock") + " --\">").addClass("form-control input-sm").prop("checked", executor.isDeviceLockUnlock);
+    var executorProxyServiceHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyServiceHost") + " --\">").addClass("form-control input-sm").val(executor.executorProxyServiceHost);
+    var executorProxyServicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyServicePort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyServicePort);
+    var executorBrowserProxyHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorBrowserProxyHost") + " --\">").addClass("form-control input-sm").val(executor.executorBrowserProxyHost);
+    var executorBrowserProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorBrowserProxyPort") + " --\">").addClass("form-control input-sm").val(executor.executorBrowserProxyPort);
+    var executorExtensionPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionPort") + " --\">").addClass("form-control input-sm").val(executor.executorExtensionPort);
+
     var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false);
     var table = $("#" + tableBody);
 
     if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
-        executorExtensionHostInput.prop("readonly", true);
-        executorExtensionPortInput.prop("readonly", true);
+        executorProxyServiceHostInput.prop("readonly", true);
+        executorProxyServicePortInput.prop("readonly", true);
     } else {
-        executorExtensionHostInput.prop("readonly", false);
-        executorExtensionPortInput.prop("readonly", false);
+        executorProxyServiceHostInput.prop("readonly", false);
+        executorProxyServicePortInput.prop("readonly", false);
     }
     if (executor.executorProxyType === 'NONE') {
-        executorProxyHostInput.prop("readonly", true);
-        executorProxyPortInput.prop("readonly", true);
+        executorBrowserProxyHostInput.prop("readonly", true);
+        executorBrowserProxyPortInput.prop("readonly", true);
     } else {
-        executorProxyHostInput.prop("readonly", false);
-        executorProxyPortInput.prop("readonly", false);
+        executorBrowserProxyHostInput.prop("readonly", false);
+        executorBrowserProxyPortInput.prop("readonly", false);
     }
 
 
@@ -660,18 +667,18 @@ function appendExecutorRow(tableBody, executor) {
     selectProxyTypeLnk.change(function () {
         executor.executorProxyType = $(this).val();
         if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
-            executorExtensionHostInput.prop("readonly", true);
-            executorExtensionPortInput.prop("readonly", true);
+            executorProxyServiceHostInput.prop("readonly", true);
+            executorProxyServicePortInput.prop("readonly", true);
         } else {
-            executorExtensionHostInput.prop("readonly", false);
-            executorExtensionPortInput.prop("readonly", false);
+            executorProxyServiceHostInput.prop("readonly", false);
+            executorProxyServicePortInput.prop("readonly", false);
         }
         if (executor.executorProxyType === 'NONE') {
-            executorProxyHostInput.prop("readonly", true);
-            executorProxyPortInput.prop("readonly", true);
+            executorBrowserProxyHostInput.prop("readonly", true);
+            executorBrowserProxyPortInput.prop("readonly", true);
         } else {
-            executorProxyHostInput.prop("readonly", false);
-            executorProxyPortInput.prop("readonly", false);
+            executorBrowserProxyHostInput.prop("readonly", false);
+            executorBrowserProxyPortInput.prop("readonly", false);
         }
 
     });
@@ -689,23 +696,25 @@ function appendExecutorRow(tableBody, executor) {
     var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
     var host = $("<div class='form-group col-sm-4'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "host") + "</label>").append(hostInput);
     var port = $("<div class='form-group col-sm-2'></div>").append("<label for='port'>" + doc.getDocOnline("robotexecutor", "Port") + "</label>").append(portInput);
-    var hostuser = $("<div class='form-group col-sm-3'></div>").append("<label for='hostuser'>" + doc.getDocOnline("robotexecutor", "host_user") + "</label>").append(hostUserInput);
-    var hostpass = $("<div class='form-group col-sm-3'></div>").append("<label for='hostpassword'>" + doc.getDocOnline("robotexecutor", "host_password") + "</label>").append(hostPasswordInput);
+    var hostUser = $("<div class='form-group col-sm-3'></div>").append("<label for='hostUser'>" + doc.getDocOnline("robotexecutor", "hostUser") + "</label>").append(hostUserInput);
+    var hostPassword = $("<div class='form-group col-sm-3'></div>").append("<label for='hostPassword'>" + doc.getDocOnline("robotexecutor", "hostPassword") + "</label>").append(hostPasswordInput);
     var dudid = $("<div class='form-group col-sm-4'></div>").append("<label for='deviceudid'>" + doc.getDocOnline("robotexecutor", "deviceUdid") + "</label>").append(deviceUdidInput);
     var dname = $("<div class='form-group col-sm-4'></div>").append("<label for='devicename'>" + doc.getDocOnline("robotexecutor", "deviceName") + "</label>").append(deviceNameInput);
     var dport = $("<div class='form-group col-sm-2'></div>").append("<label for='deviceport'>" + doc.getDocOnline("robotexecutor", "devicePort") + "</label>").append(devicePortInput);
     var dLockUnlock = $("<div class='form-group col-sm-2'></div>").append("<label for='devicelockunlockinput'>" + doc.getDocOnline("robotexecutor", "deviceLockUnlock") + "</label>").append(deviceLockUnlockInput);
     var epType = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxytype'>" + doc.getDocOnline("robotexecutor", "executorProxyType") + "</label>").append(selectProxyTypeLnk.val(executor.executorProxyType));
-    var eehost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorextensionhost'>" + doc.getDocOnline("robotexecutor", "executorExtensionHost") + "</label>").append(executorExtensionHostInput);
-    var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorextensionport'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
-    var ephost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorproxyhost'>" + doc.getDocOnline("robotexecutor", "executorProxyHost") + "</label>").append(executorProxyHostInput);
-    var epport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxyport'>" + doc.getDocOnline("robotexecutor", "executorProxyPort") + "</label>").append(executorProxyPortInput);
+    var eehost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorProxyServiceHost'>" + doc.getDocOnline("robotexecutor", "executorProxyServiceHost") + "</label>").append(executorProxyServiceHostInput);
+    var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorProxyServicePort'>" + doc.getDocOnline("robotexecutor", "executorProxyServicePort") + "</label>").append(executorProxyServicePortInput);
+    var ephost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorBrowserProxyHost'>" + doc.getDocOnline("robotexecutor", "executorBrowserProxyHost") + "</label>").append(executorBrowserProxyHostInput);
+    var epport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorBrowserProxyPort'>" + doc.getDocOnline("robotexecutor", "executorBrowserProxyPort") + "</label>").append(executorBrowserProxyPortInput);
+    var executorExtensionPortGroup = $("<div class='form-group col-sm-2'></div>").append("<label for='executorExtensionPort'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
     var drow1 = $("<div class='row'></div>").append(active).append(rank).append(expandName);
-    var drow2 = $("<div class='row'></div>").append(host).append(port).append(hostuser).append(hostpass);
-//    var drow3 = $("<div class='row'></div>").append(hostuser).append(hostpass);
+    var drow2 = $("<div class='row'></div>").append(host).append(port).append(hostUser).append(hostPassword);
+//    var drow3 = $("<div class='row'></div>").append(hostUser).append(hostPassword);
     var drow4 = $("<div class='row alert alert-warning'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
     var drow5 = $("<div class='row alert alert-warning'></div>").append(epType).append(eehost).append(eeport).append(ephost).append(epport);
-    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5);
+    var drow6 = $("<div class='row alert alert-warning'></div>").append(executorExtensionPortGroup);
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5).append(drow6);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
 
 
@@ -751,17 +760,20 @@ function appendExecutorRow(tableBody, executor) {
     deviceLockUnlockInput.change(function () {
         executor.isDeviceLockUnlock = $(this).prop("checked");
     });
-    executorExtensionHostInput.change(function () {
-        executor.executorExtensionHost = $(this).val();
+    executorProxyServiceHostInput.change(function () {
+        executor.executorProxyServiceHost = $(this).val();
+    });
+    executorProxyServicePortInput.change(function () {
+        executor.executorProxyServicePort = $(this).val();
+    });
+    executorBrowserProxyHostInput.change(function () {
+        executor.executorBrowserProxyHost = $(this).val();
+    });
+    executorBrowserProxyPortInput.change(function () {
+        executor.executorBrowserProxyPort = $(this).val();
     });
     executorExtensionPortInput.change(function () {
         executor.executorExtensionPort = $(this).val();
-    });
-    executorProxyHostInput.change(function () {
-        executor.executorProxyHost = $(this).val();
-    });
-    executorProxyPortInput.change(function () {
-        executor.executorProxyPort = $(this).val();
     });
 
     hostInput.autocomplete({
@@ -777,7 +789,7 @@ function appendExecutorRow(tableBody, executor) {
         $(this).autocomplete("search", "");
     });
 
-    executorExtensionHostInput.autocomplete({
+    executorProxyServiceHostInput.autocomplete({
         source: getInvariantArray("ROBOTPROXYHOST", false),
         minLength: 0,
         messages: {
@@ -790,7 +802,7 @@ function appendExecutorRow(tableBody, executor) {
         $(this).autocomplete("search", "");
     });
 
-    executorProxyHostInput.autocomplete({
+    executorBrowserProxyHostInput.autocomplete({
         source: getInvariantArray("ROBOTPROXYHOST", false),
         minLength: 0,
         messages: {
@@ -840,10 +852,11 @@ function addNewExecutorRow(tableBody) {
         deviceName: "",
         isDeviceLockUnlock: false,
         description: "",
-        executorExtensionHost: "",
-        executorExtensionPort: 8093,
-        executorProxyHost: "",
-        executorProxyPort: 0,
+        executorProxyServiceHost: "",
+        executorProxyServicePort: 8093,
+        executorBrowserProxyHost: "",
+        executorBrowserProxyPort: 0,
+        executorExtensionPort: 0,
         executorProxyType: "NONE"
     };
     appendExecutorRow(tableBody, newExecutor);

@@ -285,7 +285,11 @@ public class ExecutionRunService implements IExecutionRunService {
                     //Start Robot server (Selenium/Appium/Sikuli)
                     LOG.debug("{}Starting Robot Server.", logPrefix);
                     try {
-                        this.robotServerService.startServer(execution);
+                        if (execution.getRobot().contains("capabilityV2")) {
+                            this.robotServerService.startServerV2(execution);
+                        } else {
+                            this.robotServerService.startServer(execution);
+                        }
                         LOG.debug("{}Robot Server Started.", logPrefix);
                     } catch (CerberusException ex) {
                         // No need to report exception message as it will be catched and reported later
@@ -322,8 +326,8 @@ public class ExecutionRunService implements IExecutionRunService {
             if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI) && !execution.getManualExecution().equals("Y")) {
                 try {
                     Capabilities caps = this.robotServerService.getUsedCapabilities(execution.getSession());
-                    execution.setVersion(caps.getVersion());
-                    execution.setPlatform(caps.getPlatform().toString());
+                    execution.setVersion(caps.getBrowserVersion());
+                    execution.setPlatform(caps.getPlatformName().toString());
                 } catch (Exception ex) {
                     LOG.error("{}Exception on Selenium getting Used Capabilities.", logPrefix, ex);
                 }

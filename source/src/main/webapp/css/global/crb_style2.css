@@ -70,6 +70,16 @@
     --qu: var(--crb-thistle-color);
 }
 
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(255 255 255);
+    z-index: 1000;
+  }
+  
 /* BLUE */
 .labelBlue {
     color: var(--crb-blue-light-color);

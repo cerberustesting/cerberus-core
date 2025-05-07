@@ -887,7 +887,7 @@ public class ActionService implements IActionService {
             return message;
 
         } catch (Exception e) {
-            
+
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = "";
             if (e.getMessage() != null) {
@@ -1646,7 +1646,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionWaitNetworkTrafficIdle(TestCaseExecution tCExecution) {
         try {
 
-            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
+            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorProxyServiceHost(), tCExecution.getRobotExecutorObj().getExecutorProxyServicePort(),
                     tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
 
         } catch (CerberusEventException ex) {
@@ -1951,7 +1951,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -1967,7 +1967,7 @@ public class ActionService implements IActionService {
 
             // We now get the har data.
             boolean doWithResponse = ParameterParserUtil.parseBooleanParam(withResponseContent, false);
-            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
+            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
 
             har = harService.enrichWithStats(har, exe.getCountryEnvApplicationParam().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
@@ -2005,7 +2005,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -2015,7 +2015,7 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Latest index from cerberus-executor
              */
-            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
+            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID());
 
             NetworkTrafficIndex nti = new NetworkTrafficIndex();
             if (StringUtil.isEmptyOrNull(value1)) {

@@ -343,6 +343,7 @@ function loadPropertiesAndDraw(test, testcase, testcaseObject, propertyToFocus, 
 
 function drawProperty(property, testcaseObject, canUpdate, index) {
     var doc = new Doc();
+    let uniqfieldid = 'p' + uniqid++;
 
     var deleteBtn = $("<button class='btn add-btn deleteItem-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     deleteBtn.attr("disabled", !canUpdate);
@@ -392,12 +393,12 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue1Field.val(property.value1);
     propertyValue1Field.prop("readonly", !canUpdate);
     var propertyValue1Container = $("<div class='input-group'></div>");
-    var propertyValue1Addon = $("<span></span>").attr("id", "propertyValue1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    var propertyValue1Addon = $("<span></span>").attr("id", "propertyValue1Addon").addClass("input-group-addon togglefullscreen").attr('for', uniqfieldid + 'v1').attr("style", "font-weight: 700;");
     propertyValue1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     propertyValue1Field.attr("aria-describedby", "propertyValue1Addon");
     var editDatalibButton = $('<div data-toggle="tooltip" class="editDataLib input-group-addon" style="text-align:center"><span class="glyphicon glyphicon-pencil"></span></div>');
     propertyValue1Container.append(propertyValue1Addon).append(propertyValue1Field).append(editDatalibButton);
-    propertyValue1Container = $("<div class='value1'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue1Container);
+    propertyValue1Container = $("<div class='value1'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v1').append(propertyValue1Container);
 
     //propertyValue1Container.append(editDatalibButton);
 
@@ -406,32 +407,32 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue1InputField.val(property.value1);
     propertyValue1InputField.prop("readonly", !canUpdate);
     var propertyValue1InputContainer = $("<div class='input-group'></div>");
-    var propertyValue1InputAddon = $("<span></span>").attr("id", "propertyValue1InputAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    var propertyValue1InputAddon = $("<span></span>").attr("id", "propertyValue1InputAddon").addClass("input-group-addon").attr('for', uniqfieldid + 'v1b').attr("style", "font-weight: 700;");
     propertyValue1InputAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     propertyValue1InputField.attr("aria-describedby", "propertyValue1InputAddon");
     propertyValue1InputContainer.append(propertyValue1InputAddon).append(propertyValue1InputField);
-    propertyValue1InputContainer = $("<div class='valueInput1'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue1InputContainer);
+    propertyValue1InputContainer = $("<div class='valueInput1'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v1b').append(propertyValue1InputContainer);
 
     //VALUE2
     var propertyValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
     propertyValue2Field.val(property.value2);
     propertyValue2Field.prop("readonly", !canUpdate);
     var propertyValue2Container = $("<div class='input-group'></div>");
-    var propertyValue2Addon = $("<span></span>").attr("id", "propertyValue2Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    var propertyValue2Addon = $("<span></span>").attr("id", "propertyValue2Addon").addClass("input-group-addon").attr('for', uniqfieldid + 'v2').attr("style", "font-weight: 700;");
     propertyValue2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     propertyValue2Field.attr("aria-describedby", "propertyValue2Addon");
     propertyValue2Container.append(propertyValue2Addon).append(propertyValue2Field);
-    propertyValue2Container = $("<div class='value2'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue2Container);
+    propertyValue2Container = $("<div class='value2'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v2').append(propertyValue2Container);
 
     //VALUE3
     var propertyValue3Field = $("<select></select>").addClass("form-control");
     propertyValue3Field.prop("readonly", !canUpdate);
     var propertyValue3Container = $("<div class='input-group'></div>");
-    var propertyValue3Addon = $("<span></span>").attr("id", "propertyValue3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    var propertyValue3Addon = $("<span></span>").attr("id", "propertyValue3Addon").addClass("input-group-addon").attr('for', uniqfieldid + 'v3').attr("style", "font-weight: 700;");
     propertyValue3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     propertyValue3Field.attr("aria-describedby", "propertyValue3Addon");
     propertyValue3Container.append(propertyValue3Addon).append(propertyValue3Field);
-    propertyValue3Container = $("<div class='value3'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue3Container);
+    propertyValue3Container = $("<div class='value3'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v3').append(propertyValue3Container);
 
     //LENGHT
     var propertyLengthField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control");
@@ -676,6 +677,9 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     content.append(props).append(right);
     table.append(content);
     displayPropertyHelper(props, property);
+
+    bindToggleFullscreen();
+
     return [props, property];
 }
 

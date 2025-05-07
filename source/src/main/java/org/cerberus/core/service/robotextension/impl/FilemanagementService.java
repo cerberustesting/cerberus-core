@@ -65,6 +65,8 @@ public class FilemanagementService implements IFilemanagementService {
     public static final String FILEMANAGEMENT_UPLOADROBOTFILE = "upload";
     public static final String FILEMANAGEMENT_GETROBOTFILE = "download";
 
+    private static final String SIKULI_FILEMANAGEMENT_PATH = "/extra/ExecuteFilemanagementAction";
+
     private JSONObject generatePostParameters(String action, int nbFiles, String filename, String option, String contentBase64) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
 
@@ -96,17 +98,16 @@ public class FilemanagementService implements IFilemanagementService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String host = StringUtil.cleanHostURL(session.getNodeHost());
-        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteFilemanagementAction";
+        String urlToConnect = generateSikuliUrlOnNode(session, SIKULI_FILEMANAGEMENT_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
-            if (session.getNodeProxyPort() > 0) {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
+            if (session.getExecutorExtensionProxyPort() > 0) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getExecutorExtensionProxyPort()));
 
-                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getExecutorExtensionProxyPort() + ") : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
@@ -291,6 +292,11 @@ public class FilemanagementService implements IFilemanagementService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_GETROBOTFILE);
         ans.setResultMessage(mes);
         return ans;
+    }
+
+    private String generateSikuliUrlOnNode(Session session, String path) {
+        int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getNodePort());
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getNodeHost()), port, path);
     }
 
 }

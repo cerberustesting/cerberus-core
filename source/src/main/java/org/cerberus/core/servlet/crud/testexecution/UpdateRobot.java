@@ -266,26 +266,26 @@ public class UpdateRobot extends HttpServlet {
             Integer rank = reJson.getInt("rank");
             String host = reJson.getString("host");
             String port = reJson.getString("port");
-            String host_user = reJson.getString("hostUser");
+            String hostUser = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
             boolean isDeviceLockUnlock = reJson.getBoolean("isDeviceLockUnlock");
-            String executorProxyHost = "";
-            if (reJson.has("executorProxyHost") && !StringUtil.isEmptyOrNull(reJson.getString("executorProxyHost"))) {
-                executorProxyHost = reJson.getString("executorProxyHost");
+            String executorBrowserProxyHost = "";
+            if (reJson.has("executorBrowserProxyHost") && !StringUtil.isEmptyOrNull(reJson.getString("executorBrowserProxyHost"))) {
+                executorBrowserProxyHost = reJson.getString("executorBrowserProxyHost");
             }
-            Integer executorProxyPort = null;
-            if (reJson.has("executorProxyPort")) {
-                executorProxyPort = reJson.getInt("executorProxyPort");
+            Integer executorBrowserProxyPort = null;
+            if (reJson.has("executorBrowserProxyPort")) {
+                executorBrowserProxyPort = reJson.getInt("executorBrowserProxyPort");
             }
             String executorProxyType = reJson.getString("executorProxyType");
-            Integer executorExtensionPort = null;
-            String executorExtensionHost = "";
-            if (reJson.has("executorExtensionHost")) {
-                executorExtensionHost = reJson.getString("executorExtensionHost");
+            Integer executorProxyServicePort = null;
+            String executorProxyServiceHost = "";
+            if (reJson.has("executorProxyServiceHost")) {
+                executorProxyServiceHost = reJson.getString("executorProxyServiceHost");
             }
-            if (reJson.has("executorExtensionPort")) {
-                executorExtensionPort = reJson.getInt("executorExtensionPort");
+            if (reJson.has("executorProxyServicePort")) {
+                executorProxyServicePort = reJson.getInt("executorProxyServicePort");
             }
 
             Integer devicePort = null;
@@ -295,19 +295,22 @@ public class UpdateRobot extends HttpServlet {
 
             String description = reJson.getString("description");
 
-            String host_password = reJson.getString("hostPassword");
-            if (host_password.equals(StringUtil.SECRET_STRING)) {
-                host_password = "";
+            String hostPassword = reJson.getString("hostPassword");
+            if (hostPassword.equals(StringUtil.SECRET_STRING)) {
+                hostPassword = "";
                 for (RobotExecutor robotExecutor : reList1) {
                     if (robotExecutor.getID() == id) {
-                        host_password = robotExecutor.getHostPassword();
+                        hostPassword = robotExecutor.getHostPassword();
                         LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
                     }
                 }
             }
 
+            //Front (json serialize) send string empty when user provides no value. So, need to check first if value is not an empty string to secure and affect 0.
+            Integer executorExtensionPort = (reJson.has("executorExtensionPort") && !reJson.get("executorExtensionPort").toString().isEmpty()) ? reJson.getInt("executorExtensionPort") : 0;
+
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorExtensionPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }
