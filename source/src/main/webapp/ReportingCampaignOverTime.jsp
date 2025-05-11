@@ -160,7 +160,6 @@
                                             <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
                                         </div>
                                     </div>
-
                                 </div>
 
                                 <div id="perfFilters" style="display: none;" class="row">
@@ -191,12 +190,8 @@
                 </div>
 
 
-                <div class="col-lg-3" id="FiltersPanel">
+                <div class="col-lg-3" id="KPIPanel">
                     <div class="panel panel-default">
-<!--                        <div class="panel-heading card">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="filters">Availability rates</label>
-                        </div>-->
                         <div class="panel-body collapse in" id="availabiltyChart">
                             <div class="row">
                                 <div class="col-xs-8 paddingRight0" id="ChartAvailabilty1" >

@@ -78,8 +78,8 @@
     top: 0;
     background: rgba(255 255 255);
     z-index: 1000;
-  }
-  
+}
+
 /* BLUE */
 .labelBlue {
     color: var(--crb-blue-light-color);
@@ -1452,6 +1452,37 @@ table.dataTable thead th {
 
 .popover{
     width:  600px;
+}
+
+.ascommentOK{
+    font-size: x-large;
+    color: green;
+    text-align: center
+}
+.ascommentKO{
+    font-size: x-large;
+    color: red;
+    text-align: center
+}
+.ascommentWARNING{
+    font-size: x-large;
+    color: orange;
+    text-align: center
+}
+.ascommentL2OK{
+    font-size: medium;
+    color: green;
+    text-align: center
+}
+.ascommentL2KO{
+    font-size: medium;
+    color: red;
+    text-align: center
+}
+.ascommentL2WARNING{
+    font-size: medium;
+    color: orange;
+    text-align: center
 }
 
 @keyframes blink {

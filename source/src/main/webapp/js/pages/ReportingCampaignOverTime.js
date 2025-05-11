@@ -43,10 +43,28 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        $('#frompicker').datetimepicker();
+        moment.locale('en', {
+            week: {dow: 1} // Monday is the first day of the week
+        });
+
+        $('#frompicker').datetimepicker({
+            showTodayButton: true,
+            sideBySide: true,
+            keepOpen: false
+        });
+//        $('#frompicker').on("change", function () {
+//            $(this).datetimepicker('hide');
+//        });
+
         $('#topicker').datetimepicker({
+            showTodayButton: true,
+            sideBySide: true,
+            keepOpen: false,
             useCurrent: false //Important! See issue #1075
         });
+//        $('#topicker').on("change", function () {
+//            $(this).datetimepicker('hide');
+//        });
 
 //        $("#frompicker").on("dp.change", function (e) {
 //            $('#topicker').data("DateTimePicker").minDate(e.date);
