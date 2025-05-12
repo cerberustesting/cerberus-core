@@ -2641,6 +2641,18 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
 }
 }
 
+function mimicISOString(date) {
+    let d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+    return [year, month, day].join('-') + 'T00:00:00.000Z';
+}
+
 
 
 var unitlist = ["", " k", " M", " G"];

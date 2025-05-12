@@ -163,7 +163,7 @@
                                     
                                 </div>
                                 <div class="col-xs-12 ascommentL2KO" name="L2" id="freqChartComment2" style="">
-                                    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -185,10 +185,10 @@
                         <div class="panel-body collapse in" id="relChart">
                             <div class="row">
                                 <div class="col-xs-12 ascommentWARNING" name="L1" id="freqChartComment1" style="">
-                                    2% flaky tests
+                                    
                                 </div>
                                 <div class="col-xs-12 ascommentL2OK" name="L2" id="freqChartComment2" style="">
-                                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> - 1%
+                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -210,10 +210,10 @@
                         <div class="panel-body collapse in" id="durChart">
                             <div class="row">
                                 <div class="col-xs-12 ascommentOK" name="L1" id="freqChartComment1" style="">
-                                    20 min avg
+                                    
                                 </div>
                                 <div class="col-xs-12 ascommentL2WARNING" name="L2" id="freqChartComment2" style="">
-                                    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> + 5%
+                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -235,10 +235,10 @@
                         <div class="panel-body collapse in" id="mntChart">
                             <div class="row">
                                 <div class="col-xs-12 ascommentOK" name="L1" id="freqChartComment1" style="">
-                                    8 hours
+                                   
                                 </div>
                                 <div class="col-xs-12 ascommentL2OK" name="L2" id="freqChartComment2" style="">
-                                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> + 20%
+                                 
                                 </div>
                             </div>
                             <div class="row">

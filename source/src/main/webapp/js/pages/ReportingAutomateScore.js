@@ -156,6 +156,8 @@ function displayPageLabel(doc) {
  */
 
 function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
+    var user = getUser();
+
     showLoader($("#otFilterPanel"));
 
     if (environments === null || environments === undefined) {
@@ -213,7 +215,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         }
     }
 
-    let qS = "from=" + from + campaignString + environmentsQ + gp1sQ + gp2sQ + gp3sQ;
+    let qS = "from=" + mimicISOString(from) + campaignString + environmentsQ + gp1sQ + gp2sQ + gp3sQ + user.defaultSystemsQuery;
 
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingAutomateScore.jsp?" + qS);
@@ -355,7 +357,7 @@ function chartBarColorLabel(current, final) {
 }
 
 function renderGlobalAS(asValue) {
-    console.info(asValue);
+
     $("#ASA").removeClass('btn-default btn-info active');
     $("#ASB").removeClass('btn-default btn-info active');
     $("#ASC").removeClass('btn-default btn-info active');
