@@ -799,7 +799,7 @@ public class WebDriverService implements IWebDriverService {
      * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
-     *                                Database) inside current URL (from Selenium)
+     * Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
@@ -989,7 +989,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
 
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString(),exception);
+            LOG.warn(exception.toString(), exception);
             return parseWebDriverException(exception);
         }
 
@@ -1110,7 +1110,7 @@ public class WebDriverService implements IWebDriverService {
                 message.setDescription(message.getDescription()
                         .replace("%WINDOW%", targetContext)
                         .replace("%INITIALCONTEXT%", initialContext)
-                        .replace("%ALLCONTEXTS%", String.join("-", allContexts)));
+                        .replace("%ALLCONTEXTS%", String.join("  &  ", allContexts)));
                 return message;
             }
 
@@ -1129,9 +1129,9 @@ public class WebDriverService implements IWebDriverService {
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription()
-                .replace("%WINDOW%", targetContext)
+                .replace("%WINDOW%", identifier.getIdentifier() + "=" + identifier.getLocator())
                 .replace("%INITIALCONTEXT%", initialContext)
-                .replace("%ALLCONTEXTS%", String.join("-", allContexts)));
+                .replace("%ALLCONTEXTS%", String.join("  &  ", allContexts)));
         return message;
     }
 
@@ -1501,13 +1501,13 @@ public class WebDriverService implements IWebDriverService {
 
             // Arbitrary
             String[] browsers = new String[]{
-                    "",
-                    "Google Chrome",
-                    "Mozilla Firefox",
-                    "Opera",
-                    "Safari",
-                    "Internet Explorer",
-                    "Microsoft Edge",};
+                "",
+                "Google Chrome",
+                "Mozilla Firefox",
+                "Opera",
+                "Safari",
+                "Internet Explorer",
+                "Microsoft Edge",};
 
             for (String browser : browsers) {
                 HWND window;

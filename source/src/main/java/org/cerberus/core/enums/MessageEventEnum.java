@@ -305,7 +305,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SELECT_REGEX_INVALIDPATTERN(281, "FA", "Pattern '%PATTERN%' is not valid. Detailed error : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT(282, "FA", "Failed to release click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT(283, "FA", "Failed to left click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find element '%WINDOW%'! Initial window '%INITIALCONTEXT%'. All contexts available : '%ALLCONTEXTS%'", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find window '%WINDOW%'! Initial window '%INITIALCONTEXT%'. All contexts available : %ALLCONTEXTS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWITCHTOCONTEXT_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to context '%CONTEXT%' because could not find it! Available contexts are: '%CONTEXTS%'. Detailed error: %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close the alert popup ! Please either specify 'ok' or 'cancel'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_ALERT(280, "FA", "Failed to keypress '%KEY%' on the alert popup !", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
