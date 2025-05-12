@@ -17,36 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket.encoders;
+package org.cerberus.core.service.ai.impl;
 
-import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
-import org.springframework.beans.factory.annotation.Autowired;
+public class MessageAI {
+    private String sender;
+    private String content;
 
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
-import org.cerberus.core.websocket.QueueStatus;
-
-/**
- * Created by vertigo on 16/06/24.
- */
-public class QueueStatusEncoder implements Encoder.Text<QueueStatus> {
-
-    @Autowired
-    ITestCaseStepExecutionService testCaseStepExecutionService;
-
-    @Override
-    public String encode(QueueStatus queueStatus) throws EncodeException {
-        return queueStatus.toJson(true).toString();
-    }
-
-    @Override
-    public void init(EndpointConfig endpointConfig) {
+    public MessageAI() {
 
     }
 
-    @Override
-    public void destroy() {
-
+    public MessageAI(String sender, String content) {
+        this.sender = sender;
+        this.content = content;
     }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }

@@ -6677,3 +6677,8 @@ ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL A
 
 -- 1908
 DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';
+
+-- 1909
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES ('', 'cerberus_anthropic_apikey', 'my_apikey', 'Your Anthropic API Key : https://console.anthropic.com/settings/keys');
+

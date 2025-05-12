@@ -89,9 +89,10 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.websocket.TestCaseExecutionEndPoint;
+import org.cerberus.core.websocket.TestCaseExecutionWebSocket;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,9 @@ import org.cerberus.core.service.robotproxy.IRobotProxyService;
 public class ExecutionRunService implements IExecutionRunService {
 
     private static final Logger LOG = LogManager.getLogger(ExecutionRunService.class);
+
+    @Autowired
+    TestCaseExecutionWebSocket testCaseExecutionWebSocket;
 
     private ISikuliService sikuliService;
     private IRobotServerService robotServerService;
@@ -973,7 +977,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private void updateExecutionWebSocketOnly(TestCaseExecution execution, boolean forcePush) {
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(execution, forcePush);
+            testCaseExecutionWebSocket.send(execution, forcePush);
         }
 
     }
@@ -1000,8 +1004,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(execution, true);
-            TestCaseExecutionEndPoint.getInstance().end(execution);
+            testCaseExecutionWebSocket.send(execution, true);
+            testCaseExecutionWebSocket.end(execution);
         }
 
         return execution;

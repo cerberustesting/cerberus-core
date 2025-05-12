@@ -53,7 +53,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusEndPoint;
+import org.cerberus.core.websocket.QueueStatusWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -108,6 +108,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IFactoryQueueStat factoryQueueStat;
     @Autowired
     private IQueueStatService queueStatService;
+    @Autowired
+    private QueueStatusWebSocket queueStatusWebSocket;
 
     @Override
     public boolean isInstanceActive() {
@@ -674,7 +676,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             .globalLimit(poolSizeGeneral)
                             .running(const01_current)
                             .queueSize(executionsInQueue.size()).build();
-                    QueueStatusEndPoint.getInstance().send(queueS, true);
+                    queueStatusWebSocket.send(queueS, true);
                 }
 
                 queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));

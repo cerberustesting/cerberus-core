@@ -214,7 +214,7 @@ function loadExecutionInformation(executionId, steps, sockets) {
                         protocol = "wss:";
                     }
                     var path = parser.pathname.split("TestCaseExecution")[0];
-                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var new_uri = protocol + parser.host + path + "api/ws/execution/" + executionId;
 
                     var socket = new WebSocket(new_uri);
 
