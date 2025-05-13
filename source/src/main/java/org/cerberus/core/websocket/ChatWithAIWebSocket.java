@@ -63,10 +63,7 @@ public class ChatWithAIWebSocket extends TextWebSocketHandler {
             MessageAI broadcast = new MessageAI(incoming.getSender(), incoming.getContent());
             String payload = objectMapper.writeValueAsString(broadcast);
             StringBuilder context = new StringBuilder();
-            context.append("I'm working in a Software development context, in a job related to Quality assurance (automation, tester).");
-            context.append("The context of the question is related to Cerberus-testing, a low code testing framework.");
-            context.append("Respond in HTML format, including any formatting like bold, lists, icon, and code inside proper HTML tags.The maximum font-size cannot exceed 18px");
-            context.append(payload);
+            context.append( incoming.getContent());
 
             aiService.askClaude(incoming.getSender(), session, context.toString());
         } catch (Exception ex){

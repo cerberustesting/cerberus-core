@@ -37,7 +37,16 @@ function initPage() {
     displayFooter(doc);
 
     // Connect to your WebSocket endpoint
-    const socket = new WebSocket("ws://localhost:8080/cerberus_core_war/api/ws/chatai"); // Adjust to your backend port/path
+    var parser = document.createElement('a');
+    parser.href = window.location.href;
+    var protocol = "ws:";
+    if (parser.protocol === "https:") {
+        protocol = "wss:";
+    }
+    var path = parser.pathname.split("Prompt")[0];
+    var new_uri = protocol + parser.host + path + "api/ws/chatai";
+    console.info("Open Socket to : " + new_uri);
+    var socket = new WebSocket(new_uri);
 
     var username = getUser().name;
     // Append incoming streamed data
@@ -63,7 +72,7 @@ function initPage() {
     socket.onopen = function() {
         console.log("Connected to WebSocket!");
         const msg = {
-            sender: username,
+            sender: getUser().login,
             content: "Hello, I'm "+username+". Could you give me some example of things that I can ask you related to Cerberus-Testing?"
         };
         socket.send(JSON.stringify(msg));
@@ -82,7 +91,7 @@ function initPage() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
         const msg = {
-            sender: "Benoit",
+            sender: getUser().login,
             content: text
         };
         socket.send(JSON.stringify(msg));

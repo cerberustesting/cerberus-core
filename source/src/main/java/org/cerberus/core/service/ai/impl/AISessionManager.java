@@ -21,45 +21,64 @@ package org.cerberus.core.service.ai.impl;
 
 
 import com.anthropic.models.messages.MessageParam;
+import com.anthropic.models.messages.Model;
+import org.cerberus.core.crud.dao.IUserPromptDAO;
+import org.cerberus.core.crud.dao.IUserPromptMessageDAO;
+import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Component
+@Service
 public class AISessionManager {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AISessionManager.class);
 
-
-    @PostConstruct
-    public void init(){
-        LOG.debug("init AISessionManager");
-        this.listOfSessionsByUser = new HashMap<String, HashMap<String, List<MessageParam>>>();
-    }
-
+    @Autowired
+    IUserPromptDAO iUserPromptDAO;
+    @Autowired
+    IUserPromptMessageDAO iUserPromptMessageDAO;
 
     private HashMap<String, HashMap<String, List<MessageParam>>> listOfSessionsByUser;
 
 
-    public void addMessage(String user, String session, MessageParam messageParam) {
-        this.listOfSessionsByUser.putIfAbsent(user, new HashMap<>());
 
-        Map<String, List<MessageParam>> sessions = this.listOfSessionsByUser.get(user);
-        sessions.putIfAbsent(session, new ArrayList<MessageParam>());
+    public void addMessage(String login, String session, String role, String message) {
 
-        sessions.get(session).add(messageParam);
+        UserPrompt up = iUserPromptDAO.findUserPromptByUserSessionID(login, session);
+        StringBuilder messageWithInitialContext = new StringBuilder();
+        if (up == null){
+            String iaModel = Model.CLAUDE_3_5_SONNET_LATEST.toString();
+            Integer iaMaxTokens = 1024;
+            String title = "new request";
+
+            UserPrompt upToInsert = UserPrompt.builder()
+                    .login(login).sessionID(session).iaModel(iaModel).iaMaxTokens(iaMaxTokens).title(title).usrCreated(login)
+                    .build();
+
+            iUserPromptDAO.insertUserPrompt(upToInsert);
+
+            messageWithInitialContext.append("I'm working in a Software development context, in a job related to Quality assurance (automation, tester).");
+            messageWithInitialContext.append("The context of the question is related to Cerberus-testing, a low code testing framework.");
+            messageWithInitialContext.append("Respond in HTML format, including any formatting like bold, lists, icon, and code inside proper HTML tags.The maximum font-size cannot exceed 18px. ");
+        }
+
+        messageWithInitialContext.append(message);
+
+
+        UserPromptMessage upmToInsert = UserPromptMessage.builder()
+                .sessionID(session).role(role).message(messageWithInitialContext.toString()).usrCreated(login)
+                .build();
+        iUserPromptMessageDAO.insertUserPromptMessage(upmToInsert);
+
     }
 
-    public List<MessageParam> getAllMessages(String user, String session){
-        if (this.listOfSessionsByUser.containsKey(user) && this.listOfSessionsByUser.get(user).containsKey(session)) {
-            return this.listOfSessionsByUser.get(user).get(session);
-        }
-        return null;
+    public List<UserPromptMessage> getAllMessages(String user, String session){
+        List<UserPromptMessage> upm = iUserPromptMessageDAO.findBySessionID(session);
+        return upm;
     }
 
 }
