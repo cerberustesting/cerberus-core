@@ -40,7 +40,7 @@ public class UserPromptMessageDAO implements IUserPromptMessageDAO {
 
     private static final Logger LOG = LogManager.getLogger(UserPromptMessageDAO.class);
 
-    private static final String TABLE = "UserPromptMessage";
+    private static final String TABLE = "userpromptmessage";
 
     @Override
     public boolean insertUserPromptMessage(UserPromptMessage msg) {

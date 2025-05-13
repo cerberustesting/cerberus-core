@@ -43,7 +43,7 @@ public class UserPromptDAO implements IUserPromptDAO {
 
     private static final Logger LOG = LogManager.getLogger(UserPromptDAO.class);
 
-    private static final String TABLE = "UserPrompt";
+    private static final String TABLE = "userprompt";
 
     @Override
     public boolean insertUserPrompt(UserPrompt userPrompt) {
