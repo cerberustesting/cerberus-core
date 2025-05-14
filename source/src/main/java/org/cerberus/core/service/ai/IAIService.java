@@ -28,7 +28,7 @@ public interface IAIService {
     /**
      * @param newQuestion
      */
-    void askClaude(String user, WebSocketSession websocketSession, String newQuestion);
+    void askClaude(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion);
 
 }
 

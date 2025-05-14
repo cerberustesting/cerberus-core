@@ -26,9 +26,12 @@ import org.cerberus.core.crud.dao.IUserPromptDAO;
 import org.cerberus.core.crud.dao.IUserPromptMessageDAO;
 import org.cerberus.core.crud.entity.UserPrompt;
 import org.cerberus.core.crud.entity.UserPromptMessage;
+import org.cerberus.core.crud.service.IParameterService;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +44,8 @@ public class AISessionManager {
     IUserPromptDAO iUserPromptDAO;
     @Autowired
     IUserPromptMessageDAO iUserPromptMessageDAO;
+    @Autowired
+    IParameterService parameterService;
 
     private HashMap<String, HashMap<String, List<MessageParam>>> listOfSessionsByUser;
 
@@ -50,10 +55,11 @@ public class AISessionManager {
 
         UserPrompt up = iUserPromptDAO.findUserPromptByUserSessionID(login, session);
         StringBuilder messageWithInitialContext = new StringBuilder();
+
         if (up == null){
-            String iaModel = Model.CLAUDE_3_5_SONNET_LATEST.toString();
-            Integer iaMaxTokens = 1024;
-            String title = "new request";
+            String iaModel = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
+            Integer iaMaxTokens = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
+            String title = "";
 
             UserPrompt upToInsert = UserPrompt.builder()
                     .login(login).sessionID(session).iaModel(iaModel).iaMaxTokens(iaMaxTokens).title(title).usrCreated(login)
@@ -79,6 +85,32 @@ public class AISessionManager {
     public List<UserPromptMessage> getAllMessages(String user, String session){
         List<UserPromptMessage> upm = iUserPromptMessageDAO.findBySessionID(session);
         return upm;
+    }
+
+    public JSONArray getAllPromptByUser(String user){
+        List<UserPrompt> upList = iUserPromptDAO.findUserPromptsByLogin(user);
+        JSONArray result = new JSONArray();
+        for (UserPrompt up : upList){
+            result.put(up.toJSON());
+        }
+        return result;
+    }
+
+    public JSONArray getAllMessagesFromPrompt(String sessionID){
+        List<UserPromptMessage> upmList = iUserPromptMessageDAO.findBySessionID(sessionID);
+        JSONArray result = new JSONArray();
+        for (UserPromptMessage upm : upmList){
+            result.put(upm.toJSON());
+        }
+        return result;
+    }
+
+    public void updateTitle(String user, String session, String title){
+        UserPrompt up = iUserPromptDAO.findUserPromptByUserSessionID(user, session);
+        up.setTitle(title);
+        up.setUsrModif(user);
+        up.setDateModif(new Timestamp(System.currentTimeMillis()));
+        iUserPromptDAO.updateUserPrompt(up);
     }
 
 }

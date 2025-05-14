@@ -42,4 +42,20 @@ public class UserPrompt {
     private String usrModif;
     private Timestamp dateModif;
 
+
+    public JSONObject toJSON() {
+        JSONObject jo = new JSONObject();
+        jo.put("id", id);
+        jo.put("login", login);
+        jo.put("sessionID", sessionID);
+        jo.put("iaModel", iaModel);
+        jo.put("iaMaxTokens", iaMaxTokens);
+        jo.put("title", title);
+        jo.put("usrCreated", usrCreated);
+        jo.put("dateCreated", dateCreated);
+        jo.put("usrModif", usrModif);
+        jo.put("dateModif", dateModif);
+        return jo;
+    }
+
 }

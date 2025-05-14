@@ -60,12 +60,12 @@ public class ChatWithAIWebSocket extends TextWebSocketHandler {
         LOG.debug("Received" + message.toString());
         try {
             MessageAI incoming = objectMapper.readValue(message.getPayload(), MessageAI.class);
-            MessageAI broadcast = new MessageAI(incoming.getSender(), incoming.getContent());
+            MessageAI broadcast = new MessageAI(incoming.getSender(), incoming.getSessionID(), incoming.getContent());
             String payload = objectMapper.writeValueAsString(broadcast);
             StringBuilder context = new StringBuilder();
             context.append( incoming.getContent());
 
-            aiService.askClaude(incoming.getSender(), session, context.toString());
+            aiService.askClaude(incoming.getSender(), session, incoming.getSessionID(), context.toString());
         } catch (Exception ex){
             LOG.debug("Exception" + ex.toString());
         }

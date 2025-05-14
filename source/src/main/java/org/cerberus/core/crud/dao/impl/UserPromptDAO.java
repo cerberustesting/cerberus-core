@@ -152,7 +152,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     public boolean updateUserPrompt(UserPrompt userPrompt) {
         boolean result = false;
         final String sql = "UPDATE " + TABLE + " SET " +
-                "login = ?, sessionID = ?, iaModel = ?, iaMaxTokens = ?, title = ?, " +
+                "`login` = ?, `sessionID` = ?, `iaModel` = ?, `iaMaxTokens` = ?, `title` = ?, `usrModif` = ?, `dateModif` = ? " +
                 "WHERE `id` = ?";
 
         LOG.debug("SQL: {}", sql);
@@ -166,6 +166,8 @@ public class UserPromptDAO implements IUserPromptDAO {
             preStat.setString(i++, userPrompt.getIaModel());
             preStat.setInt(i++, userPrompt.getIaMaxTokens());
             preStat.setString(i++, userPrompt.getTitle());
+            preStat.setString(i++, userPrompt.getUsrModif());
+            preStat.setTimestamp(i++, userPrompt.getDateModif());
             preStat.setInt(i++, userPrompt.getId());
 
             result = preStat.executeUpdate() > 0;
@@ -180,7 +182,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     @Override
     public List<UserPrompt> findAllUserPrompts() {
         List<UserPrompt> prompts = new ArrayList<>();
-        final String sql = "SELECT * FROM " + TABLE + " ORDER BY dateCrea DESC";
+        final String sql = "SELECT * FROM " + TABLE + " ORDER BY dateCreated DESC";
 
         LOG.debug("SQL: {}", sql);
 
@@ -202,7 +204,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     @Override
     public List<UserPrompt> findUserPromptsByLogin(String login) {
         List<UserPrompt> prompts = new ArrayList<>();
-        final String sql = "SELECT * FROM " + TABLE + " WHERE login = ? ORDER BY dateCrea DESC";
+        final String sql = "SELECT * FROM " + TABLE + " WHERE login = ? ORDER BY dateCreated DESC";
 
         LOG.debug("SQL: {}", sql);
 

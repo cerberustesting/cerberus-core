@@ -21,14 +21,16 @@ package org.cerberus.core.service.ai.impl;
 
 public class MessageAI {
     private String sender;
+    private String sessionID;
     private String content;
 
     public MessageAI() {
 
     }
 
-    public MessageAI(String sender, String content) {
+    public MessageAI(String sender, String content, String sessionID) {
         this.sender = sender;
+        this.sessionID = sessionID;
         this.content = content;
     }
 
@@ -46,6 +48,14 @@ public class MessageAI {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
     }
 
 }

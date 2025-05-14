@@ -6689,3 +6689,8 @@ CREATE TABLE `userprompt` (`Id` INT NOT NULL AUTO_INCREMENT,`login` varchar(255)
 -- 1911
 CREATE TABLE `userpromptmessage` (`Id` INT AUTO_INCREMENT, `sessionID` VARCHAR(255) NOT NULL, `role` VARCHAR(255), `message` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', PRIMARY KEY (`Id`), CONSTRAINT `FK_userprompt_01` FOREIGN KEY (`sessionID`) REFERENCES `userprompt` (`sessionID`) ON DELETE CASCADE ON UPDATE CASCADE)
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 1912
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES ('', 'cerberus_anthropic_maxtoken', '1024', 'Max token to use'),
+           ('', 'cerberus_anthropic_defaultmodel', 'claude-3-5-sonnet-latest', 'Which model to use by default');

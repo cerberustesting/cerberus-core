@@ -20,6 +20,7 @@
 package org.cerberus.core.crud.entity;
 
 import lombok.*;
+import org.json.JSONObject;
 
 import java.sql.Timestamp;
 
@@ -39,4 +40,16 @@ public class UserPromptMessage {
     private String usrModif;
     private Timestamp dateModif;
 
+    public JSONObject toJSON() {
+        JSONObject jo = new JSONObject();
+        jo.put("id", id);
+        jo.put("sessionID", sessionID);
+        jo.put("role", role);
+        jo.put("message", message);
+        jo.put("usrCreated", usrCreated);
+        jo.put("dateCreated", dateCreated);
+        jo.put("usrModif", usrModif);
+        jo.put("dateModif", dateModif);
+        return jo;
+    }
 }

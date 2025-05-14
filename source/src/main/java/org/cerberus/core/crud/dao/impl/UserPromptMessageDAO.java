@@ -126,7 +126,7 @@ public class UserPromptMessageDAO implements IUserPromptMessageDAO {
     @Override
     public boolean deleteUserPromptMessage(int id) {
         boolean result = false;
-        final String sql = "DELETE FROM " + TABLE + " WHERE `id = ?";
+        final String sql = "DELETE FROM " + TABLE + " WHERE `id` = ?";
 
         LOG.debug("SQL: {}", sql);
 

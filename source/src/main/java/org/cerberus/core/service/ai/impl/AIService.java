@@ -26,6 +26,7 @@ import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.Model;
 import com.anthropic.models.messages.RawMessageStreamEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cerberus.core.crud.entity.UserPromptMessage;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.service.ai.IAIService;
@@ -36,7 +37,9 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -51,22 +54,24 @@ public class AIService implements IAIService {
     ParameterService parameterService;
 
     @Override
-    public void askClaude(String user, WebSocketSession websocketSession, String newQuestion) {
+    public void askClaude(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion) {
 
-        String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
-        AnthropicClient client = AnthropicOkHttpClient.builder()
-                .apiKey(apikey)
-                .build();
+        /**
+         * Insert new message (it create session if not exists)
+         */
+        sessionID = sessionID.equals("") ? websocketSession.getId() : sessionID;
 
-        LOG.debug("Message from :"+user+" : "+newQuestion);
-        aiSessionManager.addMessage(user, websocketSession.getId(), MessageParam.Role.USER.toString(), newQuestion);
+        LOG.debug("New message from :"+user+" in session :"+sessionID+" : "+newQuestion);
+        aiSessionManager.addMessage(user, sessionID, MessageParam.Role.USER.toString(), newQuestion);
 
-        List<UserPromptMessage> upmList = aiSessionManager.getAllMessages(user, websocketSession.getId());
-        LOG.debug("messages retrieved : " + upmList.size());
-        List<MessageParam> init = new ArrayList<MessageParam>();
-        for (UserPromptMessage upm : upmList){
+        /**
+         * Get all session message and generate context
+         */
+        List<UserPromptMessage> messageListFromSession = aiSessionManager.getAllMessages(user, sessionID);
+        List<MessageParam> messageParamList = new ArrayList<MessageParam>();
+        for (UserPromptMessage messageFromSession : messageListFromSession){
             MessageParam.Role role = MessageParam.Role.USER;
-            switch (upm.getRole()) {
+            switch (messageFromSession.getRole()) {
                 case "user":
                     role = MessageParam.Role.USER;
                     break;
@@ -74,19 +79,70 @@ public class AIService implements IAIService {
                     role = MessageParam.Role.ASSISTANT;
                     break;
             }
-            init.add(MessageParam.builder().role(role).content(upm.getMessage()).build());
+            messageParamList.add(MessageParam.builder().role(role).content(messageFromSession.getMessage()).build());
         }
 
+        /**
+         * After the first question (request N°3), generate a title to retrieve conversation
+         */
+        if (messageParamList.size()==3){
+            StringBuilder getTitle = new StringBuilder();
+            getTitle.append("find a title for this request in 5 words maximum : ");
+            getTitle.append(newQuestion);
+            List<MessageParam> messageParamTitle = new ArrayList<MessageParam>();
+            messageParamTitle.add(MessageParam.builder().role(MessageParam.Role.USER).content(getTitle.toString()).build());
+            String title = CreateStreamAndGetResponse(messageParamTitle, websocketSession, "title", false);
+            aiSessionManager.updateTitle(user, sessionID, title);
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> message = new HashMap<>();
+            message.put("type", "title");
+            message.put("title", title);
+            message.put("sessionID", sessionID);
+            try {
+                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /**
+         * Call AI and store answer
+         */
+        aiSessionManager.addMessage(user, sessionID, MessageParam.Role.ASSISTANT.toString(), CreateStreamAndGetResponse(messageParamList, websocketSession, "chat", true));
+    }
+
+    /**
+     * Build call to Anthropic, submit question and build answer to return it. Response can be streamed also through websocket
+     * @param messageParamList
+     * @param websocketSession
+     * @param type
+     * @param streamedResponse
+     * @return
+     */
+    private String CreateStreamAndGetResponse(List<MessageParam> messageParamList, WebSocketSession websocketSession, String type, boolean streamedResponse){
+
+        String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
+        String defaultModel = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
+        Integer maxToken = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
+        StringBuilder fullResponse = new StringBuilder();
+
+        AnthropicClient client = AnthropicOkHttpClient.builder()
+                .apiKey(apikey)
+                .build();
+
+        /**
+         * Build Call
+         */
         MessageCreateParams createParams = MessageCreateParams.builder()
                 .model(Model.CLAUDE_3_5_SONNET_LATEST)
-                .maxTokens(1024)
-                .messages(init)
+                .maxTokens(maxToken)
+                .messages(messageParamList)
                 .build();
 
         try (StreamResponse<RawMessageStreamEvent> streamResponse =
                      client.messages().createStreaming(createParams)) {
 
-            StringBuilder fullResponse = new StringBuilder();
+
             streamResponse.stream()
                     .flatMap(event -> event.contentBlockDelta().stream())
                     .flatMap(deltaEvent -> deltaEvent.delta().text().stream())
@@ -94,16 +150,21 @@ public class AIService implements IAIService {
                         String text = textDelta.text();
                         fullResponse.append(text);
                         try {
-                            websocketSession.sendMessage(new TextMessage(text));
+                            if (streamedResponse) {
+                                ObjectMapper mapper = new ObjectMapper();
+                                Map<String, String> message = new HashMap<>();
+                                message.put("type", type);
+                                message.put("data", text);
+                                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     });
-
-            aiSessionManager.addMessage(user, websocketSession.getId(), MessageParam.Role.ASSISTANT.toString(), fullResponse.toString());
-
         } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
+        return fullResponse.toString();
     }
+
 }
