@@ -54,7 +54,8 @@ public class UserPromptDAO implements IUserPromptDAO {
         LOG.debug("SQL: {}", sql);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY)) {
 
             int i = 1;
             preStat.setString(i++, userPrompt.getLogin());
@@ -87,7 +88,8 @@ public class UserPromptDAO implements IUserPromptDAO {
         LOG.debug("SQL: {}", sql);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql)) {
+             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setInt(1, id);
             ResultSet rs = preStat.executeQuery();
@@ -111,7 +113,8 @@ public class UserPromptDAO implements IUserPromptDAO {
         LOG.debug("SQL: {}", sql);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql)) {
+             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, login);
             preStat.setString(2, sessionID);
