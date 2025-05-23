@@ -6677,3 +6677,20 @@ ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL A
 
 -- 1908
 DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';
+
+-- 1909
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES ('', 'cerberus_anthropic_apikey', 'my_apikey', 'Your Anthropic API Key : https://console.anthropic.com/settings/keys');
+
+-- 1910
+CREATE TABLE `userprompt` (`Id` INT NOT NULL AUTO_INCREMENT,`login` varchar(255) NOT NULL,`sessionID` varchar(255) NOT NULL,`iaModel` varchar(255) NOT NULL, `iaMaxTokens` INT, `title` VARCHAR(255),`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', PRIMARY KEY (`Id`), UNIQUE KEY `ID1` (`sessionID`), CONSTRAINT `FK_user_login_01` FOREIGN KEY (`login`) REFERENCES `user` (`login`) ON DELETE CASCADE ON UPDATE CASCADE)
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 1911
+CREATE TABLE `userpromptmessage` (`Id` INT AUTO_INCREMENT, `sessionID` VARCHAR(255) NOT NULL, `role` VARCHAR(255), `message` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', PRIMARY KEY (`Id`), CONSTRAINT `FK_userprompt_01` FOREIGN KEY (`sessionID`) REFERENCES `userprompt` (`sessionID`) ON DELETE CASCADE ON UPDATE CASCADE)
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 1912
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES ('', 'cerberus_anthropic_maxtoken', '1024', 'Max token to use'),
+           ('', 'cerberus_anthropic_defaultmodel', 'claude-3-5-sonnet-latest', 'Which model to use by default');

@@ -17,38 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket.decoders;
+package org.cerberus.core.crud.dao;
 
-import com.google.gson.Gson;
+import org.cerberus.core.crud.entity.UserPrompt;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
-import org.cerberus.core.websocket.QueueStatus;
+import java.util.List;
 
-/**
- * Created by corentin on 31/10/16.
- */
-public class QueueStatusDecoder implements Decoder.Text<QueueStatus> {
+public interface IUserPromptDAO {
 
-    @Override
-    public QueueStatus decode(String s) throws DecodeException {
-        Gson gson = new Gson();
-        return gson.fromJson(s, QueueStatus.class);
-    }
+    boolean insertUserPrompt(UserPrompt userPrompt);
 
-    @Override
-    public boolean willDecode(String s) {
-        return false;
-    }
+    UserPrompt findUserPromptById(int id);
 
-    @Override
-    public void init(EndpointConfig endpointConfig) {
+    UserPrompt findUserPromptByUserSessionID(String login, String sessionID);
 
-    }
+    boolean deleteUserPrompt(int id);
 
-    @Override
-    public void destroy() {
+    boolean updateUserPrompt(UserPrompt userPrompt);
 
-    }
+    List<UserPrompt> findAllUserPrompts();
+
+    List<UserPrompt> findUserPromptsByLogin(String login);
 }

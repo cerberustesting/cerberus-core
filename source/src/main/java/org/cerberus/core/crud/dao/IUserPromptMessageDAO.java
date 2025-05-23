@@ -17,36 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket.encoders;
+package org.cerberus.core.crud.dao;
 
-import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cerberus.core.crud.entity.UserPromptMessage;
 
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
-import org.cerberus.core.websocket.QueueStatus;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
-/**
- * Created by vertigo on 16/06/24.
- */
-public class QueueStatusEncoder implements Encoder.Text<QueueStatus> {
+public interface IUserPromptMessageDAO {
 
-    @Autowired
-    ITestCaseStepExecutionService testCaseStepExecutionService;
+    boolean insertUserPromptMessage(UserPromptMessage msg);
 
-    @Override
-    public String encode(QueueStatus queueStatus) throws EncodeException {
-        return queueStatus.toJson(true).toString();
-    }
+    UserPromptMessage findById(int id);
 
-    @Override
-    public void init(EndpointConfig endpointConfig) {
+    boolean updateUserPromptMessage(UserPromptMessage msg);
 
-    }
+    boolean deleteUserPromptMessage(int id);
 
-    @Override
-    public void destroy() {
+    List<UserPromptMessage> findBySessionID(String sessionID);
 
-    }
+    UserPromptMessage loadFromResultSet(ResultSet rs) throws SQLException;
 }

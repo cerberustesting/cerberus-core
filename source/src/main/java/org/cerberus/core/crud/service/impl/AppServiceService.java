@@ -48,6 +48,7 @@ import org.cerberus.core.util.XmlUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,10 +62,15 @@ import java.util.Map;
 public class AppServiceService implements IAppServiceService {
 
     private static final Logger LOG = LogManager.getLogger(AppServiceService.class);
+    @Autowired
     private IAppServiceDAO appServiceDao;
+    @Autowired
     private IAppServiceContentService appServiceContentService;
+    @Autowired
     private IAppServiceHeaderService appServiceHeaderService;
+    @Autowired
     private ITestCaseStepActionService actionService;
+
 
     @Override
     public AppService findAppServiceByKey(String name) throws CerberusException {

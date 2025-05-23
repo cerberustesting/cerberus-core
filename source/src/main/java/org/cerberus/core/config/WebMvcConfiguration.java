@@ -19,10 +19,19 @@
  */
 package org.cerberus.core.config;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.database.DatabaseSpring;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -30,7 +39,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @EnableWebMvc
+@ComponentScan(basePackages = {
+        "org.cerberus.core.api",
+        "org.cerberus.core.apiprivate"
+})
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
+    private static final Logger LOG = LogManager.getLogger(WebMvcConfiguration.class);
+
+    @Autowired
+    @Qualifier("requestMappingHandlerMapping")
+    private RequestMappingHandlerMapping handlerMapping;
+
+    @PostConstruct
+    public void logAllEndpoints() {
+        handlerMapping.getHandlerMethods().forEach((k, v) -> {
+            LOG.debug("Mapped endpoint: " + k + " -> " + v);
+        });
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

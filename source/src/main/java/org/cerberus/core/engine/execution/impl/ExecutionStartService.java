@@ -47,7 +47,6 @@ import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestService;
-import org.cerberus.core.crud.service.impl.TagService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.execution.IConditionService;
@@ -60,9 +59,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusEndPoint;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.cerberus.core.websocket.QueueStatusWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -108,6 +105,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private QueueStatusWebSocket queueStatusWebSocket;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -591,7 +590,7 @@ public class ExecutionStartService implements IExecutionStartService {
                         .globalLimit(executionUUIDObject.getGlobalLimit())
                         .running(executionUUIDObject.getRunning())
                         .queueSize(executionUUIDObject.getQueueSize()).build();
-                QueueStatusEndPoint.getInstance().send(queueS, true);
+                queueStatusWebSocket.send(queueS, true);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);

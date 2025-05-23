@@ -22,6 +22,7 @@ package org.cerberus.core.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -37,7 +38,21 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 @EnableScheduling
-@ComponentScan("org.cerberus")
+@ComponentScan(
+        basePackages = {
+                "org.cerberus"
+        },
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "org\\.cerberus\\.core\\.api\\..*"
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "org\\.cerberus\\.core\\.apiprivate\\..*"
+                )
+        }
+)
 public class CerberusConfiguration {
 
     @Bean

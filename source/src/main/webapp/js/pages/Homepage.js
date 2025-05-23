@@ -159,7 +159,7 @@ function loadQueueStatusWebSocket(sockets) {
         protocol = "wss:";
     }
     var path = parser.pathname.split("Homepage")[0];
-    var new_uri = protocol + parser.host + path + "queuestatus";
+    var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
     console.info("Open Socket to : " + new_uri);
     var socket = new WebSocket(new_uri);
 
