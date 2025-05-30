@@ -47,6 +47,8 @@ function readUserFromDatabase() {
                 data.defaultSystemsQuery = "&system=" + data.defaultSystem;
             }
             user = data;
+//            console.info("write user pref to session storage from Cerberus :");
+//            console.info(user);
             sessionStorage.setItem("user", JSON.stringify(user));
             loadUserPreferences(data);
             return user;

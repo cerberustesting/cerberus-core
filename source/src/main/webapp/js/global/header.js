@@ -450,7 +450,16 @@ function updateUserPreferences(objectWaitingLayer) {
     if (objectWaitingLayer !== undefined) {
         showLoader(objectWL);
     }
-    var tempLocalStorage = localStorage;
+    let tempLocalStorage = [];
+    tempLocalStorage = localStorage;
+
+//    tempLocalStorage.removeItem("historyTestcases");
+//    tempLocalStorage.removeItem("historyExecutions");
+//    tempLocalStorage.removeItem("historyCampaigns");
+//    tempLocalStorage.removeItem("properties");
+//    tempLocalStorage.removeItem("secondaryProperties");
+//    tempLocalStorage.removeItem("listReport");
+
     for (var i = 0; i < tempLocalStorage.length; i++) {
         if (tempLocalStorage.key(i).startsWith("DataTables_")) {
             let temp = JSON.parse(tempLocalStorage.getItem(tempLocalStorage.key(i)));
@@ -459,7 +468,11 @@ function updateUserPreferences(objectWaitingLayer) {
         }
     }
 //    console.info(tempLocalStorage);
-    var uPref = JSON.stringify(localStorage);
+    var uPref = "";
+    uPref = JSON.stringify(localStorage);
+//    console.info("upload user perf to Cerberus :");
+//    console.info(uPref);
+
     $.ajax({url: "UpdateMyUser",
         type: "POST",
         data: {column: "userPreferences", value: uPref},
