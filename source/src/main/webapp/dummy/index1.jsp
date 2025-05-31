@@ -176,7 +176,7 @@
                 console.log({"key1": "value", "key2": "value", "key3": "value"});
                 console.log({"key1": "value", "key2": "value", "key3": "value"}.toString());
                 var objet = {"key1": "value", "key2": "value", "key3": new Date().getTime().toString()};
-                tableau.push(objet)
+                tableau.push(objet);
             }
         </script>
         <br>

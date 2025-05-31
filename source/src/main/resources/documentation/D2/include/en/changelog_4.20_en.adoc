@@ -23,6 +23,7 @@
 * Muted and Flaky campaign executions are now saved on every tag. Those information can be monitored on history graphs.
 * You can now perform a service simulation call without saving the service (allowing to tune the call before commit the change to the database)
 * Every text editor field can now move to full screen mode.
+* verifyURL is more clever, waiting for a timeout before providing result (just like element checks). #2593
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
