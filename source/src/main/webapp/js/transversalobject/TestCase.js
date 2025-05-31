@@ -949,7 +949,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#comment").prop("value", "");
         formEdit.find("#origin").prop("value", "");
         formEdit.find("#refOrigin").prop("value", "");
-        formEdit.find("#isMuted").addClass("glyphicon-volume-up");
+        formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-up");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
