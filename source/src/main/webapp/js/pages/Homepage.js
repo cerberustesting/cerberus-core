@@ -164,18 +164,18 @@ function loadQueueStatusWebSocket(sockets) {
     var socket = new WebSocket(new_uri);
 
     socket.onopen = function (e) {
-    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+    }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
     socket.onmessage = function (e) {
         var data = JSON.parse(e.data);
 //        console.info("received data from socket");
 //        console.info(data);
         updatePageQueueStatus(data);
 //        updatePage(data, steps);
-    } //on récupère les messages provenant du serveur websocket
+    }; //on récupère les messages provenant du serveur websocket
     socket.onclose = function (e) {
-    } //on est informé lors de la fermeture de la connexion vers le serveur
+    }; //on est informé lors de la fermeture de la connexion vers le serveur
     socket.onerror = function (e) {
-    } //on traite les cas d'erreur*/
+    }; //on traite les cas d'erreur*/
 
     // Remain in memory
     sockets.push(socket);
@@ -358,7 +358,6 @@ function updatePageQueueStatus(data) {
 function loadExeCurrentlyRunning() {
 
     $.ajax({
-//        url: "ReadCerberusDetailInformation?" + getUser().defaultSystemsQuery,
         url: "api/executions/running",
         method: "GET",
         async: true,
