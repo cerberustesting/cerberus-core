@@ -95,6 +95,7 @@ public class UpdateRobot extends HttpServlet {
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
+        String originalRobotName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("originalRobotName"), null, charset);
         String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), null, charset);
@@ -121,7 +122,7 @@ public class UpdateRobot extends HttpServlet {
 
         JSONArray objExecutorArray = new JSONArray(request.getParameter("executors"));
         List<RobotExecutor> executors = new ArrayList<>();
-        executors = getExecutorsFromParameter(robot, request, appContext, objExecutorArray);
+        executors = getExecutorsFromParameter(originalRobotName, robot, request, appContext, objExecutorArray);
 
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
@@ -248,13 +249,16 @@ public class UpdateRobot extends HttpServlet {
         response.getWriter().flush();
     }
 
-    private List<RobotExecutor> getExecutorsFromParameter(String robot, HttpServletRequest request, ApplicationContext appContext, JSONArray json) throws JSONException, CerberusException {
+    private List<RobotExecutor> getExecutorsFromParameter(String originalRobotName, String robot, HttpServletRequest request, ApplicationContext appContext, JSONArray json) throws JSONException, CerberusException {
         List<RobotExecutor> reList = new ArrayList<>();
         IFactoryRobotExecutor reFactory = appContext.getBean(IFactoryRobotExecutor.class);
         IRobotExecutorService reService = appContext.getBean(IRobotExecutorService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-        List<RobotExecutor> reList1 = reService.convert(reService.readByRobot(robot));
+
+        //We pass the old robot name in case the robot is renamed, otherwise we query with the new name, so no records found in DB.
+        // If no change, originalRobotName is equal to robot.
+        List<RobotExecutor> robotExecutorsFromDb = reService.convert(reService.readByRobot(originalRobotName));
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject reJson = json.getJSONObject(i);
@@ -298,7 +302,7 @@ public class UpdateRobot extends HttpServlet {
             String hostPassword = reJson.getString("hostPassword");
             if (hostPassword.equals(StringUtil.SECRET_STRING)) {
                 hostPassword = "";
-                for (RobotExecutor robotExecutor : reList1) {
+                for (RobotExecutor robotExecutor : robotExecutorsFromDb) {
                     if (robotExecutor.getID() == id) {
                         hostPassword = robotExecutor.getHostPassword();
                         LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
