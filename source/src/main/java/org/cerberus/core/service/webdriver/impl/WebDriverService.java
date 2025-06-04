@@ -22,8 +22,6 @@ package org.cerberus.core.service.webdriver.impl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.W32APIOptions;
-//import io.appium.java_client.AppiumDriver;
-//import io.appium.java_client.MobileElement;
 import mantu.lab.treematching.TreeMatcher;
 import mantu.lab.treematching.TreeMatcherResponse;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +62,6 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.Logs;
-import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -83,7 +80,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -108,7 +104,7 @@ public class WebDriverService implements IWebDriverService {
 
     private By getBy(Identifier identifier) {
 
-        LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
+        LOG.debug("Finding selenium Element : {} by : {}", identifier.getLocator(), identifier.getIdentifier());
 
         By by;
         switch (identifier.getIdentifier()) {
@@ -143,7 +139,7 @@ public class WebDriverService implements IWebDriverService {
 
         AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
-        LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element : {}={}", identifier.getIdentifier(), identifier.getLocator());
 
         WebElement element = null;
 
@@ -156,7 +152,7 @@ public class WebDriverService implements IWebDriverService {
                 //Find all elements retrieved
                 List<WebElement> elements = session.getDriver().findElements(this.getBy(identifier));
 
-                // If random, overide rank with one random int from 1 to the size of the result
+                // If random, override rank with one random int from 1 to the size of the result
                 if (random) {
                     Random r = new Random();
                     rank = r.nextInt(elements.size());
@@ -217,7 +213,7 @@ public class WebDriverService implements IWebDriverService {
 
             elapsedSinceStart = new Date().getTime() - start;
             i++;
-            LOG.debug("QUERY_SELECTOR ATTEMPT #" + i + " / Elapsed time from beginning : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
+            LOG.debug("QUERY_SELECTOR ATTEMPT #{} / Elapsed time from beginning : {} (timeout : {})", i, elapsedSinceStart, session.getCerberus_selenium_wait_element());
 
             try {
                 Thread.sleep(500);
@@ -235,15 +231,15 @@ public class WebDriverService implements IWebDriverService {
                 //If element retrieved is on the visible part of the page, break
                 if (finalElement.getLocation().getX() < driver.manage().window().getSize().getWidth()
                         && finalElement.getLocation().getY() < driver.manage().window().getSize().getHeight()) {
-                    LOG.debug("FOUND : " + finalElement);
+                    LOG.debug("FOUND : {}", finalElement);
                     return finalElement;
                 } else {
                     scrolled = false;
-                    LOG.debug("Element '" + querySelector + "' " + finalElement.getLocation() + " is out of the visible screen " + driver.manage().window().getSize() + " >> Retrying to scroll");
+                    LOG.debug("Element '{}' {} is out of the visible screen {} >> Retrying to scroll", querySelector, finalElement.getLocation(), driver.manage().window().getSize());
                 }
 
             } catch (Exception ex) {
-                LOG.debug("NOT FOUND : " + querySelector);
+                LOG.debug("NOT FOUND : {}", querySelector);
             }
 
         }
@@ -256,7 +252,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message = null;
         WebElement webElement = null;
         try {
-            LOG.debug("Start scrollTo Webdriver with : " + identifier + " and text " + text + " and " + offsets);
+            LOG.debug("Start scrollTo Webdriver with : {} and text {} and {}", identifier, text, offsets);
             if (StringUtil.isEmptyOrNull(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
@@ -279,7 +275,7 @@ public class WebDriverService implements IWebDriverService {
                         finalH = Integer.valueOf(soffsets[0]);
                         finalV = Integer.valueOf(soffsets[1]);
                     } catch (Exception e) {
-                        LOG.warn("Failed offset convertion to Interger : " + offsets);
+                        LOG.warn("Failed offset conversion to Integer : {}", offsets);
                     }
                 }
 
@@ -305,7 +301,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
 
         } catch (Exception e) {
-            LOG.error("An error occured during scroll to (element:" + identifier, e);
+            LOG.error("An error occurred during scroll to (element:{}", identifier, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             message.setDescription(message.getDescription().replace("%DETAIL%", e.getMessage()));
             return message;
@@ -321,8 +317,8 @@ public class WebDriverService implements IWebDriverService {
          * new Actions(driver); actions.moveToElement(element);
          * actions.perform();
          */
-        LOG.debug("Scroll with offset : " + horizontalOffset + " and " + verticalOffset);
-        LOG.debug(" on element : " + element.toString());
+        LOG.debug("Scroll with offset : {} and {}", horizontalOffset, verticalOffset);
+        LOG.debug(" on element : {}", element.toString());
         if (isElementText) {
             ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
         } else {
@@ -346,7 +342,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent msg;
         By locator;
         String erratumMessage = "";
-        LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element : {}={}", identifier.getIdentifier(), identifier.getLocator());
 
         /**
          * If the identifier is using erratum, we trigger here the Erratum algo
@@ -362,7 +358,7 @@ public class WebDriverService implements IWebDriverService {
                 return answer;
             }
             String newXpath = getNewXPathFromErratum(session, identifier);
-            LOG.debug("NEW XPATH = " + newXpath);
+            LOG.debug("NEW XPATH = {}", newXpath);
             if (!StringUtil.isEmptyOrNull(newXpath)) {
                 locator = By.xpath(newXpath);
                 identifier.setIdentifier(Identifier.IDENTIFIER_XPATH);
@@ -391,7 +387,7 @@ public class WebDriverService implements IWebDriverService {
         }
 
         /**
-         * locator now content the right definition so we can wait the element
+         * locator now content the right definition, so we can wait the element
          * with the required condition (visible or clickable)
          */
         try {
@@ -417,7 +413,7 @@ public class WebDriverService implements IWebDriverService {
             msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
 
             /**
-             * Element was found so we can now highlight it if requested.
+             * Element was found, so we can now highlight it if requested.
              */
             if (session.getCerberus_selenium_highlightElement() > 0 && !isAppium) {
                 JavascriptExecutor js = (JavascriptExecutor) session.getDriver();
@@ -432,7 +428,7 @@ public class WebDriverService implements IWebDriverService {
             }
 
         } catch (TimeoutException exception) {
-            LOG.warn("Exception waiting for element :" + exception);
+            LOG.warn("Exception waiting for element :", exception);
             Integer numberOfElement = 0;
             try {
                 numberOfElement = this.getNumberOfElements(session, identifier);
@@ -450,7 +446,7 @@ public class WebDriverService implements IWebDriverService {
      * @param session
      * @param identifier
      * @return the new xpath value calculated using Erratum algorithm. Cerberus
-     * will attempt to convert during the timeeout parameter period or after a
+     * will attempt to convert during the timeout parameter period or after a
      * maximum of 100 iterations.
      */
     private String getNewXPathFromErratum(Session session, Identifier identifier) {
@@ -458,9 +454,9 @@ public class WebDriverService implements IWebDriverService {
         LOG.debug("Entering ERRATUM Method ============================================================");
         String[] result = identifier.getLocator().split(ERRATUM_SEPARATOR);
         String oldXpath = validXpathToErratumXpath(result[0]);
-        LOG.debug("OLD XPATH = " + oldXpath);
+        LOG.debug("OLD XPATH = {}", oldXpath);
         String oldHtml = identifier.getLocator().replace(oldXpath + ERRATUM_SEPARATOR, "");
-        LOG.debug("OLD HTML = " + oldHtml);
+        LOG.debug("OLD HTML = {}", oldHtml);
         String newHtml = "";
         String newXpath = "";
 
@@ -473,7 +469,7 @@ public class WebDriverService implements IWebDriverService {
 
             elapsedSinceStart = new Date().getTime() - start;
             i++;
-            LOG.debug("ERRATUM ATTEMPT #" + i + " / Elapsed time from begining : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
+            LOG.debug("ERRATUM ATTEMPT #{} / Elapsed time from beginning : {} (timeout : {})", i, elapsedSinceStart, session.getCerberus_selenium_wait_element());
 
             try {
                 Thread.sleep(1000);
@@ -483,12 +479,12 @@ public class WebDriverService implements IWebDriverService {
 
             newHtml = this.getPageSource(session);
 
-            LOG.debug("NEW HTML = " + newHtml.replace("\n", ""));
+            LOG.debug("NEW HTML = {}", newHtml.replace("\n", ""));
 
             LOG.debug("Getting Erratum TreeMatcherResponse.");
             TreeMatcherResponse treeMatcherResponse = TreeMatcher.matchWebpages(oldHtml, newHtml);
 
-            // Filtering on non null edges and new map with old xpath as key
+            // Filtering on non-null edges and new map with old xpath as key
             Map<String, String> edges = treeMatcherResponse.getEdges()
                     .stream()
                     .filter(edge -> !(edge.getSource() == null || edge.getTarget() == null))
@@ -499,10 +495,10 @@ public class WebDriverService implements IWebDriverService {
             LOG.debug("Erratum TreeMatcherResponse Mapping result :");
             LOG.debug(edges);
 
-            // Verifying if errratum has found the new xpath
+            // Verifying if erratum has found the new xpath
             if (edges.containsKey(oldXpath)) {
                 newXpath = erratumXpathToValidXpath(edges.get(oldXpath));
-                LOG.debug("Old XPath " + oldXpath + " found and converted to : " + newXpath);
+                LOG.debug("Old XPath {} found and converted to : {}", oldXpath, newXpath);
                 break;
             }
         }
@@ -644,7 +640,7 @@ public class WebDriverService implements IWebDriverService {
                     try {
                         result = (String) ((JavascriptExecutor) session.getDriver()).executeScript(script, webElement);
                     } catch (Exception e) {
-                        LOG.debug("getValueFromHTML locator : '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "', exception : " + e.getMessage());
+                        LOG.debug("getValueFromHTML locator : '{}={}', exception : {}", identifier.getIdentifier(), identifier.getLocator(), e.getMessage());
                     }
                 }
             }
@@ -715,12 +711,12 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotPresent(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
-        LOG.debug("Waiting for Element to be not present : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element to be not present : {}={}", identifier.getIdentifier(), identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(locator)));
         } catch (TimeoutException exception) {
-            LOG.warn("Exception waiting for element to be not present :" + exception);
+            LOG.warn("Exception waiting for element to be not present :{}", exception);
             return false;
         }
     }
@@ -743,12 +739,12 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotVisible(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
-        LOG.debug("Waiting for Element to be not visible : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element to be not visible : {}={}", identifier.getIdentifier(), identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException exception) {
-            LOG.warn("Exception waiting for element to be not visible :" + exception);
+            LOG.warn("Exception waiting for element to be not visible :{}", exception);
             return false;
         }
     }
@@ -849,7 +845,7 @@ public class WebDriverService implements IWebDriverService {
 
                 if (image != null) {
                     //logs for debug purposes
-                    LOG.info("WebDriverService: screenshot taken with succes: " + image.getName() + " (size : " + image.length() + ")");
+                    LOG.info("WebDriverService: screenshot taken with success: {} (size : {})", image.getName(), image.length());
                 } else {
                     LOG.warn("WebDriverService: screen-shot returned null: ");
                 }
@@ -925,12 +921,12 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotClickable(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
-        LOG.debug("Waiting for Element to be not clickable : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element to be not clickable : {}={}", identifier.getIdentifier(), identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(locator)));
         } catch (TimeoutException exception) {
-            LOG.warn("Exception waiting for element to be not clickable :" + exception);
+            LOG.warn("Exception waiting for element to be not clickable :{}", exception);
             return false;
         }
     }
@@ -1083,7 +1079,7 @@ public class WebDriverService implements IWebDriverService {
         } catch (NoSuchWindowException exception) {
             currentWindowId = null;
             initialContext = "Page has been closed.";
-            LOG.debug("Window is closed ? " + exception.toString());
+            LOG.debug("Window is closed ? {}", exception.toString());
         }
 
         try {
@@ -1102,7 +1098,7 @@ public class WebDriverService implements IWebDriverService {
                     targetContext = "URL:" + session.getDriver().getCurrentUrl() + " | Title:" + session.getDriver().getTitle();
                 }
                 //}
-                LOG.debug("windowHandle=" + windowHandle);
+                LOG.debug("windowHandle={}", windowHandle);
             }
 
             if (!StringUtil.isEmptyOrNull(targetHandle)) {
@@ -1155,11 +1151,11 @@ public class WebDriverService implements IWebDriverService {
             }
         } catch (NoSuchWindowException exception) {
             // Add try catch to handle not exist anymore alert popup (like when popup is closed).
-            LOG.debug("Alert popup is closed ? " + exception.toString());
+            LOG.debug("Alert popup is closed ? {}", exception.toString());
         } catch (TimeoutException exception) {
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.debug("Alert popup is closed ? " + exception.toString());
+            LOG.debug("Alert popup is closed ? {}", exception.toString());
             return parseWebDriverException(exception);
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
@@ -1170,7 +1166,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         String newKey = valueToPress;
         try {
-            // Mapp Keys.
+            // Map Keys.
             // Not mapped keys are : NULL, CANCEL, HELP, , CLEAR, PAUSE, END, HOME, INSERT, META, COMMAND, ZENKAKU_HANKAKU
 
             newKey = newKey.replace("[TAB]", Keys.TAB)
@@ -1208,11 +1204,11 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (NoSuchWindowException exception) {
             // Add try catch to handle not exist anymore alert popup (like when popup is closed).
-            LOG.debug("Alert popup still exist ? " + exception.toString());
+            LOG.debug("Alert popup still exist ? {}", exception.toString());
         } catch (TimeoutException exception) {
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.debug("Alert popup still exist ? " + exception.toString());
+            LOG.debug("Alert popup still exist ? {}", exception.toString());
             return parseWebDriverException(exception);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ALERT);
@@ -1581,7 +1577,7 @@ public class WebDriverService implements IWebDriverService {
                     } else {
                         //the key enterer is not valid
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("%KEY%", keyToPress);
-                        LOG.debug("Key " + keyToPress + " is not available in the current context");
+                        LOG.debug("Key {} is not available in the current context", keyToPress);
                     }
 
                     message.setDescription(message.getDescription().replace("%KEY%", keyToPress));
@@ -1994,7 +1990,7 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (Exception e) {
             LOG.error(e, e);
-            // Unfortunatly that can happen on Firefox See : https://github.com/SeleniumHQ/selenium/issues/7792
+            // Unfortunately that can happen on Firefox See : https://github.com/SeleniumHQ/selenium/issues/7792
             result.add("CRITICAL ERROR when getting the Console logs!!\n");
             result.add(e.getMessage());
         }
