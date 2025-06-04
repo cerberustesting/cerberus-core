@@ -341,6 +341,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
+        boolean isAppium = (session.getAppiumDriver() != null);
         AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
         By locator;
@@ -397,7 +398,7 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             WebElement element;
             if (visible) {
-                if (session.isCerberus_selenium_autoscroll()) {
+                if (session.isCerberus_selenium_autoscroll() && !isAppium) {
                     element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
                     scrollElement(session, element, false, session.getCerberus_selenium_autoscroll_horizontal_offset(), session.getCerberus_selenium_autoscroll_vertical_offset());
                 }
@@ -418,7 +419,7 @@ public class WebDriverService implements IWebDriverService {
             /**
              * Element was found so we can now highlight it if requested.
              */
-            if (session.getCerberus_selenium_highlightElement() > 0) {
+            if (session.getCerberus_selenium_highlightElement() > 0 && !isAppium) {
                 JavascriptExecutor js = (JavascriptExecutor) session.getDriver();
                 js.executeScript("arguments[0].setAttribute('style', 'background: yellow; border: 2px solid red;');", element);
                 try {
