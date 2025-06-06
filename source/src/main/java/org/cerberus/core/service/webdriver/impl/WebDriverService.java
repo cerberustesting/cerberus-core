@@ -559,15 +559,16 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public String getElementsValues(Session session, Identifier identifier) {
         WebDriver driver = session.getDriver();
-        List<String> result = new ArrayList();
+        boolean isAppium = (session.getAppiumDriver() != null);
+        List<String> result = new ArrayList<>();
 
         List<WebElement> elements = driver.findElements(this.getBy(identifier));
         for (WebElement webElement : elements) {
             if (webElement != null) {
-                if (webElement.getTagName().equalsIgnoreCase("select")) {
+                if (!isAppium && webElement.getTagName().equalsIgnoreCase("select")) {
                     Select select = (Select) webElement;
                     result.add(select.getFirstSelectedOption().getText());
-                } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
+                } else if (!isAppium && (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input"))) {
                     result.add(webElement.getAttribute("value"));
                 } else {
                     result.add(webElement.getText());
@@ -581,20 +582,21 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public String getElementsValuesSum(TestCaseExecution testCaseExecution, Identifier identifier) {
         WebDriver driver = testCaseExecution.getSession().getDriver();
+        boolean isAppium = (testCaseExecution.getSession().getAppiumDriver() != null);
         Double resultSum = 0.0;
 
         List<WebElement> elements = driver.findElements(this.getBy(identifier));
         for (WebElement webElement : elements) {
             String preparedString = "";
             if (webElement != null) {
-                if (webElement.getTagName().equalsIgnoreCase("select")) {
+                if (!isAppium && webElement.getTagName().equalsIgnoreCase("select")) {
                     Select select = (Select) webElement;
                     preparedString = StringUtil.prepareToNumeric(select.getFirstSelectedOption().getText());
                     if (!StringUtil.isEmptyOrNull(preparedString)) {
                         resultSum += Double.valueOf(preparedString);
                         testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding [" + preparedString + "] from init value [" + select.getFirstSelectedOption().getText() + "] to previous sum [" + resultSum + "].");
                     }
-                } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
+                } else if (!isAppium && (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input"))) {
                     preparedString = StringUtil.prepareToNumeric(webElement.getAttribute("value"));
                     if (!StringUtil.isEmptyOrNull(preparedString)) {
                         resultSum += Double.valueOf(preparedString);
