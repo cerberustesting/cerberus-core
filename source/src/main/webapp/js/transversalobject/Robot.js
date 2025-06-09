@@ -22,6 +22,7 @@
 //var hostUserBeforeUpdate = null;
 var availableHost = [];
 var nbRow = 0;
+var originalRobotName = null;
 
 /***
  * Open the modal with robot information.
@@ -158,6 +159,10 @@ function initModalRobot() {
         } else {
             $('#browserLogo').attr('src', '');
         }
+    });
+
+    $("#editRobotModal").on("hidden.bs.modal", function() {
+       originalRobotName = null;
     });
 
 }
@@ -316,6 +321,7 @@ function confirmRobotModalHandler(mode) {
         async: true,
         method: "POST",
         data: {
+            originalRobotName: originalRobotName,
             robot: data.robot,
             robotid: data.robotid,
             isActive: data.robotIsActive,
@@ -369,6 +375,7 @@ function feedRobotModal(robot, modalId, mode) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
+    originalRobotName = robot;
 
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({

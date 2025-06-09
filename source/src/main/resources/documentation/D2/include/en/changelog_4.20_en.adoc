@@ -5,6 +5,8 @@
 * Fixed regression that could duplicate notification on campaign definition.
 * Fixed issue when adding a new application on Environment modal
 * Fixed date/Time picker on queue follow-up screen for Last Hour and Last 6 Hours
+* Fixed emptying host password when renaming or duplicating a robot. #2591
+* Fixed an issue affecting some controls in mobile tests when cerberus_selenium_autoscroll is enabled. #2592
 
 *Improvements / New features*
 [square]
