@@ -184,6 +184,7 @@ public class TagService implements ITagService {
 
             // End of queue is now.
             mytag.setDateEndQueue(new Timestamp(new Date().getTime()));
+            mytag.setDurationMs((new Date().getTime() - mytag.getDateStartExe().getTime()));
             tagDAO.updateDateEndQueue(mytag);
 
             // Total execution.

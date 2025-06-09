@@ -43,31 +43,44 @@ public class RetriesService implements IRetriesService {
 
     // Retry management, in case the result is not (OK or NE), we execute the job again reducing the retry to 1.
     @Override
-    public boolean manageRetries(TestCaseExecution tCExecution) {
+    public Map<String, Integer> manageRetries(TestCaseExecution tCExecution) {
+        Map<String, Integer> result = new HashMap<>();
+        result.put("AlreadyExecuted", 0);
+        result.put("Retry", 0);
+
+        TestCaseExecutionQueue newExeQueue;
+        if (tCExecution.getQueueID() > 0) {
+            // If QueueId exist, we try to get the original execution queue.
+            try {
+                newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID(), false));
+                result.put("AlreadyExecuted", newExeQueue.getAlreadyExecuted());
+            } catch (Exception e) {
+                // Unfortunatly the execution no longuer exist so we pick initial value.
+                newExeQueue = tCExecution.getTestCaseExecutionQueue();
+            }
+        } else {
+            // Initial Execution does not come from the queue so we pick the value created at the beginning of the execution.
+            newExeQueue = tCExecution.getTestCaseExecutionQueue();
+        }
+
         if (tCExecution.getNumberOfRetries() > 0
                 && !tCExecution.getResultMessage().getCodeString().equals("OK")
                 && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
-            TestCaseExecutionQueue newExeQueue;
-            if (tCExecution.getQueueID() > 0) {
-                // If QueueId exist, we try to get the original execution queue.
-                try {
-                    newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID(), false));
-                } catch (Exception e) {
-                    // Unfortunatly the execution no longuer exist so we pick initial value.
-                    newExeQueue = tCExecution.getTestCaseExecutionQueue();
-                }
-            } else {
-                // Initial Execution does not come from the queue so we pick the value created at the beginning of the execution.
-                newExeQueue = tCExecution.getTestCaseExecutionQueue();
+
+            if (manageRetries(newExeQueue)) {
+                result.put("Retry", 1);
             }
-            return manageRetries(newExeQueue);
+            return result;
         }
-        return false;
+
+        return result;
     }
 
     private boolean manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
         // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
         int newRetry = tCExecutionQueue.getRetries() - 1;
+        int alreadyExed = tCExecutionQueue.getAlreadyExecuted() + 1;
+//        int newRetry = tCExecutionQueue.getRetries() - 1;
         if (newRetry < 0) {
             LOG.debug("Execution not retried because no more retry.");
             return false; // no automatic retry if newRetry <=0
@@ -82,6 +95,7 @@ public class RetriesService implements IRetriesService {
         tCExecutionQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
         tCExecutionQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         tCExecutionQueue.setRetries(newRetry);
+        tCExecutionQueue.setAlreadyExecuted(alreadyExed);
         try {
 
             Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();

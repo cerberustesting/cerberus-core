@@ -19,18 +19,20 @@
  */
 package org.cerberus.core.engine.execution;
 
+import java.util.Map;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 
 public interface IRetriesService {
 
-
     /**
-     * Retry management, in case the result is not (OK or NE), we
-     * execute the job again reducing the retry to 1.
+     * Retry management, in case the result is not (OK or NE), we execute the
+     * job again reducing the retry to 1. Map has 2 values:
+     * <br>"AlreadyExecuted" will have nb of already executed <br>"Retry" will
+     * be 1 if we need to retry a new execution
      *
      * @param tCExecution
-     * @return  */
-    boolean manageRetries(TestCaseExecution tCExecution);
-
+     * @return
+     */
+    Map<String, Integer> manageRetries(TestCaseExecution tCExecution);
 
 }

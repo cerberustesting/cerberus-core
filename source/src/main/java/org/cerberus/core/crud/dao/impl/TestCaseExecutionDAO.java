@@ -150,7 +150,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("  test = ?, testcase = ?, description = ?, build = ?, ");
         query.append("  revision = ?, environment = ?, environmentData = ?, country = ?, ");
         query.append("  browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?, ");
-        query.append("  start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, ");
+        query.append("  start = ?, end = ? , durationMs = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, ");
         query.append("  version = ?, platform = ?, executor = ?, screensize = ?, ");
         query.append("  conditionOperator = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal3Init = ?, ");
         query.append("  ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, ");
@@ -187,6 +187,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             } else {
                 preStat.setString(i++, "1970-01-01 01:01:01");
             }
+            preStat.setLong(i++, tCExecution.getDurationMs());
             preStat.setString(i++, tCExecution.getControlStatus());
             preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(tCExecution.getControlMessage(), 65000), tCExecution.getSecrets()));
             preStat.setString(i++, tCExecution.getCrbVersion());
@@ -565,6 +566,26 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setBoolean(1, falseNegative);
             preStat.setString(2, usrModif);
             preStat.setLong(3, id);
+            preStat.executeUpdate();
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public void updateLastAndFlacky(long id, boolean last, boolean flacky, String usrModif) throws CerberusException {
+        final String query = "UPDATE testcaseexecution exe SET exe.IsLast = ?, exe.IsFlacky = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.id : {}", id);
+        LOG.debug("SQL.param.last : {}", last);
+        LOG.debug("SQL.param.falcky : {}", flacky);
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setBoolean(1, last);
+            preStat.setBoolean(2, flacky);
+            preStat.setString(3, usrModif);
+            preStat.setLong(4, id);
             preStat.executeUpdate();
 
         } catch (SQLException exception) {
@@ -1254,6 +1275,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int testCaseVersion = resultSet.getInt("exe.testCaseVersion");
         int testCasePriority = resultSet.getInt("exe.testCasePriority");
         boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
+        boolean isFlacky = resultSet.getBoolean("exe.IsFlacky");
+        boolean isLast = resultSet.getBoolean("exe.IsLast");
+        long durationMs = ParameterParserUtil.parseLongParam(resultSet.getString("exe.DurationMs"), 0);
         String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProvider"), "");
         String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotSessionId"), "");
         String robotProviderSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProviderSessionId"), "");
@@ -1267,6 +1291,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 0, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
                 conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
                 usrCreated, dateCreated, usrModif, dateModif);
+        result.setFlacky(isFlacky);
+        result.setLast(isLast);
+        result.setDurationMs(durationMs);
         result.setQueueID(queueId);
         result.setRobotProviderSessionID(robotProviderSessionId);
         result.setFalseNegative(falseNegative);

@@ -53,6 +53,7 @@ public class Tag {
     private String campaign;
     private Timestamp dateEndQueue;
     private Timestamp dateStartExe;
+    private long durationMs;
     private int nbExe;
     private int nbExeUsefull;
     private int nbOK;

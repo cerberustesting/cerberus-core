@@ -192,6 +192,17 @@ public interface ITestCaseExecutionService {
     void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException;
 
     /**
+     * Set Tag to an Execution
+     *
+     * @param id : ID of the execution to update
+     * @param isLast : value of Last Execution from retry.
+     * @param isFlacky : value of Flacky Flag.
+     * @param usrModif
+     * @throws CerberusException when exception occur during the update.
+     */
+    void updateLastAndFlacky(long id, boolean isLast, boolean isFlacky, String usrModif) throws CerberusException;
+
+    /**
      * @param tag
      * @param start
      * @param amount

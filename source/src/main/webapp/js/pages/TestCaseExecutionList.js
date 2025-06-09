@@ -316,6 +316,31 @@ function aoColumnsFunc() {
             }
         },
         {
+            "data": "durationMs",
+            "visible": false,
+            "sName": "exe.durationMs",
+            "like": true,
+            "title": doc.getDocOnline("testcaseexecution", "durationMs"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "isLast",
+            "visible": false,
+            "sName": "exe.isLast",
+            "title": doc.getDocOnline("testcaseexecution", "isLast"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "isFlacky",
+            "visible": false,
+            "sName": "exe.isFlacky",
+            "title": doc.getDocOnline("testcaseexecution", "isFlacky"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "controlMessage",
             "sName": "exe.controlmessage",
             "like": true,

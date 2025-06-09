@@ -70,8 +70,11 @@ public class TestCaseExecution {
     private String platform;
     private long start;
     private long end;
+    private long durationMs;
     private String controlStatus;
     private boolean falseNegative;
+    private boolean isFlacky;
+    private boolean isLast;
     private String controlMessage;
     private String application;
     private String url;
@@ -350,7 +353,7 @@ public class TestCaseExecution {
     public TestCaseStepExecution getTestCaseStepExecutionByStepId(int stepId) {
         TestCaseStepExecution tcsee = this.getTestCaseStepInExecution();
         //If step executing if from library, return the step from the library instead
-        if (tcsee.isUsingLibraryStep()){
+        if (tcsee.isUsingLibraryStep()) {
             for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
                 if (stepId == tcse.getTestCaseStep().getLibraryStepStepId()) {
                     return tcse;
@@ -437,6 +440,10 @@ public class TestCaseExecution {
             result.put("videos", this.getVideos());
             result.put("previousExeId", this.getPreviousExeId());
             result.put("previousExeStatus", this.getPreviousExeStatus());
+
+            result.put("isLast", this.isLast());
+            result.put("isFlacky", this.isFlacky());
+            result.put("durationMs", this.getDurationMs());
 
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateCreated", this.getDateCreated());

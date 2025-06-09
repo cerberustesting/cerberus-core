@@ -54,6 +54,7 @@ public class TestCaseExecutionQueue {
     private int consoleLog;
     private String manualExecution;
     private int retries;
+    private int alreadyExecuted;
     private Date requestDate;
     private State state;
     private int priority;
@@ -207,6 +208,14 @@ public class TestCaseExecutionQueue {
 
     public void setRetries(int retries) {
         this.retries = retries;
+    }
+
+    public int getAlreadyExecuted() {
+        return alreadyExecuted;
+    }
+
+    public void setAlreadyExecuted(int alreadyExecuted) {
+        this.alreadyExecuted = alreadyExecuted;
     }
 
     public String getComment() {

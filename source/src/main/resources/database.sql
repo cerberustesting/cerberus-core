@@ -6694,3 +6694,23 @@ CREATE TABLE `userpromptmessage` (`Id` INT AUTO_INCREMENT, `sessionID` VARCHAR(2
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
     VALUES ('', 'cerberus_anthropic_maxtoken', '1024', 'Max token to use'),
            ('', 'cerberus_anthropic_defaultmodel', 'claude-3-5-sonnet-latest', 'Which model to use by default');
+
+-- 1913
+ALTER TABLE `testcaseexecution`  
+    ADD COLUMN `IsLast` BOOLEAN DEFAULT false AFTER `FalseNegative`,
+    ADD COLUMN `IsFlacky` BOOLEAN DEFAULT false AFTER `IsLast`,
+    ADD COLUMN `DurationMs` BIGINT DEFAULT 0 AFTER `End` ;
+
+-- 1914
+ALTER TABLE `tag`  
+    ADD COLUMN `DurationMs` BIGINT DEFAULT 0 AFTER `DateEndQueue` ;
+
+-- 1915
+UPDATE tag SET DurationMs = TIMESTAMPDIFF(MICROSECOND, DateStartExe , DateEndQueue) / 1000  WHERE DateEndQueue > DateStartExe;
+
+-- 1916
+ALTER TABLE `testcaseexecutionqueue`  
+    ADD COLUMN `AlreadyExecuted` INT DEFAULT 0 AFTER `Retries`;
+
+-- 1917
+UPDATE testcaseexecution SET DurationMs = TIMESTAMPDIFF(MICROSECOND, `Start`  , `End` ) /1000  where `End`  > `Start` ;

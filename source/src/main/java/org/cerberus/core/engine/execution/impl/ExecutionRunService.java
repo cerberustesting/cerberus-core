@@ -103,6 +103,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.execution.IIdentifierService;
@@ -908,7 +909,20 @@ public class ExecutionRunService implements IExecutionRunService {
                     execution.getTestCaseObj().getDescription().replace(".", ""));
 
             // Retry management, in case the result is not (OK or NE), we execute the job again reducing the retry to 1.
-            boolean willBeRetried = retriesService.manageRetries(execution);
+            Map<String, Integer> willBeRetriedMap = retriesService.manageRetries(execution);
+            boolean willBeRetried = false;
+            if (willBeRetriedMap.get("Retry") == 1) {
+                willBeRetried = true;
+            }
+
+            execution.setLast(!willBeRetried);
+
+            execution.setFlacky(!willBeRetried && (TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && willBeRetriedMap.get("AlreadyExecuted") > 0));
+
+            testCaseExecutionService.updateLastAndFlacky(runID,
+                    !willBeRetried,
+                    !willBeRetried && (TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && willBeRetriedMap.get("AlreadyExecuted") > 0),
+                    execution.getUsrCreated());
 
             // Updating queue to done status only for execution from queue
             if (execution.getQueueID() != 0) {
@@ -995,6 +1009,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Saving TestCaseExecution object.
         execution.setEnd(new Date().getTime());
+        execution.setDurationMs(new Date().getTime() - execution.getStart());
 
         try {
             testCaseExecutionService.updateTCExecution(execution);

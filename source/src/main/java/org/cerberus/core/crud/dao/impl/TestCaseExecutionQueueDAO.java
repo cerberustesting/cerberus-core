@@ -1274,8 +1274,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VIDEO + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_ROBOT_LOG + "`, `" + COLUMN_CONSOLE_LOG + "`, `" + COLUMN_RETRIES + "`, `"
-                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`, `AlreadyExecuted`) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1328,6 +1328,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             preStat.setString(i++, object.getComment());
             preStat.setString(i++, object.getDebugFlag());
             preStat.setInt(i++, object.getPriority());
+            preStat.setInt(i++, object.getAlreadyExecuted());
 
             preStat.executeUpdate();
 
@@ -2487,6 +2488,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 resultSet.getString(COLUMN_COMMENT),
                 resultSet.getString(COLUMN_DEBUGFLAG),
                 resultSet.getInt(COLUMN_RETRIES),
+                resultSet.getInt("AlreadyExecuted"),
                 resultSet.getString(COLUMN_MANUAL_EXECUTION),
                 resultSet.getLong(COLUMN_EXEID),
                 resultSet.getString(COLUMN_USRCREATED),

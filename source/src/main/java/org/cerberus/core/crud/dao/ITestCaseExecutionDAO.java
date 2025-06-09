@@ -180,6 +180,17 @@ public interface ITestCaseExecutionDAO {
     public void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException;
 
     /**
+     * Set Tag to an execution
+     *
+     * @param id : ID of the execution
+     * @param last
+     * @param flacky
+     * @param usrModif
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    public void updateLastAndFlacky(long id, boolean last, boolean flacky, String usrModif) throws CerberusException;
+
+    /**
      * @param tag
      * @param start
      * @param amount

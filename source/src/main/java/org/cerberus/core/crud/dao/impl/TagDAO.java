@@ -755,7 +755,7 @@ public class TagDAO implements ITagDAO {
     public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, ");
+        query.append("UPDATE tag SET DateEndQueue = ?, DurationMs = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, ");
         query.append("  nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, nbFlaky = ?, nbMuted = ?, ");
         query.append("  CIScore = ?, CIScoreThreshold = ?, CIScoreMax = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, ");
         query.append("  RobotDecliList = ?, SystemList = ?, ApplicationList = ?  ");
@@ -768,6 +768,7 @@ public class TagDAO implements ITagDAO {
 
             int i = 1;
             preStat.setTimestamp(i++, tag.getDateEndQueue());
+            preStat.setLong(i++, tag.getDurationMs());
             preStat.setInt(i++, tag.getNbExe());
             preStat.setInt(i++, tag.getNbExeUsefull());
             preStat.setInt(i++, tag.getNbOK());

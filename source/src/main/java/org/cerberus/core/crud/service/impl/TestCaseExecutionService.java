@@ -204,6 +204,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public void updateLastAndFlacky(long id, boolean isLast, boolean isFlacky, String usrModif) throws CerberusException {
+        testCaseExecutionDao.updateLastAndFlacky(id, isLast, isFlacky, usrModif);
+    }
+
+    @Override
     public AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) {
         return AnswerUtil.convertToAnswerList(() -> testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch));
     }
