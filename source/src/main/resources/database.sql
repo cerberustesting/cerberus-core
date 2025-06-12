@@ -6714,3 +6714,7 @@ ALTER TABLE `testcaseexecutionqueue`
 
 -- 1917
 UPDATE testcaseexecution SET DurationMs = TIMESTAMPDIFF(MICROSECOND, `Start`  , `End` ) /1000  where `End`  > `Start` ;
+
+-- 1918
+ALTER TABLE `testcaseexecution`  
+    CHANGE COLUMN `IsLast` `IsUseful` BOOLEAN DEFAULT false;

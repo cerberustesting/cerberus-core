@@ -340,6 +340,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         Integer nbRetryTot = (Integer) ttcObject.get("NbRetry");
                         nbRetryTot += testCaseExecution.getNbExecutions() - 1;
                         ttcObject.put("NbRetry", nbRetryTot);
+                        // Max Duration
+                        long durationMax = (Integer) ttcObject.get("DurationMsMax");
+                        if (testCaseExecution.getDurationMs() > durationMax) {
+                            durationMax = testCaseExecution.getDurationMs();
+                            ttcObject.put("DurationMsMax", durationMax);
+                        }
+                        ttcObject.put("DurationMsMax", testCaseExecution.getDurationMs());
                         // Nb Total Usefull Executions
                         Integer nbExeUsefullTot = (Integer) ttcObject.get("NbExeUsefull");
                         nbExeUsefullTot++;
@@ -410,6 +417,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         // Adding nb of execution on retry.
                         ttcObject.put("NbRetry", (testCaseExecution.getNbExecutions() - 1));
 
+                        // Adding Duration Max.
+                        ttcObject.put("DurationMsMax", testCaseExecution.getDurationMs());
+
                         // Adding nb of execution on retry.
                         ttcObject.put("NbExe", (testCaseExecution.getNbExecutions()));
 
@@ -478,9 +488,17 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 int nbTOCLEAN = 0;
                 int nbPENDING = 0;
                 int nbTOREPORT = 0;
-                // building Bug Status.
+                long durationMax = 0;
+                // building Bug Status & agregated values.
                 for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                     JSONObject val = entry.getValue();
+
+                    // Max duration
+                    if (val.getLong("DurationMsMax") > durationMax) {
+                        durationMax = val.getLong("DurationMsMax");
+                    }
+
+                    // Bug
                     JSONArray bugA = val.getJSONArray("bugs");
                     int nbBug = bugA.length();
                     if (nbBug > 0) {
@@ -537,6 +555,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 bugRes.put("nbTOCLEAN", nbTOCLEAN);
                 bugRes.put("nbBugs", bugMapUniq.size());
                 testCaseExecutionTable.put("bugContent", bugRes);
+
+                testCaseExecutionTable.put("durationMax", durationMax);
 
             } catch (JSONException ex) {
                 LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);

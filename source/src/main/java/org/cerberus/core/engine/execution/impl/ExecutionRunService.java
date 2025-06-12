@@ -915,7 +915,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 willBeRetried = true;
             }
 
-            execution.setLast(!willBeRetried);
+            execution.setUseful(!willBeRetried);
 
             execution.setFlacky(!willBeRetried && (TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && willBeRetriedMap.get("AlreadyExecuted") > 0));
 

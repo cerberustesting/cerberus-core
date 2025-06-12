@@ -1031,7 +1031,7 @@ function loadReportList(data2, selectTag) {
                                             </table></form><div class="marginBottom20"></div>');
             }
 
-            var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), true, [0, 'asc']);
+            var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns, data2.durationMax), true, [0, 'asc']);
             customConfig(config);
 
             var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
@@ -1922,14 +1922,14 @@ function massAction_copyQueueWithoutDep() {
 }
 
 
-function aoColumnsFunc(Columns) {
+function aoColumnsFunc(Columns, durationMax) {
     var doc = new Doc();
     var colNb = Columns.length;
     var nbColumn = colNb + 5;
     var testCaseInfoWidth = (1 / 6) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
     var tag = $('#selectTag').val();
-
+    
     var aoColumns = [
         {
             "data": "test",
@@ -2166,6 +2166,27 @@ function aoColumnsFunc(Columns) {
                 "sClass": "lastEnd",
                 "sWidth": "60px",
                 "title": "Last Exe End"
+            };
+    aoColumns.push(col);
+    col =
+            {
+                "data": "DurationMsMax",
+                "sName": "tec.DurationMsMax",
+                "mRender": function (data, type, obj) {
+                    let durPer = obj.DurationMsMax / durationMax * 100;
+                    let statClass = "";
+                    if (obj.DurationMsMax > 60000) {
+                        statClass = ' statusFA';
+                    }
+                    if (obj.DurationMsMax > 300000) {
+                        statClass = ' statusKO';
+                    }
+                    return "<div class='progress' data-toggle='tooltip' data-html='true' title='' data-original-title='" + getHumanReadableDuration(obj.DurationMsMax / 1000, 2) + "'><div class='progress-bar " + statClass + "' role='progressbar' style='width:" + durPer + "%;'>" + obj.DurationMsMax + "</div></div>";
+                },
+                "visible": false,
+                "sClass": "durationmax",
+                "sWidth": "30px",
+                "title": "Duration Max"
             };
     aoColumns.push(col);
     col =

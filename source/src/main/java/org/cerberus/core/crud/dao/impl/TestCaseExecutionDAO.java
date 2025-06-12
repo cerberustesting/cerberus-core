@@ -576,7 +576,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public void updateLastAndFlacky(long id, boolean last, boolean flacky, String usrModif) throws CerberusException {
-        final String query = "UPDATE testcaseexecution exe SET exe.IsLast = ?, exe.IsFlacky = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
+        final String query = "UPDATE testcaseexecution exe SET exe.IsUseful = ?, exe.IsFlacky = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", id);
         LOG.debug("SQL.param.last : {}", last);
@@ -1276,7 +1276,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int testCasePriority = resultSet.getInt("exe.testCasePriority");
         boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
         boolean isFlacky = resultSet.getBoolean("exe.IsFlacky");
-        boolean isLast = resultSet.getBoolean("exe.IsLast");
+        boolean isUseful = resultSet.getBoolean("exe.IsUseful");
         long durationMs = ParameterParserUtil.parseLongParam(resultSet.getString("exe.DurationMs"), 0);
         String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProvider"), "");
         String robotSessionId = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotSessionId"), "");
@@ -1292,7 +1292,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
                 usrCreated, dateCreated, usrModif, dateModif);
         result.setFlacky(isFlacky);
-        result.setLast(isLast);
+        result.setUseful(isUseful);
         result.setDurationMs(durationMs);
         result.setQueueID(queueId);
         result.setRobotProviderSessionID(robotProviderSessionId);

@@ -63,8 +63,10 @@ public interface IFactoryTestCaseExecution {
      * @param verbose
      * @param screenshot
      * @param pageSource
+     * @param video
      * @param robotLog
      * @param synchroneous
+     * @param consoleLog
      * @param timeout
      * @param outputFormat
      * @param status
