@@ -2603,26 +2603,26 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
     let cnt1 = 0;
     let cnt2 = 0;
     if (dur > 60) {
-        dur = dur / 60
-        unit = "min"
+        dur = dur / 60;
+        unit = "min";
     } else {
         return Math.round(dur) + " " + unit;
     }
     if (dur >= 60) {
-        dur = dur / 60
-        unit = "h"
+        dur = dur / 60;
+        unit = "h";
     } else {
         cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60)
+        cnt2 = durInSec - (cnt1 * 60);
         if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + cnt2 + " s";
+            return cnt1 + " " + unit + " " + Math.round(cnt2) + " s";
         } else {
             return cnt1 + " " + unit;
         }
     }
     if (dur > 24) {
-        dur = dur / 24
-        unit = "d"
+        dur = dur / 24;
+        unit = "d";
     } else {
         cnt1 = Math.floor(dur);
         cnt2 = durInSec - (cnt1 * 60 * 60)

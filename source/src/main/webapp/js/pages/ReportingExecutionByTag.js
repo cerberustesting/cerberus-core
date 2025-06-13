@@ -1650,7 +1650,7 @@ function generateTooltip(data) {
     }
     htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDate(data.Start) + '</div>';
     if (getDateShort(data.End) !== "") {
-        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.End) + '</div>';
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.End) + ' <span class=\'' + getClassDuration(data.DurationMs) + '\'>(' + getHumanReadableDuration(data.DurationMs / 1000, 2) + ')</span></div>';
     }
     htmlRes += '<div>' + ctrlmessage + '</div>';
     if (data.isMuted) {
@@ -1929,7 +1929,7 @@ function aoColumnsFunc(Columns, durationMax) {
     var testCaseInfoWidth = (1 / 6) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
     var tag = $('#selectTag').val();
-    
+
     var aoColumns = [
         {
             "data": "test",
@@ -2174,17 +2174,11 @@ function aoColumnsFunc(Columns, durationMax) {
                 "sName": "tec.DurationMsMax",
                 "mRender": function (data, type, obj) {
                     let durPer = obj.DurationMsMax / durationMax * 100;
-                    let statClass = "";
-                    if (obj.DurationMsMax > 60000) {
-                        statClass = ' statusFA';
-                    }
-                    if (obj.DurationMsMax > 300000) {
-                        statClass = ' statusKO';
-                    }
+                    let statClass = getClassDuration(obj.DurationMsMax);
                     return "<div class='progress' data-toggle='tooltip' data-html='true' title='' data-original-title='" + getHumanReadableDuration(obj.DurationMsMax / 1000, 2) + "'><div class='progress-bar " + statClass + "' role='progressbar' style='width:" + durPer + "%;'>" + obj.DurationMsMax + "</div></div>";
                 },
                 "visible": false,
-                "sClass": "durationmax",
+//                "sClass": "durationmax",
                 "sWidth": "30px",
                 "title": "Duration Max"
             };
@@ -2236,6 +2230,16 @@ function aoColumnsFunc(Columns, durationMax) {
     return aoColumns;
 }
 
+function getClassDuration(duration) {
+    if (duration <= 60000) {
+        return '';
+    }
+    if (duration > 300000) {
+        return 'statusKO';
+    }
+    return 'statusFA';
+
+}
 function renderDependency(id) {
     let text = "";
     let textdelay = "";

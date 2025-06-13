@@ -225,6 +225,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseExecution.getEnvironment()));
         result.put("Start", testCaseExecution.getStart());
         result.put("End", testCaseExecution.getEnd());
+        result.put("DurationMs", testCaseExecution.getDurationMs());
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecution.getCountry()));
         result.put("RobotDecli", JavaScriptUtils.javaScriptEscape(testCaseExecution.getRobotDecli()));
         result.put("ManualExecution", JavaScriptUtils.javaScriptEscape(testCaseExecution.getManualExecution()));
