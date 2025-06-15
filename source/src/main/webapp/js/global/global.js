@@ -2625,7 +2625,7 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
         unit = "d";
     } else {
         cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60 * 60)
+        cnt2 = durInSec - (cnt1 * 60 * 60);
         if ((cnt2 > 0) && (nbUnits > 1)) {
             return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
         } else {
@@ -2633,12 +2633,22 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
         }
     }
     cnt1 = Math.floor(dur);
-    cnt2 = durInSec - (cnt1 * 60 * 60 * 24)
+    cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
     if ((cnt2 > 0) && (nbUnits > 1)) {
         return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
     } else {
         return cnt1 + " " + unit;
 }
+}
+
+function getClassDuration(duration) {
+    if (duration <= 60000) {
+        return '';
+    }
+    if (duration > 300000) {
+        return 'statusKO';
+    }
+    return 'statusFA';
 }
 
 function mimicISOString(date) {

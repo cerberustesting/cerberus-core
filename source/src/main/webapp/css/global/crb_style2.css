@@ -351,6 +351,7 @@
 }
 .statusKO {
     background-color: var(--crb-red-color);
+    color: #fff;
 }
 
 /* FA */
@@ -367,6 +368,7 @@
 }
 .statusFA {
     background-color: var(--crb-orange-color);
+    color: #fff;
 }
 
 /* CA */

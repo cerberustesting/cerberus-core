@@ -2230,16 +2230,6 @@ function aoColumnsFunc(Columns, durationMax) {
     return aoColumns;
 }
 
-function getClassDuration(duration) {
-    if (duration <= 60000) {
-        return '';
-    }
-    if (duration > 300000) {
-        return 'statusKO';
-    }
-    return 'statusFA';
-
-}
 function renderDependency(id) {
     let text = "";
     let textdelay = "";

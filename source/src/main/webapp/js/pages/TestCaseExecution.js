@@ -404,7 +404,7 @@ function displayPageLabel(doc) {
     $("#ns1Label").text(doc.getDocLabel("page_executiondetail", "ns1"));
     $("#ns2Label").text(doc.getDocLabel("page_executiondetail", "ns2"));
     $("#ns3Label").text(doc.getDocLabel("page_executiondetail", "ns3"));
-    
+
 
     // Traceability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
@@ -1528,7 +1528,8 @@ function setConfigPanel(data) {
 //        fi.setAttribute("href", "logo-REST.png");
 //    }
     if (data.controlStatus !== "PE") {
-        configPanel.find("#duration").text("(" + (data.end - data.start) / 1000 + " s)");
+        configPanel.find("#duration").text("(" + getHumanReadableDuration(data.durationMs / 1000, 2) + ")");
+        $("#duration").addClass(getClassDuration(data.durationMs));
     }
     configPanel.find("#duration").attr("data-original-title", new Date(data.start).toLocaleString());
 

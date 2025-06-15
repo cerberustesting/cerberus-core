@@ -84,7 +84,7 @@
                                         <span id="environment"></span>
                                         <span name="Separator"> </span>
                                         <span id="controlstatus" style="font-weight: 900"></span>
-                                        <span id="duration" data-toggle='tooltip' data-original-title=''></span>
+                                        <span id="duration" class="" data-toggle='tooltip' data-original-title=''></span>
                                     </div>
                                     <div class="text-wrap">
                                         <span id="AppName"> </span>
