@@ -293,7 +293,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             Integer devicePort = null;
-            if (reJson.has("devicePort") && !StringUtil.isEmptyOrNull(reJson.getString("devicePort"))) {
+            if (reJson.has("devicePort") && !reJson.get("devicePort").toString().isEmpty()) {
                 devicePort = reJson.getInt("devicePort");
             }
 
