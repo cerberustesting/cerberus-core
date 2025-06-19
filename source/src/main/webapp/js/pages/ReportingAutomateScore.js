@@ -27,6 +27,21 @@ var configHistoMnt = {};
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 var nbEnv = 0;
 
+const imageA = new Image(20, 20);
+imageA.src = "images/AS-A2.png";
+const imageB = new Image(20, 20);
+imageB.src = "images/AS-B1.png";
+const imageC = new Image(20, 20);
+imageC.src = "images/AS-C1.png";
+const imageD = new Image(20, 20);
+imageD.src = "images/AS-D1.png";
+const imageE = new Image(20, 20);
+imageE.src = "images/AS-E2.png";
+const imageNA = new Image(20, 20);
+imageNA.src = "images/AS-NA2.png";
+
+
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -43,14 +58,20 @@ $.when($.getScript("js/global/global.js")).then(function () {
             week: {dow: 1} // Monday is the first day of the week
         });
 
-        $('#frompicker').datetimepicker({
+        $('#topicker').datetimepicker({
             format: 'YYYY-MM-DD [(Week] WW YYYY)',
             keepOpen: false,
             calendarWeeks: true
         });
 
         var campaigns = GetURLParameters("campaigns");
-        var from = GetURLParameter("from");
+        var to = GetURLParameter("to");
+
+        var nbWeeks = GetURLParameter("nbWeeks");
+        if (nbWeeks === null || nbWeeks === undefined) {
+            nbWeeks = 15;
+        }
+        $('#trendWeeks').val(nbWeeks);
 
         var environments = GetURLParameters("environments");
         //        
@@ -58,14 +79,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var gp2s = GetURLParameters("group2s");
         var gp3s = GetURLParameters("group3s");
 
-        let fromD;
-        if (from === null) {
-            fromD = new Date();
-            fromD.setMonth(fromD.getMonth() - 1);
+        let toD;
+        if (to === null) {
+            toD = new Date();
+            toD.setMonth(toD.getMonth() - 1);
         } else {
-            fromD = new Date(from);
+            toD = new Date(to);
         }
-        $('#frompicker').data("DateTimePicker").date(moment(fromD));
+        $('#topicker').data("DateTimePicker").date(moment(toD));
 
         $("#campaignSelect").empty();
         $("#campaignSelect").select2({width: "100%"});
@@ -164,7 +185,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         environments = [];
     }
 
-    let from = new Date($('#frompicker').data("DateTimePicker").date());
+    let to = new Date($('#topicker').data("DateTimePicker").date());
 
     if ($("#envSelect").val() !== null) {
         environments = $("#envSelect").val();
@@ -178,7 +199,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
     var campaignString = "";
     if ($("#campaignSelect").val() !== null) {
         for (var i = 0; i < $("#campaignSelect").val().length; i++) {
-            var campaignString = campaignString + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
+            campaignString = campaignString + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
         }
     }
 
@@ -215,81 +236,197 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         }
     }
 
-    let qS = "from=" + mimicISOString(from) + campaignString + environmentsQ + gp1sQ + gp2sQ + gp3sQ + user.defaultSystemsQuery;
+    nbWeeks = document.getElementById("trendWeeks").value;
+
+    let qS = "nbWeeks=" + nbWeeks + "&to=" + mimicISOString(to) + campaignString + environmentsQ + gp1sQ + gp2sQ + gp3sQ + user.defaultSystemsQuery;
 
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingAutomateScore.jsp?" + qS);
     }
 
     $.ajax({
-        url: "ReadTagStat?" + qS,
+        url: "api/automatescore/statistics?" + qS,
         method: "GET",
         async: true,
         dataType: 'json',
         success: function (data) {
-            if (data.messageType === "OK") {
-                updateNbDistinct(data.distinct);
-                loadEnvironmentCombo(data);
 
-                renderGlobalAS("E");
+//            console.info(data);
 
-                let labelsDatasets = ['W10', 'W11', 'W12', 'W13', 'W14'];
+            renderGlobalAS("B");
 
-                renderKPIHeader("freqChart", "4", "runs per week", "OK", "ISO", "+20", "OK");
-                let tagfreqdatasets = [{
-                        label: '# / week',
-                        data: [5, 3, 5, 2, 3],
-                        backgroundColor: 'rgba(54, 162, 235, 1)',
-                        borderColor: chartBarColorLabel('rgba(54, 162, 235, 1)', 'red'),
-                        borderWidth: 1
-                    }];
-                configHistoFreq.data.datasets = tagfreqdatasets;
-                configHistoFreq.data.labels = labelsDatasets;
-                window.myHistoFreq.update();
+            let labelsDatasets = [];
 
+            let kpiFreqData = [];
+            let kpiFreqColor = [];
+            let kpiFreqPoint = [];
 
-                renderKPIHeader("relChart", "2", "flaky tests", "WARNING", "DOWN", "-1", "KO");
-                let tagreldatasets = [{
-                        label: '% of Flacky',
-                        data: [6, 3, 5, 2, 3],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: chartBarColorLabel('rgba(54, 162, 235, 1)', 'green'),
-                        borderWidth: 1
-                    }];
-                configHistoRel.data.datasets = tagreldatasets;
-                configHistoRel.data.labels = labelsDatasets;
-                window.myHistoRel.update();
+            let kpiRelData = [];
+            let kpiRelColor = [];
+            let kpiRelPoint = [];
 
+            let kpiDurData = [];
+            let kpiDurColor = [];
+            let kpiDurPoint = [];
 
-                renderKPIHeader("durChart", "20", "min avg", "OK", "UP", "+5", "WARNING");
-                let tagdurdatasets = [{
-                        label: 'minutes',
-                        data: [6, 3, 5, 1, 2],
-                        backgroundColor: 'rgba(153, 102, 255, 1)',
-                        borderColor: chartBarColorLabel('rgba(54, 162, 235, 1)', 'orange'),
-                        borderWidth: 1
-                    }];
-                configHistoDur.data.datasets = tagdurdatasets;
-                configHistoDur.data.labels = labelsDatasets;
-                window.myHistoDur.update();
+            let kpiMaintData = [];
+            let kpiMaintColor = [];
+            let kpiMaintPoint = [];
 
+            for (let index = 0; index < data.weeks.length; index++) {
+                labelsDatasets.push(data.weeks[index].label);
 
-                renderKPIHeader("mntChart", "8", "hours", "KO", "DOWN", "-20", "OK");
-                let tagmntdatasets = [{
-                        label: 'hours',
-                        data: [6, 3, 4, 2, 4],
-                        backgroundColor: 'rgba(255, 159, 64, 1)',
-                        borderColor: chartBarColorLabel('rgba(54, 162, 235, 1)', 'green'),
-                        borderWidth: 1
-                    }];
-                configHistoMnt.data.datasets = tagmntdatasets;
-                configHistoMnt.data.labels = labelsDatasets;
-                window.myHistoMnt.update();
+                kpiFreqData.push(data.weekStats[data.weeks[index].val].kpiFrequency.value);
+                kpiFreqColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.score));
+                kpiFreqPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.score));
 
+                kpiRelData.push(data.weekStats[data.weeks[index].val].kpiReliability.value / 100);
+                kpiRelColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiReliability.score));
+                kpiRelPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiReliability.score));
+
+                kpiDurData.push(data.weekStats[data.weeks[index].val].kpiDuration.value / 60000);
+                kpiDurColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiDuration.score));
+                kpiDurPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiDuration.score));
+
+                kpiMaintData.push(data.weekStats[data.weeks[index].val].kpiMaintenance.value);
+                kpiMaintColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.score));
+                kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.score));
             }
+
+            renderScope(Object.keys(data.campaigns), data.tags);
+
+            let lastKPI = data.weekStats[data.weeks[kpiFreqData.length - 1].val];
+            renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.score, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVs1 / 100);
+
+            renderKPIHeader("relChart", lastKPI.kpiReliability.value / 100, "%", "Reliability", "Ratio of flaky and false negative", lastKPI.kpiReliability.score, lastKPI.kpiReliability.trend, lastKPI.kpiReliability.varVs1 / 100);
+
+            renderKPIHeader("durChart", getHumanReadableDuration(lastKPI.kpiDuration.value / 1000), "", "Duration", "Average campaign duration", lastKPI.kpiDuration.score, lastKPI.kpiDuration.trend, lastKPI.kpiDuration.varVs1 / 100);
+
+            renderKPIHeader("mntChart", lastKPI.kpiMaintenance.value, " min", "Maintenance Effort", "Efforts", lastKPI.kpiMaintenance.score, lastKPI.kpiMaintenance.trend, lastKPI.kpiMaintenance.varVs1 / 100);
+
+            renderKPITrend("freqChart", "Campaign executions per week - " + nbWeeks + " Weeks Trend");
+            let tagfreqdatasets = [{
+                    label: 'Executions per Week',
+                    data: kpiFreqData,
+                    fill: false,
+                    backgroundColor: kpiFreqColor,
+                    pointStyle: kpiFreqPoint,
+                    pointRadius: 10,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    tension: 0.1
+                }];
+            configHistoFreq.data.datasets = tagfreqdatasets;
+            configHistoFreq.data.labels = labelsDatasets;
+            window.myHistoFreq.update();
+
+
+            renderKPITrend("relChart", "Ratio of flaky and false negative - " + nbWeeks + " Weeks Trend");
+            let tagreldatasets = [{
+                    label: '% of Reliability',
+                    data: kpiRelData,
+                    fill: false,
+                    backgroundColor: kpiRelColor,
+                    pointStyle: kpiRelPoint,
+                    pointRadius: 10,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    tension: 0.1
+                }];
+            configHistoRel.data.datasets = tagreldatasets;
+            configHistoRel.data.labels = labelsDatasets;
+            window.myHistoRel.update();
+
+
+            renderKPITrend("durChart", "Test Campaign in minutes - " + nbWeeks + " Weeks Trend");
+            let tagdurdatasets = [{
+                    label: 'Campaign average duration',
+                    data: kpiDurData,
+                    fill: false,
+                    backgroundColor: kpiDurColor,
+                    pointStyle: kpiDurPoint,
+                    pointRadius: 10,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    tension: 0.1
+                }];
+            configHistoDur.data.datasets = tagdurdatasets;
+            configHistoDur.data.labels = labelsDatasets;
+            window.myHistoDur.update();
+
+
+            renderKPITrend("mntChart", "Efforts - " + nbWeeks + " Weeks Trend");
+            let tagmntdatasets = [{
+                    label: 'Maintenance hours',
+                    data: kpiMaintData,
+                    fill: false,
+                    backgroundColor: kpiMaintColor,
+                    pointStyle: kpiMaintPoint,
+                    pointRadius: 10,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 3,
+                    tension: 0.1
+                }];
+            configHistoMnt.data.datasets = tagmntdatasets;
+            configHistoMnt.data.labels = labelsDatasets;
+            window.myHistoMnt.update();
+
             hideLoader($("#otFilterPanel"));
         }
     });
+    hideLoader($("#otFilterPanel"));
+
+}
+function renderScope(campaigns, testcases) {
+    $("#scopeCampaigns").text(campaigns.length + " Campaigns");
+    let titleDes = "";
+    for (var i = 0; i < campaigns.length; i++) {
+        titleDes += " / " + campaigns[i];
+    }
+    titleDes = titleDes.substring(3);
+//    $("#scopeCampaigns").attr('data-toggle', 'tooltip').attr('data-original-title', 'toto');
+    $("#scopeCampaigns").attr('title', titleDes);
+
+
+    $("#scopeTests").text(testcases.length + " Tests");
+}
+
+
+function getColorFromScore(score) {
+    switch (score) {
+        case "A":
+            return 'green';
+        case "B":
+            return 'lightgreen';
+        case "C":
+            return 'yellow';
+        case "D":
+            return 'orange';
+        case "E":
+            return 'red';
+        default:
+            return 'grey';
+    }
+
+}
+function getPointFromScore(score) {
+    switch (score) {
+        case "A":
+            return imageA;
+        case "B":
+            return imageB;
+        case "C":
+            return imageC;
+        case "D":
+            return imageD;
+        case "E":
+            return imageE;
+        case "NA":
+            return imageNA;
+        default:
+            return imageNA;
+    }
+
 }
 
 function updateNbDistinct(data) {
@@ -337,6 +474,27 @@ function getOptionsBar(title, unit) {
         },
         responsive: true,
         maintainAspectRatio: false,
+        tooltips: {
+            callbacks: {
+                label: function (t, d) {
+                    newlabel = [];
+                    var xLabel = d.datasets[t.datasetIndex].label;
+                    if (unit === "size") {
+                        newlabel.push(formatNumber(Math.round(t.yLabel / 1024)) + " kb");
+                    } else if (unit === "time") {
+                        newlabel.push(getHumanReadableDuration(t.yLabel * 60));
+                    } else if (unit === "percentage") {
+                        newlabel.push(t.yLabel + ' %');
+                    } else if (unit === "nb") {
+                        newlabel.push(t.yLabel);
+                    } else {
+                        newlabel.push(xLabel + ': ' + t.yLabel);
+                    }
+                    console.info("result : " + newlabel);
+                    return newlabel;
+                }
+            }
+        },
         title: {
             text: title
         },
@@ -436,63 +594,66 @@ function renderGlobalAS(asValue) {
     }
 }
 
-function renderKPIHeader(idBlock, kpiValue, kpiDesc, kpiStatus, kpiVariation, kpiVariationValue, kpiVariationStatus) {
+function renderKPITrend(idBlock, kpiDesc) {
 
-    $("#" + idBlock + " [name='L1']").text(kpiValue + " " + kpiDesc);
-    $("#" + idBlock + " [name='L1']").removeClass("ascommentOK ascommentKO ascommentWARNING");
-    switch (kpiStatus) {
-        case "OK":
-            $("#" + idBlock + " [name='L1']").addClass("ascommentOK");
-            break;
-        case "KO":
-            $("#" + idBlock + " [name='L1']").addClass("ascommentKO");
-            break;
-        case "WARNING":
-            $("#" + idBlock + " [name='L1']").addClass("ascommentWARNING");
-            break;
-        default:
-            break;
-    }
-    $("#" + idBlock + " [name='L2']").empty();
+    $("#" + idBlock + " [name='L1']").text(kpiDesc);
+}
+
+function renderKPIHeader(idBlock, kpiValue, kpiUnit, kpiDesc, kpiSubDesc, kpiScore, kpiVariation, kpiVariationValue) {
+
+//    console.info("'''''''''''''''");
+//    console.info("idBlock " + idBlock);
+//    console.info("kpiValue " + kpiValue);
+//    console.info("kpiUnit " + kpiUnit);
+//    console.info("kpiDesc " + kpiDesc);
+//    console.info("kpiSubDesc " + kpiSubDesc);
+//    console.info("kpiStatus " + kpiScore);
+//    console.info("kpiVariation " + kpiVariation);
+//    console.info("kpiVariationValue " + kpiVariationValue);
+
+    $("#" + idBlock + "Title [name='kpi']").text(kpiValue + " " + kpiUnit);
+
+    $("#" + idBlock + "Title [name='title']").text(kpiDesc);
+
+    $("#" + idBlock + "Title [name='subtitle']").text(kpiSubDesc);
+
     switch (kpiVariation) {
-        case "UP":
-            $("#" + idBlock + " [name='L2']").html("<span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span> " + kpiVariationValue);
+        case "OKUP":
+            $("#" + idBlock + "Var [name='var']").html("<img width='20px' style='border-right: 20px;' src='images/AS-OKUP.png'> + " + kpiVariationValue + " %");
             break;
-        case "DOWN":
-            $("#" + idBlock + " [name='L2']").html("<span class='glyphicon glyphicon-arrow-down' aria-hidden='true'></span> " + kpiVariationValue);
+        case "KOUP":
+            $("#" + idBlock + "Var [name='var']").html("<img width='20px' style='border-right: 20px;' src='images/AS-KOUP.png'> + " + kpiVariationValue + " %");
+            break;
+        case "OKDOWN":
+            $("#" + idBlock + "Var [name='var']").html("<img width='20px' style='border-right: 20px;' src='images/AS-OKDOWN.png'> - " + kpiVariationValue + " %");
+            break;
+        case "KODOWN":
+            $("#" + idBlock + "Var [name='var']").html("<img width='20px' style='border-right: 20px;' src='images/AS-KODOWN.png'> - " + kpiVariationValue + " %");
             break;
         case "ISO":
-            $("#" + idBlock + " [name='L2']").html("= " + kpiVariationValue);
-            break;
-        default:
-            break;
-    }
-    $("#" + idBlock + " [name='L2']").removeClass("ascommentL2OK ascommentL2KO ascommentL2WARNING");
-    switch (kpiVariationStatus) {
-        case "OK":
-            $("#" + idBlock + " [name='L2']").addClass("ascommentL2OK");
-            break;
-        case "KO":
-            $("#" + idBlock + " [name='L2']").addClass("ascommentL2KO");
-            break;
-        case "WARNING":
-            $("#" + idBlock + " [name='L2']").addClass("ascommentL2WARNING");
+            $("#" + idBlock + "Var [name='var']").html(" " + kpiVariationValue);
             break;
         default:
             break;
     }
 
+    $("#" + idBlock + "Score [name='ASA']").removeClass('active');
+    $("#" + idBlock + "Score [name='ASB']").removeClass('active');
+    $("#" + idBlock + "Score [name='ASC']").removeClass('active');
+    $("#" + idBlock + "Score [name='ASD']").removeClass('active');
+    $("#" + idBlock + "Score [name='ASE']").removeClass('active');
 
-
-
+    $("#" + idBlock + "Score [name='AS" + kpiScore + "']").addClass('active');
 }
+
+
 
 function initGraph() {
 
-    var tagfreqoption = getOptionsBar("Frequency", "time", "linear");
-    var tagreloption = getOptionsBar("Reliability", "score", "logarithmic");
-    var tagduroption = getOptionsBar("Duration", "nb", "linear");
-    var tagmntoption = getOptionsBar("Maintenance", "nb");
+    var tagfreqoption = getOptionsBar("Frequency", "nb", "linear");
+    var tagreloption = getOptionsBar("Reliability", "percentage", "logarithmic");
+    var tagduroption = getOptionsBar("Duration", "time", "linear");
+    var tagmntoption = getOptionsBar("Maintenance", "time");
 
     let labelsDatasets = [];
     let listBackgroundColor = chartBarColorLabel('rgba(54, 162, 235, 1)', 'rgba(54, 162, 235, 1)');
@@ -505,7 +666,7 @@ function initGraph() {
     let asdatasets = [];
 
     configHistoFreq = {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labelsDatasets,
             datasets: tagfreqdatasets
@@ -513,7 +674,7 @@ function initGraph() {
         options: tagfreqoption
     };
     configHistoRel = {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labelsDatasets,
             datasets: tagreldatasets
@@ -521,7 +682,7 @@ function initGraph() {
         options: tagreloption
     };
     configHistoDur = {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labelsDatasets,
             datasets: tagdurdatasets
@@ -529,7 +690,7 @@ function initGraph() {
         options: tagduroption
     };
     configHistoMnt = {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labelsDatasets,
             datasets: tagmntdatasets

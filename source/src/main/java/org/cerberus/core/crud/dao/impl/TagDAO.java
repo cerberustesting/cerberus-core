@@ -244,7 +244,7 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
-    public AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to) {
+    public AnswerList<Tag> readByVarious(List<String> campaigns, List<String> systems, Date from, Date to) {
         AnswerList<Tag> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -261,6 +261,11 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(" where 1=1 ");
         }
 
+        if (CollectionUtils.isNotEmpty(campaigns)) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("tag.campaign", campaigns));
+        }
+
         searchSQL.append(" and tag.`DateCreated` > ? and tag.`DateCreated` < ? ");
         query.append(searchSQL);
 
@@ -275,6 +280,11 @@ public class TagDAO implements ITagDAO {
             if (CollectionUtils.isNotEmpty(systems)) {
                 for (String system : systems) {
                     preStat.setString(i++, system);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(campaigns)) {
+                for (String campaign : campaigns) {
+                    preStat.setString(i++, campaign);
                 }
             }
             t1 = new Timestamp(from.getTime());
@@ -949,6 +959,7 @@ public class TagDAO implements ITagDAO {
         int ciScoreMax = rs.getInt("tag.ciScoreMax");
         int nbFlaky = rs.getInt("tag.nbFlaky");
         int nbMuted = rs.getInt("tag.nbMuted");
+        int duration = rs.getInt("tag.DurationMs");
         String ciResult = rs.getString("tag.ciResult");
         boolean falseNegative = rs.getBoolean("tag.FalseNegative");
         String environmentList = rs.getString("tag.EnvironmentList");
@@ -978,7 +989,7 @@ public class TagDAO implements ITagDAO {
                 .browserstackBuildHash(browserstackBuildHash).browserstackAppBuildHash(browserstackAppBuildHash)
                 .lambdaTestBuild(lambdaTestBuild)
                 .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL).xRayMessage(xRayMEssage)
-                .nbFlaky(nbFlaky).nbMuted(nbMuted)
+                .nbFlaky(nbFlaky).nbMuted(nbMuted).durationMs(duration)
                 .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif)
                 .dateModif(dateModif).build();
     }

@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Repository
 public class TagStatisticDAO implements ITagStatisticDAO {
+
     private static final int MAX_ROW_SELECTED = 100000;
 
     private final DatabaseSpring databaseSpring;
@@ -52,6 +53,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Insert a unique line of TagStatistic in database
+     *
      * @param object
      * @return
      */
@@ -62,6 +64,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Insert a list of tagStatistics in only one INSERT statement
+     *
      * @param tagStatistics
      * @return
      */
@@ -69,7 +72,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
     public Answer createWithMap(Map<String, TagStatistic> tagStatistics) {
         MessageEvent msg;
         StringBuilder placeholders = new StringBuilder();
-        String baseQuery ="INSERT INTO tagstatistic (`Tag`, `Country`, `Environment`, `Campaign`, `CampaignGroup1`, `SystemList`, `ApplicationList`, `DateStartExe`, `DateEndExe`, `NbExe`, `NbExeUsefull`, `NbOK`, `nbKO`, `nbFA`, `nbNA`, `nbNE`, `nbWE`, `nbPE`, `nbQU`, `nbQE`, `nbCA`, `UsrCreated`) VALUES ";
+        String baseQuery = "INSERT INTO tagstatistic (`Tag`, `Country`, `Environment`, `Campaign`, `CampaignGroup1`, `SystemList`, `ApplicationList`, `DateStartExe`, `DateEndExe`, `NbExe`, `NbExeUsefull`, `NbOK`, `nbKO`, `nbFA`, `nbNA`, `nbNE`, `nbWE`, `nbPE`, `nbQU`, `nbQE`, `nbCA`, `UsrCreated`) VALUES ";
         placeholders.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         if (tagStatistics.size() > 1) {
             for (int i = 1; i < tagStatistics.size(); i++) {
@@ -78,8 +81,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         }
         String query = baseQuery + placeholders.toString();
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             int parameterIndex = 1;
             for (Map.Entry<String, TagStatistic> tagStatisticEntry : tagStatistics.entrySet()) {
                 preStat.setString(parameterIndex++, tagStatisticEntry.getValue().getTag());
@@ -120,6 +122,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Get a TagStatistic object from database
+     *
      * @param object
      * @return
      */
@@ -142,14 +145,14 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         String systemRegex = "";
         String applicationRegex = "";
 
-        if (!systems.isEmpty()) {
+        if (systems!=null && !systems.isEmpty()) {
             systemRegex = systems.stream()
                     .map(sys -> "\"" + sys + "\"")
                     .collect(Collectors.joining("|"));
             query.append(" WHERE `SystemList` REGEXP ?");
         }
 
-        if (!applications.isEmpty()) {
+        if (applications != null && !applications.isEmpty()) {
             if (systems.isEmpty()) {
                 query.append(" WHERE `ApplicationList` REGEXP ?");
             } else {
@@ -160,22 +163,24 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                     .collect(Collectors.joining("|"));
         }
 
-        if (!group1List.isEmpty()) {
+        if (group1List != null && !group1List.isEmpty()) {
             query.append(" AND ").append(SqlUtil.generateInClause("CampaignGroup1", group1List));
         }
 
         query.append(") AND `DateStartExe` >= ? AND `DateEndExe` <= ?");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
 
-            if (!systems.isEmpty()) preStat.setString(i++, systemRegex);
-            if (!applications.isEmpty()) preStat.setString(i++, applicationRegex);
+            if (systems!=null && !systems.isEmpty()) {
+                preStat.setString(i++, systemRegex);
+            }
+            if (applications != null && !applications.isEmpty()) {
+                preStat.setString(i++, applicationRegex);
+            }
 
-            if (!group1List.isEmpty()) {
+            if (group1List != null && !group1List.isEmpty()) {
                 for (String group1 : group1List) {
                     preStat.setString(i++, group1.replaceAll("%20", " ")); //Replace %20 (encoded space) by decoded space in case of group 1 contains spaces
                 }
@@ -184,8 +189,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             preStat.setString(i++, minDate);
             preStat.setString(i++, maxDate);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 LOG.info("Execute SQL Statement: {} ", preStat);
 
@@ -239,9 +243,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             query.append(" AND ").append(SqlUtil.generateInClause("`Environment`", environments));
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
 
@@ -261,8 +263,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                 }
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 LOG.info("Execute SQL Statement: {} ", preStat);
 
@@ -299,6 +300,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Get a TagStatistics list by tag from database
+     *
      * @param tag
      * @return
      */
@@ -309,16 +311,13 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TagStatistic> tagStatistics = new ArrayList<>();
 
-        String query ="SELECT * FROM `tagstatistic` WHERE `tag` = ?";
+        String query = "SELECT * FROM `tagstatistic` WHERE `tag` = ?";
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);
-                Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query); Statement stm = connection.createStatement()) {
             preStat.setString(1, tag);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     tagStatistics.add(this.loadFromResultSet(resultSet));
@@ -353,6 +352,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Update a TagStatistic
+     *
      * @param object
      * @return
      */
@@ -363,6 +363,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Delete a TagStatistic object in database
+     *
      * @param tag
      * @param object
      * @return
@@ -374,6 +375,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
     /**
      * Convert a database result set into entity
+     *
      * @param resultSet
      * @return
      * @throws SQLException

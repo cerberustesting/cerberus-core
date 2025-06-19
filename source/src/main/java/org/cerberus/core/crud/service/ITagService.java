@@ -65,12 +65,13 @@ public interface ITagService {
 
     /**
      *
+     * @param campaigns
      * @param systems
      * @param from
      * @param to
      * @return
      */
-    AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to);
+    AnswerList<Tag> readByVarious(List<String> campaigns, List<String> systems, Date from, Date to);
 
     /**
      *

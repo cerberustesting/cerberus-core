@@ -185,7 +185,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
         JSONObject pointObj = new JSONObject();
 
         // get all TestCase Execution Data.
-        AnswerList<Tag> resp = tagService.readByVarious(system, from, to);
+        AnswerList<Tag> resp = tagService.readByVarious(new ArrayList<>(), system, from, to);
 
         // Building the list of status to load adding the extra RETRY.
         List<String> statList = new ArrayList<>();
@@ -202,7 +202,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
                  * Bar Charts per control status.
                  */
                 for (String v : statList) {
-                    
+
                     curveKeyStatus = v.toUpperCase();
                     int x = getValue(tagCur, curveKeyStatus);
 

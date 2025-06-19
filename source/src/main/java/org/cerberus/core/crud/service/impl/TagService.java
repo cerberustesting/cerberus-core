@@ -115,8 +115,8 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public AnswerList<Tag> readByVarious(List<String> systems, Date from, Date to) {
-        return tagDAO.readByVarious(systems, from, to);
+    public AnswerList<Tag> readByVarious(List<String> campaigns, List<String> systems, Date from, Date to) {
+        return tagDAO.readByVarious(campaigns, systems, from, to);
     }
 
     @Override
