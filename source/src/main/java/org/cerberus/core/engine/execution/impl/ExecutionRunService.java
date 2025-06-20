@@ -22,24 +22,7 @@ package org.cerberus.core.engine.execution.impl;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.CountryEnvLink;
-import org.cerberus.core.crud.entity.CountryEnvParam;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.RobotCapability;
-import org.cerberus.core.crud.entity.Tag;
-import org.cerberus.core.crud.entity.Test;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionData;
-import org.cerberus.core.crud.entity.TestCaseExecutionSysVer;
-import org.cerberus.core.crud.entity.TestCaseStep;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.core.crud.entity.TestCaseStepExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryRobotCapability;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.core.crud.factory.IFactoryTestCaseStepActionControlExecution;
@@ -290,7 +273,8 @@ public class ExecutionRunService implements IExecutionRunService {
                     //Start Robot server (Selenium/Appium/Sikuli)
                     LOG.debug("{}Starting Robot Server.", logPrefix);
                     try {
-                        if (execution.getRobot().contains("capabilityV2")) {
+                        //Ensure retrocompability with selenium 3
+                        if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_use_w3c_capabilities, "", false) || execution.getRobot().contains("capabilityV2")) {
                             this.robotServerService.startServerV2(execution);
                         } else {
                             this.robotServerService.startServer(execution);

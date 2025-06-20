@@ -96,6 +96,8 @@ public class Parameter {
     public static final String VALUE_cerberus_github_apitoken = "cerberus_github_apitoken";
     public static final String VALUE_cerberus_azuredevops_accesstoken = "cerberus_azuredevops_accesstoken";
     public static final String VALUE_cerberus_gitlab_apitoken = "cerberus_gitlab_apitoken";
+    public static final String VALUE_cerberus_use_w3c_capabilities = "cerberus_use_w3c_capabilities";
+
     public static final String VALUE_cerberus_tagcombofilterpersystem_boolean = "cerberus_tagcombofilterpersystem_boolean";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
