@@ -198,125 +198,134 @@
                             <label id="lblFreq">Key Metrics</label>
                             <!--                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" id="automateScoreChart">
+                        <div class="panel-body collapse in" style="padding:0px;"  id="automateScoreChart">
                             <div class="row">
 
-                                <div class="col-md-3 col-xs-6">
-                                    <div class="row">
-                                        <div class="col-xs-6" style="padding-right: 0px;" id="freqChartTitle">
-                                            <div class="astitle" name="title">
-                                                TITLE
-                                            </div>
-                                            <div class="assubtitle" name="subtitle">
-                                                subTITLE
-                                            </div>
-                                            <div class="askpi" name="kpi">
-                                                X
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 " style="padding-left: 0px;">
-                                            <div class=" " id="freqChartScore" style="text-align: center;">
-                                                <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
-                                                    <button name="ASA" class="btn btn-A ASButton">A</button>
-                                                    <button name="ASB" class="btn btn-B ASButton">B</button>
-                                                    <button name="ASC" class="btn btn-C ASButton">C</button>
-                                                    <button name="ASD" class="btn btn-D ASButton">D</button>
-                                                    <button name="ASE" class="btn btn-E ASButton">E</button>
+                                <div class="col-md-6 ">
+                                    <div style="border-style: solid; border-color: lightgray;border-width: 2px;margin: 1em 2em 1em;">
+
+                                        <div class="row">
+                                            <div class="col-xs-6 " style="padding-right: 0px;" id="freqChartTitle">
+                                                <div class="astitle" name="title">
+                                                    TITLE
+                                                </div>
+                                                <div class="assubtitle" name="subtitle">
+                                                    subTITLE
+                                                </div>
+                                                <div class="askpi" name="kpi">
+                                                    X
                                                 </div>
                                             </div>
-                                            <div id="freqChartVar" style="text-align: center;"> 
-                                                <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                            <div class="col-xs-6 " style="padding-left: 0px;">
+                                                <div class=" " id="freqChartScore" style="text-align: center;">
+                                                    <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
+                                                        <button name="ASA" class="btn btn-A ASButton">A</button>
+                                                        <button name="ASB" class="btn btn-B ASButton">B</button>
+                                                        <button name="ASC" class="btn btn-C ASButton">C</button>
+                                                        <button name="ASD" class="btn btn-D ASButton">D</button>
+                                                        <button name="ASE" class="btn btn-E ASButton">E</button>
+                                                    </div>
+                                                </div>
+                                                <div id="freqChartVar" style="text-align: center;"> 
+                                                    <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
 
-                                <div class="col-md-3 col-xs-6">
-                                    <div class="row">
-                                        <div class="col-xs-6" style="padding-right: 0px;" id="relChartTitle">
-                                            <div class="astitle" name="title">
-                                                TITLE
-                                            </div>
-                                            <div class="assubtitle" name="subtitle">
-                                                subTITLE
-                                            </div>
-                                            <div class="askpi" name="kpi">
-                                                X
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 " style="padding-left: 0px;">
-                                            <div class=" " id="relChartScore" style="text-align: center;">
-                                                <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
-                                                    <button name="ASA" class="btn btn-A ASButton">A</button>
-                                                    <button name="ASB" class="btn btn-B ASButton">B</button>
-                                                    <button name="ASC" class="btn btn-C ASButton">C</button>
-                                                    <button name="ASD" class="btn btn-D ASButton">D</button>
-                                                    <button name="ASE" class="btn btn-E ASButton">E</button>
+                                <div class="col-md-6 ">
+                                    <div style="border-style: solid; border-color: lightgray;border-width: 2px;margin: 1em 2em 1em;">
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right: 0px;" id="relChartTitle">
+                                                <div class="astitle" name="title">
+                                                    TITLE
+                                                </div>
+                                                <div class="assubtitle" name="subtitle">
+                                                    subTITLE
+                                                </div>
+                                                <div class="askpi" name="kpi">
+                                                    X
                                                 </div>
                                             </div>
-                                            <div id="relChartVar" style="text-align: center;"> 
-                                                <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                            <div class="col-xs-6 " style="padding-left: 0px;">
+                                                <div class=" " id="relChartScore" style="text-align: center;">
+                                                    <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
+                                                        <button name="ASA" class="btn btn-A ASButton">A</button>
+                                                        <button name="ASB" class="btn btn-B ASButton">B</button>
+                                                        <button name="ASC" class="btn btn-C ASButton">C</button>
+                                                        <button name="ASD" class="btn btn-D ASButton">D</button>
+                                                        <button name="ASE" class="btn btn-E ASButton">E</button>
+                                                    </div>
+                                                </div>
+                                                <div id="relChartVar" style="text-align: center;"> 
+                                                    <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-3 col-xs-6">
-                                    <div class="row">
-                                        <div class="col-xs-6" style="padding-right: 0px;" id="durChartTitle">
-                                            <div class="astitle" name="title">
-                                                TITLE
-                                            </div>
-                                            <div class="assubtitle" name="subtitle">
-                                                subTITLE
-                                            </div>
-                                            <div class="askpi" name="kpi">
-                                                X
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 " style="padding-left: 0px;">
-                                            <div class=" " id="durChartScore" style="text-align: center;">
-                                                <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
-                                                    <button name="ASA" class="btn btn-A ASButton">A</button>
-                                                    <button name="ASB" class="btn btn-B ASButton">B</button>
-                                                    <button name="ASC" class="btn btn-C ASButton">C</button>
-                                                    <button name="ASD" class="btn btn-D ASButton">D</button>
-                                                    <button name="ASE" class="btn btn-E ASButton">E</button>
+                                <div class="col-md-6 ">
+                                    <div style="border-style: solid; border-color: lightgray;border-width: 2px;margin: 1em 2em 1em;">
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right: 0px;" id="durChartTitle">
+                                                <div class="astitle" name="title">
+                                                    TITLE
+                                                </div>
+                                                <div class="assubtitle" name="subtitle">
+                                                    subTITLE
+                                                </div>
+                                                <div class="askpi" name="kpi">
+                                                    X
                                                 </div>
                                             </div>
-                                            <div id="durChartVar" style="text-align: center;"> 
-                                                <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                            <div class="col-xs-6 " style="padding-left: 0px;">
+                                                <div class=" " id="durChartScore" style="text-align: center;">
+                                                    <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
+                                                        <button name="ASA" class="btn btn-A ASButton">A</button>
+                                                        <button name="ASB" class="btn btn-B ASButton">B</button>
+                                                        <button name="ASC" class="btn btn-C ASButton">C</button>
+                                                        <button name="ASD" class="btn btn-D ASButton">D</button>
+                                                        <button name="ASE" class="btn btn-E ASButton">E</button>
+                                                    </div>
+                                                </div>
+                                                <div id="durChartVar" style="text-align: center;"> 
+                                                    <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-3 col-xs-6">
-                                    <div class="row">
-                                        <div class="col-xs-6" style="padding-right: 0px;" id="mntChartTitle">
-                                            <div class="astitle" name="title">
-                                                TITLE
-                                            </div>
-                                            <div class="assubtitle" name="subtitle">
-                                                subTITLE
-                                            </div>
-                                            <div class="askpi" name="kpi">
-                                                X
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 " style="padding-left: 0px;">
-                                            <div class=" " id="mntChartScore" style="text-align: center;">
-                                                <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
-                                                    <button name="ASA" class="btn btn-A ASButton">A</button>
-                                                    <button name="ASB" class="btn btn-B ASButton">B</button>
-                                                    <button name="ASC" class="btn btn-C ASButton">C</button>
-                                                    <button name="ASD" class="btn btn-D ASButton">D</button>
-                                                    <button name="ASE" class="btn btn-E ASButton">E</button>
+                                <div class="col-md-6 ">
+                                    <div style="border-style: solid; border-color: lightgray;border-width: 2px;margin: 1em 2em 1em;">
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right: 0px;" id="mntChartTitle">
+                                                <div class="astitle" name="title">
+                                                    TITLE
+                                                </div>
+                                                <div class="assubtitle" name="subtitle">
+                                                    subTITLE
+                                                </div>
+                                                <div class="askpi" name="kpi">
+                                                    X
                                                 </div>
                                             </div>
-                                            <div id="mntChartVar" style="text-align: center;"> 
-                                                <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                            <div class="col-xs-6 " style="padding-left: 0px;">
+                                                <div class=" " id="mntChartScore" style="text-align: center;">
+                                                    <div class="btn-group btn-toggle marginTop5 marginBottom20"> 
+                                                        <button name="ASA" class="btn btn-A ASButton">A</button>
+                                                        <button name="ASB" class="btn btn-B ASButton">B</button>
+                                                        <button name="ASC" class="btn btn-C ASButton">C</button>
+                                                        <button name="ASD" class="btn btn-D ASButton">D</button>
+                                                        <button name="ASE" class="btn btn-E ASButton">E</button>
+                                                    </div>
+                                                </div>
+                                                <div id="mntChartVar" style="text-align: center;"> 
+                                                    <span class="ASkpiVar" name="var"><img width="20px" style="border-right: 20px;" src=""></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
