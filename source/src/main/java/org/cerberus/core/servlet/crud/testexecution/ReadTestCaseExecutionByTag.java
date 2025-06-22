@@ -342,7 +342,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         nbRetryTot += testCaseExecution.getNbExecutions() - 1;
                         ttcObject.put("NbRetry", nbRetryTot);
                         // Max Duration
-                        long durationMax = (Integer) ttcObject.get("DurationMsMax");
+                        long durationMax = ttcObject.getLong("DurationMsMax");
                         if (testCaseExecution.getDurationMs() > durationMax) {
                             durationMax = testCaseExecution.getDurationMs();
                             ttcObject.put("DurationMsMax", durationMax);
