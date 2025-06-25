@@ -273,6 +273,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.from : {}", from);
         LOG.debug("SQL.to : {}", to);
         LOG.debug("SQL.system {}: ", systems);
+        LOG.debug("SQL.campaign {}: ", campaigns);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 

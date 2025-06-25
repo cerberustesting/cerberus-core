@@ -1113,10 +1113,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecution','verbose','','fa','چاپ مفصل','این مربوط به سطح اطلاعاتی است که Cerberus هنگام ایجاد اجرا نگه می دارد. می تواند مقادیر زیر را بگیرد:<br><br><b>0</b> : آزمون حداقل اطلاعات ورود به سیستم را برای حفظ زمان پاسخ حفظ می کند. این برای زمانی استفاده می شود که تعداد زیادی آزمون انجام می شود. هیچ جزئیاتی در مورد اقدام ذخیره نخواهد شد. <br><b>1</b> : این سطح استاندارد ورود به سیستم است. اطلاعات دقیق اجرای عملیت نیز ذخیره خواهد شد.<br><b>2</b> : این بالاترین سطح اطلاعات دقیقی است که می توان انتخاب کرد. اطلاعات دقیق ترافیک وب ذخیره خواهد شد. این فقط در موارد بسیار خاص که تمام اطلاعات بازدیدهای یک اجرا مورد نیاز است استفاده می شود<br><br>NB : سطح پرمخاطب بالاتر از 0 به ترافیک شبکه متکی است(فقط در مرورگر فایرفاکس موجود است)',NULL)");
         b.append(",('testcaseexecution','durationMs','','en','Duration (ms)','',NULL)");
         b.append(",('testcaseexecution','durationMs','','fr','Durée (ms)','',NULL)");
-        b.append(",('testcaseexecution','isLast','','en','Last (no more retry)','',NULL)");
-        b.append(",('testcaseexecution','isLast','','fr','Dernière Execution','',NULL)");
-        b.append(",('testcaseexecution','isFlacky','','en','Flacky','',NULL)");
-        b.append(",('testcaseexecution','isFlacky','','fr','Instable','',NULL)");
+        b.append(",('testcaseexecution','isUseful','','en','Useful (no more retry)','',NULL)");
+        b.append(",('testcaseexecution','isUseful','','fr','Dernière Execution (utile)','',NULL)");
+        b.append(",('testcaseexecution','isFlaky','','en','Flaky','',NULL)");
+        b.append(",('testcaseexecution','isFlaky','','fr','Instable','',NULL)");
+        b.append(",('testcaseexecution','falseNegative','','en','False Negative','',NULL)");
+        b.append(",('testcaseexecution','falseNegative','','fr','Faux Négatif','',NULL)");
         b.append(",('testcaseexecutiondata','database','','en','Database','',NULL)");
         b.append(",('testcaseexecutiondata','database','','fa','پایگاه داده','',NULL)");
         b.append(",('testcaseexecutiondata','database','','fr','Base de Donnée','',NULL)");

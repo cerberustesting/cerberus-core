@@ -153,6 +153,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public List<TestCaseExecution> readByCriteria(List<String> system, List<String> tags, Date from, Date to) throws CerberusException {
+        return this.convert(testCaseExecutionDao.readByCriteria(system, tags, from, to));
+    }
+
+    @Override
     public Integer getNbExecutions(List<String> system) throws CerberusException {
         return testCaseExecutionDao.getNbExecutions(system);
     }
@@ -204,8 +209,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public void updateLastAndFlacky(long id, boolean isLast, boolean isFlacky, String usrModif) throws CerberusException {
-        testCaseExecutionDao.updateLastAndFlacky(id, isLast, isFlacky, usrModif);
+    public void updateLastAndFlaky(long id, boolean isLast, boolean isFlaky, String usrModif) throws CerberusException {
+        testCaseExecutionDao.updateLastAndFlaky(id, isLast, isFlaky, usrModif);
     }
 
     @Override

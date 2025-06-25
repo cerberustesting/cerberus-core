@@ -73,7 +73,7 @@ public class TestCaseExecution {
     private long durationMs;
     private String controlStatus;
     private boolean falseNegative;
-    private boolean isFlacky;
+    private boolean isFlaky;
     private boolean isUseful;
     private String controlMessage;
     private String application;
@@ -165,7 +165,6 @@ public class TestCaseExecution {
     private long firstExeStart;
     private long lastExeStart;
     private long lastExeEnd;
-    private boolean isFlaky;
 
     // Others
     private MessageGeneral resultMessage;
@@ -442,7 +441,7 @@ public class TestCaseExecution {
             result.put("previousExeStatus", this.getPreviousExeStatus());
 
             result.put("isUseful", this.isUseful());
-            result.put("isFlacky", this.isFlacky());
+            result.put("isFlaky", this.isFlaky());
             result.put("durationMs", this.getDurationMs());
 
             result.put("usrCreated", this.getUsrCreated());

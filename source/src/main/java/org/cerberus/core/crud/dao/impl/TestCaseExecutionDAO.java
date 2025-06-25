@@ -575,15 +575,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public void updateLastAndFlacky(long id, boolean last, boolean flacky, String usrModif) throws CerberusException {
-        final String query = "UPDATE testcaseexecution exe SET exe.IsUseful = ?, exe.IsFlacky = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
+    public void updateLastAndFlaky(long id, boolean last, boolean flaky, String usrModif) throws CerberusException {
+        final String query = "UPDATE testcaseexecution exe SET exe.IsUseful = ?, exe.IsFlaky = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", id);
         LOG.debug("SQL.param.last : {}", last);
-        LOG.debug("SQL.param.falcky : {}", flacky);
+        LOG.debug("SQL.param.falcky : {}", flaky);
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setBoolean(1, last);
-            preStat.setBoolean(2, flacky);
+            preStat.setBoolean(2, flaky);
             preStat.setString(3, usrModif);
             preStat.setLong(4, id);
             preStat.executeUpdate();
@@ -730,6 +730,89 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, testcase.getTest());
                 preStat.setString(i++, testcase.getTestcase());
             }
+
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
+    public AnswerList<TestCaseExecution> readByCriteria(List<String> systems, List<String> tags, Date from, Date to) {
+        AnswerList<TestCaseExecution> response = new AnswerList<>();
+        List<TestCaseExecution> objectList = new ArrayList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        Timestamp t1;
+
+        StringBuilder searchSQL = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ");
+        searchSQL.append(" where 1=1 ");
+
+        if (CollectionUtils.isNotEmpty(systems)) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", systems));
+        }
+        if (CollectionUtils.isNotEmpty(tags)) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`Tag`", tags));
+        }
+        searchSQL.append(" and start >= ? and start <= ? ");
+        searchSQL.append(" and isUseful = true ");
+        query.append(searchSQL);
+        query.append(" limit ").append(MAX_ROW_SELECTED);
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.systems : {}", systems);
+        LOG.debug("SQL.param.tags : {}", tags);
+        LOG.debug("SQL.param.from : {}", from);
+        LOG.debug("SQL.param.to : {}", to);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
+
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(tags)) {
+                for (String tag : tags) {
+                    preStat.setString(i++, tag);
+                }
+            }
+            t1 = new Timestamp(from.getTime());
+            preStat.setTimestamp(i++, t1);
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i++, t1);
 
             try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
@@ -1275,7 +1358,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int testCaseVersion = resultSet.getInt("exe.testCaseVersion");
         int testCasePriority = resultSet.getInt("exe.testCasePriority");
         boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
-        boolean isFlacky = resultSet.getBoolean("exe.IsFlacky");
+        boolean isFlaky = resultSet.getBoolean("exe.IsFlaky");
         boolean isUseful = resultSet.getBoolean("exe.IsUseful");
         long durationMs = ParameterParserUtil.parseLongParam(resultSet.getString("exe.DurationMs"), 0);
         String robotProvider = ParameterParserUtil.parseStringParam(resultSet.getString("exe.RobotProvider"), "");
@@ -1291,7 +1374,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 0, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null, robotProvider, robotSessionId,
                 conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, manualExecution, userAgent, testCaseVersion, testCasePriority, system,
                 usrCreated, dateCreated, usrModif, dateModif);
-        result.setFlacky(isFlacky);
+        result.setFlaky(isFlaky);
         result.setUseful(isUseful);
         result.setDurationMs(durationMs);
         result.setQueueID(queueId);

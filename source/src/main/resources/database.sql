@@ -6722,3 +6722,8 @@ ALTER TABLE `testcaseexecution`
 -- 1919
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_use_w3c_capabilities', 'false', 'This parameter allows to be compliant with the W3C protocol used by Selenium 4 and Appium 2. If you are still on Selenium 3 or Appium 1, you can let this parameter to false.');
+
+-- 1920
+ALTER TABLE `testcaseexecution`  
+    CHANGE COLUMN `IsFlacky` `IsFlaky` BOOLEAN DEFAULT false;
+

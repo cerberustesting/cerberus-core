@@ -58,7 +58,13 @@
                             <div class="">
 
                                 <div class="row">
-                                    <div class='col-md-8'>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <label for="systemSelect">System</label>
+                                            <select multiple="multiple" class="form-control" id="systemSelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-5'>
                                         <div class="form-group">
                                             <label for="campaignSelect">Campaign</label>
                                             <select multiple="multiple" class="form-control" id="campaignSelect"></select>
@@ -382,7 +388,7 @@
 
                                         <div class="row">
                                             <div class="col-xs-12 marginBottom5" id="lblFreq" style="">
-                                                <label id="lblRel">Reliability</label>
+                                                <label id="lblRel">Stability</label>
                                             </div>
                                         </div>
                                         <div class="row">

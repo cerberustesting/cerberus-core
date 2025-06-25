@@ -42,7 +42,7 @@ public class AutomateScorePrivateController {
     @GetMapping("/statistics")
     public String getTagASStatistics(
             HttpServletRequest request,
-            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
+            @RequestParam(name = "systems", value = "systems", required = false) List<String> systems,
             @RequestParam(name = "campaigns", value = "campaigns", required = false) List<String> campaigns,
             @RequestParam(name = "to", value = "to", required = false) String to,
             @RequestParam(name = "nbWeeks", value = "nbWeeks", required = false) int nbWeeks

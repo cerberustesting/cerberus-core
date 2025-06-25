@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.automatescore.impl;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,8 +34,10 @@ import java.util.Map;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITagStatisticService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
@@ -56,6 +59,9 @@ public class AutomateScoreService implements IAutomateScoreService {
 
     @Autowired
     private ITagService tagService;
+
+    @Autowired
+    private ITestCaseExecutionService executionService;
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String DATEWEEK_FORMAT = "yyyy-ww";
@@ -79,13 +85,11 @@ public class AutomateScoreService implements IAutomateScoreService {
             LOG.debug("Exception when parsing date", ex);
         }
 
-        List<Tag> tagStatistics = new ArrayList<>();
-        AnswerList<Tag> daoAnswer;
-        List<String> systemsAllowed;
-        List<String> applicationsAllowed;
+        List<Tag> tagsStatistics = new ArrayList<>();
+        AnswerList<Tag> daoTagAnswer;
 
-        Map<String, Object> mandatoryFilters = new HashMap<>();
-        mandatoryFilters.put("System", systems);
+        List<TestCaseExecution> exesStatistics = new ArrayList<>();
+        AnswerList<TestCaseExecution> daoExeAnswer;
 
         JSONObject response = new JSONObject();
         try {
@@ -127,44 +131,73 @@ public class AutomateScoreService implements IAutomateScoreService {
             cTo.set(Calendar.MINUTE, 59);
             cTo.set(Calendar.SECOND, 59);
 
-            daoAnswer = tagService.readByVarious(campaigns, systems, cFrom.getTime(), cTo.getTime());
-            tagStatistics = daoAnswer.getDataList();
-
 //            LOG.debug(tagStatistics.size());
             DateFormat dwf = new SimpleDateFormat(DATEWEEK_FORMAT);
             DateFormat dwfWekkOnly = new SimpleDateFormat(DATEWEEKONLY_FORMAT);
             JSONArray weeks = new JSONArray();
             String weekEntry = "";
 
-            JSONObject weekStat = new JSONObject();
-            Map<String, JSONObject> weekCampaignStats = new HashMap<>();
-            Map<String, JSONObject> campaignsMap = new HashMap<>();
+            // Get week number of current week.
+            String todayWeekEntry = dwf.format(new Date());
 
+            JSONObject weekStatTag = new JSONObject();
+            JSONObject weekStatExe = new JSONObject();
+            JSONObject weekStat = new JSONObject();
+
+            Map<String, JSONObject> weekGlobalTagStats = new HashMap<>();
+            Map<String, JSONObject> weekGlobalExeStats = new HashMap<>();
+            Map<String, JSONObject> weekGlobalStats = new HashMap<>();
+
+            Map<String, JSONObject> campaignMap = new HashMap<>();
+            Map<String, JSONObject> campaignWeekMap = new HashMap<>();
+            Map<String, JSONObject> testCaseMap = new HashMap<>();
+            Map<String, JSONObject> testCaseWeekMap = new HashMap<>();
+
+            /**
+             * Feed Week list from to parameter and nbWeeks (Trend duration)
+             */
             for (int i = nbWeeks; i >= 0; i--) {
                 JSONObject week = new JSONObject();
                 weekEntry = dwf.format(new Date(toD.getTime() - Duration.ofDays(7 * i).toMillis()));
                 week.put("val", weekEntry);
                 week.put("label", "W" + dwfWekkOnly.format(new Date(toD.getTime() - Duration.ofDays(7 * i).toMillis())));
 
-                weekStat = new JSONObject();
-                weekStat.put("nbFlaky", 0);
-                weekStat.put("nbExe", 0);
-                weekStat.put("frequency", 0);
-                weekStat.put("durationSum", 0);
-                weekStat.put("durationMax", 0);
-                weekStat.put("durationMin", 0);
-                weekStat.put("duration", 0);
-                weekStat.put("reliability", 0);
-                weekCampaignStats.put(weekEntry, weekStat);
+                weekStatTag = new JSONObject();
+                weekStatTag.put("nbFlaky", 0);
+                weekStatTag.put("nbExe", 0);
+                weekStatTag.put("frequency", 0);
+                weekStatTag.put("durationSum", 0);
+                weekStatTag.put("durationMax", 0);
+                weekStatTag.put("durationMin", 0);
+                weekStatTag.put("duration", 0);
+                weekStatTag.put("stability", 0);
+                weekGlobalTagStats.put(weekEntry, weekStatTag);
 
-//                tag.put("start", weekEntry);
-//                tag.put("end", weekEntry);
+                weekStatExe = new JSONObject();
+                weekStatExe.put("nbFlaky", 0);
+                weekStatExe.put("nbFN", 0);
+                weekStatExe.put("nbExe", 0);
+                weekStatExe.put("durationSum", 0);
+                weekStatExe.put("durationMax", 0);
+                weekStatExe.put("durationMin", 0);
+                weekStatExe.put("duration", 0);
+                weekGlobalExeStats.put(weekEntry, weekStatExe);
+
+                weekStat = new JSONObject();
+                weekGlobalStats.put(weekEntry, weekStat);
+
                 weeks.put(week);
             }
             response.put("weeks", weeks);
 
-            if (tagStatistics.isEmpty()) {
-                response.put("message", daoAnswer.getResultMessage().getDescription());
+            /**
+             * Feed Week with counters parsing all campaigns executions
+             */
+            daoTagAnswer = tagService.readByVarious(campaigns, systems, cFrom.getTime(), cTo.getTime());
+            tagsStatistics = daoTagAnswer.getDataList();
+
+            if (tagsStatistics.isEmpty()) {
+                response.put("message", daoTagAnswer.getResultMessage().getDescription());
                 return response;
 //                return ResponseEntity
 //                        .status(HttpStatus.NOT_FOUND)
@@ -174,7 +207,8 @@ public class AutomateScoreService implements IAutomateScoreService {
             JSONObject tag = new JSONObject();
             JSONArray tags = new JSONArray();
             JSONObject campaign = new JSONObject();
-            for (Tag myTag : tagStatistics) {
+            String cwKey = "";
+            for (Tag myTag : tagsStatistics) {
 
                 if ((myTag.getDurationMs() > 0) && (StringUtil.isNotEmptyOrNull(myTag.getCampaign()))) {
 
@@ -185,55 +219,231 @@ public class AutomateScoreService implements IAutomateScoreService {
                     tag.put("week", weekEntry);
                     tag.put("tag", myTag.getTag());
                     tag.put("start", myTag.getDateStartExe());
-                    tag.put("nbFlacky", myTag.getNbFlaky());
+                    tag.put("nbFlaky", myTag.getNbFlaky());
                     tag.put("nbExe", myTag.getNbExeUsefull());
                     tag.put("duration", myTag.getDurationMs());
                     tag.put("campaign", myTag.getCampaign());
                     tags.put(tag);
 
                     // Campaigns
-                    if (!campaignsMap.containsKey(myTag.getCampaign())) {
+                    if (!campaignMap.containsKey(myTag.getCampaign())) {
                         campaign = new JSONObject();
                         campaign.put("name", myTag.getCampaign());
                         campaign.put("nb", 1);
-                        campaignsMap.put(myTag.getCampaign(), campaign);
+                        campaignMap.put(myTag.getCampaign(), campaign);
                     } else {
-                        campaign = campaignsMap.get(myTag.getCampaign());
+                        campaign = campaignMap.get(myTag.getCampaign());
                         campaign.put("nb", campaign.getInt("nb") + 1);
-                        campaignsMap.put(myTag.getCampaign(), campaign);
+                        campaignMap.put(myTag.getCampaign(), campaign);
+                    }
+
+                    // Campaigns Week
+                    cwKey = getCampaignWeekKey(myTag.getCampaign(), weekEntry);
+                    if (!campaignWeekMap.containsKey(cwKey)) {
+                        campaign = new JSONObject();
+                        campaign.put("campaign", myTag.getCampaign());
+                        campaign.put("nb", 1);
+                        campaignWeekMap.put(cwKey, campaign);
+                    } else {
+                        campaign = campaignWeekMap.get(cwKey);
+                        campaign.put("nb", campaign.getInt("nb") + 1);
+                        campaignWeekMap.put(cwKey, campaign);
                     }
 
                     // Stats
-                    weekStat = weekCampaignStats.get(weekEntry);
-                    if (weekStat != null) {
-                        weekStat.put("nbFlaky", weekStat.getInt("nbFlaky") + myTag.getNbFlaky());
-                        weekStat.put("nbExe", weekStat.getInt("nbExe") + myTag.getNbExeUsefull());
-                        weekStat.put("frequency", weekStat.getInt("frequency") + 1);
-                        weekStat.put("durationSum", weekStat.getInt("durationSum") + myTag.getDurationMs());
-                        if (myTag.getDurationMs() > weekStat.getInt("durationMax")) {
-                            weekStat.put("durationMax", myTag.getDurationMs());
+                    weekStatTag = weekGlobalTagStats.get(weekEntry);
+                    if (weekStatTag != null) {
+
+                        weekStatTag.put("nbFlaky", weekStatTag.getInt("nbFlaky") + myTag.getNbFlaky());
+                        weekStatTag.put("nbExe", weekStatTag.getInt("nbExe") + myTag.getNbExeUsefull());
+                        weekStatTag.put("frequency", weekStatTag.getInt("frequency") + 1);
+                        weekStatTag.put("durationSum", weekStatTag.getInt("durationSum") + myTag.getDurationMs());
+                        if (myTag.getDurationMs() > weekStatTag.getInt("durationMax")) {
+                            weekStatTag.put("durationMax", myTag.getDurationMs());
                         }
-                        if (myTag.getDurationMs() != 0 && (myTag.getDurationMs() < weekStat.getInt("durationMin") || weekStat.getInt("durationMin") == 0)) {
-                            weekStat.put("durationMin", myTag.getDurationMs());
+                        if (myTag.getDurationMs() != 0 && (myTag.getDurationMs() < weekStatTag.getInt("durationMin") || weekStatTag.getInt("durationMin") == 0)) {
+                            weekStatTag.put("durationMin", myTag.getDurationMs());
                         }
-                        if (weekStat.getInt("frequency") > 0) {
-                            weekStat.put("duration", weekStat.getInt("durationSum") / weekStat.getInt("frequency"));
+                        if (weekStatTag.getInt("frequency") > 0) {
+                            weekStatTag.put("duration", weekStatTag.getInt("durationSum") / weekStatTag.getInt("frequency"));
                         }
 //                        LOG.debug("toto {} {} {}", weekStat.getInt("nbExe"), weekStat.getInt("nbFlaky"), weekStat.getInt("nbExe"));
-                        if (weekStat.getInt("nbExe") > 0) {
-                            weekStat.put("reliability", (int) (weekStat.getInt("nbFlaky") * 10000 / weekStat.getInt("nbExe")));
-                        }
-                        weekCampaignStats.put(weekEntry, weekStat);
+//                        if (weekStatTag.getInt("nbExe") > 0) {
+//                            weekStatTag.put("sability", (int) (weekStatTag.getInt("nbFlaky") * 10000 / weekStatTag.getInt("nbExe")));
+//                        }
+                        weekGlobalTagStats.put(weekEntry, weekStatTag);
                     }
 
                 }
             }
 
+            // Loop agains campaignweek list in order to attach each of the into the correct week.
+            String tmpWeekEntry = "";
+            JSONArray tmpCmp;
+            for (Map.Entry<String, JSONObject> entry : campaignWeekMap.entrySet()) {
+                String key = entry.getKey();
+                JSONObject val = entry.getValue();
+                tmpWeekEntry = key.substring(key.length() - 7);
+//                LOG.debug(key);
+//                LOG.debug(tmpWeekEntry);
+                if (weekGlobalTagStats.containsKey(tmpWeekEntry)) {
+                    JSONObject tmpWeek = weekGlobalTagStats.get(tmpWeekEntry);
+                    if (tmpWeek.has("campaigns")) {
+                        tmpCmp = tmpWeek.getJSONArray("campaigns");
+                    } else {
+                        tmpCmp = new JSONArray();
+                    }
+                    tmpCmp.put(val);
+                    tmpWeek.put("campaigns", tmpCmp);
+                    weekGlobalTagStats.put(tmpWeekEntry, tmpWeek);
+                }
+            }
+
+            /**
+             * Feed Week with counters parsing all executions
+             */
+            List<String> taglist = new ArrayList<>();
+            for (Tag tagsStatistic : tagsStatistics) {
+                taglist.add(tagsStatistic.getTag());
+            }
+            exesStatistics = executionService.readByCriteria(systems, taglist, cFrom.getTime(), cTo.getTime());
+
+//            if (exesStatistics.isEmpty()) {
+//                response.put("message", daoTagAnswer.getResultMessage().getDescription());
+//                return response;
+//                return ResponseEntity
+//                        .status(HttpStatus.NOT_FOUND)
+//                        .body(response.toString());
+//            }
+            JSONObject tcExe = new JSONObject();
+            JSONArray tcExes = new JSONArray();
+            String tcKey;
+            String tcwKey;
+            JSONObject testcase = new JSONObject();
+            JSONObject testcaseWeek = new JSONObject();
+            for (TestCaseExecution myExe : exesStatistics) {
+
+                if ((myExe.getDurationMs() > 0) && (StringUtil.isNotEmptyOrNull(myExe.getTag()))) {
+
+                    weekEntry = dwf.format(new Date(myExe.getStart()));
+//                    LOG.debug(weekEntry);
+                    // Tag
+                    tcExe = new JSONObject();
+                    tcExe.put("week", weekEntry);
+                    tcExe.put("tag", myExe.getTag());
+                    tcExe.put("start", new Timestamp(myExe.getStart()));
+                    tcExe.put("isFlaky", myExe.isFlaky());
+                    tcExe.put("isFN", myExe.isFalseNegative());
+                    tcExe.put("duration", myExe.getDurationMs());
+                    tcExe.put("testFolder", myExe.getTest());
+                    tcExe.put("testcaseId", myExe.getTestCase());
+                    tcExe.put("id", myExe.getId());
+                    tcExes.put(tcExe);
+
+                    // Testcases
+                    tcKey = getTestCaseKey(myExe.getTest(), myExe.getTestCase());
+                    if (!testCaseMap.containsKey(tcKey)) {
+                        testcase = new JSONObject();
+//                        testcase.put("name", tcKey);
+                        testcase.put("test", myExe.getTest());
+                        testcase.put("testcase", myExe.getTestCase());
+                        testcase.put("nb", 1);
+                        testCaseMap.put(tcKey, testcase);
+                    } else {
+                        testcase = testCaseMap.get(tcKey);
+                        testcase.put("nb", testcase.getInt("nb") + 1);
+                        testCaseMap.put(tcKey, testcase);
+                    }
+
+                    tcwKey = getTestCaseWeekKey(myExe.getTest(), myExe.getTestCase(), weekEntry);
+                    int nbFlaky = myExe.isFlaky() ? 1 : 0;
+                    int nbFN = myExe.isFalseNegative() ? 1 : 0;
+                    long exeDur = myExe.getDurationMs();
+                    if (!testCaseWeekMap.containsKey(tcwKey)) {
+                        testcaseWeek = new JSONObject();
+//                        testcaseWeek.put("name", tcwKey);
+                        testcaseWeek.put("testFolder", myExe.getTest());
+                        testcaseWeek.put("testcaseId", myExe.getTestCase());
+                        testcaseWeek.put("nb", 1);
+                        testcaseWeek.put("nbFlaky", nbFlaky);
+                        testcaseWeek.put("nbFN", nbFN);
+                        testcaseWeek.put("durationSum", exeDur);
+                        testCaseWeekMap.put(tcwKey, testcaseWeek);
+                    } else {
+                        testcaseWeek = testCaseWeekMap.get(tcwKey);
+                        testcaseWeek.put("nb", testcaseWeek.getInt("nb") + 1);
+                        testcaseWeek.put("nbFlaky", testcaseWeek.getInt("nbFlaky") + nbFlaky);
+                        testcaseWeek.put("nbFN", testcaseWeek.getInt("nbFN") + nbFN);
+                        testcaseWeek.put("durationSum", testcaseWeek.getInt("durationSum") + exeDur);
+                        if (testcaseWeek.getInt("nb") > 0) {
+                            testcaseWeek.put("duration", testcaseWeek.getInt("durationSum") / testcaseWeek.getInt("nb"));
+                        }
+                        testCaseWeekMap.put(tcwKey, testcaseWeek);
+                    }
+
+                    // Stats
+                    weekStatExe = weekGlobalExeStats.get(weekEntry);
+//                    LOG.debug("toto " + weekEntry);
+//                    LOG.debug("toto " + weekStatExe);
+                    if (weekStatExe != null) {
+                        weekStatExe.put("nbFlaky", weekStatExe.getInt("nbFlaky") + (myExe.isFlaky() ? 1 : 0));
+                        weekStatExe.put("nbFN", weekStatExe.getInt("nbFN") + (myExe.isFalseNegative() ? 1 : 0));
+                        weekStatExe.put("nbExe", weekStatExe.getInt("nbExe") + 1);
+                        weekStatExe.put("durationSum", weekStatExe.getInt("durationSum") + myExe.getDurationMs());
+                        if (myExe.getDurationMs() > weekStatExe.getInt("durationMax")) {
+                            weekStatExe.put("durationMax", myExe.getDurationMs());
+                        }
+                        if (myExe.getDurationMs() != 0 && (myExe.getDurationMs() < weekStatExe.getInt("durationMin") || weekStatExe.getInt("durationMin") == 0)) {
+                            weekStatExe.put("durationMin", myExe.getDurationMs());
+                        }
+                        if (weekStatExe.getInt("nbExe") > 0) {
+                            weekStatExe.put("duration", weekStatExe.getInt("durationSum") / weekStatExe.getInt("nbExe"));
+                        }
+//                        LOG.debug("toto {} {} {}", weekStatExe.getInt("nbExe"), weekStatExe.getInt("nbFlaky"), weekStatExe.getInt("durationSum"));
+                        if (weekStatExe.getInt("nbExe") > 0) {
+                            weekStatExe.put("stability", (int) ((weekStatExe.getInt("nbFlaky") + weekStatExe.getInt("nbFN")) * 10000 / (float) weekStatExe.getInt("nbExe")));
+                        }
+                        weekGlobalExeStats.put(weekEntry, weekStatExe);
+                    }
+                }
+            }
+
+            // Loop agains testcaseweek list in order to attach each of the into the correct week.
+            tmpWeekEntry = "";
+            JSONArray tmpTc;
+            for (Map.Entry<String, JSONObject> entry : testCaseWeekMap.entrySet()) {
+                String key = entry.getKey();
+                JSONObject val = entry.getValue();
+                tmpWeekEntry = key.substring(key.length() - 7);
+//                LOG.debug(key);
+//                LOG.debug(tmpWeekEntry);
+                if (weekGlobalExeStats.containsKey(tmpWeekEntry)) {
+                    JSONObject tmpWeek = weekGlobalExeStats.get(tmpWeekEntry);
+                    if (tmpWeek.has("tests")) {
+                        tmpTc = tmpWeek.getJSONArray("tests");
+                    } else {
+                        tmpTc = new JSONArray();
+                    }
+                    tmpTc.put(val);
+                    tmpWeek.put("tests", tmpTc);
+                    weekGlobalExeStats.put(tmpWeekEntry, tmpWeek);
+                }
+            }
+
             // Loop against all weeks in order to calculate score + variations vs Week - 1
-            int kpi1ValuePrev = 0;
-            int kpi2ValuePrev = 0;
-            int kpi3ValuePrev = 0;
-            int kpi4ValuePrev = 0;
+            long kpi1ValuePrev = 0;
+            long kpi2ValuePrev = 0;
+            long kpi3ValuePrev = 0;
+            long kpi4ValuePrev = 0;
+            long kpi1ValuePrevAll = 0;
+            long kpi2ValuePrevAll = 0;
+            long kpi3ValuePrevAll = 0;
+            long kpi4ValuePrevAll = 0;
+            int kpi1ValuePrevAllNb = 0;
+            int kpi2ValuePrevAllNb = 0;
+            int kpi3ValuePrevAllNb = 0;
+            int kpi4ValuePrevAllNb = 0;
+
             for (int i = 0; i < weeks.length(); i++) {
                 JSONObject myWeek = (JSONObject) weeks.get(i);
                 int previousKPI = 0;
@@ -242,57 +452,101 @@ public class AutomateScoreService implements IAutomateScoreService {
 
                 // KPI1 - Frequency
                 JSONObject kpiFreq = new JSONObject();
-                int kpi1Value = weekCampaignStats.get(weekKey).getInt("frequency");
+                long kpi1Value = 0;
+                if (weekGlobalTagStats.get(weekKey).has("campaigns") && weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length() > 0) {
+                    kpi1Value = weekGlobalTagStats.get(weekKey).getInt("frequency") / weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length();
+                }
                 kpiFreq.put("value", kpi1Value);
-                kpiFreq.put("score", getScoreFrequency(kpi1Value));
+                kpiFreq.put("score", getScoreFrequency(kpi1Value, weekKey, todayWeekEntry));
                 if (kpi1ValuePrev != 0 && i > 0) {
                     kpiFreq.put("varVs1", ((kpi1Value * 10000) - (kpi1ValuePrev * 10000)) / (kpi1ValuePrev));
                 }
-                kpiFreq.put("trend", getTrendFrequency(kpi1ValuePrev, kpi1Value));
+                if (kpi1ValuePrevAllNb != 0 && kpi1ValuePrevAll != 0 && i > 0) {
+                    kpiFreq.put("varVsAll", Math.round(((kpi1Value * 10000) - (kpi1ValuePrevAll * 10000 / (float) kpi1ValuePrevAllNb)) / (kpi1ValuePrevAll / (float) kpi1ValuePrevAllNb)));
+                }
+                if (kpi1ValuePrevAllNb > 0) {
+                    kpiFreq.put("trend", getTrendFrequency(Math.round(kpi1ValuePrevAll / kpi1ValuePrevAllNb), kpi1Value, weekKey, todayWeekEntry));
+                } else {
+                    kpiFreq.put("trend", getTrendFrequency(kpi1ValuePrev, kpi1Value, weekKey, todayWeekEntry));
+                }
 
                 // KPI2 - Duration
                 JSONObject kpiDur = new JSONObject();
-                int kpi2Value = weekCampaignStats.get(weekKey).getInt("duration");
+                long kpi2Value = weekGlobalTagStats.get(weekKey).getInt("duration");
                 kpiDur.put("value", kpi2Value);
                 kpiDur.put("score", getScoreDuration(kpi2Value));
                 if (kpi2ValuePrev != 0 && i > 0) {
                     kpiDur.put("varVs1", ((kpi2Value) - (kpi2ValuePrev)) * 10000 / (kpi2ValuePrev));
                 }
-                kpiDur.put("trend", getTrendDuration(kpi1ValuePrev, kpi1Value));
-
-                // KPI3 - Reliability
-                JSONObject kpiReliability = new JSONObject();
-                int kpi3Value = weekCampaignStats.get(weekKey).getInt("nbExe") == 0 ? 0 : weekCampaignStats.get(weekKey).getInt("nbFlaky") * 10000 / weekCampaignStats.get(weekKey).getInt("nbExe");
-                kpiReliability.put("value", kpi3Value);
-                kpiReliability.put("score", getScoreReliability(kpi3Value, weekCampaignStats.get(weekKey).getInt("nbExe")));
-                if (kpi3ValuePrev != 0 && i > 0) {
-                    kpiReliability.put("varVs1", ((kpi3Value) - (kpi3ValuePrev)) * 10000 / (kpi3ValuePrev));
+                if (kpi2ValuePrevAllNb != 0 && kpi2ValuePrevAll != 0 && i > 0) {
+                    kpiDur.put("varVsAll", Math.round(((kpi2Value * 10000) - (kpi2ValuePrevAll * 10000 / (float) kpi2ValuePrevAllNb)) / (kpi2ValuePrevAll / (float) kpi2ValuePrevAllNb)));
+//                    kpiDur.put("varVsAll", Math.round(((kpi2Value * 10000) - ((kpi2ValuePrevAll * 10000) / (float) kpi2ValuePrevAllNb)) / ((float) (kpi2ValuePrevAll / (float) kpi2ValuePrevAllNb))));
+                    kpiDur.put("varVsAll-nb", kpi2ValuePrevAllNb);
+                    kpiDur.put("varVsAll-sum", kpi2ValuePrevAll);
                 }
-                kpiReliability.put("trend", getTrendReliability(kpi1ValuePrev, kpi1Value));
+                if (kpi2ValuePrevAllNb > 0) {
+                    kpiDur.put("trend", getTrendDuration(Math.round(kpi2ValuePrevAll / (float) kpi2ValuePrevAllNb), kpi2Value));
+                } else {
+                    kpiDur.put("trend", getTrendDuration(kpi2ValuePrev, kpi2Value));
+                }
+
+                // KPI3 - Stability
+                JSONObject kpiStability = new JSONObject();
+                long kpi3Value = weekGlobalTagStats.get(weekKey).getInt("nbExe") == 0 ? 0
+                        : (weekGlobalTagStats.get(weekKey).getInt("nbFlaky") * 10000 + weekGlobalExeStats.get(weekKey).getInt("nbFN") * 10000) / weekGlobalTagStats.get(weekKey).getInt("nbExe");
+                kpiStability.put("value", kpi3Value);
+                kpiStability.put("score", getScoreStability(kpi3Value, weekGlobalTagStats.get(weekKey).getInt("nbExe")));
+                if (kpi3ValuePrev != 0 && i > 0) {
+                    kpiStability.put("varVs1", ((kpi3Value) - (kpi3ValuePrev)) * 10000 / (kpi3ValuePrev));
+                }
+                if (kpi3ValuePrevAllNb != 0 && kpi3ValuePrevAll != 0 && i > 0) {
+                    kpiStability.put("varVsAll", Math.round(((kpi3Value * 10000) - (kpi3ValuePrevAll / (float) kpi3ValuePrevAllNb * 10000)) / (kpi3ValuePrevAll / (float) kpi3ValuePrevAllNb)));
+                }
+                if (kpi3ValuePrevAllNb > 0) {
+                    kpiStability.put("trend", getTrendStability(Math.round(kpi3ValuePrevAll / kpi3ValuePrevAllNb), kpi3Value));
+                } else {
+                    kpiStability.put("trend", getTrendStability(kpi3ValuePrev, kpi3Value));
+                }
 
                 // KPI4 - Maintenance
                 JSONObject kpiMaintenance = new JSONObject();
-                int kpi4Value = weekCampaignStats.get(weekKey).getInt("durationMax");
+                long kpi4Value = weekGlobalTagStats.get(weekKey).getInt("durationMax");
                 kpiMaintenance.put("value", kpi4Value);
                 kpiMaintenance.put("score", getScoreMaintenance(kpi4Value));
                 if (kpi4ValuePrev != 0 && i > 0) {
                     kpiMaintenance.put("varVs1", ((kpi4Value) - (kpi4ValuePrev)) * 10000 / (kpi4ValuePrev));
                 }
-                kpiMaintenance.put("trend", getTrendMaintenance(kpi1ValuePrev, kpi1Value));
+                if (kpi4ValuePrevAllNb != 0 && kpi4ValuePrevAll != 0 && i > 0) {
+                    kpiMaintenance.put("varVsAll", Math.round(((kpi4Value * 10000) - (kpi4ValuePrevAll / (float) kpi4ValuePrevAllNb * 10000)) / (kpi4ValuePrevAll / (float) kpi4ValuePrevAllNb)));
+                }
+                if (kpi4ValuePrevAllNb > 0) {
+                    kpiMaintenance.put("trend", getTrendMaintenance(Math.round(kpi4ValuePrevAll / kpi4ValuePrevAllNb), kpi4Value));
+                } else {
+                    kpiMaintenance.put("trend", getTrendMaintenance(kpi4ValuePrev, kpi4Value));
+                }
+                kpiMaintenance.put("trend", getTrendMaintenance(kpi4ValuePrev, kpi4Value));
 
-                JSONObject weekVal = weekCampaignStats.get(weekKey);
+                JSONObject weekVal = weekGlobalStats.get(weekKey);
                 weekVal.put("kpiFrequency", kpiFreq);
                 weekVal.put("kpiDuration", kpiDur);
-                weekVal.put("kpiReliability", kpiReliability);
+                weekVal.put("kpiStability", kpiStability);
                 weekVal.put("kpiMaintenance", kpiMaintenance);
 
-                weekCampaignStats.put(weekKey, weekVal);
+                weekGlobalStats.put(weekKey, weekVal);
 
                 // Keep previous value for next iteration
                 kpi1ValuePrev = kpi1Value;
                 kpi2ValuePrev = kpi2Value;
                 kpi3ValuePrev = kpi3Value;
                 kpi4ValuePrev = kpi4Value;
+                kpi1ValuePrevAll += kpi1Value;
+                kpi2ValuePrevAll += kpi2Value;
+                kpi3ValuePrevAll += kpi3Value;
+                kpi4ValuePrevAll += kpi4Value;
+                kpi1ValuePrevAllNb++;
+                kpi2ValuePrevAllNb++;
+                kpi3ValuePrevAllNb++;
+                kpi4ValuePrevAllNb++;
 
             }
 
@@ -307,30 +561,42 @@ public class AutomateScoreService implements IAutomateScoreService {
 //                val.put("kpi1", kpiFreq);
 //                weekStats.put(key, val);
 //            }
+            response.put("campaigns", campaignMap);
+
             response.put("tags", tags);
 
-            response.put("weekStats", weekCampaignStats);
+            response.put("testcases", testCaseMap);
 
-            response.put("campaigns", campaignsMap);
+            response.put("debug-testcaseWeeks", testCaseWeekMap);
 
-//            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
-//            Map<String, String> campaignGroups1 = tagStatisticService.generateGroup1List(aggregateByTag.keySet());
-//            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN", campaignGroups1);
-//            List<JSONObject> aggregateListByCampaign = new ArrayList<>();
-//            for (Map.Entry<String, JSONObject> entry : aggregateByCampaign.entrySet()) {
-//                String key = entry.getKey();
-//                JSONObject value = entry.getValue();
-//                group1List.replaceAll(g -> g.replace("%20", " "));
-//                if (group1List.isEmpty()) {
-//                    aggregateListByCampaign.add(value);
-//                } else {
-//                    if (group1List.contains(value.getString("campaignGroup1"))) {
-//                        aggregateListByCampaign.add(value);
-//                    }
-//                }
-//            }
-//            response.put("group1List", new HashSet<>(campaignGroups1.values())); //Hashset has only unique values
-//            response.put("campaignStatistics", aggregateListByCampaign);
+            response.put("debug-campaignWeeks", campaignWeekMap);
+
+            response.put("exes", tcExes);
+
+            response.put("weekStatsTag", weekGlobalTagStats);
+
+            response.put("weekStatsExe", weekGlobalExeStats);
+
+            response.put("weekStats", weekGlobalStats);
+
+            //            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
+            //            Map<String, String> campaignGroups1 = tagStatisticService.generateGroup1List(aggregateByTag.keySet());
+            //            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN", campaignGroups1);
+            //            List<JSONObject> aggregateListByCampaign = new ArrayList<>();
+            //            for (Map.Entry<String, JSONObject> entry : aggregateByCampaign.entrySet()) {
+            //                String key = entry.getKey();
+            //                JSONObject value = entry.getValue();
+            //                group1List.replaceAll(g -> g.replace("%20", " "));
+            //                if (group1List.isEmpty()) {
+            //                    aggregateListByCampaign.add(value);
+            //                } else {
+            //                    if (group1List.contains(value.getString("campaignGroup1"))) {
+            //                        aggregateListByCampaign.add(value);
+            //                    }
+            //                }
+            //            }
+            //            response.put("group1List", new HashSet<>(campaignGroups1.values())); //Hashset has only unique values
+            //            response.put("campaignStatistics", aggregateListByCampaign);
             return response;
 
         } catch (JSONException exception) {
@@ -348,7 +614,22 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getScoreFrequency(int kpi) {
+    private String getTestCaseKey(String test, String testCase) {
+        return test + " | " + testCase;
+    }
+
+    private String getTestCaseWeekKey(String test, String testCase, String week) {
+        return test + " | " + testCase + " | " + week;
+    }
+
+    private String getCampaignWeekKey(String campaign, String week) {
+        return campaign + " | " + week;
+    }
+
+    private String getScoreFrequency(long kpi, String week, String todayWeek) {
+        if (week != null && week.equals(todayWeek)) {
+            return "NA";
+        }
         if (kpi > 10) {
             return "A";
         } else if (kpi > 7) {
@@ -364,7 +645,7 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getScoreReliability(int kpi, int nbExe) {
+    private String getScoreStability(long kpi, int nbExe) {
         if (nbExe == 0) {
             return "NA";
         }
@@ -381,7 +662,7 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getScoreDuration(int kpi) {
+    private String getScoreDuration(long kpi) {
         if (kpi == 0) {
             return "NA";
         }
@@ -399,7 +680,7 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getScoreMaintenance(int kpi) {
+    private String getScoreMaintenance(long kpi) {
         if (kpi < 600000) { // 10 min
             return "A";
         } else if (kpi < 1200000) { // 20 min
@@ -413,7 +694,7 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getTrendMaintenance(int kpiprev, int kpi) {
+    private String getTrendMaintenance(long kpiprev, long kpi) {
         if (kpiprev < kpi) {
             return "KOUP";
         }
@@ -423,7 +704,10 @@ public class AutomateScoreService implements IAutomateScoreService {
         return "ISO";
     }
 
-    private String getTrendFrequency(int kpiprev, int kpi) {
+    private String getTrendFrequency(long kpiprev, long kpi, String week, String todayWeek) {
+        if (week != null && week.equals(todayWeek)) {
+            return "NA";
+        }
         if (kpiprev < kpi) {
             return "OKUP";
         }
@@ -433,7 +717,7 @@ public class AutomateScoreService implements IAutomateScoreService {
         return "ISO";
     }
 
-    private String getTrendReliability(int kpiprev, int kpi) {
+    private String getTrendStability(long kpiprev, long kpi) {
         if (kpiprev < kpi) {
             return "KOUP";
         }
@@ -443,11 +727,11 @@ public class AutomateScoreService implements IAutomateScoreService {
         return "ISO";
     }
 
-    private String getTrendDuration(int kpiprev, int kpi) {
-        if (kpiprev < kpi) {
+    private String getTrendDuration(long kpiprev, long kpi) {
+        if (kpiprev > kpi) {
             return "OKDOWN";
         }
-        if (kpiprev > kpi) {
+        if (kpiprev < kpi) {
             return "KOUP";
         }
         return "ISO";

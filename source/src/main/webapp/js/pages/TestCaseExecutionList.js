@@ -325,20 +325,49 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "isLast",
+            "data": "isUseful",
             "visible": false,
-            "sName": "exe.isLast",
-            "title": doc.getDocOnline("testcaseexecution", "isLast"),
+            "sName": "exe.isUseful",
+            "title": doc.getDocOnline("testcaseexecution", "isUseful"),
             "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (data === true) {
+                    return data;
+                } else {
+                    return "";
+                }
+            }
         },
         {
-            "data": "isFlacky",
+            "data": "isFlaky",
             "visible": false,
-            "sName": "exe.isFlacky",
-            "title": doc.getDocOnline("testcaseexecution", "isFlacky"),
+            "sName": "exe.isFlaky",
+            "title": doc.getDocOnline("testcaseexecution", "isFlaky"),
             "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (data === true) {
+                    return data;
+                } else {
+                    return "";
+                }
+            }
+        },
+        {
+            "data": "falseNegative",
+            "visible": false,
+            "sName": "exe.falseNegative",
+            "title": doc.getDocOnline("testcaseexecution", "falseNegative"),
+            "sWidth": "70px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (data === true) {
+                    return data;
+                } else {
+                    return "";
+                }
+            }
         },
         {
             "data": "controlMessage",

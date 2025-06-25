@@ -118,6 +118,16 @@ public interface ITestCaseExecutionService {
     List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException;
 
     /**
+     * @param system
+     * @param tags
+     * @param from
+     * @param to
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecution> readByCriteria(List<String> system, List<String> tags, Date from, Date to) throws CerberusException;
+
+    /**
      *
      * @param system
      * @return
@@ -196,11 +206,11 @@ public interface ITestCaseExecutionService {
      *
      * @param id : ID of the execution to update
      * @param isLast : value of Last Execution from retry.
-     * @param isFlacky : value of Flacky Flag.
+     * @param isFlaky : value of Flaky Flag.
      * @param usrModif
      * @throws CerberusException when exception occur during the update.
      */
-    void updateLastAndFlacky(long id, boolean isLast, boolean isFlacky, String usrModif) throws CerberusException;
+    void updateLastAndFlaky(long id, boolean isLast, boolean isFlaky, String usrModif) throws CerberusException;
 
     /**
      * @param tag

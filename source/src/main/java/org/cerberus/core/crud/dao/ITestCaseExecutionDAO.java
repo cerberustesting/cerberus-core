@@ -184,11 +184,11 @@ public interface ITestCaseExecutionDAO {
      *
      * @param id : ID of the execution
      * @param last
-     * @param flacky
+     * @param flaky
      * @param usrModif
      * @throws org.cerberus.core.exception.CerberusException
      */
-    public void updateLastAndFlacky(long id, boolean last, boolean flacky, String usrModif) throws CerberusException;
+    public void updateLastAndFlaky(long id, boolean last, boolean flaky, String usrModif) throws CerberusException;
 
     /**
      * @param tag
@@ -213,6 +213,15 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     public AnswerList<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to);
+
+    /**
+     * @param system
+     * @param tags
+     * @param from
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCaseExecution> readByCriteria(List<String> system, List<String> tags, Date from, Date to);
 
     /**
      * @param systems
