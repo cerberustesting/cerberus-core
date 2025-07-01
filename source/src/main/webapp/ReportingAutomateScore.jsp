@@ -451,6 +451,49 @@
                     </div>
 
                 </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-lg-12" id="DetailKPIPanel">
+
+
+                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a data-toggle="tab" href="#tabTestcases" id="testcaseDetails" name="tabTestcases">Test Cases</a></li>
+                        <li><a data-toggle="tab" href="#tabCampaigns" id="campaignDetails" name="tabCampaigns">Campaigns</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <div class="center tab-pane fade in active" id="tabTestcases">
+                            <div class="panel panel-default">
+                                <!--                            <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
+                                                                <span class="fa fa-pie-chart fa-fw"></span>
+                                                                <label id="ns3Label">Requests List</label>
+                                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                                            </div>-->
+                                <div class="panel-body collapse in" id="testcaseList">
+                                    <table id="testcasesTable" class="table table-bordered table-hover display" name="testcasesTable"></table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="center tab-pane fade in" id="tabCampaigns">
+                            <div class="panel panel-default">
+                                <div class="panel-body" id="campaignList">
+                                    <table id="campaignsTable" class="table table-bordered table-hover display" name="campaignsTable"></table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row">
 
                 <footer class="footer">
                     <div class="container-fluid" id="footer"></div>

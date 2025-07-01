@@ -165,12 +165,11 @@ public class AutomateScoreService implements IAutomateScoreService {
                 weekStatTag = new JSONObject();
                 weekStatTag.put("nbFlaky", 0);
                 weekStatTag.put("nbExe", 0);
-                weekStatTag.put("frequency", 0);
+                weekStatTag.put("nb", 0);
                 weekStatTag.put("durationSum", 0);
                 weekStatTag.put("durationMax", 0);
                 weekStatTag.put("durationMin", 0);
                 weekStatTag.put("duration", 0);
-                weekStatTag.put("stability", 0);
                 weekGlobalTagStats.put(weekEntry, weekStatTag);
 
                 weekStatExe = new JSONObject();
@@ -228,12 +227,58 @@ public class AutomateScoreService implements IAutomateScoreService {
                     // Campaigns
                     if (!campaignMap.containsKey(myTag.getCampaign())) {
                         campaign = new JSONObject();
-                        campaign.put("name", myTag.getCampaign());
+                        campaign.put("campaign", myTag.getCampaign());
                         campaign.put("nb", 1);
+                        campaign.put("nbFlaky", myTag.getNbFlaky());
+                        campaign.put("nbFlakySum", myTag.getNbFlaky());
+                        campaign.put("nbFlakyMax", myTag.getNbFlaky());
+                        campaign.put("nbFlakyMin", myTag.getNbFlaky());
+                        campaign.put("nbExe", myTag.getNbExeUsefull());
+                        campaign.put("nbExeSum", myTag.getNbExeUsefull());
+                        campaign.put("nbExeMax", myTag.getNbExeUsefull());
+                        campaign.put("nbExeMin", myTag.getNbExeUsefull());
+                        campaign.put("duration", myTag.getDurationMs());
+                        campaign.put("durationSum", myTag.getDurationMs());
+                        campaign.put("durationMax", myTag.getDurationMs());
+                        campaign.put("durationMin", myTag.getDurationMs());
                         campaignMap.put(myTag.getCampaign(), campaign);
                     } else {
                         campaign = campaignMap.get(myTag.getCampaign());
                         campaign.put("nb", campaign.getInt("nb") + 1);
+
+                        campaign.put("nbFlakySum", campaign.getLong("nbFlakySum") + myTag.getNbFlaky());
+                        if (myTag.getNbFlaky() > campaign.getLong("nbFlakyMax")) {
+                            campaign.put("nbFlakyMax", myTag.getNbFlaky());
+                        }
+                        if (myTag.getNbFlaky() < campaign.getLong("nbFlakyMin")) {
+                            campaign.put("nbFlakyMin", myTag.getNbFlaky());
+                        }
+                        if (campaign.getInt("nb") > 0) {
+                            campaign.put("nbFlaky", campaign.getLong("nbFlakySum") / campaign.getInt("nb"));
+                        }
+
+                        campaign.put("nbExeSum", campaign.getLong("nbExeSum") + myTag.getNbExeUsefull());
+                        if (myTag.getNbExeUsefull() > campaign.getLong("nbExeMax")) {
+                            campaign.put("nbExeMax", myTag.getNbExeUsefull());
+                        }
+                        if (myTag.getNbExeUsefull() != 0 && (myTag.getNbExeUsefull() < campaign.getLong("nbExeMin") || campaign.getLong("nbExeMin") == 0)) {
+                            campaign.put("nbExeMin", myTag.getNbExeUsefull());
+                        }
+                        if (campaign.getInt("nb") > 0) {
+                            campaign.put("nbExe", campaign.getLong("nbExeSum") / campaign.getInt("nb"));
+                        }
+
+                        campaign.put("durationSum", campaign.getLong("durationSum") + myTag.getDurationMs());
+                        if (myTag.getDurationMs() > campaign.getLong("durationMax")) {
+                            campaign.put("durationMax", myTag.getDurationMs());
+                        }
+                        if (myTag.getDurationMs() != 0 && (myTag.getDurationMs() < campaign.getLong("durationMin") || campaign.getLong("durationMin") == 0)) {
+                            campaign.put("durationMin", myTag.getDurationMs());
+                        }
+                        if (campaign.getInt("nb") > 0) {
+                            campaign.put("duration", campaign.getLong("durationSum") / campaign.getInt("nb"));
+                        }
+
                         campaignMap.put(myTag.getCampaign(), campaign);
                     }
 
@@ -256,16 +301,16 @@ public class AutomateScoreService implements IAutomateScoreService {
 
                         weekStatTag.put("nbFlaky", weekStatTag.getInt("nbFlaky") + myTag.getNbFlaky());
                         weekStatTag.put("nbExe", weekStatTag.getInt("nbExe") + myTag.getNbExeUsefull());
-                        weekStatTag.put("frequency", weekStatTag.getInt("frequency") + 1);
-                        weekStatTag.put("durationSum", weekStatTag.getInt("durationSum") + myTag.getDurationMs());
-                        if (myTag.getDurationMs() > weekStatTag.getInt("durationMax")) {
+                        weekStatTag.put("nb", weekStatTag.getInt("nb") + 1);
+                        weekStatTag.put("durationSum", weekStatTag.getLong("durationSum") + myTag.getDurationMs());
+                        if (myTag.getDurationMs() > weekStatTag.getLong("durationMax")) {
                             weekStatTag.put("durationMax", myTag.getDurationMs());
                         }
-                        if (myTag.getDurationMs() != 0 && (myTag.getDurationMs() < weekStatTag.getInt("durationMin") || weekStatTag.getInt("durationMin") == 0)) {
+                        if (myTag.getDurationMs() != 0 && (myTag.getDurationMs() < weekStatTag.getLong("durationMin") || weekStatTag.getLong("durationMin") == 0)) {
                             weekStatTag.put("durationMin", myTag.getDurationMs());
                         }
-                        if (weekStatTag.getInt("frequency") > 0) {
-                            weekStatTag.put("duration", weekStatTag.getInt("durationSum") / weekStatTag.getInt("frequency"));
+                        if (weekStatTag.getInt("nb") > 0) {
+                            weekStatTag.put("duration", weekStatTag.getLong("durationSum") / weekStatTag.getInt("nb"));
                         }
 //                        LOG.debug("toto {} {} {}", weekStat.getInt("nbExe"), weekStat.getInt("nbFlaky"), weekStat.getInt("nbExe"));
 //                        if (weekStatTag.getInt("nbExe") > 0) {
@@ -329,6 +374,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 //                    LOG.debug(weekEntry);
                     // Tag
                     tcExe = new JSONObject();
+                    tcExe.put("id", myExe.getId());
                     tcExe.put("week", weekEntry);
                     tcExe.put("tag", myExe.getTag());
                     tcExe.put("start", new Timestamp(myExe.getStart()));
@@ -337,28 +383,46 @@ public class AutomateScoreService implements IAutomateScoreService {
                     tcExe.put("duration", myExe.getDurationMs());
                     tcExe.put("testFolder", myExe.getTest());
                     tcExe.put("testcaseId", myExe.getTestCase());
-                    tcExe.put("id", myExe.getId());
                     tcExes.put(tcExe);
 
                     // Testcases
                     tcKey = getTestCaseKey(myExe.getTest(), myExe.getTestCase());
+                    int nbFlaky = myExe.isFlaky() ? 1 : 0;
+                    int nbFN = myExe.isFalseNegative() ? 1 : 0;
+                    long exeDur = myExe.getDurationMs();
                     if (!testCaseMap.containsKey(tcKey)) {
                         testcase = new JSONObject();
 //                        testcase.put("name", tcKey);
-                        testcase.put("test", myExe.getTest());
-                        testcase.put("testcase", myExe.getTestCase());
+                        testcase.put("testFolder", myExe.getTest());
+                        testcase.put("testcaseId", myExe.getTestCase());
                         testcase.put("nb", 1);
+                        testcase.put("nbFlaky", nbFlaky);
+                        testcase.put("nbFN", nbFN);
+                        testcase.put("durationSum", myExe.getDurationMs());
+                        testcase.put("durationMax", myExe.getDurationMs());
+                        testcase.put("durationMin", myExe.getDurationMs());
+                        testcase.put("duration", myExe.getDurationMs());
                         testCaseMap.put(tcKey, testcase);
                     } else {
                         testcase = testCaseMap.get(tcKey);
                         testcase.put("nb", testcase.getInt("nb") + 1);
+                        testcase.put("nbFlaky", testcase.getLong("nbFlaky") + nbFlaky);
+                        testcase.put("nbFN", testcase.getLong("nbFN") + nbFN);
+                        testcase.put("durationSum", testcase.getLong("durationSum") + myExe.getDurationMs());
+                        if (myExe.getDurationMs() > testcase.getLong("durationMax")) {
+                            testcase.put("durationMax", myExe.getDurationMs());
+                        }
+                        if (myExe.getDurationMs() != 0 && (myExe.getDurationMs() < testcase.getLong("durationMin") || testcase.getLong("durationMin") == 0)) {
+                            testcase.put("durationMin", myExe.getDurationMs());
+                        }
+                        if (testcase.getInt("nb") > 0) {
+                            testcase.put("duration", testcase.getLong("durationSum") / testcase.getInt("nb"));
+                        }
+
                         testCaseMap.put(tcKey, testcase);
                     }
 
                     tcwKey = getTestCaseWeekKey(myExe.getTest(), myExe.getTestCase(), weekEntry);
-                    int nbFlaky = myExe.isFlaky() ? 1 : 0;
-                    int nbFN = myExe.isFalseNegative() ? 1 : 0;
-                    long exeDur = myExe.getDurationMs();
                     if (!testCaseWeekMap.containsKey(tcwKey)) {
                         testcaseWeek = new JSONObject();
 //                        testcaseWeek.put("name", tcwKey);
@@ -374,9 +438,9 @@ public class AutomateScoreService implements IAutomateScoreService {
                         testcaseWeek.put("nb", testcaseWeek.getInt("nb") + 1);
                         testcaseWeek.put("nbFlaky", testcaseWeek.getInt("nbFlaky") + nbFlaky);
                         testcaseWeek.put("nbFN", testcaseWeek.getInt("nbFN") + nbFN);
-                        testcaseWeek.put("durationSum", testcaseWeek.getInt("durationSum") + exeDur);
+                        testcaseWeek.put("durationSum", testcaseWeek.getLong("durationSum") + exeDur);
                         if (testcaseWeek.getInt("nb") > 0) {
-                            testcaseWeek.put("duration", testcaseWeek.getInt("durationSum") / testcaseWeek.getInt("nb"));
+                            testcaseWeek.put("duration", testcaseWeek.getLong("durationSum") / testcaseWeek.getInt("nb"));
                         }
                         testCaseWeekMap.put(tcwKey, testcaseWeek);
                     }
@@ -389,15 +453,15 @@ public class AutomateScoreService implements IAutomateScoreService {
                         weekStatExe.put("nbFlaky", weekStatExe.getInt("nbFlaky") + (myExe.isFlaky() ? 1 : 0));
                         weekStatExe.put("nbFN", weekStatExe.getInt("nbFN") + (myExe.isFalseNegative() ? 1 : 0));
                         weekStatExe.put("nbExe", weekStatExe.getInt("nbExe") + 1);
-                        weekStatExe.put("durationSum", weekStatExe.getInt("durationSum") + myExe.getDurationMs());
-                        if (myExe.getDurationMs() > weekStatExe.getInt("durationMax")) {
+                        weekStatExe.put("durationSum", weekStatExe.getLong("durationSum") + myExe.getDurationMs());
+                        if (myExe.getDurationMs() > weekStatExe.getLong("durationMax")) {
                             weekStatExe.put("durationMax", myExe.getDurationMs());
                         }
-                        if (myExe.getDurationMs() != 0 && (myExe.getDurationMs() < weekStatExe.getInt("durationMin") || weekStatExe.getInt("durationMin") == 0)) {
+                        if (myExe.getDurationMs() != 0 && (myExe.getDurationMs() < weekStatExe.getLong("durationMin") || weekStatExe.getLong("durationMin") == 0)) {
                             weekStatExe.put("durationMin", myExe.getDurationMs());
                         }
                         if (weekStatExe.getInt("nbExe") > 0) {
-                            weekStatExe.put("duration", weekStatExe.getInt("durationSum") / weekStatExe.getInt("nbExe"));
+                            weekStatExe.put("duration", weekStatExe.getLong("durationSum") / weekStatExe.getInt("nbExe"));
                         }
 //                        LOG.debug("toto {} {} {}", weekStatExe.getInt("nbExe"), weekStatExe.getInt("nbFlaky"), weekStatExe.getInt("durationSum"));
                         if (weekStatExe.getInt("nbExe") > 0) {
@@ -454,7 +518,7 @@ public class AutomateScoreService implements IAutomateScoreService {
                 JSONObject kpiFreq = new JSONObject();
                 long kpi1Value = 0;
                 if (weekGlobalTagStats.get(weekKey).has("campaigns") && weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length() > 0) {
-                    kpi1Value = weekGlobalTagStats.get(weekKey).getInt("frequency") / weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length();
+                    kpi1Value = weekGlobalTagStats.get(weekKey).getInt("nb") / weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length();
                 }
                 kpiFreq.put("value", kpi1Value);
                 kpiFreq.put("score", getScoreFrequency(kpi1Value, weekKey, todayWeekEntry));
@@ -472,7 +536,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 
                 // KPI2 - Duration
                 JSONObject kpiDur = new JSONObject();
-                long kpi2Value = weekGlobalTagStats.get(weekKey).getInt("duration");
+                long kpi2Value = weekGlobalTagStats.get(weekKey).getLong("duration");
                 kpiDur.put("value", kpi2Value);
                 kpiDur.put("score", getScoreDuration(kpi2Value));
                 if (kpi2ValuePrev != 0 && i > 0) {
@@ -510,7 +574,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 
                 // KPI4 - Maintenance
                 JSONObject kpiMaintenance = new JSONObject();
-                long kpi4Value = weekGlobalTagStats.get(weekKey).getInt("durationMax");
+                long kpi4Value = weekGlobalTagStats.get(weekKey).getLong("durationMax");
                 kpiMaintenance.put("value", kpi4Value);
                 kpiMaintenance.put("score", getScoreMaintenance(kpi4Value));
                 if (kpi4ValuePrev != 0 && i > 0) {
@@ -561,11 +625,23 @@ public class AutomateScoreService implements IAutomateScoreService {
 //                val.put("kpi1", kpiFreq);
 //                weekStats.put(key, val);
 //            }
-            response.put("campaigns", campaignMap);
+            JSONArray campaignsArray = new JSONArray();
+            for (Map.Entry<String, JSONObject> entry : campaignMap.entrySet()) {
+                JSONObject val = entry.getValue();
+                campaignsArray.put(val);
+
+            }
+            response.put("campaigns", campaignsArray);
 
             response.put("tags", tags);
 
-            response.put("testcases", testCaseMap);
+            JSONArray testcasesArray = new JSONArray();
+            for (Map.Entry<String, JSONObject> entry : testCaseMap.entrySet()) {
+                JSONObject val = entry.getValue();
+                testcasesArray.put(val);
+
+            }
+            response.put("testcases", testcasesArray);
 
             response.put("debug-testcaseWeeks", testCaseWeekMap);
 

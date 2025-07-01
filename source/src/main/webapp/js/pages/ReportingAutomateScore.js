@@ -101,6 +101,241 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
+
+function aoColumnsFuncTestCase() {
+    var doc = new Doc();
+
+    var aoColumns = [
+        {
+            "data": "testFolder",
+            "bSortable": true,
+            "sName": "testFolder",
+            "title": "Test Folder",
+            "sWidth": "200px"
+        },
+        {
+            "data": "testcaseId",
+            "bSortable": true,
+            "sName": "testcaseId",
+            "title": "Test Case ID",
+            "sWidth": "70px"
+        },
+        {
+            "data": "nb",
+            "bSortable": true,
+            "sName": "nb",
+            "title": "nb of executions",
+            "sWidth": "50px"
+        },
+        {
+            "data": "duration",
+            "bSortable": true,
+            "sName": "duration",
+            "title": "Average Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "durationMin",
+            "bSortable": true,
+            "sName": "durationMin",
+            "title": "Min Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "durationMax",
+            "bSortable": true,
+            "sName": "durationMax",
+            "title": "Max Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "nbFN",
+            "bSortable": true,
+            "sName": "nbFN",
+            "title": "nb of False Negative",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                return data;
+            }
+        },
+        {
+            "data": "nbFlaky",
+            "bSortable": true,
+            "sName": "nbFlaky",
+            "title": "nb of Flaky",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                return data;
+            }
+        }
+    ];
+
+    return aoColumns;
+}
+
+function aoColumnsFuncCampaign() {
+    var doc = new Doc();
+
+    var aoColumns = [
+        {
+            "data": "campaign",
+            "bSortable": true,
+            "sName": "campaign",
+            "title": "Campaign",
+            "sWidth": "200px"
+        },
+        {
+            "data": "nb",
+            "bSortable": true,
+            "sName": "nb",
+            "title": "nb of campaign exe",
+            "sWidth": "50px"
+        },
+        {
+            "data": "nbExe",
+            "bSortable": true,
+            "sName": "nbExe",
+            "title": "nb of executions",
+            "sWidth": "50px"
+        },
+        {
+            "data": "nbExeMin",
+            "bSortable": true,
+            "sName": "nbExeMin",
+            "title": "Min nb of executions",
+            "sWidth": "50px"
+        },
+        {
+            "data": "nbExeMax",
+            "bSortable": true,
+            "sName": "nbExeMax",
+            "title": "Max nb of executions",
+            "sWidth": "50px"
+        },
+        {
+            "data": "duration",
+            "bSortable": true,
+            "sName": "duration",
+            "title": "Average Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "durationMin",
+            "bSortable": true,
+            "sName": "durationMin",
+            "title": "Min Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "durationMax",
+            "bSortable": true,
+            "sName": "durationMax",
+            "title": "Max Duration",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                return getHumanReadableDuration(data / 1000);
+            }
+        },
+        {
+            "data": "nbFlaky",
+            "bSortable": true,
+            "sName": "nbFlaky",
+            "title": "nb of Flaky",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                return data;
+            }
+        },
+        {
+            "data": "nbFlakyMin",
+            "bSortable": true,
+            "sName": "nbFlakyMin",
+            "title": "Min nb of Flaky",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                return data;
+            }
+        },
+        {
+            "data": "nbFlakyMax",
+            "bSortable": true,
+            "sName": "nbFlakyMax",
+            "title": "Max nb of Flaky",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                return data;
+            }
+        }
+    ];
+
+    return aoColumns;
+}
+
+
+function drawTable_TestCases(data, targetTable, targetPanel) {
+    var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncTestCase(), true, [0, 'asc']);
+    configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
+
+    if ($('#' + targetTable).hasClass('dataTable') === false) {
+
+        createDataTableWithPermissions(configurations, undefined, targetPanel);
+        showTitleWhenTextOverflow();
+    } else {
+
+        var oTable = $("#testcasesTable").dataTable();
+        oTable.fnClearTable();
+        oTable.fnAddData(data);
+    }
+}
+
+function drawTable_Campaigns(data, targetTable, targetPanel) {
+    var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncCampaign(), true, [0, 'asc']);
+    configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
+
+    if ($('#' + targetTable).hasClass('dataTable') === false) {
+
+        createDataTableWithPermissions(configurations, undefined, targetPanel);
+        showTitleWhenTextOverflow();
+    } else {
+
+        var oTable = $("#campaignsTable").dataTable();
+        oTable.fnClearTable();
+        oTable.fnAddData(data);
+    }
+}
+
+
+
 /***
  * Feed the TestCase select with all the testcase from test defined.
  * @param {String} selectElement - id of select to refresh.
@@ -298,6 +533,10 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
             let kpiMaintData = [];
             let kpiMaintColor = [];
             let kpiMaintPoint = [];
+
+
+            drawTable_TestCases(data.testcases, "testcasesTable", "tabTestcases");
+            drawTable_Campaigns(data.campaigns, "campaignsTable", "tabCampaigns");
 
             for (let index = 0; index < data.weeks.length; index++) {
                 labelsDatasets.push(data.weeks[index].label);
