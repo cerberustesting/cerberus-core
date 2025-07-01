@@ -229,7 +229,7 @@ function aoColumnsFuncCampaign() {
         },
         {
             "data": "duration",
-            "bSortable": true,
+//            "bSortable": true,
             "sName": "duration",
             "title": "Average Duration",
             "sWidth": "50px",
@@ -239,7 +239,7 @@ function aoColumnsFuncCampaign() {
         },
         {
             "data": "durationMin",
-            "bSortable": true,
+//            "bSortable": true,
             "sName": "durationMin",
             "title": "Min Duration",
             "sWidth": "50px",
@@ -249,7 +249,7 @@ function aoColumnsFuncCampaign() {
         },
         {
             "data": "durationMax",
-            "bSortable": true,
+//S            "bSortable": true,
             "sName": "durationMax",
             "title": "Max Duration",
             "sWidth": "50px",
@@ -558,7 +558,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
                 kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.score));
             }
 
-            renderScope(Object.keys(data.campaigns), Object.keys(data.testcases));
+            renderScope(data.campaigns, data.testcases);
 
             let lastKPI = data.weekStats[data.weeks[kpiFreqData.length - 1].val];
             renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.score, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVsAll / 100);
@@ -646,7 +646,7 @@ function renderScope(campaigns, testcases) {
     $("#scopeCampaigns").text(campaigns.length + " Campaigns");
     let titleDes = "";
     for (var i = 0; i < campaigns.length; i++) {
-        titleDes += " / " + campaigns[i];
+        titleDes += " / " + campaigns[i].campaign;
     }
     titleDes = titleDes.substring(3);
 //    $("#scopeCampaigns").attr('data-toggle', 'tooltip').attr('data-original-title', 'toto');
