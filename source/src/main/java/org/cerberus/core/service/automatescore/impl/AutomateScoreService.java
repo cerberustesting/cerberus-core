@@ -150,6 +150,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 
             Map<String, JSONObject> campaignMap = new HashMap<>();
             Map<String, JSONObject> campaignWeekMap = new HashMap<>();
+            Map<String, JSONObject> applicationMap = new HashMap<>();
             Map<String, JSONObject> testCaseMap = new HashMap<>();
             Map<String, JSONObject> testCaseWeekMap = new HashMap<>();
 
@@ -383,18 +384,27 @@ public class AutomateScoreService implements IAutomateScoreService {
                     tcExe.put("duration", myExe.getDurationMs());
                     tcExe.put("testFolder", myExe.getTest());
                     tcExe.put("testcaseId", myExe.getTestCase());
+                    tcExe.put("application", myExe.getApplication());
                     tcExes.put(tcExe);
 
-                    // Testcases
-                    tcKey = getTestCaseKey(myExe.getTest(), myExe.getTestCase());
+                    // Init counters
                     int nbFlaky = myExe.isFlaky() ? 1 : 0;
                     int nbFN = myExe.isFalseNegative() ? 1 : 0;
                     long exeDur = myExe.getDurationMs();
+
+                    // Applications
+                    if (!applicationMap.containsKey(myExe.getApplication())) {
+                        applicationMap.put(myExe.getApplication(), null);
+                    }
+
+                    // Testcases
+                    tcKey = getTestCaseKey(myExe.getTest(), myExe.getTestCase());
                     if (!testCaseMap.containsKey(tcKey)) {
                         testcase = new JSONObject();
 //                        testcase.put("name", tcKey);
                         testcase.put("testFolder", myExe.getTest());
                         testcase.put("testcaseId", myExe.getTestCase());
+                        testcase.put("application", myExe.getApplication());
                         testcase.put("nb", 1);
                         testcase.put("nbFlaky", nbFlaky);
                         testcase.put("nbFN", nbFN);
@@ -428,6 +438,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 //                        testcaseWeek.put("name", tcwKey);
                         testcaseWeek.put("testFolder", myExe.getTest());
                         testcaseWeek.put("testcaseId", myExe.getTestCase());
+                        testcaseWeek.put("application", myExe.getApplication());
                         testcaseWeek.put("nb", 1);
                         testcaseWeek.put("nbFlaky", nbFlaky);
                         testcaseWeek.put("nbFN", nbFN);
@@ -507,6 +518,11 @@ public class AutomateScoreService implements IAutomateScoreService {
             int kpi2ValuePrevAllNb = 0;
             int kpi3ValuePrevAllNb = 0;
             int kpi4ValuePrevAllNb = 0;
+            Integer score1 = null;
+            Integer score2 = null;
+            Integer score3 = null;
+            Integer score4 = null;
+            Integer score = null;
 
             for (int i = 0; i < weeks.length(); i++) {
                 JSONObject myWeek = (JSONObject) weeks.get(i);
@@ -521,7 +537,9 @@ public class AutomateScoreService implements IAutomateScoreService {
                     kpi1Value = weekGlobalTagStats.get(weekKey).getInt("nb") / weekGlobalTagStats.get(weekKey).getJSONArray("campaigns").length();
                 }
                 kpiFreq.put("value", kpi1Value);
-                kpiFreq.put("score", getScoreFrequency(kpi1Value, weekKey, todayWeekEntry));
+                score1 = getScoreFrequency(kpi1Value, weekKey, todayWeekEntry);
+                kpiFreq.put("score", score1);
+                kpiFreq.put("scoreL", getScoreFromInt(score1));
                 if (kpi1ValuePrev != 0 && i > 0) {
                     kpiFreq.put("varVs1", ((kpi1Value * 10000) - (kpi1ValuePrev * 10000)) / (kpi1ValuePrev));
                 }
@@ -538,7 +556,9 @@ public class AutomateScoreService implements IAutomateScoreService {
                 JSONObject kpiDur = new JSONObject();
                 long kpi2Value = weekGlobalTagStats.get(weekKey).getLong("duration");
                 kpiDur.put("value", kpi2Value);
-                kpiDur.put("score", getScoreDuration(kpi2Value));
+                score2 = getScoreDuration(kpi2Value);
+                kpiDur.put("score", score2);
+                kpiDur.put("scoreL", getScoreFromInt(score2));
                 if (kpi2ValuePrev != 0 && i > 0) {
                     kpiDur.put("varVs1", ((kpi2Value) - (kpi2ValuePrev)) * 10000 / (kpi2ValuePrev));
                 }
@@ -559,7 +579,9 @@ public class AutomateScoreService implements IAutomateScoreService {
                 long kpi3Value = weekGlobalTagStats.get(weekKey).getInt("nbExe") == 0 ? 0
                         : (weekGlobalTagStats.get(weekKey).getInt("nbFlaky") * 10000 + weekGlobalExeStats.get(weekKey).getInt("nbFN") * 10000) / weekGlobalTagStats.get(weekKey).getInt("nbExe");
                 kpiStability.put("value", kpi3Value);
-                kpiStability.put("score", getScoreStability(kpi3Value, weekGlobalTagStats.get(weekKey).getInt("nbExe")));
+                score3 = getScoreStability(kpi3Value, weekGlobalTagStats.get(weekKey).getInt("nbExe"));
+                kpiStability.put("score", score3);
+                kpiStability.put("scoreL", getScoreFromInt(score3));
                 if (kpi3ValuePrev != 0 && i > 0) {
                     kpiStability.put("varVs1", ((kpi3Value) - (kpi3ValuePrev)) * 10000 / (kpi3ValuePrev));
                 }
@@ -576,7 +598,9 @@ public class AutomateScoreService implements IAutomateScoreService {
                 JSONObject kpiMaintenance = new JSONObject();
                 long kpi4Value = weekGlobalTagStats.get(weekKey).getLong("durationMax");
                 kpiMaintenance.put("value", kpi4Value);
-                kpiMaintenance.put("score", getScoreMaintenance(kpi4Value));
+                score4 = getScoreMaintenance(kpi4Value);
+                kpiMaintenance.put("score", score4);
+                kpiMaintenance.put("scoreL", getScoreFromInt(score4));
                 if (kpi4ValuePrev != 0 && i > 0) {
                     kpiMaintenance.put("varVs1", ((kpi4Value) - (kpi4ValuePrev)) * 10000 / (kpi4ValuePrev));
                 }
@@ -590,11 +614,19 @@ public class AutomateScoreService implements IAutomateScoreService {
                 }
                 kpiMaintenance.put("trend", getTrendMaintenance(kpi4ValuePrev, kpi4Value));
 
+                // GLOBAL KPI
+                JSONObject kpi = new JSONObject();
+                score = getGlobalScore(score1, score2, score3, score4);
+                kpi.put("score", score);
+                kpi.put("scoreL", getGlobalScoreFromInt(score));
+
+                // Feed all KPI to final week entry
                 JSONObject weekVal = weekGlobalStats.get(weekKey);
                 weekVal.put("kpiFrequency", kpiFreq);
                 weekVal.put("kpiDuration", kpiDur);
                 weekVal.put("kpiStability", kpiStability);
                 weekVal.put("kpiMaintenance", kpiMaintenance);
+                weekVal.put("kpi", kpi);
 
                 weekGlobalStats.put(weekKey, weekVal);
 
@@ -642,6 +674,14 @@ public class AutomateScoreService implements IAutomateScoreService {
 
             }
             response.put("testcases", testcasesArray);
+
+            JSONArray applicationsArray = new JSONArray();
+            for (Map.Entry<String, JSONObject> entry : applicationMap.entrySet()) {
+                String key = entry.getKey();
+                JSONObject val = entry.getValue();
+                applicationsArray.put(key);
+            }
+            response.put("applications", applicationsArray);
 
             response.put("debug-testcaseWeeks", testCaseWeekMap);
 
@@ -702,17 +742,60 @@ public class AutomateScoreService implements IAutomateScoreService {
         return campaign + " | " + week;
     }
 
-    private String getScoreFrequency(long kpi, String week, String todayWeek) {
-        if (week != null && week.equals(todayWeek)) {
+    private Integer getGlobalScore(Integer sc1, Integer sc2, Integer sc3, Integer sc4) {
+        int nb = 0;
+        int total = 0;
+        if (sc1 != null) {
+            nb++;
+            total += sc1;
+        }
+        if (sc2 != null) {
+            nb++;
+            total += sc2;
+        }
+        if (sc3 != null) {
+            nb++;
+            total += sc3;
+        }
+        if (sc4 != null) {
+            nb++;
+            total += sc4;
+        }
+        if (nb > 0) {
+            return total;
+        }
+        return null;
+    }
+
+    private String getScoreFromInt(Integer kpi) {
+        if (kpi == null) {
             return "NA";
         }
-        if (kpi > 10) {
+        if (kpi > 20) {
             return "A";
-        } else if (kpi > 7) {
+        } else if (kpi > 15) {
             return "B";
-        } else if (kpi > 5) {
+        } else if (kpi > 10) {
             return "C";
-        } else if (kpi > 3) {
+        } else if (kpi > 5) {
+            return "D";
+        } else if (kpi >= 0) {
+            return "E";
+        } else {
+            return "NA";
+        }
+    }
+    private String getGlobalScoreFromInt(Integer kpi) {
+        if (kpi == null) {
+            return "NA";
+        }
+        if (kpi > 80) {
+            return "A";
+        } else if (kpi > 60) {
+            return "B";
+        } else if (kpi > 40) {
+            return "C";
+        } else if (kpi > 20) {
             return "D";
         } else if (kpi >= 0) {
             return "E";
@@ -721,52 +804,75 @@ public class AutomateScoreService implements IAutomateScoreService {
         }
     }
 
-    private String getScoreStability(long kpi, int nbExe) {
+    private Integer getScoreFrequency(long kpi, String week, String todayWeek) {
+        if (week != null && week.equals(todayWeek)) {
+            return null;
+        }
+        if (kpi >= 7) {
+            return 25;
+        } else if (kpi >= 5) {
+            return 20;
+        } else if (kpi >= 3) {
+            return 15;
+        } else if (kpi >= 1) {
+            return 10;
+        } else {
+            return 0;
+        }
+    }
+
+    private Integer getScoreStability(long kpi, int nbExe) {
         if (nbExe == 0) {
-            return "NA";
+            return null;
         }
-        if (kpi < 50) {
-            return "A";
-        } else if (kpi < 100) {
-            return "B";
-        } else if (kpi < 300) {
-            return "C";
+        if (kpi < 100) {
+            return 25;
+        } else if (kpi < 500) {
+            return 20;
         } else if (kpi < 1000) {
-            return "D";
+            return 15;
+        } else if (kpi < 2000) {
+            return 10;
+        } else if (kpi < 4000) {
+            return 5;
         } else {
-            return "E";
+            return 0;
         }
     }
 
-    private String getScoreDuration(long kpi) {
+    private Integer getScoreDuration(long kpi) {
         if (kpi == 0) {
-            return "NA";
+            return null;
         }
 
-        if (kpi < 600000) { // 10 min
-            return "A";
-        } else if (kpi < 1200000) { // 20 min
-            return "B";
-        } else if (kpi < 1800000) { // 30 min
-            return "C";
-        } else if (kpi < 3600000) { // 1 h
-            return "D";
+        if (kpi < 2700000) { // 45 min
+            return 25;
+        } else if (kpi < 7200000) { // 2 hours
+            return 20;
+        } else if (kpi < 14400000) { // 4 hours
+            return 15;
+        } else if (kpi < 28800000) { // 8 hours
+            return 10;
+        } else if (kpi < 57600000) { // 16 hours
+            return 5;
         } else {
-            return "E";
+            return 0;
         }
     }
 
-    private String getScoreMaintenance(long kpi) {
-        if (kpi < 600000) { // 10 min
-            return "A";
-        } else if (kpi < 1200000) { // 20 min
-            return "B";
-        } else if (kpi < 1800000) { // 30 min
-            return "C";
-        } else if (kpi > 3600000) { // 1 h
-            return "D";
+    private Integer getScoreMaintenance(long kpi) {
+        if (kpi < 2700000) { // 45 min
+            return 25;
+        } else if (kpi < 7200000) { // 2 hours
+            return 20;
+        } else if (kpi < 14400000) { // 4 hours
+            return 15;
+        } else if (kpi < 28800000) { // 8 hours
+            return 10;
+        } else if (kpi < 57600000) { // 16 hours
+            return 5;
         } else {
-            return "E";
+            return 0;
         }
     }
 

@@ -121,6 +121,13 @@ function aoColumnsFuncTestCase() {
             "sWidth": "70px"
         },
         {
+            "data": "application",
+            "bSortable": true,
+            "sName": "application",
+            "title": "Application",
+            "sWidth": "70px"
+        },
+        {
             "data": "nb",
             "bSortable": true,
             "sName": "nb",
@@ -131,7 +138,7 @@ function aoColumnsFuncTestCase() {
             "data": "duration",
             "bSortable": true,
             "sName": "duration",
-            "title": "Average Duration",
+            "title": "Avg Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 return getHumanReadableDuration(data / 1000);
@@ -210,7 +217,7 @@ function aoColumnsFuncCampaign() {
             "data": "nbExe",
             "bSortable": true,
             "sName": "nbExe",
-            "title": "nb of executions",
+            "title": "Avg nb of executions",
             "sWidth": "50px"
         },
         {
@@ -231,7 +238,7 @@ function aoColumnsFuncCampaign() {
             "data": "duration",
 //            "bSortable": true,
             "sName": "duration",
-            "title": "Average Duration",
+            "title": "Avg Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 return getHumanReadableDuration(data / 1000);
@@ -261,7 +268,7 @@ function aoColumnsFuncCampaign() {
             "data": "nbFlaky",
             "bSortable": true,
             "sName": "nbFlaky",
-            "title": "nb of Flaky",
+            "title": "Avg nb of Flaky",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 if ((data) === 0) {
@@ -514,8 +521,6 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
 
 //            console.info(data);
 
-            renderGlobalAS("B");
-
             let labelsDatasets = [];
 
             let kpiFreqData = [];
@@ -542,32 +547,34 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
                 labelsDatasets.push(data.weeks[index].label);
 
                 kpiFreqData.push(data.weekStats[data.weeks[index].val].kpiFrequency.value);
-                kpiFreqColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.score));
-                kpiFreqPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.score));
+                kpiFreqColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
+                kpiFreqPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
 
                 kpiStabData.push(data.weekStats[data.weeks[index].val].kpiStability.value / 100);
-                kpiStabColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiStability.score));
-                kpiStabPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiStability.score));
+                kpiStabColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
+                kpiStabPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
 
                 kpiDurData.push(data.weekStats[data.weeks[index].val].kpiDuration.value / 60000);
-                kpiDurColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiDuration.score));
-                kpiDurPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiDuration.score));
+                kpiDurColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
+                kpiDurPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
 
                 kpiMaintData.push(data.weekStats[data.weeks[index].val].kpiMaintenance.value);
-                kpiMaintColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.score));
-                kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.score));
+                kpiMaintColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
+                kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
             }
 
-            renderScope(data.campaigns, data.testcases);
+            renderScope(data.campaigns, data.testcases, data.applications);
 
             let lastKPI = data.weekStats[data.weeks[kpiFreqData.length - 1].val];
-            renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.score, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVsAll / 100);
+            renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.scoreL, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVsAll / 100);
 
-            renderKPIHeader("relChart", lastKPI.kpiStability.value / 100, "%", "Stability", "Ratio of flaky and false negative", lastKPI.kpiStability.score, lastKPI.kpiStability.trend, lastKPI.kpiStability.varVsAll / 100);
+            renderKPIHeader("relChart", lastKPI.kpiStability.value / 100, "%", "Stability", "Ratio of flaky and false negative", lastKPI.kpiStability.scoreL, lastKPI.kpiStability.trend, lastKPI.kpiStability.varVsAll / 100);
 
-            renderKPIHeader("durChart", getHumanReadableDuration(lastKPI.kpiDuration.value / 1000), "", "Duration", "Average campaign duration", lastKPI.kpiDuration.score, lastKPI.kpiDuration.trend, lastKPI.kpiDuration.varVsAll / 100);
+            renderKPIHeader("durChart", getHumanReadableDuration(lastKPI.kpiDuration.value / 1000), "", "Duration", "Average campaign duration", lastKPI.kpiDuration.scoreL, lastKPI.kpiDuration.trend, lastKPI.kpiDuration.varVsAll / 100);
 
-            renderKPIHeader("mntChart", lastKPI.kpiMaintenance.value, " min", "Maintenance Effort", "Efforts", lastKPI.kpiMaintenance.score, lastKPI.kpiMaintenance.trend, lastKPI.kpiMaintenance.varVsAll / 100);
+            renderKPIHeader("mntChart", lastKPI.kpiMaintenance.value, " min", "Maintenance Effort", "Efforts", lastKPI.kpiMaintenance.scoreL, lastKPI.kpiMaintenance.trend, lastKPI.kpiMaintenance.varVsAll / 100);
+
+            renderGlobalAS(lastKPI.kpi.scoreL);
 
             renderKPITrend("freqChart", "Campaign executions per week - " + nbWeeks + " Weeks Trend");
             let tagfreqdatasets = [{
@@ -642,8 +649,8 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
     hideLoader($("#otFilterPanel"));
 
 }
-function renderScope(campaigns, testcases) {
-    $("#scopeCampaigns").text(campaigns.length + " Campaigns");
+function renderScope(campaigns, testcases, applications) {
+    $("#scopeCampaigns").text(getTextPlurial(campaigns.length, " Campaign", " Campaigns"));
     let titleDes = "";
     for (var i = 0; i < campaigns.length; i++) {
         titleDes += " / " + campaigns[i].campaign;
@@ -653,10 +660,28 @@ function renderScope(campaigns, testcases) {
     $("#scopeCampaigns").attr('title', titleDes);
 
 
-    $("#scopeTests").text(testcases.length + " Tests");
+    $("#scopeApplications").text(getTextPlurial(applications.length, " Application", " Applications"));
+    titleDes = "";
+    for (var i = 0; i < applications.length; i++) {
+        titleDes += " / " + applications[i];
+    }
+    titleDes = titleDes.substring(3);
+//    $("#scopeCampaigns").attr('data-toggle', 'tooltip').attr('data-original-title', 'toto');
+    $("#scopeApplications").attr('title', titleDes);
+
+
+    $("#scopeTests").text(getTextPlurial(testcases.length, " Test", " Tests"));
 }
 
-
+function getTextPlurial(nb, textSingle, textPlusial) {
+    if (nb > 1) {
+        return "" + nb + textPlusial;
+    } else if (nb === 1) {
+        return "" + nb + textSingle;
+    } else {
+        return "";
+    }
+}
 function getColorFromScore(score) {
     switch (score) {
         case "A":
@@ -824,7 +849,7 @@ function renderGlobalAS(asValue) {
             $("#ASA").addClass('btn-default');
             $("#ASD").addClass('btn-default');
             $("#ASE").addClass('btn-default');
-            $("#ASC").attr('style', 'font-size: 40px;background-color: yellow');
+            $("#ASC").attr('style', 'font-size: 40px;background-color: yellow;color: black');
             $("#ASB").attr('style', 'font-size: 30px');
             $("#ASA").attr('style', 'font-size: 30px');
             $("#ASD").attr('style', 'font-size: 30px');

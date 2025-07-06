@@ -174,12 +174,15 @@
                                             <div class="asperimeter marginBottom20" name="title">
                                                 <span id="scopeTests" class="label label-default" style="font-size : 15px; margin-right:15px">X Test cases</span>
                                             </div>
+                                            <div class="asperimeter marginBottom20" name="title">
+                                                <span id="scopeApplications" class="label label-default" style="font-size : 15px; margin-right:15px">X Applications</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-7">
-                                        <div class="col-xs-6" style="padding-right: 0px;" id="chartTitle">
-                                            <div class="" name="subtitle">
-                                                Blablabla
+                                        <div class="col-xs-12" style="padding-right: 0px;" id="chartTitle">
+                                            <div class="" name="subtitle" style="font-size: large;">
+                                                The Automate Score measures the effectiveness of your testing automation across four critical dimensions: execution frequency, stability, duration and maintenance effort.
                                             </div>
                                         </div>
                                     </div>
@@ -345,6 +348,57 @@
                 </div>
 
             </div>
+
+
+
+
+            <div class="row" style="display: none">
+
+                <div class="col-lg-12" id="KPIRecoPanel">
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading card">
+                            <span class="fa fa-bar-chart fa-fw"></span>
+                            <label id="lblFreq">Recomendations</label>
+                        </div>
+                        <div class="panel-body collapse in" style="padding:0px;"  id="automateScoreReco">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div style="background-color: #eafaff;margin: 1em 2em 1em;">
+                                        ddgd
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div style="background-color: #eafaff;margin: 1em 2em 1em;">
+                                        ddgd
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div style="background-color: #eafaff;margin: 1em 2em 1em;">
+                                        ddgd
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div style="background-color: #eafaff;margin: 1em 2em 1em;">
+                                        ddgd
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
 
             <div class="row">
 
