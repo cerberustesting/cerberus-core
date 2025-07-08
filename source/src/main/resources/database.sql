@@ -6727,3 +6727,21 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 ALTER TABLE `testcaseexecution`  
     CHANGE COLUMN `IsFlacky` `IsFlaky` BOOLEAN DEFAULT false;
 
+-- 1921
+CREATE TABLE `testcasehisto` (
+    `Id` INT NOT NULL AUTO_INCREMENT,
+    `Test` varchar(45) NULL,
+    `TestCase` varchar(45) NULL,
+    `Version` INT(10) NOT NULL ,
+    `DateVersion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `Description` varchar(500) NOT NULL DEFAULT '',
+    `TestCaseContent` MEDIUMTEXT ,
+    `UsrCreated` varchar(45) NOT NULL DEFAULT '',
+    `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `UsrModif` varchar(45) NOT NULL DEFAULT '',
+    `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',
+        PRIMARY KEY (`ID`),
+        UNIQUE KEY `IX_testcasehisto_01` (`Test`,`TestCase`,`Version`),
+        CONSTRAINT `FK_testcasehisto_01` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE)
+    ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+

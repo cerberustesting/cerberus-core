@@ -61,6 +61,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.entity.TestCaseHisto;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
 
 /**
  * @author bcivel
@@ -74,6 +76,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     private ITestCaseStepService stepService;
     private ITestCaseStepActionService actionService;
     private ITestCaseStepActionControlService controlService;
+    private ITestCaseHistoService testCaseHistoService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -129,6 +132,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             stepService = appContext.getBean(ITestCaseStepService.class);
             actionService = appContext.getBean(ITestCaseStepActionService.class);
             controlService = appContext.getBean(ITestCaseStepActionControlService.class);
+            testCaseHistoService = appContext.getBean(ITestCaseHistoService.class);
 
             AnswerItem<TestCase> testcaseAnswerItem = testCaseService.readByKey(testId, testCaseId);
             TestCase testcase = testcaseAnswerItem.getItem();
@@ -149,6 +153,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 ans.setResultMessage(msg);
 
             } else { // Test Case exist and we can update it so Global update start here
+
+                // Save histo entry
+                this.testCaseHistoService.create(TestCaseHisto.builder()
+                        .test(testcase.getTest())
+                        .testCase(testcase.getTestcase())
+                        .version(testcase.getVersion())
+                        .usrCreated(testcase.getUsrModif())
+//                        .testCaseContent(testcase.toJsonV001("", null))
+                        .testCaseContent(new JSONObject())
+                        .description("")
+                        .build());
 
                 // TestcaseCountryProperties Update
                 List<TestCaseCountryProperties> testcaseCountryPropertiesFromPage = getTestCaseCountryPropertiesFromParameter(testcase, properties);

@@ -33,6 +33,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.entity.TestCaseHisto;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
+import org.json.JSONObject;
 
 /**
  *
@@ -50,6 +53,8 @@ public class UpdateTestCase extends AbstractCreateUpdateTestCase {
     @Autowired
     private ILogEventService logEventService;
 
+    @Autowired
+    private ITestCaseHistoService testCaseHistoService;
 
     @Override
     protected String getTypeOperation() {
@@ -57,19 +62,32 @@ public class UpdateTestCase extends AbstractCreateUpdateTestCase {
     }
 
     @Override
-    protected TestCase getTestCaseBeforeTraitment (String keyTest, String keyTestCase) {
+    protected TestCase getTestCaseBeforeTraitment(String keyTest, String keyTestCase) {
         AnswerItem resp = testCaseService.readByKey(keyTest, keyTestCase);
+        TestCase res = (TestCase) resp.getItem();
+        // Save histo entry
+        this.testCaseHistoService.create(TestCaseHisto.builder()
+                .test(res.getTest())
+                .testCase(res.getTestcase())
+                .version(res.getVersion())
+                .usrCreated(res.getUsrModif())
+                //                .testCaseContent(res.toJsonV001("", null))
+                .testCaseContent(new JSONObject())
+                .description("")
+                .build());
+        res.setVersion(res.getVersion() + 1);
 
-        return (TestCase) resp.getItem();
+        return res;
     }
 
     @Override
-    protected void fireLogEvent (String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
-        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", LogEvent.STATUS_INFO, "Update TestCase Header : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getVersion(), request);
+    protected void fireLogEvent(String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
+        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", LogEvent.STATUS_INFO, "Update TestCase Header : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : " + tc.getVersion(), request);
     }
 
     @Override
     protected void updateTestCase(String originalTest, String originalTestCase, TestCase tc) throws CerberusException {
+
         testCaseService.convert(testCaseService.update(originalTest, originalTestCase, tc));
     }
 

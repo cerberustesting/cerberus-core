@@ -84,6 +84,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.TestCaseHisto;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -133,6 +135,8 @@ public class TestCaseService implements ITestCaseService {
     private ITestCaseLabelService testCaseLabelService;
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private ITestCaseHistoService testCaseHistoService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -534,6 +538,7 @@ public class TestCaseService implements ITestCaseService {
         if (testcase.getTest() != null && !testService.exist(testcase.getTest())) {
             testService.create(factoryTest.create(testcase.getTest(), "", true, null, testcase.getUsrModif(), null, "", null));
         }
+
         Answer ans = testCaseDao.update(keyTest, keyTestcase, testcase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_UPDATE, testcase, keyTest, keyTestcase, null);
@@ -939,6 +944,16 @@ public class TestCaseService implements ITestCaseService {
                 newTestcaseVersion.getTestcase(),
                 newTestcaseVersion.getTestCaseCountries()
         );
+
+        // Save histo entry
+        this.testCaseHistoService.create(TestCaseHisto.builder()
+                .test(oldTestcaseVersion.getTest())
+                .testCase(oldTestcaseVersion.getTestcase())
+                .version(oldTestcaseVersion.getVersion())
+                .usrCreated(newTestcaseVersion.getUsrCreated())
+                .testCaseContent(new JSONObject())
+                .description("")
+                .build());
 
         if (CollectionUtils.isNotEmpty(newTestcaseVersion.getTestCaseCountryProperties())) {
             newTestcaseVersion.setTestCaseCountryProperties(
