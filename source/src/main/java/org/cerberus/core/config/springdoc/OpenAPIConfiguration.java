@@ -20,6 +20,7 @@
 
 package org.cerberus.core.config.springdoc;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -40,6 +41,11 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @Configuration
+@OpenAPIDefinition(
+        servers = {
+                @io.swagger.v3.oas.annotations.servers.Server(url = "/")
+        }
+)
 @Import({
         org.springdoc.core.SpringDocConfiguration.class,
         org.springdoc.webmvc.core.SpringDocWebMvcConfiguration.class

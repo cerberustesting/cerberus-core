@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.apiprivate;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class AutomateScorePrivateController {
     @Autowired
     private IAutomateScoreService automateScoreService;
 
+    @Operation(hidden=true)
     @GetMapping("/statistics")
     public String getTagASStatistics(
             HttpServletRequest request,
