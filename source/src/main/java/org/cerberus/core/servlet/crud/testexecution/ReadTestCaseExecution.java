@@ -162,7 +162,9 @@ public class ReadTestCaseExecution extends HttpServlet {
                 } else if (executionId != 0 && !executionWithDependency) {
                     answer = testCaseExecutionService.readByKeyWithDependency(executionId);
                     TestCaseExecution tce = (TestCaseExecution) answer.getItem();
-                    tce.getTestCaseObj().setRefOrigineUrl(testCaseService.getRefOriginUrl(tce.getTestCaseObj().getOrigine(), tce.getTestCaseObj().getRefOrigine(), tce.getTestCaseObj().getSystem()));
+                    if (tce.getTestCaseObj() != null) {
+                        tce.getTestCaseObj().setRefOrigineUrl(testCaseService.getRefOriginUrl(tce.getTestCaseObj().getOrigine(), tce.getTestCaseObj().getRefOrigine(), tce.getTestCaseObj().getSystem()));
+                    }
                     jsonResponse.put("testCaseExecution", tce.toJson(true));
                 } else if (executionId != 0 && executionWithDependency) {
 
