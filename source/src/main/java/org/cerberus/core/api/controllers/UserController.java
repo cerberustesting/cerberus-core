@@ -20,18 +20,23 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.application.ApplicationDTOV001;
 import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.user.UserDTOV001;
 import org.cerberus.core.api.dto.user.UserMapperV001;
@@ -53,7 +58,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
-@Api(tags = "User")
+@Tag(name = "User", description = "Operations related to User")
 @RestController
 @RequestMapping(path = "/public/users")
 public class UserController {
@@ -66,16 +71,22 @@ public class UserController {
     private final IUserService userService;
     private final ILogEventService logEventService;
 
-    @ApiOperation("Get a user by its login name")
-    @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
+    //FIND USER BY USER NAMES
+    @GetMapping(path = "/{user}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get a user by its login name",
+        description = "Get a user by its login name",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the user", content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,schema = @Schema(implementation = AppServiceDTOV001.class))}),
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{user}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<UserDTOV001> findByKey(
-            @PathVariable("user") String user,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) {
+        @Parameter(description = "User name") @PathVariable("user") String user,
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) {
         
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request, login);
@@ -92,15 +103,21 @@ public class UserController {
         }
     }
 
-    @ApiOperation("Get all users")
-    @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
+    //FIND ALL USER
+    @GetMapping(path = "/", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get all users",
+        description = "Get all users",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the users", content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,schema = @Schema(implementation = AppServiceDTOV001.class))}),
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<UserDTOV001>> findAll(
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) throws CerberusException {
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) throws CerberusException {
         
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request, login);
@@ -114,3 +131,4 @@ public class UserController {
 
     }
 }
+

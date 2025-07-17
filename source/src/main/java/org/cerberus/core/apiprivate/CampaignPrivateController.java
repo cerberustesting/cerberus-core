@@ -19,10 +19,9 @@
  */
 package org.cerberus.core.apiprivate;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.cerberus.core.util.datatable.DataTableInformation;
 import com.google.gson.Gson;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,6 +97,7 @@ public class CampaignPrivateController {
      * @param test
      * @return
      */
+    @Operation(hidden=true)
     @GetMapping("/scheduled")
     public String readByKey(HttpServletRequest request, String test) {
 

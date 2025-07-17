@@ -20,21 +20,27 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.api.dto.testcase.TestcaseSimplifiedCreationDTOV001;
+import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.Application;
@@ -78,7 +84,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MorganLmd
  */
 @AllArgsConstructor
-@Api(tags = "Testcase")
+@Tag(name = "Testcase", description = "Endpoints related to Testcase")
 @Validated
 @RestController
 @RequestMapping(path = "/public/testcases")
@@ -100,11 +106,16 @@ public class TestcaseController {
     private final ILogEventService logEventService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
 
-    @ApiOperation("Get all testcases by test folder")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
+    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all testcases by test folder",
+            description = "Get all testcases by test folder",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the testcases", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<TestcaseDTOV001>> findTestcasesByTest(
             @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -122,11 +133,16 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Get a testcase filtered by its FolderId and testCaseId")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
+    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get a testcase filtered by its FolderId and testCaseId",
+            description = "Get a testcase filtered by its FolderId and testCaseId",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseDTOV001> findTestcaseByTestAndTestcase(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
@@ -145,11 +161,16 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Create a new Testcase")
-    @ApiResponse(code = 200, message = "ok")
+    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Create a new Testcase",
+            description = "Create a new Testcase",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Created the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseDTOV001> createTestcase(
             @Valid @JsonView(View.Public.POST.class) @RequestBody TestcaseDTOV001 newTestcase,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -168,11 +189,16 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Create a new Testcase with only few information")
-    @ApiResponse(code = 200, message = "ok")
+    @PostMapping(path = "/create", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Create a new Testcase with only few information",
+            description = "Create a new Testcase with only few information",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Created the testcase", content = { @Content(mediaType = "application/json")})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "/create", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String createSimplifiedTestcase(
             @Valid @JsonView(View.Public.POST.class) @RequestBody TestcaseSimplifiedCreationDTOV001 newTestcase,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -322,11 +348,16 @@ public class TestcaseController {
         return jsonResponse.toString();
     }
 
-    @ApiOperation("Update a Testcase")
-    @ApiResponse(code = 200, message = "ok")
+    @PutMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Update a Testcase",
+            description = "Update a Testcase",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Updated the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseDTOV001> update(
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("testFolderId") String testFolderId,

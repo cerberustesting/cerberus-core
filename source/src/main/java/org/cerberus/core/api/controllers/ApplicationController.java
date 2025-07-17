@@ -20,20 +20,21 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.application.ApplicationDTOV001;
-import org.cerberus.core.api.dto.application.ApplicationMapperV001;
-import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
-import org.cerberus.core.api.dto.application.CountryEnvironmentParametersMapperV001;
+import org.cerberus.core.api.dto.application.*;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.services.ApplicationApiService;
@@ -43,7 +44,6 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.exception.CerberusException;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Application")
+@Tag(name = "Application", description = "Endpoints related to Applications")
 @RestController
 @RequestMapping(path = "/public/applications")
 public class ApplicationController {
@@ -77,16 +77,23 @@ public class ApplicationController {
 
     private static final Logger LOG = LogManager.getLogger(ApplicationController.class);
 
-    @ApiOperation("Get an application by its application name")
-    @ApiResponse(code = 200, message = "operation successful", response = ApplicationDTOV001.class, responseContainer = "List")
+
+    //FIND APPLICATION BY APPLICATION NAME
+    @GetMapping(path = "/{application}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get Application",
+        description = "Get an application by its application name",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the application", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = ApplicationDTOV001.class))}),
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{application}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<ApplicationDTOV001> findApplicationByIdName(
-            @PathVariable("application") String application,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) throws CerberusException {
+        @Parameter(description = "Application name") @PathVariable("application") String application,
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) throws CerberusException {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
@@ -98,27 +105,35 @@ public class ApplicationController {
         );
     }
 
-    @ApiOperation("Get an application environment with its associated endpoint")
-    @ApiResponse(code = 200, message = "operation successful", response = CountryEnvironmentParametersDTOV001.class, responseContainer = "List")
-    @JsonView(View.Public.GET.class)
+    //FIND APPLICATION_COUNTRY_ENVIRONMENT BY NAMES
+    @GetMapping(path = "/{application}/{country}/{environment}",headers = API_VERSION_1,produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get an application environment with its associated endpoint",
+        description = "Fetches application environment parameters for a given application, country, and environment",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the application / country / environment", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseWrapper.class))}),
+        }
+    )
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{application}/{country}/{environment}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @JsonView(View.Public.GET.class)
     public ResponseWrapper<CountryEnvironmentParametersDTOV001> findApplicationEnvironmentByIds(
-            @PathVariable("application") String application,
-            @PathVariable("country") String country,
-            @PathVariable("environment") String environment,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) throws CerberusException {
+            @Parameter(description = "Application name") @PathVariable("application") String application,
+            @Parameter(description = "Country") @PathVariable("country") String country,
+            @Parameter(description = "Environment name") @PathVariable("environment") String environment,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal
+    ) throws CerberusException {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
-        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO,
+                String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
 
-        // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(application);
         if (applicationObj == null) {
             throw new EntityNotFoundException(Application.class, "application", application);
         }
+
         String system = applicationObj.getSystem();
         return ResponseWrapper.wrap(
                 this.applicationEnvironmentMapper.toDTO(
@@ -127,19 +142,25 @@ public class ApplicationController {
         );
     }
 
-    @ApiOperation("Update an application environment")
-    @ApiResponse(code = 200, message = "ok")
+    //PUT APPLICATION_COUNTRY_ENVIRONMENT
+    @PutMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Update Application Country Environment",
+        description = "Update an application country environment",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Put the application / country / environment", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseWrapper.class))}),
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<CountryEnvironmentParametersDTOV001> updatePUT(
-            @PathVariable("application") String applicationId,
-            @PathVariable("country") String countryId,
-            @PathVariable("environment") String environmentId,
-            @Valid @JsonView(View.Public.PUT.class) @RequestBody CountryEnvironmentParametersDTOV001 applicationEnvironmentToUpdate,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) throws CerberusException {
+        @Parameter(description = "Application name") @PathVariable("application") String applicationId,
+        @Parameter(description = "Country") @PathVariable("country") String countryId,
+        @Parameter(description = "Environment name") @PathVariable("environment") String environmentId,
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Valid @JsonView(View.Public.PUT.class) @RequestBody CountryEnvironmentParametersDTOV001 applicationEnvironmentToUpdate,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) throws CerberusException {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
@@ -165,19 +186,25 @@ public class ApplicationController {
         );
     }
 
-    @ApiOperation("Update an application environment")
-    @ApiResponse(code = 200, message = "ok")
+    //PATCH APPLICATION_COUNTRY_ENVIRONMENT
+    @PatchMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Patch Application Country Environment",
+        description = "Patch an application country environment",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Patch the application / country / environment", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = ResponseWrapper.class))}),
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<CountryEnvironmentParametersDTOV001> updatePATCH(
-            @PathVariable("application") String applicationId,
-            @PathVariable("country") String countryId,
-            @PathVariable("environment") String environmentId,
-            @Valid @JsonView(View.Public.PATCH.class) @RequestBody CountryEnvironmentParametersDTOV001 applicationEnvironmentToUpdate,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) throws CerberusException {
+        @Parameter(description = "Application name") @PathVariable("application") String applicationId,
+        @Parameter(description = "Country") @PathVariable("country") String countryId,
+        @Parameter(description = "Environment name") @PathVariable("environment") String environmentId,
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Valid @JsonView(View.Public.PATCH.class) @RequestBody CountryEnvironmentParametersDTOV001 applicationEnvironmentToUpdate,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) throws CerberusException {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-PATCH", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);

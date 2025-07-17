@@ -20,37 +20,45 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author lucashimpens
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "ManualUrlParameters")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "host",
+        "contextRoot",
+        "loginRelativeUrl",
+        "envData"
+})
+@Schema(name = "ManualUrlParameters")
 public class ManualUrlParametersDTOV001 {
 
-    @ApiModelProperty(position = 1)
     @JsonView(View.Public.POST.class)
+    @Schema(description = "Host address")
     private String host;
 
-    @ApiModelProperty(position = 2)
     @JsonView(View.Public.POST.class)
+    @Schema(description = "Context root path")
     private String contextRoot;
 
-    @ApiModelProperty(position = 3)
     @JsonView(View.Public.POST.class)
+    @Schema(description = "Login relative URL")
     private String loginRelativeUrl;
 
-    @ApiModelProperty(position = 4)
     @JsonView(View.Public.POST.class)
+    @Schema(description = "Environment data")
     private String envData;
 }

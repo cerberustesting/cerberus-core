@@ -20,41 +20,50 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author lucashimpens
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "QueuedEntry")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "queueId",
+        "country",
+        "environment",
+        "testFolderId",
+        "testcaseId"
+})
+@Schema(name = "QueuedEntry")
 public class QueuedEntryDTOV001 {
 
-    @ApiModelProperty(position = 1)
     @JsonView(View.Public.GET.class)
+    @Schema(description = "Queue identifier")
     private Long queueId;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 2)
+    @Schema(description = "Country")
     private String country;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 3)
+    @Schema(description = "Environment")
     private String environment;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 4)
+    @Schema(description = "Test folder identifier")
     private String testFolderId;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 5)
+    @Schema(description = "Testcase identifier")
     private String testcaseId;
 }

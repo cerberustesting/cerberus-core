@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.apiprivate;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TagStatistic;
@@ -59,6 +60,7 @@ public class CampaignExecutionPrivateController {
     @Autowired
     private ITagService tagService;
 
+    @Operation(hidden=true)
     @PostMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTagStatistics(
             HttpServletRequest request,
@@ -169,6 +171,7 @@ public class CampaignExecutionPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @GetMapping(path = "/statistics/{campaign}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getCampaignStatisticsByCountryEnv(
             HttpServletRequest request,
@@ -265,6 +268,7 @@ public class CampaignExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping("{executionId}/declareFalseNegative")
     public String updateDeclareFalseNegative(
             @PathVariable("executionId") String tag,
@@ -281,6 +285,7 @@ public class CampaignExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping("{executionId}/undeclareFalseNegative")
     public String updateUndeclareFalseNegative(
             @PathVariable("executionId") String tag,
@@ -297,6 +302,7 @@ public class CampaignExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping(path = "{executionId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper cancelTag(
             @PathVariable("executionId") String tag,
@@ -319,6 +325,7 @@ public class CampaignExecutionPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @PostMapping(path = "{executionId}/pause", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper pauseTag(
             @PathVariable("executionId") String tag,
@@ -341,6 +348,7 @@ public class CampaignExecutionPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @PostMapping(path = "{executionId}/resume", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper resumeTag(
             @PathVariable("executionId") String tag,

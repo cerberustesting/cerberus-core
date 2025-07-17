@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.config;
+package org.cerberus.core.config.cerberus;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -50,6 +50,14 @@ import java.util.concurrent.Executor;
                 @ComponentScan.Filter(
                         type = FilterType.REGEX,
                         pattern = "org\\.cerberus\\.core\\.apiprivate\\..*"
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "org\\.cerberus\\.core\\.config\\.webmvc\\..*"
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "org\\.cerberus\\.core\\.config\\.springdoc\\..*"
                 )
         }
 )

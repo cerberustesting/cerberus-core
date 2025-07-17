@@ -20,78 +20,96 @@
 
 package org.cerberus.core.api.dto.testcase;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.sql.Timestamp;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author MorganLmd
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseDependency")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "id",
+        "dependencyTestFolderId",
+        "dependencyTestcaseId",
+        "dependencyEvent",
+        "dependencyTCDelay",
+        "type",
+        "isActive",
+        "description",
+        "usrCreated",
+        "dateCreated",
+        "usrModif",
+        "dateModif"
+})
+@Schema(name = "TestcaseDependency")
 public class TestcaseDepDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Unique ID of the dependency")
     private long id;
 
     @NotBlank(message = "The test folder id this testcase is dependent of is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "The test folder id this testcase depends on", required = true)
     private String dependencyTestFolderId;
 
     @NotBlank(message = "The testcase id this testcase is dependent of is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "The testcase id this testcase depends on", required = true)
     private String dependencyTestcaseId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Dependency event")
     private String dependencyEvent;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Delay for the testcase dependency")
     private Integer dependencyTCDelay;
 
     @NotNull(message = "Type is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Type of the dependency", required = true)
     private String type;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 5)
-    @JsonProperty("isActive")
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Indicates if the dependency is active")
     @Builder.Default
     private boolean isActive = true;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 6)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description of the dependency")
     private String description;
-    
-    @ApiModelProperty(position = 7)
-    @JsonView(value = {View.Public.GET.class})
+
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created this dependency")
     private String usrCreated;
 
-    @ApiModelProperty(position = 8)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Creation timestamp")
     private Timestamp dateCreated;
 
-    @ApiModelProperty(position = 9)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who last modified this dependency")
     private String usrModif;
 
-    @ApiModelProperty(position = 10)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Last modification timestamp")
     private Timestamp dateModif;
-    
+
 }

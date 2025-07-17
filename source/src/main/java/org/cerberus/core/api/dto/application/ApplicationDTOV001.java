@@ -20,11 +20,12 @@
 package org.cerberus.core.api.dto.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -36,91 +37,97 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "Application")
+@JsonPropertyOrder({
+        "application", "description", "sort", "type", "system", "subsystem", "svnurl",
+        "bugTrackerUrl", "bugTrackerNewUrl", "poolSize", "deploytype", "mavengroupid",
+        "bugTrackerConnector", "bugTrackerParam1", "bugTrackerParam2", "bugTrackerParam3",
+        "environments", "usrCreated", "dateCreated", "usrModif", "dateModif"
+})
+@Schema(name = "Application")
 public class ApplicationDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Application name")
     private String application;
 
-    @ApiModelProperty(position = 1)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description")
     private String description;
 
-    @ApiModelProperty(position = 2)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Sort order")
     private Integer sort;
 
-    @ApiModelProperty(position = 3)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Type")
     private String type;
 
-    @ApiModelProperty(position = 4)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "System")
     private String system;
 
-    @ApiModelProperty(position = 5)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Subsystem")
     private String subsystem;
 
-    @ApiModelProperty(position = 6)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "SVN URL")
     private String svnurl;
 
-    @ApiModelProperty(position = 7)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker URL")
     private String bugTrackerUrl;
 
-    @ApiModelProperty(position = 8)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker new URL")
     private String bugTrackerNewUrl;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker connector")
     private String bugTrackerConnector;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker param 1")
     private String bugTrackerParam1;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker param 2")
     private String bugTrackerParam2;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bug tracker param 3")
     private String bugTrackerParam3;
 
-    @ApiModelProperty(position = 9)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Pool size")
     private Integer poolSize;
 
-    @ApiModelProperty(position = 10)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Deploy type")
     private String deploytype;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Maven group ID")
     private String mavengroupid;
 
-    @ApiModelProperty(position = 12)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Environments")
     private List<CountryEnvironmentParametersDTOV001> environments;
 
-    @ApiModelProperty(position = 17)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who created")
     private String usrCreated;
 
-    @ApiModelProperty(position = 19)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "Date created")
     private String dateCreated;
 
-    @ApiModelProperty(position = 20)
-    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who modified")
     private String usrModif;
 
-    @ApiModelProperty(position = 21)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "Date modified")
     private String dateModif;
 }

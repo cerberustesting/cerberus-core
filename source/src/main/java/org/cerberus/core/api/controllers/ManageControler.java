@@ -20,16 +20,20 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.sql.Timestamp;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.user.UserMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
@@ -53,7 +57,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
-@Api(tags = "Manage")
+@Tag(name = "Manage", description = "Endpoints related to Cerberus instance management")
 @RestController
 @RequestMapping(path = "/public/manage")
 public class ManageControler {
@@ -69,11 +73,16 @@ public class ManageControler {
     private final SchedulerInit cerberusScheduler;
     private final ExecutionUUID euuid;
 
-    @ApiOperation("Start Cerberus Instance (remove splash page, reload scheduler and force a queue processing)")
-    @ApiResponse(code = 200, message = "ok")
+    @PostMapping(path = "/start", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Start Cerberus Instance (remove splash page, reload scheduler and force a queue processing)",
+            description = "Start Cerberus Instance (remove splash page, reload scheduler and force a queue processing)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the service", content = { @Content(mediaType = "application/json")})
+            }
+    )
     @JsonView(View.Public.POST.class)
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(path = "/start", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper manageStart(
             @RequestParam("scope") String scope,
             @RequestHeader(name = API_KEY, required = false) String apiKey,

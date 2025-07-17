@@ -27,7 +27,7 @@ import java.util.ConcurrentModificationException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.core.config.Property;
+import org.cerberus.core.config.cerberus.Property;
 import org.cerberus.core.crud.dao.IParameterDAO;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.factory.IFactoryParameter;

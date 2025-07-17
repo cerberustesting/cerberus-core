@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.config.Property;
+import org.cerberus.core.config.cerberus.Property;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.database.dao.ICerberusInformationDAO;
 import org.cerberus.core.engine.entity.ExecutionUUID;

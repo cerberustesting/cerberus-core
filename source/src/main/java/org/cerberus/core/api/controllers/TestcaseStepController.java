@@ -20,17 +20,22 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
 import org.cerberus.core.api.dto.testcasestep.TestcaseStepMapperV001;
 import org.cerberus.core.api.dto.views.View;
@@ -53,7 +58,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MorganLmd
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Step")
+@Tag(name = "Testcase Step", description = "Operations related to Testcase Step")
 @RestController
 @RequestMapping(path = "/public/testcasesteps")
 public class TestcaseStepController {
@@ -69,11 +74,16 @@ public class TestcaseStepController {
 
     private static final Logger LOG = LogManager.getLogger(TestcaseStepController.class);
 
-    @ApiOperation("Get all Testcase Steps")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @GetMapping(headers = {API_VERSION_1}, produces = "application/json")
+    @Operation(
+            summary = "Get all Testcase Steps",
+            description = "Get all Testcase Steps",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Found the steps", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseStepDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(headers = {API_VERSION_1}, produces = "application/json")
     public ResponseWrapper<List<TestcaseStepDTOV001>> findAll(
             @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -92,11 +102,16 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all Testcase Steps from a test folder")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all Testcase Steps from a test folder",
+            description = "Get all Testcase Steps from a test folder",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the steps", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseStepDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<TestcaseStepDTOV001>> findAllByTestFolderId(
             @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -114,11 +129,16 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all Testcase Steps of a testcase")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all Testcase Steps of a testcase",
+            description = "Get all Testcase Steps of a testcase",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the steps", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseStepDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<TestcaseStepDTOV001>> findAllByTestFolderIdTestcaseId(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
@@ -137,11 +157,16 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get a Testcase Step by its key (testFolderId and testcaseId and stepId)")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class)
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get a Testcase Step by its key (testFolderId and testcaseId and stepId)",
+            description = "Get a Testcase Step by its key (testFolderId and testcaseId and stepId)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the step", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseStepDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseStepDTOV001> findByKey(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,

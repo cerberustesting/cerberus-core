@@ -19,10 +19,10 @@
  */
 package org.cerberus.core.apiprivate;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.cerberus.core.util.datatable.DataTableInformation;
 import com.google.gson.Gson;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,12 +47,7 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -88,15 +83,14 @@ public class TestPrivateController {
      * @param request
      * @return
      */
-    @ApiImplicitParams({
-        @ApiImplicitParam(dataType = "string", name = "test", value = "This is the test", required = true),
-        @ApiImplicitParam(name = "Active", value = "Active", required = false),
-        @ApiImplicitParam(name = "ParentTest", value = "ParentTest", required = false),
-        @ApiImplicitParam(name = "Description", value = "Description", required = false)
-    })
+    @Operation(hidden=true)
     @PostMapping("/create")
-    public String create(String test, String active, String parentTest, String description,
-            HttpServletRequest request) {
+    public String create(
+            @Parameter(description = "Test name", required = true) @RequestParam(name = "test") String test,
+            @Parameter(description = "Active") @RequestParam(name = "Active", required = false) String active,
+            @Parameter(description = "ParentTest") @RequestParam(name = "ParentTest", required = false) String parentTest,
+            @Parameter(description = "Description") @RequestParam(name = "Description", required = false) String description,
+            @Parameter(hidden = true) HttpServletRequest request) {
 
         JSONObject jsonResponse = new JSONObject();
 
@@ -144,10 +138,11 @@ public class TestPrivateController {
      * @param request
      * @return
      */
-    @ApiImplicitParams({
-        @ApiImplicitParam(required = true, dataType = "string", name = "test", value = "This is the test")})
+    @Operation(hidden=true)
     @DeleteMapping("/delete")
-    public String delete(String test, HttpServletRequest request) {
+    public String delete(
+            @Parameter(description = "Test name", required = true) @RequestParam(name = "test") String test,
+            @Parameter(hidden = true) HttpServletRequest request) {
 
         JSONObject jsonResponse = new JSONObject();
 
@@ -180,10 +175,10 @@ public class TestPrivateController {
      * @param test
      * @return
      */
-    @ApiImplicitParams({
-        @ApiImplicitParam(required = true, dataType = "string", name = "test", value = "This is the test")})
+    @Operation(hidden=true)
     @GetMapping("/readByKey")
-    public String readByKey(HttpServletRequest request, String test) {
+    public String readByKey(@Parameter(description = "Test name", required = true) @RequestParam(name = "test") String test,
+                            @Parameter(hidden = true) HttpServletRequest request) {
 
         JSONObject object = new JSONObject();
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
@@ -218,6 +213,7 @@ public class TestPrivateController {
      * @param request
      * @return
      */
+    @Operation(hidden=true)
     @GetMapping("/read")
     public String read(HttpServletRequest request) {
 
@@ -258,10 +254,11 @@ public class TestPrivateController {
      * @param system
      * @return
      */
-    @ApiImplicitParams({
-        @ApiImplicitParam(required = true, dataType = "string", name = "system", value = "This is the system")})
+    @Operation(hidden=true)
     @GetMapping("readBySystem")
-    public String readBySystem(HttpServletRequest request, String system) {
+    public String readBySystem(
+            @Parameter(description = "System name", required = true) @RequestParam(name = "system") String system,
+            @Parameter(hidden = true) HttpServletRequest request) {
         JSONObject object = new JSONObject();
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
@@ -299,6 +296,7 @@ public class TestPrivateController {
      * @param request
      * @return
      */
+    @Operation(hidden=true)
     @GetMapping("readDistinctValueOfColumn")
     public String readDistinctValueOfColumn(HttpServletRequest request) {
 
@@ -324,14 +322,14 @@ public class TestPrivateController {
      * @param description
      * @return 
      */
-    @ApiImplicitParams({
-        @ApiImplicitParam(dataType = "string", name = "originalTest", value = "Origin test to update", required = true),
-        @ApiImplicitParam(dataType = "string", name = "test", value = "Target test name", required = true),
-        @ApiImplicitParam(name = "Active", value = "Active", required = false),
-        @ApiImplicitParam(name = "Description", value = "Description", required = false)
-    })
+    @Operation(hidden=true)
     @PatchMapping("/update")
-    public String update(HttpServletRequest request, String originalTest, String test, String active, String description) {
+    public String update(
+            @Parameter(description = "Original Test") @RequestParam(name = "OriginalTest", required = true) String originalTest,
+            @Parameter(description = "Test name", required = true) @RequestParam(name = "test") String test,
+            @Parameter(description = "Active") @RequestParam(name = "Active", required = false) String active,
+            @Parameter(description = "Description") @RequestParam(name = "Description", required = false) String description,
+            @Parameter(hidden = true) HttpServletRequest request) {
 
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();

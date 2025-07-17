@@ -20,10 +20,11 @@
 
 package org.cerberus.core.api.dto.campaignexecution;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -35,54 +36,57 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CampaignExecution")
+@JsonPropertyOrder({
+        "campaignExecutionId", "ciResult", "startDate", "endDate", "durationInMillis", "campaignId",
+        "description", "result", "browserstackBuildHash", "browserstackAppBuildHash", "lambdaTestBuild", "executions"})
+@Schema(name = "CampaignExecution")
 public class CampaignExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 0)
+    @Schema(description = "campaignExecutionId")
     private String campaignExecutionId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 1)
+    @Schema(description = "ciResult")
     private String ciResult;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 2)
+    @Schema(description = "startDate")
     private String startDate;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
+    @Schema(description = "endDate")
     private String endDate;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @Schema(description = "durationInMillis")
     private long durationInMillis;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @Schema(description = "campaignId")
     private String campaignId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @Schema(description = "description")
     private String description;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @Schema(description = "result")
     private CampaignExecutionResultDTOV001 result;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @Schema(description = "browserstackBuildHash")
     private String browserstackBuildHash;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @Schema(description = "browserstackAppBuildHash")
     private String browserstackAppBuildHash;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 10)
+    @Schema(description = "lambdaTestBuild")
     private String lambdaTestBuild;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @Schema(description = "executions")
     private List<TestcaseExecutionDTOV001> executions;
 }

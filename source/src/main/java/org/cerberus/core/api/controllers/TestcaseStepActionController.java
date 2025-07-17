@@ -20,19 +20,24 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionDTOV001;
 import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionMapperV001;
+import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -51,7 +56,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Action")
+@Tag(name = "Testcase Action", description = "Operations related to Testcase Action")
 @RestController
 @RequestMapping(path = "/public/testcasestepactions")
 public class TestcaseStepActionController {
@@ -65,11 +70,16 @@ public class TestcaseStepActionController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ILogEventService logEventService;
 
-    @ApiOperation("Find a testcase Action by its key (testFolderId, testcaseId, stepId, actionId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Find a testcase Action by its key (testFolderId, testcaseId, stepId, actionId)",
+            description = "Find a testcase Action by its key (testFolderId, testcaseId, stepId, actionId)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the action", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseStepActionDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseStepActionDTOV001> findActionByKey(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
@@ -90,11 +100,16 @@ public class TestcaseStepActionController {
         );
     }
 
-    @ApiOperation("Find actions by testcase step (testFolderId, testcaseId, stepId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Find actions by testcase step (testFolderId, testcaseId, stepId)",
+            description = "Find actions by testcase step (testFolderId, testcaseId, stepId)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the actions", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseStepActionDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<TestcaseStepActionDTOV001>> findActionsByStep(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,

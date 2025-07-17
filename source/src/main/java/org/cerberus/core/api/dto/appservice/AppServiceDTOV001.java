@@ -22,11 +22,12 @@ package org.cerberus.core.api.dto.appservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -38,98 +39,122 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "Service")
+@JsonPropertyOrder({
+        "service",
+        "application",
+        "type",
+        "method",
+        "servicePath",
+        "isFollowingRedirection",
+        "fileName",
+        "operation",
+        "attachementURL",
+        "serviceRequest",
+        "kafkaTopic",
+        "kafkaKey",
+        "kafkaFilterPath",
+        "kafkaFilterValue",
+        "group",
+        "description",
+        "headers",
+        "contents",
+        "usrCreated",
+        "dateCreated",
+        "usrModif",
+        "dateModif"
+})
+@Schema(name = "Service")
 public class AppServiceDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "Service identifier", required = true)
     private String service;
 
-    @ApiModelProperty(position = 1)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Application name")
     private String application;
 
     @NotEmpty
-    @ApiModelProperty(position = 2)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Type of service", required = true)
     private String type;
 
     @NotEmpty
-    @ApiModelProperty(position = 3)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Method name", required = true)
     private String method;
 
-    @ApiModelProperty(position = 4)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Service path")
     private String servicePath;
 
-    @ApiModelProperty(position = 5)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isFollowingRedirection")
+    @Schema(description = "Whether the service follows redirection")
     private boolean isFollowingRedirection;
 
-    @ApiModelProperty(position = 6)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "File name")
     private String fileName;
 
-    @ApiModelProperty(position = 7)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Operation name")
     private String operation;
 
-    @ApiModelProperty(position = 8)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Attachment URL")
     private String attachementURL;
 
-    @ApiModelProperty(position = 9)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Service request content")
     private String serviceRequest;
 
-    @ApiModelProperty(position = 10)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka topic")
     private String kafkaTopic;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka key")
     private String kafkaKey;
 
-    @ApiModelProperty(position = 12)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka filter path")
     private String kafkaFilterPath;
 
-    @ApiModelProperty(position = 13)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka filter value")
     private String kafkaFilterValue;
 
-    @ApiModelProperty(position = 14)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Group name")
     private String group;
 
-    @ApiModelProperty(position = 15)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description")
     private String description;
 
-    @ApiModelProperty(position = 16)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "List of service headers")
     private List<AppServiceHeaderDTOV001> headers;
 
-    @ApiModelProperty(position = 17)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "List of service contents")
     private List<AppServiceContentDTOV001> contents;
 
-    @ApiModelProperty(position = 17)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who created the record")
     private String usrCreated;
 
-    @ApiModelProperty(position = 19)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date of creation")
     private String dateCreated;
 
-    @ApiModelProperty(position = 20)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who last modified the record")
     private String usrModif;
 
-    @ApiModelProperty(position = 21)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date of last modification")
     private String dateModif;
 }

@@ -23,6 +23,8 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestGenericObject;
@@ -63,6 +65,7 @@ public class TestCasePrivateController {
     @Autowired
     TestGenericObjectService testGenericObjectService;
 
+    @Operation(hidden=true)
     @GetMapping("/count")
     public String getnbByCriteria(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -83,6 +86,7 @@ public class TestCasePrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @PostMapping("/objects")
     public String readObjects(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
