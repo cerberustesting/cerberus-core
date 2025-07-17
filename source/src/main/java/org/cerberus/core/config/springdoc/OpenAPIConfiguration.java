@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springdoc.webmvc.core.SpringDocWebMvcConfiguration;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -57,6 +58,11 @@ public class OpenAPIConfiguration {
 
     @Autowired
     ApplicationContext context;
+
+    @Bean
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
+    }
 
     @PostConstruct
     public void logBeans() {
