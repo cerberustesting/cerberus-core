@@ -176,6 +176,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
                 response.getWriter().print(jsonResponse.toString());
             } catch (CerberusException ce) {
+                LOG.warn(ce, ce);
                 AnswerItem answer = AnswerUtil.convertToAnswerItem(() -> {
                     throw ce;
                 });
@@ -184,12 +185,16 @@ public class ReadTestCaseExecution extends HttpServlet {
                 jsonResponse.put("message", answer.getResultMessage().getDescription());
 
                 response.getWriter().print(jsonResponse.toString());
+            } catch (Exception ce) {
+                LOG.error(ce, ce);
             }
 
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+        } catch (Exception ce) {
+            LOG.error(ce, ce);
         }
     }
 
@@ -558,7 +563,6 @@ public class ReadTestCaseExecution extends HttpServlet {
 //
 //        return result;
 //    }
-
 //    private JSONObject testCaseExecutionToJSONObject(
 //            TestCaseExecution testCaseExecution) throws JSONException {
 //        JSONObject result = new JSONObject();
@@ -589,7 +593,6 @@ public class ReadTestCaseExecution extends HttpServlet {
 //
 //        return result;
 //    }
-
 //    private List<TestCaseExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch) throws ParseException, CerberusException {
 //        AnswerList<TestCaseExecution> testCaseExecution;
 //        AnswerList<TestCaseExecutionQueue> testCaseExecutionInQueue;
@@ -614,7 +617,6 @@ public class ReadTestCaseExecution extends HttpServlet {
 //        testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
 //        return testCaseExecutions;
 //    }
-
     /**
      * Find Values to display for Column Filter
      *
