@@ -43,7 +43,7 @@ import java.util.Arrays;
 @Configuration
 @OpenAPIDefinition(
         servers = {
-                @io.swagger.v3.oas.annotations.servers.Server(url = "/")
+                @io.swagger.v3.oas.annotations.servers.Server(url = "/api")
         }
 )
 @Import({
