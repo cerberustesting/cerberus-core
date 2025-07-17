@@ -20,19 +20,24 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
 import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
+import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.InvariantApiService;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
@@ -52,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Invariant")
+@Tag(name = "Invariant", description = "Endpoints related to Invariants")
 @RestController
 @RequestMapping(path = "/public/invariants")
 public class InvariantController {
@@ -65,11 +70,16 @@ public class InvariantController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(InvariantController.class);
 
-    @ApiOperation("Get all invariants filtered by idName")
-    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
+    @GetMapping(path = "/{idName}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all invariants filtered by idName",
+            description = "Get all invariants filtered by idName",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the invariants", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = InvariantDTOV001.class)))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{idName}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<InvariantDTOV001>> findInvariantByIdName(
             @PathVariable("idName") String idName,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -87,11 +97,16 @@ public class InvariantController {
         );
     }
 
-    @ApiOperation("Get invariant filtered by idName and value")
-    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
+    @GetMapping(path = "/{idName}/{value}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get invariant filtered by idName and value",
+            description = "Get invariant filtered by idName and value",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the invariant", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = InvariantDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{idName}/{value}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<InvariantDTOV001> findInvariantByIdNameAndValue(
             @PathVariable("idName") String idName,
             @PathVariable("value") String value,

@@ -17,21 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.config;
+package org.cerberus.core.config.webmvc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.database.DatabaseSpring;
+import org.cerberus.core.config.springdoc.OpenAPIConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 /**
  *
@@ -41,8 +44,10 @@ import javax.annotation.PostConstruct;
 @EnableWebMvc
 @ComponentScan(basePackages = {
         "org.cerberus.core.api",
-        "org.cerberus.core.apiprivate"
+        "org.cerberus.core.apiprivate",
+        "org.cerberus.core.config.springdoc"
 })
+@Import(OpenAPIConfiguration.class)
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private static final Logger LOG = LogManager.getLogger(WebMvcConfiguration.class);
@@ -54,16 +59,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @PostConstruct
     public void logAllEndpoints() {
         handlerMapping.getHandlerMethods().forEach((k, v) -> {
-            LOG.debug("Mapped endpoint: " + k + " -> " + v);
+            LOG.debug("WebMVC : Mapped endpoint: " + k + " -> " + v);
         });
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
 }

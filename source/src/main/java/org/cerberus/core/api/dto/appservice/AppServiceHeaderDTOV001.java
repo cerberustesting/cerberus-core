@@ -22,10 +22,11 @@ package org.cerberus.core.api.dto.appservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -37,49 +38,61 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "ServiceHeader")
+@JsonPropertyOrder({
+        "service",
+        "key",
+        "value",
+        "sort",
+        "isActive",
+        "description",
+        "usrCreated",
+        "dateCreated",
+        "usrModif",
+        "dateModif"
+})
+@Schema(name = "ServiceHeader")
 public class AppServiceHeaderDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class,})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Service identifier", required = true)
     private String service;
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class,})
-    @ApiModelProperty(position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Header key", required = true)
     private String key;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Header value")
     private String value;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Sorting index")
     private int sort;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActive")
+    @Schema(description = "Indicates if the header is active")
     private boolean isActive;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 5)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description")
     private String description;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created the header")
     private String usrCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date the header was created")
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who last modified the header")
     private String usrModif;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date of last modification")
     private String dateModif;
 }

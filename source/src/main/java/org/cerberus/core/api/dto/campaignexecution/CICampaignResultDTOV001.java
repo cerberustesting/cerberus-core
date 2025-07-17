@@ -19,10 +19,10 @@
  */
 package org.cerberus.core.api.dto.campaignexecution;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -34,63 +34,65 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CICampaignExecutionResult")
+@Schema(name = "CICampaignExecutionResult")
+@JsonPropertyOrder({"globalResult","campaignExecutionId","calculatedResult","resultThreshold","detailByDeclinations","environments",
+        "countries","robotDeclinations","systems","applications","result","resultByPriority","executionStart","executionEnd"
+})
 public class CICampaignResultDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 0)
+    @Schema(description = "Global result of the CI campaign (e.g. OK, KO)")
     private String globalResult;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 1)
+    @Schema(description = "Unique ID of the campaign execution")
     private String campaignExecutionId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 2)
+    @Schema(description = "Numeric representation of the calculated result (e.g. percentage OK)")
     private int calculatedResult;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
+    @Schema(description = "Result threshold used for evaluation")
     private int resultThreshold;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @Schema(description = "Details by declination as JSON structure")
     private JsonNode detailByDeclinations;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @Schema(description = "Environment breakdown in JSON")
     private JsonNode environments;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @Schema(description = "Countries involved in the campaign")
     private JsonNode countries;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @Schema(description = "Robot declinations details")
     private JsonNode robotDeclinations;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @Schema(description = "System(s) involved")
     private JsonNode systems;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @Schema(description = "Applications involved")
     private JsonNode applications;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 10)
+    @Schema(description = "Global result counts by status")
     private CampaignExecutionResultDTOV001 result;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @Schema(description = "Result distribution by priority level")
     private CampaignExecutionResultPriorityDTOV001 resultByPriority;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @Schema(description = "Execution start timestamp", example = "2025-07-16T14:33:00Z")
     private String executionStart;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
+    @Schema(description = "Execution end timestamp", example = "2025-07-16T14:38:00Z")
     private String executionEnd;
-
 }

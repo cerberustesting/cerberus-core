@@ -20,15 +20,18 @@
 
 package org.cerberus.core.api.dto.testcase;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
 import org.cerberus.core.api.dto.views.View;
@@ -36,86 +39,108 @@ import org.cerberus.core.api.dto.views.View;
 /**
  * @author MorganLmd
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseCountryProperties")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "testFolderId",
+        "testcaseId",
+        "property",
+        "description",
+        "type",
+        "database",
+        "value1",
+        "value2",
+        "value3",
+        "length",
+        "rowLimit",
+        "nature",
+        "rank",
+        "usrCreated",
+        "dateCreated",
+        "usrModif",
+        "dateModif",
+        "countries"
+})
+@Schema(name = "TestcaseCountryProperties")
 public class TestcaseCountryPropertiesDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Test folder ID")
     private String testFolderId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Testcase ID")
     private String testcaseId;
 
     @NotBlank(message = "Property is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Property name", required = true)
     private String property;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Property description")
     private String description;
 
     @NotBlank(message = "Message is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Type", required = true)
     private String type;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 5)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Database")
     private String database;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 6)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 1")
     private String value1;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 7)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 2")
     private String value2;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 7)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 3")
     private String value3;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 8)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Length")
     private String length;
 
     @NotNull(message = "Row limit is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 9)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Row limit", required = true)
     private int rowLimit;
 
     @NotNull(message = "Nature is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 10)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Nature", required = true)
     private String nature;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 11)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Rank")
     private int rank;
 
-    @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 16)
-    private List<InvariantDTOV001> countries;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created this property")
     private String usrCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Creation date")
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who last modified this property")
     private String usrModif;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 15)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Modification date")
     private String dateModif;
+
+    @Valid
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "List of countries associated with this property")
+    private List<InvariantDTOV001> countries;
 }

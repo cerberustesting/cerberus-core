@@ -19,9 +19,10 @@
  */
 package org.cerberus.core.api.dto.campaignexecution;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -33,46 +34,53 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CampaignExecutionResultPriority")
+@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonPropertyOrder({
+        "okCoefficientPriorityLevel1", "okCoefficientPriorityLevel2", "okCoefficientPriorityLevel3",
+        "okCoefficientPriorityLevel4", "okCoefficientPriorityLevel5",
+        "nonOkExecutionsPriorityLevel1", "nonOkExecutionsPriorityLevel2", "nonOkExecutionsPriorityLevel3",
+        "nonOkExecutionsPriorityLevel4", "nonOkExecutionsPriorityLevel5"
+})
+@Schema(name = "CampaignExecutionResultPriority")
 public class CampaignExecutionResultPriorityDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 0)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "okCoefficientPriorityLevel1")
     private int okCoefficientPriorityLevel1;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 1)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "okCoefficientPriorityLevel2")
     private int okCoefficientPriorityLevel2;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 2)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "okCoefficientPriorityLevel3")
     private int okCoefficientPriorityLevel3;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "okCoefficientPriorityLevel4")
     private int okCoefficientPriorityLevel4;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "okCoefficientPriorityLevel5")
     private int okCoefficientPriorityLevel5;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "nonOkExecutionsPriorityLevel1")
     private int nonOkExecutionsPriorityLevel1;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "nonOkExecutionsPriorityLevel2")
     private int nonOkExecutionsPriorityLevel2;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "nonOkExecutionsPriorityLevel3")
     private int nonOkExecutionsPriorityLevel3;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "nonOkExecutionsPriorityLevel4")
     private int nonOkExecutionsPriorityLevel4;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "nonOkExecutionsPriorityLevel5")
     private int nonOkExecutionsPriorityLevel5;
 }

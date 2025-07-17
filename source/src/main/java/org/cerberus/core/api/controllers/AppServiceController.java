@@ -20,17 +20,22 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
 import org.cerberus.core.api.dto.appservice.AppServiceCallDTO;
 import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.appservice.AppServiceMapperV001;
@@ -41,6 +46,7 @@ import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.IAppServiceService;
 import org.cerberus.core.crud.service.ILogEventService;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appservice.IServiceService;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
@@ -60,7 +66,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
-@Api(tags = "Service")
+@Tag(name = "Service", description = "Endpoints related to Application Services")
 @RestController
 @RequestMapping(path = "/public/services")
 public class AppServiceController {
@@ -74,16 +80,22 @@ public class AppServiceController {
     private final IServiceService serviceService;
     private final ILogEventService logEventService;
 
-    @ApiOperation("Get a service by its service name")
-    @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
+    //FIND SERVICE BY SERVICE NAMES
+    @GetMapping(path = "/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get a service by its service name",
+        description = "Get a service by its service name",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the service", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = AppServiceDTOV001.class))})
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<AppServiceDTOV001> findByKey(
-            @PathVariable("service") String service,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) {
+            @Parameter(description = "Service name") @PathVariable("service") String service,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/services", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
@@ -100,16 +112,22 @@ public class AppServiceController {
         }
     }
 
-    @ApiOperation("Create a service")
-    @ApiResponse(code = 200, message = "ok")
+    //CREATE SERVICE
+    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Create a service",
+        description = "Create a service",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Created the service", content = @Content)
+        }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<AppServiceDTOV001> create(
             @Valid @JsonView(View.Public.POST.class) @RequestBody AppServiceDTOV001 serviceDTO,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) {
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/services", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
@@ -124,17 +142,23 @@ public class AppServiceController {
         );
     }
 
-    @ApiOperation("Update a service")
-    @ApiResponse(code = 200, message = "ok")
+    //UPDATE SERVICE BY SERVICE NAMES
+    @PutMapping(path = "/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Update a service",
+            description = "Update a service",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Updated the service", content = @Content)
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping(path = "/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<AppServiceDTOV001> update(
-            @PathVariable("service") String service,
+            @Parameter(description = "Service name") @PathVariable("service") String service,
             @Valid @JsonView(View.Public.PUT.class) @RequestBody AppServiceDTOV001 serviceDTO,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) {
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/services", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
@@ -150,17 +174,23 @@ public class AppServiceController {
         );
     }
 
-    @ApiOperation("Call a service and get the result")
-    @ApiResponse(code = 200, message = "ok")
+    //CALL SERVICE BY SERVICE NAMES
+    @PostMapping(path = "/call/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Call a service and return the result",
+            description = "Call a service and return the result\"",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Called the service", content = @Content)
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(path = "/call/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<String> call(
-            @PathVariable("service") String service,
+            @Parameter(description = "Service name") @PathVariable("service") String service,
             @Valid @JsonView(View.Public.POST.class) @RequestBody AppServiceCallDTO serviceCallDTO,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            HttpServletRequest request,
-            Principal principal) {
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/services/call", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services/call called with URL: %s", request.getRequestURL()), request, login);

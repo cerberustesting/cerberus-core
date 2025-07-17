@@ -49,7 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.servlet.annotation.WebServlet;
-import org.cerberus.core.config.Property;
+import org.cerberus.core.config.cerberus.Property;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.util.answer.AnswerUtil;
 import org.cerberus.core.service.notification.INotificationService;

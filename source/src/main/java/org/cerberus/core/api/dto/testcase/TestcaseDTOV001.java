@@ -19,17 +19,20 @@
  */
 package org.cerberus.core.api.dto.testcase;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
 import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
@@ -38,192 +41,202 @@ import org.cerberus.core.api.dto.views.View;
 /**
  * @author MorganLmd
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "Testcase")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "testFolderId", "testcaseId", "application", "description", "detailedDescription",
+        "priority", "version", "status", "isActive", "isActiveQA", "isActiveUAT", "isActivePROD",
+        "conditionOperator", "conditionValue1", "conditionValue2", "conditionValue3", "conditionOptions",
+        "type", "externalProvider", "externalReference", "comment", "fromMajor", "fromMinor",
+        "toMajor", "toMinor", "bugs", "targetMajor", "targetMinor", "implementer", "executor",
+        "userAgent", "screenSize", "usrCreated", "dateCreated", "usrModif", "dateModif",
+        "steps", "countries", "properties", "inheritedProperties", "labels", "dependencies"
+})
+@Schema(name = "Testcase")
 public class TestcaseDTOV001 {
 
     @NotBlank(message = "Test folder id is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "Examples", position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Test folder ID", example = "Examples", required = true)
     private String testFolderId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(example = "0001A", position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Testcase ID", example = "0001A")
     private String testcaseId;
 
     @NotBlank(message = "Application attribute is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "Google", position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Application", example = "Google", required = true)
     private String application;
 
     @NotBlank(message = "A description is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "Search for Cerberus Website", position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description", example = "Search for Cerberus Website", required = true)
     private String description;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "<p>This test case shows how to implement scenarios with basic actions.&nbsp;</p>", position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Detailed description", example = "<p>This test case shows how to implement scenarios with basic actions.&nbsp;</p>")
     private String detailedDescription;
 
     @Positive(message = "Priority must be a positive value")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "1", position = 5)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Priority", example = "1")
     private int priority;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "5", position = 6)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Version", example = "5")
     private int version;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "WORKING", position = 7)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Status", example = "WORKING")
     private String status;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "true", position = 8)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActive")
+    @Schema(description = "Active flag", example = "true")
     private boolean isActive;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "true", position = 9)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActiveQA")
+    @Schema(description = "QA active flag", example = "true")
     private boolean isActiveQA;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "true", position = 10)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActiveUAT")
+    @Schema(description = "UAT active flag", example = "true")
     private boolean isActiveUAT;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "true", position = 11)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActivePROD")
+    @Schema(description = "PROD active flag", example = "true")
     private boolean isActivePROD;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "always", position = 12)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition operator", example = "always")
     private String conditionOperator;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 13)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 1", example = "")
     private String conditionValue1;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 14)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 2", example = "")
     private String conditionValue2;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 15)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 3", example = "")
     private String conditionValue3;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 16)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition options")
     private JsonNode conditionOptions;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "AUTOMATED", position = 17)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Type", example = "AUTOMATED")
     private String type;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "RX", position = 18)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "External provider", example = "RX")
     private String externalProvider;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 19)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "External reference", example = "")
     private String externalReference;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 20)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Comment", example = "")
     private String comment;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 21)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "From major", example = "")
     private String fromMajor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 22)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "From minor", example = "")
     private String fromMinor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 23)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "To major", example = "")
     private String toMajor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 24)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "To minor", example = "")
     private String toMinor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 25)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Bugs")
     private JsonNode bugs;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 26)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Target major", example = "")
     private String targetMajor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 27)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Target minor", example = "")
     private String targetMinor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "cerberus", position = 28)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Implementer", example = "cerberus")
     private String implementer;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 29)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Executor", example = "")
     private String executor;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 30)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User agent", example = "")
     private String userAgent;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(example = "", position = 31)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Screen size", example = "")
     private String screenSize;
 
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created", example = "cerberus")
+    private String usrCreated;
+
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date created", example = "2012-06-19 09:56:40.0")
+    private String dateCreated;
+
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who modified", example = "a03e2ae7-6fe6-42df-b2d6-6f7542ee3ed3")
+    private String usrModif;
+
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date modified", example = "2019-04-06 10:15:09.0")
+    private String dateModif;
+
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 36, required = false)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Steps", required = false)
     private List<TestcaseStepDTOV001> steps;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 37)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Countries", required = false)
     private List<InvariantDTOV001> countries;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 38)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Properties", required = false)
     private List<TestcaseCountryPropertiesDTOV001> properties;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 39)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Inherited properties", required = false)
     private List<TestcaseCountryPropertiesDTOV001> inheritedProperties;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 40)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Labels", required = false)
     private List<LabelDTOV001> labels;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 41)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Dependencies", required = false)
     private List<TestcaseDepDTOV001> dependencies;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "cerberus", position = 32)
-    private String usrCreated;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "2012-06-19 09:56:40.0", position = 33)
-    private String dateCreated;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "a03e2ae7-6fe6-42df-b2d6-6f7542ee3ed3", position = 34)
-    private String usrModif;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "2019-04-06 10:15:09.0", position = 35)
-    private String dateModif;
-
 }

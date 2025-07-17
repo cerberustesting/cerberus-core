@@ -21,6 +21,8 @@ package org.cerberus.core.apiprivate;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.IAppServiceService;
@@ -47,6 +49,7 @@ public class DummyPrivateController {
     @Autowired
     IAppServiceService appserviceService;
 
+    @Operation(hidden=true)
     @GetMapping("/testcsv")
     public String getnbByCriteria(
             HttpServletRequest request) {
@@ -65,6 +68,7 @@ public class DummyPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @GetMapping("/empty")
     public String getEmpty(
             HttpServletRequest request) {

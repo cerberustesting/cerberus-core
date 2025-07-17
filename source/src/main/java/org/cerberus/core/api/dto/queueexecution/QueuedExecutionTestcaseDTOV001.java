@@ -20,29 +20,32 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author lucashimpens
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "QueuedExecutionTestcase")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({"testFolderId", "testcaseId"})
+@Schema(name = "QueuedExecutionTestcase")
 public class QueuedExecutionTestcaseDTOV001 {
 
-    @ApiModelProperty(position = 1)
-    @JsonView({View.Public.GET.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "ID of the test folder")
     private String testFolderId;
 
-    @ApiModelProperty(position = 2)
-    @JsonView({View.Public.GET.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "ID of the testcase")
     private String testcaseId;
 }

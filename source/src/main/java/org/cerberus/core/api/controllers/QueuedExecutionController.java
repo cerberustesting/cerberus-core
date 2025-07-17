@@ -20,14 +20,17 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionDTOV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionMapperV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionResultDTOV001;
@@ -46,7 +49,7 @@ import org.springframework.web.bind.annotation.*;
  * @author lucashimpens
  */
 @AllArgsConstructor
-@Api(tags = "Queued Execution")
+@Tag(name = "Queued Execution", description = "Endpoints related to Queued Execution")
 @Validated
 @RestController
 @RequestMapping(path = "/public/queuedexecutions/")
@@ -61,12 +64,16 @@ public class QueuedExecutionController {
     private final ILogEventService logEventService;
     private final QueuedExecutionResultMapperV001 queuedExecutionResultMapper;
 
-    @ApiOperation(value = "Add a testcases list to the execution queue", notes = "testcases, countries, environments and robots are required.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Test cases successfully added to the execution queue", response = QueuedExecutionResultDTOV001.class),})
+    @PostMapping(headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Add a testcases list to the execution queue.",
+            description = "Add a testcases list to the execution queue. Testcases, countries, environments and robots are required.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Test cases successfully added to the execution queue", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = QueuedExecutionResultDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<QueuedExecutionResultDTOV001> addTestcasesToExecutionQueue(
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             @JsonView(View.Public.POST.class) @RequestBody(required = false) QueuedExecutionDTOV001 queuedExecution,
@@ -86,16 +93,16 @@ public class QueuedExecutionController {
         );
     }
 
-    @ApiOperation(value = "Add a campaign to the execution queue", notes = "You can override the default campaign parameters with the JSON body. \n "
-            + "Write in the JSON only the parameters you want to override. \n"
-            + "If you don't want to override parameters, send an empty json ({}).")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Campaign successfully added to the execution queue.", response = QueuedExecutionResultDTOV001.class),
-        @ApiResponse(code = 404, message = "Campaign doesn't exist.")
-    })
+    @PostMapping(path = "/{campaignId}", headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Add a campaign to the execution queue.",
+            description = "Add a campaign to the execution queue. You can override the default campaign parameters with the JSON body. Write in the JSON only the parameters you want to override. If you don't want to override parameters, send an empty json ({}).",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Test cases successfully added to the execution queue", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = QueuedExecutionResultDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(path = "/{campaignId}", headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<QueuedExecutionResultDTOV001> addCampaignToExecutionQueue(
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             @JsonView(View.Public.POST.class) @RequestBody(required = false) QueuedExecutionDTOV001 queuedExecution,

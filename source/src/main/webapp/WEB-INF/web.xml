@@ -39,7 +39,7 @@
     </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>org.cerberus.core.config.CerberusConfiguration</param-value>
+        <param-value>org.cerberus.core.config.cerberus.CerberusConfiguration</param-value>
     </context-param>
     <servlet>
         <servlet-name>springrest</servlet-name>
@@ -51,7 +51,7 @@
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>
-                org.cerberus.core.config.WebMvcConfiguration
+                org.cerberus.core.config.webmvc.WebMvcConfiguration
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
@@ -148,6 +148,7 @@
             <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
             <url-pattern>/CampaignList.jsp</url-pattern>
+            <url-pattern>/SwaggerUI.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -178,6 +179,7 @@
             <url-pattern>/ReadExecutionStat</url-pattern>
             <url-pattern>/ReadQueueStat</url-pattern>
             <url-pattern>/ReadTagStat</url-pattern>
+            <url-pattern>/api/v3/api-docs</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -512,7 +514,6 @@
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
             <url-pattern>/ChangeUserPasswordAdmin</url-pattern>
-            <url-pattern>/api/swagger-ui.html</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

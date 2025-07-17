@@ -19,16 +19,19 @@
  */
 package org.cerberus.core.api.dto.testcaseaction;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlDTOV001;
 import org.cerberus.core.api.dto.views.View;
@@ -36,121 +39,130 @@ import org.cerberus.core.api.dto.views.View;
 /**
  * @author mlombard
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseAction")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "testFolderId", "testcaseId", "stepId", "actionId", "sort",
+        "conditionOperator", "conditionValue1", "conditionValue2", "conditionValue3", "conditionOptions",
+        "action", "value1", "value2", "value3", "options", "isFatal", "description",
+        "screenshotFilename", "doScreenshotBefore", "doScreenshotAfter", "waitBefore", "waitAfter",
+        "usrCreated", "dateCreated", "usrModif", "dateModif", "controls"
+})
+@Schema(name = "TestcaseAction")
 public class TestcaseStepActionDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Test folder ID")
     private String testFolderId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Testcase ID")
     private String testcaseId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Step ID")
     private int stepId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Action ID")
     private int actionId;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Sort order")
     private int sort;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 5)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition operator")
     private String conditionOperator;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 6)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 1")
     private String conditionValue1;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 7)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 2")
     private String conditionValue2;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 8)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition value 3")
     private String conditionValue3;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 9)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Condition options")
     private JsonNode conditionOptions;
 
     @NotBlank(message = "Action is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 10)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Action", required = true)
     private String action;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 11)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 1")
     private String value1;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 12)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 2")
     private String value2;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 13)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Value 3")
     private String value3;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 14)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Options")
     private JsonNode options;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 15)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isFatal")
+    @Schema(description = "Is fatal")
     private boolean isFatal;
 
     @NotBlank(message = "A description is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 16)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Description", required = true)
     private String description;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 17)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Screenshot filename")
     private String screenshotFilename;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 18)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Do screenshot before")
     private boolean doScreenshotBefore;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 19)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Do screenshot after")
     private boolean doScreenshotAfter;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 20)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Wait before (ms)")
     private int waitBefore;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 21)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Wait after (ms)")
     private int waitAfter;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 22)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created")
     private String usrCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 23)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date created")
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 24)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who modified")
     private String usrModif;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 25)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Date modified")
     private String dateModif;
 
     @Valid
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 26, required = false)
-    List<TestcaseStepActionControlDTOV001> controls;
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Controls")
+    private List<TestcaseStepActionControlDTOV001> controls;
 }

@@ -21,6 +21,9 @@ package org.cerberus.core.apiprivate;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
@@ -57,13 +60,17 @@ public class ExecutionPrivateController {
     @Autowired
     private ExecutionUUID executionUUIDObject;
 
+    @Operation(hidden=true)
     @GetMapping("/getLastByCriteria")
     public String getLastByCriteria(
-            @RequestParam(name = "test", value = "test") String test,
-            @RequestParam(name = "testCase", value = "testCase") String testCase,
-            @RequestParam(name = "numberOfExecution", value = "Number of execution expected. If empty, all execution matching the criteria will be returned", required = false) Integer numberOfExecution,
-            @RequestParam(name = "tag", value = "Tag of the execution expected", required = false) String tag,
-            @RequestParam(name = "campaign", value = "Campaign name of the execution expected", required = false) String campaign) {
+            @RequestParam(name = "test") String test,
+            @RequestParam(name = "testCase") String testCase,
+            @Parameter(name = "numberOfExecution", description = "Number of executions expected. If empty, all matching executions will be returned.")
+            @RequestParam(name = "numberOfExecution", required = false) Integer numberOfExecution,
+            @Parameter(name = "tag", description = "Tag of the execution expected.")
+            @RequestParam(name = "tag", required = false) String tag,
+            @Parameter(name = "campaign", description = "Campaign name of the execution expected.")
+            @RequestParam(name = "campaign", required = false) String campaign) {
 
         try {
             test = policy.sanitize(test);
@@ -77,6 +84,7 @@ public class ExecutionPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @GetMapping("/count")
     public String getnbByCriteria(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -97,6 +105,7 @@ public class ExecutionPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @GetMapping("/running")
     public String getRunning(
             //            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -109,6 +118,7 @@ public class ExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping("{executionId}/declareFalseNegative")
     public String updateDeclareFalseNegative(
             @PathVariable("executionId") int executionId,
@@ -126,6 +136,7 @@ public class ExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping("{executionId}/undeclareFalseNegative")
     public String updateUndeclareFalseNegative(
             @PathVariable("executionId") int executionId,
@@ -143,6 +154,7 @@ public class ExecutionPrivateController {
 
     }
 
+    @Operation(hidden=true)
     @PostMapping("{executionId}/createBug")
     public String createBug(
             @PathVariable("executionId") long executionId,

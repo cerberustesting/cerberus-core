@@ -21,11 +21,12 @@ package org.cerberus.core.api.dto.appservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -37,40 +38,43 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "ServiceCall")
+@JsonPropertyOrder({
+        "application", "country", "environment", "kafkaTime", "kafkanb", "system", "timeout", "props"
+})
+@Schema(name = "ServiceCall")
 public class AppServiceCallDTO {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "Application name")
     private String application;
 
     @NotEmpty
-    @ApiModelProperty(position = 1)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Country", required = true)
     private String country;
 
     @NotEmpty
-    @ApiModelProperty(position = 2)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Environment", required = true)
     private String environment;
 
-    @ApiModelProperty(position = 3)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka time")
     private String kafkaTime;
 
-    @ApiModelProperty(position = 4)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Kafka number")
     private String kafkanb;
 
-    @ApiModelProperty(position = 5)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "System")
     private String system;
 
-    @ApiModelProperty(position = 6)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Timeout value")
     private int timeout;
 
-    @ApiModelProperty(position = 7)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Properties list")
     private List<AppServiceCallPropertyDTO> props;
 }

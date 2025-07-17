@@ -21,11 +21,12 @@ package org.cerberus.core.api.dto.appservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -37,28 +38,27 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "ServiceCallProperty")
+@JsonPropertyOrder({"isActive", "key", "value", "description", "toDelete"})
+@Schema(name = "ServiceCallProperty")
 public class AppServiceCallPropertyDTO {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "Indicates if the property is active")
     private boolean isActive;
 
-    @ApiModelProperty(position = 1)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Property key")
     private String key;
 
-    @ApiModelProperty(position = 2)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Property value")
     private String value;
 
-    @ApiModelProperty(position = 3)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Property description")
     private String description;
-    
-    @ApiModelProperty(position = 4)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Flag to indicate deletion")
     private boolean toDelete;
-
-
 }

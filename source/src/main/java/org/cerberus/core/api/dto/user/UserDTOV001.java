@@ -21,10 +21,11 @@
 package org.cerberus.core.api.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotEmpty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -36,69 +37,74 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "User")
+@JsonPropertyOrder({
+        "login", "name", "email", "team", "language",
+        "attribute01", "attribute02", "attribute03", "attribute04", "attribute05",
+        "comment", "usrCreated", "dateCreated", "usrModif", "dateModif"
+})
+@Schema(name = "User")
 public class UserDTOV001 {
 
     @NotEmpty
-    @ApiModelProperty(position = 0)
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class})
+    @Schema(description = "User login", required = true)
     private String login;
 
-    @ApiModelProperty(position = 1)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User name")
     private String name;
 
     @NotEmpty
-    @ApiModelProperty(position = 2)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User email", required = true)
     private String email;
 
     @NotEmpty
-    @ApiModelProperty(position = 3)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User team", required = true)
     private String team;
 
-    @ApiModelProperty(position = 4)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User language")
     private String language;
 
-    @ApiModelProperty(position = 5)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Custom attribute 01")
     private String attribute01;
 
-    @ApiModelProperty(position = 6)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Custom attribute 02")
     private String attribute02;
 
-    @ApiModelProperty(position = 7)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Custom attribute 03")
     private String attribute03;
 
-    @ApiModelProperty(position = 8)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Custom attribute 04")
     private String attribute04;
 
-    @ApiModelProperty(position = 9)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Custom attribute 05")
     private String attribute05;
 
-    @ApiModelProperty(position = 10)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User comment")
     private String comment;
 
-    @ApiModelProperty(position = 11)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who created")
     private String usrCreated;
 
-    @ApiModelProperty(position = 12)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "Date created")
     private String dateCreated;
 
-    @ApiModelProperty(position = 13)
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "User who modified")
     private String usrModif;
 
-    @ApiModelProperty(position = 14)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "Date modified")
     private String dateModif;
 }

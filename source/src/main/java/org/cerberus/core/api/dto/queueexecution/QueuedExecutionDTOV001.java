@@ -20,90 +20,112 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author lucashimpens
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "QueuedExecution")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "testcases",
+        "countries",
+        "environments",
+        "robots",
+        "tag",
+        "screenshot",
+        "video",
+        "verbose",
+        "timeout",
+        "pageSource",
+        "robotLog",
+        "consoleLog",
+        "manualExecution",
+        "retries",
+        "priority",
+        "manualUrl",
+        "manualUrlParameters"
+})
+@Schema(name = "QueuedExecution")
 public class QueuedExecutionDTOV001 {
 
-    @ApiModelProperty(position = 1)
     @JsonView(View.Public.POST.class)
+    @Schema(description = "List of testcases to execute")
     private List<QueuedExecutionTestcaseDTOV001> testcases;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 2)
+    @Schema(description = "List of countries")
     private List<String> countries;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 3)
+    @Schema(description = "List of environments")
     private List<String> environments;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 4)
+    @Schema(description = "List of robots")
     private List<String> robots;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 5)
+    @Schema(description = "Execution tag")
     private String tag;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 6)
+    @Schema(description = "Screenshot flag")
     private Integer screenshot;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 7)
+    @Schema(description = "Video flag")
     private Integer video;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 8)
+    @Schema(description = "Verbose flag")
     private Integer verbose;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 9)
+    @Schema(description = "Timeout in seconds")
     private Integer timeout;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 10)
+    @Schema(description = "Page source flag")
     private Integer pageSource;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 11)
+    @Schema(description = "Robot log flag")
     private Integer robotLog;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 12)
+    @Schema(description = "Console log flag")
     private Integer consoleLog;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 13)
+    @Schema(description = "Manual execution flag")
     private String manualExecution;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 14)
+    @Schema(description = "Number of retries")
     private Integer retries;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 15)
+    @Schema(description = "Priority level")
     private Integer priority;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 16)
+    @Schema(description = "Manual URL flag")
     private Integer manualUrl;
 
     @JsonView(View.Public.POST.class)
-    @ApiModelProperty(position = 17)
+    @Schema(description = "Manual URL parameters")
     private ManualUrlParametersDTOV001 manualUrlParameters;
 }

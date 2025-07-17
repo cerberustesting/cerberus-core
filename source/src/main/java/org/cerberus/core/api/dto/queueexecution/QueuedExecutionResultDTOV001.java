@@ -20,58 +20,72 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author lucashimpens
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "QueuedExecutionResult")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "tag",
+        "nbExecutions",
+        "testcasesNotExist",
+        "testcasesNotActive",
+        "testcasesNotAllowedOnEnvironment",
+        "environmentsNotExistOrNotActive",
+        "robotsMissing",
+        "queuedEntries",
+        "messages"
+})
+@Schema(name = "QueuedExecutionResult")
 public class QueuedExecutionResultDTOV001 {
 
-    @ApiModelProperty(position = 1)
     @JsonView(View.Public.GET.class)
+    @Schema(description = "Execution tag")
     private String tag;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 2)
+    @Schema(description = "Number of executions")
     private int nbExecutions;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 2)
+    @Schema(description = "Count of testcases not existing")
     private int testcasesNotExist;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 3)
+    @Schema(description = "Count of testcases not active")
     private int testcasesNotActive;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 4)
+    @Schema(description = "Count of testcases not allowed on environment")
     private int testcasesNotAllowedOnEnvironment;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 5)
+    @Schema(description = "Count of environments not existing or not active")
     private int environmentsNotExistOrNotActive;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 6)
+    @Schema(description = "Count of robots missing")
     private int robotsMissing;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 7)
+    @Schema(description = "List of queued entries")
     private List<QueuedEntryDTOV001> queuedEntries;
 
     @JsonView(View.Public.GET.class)
-    @ApiModelProperty(position = 8)
+    @Schema(description = "List of messages")
     private List<String> messages;
 }

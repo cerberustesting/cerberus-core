@@ -20,9 +20,10 @@
 
 package org.cerberus.core.api.dto.campaignexecution;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -34,58 +35,63 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CampaignExecutionRobot")
+@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonPropertyOrder({
+        "robotId", "executor", "host", "port", "declination", "browser", "version",
+        "platform", "screenSize", "userAgent", "sessionId", "provider", "providerSessionId"
+})
+@Schema(name = "CampaignExecutionRobot")
 public class CampaignExecutionRobotDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 0)
+    @Schema(description = "robotId", example = "robot-chrome-linux-001")
     private String robotId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 1)
+    @Schema(description = "executor", example = "cerberus")
     private String executor;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 2)
+    @Schema(description = "host", example = "localhost")
     private String host;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
+    @Schema(description = "port", example = "4444")
     private String port;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @Schema(description = "declination", example = "default")
     private String declination;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @Schema(description = "browser", example = "chrome")
     private String browser;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @Schema(description = "version", example = "115.0")
     private String version;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @Schema(description = "platform", example = "LINUX")
     private String platform;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @Schema(description = "screenSize", example = "1920x1080")
     private String screenSize;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @Schema(description = "userAgent")
     private String userAgent;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @Schema(description = "sessionId")
     private String sessionId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
+    @Schema(description = "provider")
     private String provider;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
+    @Schema(description = "providerSessionId")
     private String providerSessionId;
 }

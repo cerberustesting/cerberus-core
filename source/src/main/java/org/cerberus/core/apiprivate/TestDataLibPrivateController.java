@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
@@ -74,6 +76,7 @@ public class TestDataLibPrivateController {
      * @param request
      * @return
      */
+    @Operation(hidden=true)
     @GetMapping(path = "{testdatalibid}/csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<Resource> downloadCsv(
             @PathVariable("testdatalibid") int testdatalibid,

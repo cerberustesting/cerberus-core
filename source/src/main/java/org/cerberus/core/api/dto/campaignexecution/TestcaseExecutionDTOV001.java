@@ -20,10 +20,11 @@
 
 package org.cerberus.core.api.dto.campaignexecution;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -37,115 +38,123 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseExecution")
+@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonPropertyOrder({
+        "testcaseExecutionId", "testcase", "description", "environment", "country", "priority",
+        "testcaseVersion", "build", "revision", "startDate", "endDate", "durationInMillis",
+        "controlStatus", "controlMessage", "robot", "url", "tag", "status", "usrExecuted",
+        "queueId", "isManualExecution", "system", "application", "usrCreated", "dateCreated",
+        "usrModif", "dateModif"
+})
+@Schema(name = "TestcaseExecution")
 public class TestcaseExecutionDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 0)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "testcaseExecutionId")
     private long testcaseExecutionId;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 1)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "testcase")
     private TestcaseDTOV001 testcase;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 2)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "description")
     private String description;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "environment")
     private InvariantDTOV001 environment;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "country")
     private InvariantDTOV001 country;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "priority")
     private InvariantDTOV001 priority;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "testcaseVersion")
     private int testcaseVersion;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "build")
     private String build;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "revision")
     private String revision;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "startDate")
     private String startDate;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 10)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "endDate")
     private String endDate;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "durationInMillis")
     private long durationInMillis;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "controlStatus")
     private String controlStatus;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "controlMessage")
     private String controlMessage;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "robot")
     private CampaignExecutionRobotDTOV001 robot;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 15)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "url")
     private String url;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 16)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "tag")
     private String tag;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 17)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "status")
     private String status;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 18)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "usrExecuted")
     private String usrExecuted;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 19)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "queueId")
     private long queueId;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 20)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "isManualExecution")
     @JsonProperty("isManualExecution")
     private boolean isManualExecution;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 21)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "system")
     private String system;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 22)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "application")
     private String application;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 23)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "usrCreated")
     private String usrCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 24)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "dateCreated")
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 25)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "usrModif")
     private String usrModif;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 26)
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "dateModif")
     private String dateModif;
 }

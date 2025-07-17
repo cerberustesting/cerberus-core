@@ -20,84 +20,104 @@
 
 package org.cerberus.core.api.dto.testcase;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 /**
  * @author MorganLmd
  */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "Label")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonPropertyOrder({
+        "id",
+        "system",
+        "label",
+        "type",
+        "color",
+        "parentLabelID",
+        "requirementType",
+        "requirementStatus",
+        "requirementCriticality",
+        "description",
+        "detailedDescription",
+        "usrCreated",
+        "dateCreated",
+        "usrModif",
+        "dateModif"
+})
+@Schema(name = "Label")
 public class LabelDTOV001 {
 
     @NotNull(message = "Id is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 0)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Id", required = true)
     private Integer id;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 1)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "System")
     private String system;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 2)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Label")
     private String label;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 3)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Type")
     private String type;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 4)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Color")
     private String color;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 5)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Parent Label ID")
     private Integer parentLabelID;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 6)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Requirement Type")
     private String requirementType;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 7)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Requirement Status")
     private String requirementStatus;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 8)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Requirement Criticality")
     private String requirementCriticality;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 9)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Description")
     private String description;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 10)
+    @JsonView({View.Public.GET.class, View.Public.PUT.class})
+    @Schema(description = "Detailed Description")
     private String detailedDescription;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who created the label")
     private String usrCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Creation date")
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "User who last modified the label")
     private String usrModif;
 
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
+    @JsonView({View.Public.GET.class})
+    @Schema(description = "Modification date")
     private String dateModif;
-
-
 }

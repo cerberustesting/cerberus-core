@@ -19,25 +19,11 @@
  */
 package org.cerberus.core.apiprivate;
 
-import com.google.gson.Gson;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.TestGenericObject;
-import org.cerberus.core.crud.service.impl.TestCaseService;
-import org.cerberus.core.crud.service.impl.TestGenericObjectService;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.service.ai.IAIService;
-import org.cerberus.core.service.ai.impl.AIService;
 import org.cerberus.core.service.ai.impl.AISessionManager;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.StringUtil;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.answer.AnswerList;
-import org.cerberus.core.util.datatable.DataTableInformation;
 import org.cerberus.core.util.servlet.ServletUtil;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -45,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author bcivel
@@ -60,6 +45,7 @@ public class AIPrivateController {
     @Autowired
     AISessionManager aISessionManager;
 
+    @Operation(hidden=true)
     @GetMapping("/prompts")
     public String getAllUserPrompts(HttpServletRequest request) {
 
@@ -76,6 +62,7 @@ public class AIPrivateController {
         }
     }
 
+    @Operation(hidden=true)
     @GetMapping("/messagesFromPrompt/{sessionID}")
     public String getAllRequests(@PathVariable("sessionID") String sessionID, HttpServletRequest request) {
 

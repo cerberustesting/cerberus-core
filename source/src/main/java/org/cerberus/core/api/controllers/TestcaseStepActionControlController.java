@@ -20,15 +20,20 @@
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlDTOV001;
 import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlMapperV001;
 import org.cerberus.core.api.dto.views.View;
@@ -44,14 +49,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Control")
-@ApiIgnore
+@Tag(name = "Testcase Action Control", description = "Operations related to Testcase Action Control")
 @RestController
 @RequestMapping(path = "/public/testcasestepactioncontrols")
 public class TestcaseStepActionControlController {
@@ -65,11 +68,16 @@ public class TestcaseStepActionControlController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ILogEventService logEventService;
 
-    @ApiOperation("Find a Testcase Control by its key (testFolderId, testcaseId, stepId, actionId, controlId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Find a Testcase Control by its key (testFolderId, testcaseId, stepId, actionId, controlId)",
+            description = "Find a Testcase Control by its key (testFolderId, testcaseId, stepId, actionId, controlId)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the testcase control", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseStepActionControlDTOV001.class))})
+            }
+    )
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<TestcaseStepActionControlDTOV001> findControlByKey(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
