@@ -83,9 +83,9 @@ public class AutomateScoreService implements IAutomateScoreService {
     public JSONObject generateAutomateScore(HttpServletRequest request, List<String> systems, List<String> campaigns, String to, int nbWeeks) {
 
         LOG.debug(systems);
-        
+
         long changeDuration = parameterService.getParameterLongByKey(Parameter.VALUE_cerberus_automatescore_changehorizon, null, CHANGE_HORIZON);
-        
+
         Date toD;
         try {
             TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -546,7 +546,11 @@ public class AutomateScoreService implements IAutomateScoreService {
             String tmpUserEntry = "";
             for (TestCaseHisto myChange : histoStatistics) {
 
-                if ((StringUtil.isNotEmptyOrNull(myChange.getTestCase())) && (StringUtil.isNotEmptyOrNull(myChange.getTestCase()))) {
+                tcKey = getTestCaseKey(myChange.getTest(), myChange.getTestCase());
+
+                if ((StringUtil.isNotEmptyOrNull(myChange.getTestCase()))
+                        && (StringUtil.isNotEmptyOrNull(myChange.getTestCase()))
+                        && (testCaseMap.containsKey(tcKey))) {
 
                     weekEntry = dwf.format(new Date(myChange.getDateVersion().getTime()));
 //                    LOG.debug(weekEntry);
@@ -823,7 +827,6 @@ public class AutomateScoreService implements IAutomateScoreService {
             for (Map.Entry<String, JSONObject> entry : campaignMap.entrySet()) {
                 JSONObject val = entry.getValue();
                 campaignsArray.put(val);
-
             }
             response.put("campaigns", campaignsArray);
 
@@ -833,7 +836,6 @@ public class AutomateScoreService implements IAutomateScoreService {
             for (Map.Entry<String, JSONObject> entry : testCaseMap.entrySet()) {
                 JSONObject val = entry.getValue();
                 testcasesArray.put(val);
-
             }
             response.put("testcases", testcasesArray);
 

@@ -1011,14 +1011,23 @@ function aoColumnsFunc_TestCase() {
 function aoColumnsFunc_Tag() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocOnline("tag", "tag")},
+        {
+            "data": "1",
+            "sName": "Tag",
+            "sWidth": "250px",
+            "title": doc.getDocOnline("tag", "tag")
+        },
         {
             "data": "4",
             "sName": "DateCreated",
             "sWidth": "150px",
             "title": doc.getDocLabel("page_tag", "datecreated"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["4"]);
+                if (type === "display") {
+                    return getDate(oObj["4"]);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -1038,8 +1047,20 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "result",
             "sWidth": "150px",
+            "bSearchable": false,
             "mRender": function (data, type, obj) {
-                return result(obj[0]);
+                if ((type === "display") || (type === "filter")) {
+                    return result(obj[0]);
+                } else {
+                    if (obj[0].nbExeUsefull > 0) {
+                        return ((obj[0].nbOK * 100 / obj[0].nbExeUsefull) * 1000000)
+                                + ((obj[0].nbKO * 100 / obj[0].nbExeUsefull) * 10000)
+                                + ((obj[0].nbFA * 100 / obj[0].nbExeUsefull) * 100)
+                                + ((obj[0].nbNA * 100 / obj[0].nbExeUsefull));
+                    } else {
+                        return 0;
+                    }
+                }
             },
             "title": doc.getDocLabel("page_tag", "result")
         },
@@ -1047,17 +1068,30 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "duration",
             "sWidth": "40px",
+            "bSearchable": false,
             className: 'dt-body-right',
             "mRender": function (data, type, obj) {
-                return getDuration(obj[0]);
+                let tmp = getDuration(obj[0]);
+                if (type === "display") {
+                    return tmp.disp;
+                } else {
+                    return tmp.data;
+                }
             },
             "title": doc.getDocOnline("page_tag", "duration")
         },
-        {"data": "3", "sName": "nbExeUsefull", "sWidth": "40px", "title": doc.getDocOnline("tag", "nbexeusefull")},
+        {
+            "data": "3",
+            "sName": "nbExeUsefull",
+            "sWidth": "40px",
+            "bSearchable": false,
+            "title": doc.getDocOnline("tag", "nbexeusefull")
+        },
         {
             "data": null,
             "sName": "reliability",
             "sWidth": "150px",
+            "bSearchable": false,
             "mRender": function (data, type, obj) {
                 return reliability(obj[0]);
             },
@@ -1067,23 +1101,40 @@ function aoColumnsFunc_Tag() {
             "data": null,
             "sName": "exepermin",
             "sWidth": "40px",
+            "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var dur = getDuration(obj[0]);
-                if (dur > 0) {
-                    return Math.round((obj[0].nbExe / dur) * 10) / 10;
+                if (dur.data > 0) {
+                    return Math.round((obj[0].nbExe / (dur.data / 60)) * 10) / 10;
                 }
                 return "";
             },
             "title": doc.getDocOnline("page_tag", "exepermin")
         },
-        {"data": "2", "sName": "nbExe", "sWidth": "40px", "title": doc.getDocOnline("tag", "nbexe")},
-        {"data": "7", "sName": "ciscore", "sWidth": "40px", "title": doc.getDocOnline("tag", "ciscore")},
+        {
+            "data": "2",
+            "sName": "nbExe",
+            "sWidth": "40px",
+            "bSearchable": false,
+            "title": doc.getDocOnline("tag", "nbexe")
+        },
+        {
+            "data": "7",
+            "sName": "ciscore",
+            "sWidth": "40px",
+            "bSearchable": false,
+            "title": doc.getDocOnline("tag", "ciscore")
+        },
         {
             "data": "5",
             "sName": "DateEndQueue",
             "sWidth": "150px",
             "mRender": function (data, type, obj) {
-                return getDate(obj[0].DateEndQueue);
+                if (type === "display") {
+                    return getDate(obj[0].DateEndQueue);
+                } else {
+                    return obj[0].DateEndQueue;
+                }
             },
             "title": doc.getDocOnline("tag", "dateendqueue")
         }
@@ -1126,14 +1177,13 @@ function result(tag) {
 }
 
 function getDuration(tag) {
+    let res = {};
     var startTime = new Date(tag.DateCreated);
     var endTime = new Date(tag.DateEndQueue);
-    var diff = (endTime - startTime) / 60000;
-    var roundDiff = Math.round(diff * 10) / 10;
-    if (roundDiff < 0) {
-        return "";
-    }
-    return (roundDiff);
+    var diff = (endTime - startTime) / 1000;
+    res.disp = getHumanReadableDuration(diff);
+    res.data = diff;
+    return res;
 }
 
 function loadSchedulerTable(name) {

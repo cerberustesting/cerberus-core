@@ -2089,7 +2089,7 @@ function aoColumnsFunc(Columns, durationMax) {
                         return data;
                     }
                 } else {
-                    return "";
+                    return data.ControlStatus + "-" + data.previousExeControlStatus;
                 }
             }
         };
@@ -2173,9 +2173,12 @@ function aoColumnsFunc(Columns, durationMax) {
                 "data": "DurationMsMax",
                 "sName": "tec.DurationMsMax",
                 "mRender": function (data, type, obj) {
-                    let durPer = obj.DurationMsMax / durationMax * 100;
-                    let statClass = getClassDuration(obj.DurationMsMax);
-                    return "<div class='progress' data-toggle='tooltip' data-html='true' title='' data-original-title='" + getHumanReadableDuration(obj.DurationMsMax / 1000, 2) + "'><div class='progress-bar " + statClass + "' role='progressbar' style='width:" + durPer + "%;'>" + obj.DurationMsMax + "</div></div>";
+                    if (type === 'display') {
+                        let durPer = obj.DurationMsMax / durationMax * 100;
+                        let statClass = getClassDuration(obj.DurationMsMax);
+                        return "<div class='progress' data-toggle='tooltip' data-html='true' title='' data-original-title='" + getHumanReadableDuration(obj.DurationMsMax / 1000, 2) + "'><div class='progress-bar " + statClass + "' role='progressbar' style='width:" + durPer + "%;'>" + getHumanReadableDuration(obj.DurationMsMax / 1000, 2) + "</div></div>";
+                    }
+                    return data;
                 },
                 "visible": false,
 //                "sClass": "durationmax",
