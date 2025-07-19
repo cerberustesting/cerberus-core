@@ -322,7 +322,14 @@ function aoColumnsFunc() {
             "like": true,
             "title": doc.getDocOnline("testcaseexecution", "durationMs"),
             "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
+            }
         },
         {
             "data": "isUseful",
