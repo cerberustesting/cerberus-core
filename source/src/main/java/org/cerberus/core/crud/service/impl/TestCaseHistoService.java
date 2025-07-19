@@ -19,10 +19,10 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.util.Date;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.cerberus.core.crud.dao.ITestCaseHistoDAO;
 import org.cerberus.core.crud.entity.TestCaseHisto;
 import org.cerberus.core.crud.service.ITestCaseHistoService;
+import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.AnswerList;
 
@@ -57,8 +59,44 @@ public class TestCaseHistoService implements ITestCaseHistoService {
     }
 
     @Override
+    public List<TestCaseHisto> readByDate(Date from, Date to) throws CerberusException{
+        return this.convert(testCaseHistoDao.readByDate(from, to));
+    }
+
+    @Override
     public Answer create(TestCaseHisto testCaseHisto) {
         return testCaseHistoDao.create(testCaseHisto);
     }
+    
+    
+    @Override
+    public TestCaseHisto convert(AnswerItem<TestCaseHisto> answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<TestCaseHisto> convert(AnswerList<TestCaseHisto> answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    
+    
 
 }

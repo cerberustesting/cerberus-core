@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.util.Date;
+import java.util.List;
 import org.cerberus.core.crud.entity.TestCaseHisto;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -37,6 +39,7 @@ public interface ITestCaseHistoService {
      * @param testcase
      * @param version
      * @return
+     * @throws org.cerberus.core.exception.CerberusException
      */
     TestCaseHisto readByKey(String test, String testcase, int version) throws CerberusException;
 
@@ -50,9 +53,40 @@ public interface ITestCaseHistoService {
 
     /**
      *
+     * @param from
+     * @param to
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    List<TestCaseHisto> readByDate(Date from, Date to) throws CerberusException;
+
+    /**
+     *
      * @param object
      * @return
      */
     Answer create(TestCaseHisto object);
 
+    
+    /**
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseHisto convert(AnswerItem<TestCaseHisto> answerItem) throws CerberusException;
+
+    /**
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseHisto> convert(AnswerList<TestCaseHisto> answerList) throws CerberusException;
+
+    /**
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
+    
 }

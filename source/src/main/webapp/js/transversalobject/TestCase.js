@@ -783,7 +783,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     fillTestAndTestCaseSelect("#selectTest", "#selectTestCase", undefined, undefined, true)
     $("#selectTest").change(function () {
         fillTestCaseSelect("#selectTestCase", $("#selectTest").val(), undefined, true);
-    })
+    });
 
 
 }
@@ -791,8 +791,8 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
 
 function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases) {
-    var doc = new Doc()
-    var system = getSys()
+    var doc = new Doc();
+    var system = getSys();
     var url1 = "";
     if (allTestCases) {
         url1 = getUser().systemQuery;
@@ -838,8 +838,8 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
  * @param testcase  auto select this testcase
  */
 function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase, allTestCases) {
-    var doc = new Doc()
-    var system = getSys()
+    var doc = new Doc();
+    var system = getSys();
     $.ajax({
         url: "ReadTest",
         async: true,
@@ -868,8 +868,9 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
             $(selectorTestSelect).select2({width: "100%"}).next().css("margin-bottom", "7px");
         }
     });
-
-    fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases)
+    if (selectorTestCaseSelect !== undefined) {
+        fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases);
+    }
 }
 
 
@@ -1395,8 +1396,10 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 }
 
 function appendTestList(defautValue) {
-    $('#editTestCaseModal [name="test"]').empty();
-    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+//    $('#editTestCaseModal [name="test"]').empty();
+//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
+
 
     // Set Select2 Value.
     var myoption = $('<option></option>').text(defautValue).val(defautValue);

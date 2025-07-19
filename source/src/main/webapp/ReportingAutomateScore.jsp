@@ -207,7 +207,7 @@
                             <label id="lblFreq">Key Metrics</label>
                             <!--                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" style="padding:0px;"  id="automateScoreChart">
+                        <div class="panel-body collapse in" style="padding:0px;"  id="kpiScoreChart">
                             <div class="row">
 
                                 <div class="col-md-6 ">

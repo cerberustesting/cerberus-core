@@ -100,6 +100,8 @@ public class Parameter {
 
     public static final String VALUE_cerberus_tagcombofilterpersystem_boolean = "cerberus_tagcombofilterpersystem_boolean";
 
+    public static final String VALUE_cerberus_automatescore_changehorizon = "cerberus_automatescore_changehorizon";
+
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
             + "\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\",\"cerberus_xraycloud_clientsecret\",\"cerberus_xraycloud_clientid\",\"cerberus_xraydc_token\","
             + "\"cerberus_jiracloud_apiuser_apitoken\",\"cerberus_github_apitoken\",\"cerberus_azuredevops_accesstoken\",\"cerberus_gitlab_apitoken\")";

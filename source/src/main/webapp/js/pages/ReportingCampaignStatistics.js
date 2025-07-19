@@ -147,10 +147,10 @@ function setSystemSelectOptions() {
 function setApplicationSelectOptions(systems) {
     let systemsQ = "";
     $("#applicationSelect").html("");
-    $('#applicationSelect').multiselect('refresh')
+    $('#applicationSelect').multiselect('refresh');
     $.each(systems, function(index, value) {
         systemsQ +=  "&system=" + encodeURI(systems[index]);
-    })
+    });
     $.ajax
         ({
             url: "ReadApplication?"+systemsQ,

@@ -23,8 +23,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -150,17 +152,79 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
             return null;
         }
 
-        String test = resultSet.getString("teh.test") == null ? "" : resultSet.getString("teh.test");
-        String testcase = resultSet.getString("teh.testcase") == null ? "" : resultSet.getString("teh.testcase");
-        int version = resultSet.getInt("teh.version");
-        String description = resultSet.getString("teh.description") == null ? "" : resultSet.getString("teh.description");
-        Timestamp dateVersion = resultSet.getTimestamp("teh.DateVersion");
-        String usrCreated = resultSet.getString("teh.UsrCreated");
-        Timestamp dateCreated = resultSet.getTimestamp("teh.DateCreated");
-        String usrModif = resultSet.getString("teh.UsrModif");
-        Timestamp dateModif = resultSet.getTimestamp("teh.DateModif");
+        String test = resultSet.getString("tch.test") == null ? "" : resultSet.getString("tch.test");
+        String testcase = resultSet.getString("tch.testcase") == null ? "" : resultSet.getString("tch.testcase");
+        int version = resultSet.getInt("tch.version");
+        String description = resultSet.getString("tch.description") == null ? "" : resultSet.getString("tch.description");
+        Timestamp dateVersion = resultSet.getTimestamp("tch.DateVersion");
+        String usrCreated = resultSet.getString("tch.UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tch.DateCreated");
+        String usrModif = resultSet.getString("tch.UsrModif");
+        Timestamp dateModif = resultSet.getTimestamp("tch.DateModif");
 
         return TestCaseHisto.builder().test(test).testCase(testcase).version(version).description(description).dateCreated(dateCreated).dateModif(dateModif).dateVersion(dateVersion).usrCreated(usrCreated).usrModif(usrModif).build();
+    }
+
+    @Override
+    public AnswerList<TestCaseHisto> readByDate(Date from, Date to) {
+        AnswerList<TestCaseHisto> response = new AnswerList<>();
+        List<TestCaseHisto> objectList = new ArrayList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        Timestamp t1;
+
+        StringBuilder searchSQL = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcasehisto tch ");
+        searchSQL.append(" where 1=1 ");
+
+        searchSQL.append(" and DateVersion >= ? and DateVersion <= ? ");
+        query.append(searchSQL);
+        query.append(" limit ").append(MAX_ROW_SELECTED);
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.from : {}", from);
+        LOG.debug("SQL.param.to : {}", to);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
+
+            int i = 1;
+            t1 = new Timestamp(from.getTime());
+            preStat.setTimestamp(i++, t1);
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i++, t1);
+
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
     }
 
     @Override

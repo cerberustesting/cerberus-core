@@ -33,14 +33,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseHisto;
+import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITagStatisticService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.automatescore.IAutomateScoreService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,9 +65,17 @@ public class AutomateScoreService implements IAutomateScoreService {
     @Autowired
     private ITestCaseExecutionService executionService;
 
+    @Autowired
+    private ITestCaseHistoService histoService;
+
+    @Autowired
+    private IParameterService parameterService;
+
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String DATEWEEK_FORMAT = "yyyy-ww";
     private static final String DATEWEEKONLY_FORMAT = "w";
+
+    private static final long CHANGE_HORIZON = 300000; // 5 min
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AutomateScoreService.class);
 
@@ -73,7 +83,9 @@ public class AutomateScoreService implements IAutomateScoreService {
     public JSONObject generateAutomateScore(HttpServletRequest request, List<String> systems, List<String> campaigns, String to, int nbWeeks) {
 
         LOG.debug(systems);
-
+        
+        long changeDuration = parameterService.getParameterLongByKey(Parameter.VALUE_cerberus_automatescore_changehorizon, null, CHANGE_HORIZON);
+        
         Date toD;
         try {
             TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -89,7 +101,8 @@ public class AutomateScoreService implements IAutomateScoreService {
         AnswerList<Tag> daoTagAnswer;
 
         List<TestCaseExecution> exesStatistics = new ArrayList<>();
-        AnswerList<TestCaseExecution> daoExeAnswer;
+
+        List<TestCaseHisto> histoStatistics = new ArrayList<>();
 
         JSONObject response = new JSONObject();
         try {
@@ -103,10 +116,6 @@ public class AutomateScoreService implements IAutomateScoreService {
                 return response;
             }
 
-//            systemsAllowed = tagStatisticService.getSystemsAllowedForUser(request.getUserPrincipal().getName());
-//            systems.removeIf(param -> !systemsAllowed.contains(param));
-            //If user put in filter a system that is has no access, we delete from the list.
-//            LOG.debug(systems);
             nbWeeks--;
             // Calculate from and to securing that full week is considered
             Calendar cFrom = Calendar.getInstance();
@@ -142,19 +151,29 @@ public class AutomateScoreService implements IAutomateScoreService {
 
             JSONObject weekStatTag = new JSONObject();
             JSONObject weekStatExe = new JSONObject();
+            JSONObject weekStatUser = new JSONObject();
             JSONObject weekStat = new JSONObject();
 
             Map<String, JSONObject> weekGlobalTagStats = new HashMap<>();
             Map<String, JSONObject> weekGlobalExeStats = new HashMap<>();
+            Map<String, JSONObject> weekGlobalUserStats = new HashMap<>();
             Map<String, JSONObject> weekGlobalStats = new HashMap<>();
 
             Map<String, JSONObject> campaignMap = new HashMap<>();
             Map<String, JSONObject> campaignWeekMap = new HashMap<>();
+
             Map<String, JSONObject> applicationMap = new HashMap<>();
+
             Map<String, JSONObject> testCaseMap = new HashMap<>();
             Map<String, JSONObject> testCaseWeekMap = new HashMap<>();
 
+            Map<String, JSONObject> userMap = new HashMap<>();
+            Map<String, JSONArray> userWeekMap = new HashMap<>();
+
             /**
+             * ################################################################
+             * ## WEEK LIST ##
+             * ################################################################
              * Feed Week list from to parameter and nbWeeks (Trend duration)
              */
             for (int i = nbWeeks; i >= 0; i--) {
@@ -183,6 +202,11 @@ public class AutomateScoreService implements IAutomateScoreService {
                 weekStatExe.put("duration", 0);
                 weekGlobalExeStats.put(weekEntry, weekStatExe);
 
+                weekStatUser = new JSONObject();
+                weekStatUser.put("nbSave", 0);
+                weekStatUser.put("duration", 0);
+                weekGlobalUserStats.put(weekEntry, weekStatUser);
+
                 weekStat = new JSONObject();
                 weekGlobalStats.put(weekEntry, weekStat);
 
@@ -191,6 +215,9 @@ public class AutomateScoreService implements IAutomateScoreService {
             response.put("weeks", weeks);
 
             /**
+             * ################################################################
+             * ## CAMPAIGN EXECUTION ##
+             * ################################################################
              * Feed Week with counters parsing all campaigns executions
              */
             daoTagAnswer = tagService.readByVarious(campaigns, systems, cFrom.getTime(), cTo.getTime());
@@ -323,7 +350,7 @@ public class AutomateScoreService implements IAutomateScoreService {
                 }
             }
 
-            // Loop agains campaignweek list in order to attach each of the into the correct week.
+            // Loop agains campaignweek list in order to attach each of them into the correct week.
             String tmpWeekEntry = "";
             JSONArray tmpCmp;
             for (Map.Entry<String, JSONObject> entry : campaignWeekMap.entrySet()) {
@@ -346,6 +373,9 @@ public class AutomateScoreService implements IAutomateScoreService {
             }
 
             /**
+             * ################################################################
+             * ## EXECUTION ##
+             * ################################################################
              * Feed Week with counters parsing all executions
              */
             List<String> taglist = new ArrayList<>();
@@ -354,13 +384,6 @@ public class AutomateScoreService implements IAutomateScoreService {
             }
             exesStatistics = executionService.readByCriteria(systems, taglist, cFrom.getTime(), cTo.getTime());
 
-//            if (exesStatistics.isEmpty()) {
-//                response.put("message", daoTagAnswer.getResultMessage().getDescription());
-//                return response;
-//                return ResponseEntity
-//                        .status(HttpStatus.NOT_FOUND)
-//                        .body(response.toString());
-//            }
             JSONObject tcExe = new JSONObject();
             JSONArray tcExes = new JSONArray();
             String tcKey;
@@ -483,9 +506,11 @@ public class AutomateScoreService implements IAutomateScoreService {
                 }
             }
 
-            // Loop agains testcaseweek list in order to attach each of the into the correct week.
+            // Loop against testcaseweek map in order to attach each of them into the 2 maps per week and per test.
             tmpWeekEntry = "";
             JSONArray tmpTc;
+            Map<String, JSONArray> weekTestCaseMap = new HashMap<>();
+
             for (Map.Entry<String, JSONObject> entry : testCaseWeekMap.entrySet()) {
                 String key = entry.getKey();
                 JSONObject val = entry.getValue();
@@ -505,6 +530,143 @@ public class AutomateScoreService implements IAutomateScoreService {
                 }
             }
 
+            /**
+             * ################################################################
+             * ## Maintenance duration ##
+             * ################################################################
+             *
+             */
+            histoStatistics = histoService.readByDate(cFrom.getTime(), cTo.getTime());
+
+            String userWeekKey;
+            JSONObject tcChmt = new JSONObject();
+            JSONArray tcChmts = new JSONArray();
+            JSONObject userWeek = new JSONObject();
+            JSONArray userWeeks = new JSONArray();
+            String tmpUserEntry = "";
+            for (TestCaseHisto myChange : histoStatistics) {
+
+                if ((StringUtil.isNotEmptyOrNull(myChange.getTestCase())) && (StringUtil.isNotEmptyOrNull(myChange.getTestCase()))) {
+
+                    weekEntry = dwf.format(new Date(myChange.getDateVersion().getTime()));
+//                    LOG.debug(weekEntry);
+                    // Unit Change for debug
+                    tcChmt = new JSONObject();
+                    tcChmt.put("date", myChange.getDateVersion());
+                    tcChmt.put("week", weekEntry);
+                    tcChmt.put("user", myChange.getUsrCreated());
+                    tcChmt.put("testFolder", myChange.getTest());
+                    tcChmt.put("testcaseId", myChange.getTestCase());
+                    tcChmts.put(tcChmt);
+//                    LOG.debug("---------------------------------------");
+//                    LOG.debug(tcChmt);
+
+                    userWeekKey = getUserWeekKey(myChange.getUsrCreated(), weekEntry);
+
+                    if (!userWeekMap.containsKey(userWeekKey)) {
+                        userWeeks = new JSONArray();
+                        userWeek = new JSONObject();
+//                        testcaseWeek.put("name", tcwKey);
+                        userWeek.put("user", myChange.getUsrCreated());
+                        userWeek.put("dateStart", myChange.getDateVersion());
+                        userWeek.put("dateStartl", myChange.getDateVersion().getTime());
+                        userWeek.put("dateEnd", myChange.getDateVersion());
+                        userWeek.put("dateEndl", myChange.getDateVersion().getTime());
+                        userWeek.put("nb", 1);
+                        userWeek.put("duration", changeDuration * 2);
+                        userWeeks.put(userWeek);
+                        userWeekMap.put(userWeekKey, userWeeks);
+//                        LOG.debug(userWeeks);
+                    } else {
+                        JSONArray tmpUserWeeks = new JSONArray();
+
+                        userWeeks = userWeekMap.get(userWeekKey);
+
+                        boolean found = false;
+                        for (Object userWeek1 : userWeeks) {
+                            userWeek = (JSONObject) userWeek1;
+//                            LOG.debug(userWeek);
+                            if ((myChange.getDateVersion().getTime() < (userWeek.getLong("dateStartl") - changeDuration))
+                                    || (myChange.getDateVersion().getTime() > (userWeek.getLong("dateEndl") + changeDuration))) {
+                                tmpUserWeeks.put(userWeek);
+                            } else {
+                                found = true;
+                                userWeek.put("nb", userWeek.getInt("nb") + 1);
+                                if (myChange.getDateVersion().getTime() < (userWeek.getLong("dateStartl"))) {
+                                    userWeek.put("dateStart", myChange.getDateVersion());
+                                    userWeek.put("dateStartl", myChange.getDateVersion().getTime());
+                                } else if (myChange.getDateVersion().getTime() > (userWeek.getLong("dateEndl"))) {
+                                    userWeek.put("dateEnd", myChange.getDateVersion());
+                                    userWeek.put("dateEndl", myChange.getDateVersion().getTime());
+                                }
+                                userWeek.put("duration", (userWeek.getLong("dateEndl") + changeDuration) - (userWeek.getLong("dateStartl") - changeDuration));
+                                tmpUserWeeks.put(userWeek);
+//                                LOG.debug("match");
+                            }
+
+                        }
+                        if (!found) {
+                            userWeek = new JSONObject();
+                            userWeek.put("user", myChange.getUsrCreated());
+                            userWeek.put("dateStart", myChange.getDateVersion());
+                            userWeek.put("dateStartl", myChange.getDateVersion().getTime());
+                            userWeek.put("dateEnd", myChange.getDateVersion());
+                            userWeek.put("dateEndl", myChange.getDateVersion().getTime());
+                            userWeek.put("nb", 1);
+                            userWeek.put("duration", changeDuration * 2);
+                            tmpUserWeeks.put(userWeek);
+//                            LOG.debug("not match");
+                        }
+
+                        userWeekMap.put(userWeekKey, tmpUserWeeks);
+                    }
+//                    LOG.debug(userWeekMap);
+
+                }
+            }
+
+            // Loop against userweek map in order to attach each of them into the 2 maps per week and per user.
+            tmpWeekEntry = "";
+            tmpUserEntry = "";
+            JSONArray tmpUser;
+            Map<String, JSONObject> weekUserTimeMap = new HashMap<>();
+
+            for (Map.Entry<String, JSONArray> entry : userWeekMap.entrySet()) {
+                String key = entry.getKey();
+                JSONArray val = entry.getValue();
+                tmpWeekEntry = key.substring(key.length() - 7);
+                tmpUserEntry = key.substring(0, key.length() - 10);
+//                LOG.debug(key);
+//                LOG.debug(tmpWeekEntry);
+
+                if (weekGlobalUserStats.containsKey(tmpWeekEntry)) {
+
+                    JSONObject tmpWeek = weekGlobalUserStats.get(tmpWeekEntry);
+
+                    for (Object object : val) {
+                        JSONObject listOfTimeSpent = (JSONObject) object;
+                        tmpWeek.put("nbSave", tmpWeek.getInt("nbSave") + listOfTimeSpent.getInt("nb"));
+                        tmpWeek.put("duration", tmpWeek.getLong("duration") + listOfTimeSpent.getLong("duration"));
+                    }
+
+                    if (tmpWeek.has("users")) {
+                        tmpTc = tmpWeek.getJSONArray("users");
+                    } else {
+                        tmpTc = new JSONArray();
+                    }
+
+                    tmpTc.put(tmpUserEntry);
+                    tmpWeek.put("users", tmpTc);
+                    weekGlobalUserStats.put(tmpWeekEntry, tmpWeek);
+                }
+            }
+
+            /**
+             * ################################################################
+             * ## KPI CALCULATION ##
+             * ################################################################
+             *
+             */
             // Loop against all weeks in order to calculate score + variations vs Week - 1
             long kpi1ValuePrev = 0;
             long kpi2ValuePrev = 0;
@@ -596,7 +758,7 @@ public class AutomateScoreService implements IAutomateScoreService {
 
                 // KPI4 - Maintenance
                 JSONObject kpiMaintenance = new JSONObject();
-                long kpi4Value = weekGlobalTagStats.get(weekKey).getLong("durationMax");
+                long kpi4Value = weekGlobalUserStats.get(weekKey).getLong("duration");
                 kpiMaintenance.put("value", kpi4Value);
                 score4 = getScoreMaintenance(kpi4Value);
                 kpiMaintenance.put("score", score4);
@@ -687,42 +849,26 @@ public class AutomateScoreService implements IAutomateScoreService {
 
             response.put("debug-campaignWeeks", campaignWeekMap);
 
+            response.put("debug-userWeeks", userWeekMap);
+
             response.put("exes", tcExes);
+
+            response.put("chgmts", tcChmts);
 
             response.put("weekStatsTag", weekGlobalTagStats);
 
             response.put("weekStatsExe", weekGlobalExeStats);
 
+            response.put("weekStatsUser", weekGlobalUserStats);
+
             response.put("weekStats", weekGlobalStats);
 
-            //            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
-            //            Map<String, String> campaignGroups1 = tagStatisticService.generateGroup1List(aggregateByTag.keySet());
-            //            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN", campaignGroups1);
-            //            List<JSONObject> aggregateListByCampaign = new ArrayList<>();
-            //            for (Map.Entry<String, JSONObject> entry : aggregateByCampaign.entrySet()) {
-            //                String key = entry.getKey();
-            //                JSONObject value = entry.getValue();
-            //                group1List.replaceAll(g -> g.replace("%20", " "));
-            //                if (group1List.isEmpty()) {
-            //                    aggregateListByCampaign.add(value);
-            //                } else {
-            //                    if (group1List.contains(value.getString("campaignGroup1"))) {
-            //                        aggregateListByCampaign.add(value);
-            //                    }
-            //                }
-            //            }
-            //            response.put("group1List", new HashSet<>(campaignGroups1.values())); //Hashset has only unique values
-            //            response.put("campaignStatistics", aggregateListByCampaign);
             return response;
 
         } catch (JSONException exception) {
             LOG.error("Error when JSON processing: ", exception);
             return response;
 
-//        } catch (CerberusException exception) {
-//            LOG.error("Unable to get allowed systems: ", exception);
-//            return response;
-//
         } catch (Exception exception) {
             LOG.error(exception, exception);
             return response;
@@ -740,6 +886,10 @@ public class AutomateScoreService implements IAutomateScoreService {
 
     private String getCampaignWeekKey(String campaign, String week) {
         return campaign + " | " + week;
+    }
+
+    private String getUserWeekKey(String user, String week) {
+        return user + " | " + week;
     }
 
     private Integer getGlobalScore(Integer sc1, Integer sc2, Integer sc3, Integer sc4) {
@@ -785,6 +935,7 @@ public class AutomateScoreService implements IAutomateScoreService {
             return "NA";
         }
     }
+
     private String getGlobalScoreFromInt(Integer kpi) {
         if (kpi == null) {
             return "NA";

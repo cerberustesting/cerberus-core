@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.dao;
 
+import java.util.Date;
 import org.cerberus.core.crud.entity.TestCaseHisto;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -47,6 +48,14 @@ public interface ITestCaseHistoDAO {
      * @return
      */
     public AnswerList<TestCaseHisto> readByTestCase(String test, String Testcase);
+
+    /**
+     *
+     * @param from
+     * @param to
+     * @return
+     */
+    public AnswerList<TestCaseHisto> readByDate(Date from, Date to);
 
     /**
      *

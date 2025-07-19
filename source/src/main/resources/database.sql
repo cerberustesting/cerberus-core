@@ -6745,3 +6745,7 @@ CREATE TABLE `testcasehisto` (
         CONSTRAINT `FK_testcasehisto_01` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE)
     ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+-- 1922
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_automatescore_changehorizon', '300000', 'This duration in ms will be added before and after any testcase save action when calculating the time spent on maintaining the test cases. Default to 300000 (5 min).');
+

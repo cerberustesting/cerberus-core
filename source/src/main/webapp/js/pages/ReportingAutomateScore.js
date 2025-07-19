@@ -139,9 +139,14 @@ function aoColumnsFuncTestCase() {
             "bSortable": true,
             "sName": "duration",
             "title": "Avg Duration",
-            "sWidth": "50px",
+            "sWidth": "50px"
+            ,
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -151,7 +156,11 @@ function aoColumnsFuncTestCase() {
             "title": "Min Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -161,7 +170,11 @@ function aoColumnsFuncTestCase() {
             "title": "Max Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -188,6 +201,23 @@ function aoColumnsFuncTestCase() {
                     return "";
                 }
                 return data;
+            }
+        },
+        {
+            "data": "nbFlaky",
+            "bSortable": true,
+            "sName": "nbFlaky",
+            "title": "% of Flaky",
+            "sWidth": "50px",
+            "mRender": function (data, type, oObj) {
+                if ((data) === 0) {
+                    return "";
+                }
+                let per = data / oObj.nb * 100;
+                if (type === 'display') {
+                    return "" + Math.round(per) + " %";
+                }
+                return per;
             }
         }
     ];
@@ -241,7 +271,11 @@ function aoColumnsFuncCampaign() {
             "title": "Avg Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -251,7 +285,11 @@ function aoColumnsFuncCampaign() {
             "title": "Min Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -261,7 +299,11 @@ function aoColumnsFuncCampaign() {
             "title": "Max Duration",
             "sWidth": "50px",
             "mRender": function (data, type, oObj) {
-                return getHumanReadableDuration(data / 1000);
+                if (type === 'display') {
+                    return getHumanReadableDuration(data / 1000);
+                } else {
+                    return data;
+                }
             }
         },
         {
@@ -310,34 +352,48 @@ function aoColumnsFuncCampaign() {
 
 
 function drawTable_TestCases(data, targetTable, targetPanel) {
-    var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncTestCase(), true, [0, 'asc']);
-    configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
+    if (data && data.length > 0) {
+        var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncTestCase(), true, [0, 'asc']);
+        configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
 
-    if ($('#' + targetTable).hasClass('dataTable') === false) {
+        if ($('#' + targetTable).hasClass('dataTable') === false) {
 
-        createDataTableWithPermissions(configurations, undefined, targetPanel);
-        showTitleWhenTextOverflow();
+            createDataTableWithPermissions(configurations, undefined, targetPanel);
+            showTitleWhenTextOverflow();
+        } else {
+
+            var oTableTC = $("#testcasesTable").dataTable();
+            oTableTC.fnClearTable();
+            oTableTC.fnAddData(data);
+        }
     } else {
-
-        var oTable = $("#testcasesTable").dataTable();
-        oTable.fnClearTable();
-        oTable.fnAddData(data);
+        if (oTableTC) {
+            var oTableTC = $("#campaignsTable").dataTable();
+            oTableTC.fnClearTable();
+        }
     }
 }
 
 function drawTable_Campaigns(data, targetTable, targetPanel) {
-    var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncCampaign(), true, [0, 'asc']);
-    configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
+    if (data && data.length > 0) {
+        var configurations = new TableConfigurationsClientSide(targetTable, data, aoColumnsFuncCampaign(), true, [0, 'asc']);
+        configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
 
-    if ($('#' + targetTable).hasClass('dataTable') === false) {
+        if ($('#' + targetTable).hasClass('dataTable') === false) {
 
-        createDataTableWithPermissions(configurations, undefined, targetPanel);
-        showTitleWhenTextOverflow();
+            createDataTableWithPermissions(configurations, undefined, targetPanel);
+            showTitleWhenTextOverflow();
+        } else {
+
+            var oTableCmp = $("#campaignsTable").dataTable();
+            oTableCmp.fnClearTable();
+            oTableCmp.fnAddData(data);
+        }
     } else {
-
-        var oTable = $("#campaignsTable").dataTable();
-        oTable.fnClearTable();
-        oTable.fnAddData(data);
+        if (oTableCmp) {
+            var oTableCmp = $("#campaignsTable").dataTable();
+            oTableCmp.fnClearTable();
+        }
     }
 }
 
@@ -354,7 +410,6 @@ function drawTable_Campaigns(data, targetTable, targetPanel) {
  * @returns {null}
  */
 function feedCampaignCombos(selectElement, defaultCampaigns, environments, gp1s, gp2s, gp3s) {
-    showLoader($("#otFilterPanel"));
 
     var campaignList = $(selectElement);
     campaignList.empty();
@@ -370,8 +425,6 @@ function feedCampaignCombos(selectElement, defaultCampaigns, environments, gp1s,
         feedCampaignGpX("#gp1Select", data.distinct.group1);
         feedCampaignGpX("#gp2Select", data.distinct.group2);
         feedCampaignGpX("#gp3Select", data.distinct.group3);
-
-        hideLoader($("#otFilterPanel"));
 
     });
 }
@@ -441,6 +494,11 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
     var user = getUser();
 
     showLoader($("#otFilterPanel"));
+    showLoader($("#automateScoreChart"));
+    showLoader($("#kpiScoreChart"));
+    showLoader($("#trendChart"));
+    showLoader($("#tabTestcases"));
+    showLoader($("#tabCampaigns"));
 
     if (environments === null || environments === undefined) {
         environments = [];
@@ -512,6 +570,8 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         InsertURLInHistory("./ReportingAutomateScore.jsp?" + qS);
     }
 
+
+
     $.ajax({
         url: "api/automatescore/statistics?" + qS,
         method: "GET",
@@ -521,132 +581,144 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
 
 //            console.info(data);
 
-            let labelsDatasets = [];
-
-            let kpiFreqData = [];
-            let kpiFreqColor = [];
-            let kpiFreqPoint = [];
-
-            let kpiStabData = [];
-            let kpiStabColor = [];
-            let kpiStabPoint = [];
-
-            let kpiDurData = [];
-            let kpiDurColor = [];
-            let kpiDurPoint = [];
-
-            let kpiMaintData = [];
-            let kpiMaintColor = [];
-            let kpiMaintPoint = [];
+            if (data.weekStats) {
 
 
-            drawTable_TestCases(data.testcases, "testcasesTable", "tabTestcases");
-            drawTable_Campaigns(data.campaigns, "campaignsTable", "tabCampaigns");
+                let labelsDatasets = [];
 
-            for (let index = 0; index < data.weeks.length; index++) {
-                labelsDatasets.push(data.weeks[index].label);
+                let kpiFreqData = [];
+                let kpiFreqColor = [];
+                let kpiFreqPoint = [];
 
-                kpiFreqData.push(data.weekStats[data.weeks[index].val].kpiFrequency.value);
-                kpiFreqColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
-                kpiFreqPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
+                let kpiStabData = [];
+                let kpiStabColor = [];
+                let kpiStabPoint = [];
 
-                kpiStabData.push(data.weekStats[data.weeks[index].val].kpiStability.value / 100);
-                kpiStabColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
-                kpiStabPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
+                let kpiDurData = [];
+                let kpiDurColor = [];
+                let kpiDurPoint = [];
 
-                kpiDurData.push(data.weekStats[data.weeks[index].val].kpiDuration.value / 60000);
-                kpiDurColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
-                kpiDurPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
+                let kpiMaintData = [];
+                let kpiMaintColor = [];
+                let kpiMaintPoint = [];
 
-                kpiMaintData.push(data.weekStats[data.weeks[index].val].kpiMaintenance.value);
-                kpiMaintColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
-                kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
+
+                drawTable_TestCases(data.testcases, "testcasesTable", "tabTestcases");
+                drawTable_Campaigns(data.campaigns, "campaignsTable", "tabCampaigns");
+
+                for (let index = 0; index < data.weeks.length; index++) {
+                    labelsDatasets.push(data.weeks[index].label);
+
+                    kpiFreqData.push(data.weekStats[data.weeks[index].val].kpiFrequency.value);
+                    kpiFreqColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
+                    kpiFreqPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiFrequency.scoreL));
+
+                    kpiStabData.push(data.weekStats[data.weeks[index].val].kpiStability.value / 100);
+                    kpiStabColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
+                    kpiStabPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiStability.scoreL));
+
+                    kpiDurData.push(data.weekStats[data.weeks[index].val].kpiDuration.value / 60000);
+                    kpiDurColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
+                    kpiDurPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiDuration.scoreL));
+
+                    kpiMaintData.push(data.weekStats[data.weeks[index].val].kpiMaintenance.value / 60000);
+                    kpiMaintColor.push(getColorFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
+                    kpiMaintPoint.push(getPointFromScore(data.weekStats[data.weeks[index].val].kpiMaintenance.scoreL));
+                }
+
+                renderScope(data.campaigns, data.testcases, data.applications);
+
+                let lastKPI = data.weekStats[data.weeks[kpiFreqData.length - 1].val];
+                renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.scoreL, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVsAll / 100);
+
+                renderKPIHeader("relChart", lastKPI.kpiStability.value / 100, "%", "Stability", "Ratio of flaky and false negative", lastKPI.kpiStability.scoreL, lastKPI.kpiStability.trend, lastKPI.kpiStability.varVsAll / 100);
+
+                renderKPIHeader("durChart", getHumanReadableDuration(lastKPI.kpiDuration.value / 1000), "", "Duration", "Average campaign duration", lastKPI.kpiDuration.scoreL, lastKPI.kpiDuration.trend, lastKPI.kpiDuration.varVsAll / 100);
+
+                renderKPIHeader("mntChart", getHumanReadableDuration(lastKPI.kpiMaintenance.value / 1000), "", "Maintenance Effort", "Efforts", lastKPI.kpiMaintenance.scoreL, lastKPI.kpiMaintenance.trend, lastKPI.kpiMaintenance.varVsAll / 100);
+
+                renderGlobalAS(lastKPI.kpi.scoreL);
+
+                renderKPITrend("freqChart", "Campaign executions per week - " + nbWeeks + " Weeks Trend");
+                let tagfreqdatasets = [{
+                        label: 'Executions per Week',
+                        data: kpiFreqData,
+                        fill: false,
+                        backgroundColor: kpiFreqColor,
+                        pointStyle: kpiFreqPoint,
+                        pointRadius: 10,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        tension: 0.1
+                    }];
+                configHistoFreq.data.datasets = tagfreqdatasets;
+                configHistoFreq.data.labels = labelsDatasets;
+                window.myHistoFreq.update();
+
+
+                renderKPITrend("relChart", "Ratio of flaky and false negative - " + nbWeeks + " Weeks Trend");
+                let tagstabdatasets = [{
+                        label: '% of Stability',
+                        data: kpiStabData,
+                        fill: false,
+                        backgroundColor: kpiStabColor,
+                        pointStyle: kpiStabPoint,
+                        pointRadius: 10,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        tension: 0.1
+                    }];
+                configHistoStab.data.datasets = tagstabdatasets;
+                configHistoStab.data.labels = labelsDatasets;
+                window.myHistoStab.update();
+
+
+                renderKPITrend("durChart", "Test Campaign in minutes - " + nbWeeks + " Weeks Trend");
+                let tagdurdatasets = [{
+                        label: 'Campaign average duration',
+                        data: kpiDurData,
+                        fill: false,
+                        backgroundColor: kpiDurColor,
+                        pointStyle: kpiDurPoint,
+                        pointRadius: 10,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        tension: 0.1
+                    }];
+                configHistoDur.data.datasets = tagdurdatasets;
+                configHistoDur.data.labels = labelsDatasets;
+                window.myHistoDur.update();
+
+
+                renderKPITrend("mntChart", "Efforts in minutes - " + nbWeeks + " Weeks Trend");
+                let tagmntdatasets = [{
+                        label: 'Maintenance hours',
+                        data: kpiMaintData,
+                        fill: false,
+                        backgroundColor: kpiMaintColor,
+                        pointStyle: kpiMaintPoint,
+                        pointRadius: 10,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        tension: 0.1
+                    }];
+                configHistoMnt.data.datasets = tagmntdatasets;
+                configHistoMnt.data.labels = labelsDatasets;
+                window.myHistoMnt.update();
+
+                hideLoader($("#automateScoreChart"));
+                hideLoader($("#kpiScoreChart"));
+                hideLoader($("#trendChart"));
+                hideLoader($("#tabTestcases"));
+                hideLoader($("#tabCampaigns"));
+            } else {
+                showMessageMainPage("warning", data.message, true);
+
             }
-
-            renderScope(data.campaigns, data.testcases, data.applications);
-
-            let lastKPI = data.weekStats[data.weeks[kpiFreqData.length - 1].val];
-            renderKPIHeader("freqChart", lastKPI.kpiFrequency.value, "/week", "Execution Frequency", "Campaigns per week", lastKPI.kpiFrequency.scoreL, lastKPI.kpiFrequency.trend, lastKPI.kpiFrequency.varVsAll / 100);
-
-            renderKPIHeader("relChart", lastKPI.kpiStability.value / 100, "%", "Stability", "Ratio of flaky and false negative", lastKPI.kpiStability.scoreL, lastKPI.kpiStability.trend, lastKPI.kpiStability.varVsAll / 100);
-
-            renderKPIHeader("durChart", getHumanReadableDuration(lastKPI.kpiDuration.value / 1000), "", "Duration", "Average campaign duration", lastKPI.kpiDuration.scoreL, lastKPI.kpiDuration.trend, lastKPI.kpiDuration.varVsAll / 100);
-
-            renderKPIHeader("mntChart", lastKPI.kpiMaintenance.value, " min", "Maintenance Effort", "Efforts", lastKPI.kpiMaintenance.scoreL, lastKPI.kpiMaintenance.trend, lastKPI.kpiMaintenance.varVsAll / 100);
-
-            renderGlobalAS(lastKPI.kpi.scoreL);
-
-            renderKPITrend("freqChart", "Campaign executions per week - " + nbWeeks + " Weeks Trend");
-            let tagfreqdatasets = [{
-                    label: 'Executions per Week',
-                    data: kpiFreqData,
-                    fill: false,
-                    backgroundColor: kpiFreqColor,
-                    pointStyle: kpiFreqPoint,
-                    pointRadius: 10,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 3,
-                    tension: 0.1
-                }];
-            configHistoFreq.data.datasets = tagfreqdatasets;
-            configHistoFreq.data.labels = labelsDatasets;
-            window.myHistoFreq.update();
-
-
-            renderKPITrend("relChart", "Ratio of flaky and false negative - " + nbWeeks + " Weeks Trend");
-            let tagstabdatasets = [{
-                    label: '% of Stability',
-                    data: kpiStabData,
-                    fill: false,
-                    backgroundColor: kpiStabColor,
-                    pointStyle: kpiStabPoint,
-                    pointRadius: 10,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 3,
-                    tension: 0.1
-                }];
-            configHistoStab.data.datasets = tagstabdatasets;
-            configHistoStab.data.labels = labelsDatasets;
-            window.myHistoStab.update();
-
-
-            renderKPITrend("durChart", "Test Campaign in minutes - " + nbWeeks + " Weeks Trend");
-            let tagdurdatasets = [{
-                    label: 'Campaign average duration',
-                    data: kpiDurData,
-                    fill: false,
-                    backgroundColor: kpiDurColor,
-                    pointStyle: kpiDurPoint,
-                    pointRadius: 10,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 3,
-                    tension: 0.1
-                }];
-            configHistoDur.data.datasets = tagdurdatasets;
-            configHistoDur.data.labels = labelsDatasets;
-            window.myHistoDur.update();
-
-
-            renderKPITrend("mntChart", "Efforts - " + nbWeeks + " Weeks Trend");
-            let tagmntdatasets = [{
-                    label: 'Maintenance hours',
-                    data: kpiMaintData,
-                    fill: false,
-                    backgroundColor: kpiMaintColor,
-                    pointStyle: kpiMaintPoint,
-                    pointRadius: 10,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 3,
-                    tension: 0.1
-                }];
-            configHistoMnt.data.datasets = tagmntdatasets;
-            configHistoMnt.data.labels = labelsDatasets;
-            window.myHistoMnt.update();
 
             hideLoader($("#otFilterPanel"));
         }
     });
-    hideLoader($("#otFilterPanel"));
 
 }
 function renderScope(campaigns, testcases, applications) {
