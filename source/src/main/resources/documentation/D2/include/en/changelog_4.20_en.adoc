@@ -7,6 +7,7 @@
 * Fixed date/Time picker on queue follow-up screen for Last Hour and Last 6 Hours
 * Fixed emptying host password when renaming or duplicating a robot. #2591
 * Fixed an issue affecting some controls in mobile tests when cerberus_selenium_autoscroll is enabled. #2592
+* Fixed sorting on tag list of campaign modal. #2573
 
 *Improvements / New features*
 [square]
@@ -26,7 +27,8 @@
 * You can now perform a service simulation call without saving the service (allowing to tune the call before commit the change to the database)
 * Every text editor field can now move to full screen mode.
 * verifyURL is more clever, waiting for a timeout before providing result (just like element checks). #2593
-* Added duration display on campaign execution report.
+* Added duration display on campaign execution report and execution list. #2594
+* New system variable %system.LASTSERVICE_RESPONSETIME% getting the last API call response time in ms #2589
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

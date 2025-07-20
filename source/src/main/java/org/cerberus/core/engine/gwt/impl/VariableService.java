@@ -367,6 +367,12 @@ public class VariableService implements IVariableService {
             if (!(execution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(execution.getLastServiceCalled().getResponseHTTPCode()));
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", execution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                if (execution.getLastServiceCalled().getEnd().getTime() > execution.getLastServiceCalled().getStart().getTime()) {
+                    stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSETIME%",
+                            String.valueOf(execution.getLastServiceCalled().getEnd().getTime() - execution.getLastServiceCalled().getStart().getTime()));
+                } else {
+                    stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSETIME%", VALUE_WHEN_NULL);
+                }
                 if (!(execution.getLastServiceCalled().getResponseHTTPBody() == null)) {
                     stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", execution.getLastServiceCalled().getResponseHTTPBody());
                 } else {
@@ -376,6 +382,7 @@ public class VariableService implements IVariableService {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", VALUE_WHEN_NULL);
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSETIME%", VALUE_WHEN_NULL);
             }
             if (!(execution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(execution.getLastServiceCalled().getResponseHTTPCode()));

@@ -216,6 +216,7 @@ NOTE: You can also get the nb of rows your variable has by using the `**nbrows**
 | %system.**CURRENTSTEP_ELAPSEDMS**% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
 | %system.**STEP.n.n.RETURNCODE**% |	Return Code of the step n. n being the execution sequence of the step (sort).
 | %system.**LASTSERVICE_HTTPCODE**% |	Http return code of the last service called.
+| %system.**LASTSERVICE_RESPONSETIME**% |	Http response time in ms of the last service called.
 | %system.**LASTSERVICE_CALL**% |	Last JSON Service call.
 | %system.**LASTSERVICE_RESPONSE**% |	Last JSON Service answer.
 
