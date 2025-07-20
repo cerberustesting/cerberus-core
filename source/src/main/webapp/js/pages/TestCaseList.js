@@ -1108,12 +1108,12 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.isMuted",
             "title": doc.getDocOnline("testcase", "IsMuted"),
             "sWidth": "20px",
-                "mRender": function (data, type, obj) {
-                    if (obj.isMuted) {
-                        return '<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>';
-                    }
-                    return "";
-                },
+            "mRender": function (data, type, obj) {
+                if (obj.isMuted) {
+                    return '<span class="glyphicon glyphicon-volume-off" aria-hidden="true"></span>';
+                }
+                return "";
+            },
             "sDefaultContent": ""
         },
         {

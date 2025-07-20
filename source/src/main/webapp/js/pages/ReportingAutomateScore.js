@@ -118,7 +118,24 @@ function aoColumnsFuncTestCase() {
             "bSortable": true,
             "sName": "testcaseId",
             "title": "Test Case ID",
-            "sWidth": "70px"
+            "sWidth": "70px",
+            "mRender": function (data, type, obj) {
+                if (type === "display") {
+                    console.info(obj);
+                    var buttons = "";
+
+                    var editScript = '<a id="testCaseLink" class="btn btn-primary btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["testFolder"]) + '&testcase=' + encodeURIComponent(obj["testcaseId"]) + '">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
+
+                    buttons += editScript;
+
+                    return '<div class="center btn-group width250">' + buttons + obj["testcaseId"] + '</div> ';
+                } else {
+                    return obj["testFolder"] + data;
+                }
+            }
         },
         {
             "data": "application",
@@ -852,7 +869,6 @@ function getOptionsBar(title, unit) {
                     } else {
                         newlabel.push(xLabel + ': ' + t.yLabel);
                     }
-                    console.info("result : " + newlabel);
                     return newlabel;
                 }
             }

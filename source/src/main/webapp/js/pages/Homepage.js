@@ -621,7 +621,7 @@ function getHPOptionsTcGraph(title, unit) {
                         labelString: 'Date'
                     },
                     gridLines: {
-                        color: "rgba(0, 0, 0, 0)",
+                        color: "rgba(0, 0, 0, 0)"
                     }
                 }],
             yAxes: [{
@@ -635,11 +635,18 @@ function getHPOptionsTcGraph(title, unit) {
     return option;
 }
 
-function generateTooltip(data, tag) {
+function generateTooltip(data, tag, tagObj) {
     var htmlRes;
     var len = statusOrder.length;
 
     htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + tag;
+    htmlRes += "<div>&nbsp;</div>";
+
+    htmlRes += "<div>Started : " + getDate(tagObj.DateStartExe) + " (" + getHumanReadableDuration((new Date().getTime() - new Date(tagObj.DateStartExe).getTime()) / 1000) + " ago)</div>";
+    if ((new Date(tagObj.DateEndQueue).getTime() - new Date(tagObj.DateStartExe).getTime()) > 0) {
+        htmlRes += "<div>Duration : " + getHumanReadableDuration((new Date(tagObj.DateEndQueue).getTime() - new Date(tagObj.DateStartExe).getTime()) / 1000) + "</div>";
+    }
+    htmlRes += "<div>&nbsp;</div>";
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
@@ -657,7 +664,7 @@ function generateTagReport(data, tag, rowId, tagObj) {
     var divId = "#tagExecStatusRow" + rowId;
     var reportArea = $(divId).attr("data-tag", tag);
     var buildBar;
-    var tooltip = generateTooltip(data, tag);
+    var tooltip = generateTooltip(data, tag, tagObj);
     var len = statusOrder.length;
 
     let ciRes = '';
@@ -717,7 +724,7 @@ function loadLastTagResultList() {
 }
 
 
-function refreshTagList(tagList, reportArea) {
+function refreshTagList(tagList1, reportArea) {
 
     var tagScheduled = readNextTagScheduled();
     if (tagScheduled.length > 0) {
@@ -727,26 +734,44 @@ function refreshTagList(tagList, reportArea) {
         }
     }
 
-    if (tagList.length > 0) {
-        for (var index = 0; index < tagList.length; index++) {
-            var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
-            reportArea.append(idDiv);
-        }
-        for (var index = 0; index < tagList.length; index++) {
-            let tagName = tagList[index];
-            //TODO find a way to remove the use for resendTag
-            var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + encodeURIComponent(tagName) + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
-            var jqxhr = $.get(requestToServlet, null, "json");
+//    console.info("-------------------------");
+//    console.info(tagList1);
 
-            $.when(jqxhr).then(function (data) {
-                generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho, data.tagObject);
-                nbTagLoaded++;
-                hideLoaderTag();
-            });
+    let elementid = 0;
+    for (var i = 0; i < tagList1.campaigns.length; i++) {
+        let tagList = tagList1.tagLists[tagList1.campaigns[i]];
+//        console.info("-------------------------1");
+//        console.info(tagList);
+        var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeader">' + tagList1.campaigns[i] + '</div>';
+        reportArea.append(idDiv);
+
+        if (tagList.length > 0) {
+            for (var index = 0; index < tagList.length; index++) {
+                let tagName = tagList[index];
+                var idDiv = '<div id="tagExecStatusRow' + elementid++ + '" class="tagDetail" data-tag="' + encodeURIComponent(tagName) + '"></div>';
+                reportArea.append(idDiv);
+            }
         }
-    } else {
-        hideLoader($("#LastTagExecPanel"));
     }
+
+    document.querySelectorAll('.tagDetail').forEach((item, index) => {
+//        console.info(item);
+//        console.info(index);
+//
+//        console.info(item.getAttribute("data-tag"));
+        tagName = item.getAttribute("data-tag");
+
+        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + encodeURIComponent(tagName) + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
+        var jqxhr = $.get(requestToServlet, null, "json");
+
+        $.when(jqxhr).then(function (data) {
+            generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho, data.tagObject);
+            nbTagLoaded++;
+            hideLoaderTag();
+        });
+
+    });
+
     updateNextFireTime();
 
 }
@@ -762,36 +787,74 @@ function hideLoaderTag() {
 function readLastTagExec(searchString, reportArea) {
     var tagList = [];
 
-    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, true);
-    var paramExe = nbExe.value;
+    var tagListResult = {};
 
-    if (!((paramExe >= 0) && (paramExe <= 20))) {
-        paramExe = 5;
+    var tagAgregated = {};
+    var campaignList = [];
+
+    let paramMaxTagToDisplay = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, true).value;
+    let maxCampaign = getParameter("cerberus_homepage_nbdisplayedcampaign", getUser().defaultSystem, true).value;
+    let maxPerCampaign = getParameter("cerberus_homepage_nbdisplayedtagpercampaign", getUser().defaultSystem, true).value;
+
+    if (!((paramMaxTagToDisplay >= 0) && (paramMaxTagToDisplay <= 20))) {
+        paramMaxTagToDisplay = 5;
     }
-    nbTagLoadedTarget = paramExe;
+    nbTagLoadedTarget = paramMaxTagToDisplay;
 
-    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe + getUser().defaultSystemsQuery;
+    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=100" + getUser().defaultSystemsQuery;
     if (!isEmpty(searchString)) {
         myUrl = myUrl + "&sSearch=" + searchString;
     }
+    let newArray = [];
 
+    let campaignAdded = 0;
+
+    let totalLinesAdded = 0;
     $.ajax({
         type: "GET",
         url: myUrl,
-//        data: {tagNumber: nbExe.value},
         async: true,
         dataType: 'json',
         success: function (data) {
             nbTagLoadedTarget = data.contentTable.length;
             for (var s = 0; s < data.contentTable.length; s++) {
-                tagList.push(data.contentTable[s].tag);
-            }
-            refreshTagList(tagList, reportArea);
+                if (totalLinesAdded < paramMaxTagToDisplay) {
+                    tagList.push(data.contentTable[s].tag);
 
-//            tagList = data.contentTable;
+                    let campaignName = "noCampaign";
+                    if (data.contentTable[s].campaign && data.contentTable[s].campaign.length > 0) {
+                        campaignName = data.contentTable[s].campaign;
+                    }
+
+                    if (tagAgregated[campaignName]) {
+                        newArray = tagAgregated[campaignName];
+                        if (newArray.length < maxPerCampaign) {
+                            newArray.push(data.contentTable[s].tag);
+                            totalLinesAdded++;
+                            tagAgregated[campaignName] = newArray;
+                        }
+
+                    } else {
+                        if (campaignAdded < maxCampaign) {
+                            campaignList.push(campaignName);
+                            newArray = [];
+                            newArray.push(data.contentTable[s].tag);
+                            totalLinesAdded++;
+                            tagAgregated[campaignName] = newArray;
+                            campaignAdded++;
+                        }
+                    }
+
+                }
+            }
+            nbTagLoadedTarget = totalLinesAdded;
+            tagListResult.campaigns = campaignList;
+            tagListResult.tagLists = tagAgregated;
+            refreshTagList(tagListResult, reportArea);
+
         }
     });
-    return tagList;
+    return tagListResult;
 }
 
 function readNextTagScheduled() {
@@ -907,6 +970,7 @@ function aoColumnsFunc() {
 
     return aoColumns;
 }
+
 
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
