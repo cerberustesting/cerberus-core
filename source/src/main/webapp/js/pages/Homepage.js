@@ -48,7 +48,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         }
         );
 
-        $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
+//        $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
 
         $("#selectTag").on('change', function () {
             var tagListForm = $("#tagList");
@@ -66,49 +66,49 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
         });
 
-        $("#saveTagList").on('click', function () {
-            var tagListForm = $("#tagListForm input");
-            var tagList = [];
+//        $("#saveTagList").on('click', function () {
+//            var tagListForm = $("#tagListForm input");
+//            var tagList = [];
+//
+//
+//            $.each(tagListForm.serializeArray(), function () {
+//                tagList.push(this.value);
+//            });
+//
+//            localStorage.setItem("tagList", JSON.stringify(tagList));
+//
+//            var searchStringTag = $("#searchStringTag").val();
+//            localStorage.setItem("tagSearchString", searchStringTag);
+//
+//
+//            $("#tagSettingsModal").modal('hide');
+//            $('#tagExecStatus').empty();
+//            loadLastTagResultList();
+//        });
 
-
-            $.each(tagListForm.serializeArray(), function () {
-                tagList.push(this.value);
-            });
-
-            localStorage.setItem("tagList", JSON.stringify(tagList));
-
-            var searchStringTag = $("#searchStringTag").val();
-            localStorage.setItem("tagSearchString", searchStringTag);
-
-
-            $("#tagSettingsModal").modal('hide');
-            $('#tagExecStatus').empty();
-            loadLastTagResultList();
-        });
-
-        $("#tagSettings").on('click', function (event) {
-            stopPropagation(event);
-            var tagListForm = $("#tagList");
-            var tagList = JSON.parse(localStorage.getItem("tagList"));
-            var tagSearchString = localStorage.getItem("tagSearchString");
-
-            if (tagList !== null) {
-                for (var index = 0; index < tagList.length; index++) {
-                    tagListForm.append('<div class="input-group">\n\
-                                        <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
-                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index] + '" readonly>\n\
-                                        </div>');
-                }
-            }
-            loadTagFilter();
-            $("#searchStringTag").val(tagSearchString);
-
-            $(".removeTag").on('click', function () {
-                $(this).parent().remove();
-            });
-
-            $("#tagSettingsModal").modal('show');
-        });
+//        $("#tagSettings").on('click', function (event) {
+//            stopPropagation(event);
+//            var tagListForm = $("#tagList");
+//            var tagList = JSON.parse(localStorage.getItem("tagList"));
+//            var tagSearchString = localStorage.getItem("tagSearchString");
+//
+//            if (tagList !== null) {
+//                for (var index = 0; index < tagList.length; index++) {
+//                    tagListForm.append('<div class="input-group">\n\
+//                                        <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
+//                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index] + '" readonly>\n\
+//                                        </div>');
+//                }
+//            }
+//            loadTagFilter();
+//            $("#searchStringTag").val(tagSearchString);
+//
+//            $(".removeTag").on('click', function () {
+//                $(this).parent().remove();
+//            });
+//
+//            $("#tagSettingsModal").modal('show');
+//        });
 
         //configure and create the dataTable
         var jqxhr = $.getJSON("Homepage", "e=1" + getUser().defaultSystemsQuery);
@@ -187,7 +187,7 @@ function displayPageLabel() {
 
     displayHeaderLabel(doc);
     $("#lastTagExec").html(doc.getDocOnline("homepage", "lastTagExecution"));
-    $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
+//    $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
     $("#testCaseStatusByApp").html(doc.getDocOnline("homepage", "testCaseStatusByApp"));
     $("#title").html(doc.getDocLabel("homepage", "title"));
@@ -706,20 +706,20 @@ function loadLastTagResultList() {
     nbTagLoaded = 0;
 
     //Get the last tag to display
-    var tagList = JSON.parse(localStorage.getItem("tagList"));
-    var searchTag = localStorage.getItem("tagSearchString");
-    if (searchTag || (tagList && tagList.length > 0)) {
-        $("#tagSettings").addClass("btn-primary");
-    } else {
-        $("#tagSettings").removeClass("btn-primary");
-    }
+//    var tagList = JSON.parse(localStorage.getItem("tagList"));
+//    var searchTag = localStorage.getItem("tagSearchString");
+//    if (searchTag || (tagList && tagList.length > 0)) {
+//        $("#tagSettings").addClass("btn-primary");
+//    } else {
+//        $("#tagSettings").removeClass("btn-primary");
+//    }
 
-    if (tagList === null || tagList.length === 0) {
-        tagList = readLastTagExec(searchTag, reportArea);
-    } else {
-        nbTagLoadedTarget = tagList.length;
-        refreshTagList(tagList, reportArea);
-    }
+//    if (tagList === null || tagList.length === 0) {
+       var tagList = readLastTagExec("", reportArea);
+//    } else {
+//        nbTagLoadedTarget = tagList.length;
+//        refreshTagList(tagList, reportArea);
+//    }
 
 }
 
@@ -742,7 +742,11 @@ function refreshTagList(tagList1, reportArea) {
         let tagList = tagList1.tagLists[tagList1.campaigns[i]];
 //        console.info("-------------------------1");
 //        console.info(tagList);
-        var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeader">' + tagList1.campaigns[i] + '</div>';
+        if (tagList1.campaigns[i] === "noCampaign") {
+            var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeaderNoCampaign">---- no campaign defined ---</div>';
+        } else {
+            var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeader">' + tagList1.campaigns[i] + '</div>';
+        }
         reportArea.append(idDiv);
 
         if (tagList.length > 0) {

@@ -1560,6 +1560,11 @@ table.dataTable thead th {
     background-color: #ffdcdcff
 }
 
+.hpCampaignHeaderNoCampaign{
+    background-color: #ffdcdcff;
+    font-style: italic
+}
+
 .tagDetail{
     margin-left: 15px;
 }

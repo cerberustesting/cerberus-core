@@ -162,9 +162,9 @@
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
                                         onclick="stopPropagation(event); loadLastTagResultList();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                                <button id="tagSettings" class="btn btn-default btn-xs"><span
+<!--                                <button id="tagSettings" class="btn btn-default btn-xs"><span
                                         class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label>
-                                </button>
+                                </button>-->
                             </div>
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="lastTagExec">Last tag executions</label>
