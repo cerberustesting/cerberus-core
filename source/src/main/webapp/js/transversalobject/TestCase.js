@@ -868,9 +868,10 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
             $(selectorTestSelect).select2({width: "100%"}).next().css("margin-bottom", "7px");
         }
     });
-    if (selectorTestCaseSelect !== undefined) {
-        fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases);
-    }
+    fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases)
+//    if (selectorTestCaseSelect !== undefined) {
+//        fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases);
+//    }
 }
 
 
@@ -1396,9 +1397,9 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 }
 
 function appendTestList(defautValue) {
-//    $('#editTestCaseModal [name="test"]').empty();
-//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
-    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
+    $('#editTestCaseModal [name="test"]').empty();
+    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+//    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
 
 
     // Set Select2 Value.
