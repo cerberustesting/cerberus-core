@@ -493,7 +493,7 @@ function confirmTestCaseModalHandler(mode) {
         testIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testElementEmpty) {
-        localMessage = new Message("danger", "Please specify the name of the test!");
+        localMessage = new Message("danger", "Please specify the name of the test folder!");
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testIdElementEmpty) {
