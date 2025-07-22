@@ -29,6 +29,7 @@
 * verifyURL is more clever, waiting for a timeout before providing result (just like element checks). #2593
 * Added duration display on campaign execution report and execution list. #2594
 * New system variable %system.LASTSERVICE_RESPONSETIME% getting the last API call response time in ms #2589
+* Homepage now diaplay last executed tags grouped by campaign (cerberus_homepage_nbdisplayedcampaign can be used to limit nb of displayed campaign and cerberus_homepage_nbdisplayedtagpercampaign nb of tags per campaign)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

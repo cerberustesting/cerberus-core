@@ -765,7 +765,7 @@ function refreshTagList(tagList1, reportArea) {
 //        console.info(item.getAttribute("data-tag"));
         tagName = item.getAttribute("data-tag");
 
-        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + encodeURIComponent(tagName) + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
+        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
         var jqxhr = $.get(requestToServlet, null, "json");
 
         $.when(jqxhr).then(function (data) {
