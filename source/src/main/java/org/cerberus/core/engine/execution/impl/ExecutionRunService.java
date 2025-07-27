@@ -94,6 +94,8 @@ import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+import org.cerberus.core.websocket.ExecutionMonitor;
+import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
 
 /**
  * @author bcivel
@@ -107,6 +109,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Autowired
     TestCaseExecutionWebSocket testCaseExecutionWebSocket;
+
+    @Autowired
+    ExecutionMonitor executionMonitor;
+
+    @Autowired
+    ExecutionMonitorWebSocket executionMonitorWebSocket;
 
     private ISikuliService sikuliService;
     private IRobotServerService robotServerService;
@@ -1005,6 +1013,11 @@ public class ExecutionRunService implements IExecutionRunService {
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
             testCaseExecutionWebSocket.send(execution, true);
             testCaseExecutionWebSocket.end(execution);
+        }
+
+        if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
+            executionMonitor.addNewExecutionToMonitor(execution.toLight());
+            executionMonitorWebSocket.send(true);
         }
 
         return execution;

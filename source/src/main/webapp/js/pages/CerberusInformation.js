@@ -56,16 +56,17 @@ function feedContent() {
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
     $.when(jqxhr).then(function (data) {
 
+//        console.info(data);
 
         var table = $("#cerberusTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.projectName);
-        var cel2 = $("<td></td>").append(data.projectVersion);
-        var cel3 = $("<td></td>").append(data.projectBuild);
-        var cel4 = $("<td></td>").append(data.databaseCerberusTargetVersion);
-        var cel5 = $("<td></td>").append(data.databaseCerberusCurrentVersion);
-        var cel6 = $("<td></td>").append(data.environment);
+        var cel1 = $("<td></td>").append(data.cerberus.projectName);
+        var cel2 = $("<td></td>").append(data.cerberus.projectVersion);
+        var cel3 = $("<td></td>").append(data.cerberus.projectBuild);
+        var cel4 = $("<td></td>").append(data.database.databaseCerberusTargetVersion);
+        var cel5 = $("<td></td>").append(data.database.databaseCerberusCurrentVersion);
+        var cel6 = $("<td></td>").append(data.cerberus.environment);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -77,11 +78,11 @@ function feedContent() {
         var table = $("#cerberusAuthTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.authentification);
-        var cel2 = $("<td></td>").append(data.isKeycloak);
-        var cel3 = $("<td></td>").append(data.keycloakRealm);
-        var cel4 = $("<td></td>").append(data.keycloakClient);
-        var cel5 = $("<td></td>").append(data.keycloakUrl);
+        var cel1 = $("<td></td>").append(data.authentification.authentification);
+        var cel2 = $("<td></td>").append(data.authentification.isKeycloak);
+        var cel3 = $("<td></td>").append(data.authentification.keycloakRealm);
+        var cel4 = $("<td></td>").append(data.authentification.keycloakClient);
+        var cel5 = $("<td></td>").append(data.authentification.keycloakUrl);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -92,10 +93,10 @@ function feedContent() {
         var table = $("#cerberusSaaSTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.saaS);
-        var cel2 = $("<td></td>").append(data.isSaaS.toString());
-        var cel3 = $("<td></td>").append(data.saasInstance);
-        var cel4 = $("<td></td>").append(data.saasParallelrun);
+        var cel1 = $("<td></td>").append(data.saasinfo.saaS);
+        var cel2 = $("<td></td>").append(data.saasinfo.isSaaS.toString());
+        var cel3 = $("<td></td>").append(data.saasinfo.saasInstance);
+        var cel4 = $("<td></td>").append(data.saasinfo.saasParallelrun);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -105,32 +106,32 @@ function feedContent() {
         var table = $("#jvmTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.javaVersion);
+        var cel1 = $("<td></td>").append(data.java.javaVersion);
         row.append(cel1);
         table.append(row);
 
         var table = $("#appjvmTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.applicationServerInfo);
+        var cel1 = $("<td></td>").append(data.java.applicationServerInfo);
         row.append(cel1);
         table.append(row);
 
         var table = $("#jvmMemTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.javaTotalMemory);
-        var cel2 = $("<td></td>").append(data.javaUsedMemory);
-        var cel3 = $("<td></td>").append(data.javaFreeMemory);
-        var cel4 = $("<td></td>").append(data.javaMaxMemory);
+        var cel1 = $("<td></td>").append(data.java.javaTotalMemory);
+        var cel2 = $("<td></td>").append(data.java.javaUsedMemory);
+        var cel3 = $("<td></td>").append(data.java.javaFreeMemory);
+        var cel4 = $("<td></td>").append(data.java.javaMaxMemory);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
         row.append(cel4);
         table.append(row);
-        let progress = (data.javaUsedMemory / data.javaMaxMemory) * 100;
+        let progress = (data.java.javaUsedMemory / data.java.javaMaxMemory) * 100;
         $("#progress-barUsed").css("width", progress + "%").attr("aria-valuenow", progress);
-        progress = (data.javaFreeMemory / data.javaMaxMemory) * 100;
+        progress = (data.java.javaFreeMemory / data.java.javaMaxMemory) * 100;
         $("#progress-barTotal").css("width", progress + "%").attr("aria-valuenow", progress);
 
 
@@ -179,10 +180,10 @@ function feedContent() {
         var table = $("#databaseTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.databaseProductName);
-        var cel2 = $("<td></td>").append(data.databaseProductVersion);
-        var cel3 = $("<td></td>").append(data.databaseMajorVersion);
-        var cel4 = $("<td></td>").append(data.databaseMinorVersion);
+        var cel1 = $("<td></td>").append(data.database.databaseProductName);
+        var cel2 = $("<td></td>").append(data.database.databaseProductVersion);
+        var cel3 = $("<td></td>").append(data.database.databaseMajorVersion);
+        var cel4 = $("<td></td>").append(data.database.databaseMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -192,10 +193,10 @@ function feedContent() {
         var table = $("#driverTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.driverName);
-        var cel2 = $("<td></td>").append(data.driverVersion);
-        var cel3 = $("<td></td>").append(data.driverMajorVersion);
-        var cel4 = $("<td></td>").append(data.driverMinorVersion);
+        var cel1 = $("<td></td>").append(data.database.driverName);
+        var cel2 = $("<td></td>").append(data.database.driverVersion);
+        var cel3 = $("<td></td>").append(data.database.driverMajorVersion);
+        var cel4 = $("<td></td>").append(data.database.driverMinorVersion);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
@@ -205,8 +206,8 @@ function feedContent() {
         var table = $("#jdbcTableBody");
         table.empty();
         var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.jDBCMinorVersion);
-        var cel2 = $("<td></td>").append(data.jDBCMajorVersion);
+        var cel1 = $("<td></td>").append(data.database.jDBCMinorVersion);
+        var cel2 = $("<td></td>").append(data.database.jDBCMajorVersion);
         row.append(cel1);
         row.append(cel2);
         table.append(row);

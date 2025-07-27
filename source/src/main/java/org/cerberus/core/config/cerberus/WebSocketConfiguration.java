@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.websocket.ChatWithAIWebSocket;
 import org.cerberus.core.websocket.QueueStatusWebSocket;
+import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
 import org.cerberus.core.websocket.TestCaseExecutionWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,8 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     private ChatWithAIWebSocket chatWithAIWebSocket;
     @Autowired
     private QueueStatusWebSocket queueStatusWebSocket;
+    @Autowired
+    private ExecutionMonitorWebSocket executionMonitorWebSocket;
 
 
     @Override
@@ -57,6 +60,8 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         registry.addHandler(chatWithAIWebSocket, "/ws/chatai")
                 .setAllowedOrigins("*");
         registry.addHandler(queueStatusWebSocket, "/ws/queuestatus")
+                .setAllowedOrigins("*");
+        registry.addHandler(executionMonitorWebSocket, "/ws/executionmonitor")
                 .setAllowedOrigins("*");
         registry.addHandler(testCaseExecutionWebSocket, "/ws/execution/{execution-id}")
                 .addInterceptors(new HttpHandshakeInterceptor())

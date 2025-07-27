@@ -54,6 +54,7 @@ import org.cerberus.core.engine.scheduler.SchedulerInit;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.version.Infos;
+import org.cerberus.core.websocket.ExecutionMonitor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,6 +80,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     private ITagSystemService tagSystemService;
     private IExecutionThreadPoolService executionThreadPoolService;
     private IXRayService xrayService;
+    private ExecutionMonitor monitorExe;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -91,14 +93,19 @@ public class ReadCerberusDetailInformation extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        JSONObject jsonResponse = new JSONObject();
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
-        SessionCounter sc = appContext.getBean(SessionCounter.class);
-        SchedulerInit scInit = appContext.getBean(SchedulerInit.class);
-        Infos infos = new Infos();
 
+        JSONObject jsonResponse = new JSONObject();
+        
         try {
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ExecutionUUID euuid = appContext.getBean(ExecutionUUID.class);
+            SessionCounter sc = appContext.getBean(SessionCounter.class);
+            SchedulerInit scInit = appContext.getBean(SchedulerInit.class);
+
+            Infos infos = new Infos();
+
+            // ######### runningExecutionsList #########
             JSONArray executionArray = new JSONArray();
             for (Object ex : euuid.getExecutionUUIDList().values()) {
                 TestCaseExecution execution = (TestCaseExecution) ex;
@@ -117,9 +124,13 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             }
             jsonResponse.put("runningExecutionsList", executionArray);
 
-            jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
-            jsonResponse.put("active_users", sc.getActiveUsers());
+            // ######### sessions #########
+            JSONObject session = new JSONObject();
+            session.put("simultaneous_session", sc.getTotalActiveSession());
+            session.put("active_users", sc.getActiveUsers());
+            jsonResponse.put("sessions", session);
 
+            // ######### scheduler #########
             JSONObject schedulerObject = new JSONObject();
             if (scInit != null) {
                 schedulerObject.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
@@ -145,77 +156,87 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             }
             jsonResponse.put("scheduler", schedulerObject);
 
+            // ######### queueStats #########
             JSONObject queueObject = new JSONObject();
             queueObject.put("globalLimit", euuid.getGlobalLimit());
             queueObject.put("running", euuid.getRunning());
             queueObject.put("queueSize", euuid.getQueueSize());
             jsonResponse.put("queueStats", queueObject);
 
+            // ######### database #########
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
-
             AnswerItem<HashMap<String, String>> ans = cerberusDatabaseInformation.getDatabaseInformation();
             HashMap<String, String> cerberusInformation = ans.getItem();
 
-            // Database Informations.
-            jsonResponse.put("databaseProductName", cerberusInformation.get("DatabaseProductName"));
-            jsonResponse.put("databaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
-            jsonResponse.put("databaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
-            jsonResponse.put("databaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
+            JSONObject databaseinfo = new JSONObject();
+            databaseinfo.put("databaseProductName", cerberusInformation.get("DatabaseProductName"));
+            databaseinfo.put("databaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
+            databaseinfo.put("databaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
+            databaseinfo.put("databaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
 
-            jsonResponse.put("driverName", cerberusInformation.get("DriverName"));
-            jsonResponse.put("driverVersion", cerberusInformation.get("DriverVersion"));
-            jsonResponse.put("driverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
-            jsonResponse.put("driverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
+            databaseinfo.put("driverName", cerberusInformation.get("DriverName"));
+            databaseinfo.put("driverVersion", cerberusInformation.get("DriverVersion"));
+            databaseinfo.put("driverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
+            databaseinfo.put("driverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
 
-            jsonResponse.put("jDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
-            jsonResponse.put("jDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
-
-            // Cerberus Informations.
-            jsonResponse.put("projectName", infos.getProjectName());
-            jsonResponse.put("projectVersion", infos.getProjectVersion());
-            jsonResponse.put("projectBuild", infos.getProjectBuildId());
-            jsonResponse.put("environment", System.getProperty(Property.ENVIRONMENT));
+            databaseinfo.put("jDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
+            databaseinfo.put("jDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
 
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
-            jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSqlVersion());
+            databaseinfo.put("databaseCerberusTargetVersion", databaseVersionService.getSqlVersion());
 
             myVersionService = appContext.getBean(IMyVersionService.class);
             if (myVersionService.findMyVersionByKey("database") != null) {
-                jsonResponse.put("databaseCerberusCurrentVersion", myVersionService.findMyVersionByKey("database").getValue());
+                databaseinfo.put("databaseCerberusCurrentVersion", myVersionService.findMyVersionByKey("database").getValue());
             } else {
-                jsonResponse.put("databaseCerberusCurrentVersion", "0");
+                databaseinfo.put("databaseCerberusCurrentVersion", "0");
             }
+            jsonResponse.put("database", databaseinfo);
 
-            // Cerberus Parameters
-            jsonResponse.put("authentification", System.getProperty(Property.AUTHENTIFICATION));
-            jsonResponse.put("isKeycloak", Property.isKeycloak());
-            jsonResponse.put("keycloakRealm", System.getProperty(Property.KEYCLOAKREALM));
-            jsonResponse.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
-            jsonResponse.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
+            // ######### cerberus #########
+            JSONObject crbinfo = new JSONObject();
+            crbinfo.put("projectName", infos.getProjectName());
+            crbinfo.put("projectVersion", infos.getProjectVersion());
+            crbinfo.put("projectBuild", infos.getProjectBuildId());
+            crbinfo.put("environment", System.getProperty(Property.ENVIRONMENT));
+            jsonResponse.put("cerberus", crbinfo);
 
+            // ######### authentification #########
+            JSONObject authinfo = new JSONObject();
+            authinfo.put("authentification", System.getProperty(Property.AUTHENTIFICATION));
+            authinfo.put("isKeycloak", Property.isKeycloak());
+            authinfo.put("keycloakRealm", System.getProperty(Property.KEYCLOAKREALM));
+            authinfo.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
+            authinfo.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
+            jsonResponse.put("authentification", authinfo);
+
+            // ######### saasinfo #########
+            JSONObject saasinfo = new JSONObject();
             parameterService = appContext.getBean(IParameterService.class);
-            jsonResponse.put("saaS", System.getProperty(Property.SAAS));
-            jsonResponse.put("isSaaS", Property.isSaaS());
-            jsonResponse.put("saasInstance", System.getProperty(Property.SAASINSTANCE));
-//            jsonResponse.put("saasParallelrun", System.getProperty(Property.SAASPARALLELRUN));
-            jsonResponse.put("saasParallelrun", parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12));
+            saasinfo.put("saaS", System.getProperty(Property.SAAS));
+            saasinfo.put("isSaaS", Property.isSaaS());
+            saasinfo.put("saasInstance", System.getProperty(Property.SAASINSTANCE));
+            saasinfo.put("saasParallelrun", parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12));
+            jsonResponse.put("saasinfo", saasinfo);
 
-            jsonResponse.put("javaVersion", System.getProperty("java.version"));
+            // ######### java #########
+            JSONObject javainfo = new JSONObject();
+            javainfo.put("javaVersion", System.getProperty("java.version"));
             Runtime instance = Runtime.getRuntime();
             int mb = 1024 * 1024;
-            jsonResponse.put("javaFreeMemory", instance.freeMemory() / mb);
-            jsonResponse.put("javaTotalMemory", instance.totalMemory() / mb);
-            jsonResponse.put("javaUsedMemory", (instance.totalMemory() - instance.freeMemory()) / mb);
-            jsonResponse.put("javaMaxMemory", instance.maxMemory() / mb);
+            javainfo.put("javaFreeMemory", instance.freeMemory() / mb);
+            javainfo.put("javaTotalMemory", instance.totalMemory() / mb);
+            javainfo.put("javaUsedMemory", (instance.totalMemory() - instance.freeMemory()) / mb);
+            javainfo.put("javaMaxMemory", instance.maxMemory() / mb);
 
             String str1 = getServletContext().getServerInfo();
-            jsonResponse.put("applicationServerInfo", str1);
+            javainfo.put("applicationServerInfo", str1);
+            jsonResponse.put("java", javainfo);
 
-            // Cache parameter data and status
+            // ######### cache #########
             JSONObject objCache = new JSONObject();
             HashMap<String, Parameter> cacheParam = parameterService.getCacheEntry();
             JSONArray cacheValuesArray = new JSONArray();
-
             for (Map.Entry<String, Parameter> entry : cacheParam.entrySet()) {
                 String key = entry.getKey();
                 Parameter value = entry.getValue();
@@ -230,26 +251,31 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             }
             objCache.put("cacheParameterEntries", cacheValuesArray);
             objCache.put("cacheParameterDurationInS", Parameter.CACHE_DURATION);
-
             // Cache Tag System data and status
             cacheValuesArray = new JSONArray();
             tagSystemService = appContext.getBean(ITagSystemService.class);
             cacheValuesArray.put(tagSystemService.getTagSystemCache());
             objCache.put("cacheTagSystemEntries", cacheValuesArray);
-
             // Cache XRay data and status
             xrayService = appContext.getBean(IXRayService.class);
             objCache.put("cacheXRayEntries", xrayService.getAllCacheEntries());
-
             jsonResponse.put("cache", objCache);
 
-            // Credit Limit Consumption
+            // ######### monitorExecutions #########
+            monitorExe = appContext.getBean(ExecutionMonitor.class);
+            JSONObject monitor = new JSONObject();
+            monitor.put("executions", monitorExe.getExecutionHashMap());
+            monitor.put("tests", monitorExe.getTestcaseMap());
+            monitor.put("environments", monitorExe.getCountryEnvRobotMap());
+            jsonResponse.put("monitorExecutions", monitor);
+            
+            // ######### creditLimit #########
             JSONObject objCreditLimit = new JSONObject();
             objCreditLimit.put("numberOfExecution", sc.getCreditLimitNbExe());
             objCreditLimit.put("durationOfExecutionInSecond", sc.getCreditLimitSecondExe());
-
             jsonResponse.put("creditLimit", objCreditLimit);
 
+            // ######### executionThreadPoolInstanceActive #########
             executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
             jsonResponse.put("executionThreadPoolInstanceActive", executionThreadPoolService.isInstanceActive());
 

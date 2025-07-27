@@ -1568,3 +1568,29 @@ table.dataTable thead th {
 .tagDetail{
     margin-left: 15px;
 }
+
+.monitor-box{
+    height:60px;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+}
+
+.monitor-sub-box{
+    height:20px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border : 2px solid black;
+    border-radius: 8px;
+    width: 20px;
+    margin: 1px;
+}
+
+.status-OK{
+    background-color: var(--ok);
+}
+.status-FA{
+    background-color: var(--fa);
+}
+.status-KO{
+    background-color: var(--ko);
+}

@@ -660,4 +660,31 @@ public class TestCaseExecution {
         return color;
     }
 
+    public TestCaseExecutionLight toLight() {
+        TestCaseExecutionLight result;
+        result = TestCaseExecutionLight.builder()
+                .id(this.getId())
+                .system(this.getSystem())
+                .test(this.getTest())
+                .testCase(this.getTestCase())
+                .description(this.getDescription())
+                .application(this.getApplication())
+                .environment(this.getEnvironment())
+                .environmentData(this.getEnvironmentData())
+                .country(this.getCountry())
+                .robot(this.getRobot())
+                .tag(this.getTag())
+                .controlStatus(this.getControlStatus())
+                .controlMessage(this.getControlMessage())
+                .start(this.getStart())
+                .end(this.getEnd())
+                .build();
+
+        if (this.getTagObj() != null) {
+            result.setCampaign(this.getTagObj().getCampaign());
+        }
+
+        return result;
+    }
+
 }
