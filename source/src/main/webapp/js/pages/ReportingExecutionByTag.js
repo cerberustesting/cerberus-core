@@ -573,6 +573,18 @@ function loadReportingData(selectTag) {
                 eval(elmt.attr("onload")) // TODO eval la method
         });
 
+        //Collapse mechanism for TagInfo.
+        var collapseTagContainer = $('div[data-target="#TagInfo"]');
+        collapseTagContainer.on('click', function (event) {
+          var clickedButton = event.target;
+
+          if (clickedButton.id === 'refreshAll') {
+            //Prevent collapse
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        });
+
         //Event fired when we resize a column on the datatable. Need to re-execute functions because datatable is regenerated
         $('#listTable').on('column-sizing.dt', function () {
             createHeaderCheckboxes();
