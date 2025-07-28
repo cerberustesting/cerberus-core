@@ -102,7 +102,7 @@ Control.prototype.generateContent = function () {
 
 //DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' style='border:0px' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
+    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>").attr("style", "border:0px; text-overflow: ellipsis;");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;").attr("id", "labelDiv").prop("draggable", true);
     var ctrlNumber = $($("<span class='input-group-addon' style='font-weight: 700;border-top-right-radius: 4px;border-bottom-right-radius: 4px;' id='labelControlDiv'></span>"));
 

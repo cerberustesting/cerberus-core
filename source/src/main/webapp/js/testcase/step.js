@@ -445,7 +445,7 @@ Step.prototype.draw = function () {
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input id='stepDescription' class='description form-control crb-autocomplete-variable'>").attr("placeholder", doc.getDocLabel("page_testcasescript", "describe_step")).attr("style", "border:0px");
+    var descriptionField = $("<input id='stepDescription' class='description form-control crb-autocomplete-variable'>").attr("placeholder", doc.getDocLabel("page_testcasescript", "describe_step")).attr("style", "border:0px; text-overflow: ellipsis;");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").prop("draggable", true).text(this.steps.length + 1);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);

@@ -177,7 +177,7 @@ Action.prototype.generateContent = function () {
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px");
+    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px; text-overflow: ellipsis;");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").attr("id", "labelDiv").prop("draggable", true);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
