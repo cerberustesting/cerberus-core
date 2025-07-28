@@ -242,7 +242,8 @@ function feedNewTestCaseSimpleCreationModal(modalId, defaultTest) {
             for (var option in data.contentTable) {
                 appList.push(data.contentTable[option].application);
             }
-            if (appList.includes($('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').val())) {
+            let applicationSelectValue = $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').val();
+            if (appList.includes(applicationSelectValue) || applicationSelectValue == "") {
                 $("#newApplication").attr('style', 'display:none');
             } else {
                 $("#newApplication").attr('style', 'display:block');
