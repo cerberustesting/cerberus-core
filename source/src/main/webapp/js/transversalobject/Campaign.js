@@ -1178,7 +1178,7 @@ function result(tag) {
 
 function getDuration(tag) {
     let res = {};
-    var startTime = new Date(tag.DateCreated);
+    var startTime = new Date(tag.DateStartExe);
     var endTime = new Date(tag.DateEndQueue);
     var diff = (endTime - startTime) / 1000;
     res.disp = getHumanReadableDuration(diff);
