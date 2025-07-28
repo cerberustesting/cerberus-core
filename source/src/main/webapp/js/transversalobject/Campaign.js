@@ -47,7 +47,7 @@ function renderOptionsForCampaign_Label(tableId) {
             "</div>";
     $("#" + tableId + "_wrapper div#" + tableId + "_length").before(contentToAdd);
     $("#" + tableId + "_wrapper #labelSelect").select2({
-        placeholder: "Systen",
+        placeholder: "System",
         allowClear: true
     });
 
