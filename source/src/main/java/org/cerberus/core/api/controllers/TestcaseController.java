@@ -36,11 +36,9 @@ import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.api.dto.testcase.TestcaseSimplifiedCreationDTOV001;
-import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.Application;
@@ -64,7 +62,9 @@ import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
 import static org.cerberus.core.engine.execution.enums.ConditionOperatorEnum.CONDITIONOPERATOR_ALWAYS;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -246,7 +246,7 @@ public class TestcaseController {
                             .build());
         }
 
-        this.testCaseService.create(
+        Answer createTestCaseAnswer = this.testCaseService.create(
                 TestCase.builder()
                         .test(newTestcase.getTestFolderId())
                         .testcase(newTestcase.getTestcaseId())
@@ -266,81 +266,89 @@ public class TestcaseController {
                         .usrCreated(login)
                         .build());
 
-        List<Invariant> countryInvariantList = this.invariantService.readByIdName("COUNTRY");
-        for (Invariant countryInvariant : countryInvariantList) {
+        if (createTestCaseAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-            this.testCaseCountryService.create(
-                    TestCaseCountry.builder()
-                            .test(newTestcase.getTestFolderId())
-                            .testcase(newTestcase.getTestcaseId())
-                            .country(countryInvariant.getValue())
-                            .usrCreated(login)
-                            .build());
-        }
+            List<Invariant> countryInvariantList = this.invariantService.readByIdName("COUNTRY");
+            for (Invariant countryInvariant : countryInvariantList) {
 
-        if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_testcaseautofeed_enable, newTestcase.getSystem(), true)) {
+                this.testCaseCountryService.create(
+                        TestCaseCountry.builder()
+                                .test(newTestcase.getTestFolderId())
+                                .testcase(newTestcase.getTestcaseId())
+                                .country(countryInvariant.getValue())
+                                .usrCreated(login)
+                                .build());
+            }
 
-            this.testCaseStepService.create(
-                    TestCaseStep.builder()
-                            .test(newTestcase.getTestFolderId())
-                            .testcase(newTestcase.getTestcaseId())
-                            .stepId(0)
-                            .sort(1)
-                            .isUsingLibraryStep(false)
-                            .libraryStepStepId(0)
-                            .loop(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
-                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
-                            .description("Go to the homepage and take a screenshot")
-                            .usrCreated(login)
-                            .build());
+            if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_testcaseautofeed_enable, newTestcase.getSystem(), true)) {
 
-            this.testCaseStepActionService.create(
-                    TestCaseStepAction.builder()
-                            .test(newTestcase.getTestFolderId())
-                            .testcase(newTestcase.getTestcaseId())
-                            .stepId(0)
-                            .actionId(0)
-                            .sort(1)
-                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
-                            .conditionValue1("")
-                            .conditionValue2("")
-                            .conditionValue3("")
-                            .action(TestCaseStepAction.ACTION_OPENURLWITHBASE)
-                            .value1("/")
-                            .value2("")
-                            .value3("")
-                            .description("Open the homepage")
-                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
-                            .usrCreated(login)
-                            .build());
+                this.testCaseStepService.create(
+                        TestCaseStep.builder()
+                                .test(newTestcase.getTestFolderId())
+                                .testcase(newTestcase.getTestcaseId())
+                                .stepId(0)
+                                .sort(1)
+                                .isUsingLibraryStep(false)
+                                .libraryStepStepId(0)
+                                .loop(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
+                                .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
+                                .description("Go to the homepage and take a screenshot")
+                                .usrCreated(login)
+                                .build());
 
-            this.testCaseStepActionControlService.create(
-                    TestCaseStepActionControl.builder()
-                            .test(newTestcase.getTestFolderId())
-                            .testcase(newTestcase.getTestcaseId())
-                            .stepId(0)
-                            .actionId(0)
-                            .controlId(0)
-                            .sort(1)
-                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
-                            .conditionValue1("")
-                            .conditionValue2("")
-                            .conditionValue3("")
-                            .control(TestCaseStepActionControl.CONTROL_TAKESCREENSHOT)
-                            .value1("")
-                            .value2("")
-                            .value3("")
-                            .description("Take a screenshot")
-                            .usrCreated(login)
-                            .build());
+                this.testCaseStepActionService.create(
+                        TestCaseStepAction.builder()
+                                .test(newTestcase.getTestFolderId())
+                                .testcase(newTestcase.getTestcaseId())
+                                .stepId(0)
+                                .actionId(0)
+                                .sort(1)
+                                .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
+                                .conditionValue1("")
+                                .conditionValue2("")
+                                .conditionValue3("")
+                                .action(TestCaseStepAction.ACTION_OPENURLWITHBASE)
+                                .value1("/")
+                                .value2("")
+                                .value3("")
+                                .description("Open the homepage")
+                                .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
+                                .usrCreated(login)
+                                .build());
 
+                this.testCaseStepActionControlService.create(
+                        TestCaseStepActionControl.builder()
+                                .test(newTestcase.getTestFolderId())
+                                .testcase(newTestcase.getTestcaseId())
+                                .stepId(0)
+                                .actionId(0)
+                                .controlId(0)
+                                .sort(1)
+                                .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
+                                .conditionValue1("")
+                                .conditionValue2("")
+                                .conditionValue3("")
+                                .control(TestCaseStepActionControl.CONTROL_TAKESCREENSHOT)
+                                .value1("")
+                                .value2("")
+                                .value3("")
+                                .description("Take a screenshot")
+                                .usrCreated(login)
+                                .build());
+
+            }
         }
 
         try {
-            jsonResponse.put("test", newTestcase.getTestFolderId());
-            jsonResponse.put("testcase", newTestcase.getTestcaseId());
-            jsonResponse.put("messageType", "OK");
-            jsonResponse.put("message", "success");
+            if (createTestCaseAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                jsonResponse.put("test", newTestcase.getTestFolderId());
+                jsonResponse.put("testcase", newTestcase.getTestcaseId());
+                jsonResponse.put("messageType", "OK");
+                jsonResponse.put("message", "success");
+            } else {
+                jsonResponse.put("messageType", "KO");
+                jsonResponse.put("message", createTestCaseAnswer.getMessageDescription());
+            }
         } catch (JSONException e) {
             LOG.error(e, e);
         }
