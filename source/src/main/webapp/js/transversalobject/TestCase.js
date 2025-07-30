@@ -727,7 +727,7 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     // Labels
     loadLabel(undefined, undefined, "#selectLabel");
     //Application Combo
-    appendApplicationList(undefined, undefined);
+    appendApplicationList(undefined, undefined, modalId);
 
     formEdit.modal('show');
 }
