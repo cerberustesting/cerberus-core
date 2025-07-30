@@ -1398,7 +1398,7 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 
 function appendTestList(defautValue) {
     $('#editTestCaseModal [name="test"]').empty();
-    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+    $('#editTestCaseModal [name="test"]').select2({...getComboConfigTest(), dropdownParent: $('#editTestCaseModal')});
 //    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
 
 

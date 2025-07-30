@@ -282,7 +282,7 @@ function SimpleCreationFeedTestCaseField(modalForm) {
 function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 
     $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').select2(getComboConfigApplication(true));
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').select2({...getComboConfigApplication(true), dropdownParent: $('#editTestCaseSimpleCreationModal')});
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);
@@ -293,7 +293,7 @@ function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 //Feed Test Combo and select default value if defined
 function SimpleCreationAppendTestList(defaultValue) {
     $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').select2(getComboConfigTest());
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').select2({...getComboConfigTest(), dropdownParent: $('#editTestCaseSimpleCreationModal')});
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);
