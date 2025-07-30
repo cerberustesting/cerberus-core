@@ -263,8 +263,15 @@ function loadGuiProperties() {
 
     let propArr = new Object();
 
-    $("div.list-group-item").each(function () {
-        var editor = ace.edit($(this).find("pre").attr("id"));
+    $("div.property.list-group-item").each(function () {
+        let editor;
+        //Not the same DOM Structure between classic properties and inherited properties
+        if ($(this).find("pre").attr("id")?.includes("inheritProperty")) {
+            editor = ace.edit($(this).find("pre").attr("id"));
+        } else {
+            editor = ace.edit($(this).find("pre[name='propertyValue']")[0]);
+        }
+
         let info = new Object();
         info["name"] = $(this).find("#propName").val();
         info["type"] = $(this).find("select").val();
