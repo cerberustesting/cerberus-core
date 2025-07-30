@@ -33,4 +33,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* The character to parse the "Extra Parameters" field on Robot definition was changed. Please use now the "|" character, with a space before and after, for readability reason. (ex: --start-maximized | --no-sandbox)

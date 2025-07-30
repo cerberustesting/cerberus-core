@@ -1460,7 +1460,7 @@ public class RobotServerService implements IRobotServerService {
 
                     // Extra Browser Parameters.
                     if (tCExecution.getRobotObj() != null && !StringUtil.isEmptyOrNull(tCExecution.getRobotObj().getExtraParam())) {
-                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" ");
+                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" \\| ");
                         for (String param : paramList) {
                             optionsFF.addArguments(param);
                         }
@@ -1532,7 +1532,7 @@ public class RobotServerService implements IRobotServerService {
 
                     // Extra Browser Parameters.
                     if (tCExecution.getRobotObj() != null && !StringUtil.isEmptyOrNull(tCExecution.getRobotObj().getExtraParam())) {
-                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" ");
+                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" \\| ");
                         for (String param : paramList) {
                             optionsCH.addArguments(param);
                         }

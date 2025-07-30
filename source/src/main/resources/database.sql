@@ -6749,7 +6749,10 @@ CREATE TABLE `testcasehisto` (
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_automatescore_changehorizon', '300000', 'This duration in ms will be added before and after any testcase save action when calculating the time spent on maintaining the test cases. Default to 300000 (5 min).');
 
--- 1923-1924
+-- 1923
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_homepage_nbdisplayedcampaign', '5', 'Maximum number of campaign group displayed inside homepage (that each of them will contain the latest executed tags).'),
     ('', 'cerberus_homepage_nbdisplayedtagpercampaign', '3', 'Maximum number of tags displayed in every campaign group inside homepage.');
+
+-- 1924
+UPDATE robot set `ExtraParam` = REPLACE(`ExtraParam`, ' ', ' | ');
