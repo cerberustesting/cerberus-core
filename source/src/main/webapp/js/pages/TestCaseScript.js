@@ -708,7 +708,10 @@ function saveScript(queueid = 0, tag = "") {
 
 
             },
-            error: showUnexpectedError
+            error: function (jqXHR, textStatus, errorThrown) {
+                showUnexpectedError(jqXHR, textStatus, errorThrown);
+                $("#saveScript").attr("disabled", false);
+            }
         });
     };
 
