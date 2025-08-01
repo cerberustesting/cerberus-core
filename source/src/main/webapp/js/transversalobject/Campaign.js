@@ -47,7 +47,7 @@ function renderOptionsForCampaign_Label(tableId) {
             "</div>";
     $("#" + tableId + "_wrapper div#" + tableId + "_length").before(contentToAdd);
     $("#" + tableId + "_wrapper #labelSelect").select2({
-        placeholder: "Systen",
+        placeholder: "System",
         allowClear: true
     });
 
@@ -1178,7 +1178,7 @@ function result(tag) {
 
 function getDuration(tag) {
     let res = {};
-    var startTime = new Date(tag.DateCreated);
+    var startTime = new Date(tag.DateStartExe);
     var endTime = new Date(tag.DateEndQueue);
     var diff = (endTime - startTime) / 1000;
     res.disp = getHumanReadableDuration(diff);

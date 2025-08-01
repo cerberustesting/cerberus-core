@@ -70,6 +70,7 @@ function setPlaceholderProperty(property, propertyObject) {
 
             property.find("div[class*='editDataLib']").show();
             setDatalibButtonOnClick(property.find("div[class*='editDataLib']"), escaped, editor.container.id);
+            setDatalibListener(editor, property, propertyObject);
 
         } else {
             property.find("div[class*='editDataLib']").hide();
@@ -262,8 +263,15 @@ function loadGuiProperties() {
 
     let propArr = new Object();
 
-    $("div.list-group-item").each(function () {
-        var editor = ace.edit($(this).find("pre").attr("id"));
+    $("div.property.list-group-item").each(function () {
+        let editor;
+        //Not the same DOM Structure between classic properties and inherited properties
+        if ($(this).find("pre").attr("id")?.includes("inheritProperty")) {
+            editor = ace.edit($(this).find("pre").attr("id"));
+        } else {
+            editor = ace.edit($(this).find("pre[name='propertyValue']")[0]);
+        }
+
         let info = new Object();
         info["name"] = $(this).find("#propName").val();
         info["type"] = $(this).find("select").val();
@@ -1103,11 +1111,11 @@ function setDatalibButtonOnClick(element, datalib, editorId) {
                 if (data.messageType === "OK") {
                     var service = data.contentTable;
                     if (service.length >= 1) {
-                        element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'EDIT\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                        element.attr("onclick", `openModalDataLib(null, '${datalib}', 'EDIT', 'TestCaseScript_Props', '${editorId}')`);
                         element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-pencil");
                         element.attr("data-original-title", "Edit DataLib");
                     } else {
-                        element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'ADD\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                        element.attr("onclick", `openModalDataLib(null, '${datalib}', 'ADD', 'TestCaseScript_Props', '${editorId}')`);
                         element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-plus");
                         element.attr("data-original-title", "Add DataLib");
                     }
@@ -1116,4 +1124,17 @@ function setDatalibButtonOnClick(element, datalib, editorId) {
             error: showUnexpectedError
         });
     }
+}
+
+function setDatalibListener(editor, property, propertyObject) {
+    //Usage of delay in order to avoid to send too much requests
+    let typingTimer;
+    const typingDelay = 1000;
+
+    editor.getSession().on("change", function (e) {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            setDatalibButtonOnClick(property.find("div[class*='editDataLib']"), propertyObject.value1, editor.container.id);
+        }, typingDelay);
+    });
 }

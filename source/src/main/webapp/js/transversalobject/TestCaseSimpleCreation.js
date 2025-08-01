@@ -242,7 +242,8 @@ function feedNewTestCaseSimpleCreationModal(modalId, defaultTest) {
             for (var option in data.contentTable) {
                 appList.push(data.contentTable[option].application);
             }
-            if (appList.includes($('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').val())) {
+            let applicationSelectValue = $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').val();
+            if (appList.includes(applicationSelectValue) || applicationSelectValue == "") {
                 $("#newApplication").attr('style', 'display:none');
             } else {
                 $("#newApplication").attr('style', 'display:block');
@@ -281,7 +282,7 @@ function SimpleCreationFeedTestCaseField(modalForm) {
 function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 
     $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').select2(getComboConfigApplication(true));
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').select2({...getComboConfigApplication(true), dropdownParent: $('#editTestCaseSimpleCreationModal')});
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);
@@ -292,7 +293,7 @@ function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 //Feed Test Combo and select default value if defined
 function SimpleCreationAppendTestList(defaultValue) {
     $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').select2(getComboConfigTest());
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').select2({...getComboConfigTest(), dropdownParent: $('#editTestCaseSimpleCreationModal')});
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);

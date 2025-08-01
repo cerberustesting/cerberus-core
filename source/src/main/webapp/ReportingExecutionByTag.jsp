@@ -314,11 +314,12 @@
                 <div class="col-sm-12">
 
                     <div class="panel panel-default">
-                        <div class="panel-heading card refreshButtonHeader">
+                        <div class="panel-heading card refreshButtonHeader" data-toggle="collapse" data-target="#TagInfo">
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="TagDetailLab">Tag Information</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body" id="TagInfo">
+                        <div class="panel-body collapse in" id="TagInfo">
                             <div class="row">
                                 <div class="col-sm-4">
                                     <label for="startExe">Submitted :</label>

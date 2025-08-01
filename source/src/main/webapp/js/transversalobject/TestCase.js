@@ -727,7 +727,7 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     // Labels
     loadLabel(undefined, undefined, "#selectLabel");
     //Application Combo
-    appendApplicationList(undefined, undefined);
+    appendApplicationList(undefined, undefined, modalId);
 
     formEdit.modal('show');
 }
@@ -1398,7 +1398,7 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 
 function appendTestList(defautValue) {
     $('#editTestCaseModal [name="test"]').empty();
-    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+    $('#editTestCaseModal [name="test"]').select2({...getComboConfigTest(), dropdownParent: $('#editTestCaseModal')});
 //    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
 
 
