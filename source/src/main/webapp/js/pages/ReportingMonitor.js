@@ -22,8 +22,9 @@
 
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 
-var maxPreviousExe = 5;
-
+var maxPreviousExe = 3;
+var layoutMode = "pileup";
+var SEPARATOR = "-";
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -37,27 +38,89 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        var campaigns = GetURLParameters("campaigns");
+//        var campaigns = GetURLParameters("campaigns");
         var systems = GetURLParameters("systems");
         var environments = GetURLParameters("environments");
+        var countries = GetURLParameters("countries");
+        layoutMode = GetURLParameter("layout", layoutMode);
         //        
 
-        $("#campaignSelect").empty();
-        $("#campaignSelect").select2({width: "100%"});
-        feedCampaignCombos("#campaignSelect", campaigns, environments);
+        feedLayoutSelectOptions(layoutMode);
+//        $("#campaignSelect").empty();
+//        $("#campaignSelect").select2({width: "100%"});
+//        feedCampaignCombos("#campaignSelect", campaigns, environments);
         $("#systemSelect").empty();
         $("#systemSelect").select2({width: "100%"});
-        feedSystemSelectOptions("#systemSelect");
+        feedSystemSelectOptions("#systemSelect", systems);
         $("#envSelect").empty();
         $("#envSelect").select2({width: "100%"});
-//        feedSystemSelectOptions("#envSelect");
+        feedEnvironmentSelectOptions("#envSelect", environments);
+        $("#countrySelect").empty();
+        $("#countrySelect").select2({width: "100%"});
+        feedCountrySelectOptions("#countrySelect", countries);
 
-        loadMonitoringBoard(systems, campaigns, environments);
+        openSocketAndBuildTable(systems, environments, countries);
 
 
     });
 });
 
+function feedLayoutSelectOptions(layoutMode) {
+    if (layoutMode === "testcase") {
+        $("#layoutMode").find('.btn-1').addClass('btn-primary active');
+        $("#layoutMode").find('.btn-2').removeClass('btn-primary');
+    } else {
+        $("#layoutMode").find('.btn-1').removeClass('btn-primary');
+        $("#layoutMode").find('.btn-2').addClass('btn-primary active');
+    }
+}
+
+function loadBoard(layoutModeNew) {
+
+//    $("#layoutMode").find('.btn').toggleClass('active');
+//            if ($(this).find('.btn').size() > 0) {
+    if (layoutModeNew === "testcase") {
+        layoutMode = "testcase";
+        $("#layoutMode").find('.btn-1').addClass('btn-primary active');
+        $("#layoutMode").find('.btn-2').removeClass('btn-primary active');
+    } else {
+        layoutMode = "pileup";
+        $("#layoutMode").find('.btn-1').removeClass('btn-primary active');
+        $("#layoutMode").find('.btn-2').addClass('btn-primary active');
+    }
+
+    let systems = undefined;
+    let environments = undefined;
+    let countries = undefined;
+
+    let systemQ = "";
+    if ($("#systemSelect").val() !== null) {
+        for (var i = 0; i < $("#systemSelect").val().length; i++) {
+            systemQ = systemQ + "&systems=" + encodeURI($("#systemSelect").val()[i]);
+        }
+    }
+
+    let environmentsQ = "";
+    if ($("#envSelect").val() !== null) {
+        for (var i = 0; i < $("#envSelect").val().length; i++) {
+            environmentsQ = environmentsQ + "&environments=" + encodeURI($("#envSelect").val()[i]);
+        }
+    }
+
+    let countriesQ = "";
+    if ($("#countrySelect").val() !== null) {
+        for (var i = 0; i < $("#countrySelect").val().length; i++) {
+            countriesQ = countriesQ + "&countries=" + encodeURI($("#countrySelect").val()[i]);
+        }
+    }
+
+    let qS = "layout=" + layoutMode + systemQ + environmentsQ + countriesQ;
+
+    InsertURLInHistory("./ReportingMonitor.jsp?" + qS);
+
+    openSocketAndBuildTable(systems, environments, countries);
+
+}
 
 function goFullscreen() {
     let myButton = document.getElementById("monitoringChart");
@@ -106,7 +169,7 @@ function feedCampaignCombos(selectElement, defaultCampaigns, environments, gp1s,
     });
 }
 
-function feedSystemSelectOptions(selectElement) {
+function feedSystemSelectOptions(selectElement, systemsLoad) {
     var systemList = $(selectElement);
     systemList.empty();
 
@@ -117,8 +180,44 @@ function feedSystemSelectOptions(selectElement) {
         option = `<option value="${value}">${value}</option>`;
         systemList.append(option);
     });
+    $('#systemSelect').val(systemsLoad);
+//    console.info(systemsLoad);
+
 //    $('#systemSelect').html(options);
 //    $("#systemSelect").multiselect('rebuild');
+}
+
+function feedEnvironmentSelectOptions(selectElement, environmentsLoad) {
+    var envList = $(selectElement);
+    envList.empty();
+
+    let envs = getInvariantArray("ENVIRONMENT", false, undefined, false);
+//    let user = JSON.parse(sessionStorage.getItem('user'));
+//    let envs = user.system;
+
+    let options = $("#envSelect").html("");
+    $.each(envs, function (index, value) {
+        option = `<option value="${value}">${value}</option>`;
+        envList.append(option);
+    });
+    $('#envSelect').val(environmentsLoad);
+//    console.info(environmentsLoad);
+
+}
+
+function feedCountrySelectOptions(selectElement, countriesLoad) {
+    var countryList = $(selectElement);
+    countryList.empty();
+
+    let countries = getInvariantArray("COuNTRY", false);
+    let options = $("#countrySelect").html("");
+    $.each(countries, function (index, value) {
+        option = `<option value="${value}">${value}</option>`;
+        countryList.append(option);
+    });
+    $('#envSelect').val(countriesLoad);
+//    console.info(countriesLoad);
+
 }
 
 function loadEnvironmentCombo(data) {
@@ -160,26 +259,8 @@ function displayPageLabel(doc) {
  * Loading functions
  */
 
-
-
-function loadMonitoringBoard(systems, campaigns, environments) {
-//    console.info(systems);
-//    console.info(campaigns);
-//    console.info(environments);
-
-// Call WS and refresh table if necessary.
-
-    buildTable();
-
-// Feed contain of the table.
-
-}
-
-
-function buildTable() {
-
-
-
+function openSocketAndBuildTable(systems, environments, countries) {
+//    console.info(layoutMode);
     sockets = [];
     var parser = document.createElement('a');
     parser.href = window.location.href;
@@ -201,6 +282,7 @@ function buildTable() {
 //        console.info("received data from socket");
         console.info("ws onmessage");
         console.info(data);
+        refreshMonitorTable(data, systems, environments, countries);
 //        updatePageQueueStatus(data);
 //        updatePage(data, steps);
     }; //on récupère les messages provenant du serveur websocket
@@ -213,493 +295,129 @@ function buildTable() {
 
     // Remain in memory
     sockets.push(socket);
+}
 
 
-
-    let data = {
-        "executions": {
-            "Examples|4027A|FR|QA|": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638622307,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638635557,
-                    "tag": "tutuè20250723-192029 with space",
-                    "id": 755888,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638691412,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638697771,
-                    "tag": "tutuè20250723-192029 with space",
-                    "id": 755889,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "FR",
-                    "controlStatus": "KO",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished, but failed on validations.",
-                    "start": 1753638754811,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638758452,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755896,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638765697,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638774642,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755901,
-                    "testCase": "4027A"
-                }
-            ],
-            "Examples|4030A|BE|QA|": [
-                {
-                    "country": "BE",
-                    "controlStatus": "KO",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished, but failed on validations.",
-                    "start": 1753638756823,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-gitlab",
-                    "environmentData": "QA",
-                    "end": 1753638764611,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755899,
-                    "testCase": "4030A"
-                }
-            ],
-            "Examples|4027A|BE|QA|": [
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638752281,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638754544,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755891,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638758548,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638765599,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755900,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638774751,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638780784,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755903,
-                    "testCase": "4027A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638780903,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-jira",
-                    "environmentData": "QA",
-                    "end": 1753638783595,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755904,
-                    "testCase": "4027A"
-                }
-            ],
-            "Examples|4034A|FR|QA|LocalRobot": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638754221,
-                    "description": "ex1",
-                    "robot": "LocalRobot",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-GUI",
-                    "environmentData": "QA",
-                    "end": 1753638763277,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755894,
-                    "testCase": "4034A"
-                }
-            ],
-            "Examples|4030A|FR|QA|": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638874307,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-gitlab",
-                    "environmentData": "QA",
-                    "end": 1753638874896,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755906,
-                    "testCase": "4030A"
-                }
-            ],
-            "Examples|4026 A|BE|QA|": [
-                {
-                    "country": "BE",
-                    "controlStatus": "KO",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638752269,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638753284,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755890,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638754231,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754533,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755895,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638754231,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754533,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755895,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638754231,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754533,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755895,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638754231,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754533,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755895,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "FA",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638754231,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754533,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755895,
-                    "testCase": "4026 A"
-                },
-                {
-                    "country": "BE",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case failed to be executed because of an action.",
-                    "start": 1753638755825,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638756722,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755898,
-                    "testCase": "4026 A"
-                }
-            ],
-            "Examples|4028A|BE|QA|": [
-                {
-                    "country": "BE",
-                    "controlStatus": "KO",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638797924,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-azuredevops",
-                    "environmentData": "QA",
-                    "end": 1753638820793,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755905,
-                    "testCase": "4028A"
-                }
-            ],
-            "Examples|4029A|FR|QA|": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638754207,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-github",
-                    "environmentData": "QA",
-                    "end": 1753638756356,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755893,
-                    "testCase": "4029A"
-                }
-            ],
-            "Examples|4026 A|FR|QA|": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638753405,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV",
-                    "environmentData": "QA",
-                    "end": 1753638754116,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755892,
-                    "testCase": "4026 A"
-                }
-            ],
-            "Examples|4028A|FR|QA|": [
-                {
-                    "country": "FR",
-                    "controlStatus": "OK",
-                    "test": "Examples",
-                    "controlMessage": "The test case finished successfully",
-                    "start": 1753638774740,
-                    "description": "ex1",
-                    "robot": "",
-                    "environment": "QA",
-                    "system": "CERBERUS",
-                    "application": "Dummy-SRV-azuredevops",
-                    "environmentData": "QA",
-                    "end": 1753638797846,
-                    "tag": "tutuè20250727-195231 with space",
-                    "id": 755902,
-                    "testCase": "4028A"
-                }
-            ]
-        },
-        "tests": {
-            "Examples|4029A": 1,
-            "Examples|4034A": 1,
-            "Examples|4026 A": 5,
-            "Examples|4028A": 2,
-            "Examples|4030A": 2,
-            "Examples|4027A": 8
-        },
-        "environments": {
-            "FR|QA|": 8,
-            "BE|QA|": 10,
-            "FR|QA|LocalRobot": 1
-        }
-    };
+function refreshMonitorTable(data, systems, environments, countries) {
 
     let monTable = $("#tableMonitor");
 
     let columns = Object.keys(data.environments);
-//    columns.push("COL1");
-//    columns.push("COL2");
-//    columns.push("COL3");
-//    columns.push("COL4");
-//    columns.push("COL5");
-
     let rows = Object.keys(data.tests);
-//    rows.push("ROW1");
-//    rows.push("ROW2");
-//    rows.push("ROW3");
-//    rows.push("ROW4");
-//    rows.push("ROW5");
-//    rows.push("ROW6");
-//    rows.push("ROW7");
-//    rows.push("ROW8");
-//    rows.push("ROW9");
-//    rows.push("ROW10");
+
+    let indexValues = {};
+    document.querySelectorAll('.monitor-box').forEach((item, index) => {
+//        console.info(item);
+//        console.info(index);
+//
+//        console.info(item.getAttribute("data-tag"));
+        exeId = item.getAttribute("data-exeid");
+        id = item.getAttribute("id");
+        indexValues[id] = exeId;
+
+    });
+//    console.info("INDEX");
+//    console.info(indexValues);
 
     monTable.empty();
 
 //    console.info(rows);
 //    console.info(columns);
+    if (layoutMode === undefined) {
+        layoutMode = "piledup";
+    } // testcase or piledup
 
-    for (var j = 0, maxr = (rows.length + 1); j < maxr; j++) {
-        var row = $("<tr></tr>");
+//    console.info(layoutMode);
 
-        if (j === 0) {
+    if (layoutMode === "testcase") {
+        for (var j = 0, maxr = (rows.length + 1); j < maxr; j++) {
+            var row = $("<tr></tr>");
 
-            var cel = $("<td></td>");
-            row.append(cel);
-            for (var i = 0, maxc = (columns.length); i < maxc; i++) {
-//                console.info(i + columns[i]);
-
-                var cel = $("<td style='text-align: center'></td>");
-                cel.append(columns[i]);
-                row.append(cel);
-            }
-            monTable.append(row);
-
-        } else {
-
-            var cel = $("<td style='text-align: center;vertical-align: middle'></td>");
-            cel.append(rows[j - 1]);
-            row.append(cel);
-
-
-            for (var i = 0, maxc = (columns.length); i < maxc; i++) {
-//                console.info(i + columns[i]);
+            if (j === 0) {
 
                 var cel = $("<td></td>");
-//                console.info(rows[j - 1] + "|" + columns[i]);
-                cel.append(renderCel(i + "-" + j, data.executions[rows[j - 1] + "|" + columns[i]]));
+                row.append(cel);
+                for (var i = 0, maxc = (columns.length); i < maxc; i++) {
+//                console.info(i + columns[i]);
+
+                    var cel = $("<td style='text-align: center'></td>");
+                    cel.append(columns[i]);
+                    row.append(cel);
+                }
+                monTable.append(row);
+
+            } else {
+
+                var cel = $("<td style='text-align: center;vertical-align: middle'></td>");
+                cel.append(rows[j - 1]);
+                row.append(cel);
+
+
+                for (var i = 0, maxc = (columns.length); i < maxc; i++) {
+//                console.info(i + columns[i]);
+
+                    var cel = $("<td></td>");
+//                console.info(rows[j - 1] + SEPARATOR + columns[i]);
+                    cel.append(renderCel(rows[j - 1] + SEPARATOR + columns[i], data.executions[rows[j - 1] + SEPARATOR + columns[i]], indexValues));
+                    row.append(cel);
+                }
+                monTable.append(row);
+            }
+        }
+    } else { //pileup
+
+
+        // 1st row
+        var row = $("<tr></tr>");
+//        var cel = $("<td></td>");
+//        row.append(cel);
+        for (var i = 0, maxc = (columns.length); i < maxc; i++) {
+//                console.info(i + columns[i]);
+            let cel = $("<td style='text-align: center'></td>");
+            cel.append(columns[i]);
+            row.append(cel);
+        }
+        monTable.append(row);
+
+
+        // 2nd row
+        // 
+        // 2nd row - 1st column
+        row = $("<tr></tr>");
+//        var cel = $("<td style='text-align: center;vertical-align: middle'></td>");
+//        for (var j = 1, maxr = (rows.length + 1); j < maxr; j++) {
+//            cel.append(rows[j - 1]);
+//            cel.append("<br>");
+//        }
+//        row.append(cel);
+
+        // 2nd row - all other columns
+        for (var i = 0, maxc = (columns.length); i < maxc; i++) {
+//                console.info(i + columns[i]);
+
+            var cel = $("<td></td>");
+//                console.info(rows[j - 1] + SEPARATOR + columns[i]);
+            for (var j = 1, maxr = (rows.length + 1); j < maxr; j++) {
+                cel.append(renderCel(rows[j - 1] + SEPARATOR + columns[i], data.executions[rows[j - 1] + SEPARATOR + columns[i]], indexValues));
                 row.append(cel);
             }
             monTable.append(row);
         }
-
-
     }
+
+    $(".tooltip").remove();
     showTitleWhenTextOverflow();
 
 }
 
 
-function renderCel(id, content) {
+
+function renderCel(id, content, indexValues) {
 //    console.info(id);
 
     if (content === undefined) {
-        return $("<div id='cel-" + id + "'></div>");
+        return "";
+//        return $("<div id='cel-" + id + "' style='margin-bottom: 2px'></div>");
     }
 //    console.info(content);
 
@@ -721,6 +439,9 @@ function renderCel(id, content) {
     let exedate = new Date(curExe.start);
     let exes = [];
     if (content.length - 1 >= 1) {
+//        for (var i = content.length - 2, min = 0; i >= min; i--) {
+//            exes.push(content[i]);
+//        }
         for (var i = content.length - 2, min = 0; i >= min; i--) {
             exes.push(content[i]);
         }
@@ -733,10 +454,18 @@ function renderCel(id, content) {
 
     let tooltipcontain = getTooltip(curExe);
 //    let tooltipcontain = "";
+//    let previousCellExeId = $("#" + id).attr("data-exeid");
+//    console.info($("#" + id));
+    let previousCellExeId = indexValues[id];
+        let classChange = "";
+    if ((previousCellExeId !== undefined) && (previousCellExeId != curExe.id)) {
+//        console.info("CHANGE on " + id);
+        classChange = "new blinking";
+    }
+//    console.info(curExe.id + " " + previousCellExeId);
 
-
-    let cel = $('<div data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="cel-' + id + '" onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
-            .addClass("monitor-box status-" + status);
+    let cel = $('<div style="margin-bottom: 2px" data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="' + id + '" data-exeid="' + curExe.id + '" onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
+            .addClass(classChange + " monitor-box status-" + status);
     let row1 = $("<div style='margin-right:0px'></div>").addClass("row");
 
     let r1c1 = $("<div></div>").addClass("col-xs-6 status").append("<span class='" + fonta + "' style='margin-right: 5px;'></span>" + status);
@@ -745,11 +474,13 @@ function renderCel(id, content) {
     let r1c2 = $("<div></div>").addClass("col-xs-6 text-right").append(getHumanReadableDuration((now - exedate) / 1000, 1));
     row1.append(r1c2);
 
-    let row2 = $("<div style='margin-right:0px'></div>").addClass("row pull-right");
+    let row2 = $("<div style='margin-right:0px'></div>").addClass("row");
+    r2c = $('<div></div>').addClass("col-xs-1 pull-left bold").append(curExe.testCase);
+    row2.append(r2c);
     for (var i = 0, max = exes.length; ((i < max) && (i < maxPreviousExe)); i++) {
         let r2c;
-        r2c = $('<div data-toggle="tooltip" data-html="true" title data-original-title="' + getTooltip(exes[i]) + '" onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + exes[i].id + '\');stopPropagation(event);"></div>').addClass("monitor-sub-box col-xs-1 status-" + exes[i].controlStatus);
-        row2.append(r2c);
+        r2c = $('<div data-toggle="tooltip" data-html="true" title data-original-title="' + getTooltip(exes[i]) + '" onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + exes[i].id + '\');stopPropagation(event);"></div>').addClass("monitor-sub-box col-xs-1 pull-right status-" + exes[i].controlStatus);
+        row2.prepend(r2c);
 
     }
 
@@ -766,23 +497,23 @@ function getTooltip(data) {
         ctrlmessage = data.controlMessage.substring(0, 200) + '...';
     }
     htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>';
-    htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Test : </span>' + data.test + SEPARATOR + data.testCase + '</div>';
+    htmlRes += '<div>' + data.description + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Environment : </span>' + data.environment + '</div>';
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Application : </span>' + data.application + '</div>';
     if ((data.robot !== undefined) && (data.robot !== '')) {
         htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.robot + '</div>';
     }
-    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDate(data.start) + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Start : </span>' + getDate(data.start) + '</div>';
     let dur = data.end - data.start;
     if (getDateShort(data.end) !== "") {
         htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.end) + ' <span class=\'' + getClassDuration(dur) + '\'>(' + getHumanReadableDuration(dur / 1000, 2) + ')</span></div>';
     }
-    htmlRes += '<div>' + ctrlmessage + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }
-
-
-
 
 function getTextPlurial(nb, textSingle, textPlusial) {
     if (nb > 1) {

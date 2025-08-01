@@ -61,19 +61,43 @@
                                             <select multiple="multiple" class="form-control" id="systemSelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-md-5'>
-                                        <div class="form-group">
-                                            <label for="campaignSelect">Campaign</label>
-                                            <select multiple="multiple" class="form-control" id="campaignSelect"></select>
-                                        </div>
-                                    </div>
-                                    <div class='col-md-4'>
+                                    <!--                                    <div class='col-md-5'>
+                                                                            <div class="form-group">
+                                                                                <label for="campaignSelect">Campaign</label>
+                                                                                <select multiple="multiple" class="form-control" id="campaignSelect"></select>
+                                                                            </div>
+                                                                        </div>-->
+                                    <div class='col-md-3'>
                                         <div class="form-group" style="display: block">
                                             <label for="envSelect">Environment</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="envSelect"></select>
                                         </div>
                                     </div>
+                                    <div class='col-md-3'>
+                                        <div class="form-group" style="display: block">
+                                            <label for="countrySelect">Country</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-3'>
+                                        <div class="form-group" style="display: block">
+                                            <label for="systemSelect">Layout Mode</label>
+                                            <div class="btn-group btn-toggle marginTop5" id="layoutMode"> 
+                                                <button class="btn btn-1 btn-xs btn-default active" onclick="loadBoard('testcase');">Per Testcase</button>
+                                                <button class="btn btn-2 btn-xs btn-primary" onclick="loadBoard('pileup');">Pile Up</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
+<!--                                <div class="row">
+                                    <div class='col-sm-12 col-md-12'>
+                                        <div class="input-group-btn ">
+                                            <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton" onclick="loadKPIGraphBars(true);">Load</button>
+                                        </div>
+                                    </div>
+                                </div>-->
+
 
 
                             </div>

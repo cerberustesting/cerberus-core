@@ -1594,3 +1594,69 @@ table.dataTable thead th {
 .status-KO{
     background-color: var(--ko);
 }
+.new{
+    border : 2px solid yellow;
+}
+
+.notnew{
+    border : 2px solid white;
+}
+
+.blinking {
+    -webkit-animation: 10s blink ease infinite;
+    -moz-animation: 1s blink ease infinite;
+    -ms-animation: 1s blink ease infinite;
+    -o-animation: 1s blink ease infinite;
+    animation: 1s blink ease infinite;
+  }
+
+  @keyframes "blink" {
+    from,
+    to {
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+  }
+
+  @-moz-keyframes blink {
+    from,
+    to {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes "blink" {
+    from,
+    to {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @-ms-keyframes "blink" {
+    from,
+    to {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @-o-keyframes "blink" {
+    from,
+    to {
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
