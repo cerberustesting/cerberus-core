@@ -47,18 +47,22 @@ public class TestCaseExecutionLight {
     private String testCase;
     private String description;
     private String application;
+
     private String environment;
     private String environmentData;
     private String country;
     private String robot;
-    
+
     private String tag;
     private String campaign;
     private long start;
     private long end;
+
+    private boolean isMuted;
+    private boolean isUsefull;
+    private boolean isFalseNegative;
     
     private String controlStatus;
     private String controlMessage;
-
 
 }

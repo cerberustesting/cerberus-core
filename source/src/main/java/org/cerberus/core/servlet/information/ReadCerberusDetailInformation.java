@@ -263,11 +263,11 @@ public class ReadCerberusDetailInformation extends HttpServlet {
 
             // ######### monitorExecutions #########
             monitorExe = appContext.getBean(ExecutionMonitor.class);
-            JSONObject monitor = new JSONObject();
-            monitor.put("executions", monitorExe.getExecutionHashMap());
-            monitor.put("tests", monitorExe.getTestcaseMap());
-            monitor.put("environments", monitorExe.getCountryEnvRobotMap());
-            jsonResponse.put("monitorExecutions", monitor);
+//            JSONObject monitor = new JSONObject();
+//            monitor.put("executions", monitorExe.getExecutionHashMap());
+//            monitor.put("tests", monitorExe.getTestcaseMap());
+//            monitor.put("environments", monitorExe.getCountryEnvRobotMap());
+            jsonResponse.put("monitorExecutions", monitorExe.toJson(true));
             
             // ######### creditLimit #########
             JSONObject objCreditLimit = new JSONObject();

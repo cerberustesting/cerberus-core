@@ -1569,22 +1569,6 @@ table.dataTable thead th {
     margin-left: 15px;
 }
 
-.monitor-box{
-    height:60px;
-    padding: 10px 10px 10px 10px;
-    cursor: pointer;
-}
-
-.monitor-sub-box{
-    height:20px;
-    padding-left: 2px;
-    padding-right: 2px;
-    border : 2px solid black;
-    border-radius: 8px;
-    width: 20px;
-    margin: 1px;
-}
-
 .status-OK{
     background-color: var(--ok);
 }
@@ -1594,69 +1578,3 @@ table.dataTable thead th {
 .status-KO{
     background-color: var(--ko);
 }
-.new{
-    border : 2px solid yellow;
-}
-
-.notnew{
-    border : 2px solid white;
-}
-
-.blinking {
-    -webkit-animation: 10s blink ease infinite;
-    -moz-animation: 1s blink ease infinite;
-    -ms-animation: 1s blink ease infinite;
-    -o-animation: 1s blink ease infinite;
-    animation: 1s blink ease infinite;
-  }
-
-  @keyframes "blink" {
-    from,
-    to {
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-  }
-
-  @-moz-keyframes blink {
-    from,
-    to {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @-webkit-keyframes "blink" {
-    from,
-    to {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @-ms-keyframes "blink" {
-    from,
-    to {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @-o-keyframes "blink" {
-    from,
-    to {
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 1;
-    }
-  }

@@ -1,0 +1,103 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+.monitor-box{
+    height:60px;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+}
+
+.monitor-sub-box{
+    height:20px;
+    padding-left: 2px;
+    padding-right: 2px;
+    border : 2px solid black;
+    border-radius: 8px;
+    width: 20px;
+    margin: 1px;
+}
+
+.new{
+    border : 2px solid yellow;
+}
+
+.notnew{
+    border : 2px solid white;
+}
+
+.blinking {
+    -webkit-animation: 10s blink ease infinite;
+    -moz-animation: 1s blink ease infinite;
+    -ms-animation: 1s blink ease infinite;
+    -o-animation: 1s blink ease infinite;
+    animation: 1s blink ease infinite;
+}
+
+@keyframes "blink" {
+    from,
+    to {
+        opacity: 0.5;
+    }
+    10% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes blink {
+    from,
+    to {
+        opacity: 0.5;
+    }
+    10% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes "blink" {
+    from,
+    to {
+        opacity: 0.5;
+    }
+    10% {
+        opacity: 1;
+    }
+}
+
+@-ms-keyframes "blink" {
+    from,
+    to {
+        opacity: 0.5;
+    }
+    10% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes "blink" {
+    from,
+    to {
+        opacity: 0.5;
+    }
+
+    10% {
+        opacity: 1;
+    }
+}

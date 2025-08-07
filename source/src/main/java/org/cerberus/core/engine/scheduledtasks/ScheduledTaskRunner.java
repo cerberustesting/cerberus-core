@@ -32,6 +32,7 @@ import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.engine.scheduler.SchedulerInit;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,8 @@ public class ScheduledTaskRunner {
     private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
     @Autowired
     private IMyVersionService myVersionService;
+    @Autowired
+    private ExecutionMonitorWebSocket executionMonitorWebSocket;
 
     private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
@@ -72,6 +75,14 @@ public class ScheduledTaskRunner {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S";
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
+
+    /**
+     * This is to send any remaining websocket that may not be sent.
+     */
+    @Scheduled(fixedRate = 10000, initialDelay = 30000 /* Every minute */)
+    public void triggerStep() {
+        executionMonitorWebSocket.send(false);
+    }
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {

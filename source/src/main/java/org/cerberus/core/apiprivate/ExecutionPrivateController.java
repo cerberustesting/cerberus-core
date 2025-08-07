@@ -31,6 +31,8 @@ import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.util.servlet.ServletUtil;
+import org.cerberus.core.websocket.ExecutionMonitor;
+import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -59,8 +61,12 @@ public class ExecutionPrivateController {
     private IBugService bugService;
     @Autowired
     private ExecutionUUID executionUUIDObject;
+    @Autowired
+    private ExecutionMonitor executionMonitor;
+    @Autowired
+    private ExecutionMonitorWebSocket executionMonitorWebSocket;
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @GetMapping("/getLastByCriteria")
     public String getLastByCriteria(
             @RequestParam(name = "test") String test,
@@ -84,7 +90,7 @@ public class ExecutionPrivateController {
         }
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @GetMapping("/count")
     public String getnbByCriteria(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -105,7 +111,7 @@ public class ExecutionPrivateController {
         }
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @GetMapping("/running")
     public String getRunning(
             //            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -118,16 +124,18 @@ public class ExecutionPrivateController {
 
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @PostMapping("{executionId}/declareFalseNegative")
     public String updateDeclareFalseNegative(
-            @PathVariable("executionId") int executionId,
+            @PathVariable("executionId") long executionId,
             HttpServletRequest request) {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
         try {
             executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
+            executionMonitor.updateExecutionToMonitor(executionId, true);
+            executionMonitorWebSocket.send(true);
         } catch (CerberusException ex) {
             LOG.warn(ex, ex);
             return ex.toString();
@@ -136,16 +144,18 @@ public class ExecutionPrivateController {
 
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @PostMapping("{executionId}/undeclareFalseNegative")
     public String updateUndeclareFalseNegative(
-            @PathVariable("executionId") int executionId,
+            @PathVariable("executionId") long executionId,
             HttpServletRequest request) {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
         try {
             executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
+            executionMonitor.updateExecutionToMonitor(executionId, false);
+            executionMonitorWebSocket.send(true);
         } catch (CerberusException ex) {
             LOG.warn(ex, ex);
             return ex.toString();
@@ -154,7 +164,7 @@ public class ExecutionPrivateController {
 
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @PostMapping("{executionId}/createBug")
     public String createBug(
             @PathVariable("executionId") long executionId,

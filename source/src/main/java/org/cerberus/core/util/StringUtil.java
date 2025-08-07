@@ -64,6 +64,7 @@ public final class StringUtil {
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
     private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
     public static final String SECRET_STRING = "XXXXXXXXXX";
+    public static final String SPECIAL_CHAR_REPLACEMENT = "_";
 
     // To avoid instantiation of utility class
     private StringUtil() {
@@ -363,6 +364,15 @@ public final class StringUtil {
         LOG.debug("Cleaned host from {} to {}", host, newHost);
         return newHost;
 
+    }
+
+    public static String cleanFromSpecialCharacters(String in) {
+        return in.replace(" ", SPECIAL_CHAR_REPLACEMENT)
+                .replace("<", SPECIAL_CHAR_REPLACEMENT)
+                .replace(">", SPECIAL_CHAR_REPLACEMENT)
+                .replace("|", SPECIAL_CHAR_REPLACEMENT)
+                .replace("/", SPECIAL_CHAR_REPLACEMENT)
+                .replace("\\", SPECIAL_CHAR_REPLACEMENT);
     }
 
     /**

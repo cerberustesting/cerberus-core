@@ -1317,14 +1317,18 @@ $(function () {
  * Method that shows a loader inside a html element
  * @param {type} element
  */
-function showLoader(element) {
+function showLoader(element, messageToDisplay = "") {
     // Check if element is already blocked
     var uiElement = $(element);
     if (uiElement.data('blockUI.isBlocked')) {
         return;
     }
     var doc = new Doc();
-    var processing = doc.getDocLabel("page_global", "processing");
+    var processing = messageToDisplay;
+    if (messageToDisplay === "") {
+        var processing = doc.getDocLabel("page_global", "processing");
+    }
+//    console.info(processing);
     uiElement.block({message: processing});
 }
 
@@ -2236,6 +2240,23 @@ function GetURLParameter(sParam, defaultValue) {
         return defaultValue;
     }
 }
+function GetURLParameterBoolean(sParam, defaultValue) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            if (decodeURIComponent(sParameterName[1]) === "true")
+            return true;
+        }
+    }
+    if (defaultValue === undefined) {
+        return null;
+    } else {
+        return defaultValue;
+    }
+}
 
 /**
  * Get the parameter passed in the url Example : url?param=value
@@ -2607,6 +2628,9 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
         unit = "min";
     } else {
         return Math.round(dur) + " " + unit;
+    }
+    if (durInSec > 432000000) {
+        return "unknown";
     }
     if (dur >= 60) {
         dur = dur / 60;

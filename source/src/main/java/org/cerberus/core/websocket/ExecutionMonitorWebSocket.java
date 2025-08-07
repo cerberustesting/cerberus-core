@@ -40,6 +40,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
 
     private static final Logger LOG = LogManager.getLogger(ExecutionMonitorWebSocket.class);
 
+    static long PERIOD_MIN = 5000;
     /**
      * All open WebSocket sessions, grouped by executions
      */
@@ -69,7 +70,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
             }
             registeredSessions.add(session.getId());
             queueStatuss = registeredSessions;
-            send(true);
+            send(false);
         } finally {
             mainLock.unlock();
         }
@@ -97,7 +98,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
 
     }
 
-    public void send(boolean forcePush) {
+    public void send(boolean newEvents) {
 
         // Get registered sessions
         Collection<WebSocketSession> registeredSessions = new ArrayList<>();
@@ -110,14 +111,25 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
         } finally {
             mainLock.unlock();
         }
-
+        if (newEvents) {
+            executionMonitor.setNeedPush(true);
+        }
         // Send the given TestCaseExecution to all registered sessions
         LOG.debug("Trying to send execution monitor to sessions");
         for (WebSocketSession registeredSession : registeredSessions) {
             try {
-                if (executionMonitor != null) {
-                    registeredSession.sendMessage(new TextMessage(executionMonitor.toJson(true).toString()));
-                    LOG.debug("Execution monitor sent to session " + registeredSession.getId());
+                if ((executionMonitor.isNeedPush()) && (executionMonitor != null)) {
+                    long nbMsSinceLastPush = new Date().getTime() - executionMonitor.getLastWebsocketPush();
+                    if ((nbMsSinceLastPush > PERIOD_MIN)) {
+                        executionMonitor.setLastWebsocketPush(new Date().getTime());
+                        registeredSession.sendMessage(new TextMessage(executionMonitor.toJson(true).toString()));
+                        LOG.debug("Execution monitor sent to session " + registeredSession.getId());
+                        executionMonitor.setNeedPush(false);
+                    } else {
+                        LOG.debug("Execution monitor not sent to session " + registeredSession.getId() + " because last push is too recent : " + nbMsSinceLastPush + " ms");
+                    }
+                } else {
+                    LOG.debug("Execution monitor not sent to session " + registeredSession.getId() + " because nothing to push");
                 }
             } catch (Exception e) {
                 LOG.warn("Unable to send execution monitor to session " + registeredSession.getId() + " due to " + e.getMessage() + " --> Closing it.");
@@ -125,9 +137,9 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
         }
 
         // Finally set the last push date to the given TestCaseExecution
-        if (executionMonitor != null) {
-            executionMonitor.setLastWebsocketPush(new Date().getTime());
-        }
+//        if (executionMonitor != null) {
+//            executionMonitor.setLastWebsocketPush(new Date().getTime());
+//        }
     }
 
 }

@@ -956,6 +956,16 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(execution);
             }
 
+            /**
+             * Monitor Screen management, At the end of the execution, we save a
+             * light version of the execution and prepare it for sending it to
+             * monitoring screen.
+             */
+            if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
+                executionMonitor.addNewExecutionToMonitor(execution.toLight());
+                executionMonitorWebSocket.send(true);
+            }
+
             // Write Execution log to file and make it available as a file on execution.
             execution.addFileList(recorderService.recordExeLog(execution));
 
@@ -1013,11 +1023,6 @@ public class ExecutionRunService implements IExecutionRunService {
         if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
             testCaseExecutionWebSocket.send(execution, true);
             testCaseExecutionWebSocket.end(execution);
-        }
-
-        if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            executionMonitor.addNewExecutionToMonitor(execution.toLight());
-            executionMonitorWebSocket.send(true);
         }
 
         return execution;

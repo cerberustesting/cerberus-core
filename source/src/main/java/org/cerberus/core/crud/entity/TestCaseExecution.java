@@ -678,6 +678,9 @@ public class TestCaseExecution {
                 .controlMessage(this.getControlMessage())
                 .start(this.getStart())
                 .end(this.getEnd())
+                .isUsefull(this.isUseful())
+                .isMuted(this.isTestCaseIsMuted())
+                .isFalseNegative(this.isFalseNegative())
                 .build();
 
         if (this.getTagObj() != null) {

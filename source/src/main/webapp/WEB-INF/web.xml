@@ -580,6 +580,7 @@
             <url-pattern>/Homepage.jsp</url-pattern>
             <url-pattern>/ImpactAnalysis.jsp</url-pattern>
             <url-pattern>/RobotList.jsp</url-pattern>
+            <url-pattern>/ReportingMonitor.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

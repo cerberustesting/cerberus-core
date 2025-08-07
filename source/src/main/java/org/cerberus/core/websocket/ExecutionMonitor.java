@@ -21,6 +21,7 @@ package org.cerberus.core.websocket;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.util.StringUtil;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,23 +39,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExecutionMonitor {
 
-    static private String SEPARATOR = "-";
+    private static final String SEPARATOR = "-";
+    private static final int MAXEXECUTIONEXELIST = 10;
     // Websocket data content
-    private HashMap<String, List<TestCaseExecutionLight>> executionHashMap;
-    private HashMap<String, JSONObject> testcaseMap;
-    private HashMap<String, JSONObject> countryEnvRobotMap;
+    private HashMap<String, List<Long>> executionBoxHashMap;
+    private HashMap<Long, TestCaseExecutionLight> executionHashMap;
 
     private long lastWebsocketPush;
-
-    private long initExeLoad;
+    private boolean needPush;
 
     @PostConstruct
     public void init() {
         executionHashMap = new HashMap<>();
-        testcaseMap = new HashMap<>();
-        countryEnvRobotMap = new HashMap<>();
-        lastWebsocketPush = 0;
-        initExeLoad = 0;
+        executionBoxHashMap = new HashMap<>();
+        lastWebsocketPush = new Date().getTime();
+        needPush = false;
         LOG.info("Monitor component build.");
     }
 
@@ -62,11 +62,19 @@ public class ExecutionMonitor {
      */
     private static final Logger LOG = LogManager.getLogger(ExecutionMonitor.class);
 
-    public HashMap<String, List<TestCaseExecutionLight>> getExecutionHashMap() {
+    public HashMap<String, List<Long>> getExecutionBoxHashMap() {
+        return executionBoxHashMap;
+    }
+
+    public void setExecutionBoxHashMap(HashMap<String, List<Long>> executionBoxHashMap) {
+        this.executionBoxHashMap = executionBoxHashMap;
+    }
+
+    public HashMap<Long, TestCaseExecutionLight> getExecutionHashMap() {
         return executionHashMap;
     }
 
-    public void setExecutionHashMap(HashMap<String, List<TestCaseExecutionLight>> executionHashMap) {
+    public void setExecutionHashMap(HashMap<Long, TestCaseExecutionLight> executionHashMap) {
         this.executionHashMap = executionHashMap;
     }
 
@@ -78,91 +86,50 @@ public class ExecutionMonitor {
         this.lastWebsocketPush = lastWebsocketPush;
     }
 
-    public long getInitExeLoad() {
-        return initExeLoad;
+    public boolean isNeedPush() {
+        return needPush;
     }
 
-    public void setInitExeLoad(long initExeLoad) {
-        this.initExeLoad = initExeLoad;
+    public void setNeedPush(boolean needPush) {
+        this.needPush = needPush;
     }
 
-    public HashMap<String, JSONObject> getTestcaseMap() {
-        return testcaseMap;
-    }
-
-    public void setTestcaseMap(HashMap<String, JSONObject> testcaseMap) {
-        this.testcaseMap = testcaseMap;
-    }
-
-    public HashMap<String, JSONObject> getCountryEnvRobotMap() {
-        return countryEnvRobotMap;
-    }
-
-    public void setCountryEnvRobotMap(HashMap<String, JSONObject> countryEnvRobotMap) {
-        this.countryEnvRobotMap = countryEnvRobotMap;
+    public void updateExecutionToMonitor(long executionId, boolean isFalseNegative) {
+        executionHashMap.get(executionId).setFalseNegative(isFalseNegative);
     }
 
     public void addNewExecutionToMonitor(TestCaseExecutionLight newexecution) {
-        // Calculate agregation keys
-        String key = newexecution.getTest() + SEPARATOR + newexecution.getTestCase() + SEPARATOR + newexecution.getCountry() + SEPARATOR + newexecution.getEnvironment() + SEPARATOR + newexecution.getRobot();
-        String keyTest = newexecution.getTest() + SEPARATOR + newexecution.getTestCase();
-        String keyEnv = newexecution.getCountry() + SEPARATOR + newexecution.getEnvironment() + SEPARATOR + newexecution.getRobot();
 
-        // Maintain Key TestCase
-        JSONObject newTest;
-        if (testcaseMap.containsKey(keyTest)) {
-            newTest = testcaseMap.get(keyTest);
-            newTest.put("nb", newTest.getInt("nb") + 1);
-            testcaseMap.put(keyTest, newTest);
-        } else {
-            newTest = new JSONObject();
-            newTest.put("nb", 1);
-            newTest.put("test", newexecution.getTest());
-            newTest.put("testcase", newexecution.getTestCase());
-            newTest.put("application", newexecution.getApplication());
-            newTest.put("description", newexecution.getDescription());
-            newTest.put("system", newexecution.getSystem());
-            testcaseMap.put(keyTest, newTest);
-        }
-        // Maintain Key Env
-        JSONObject newEnv;
-        if (countryEnvRobotMap.containsKey(keyEnv)) {
-            newEnv = countryEnvRobotMap.get(keyEnv);
-            newEnv.put("nb", newTest.getInt("nb") + 1);
-            countryEnvRobotMap.put(keyEnv, newEnv);
-        } else {
-            newEnv = new JSONObject();
-            newEnv.put("nb", 1);
-            newEnv.put("env", newexecution.getEnvironment());
-            newEnv.put("envData", newexecution.getEnvironmentData());
-            newEnv.put("country", newexecution.getCountry());
-            countryEnvRobotMap.put(keyEnv, newEnv);
-        }
+        // Adding execution to main Map
+        executionHashMap.put(newexecution.getId(), newexecution);
+
+        // Calculate agregation keys
+        String key = StringUtil.cleanFromSpecialCharacters(newexecution.getTest()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getTestCase()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getCountry()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getEnvironment()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getRobot());
+        String keyTest = StringUtil.cleanFromSpecialCharacters(newexecution.getTest()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getTestCase());
+        String keyEnv = StringUtil.cleanFromSpecialCharacters(newexecution.getCountry()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getEnvironment()) + SEPARATOR
+                + StringUtil.cleanFromSpecialCharacters(newexecution.getRobot());
 
         // Maintain Execution tile
-        if (this.getExecutionHashMap().containsKey(key)) {
-            List<TestCaseExecutionLight> existingList = this.getExecutionHashMap().get(key);
-            existingList.add(newexecution);
+        if (this.getExecutionBoxHashMap().containsKey(key)) {
+            List<Long> existingList = this.getExecutionBoxHashMap().get(key);
+            existingList.add(newexecution.getId());
             // If old execution list is too big, we remove the oldest one.
-            if (existingList.size() > 10) {
+            if (existingList.size() > MAXEXECUTIONEXELIST) {
+                executionHashMap.remove(existingList.get(0));
                 existingList.remove(0);
 
-                // Remove counter from countryEnvRobotMap
-                newEnv = countryEnvRobotMap.get(keyEnv);
-                newEnv.put("nb", newTest.getInt("nb") - 1);
-                countryEnvRobotMap.put(keyEnv, newEnv);
-
-                // Remove counter from testcaseMap
-                newTest = testcaseMap.get(keyTest);
-                newTest.put("nb", newTest.getInt("nb") - 1);
-                testcaseMap.put(keyTest, newTest);
-
             }
-            this.getExecutionHashMap().put(key, existingList);
+            this.getExecutionBoxHashMap().put(key, existingList);
         } else {
-            List<TestCaseExecutionLight> newList = new ArrayList<>();
-            newList.add(newexecution);
-            this.getExecutionHashMap().put(key, newList);
+            List<Long> newList = new ArrayList<>();
+            newList.add(newexecution.getId());
+            this.getExecutionBoxHashMap().put(key, newList);
         }
     }
 
@@ -172,8 +139,11 @@ public class ExecutionMonitor {
         try {
 
             result.put("executions", executionHashMap);
-            result.put("tests", testcaseMap);
-            result.put("environments", countryEnvRobotMap);
+            result.put("executionBoxes", executionBoxHashMap);
+            JSONObject wsTiming = new JSONObject();
+            wsTiming.put("lastPush", lastWebsocketPush);
+            wsTiming.put("needPush", needPush);
+            result.put("wsTiming", wsTiming);
 
             //queueStats.queueSize
         } catch (JSONException ex) {
