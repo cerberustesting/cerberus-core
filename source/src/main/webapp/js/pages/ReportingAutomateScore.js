@@ -121,7 +121,7 @@ function aoColumnsFuncTestCase() {
             "sWidth": "70px",
             "mRender": function (data, type, obj) {
                 if (type === "display") {
-                    console.info(obj);
+//                    console.info(obj);
                     var buttons = "";
 
                     var editScript = '<a id="testCaseLink" class="btn btn-primary btn-xs marginRight5"\n\
@@ -762,15 +762,6 @@ function renderScope(campaigns, testcases, applications) {
     $("#scopeTests").text(getTextPlurial(testcases.length, " Test", " Tests"));
 }
 
-function getTextPlurial(nb, textSingle, textPlusial) {
-    if (nb > 1) {
-        return "" + nb + textPlusial;
-    } else if (nb === 1) {
-        return "" + nb + textSingle;
-    } else {
-        return "";
-    }
-}
 function getColorFromScore(score) {
     switch (score) {
         case "A":

@@ -56,7 +56,7 @@
                             <div class="">
 
                                 <div class="row">
-                                    <div class='col-md-3'>
+                                    <div class='col-md-3 col-sm-4'>
                                         <div class="form-group">
                                             <label for="systemSelect">System</label>
                                             <select multiple="multiple" class="form-control" id="systemSelect"></select>
@@ -68,23 +68,23 @@
                                                                                 <select multiple="multiple" class="form-control" id="campaignSelect"></select>
                                                                             </div>
                                                                         </div>-->
-                                    <div class='col-md-3'>
+                                    <div class='col-md-3 col-sm-4'>
                                         <div class="form-group" style="display: block">
                                             <label for="envSelect">Environment</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="envSelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-md-2'>
+                                    <div class='col-md-2 col-sm-4'>
                                         <div class="form-group" style="display: block">
                                             <label for="countrySelect">Country</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
                                         </div>
                                     </div>
-                                    <div class="form-group form-group-xs col-md-2">
+                                    <div class="form-group form-group-xs col-md-2 col-xs-6">
                                         <label for="displayMuted">Display Muted</label>
                                         <input class="form-control input-xs" id="displayMuted" name="displayMuted" type="checkbox" value="1">
                                     </div>                                    
-                                    <div class="form-group form-group-xs col-md-2">
+                                    <div class="form-group form-group-xs col-md-2 col-xs-6">
                                         <label for="displayRetry">Display Retries</label>
                                         <input class="form-control input-xs" id="displayRetry" name="displayRetry" type="checkbox" value="1">
                                     </div>                                    
@@ -92,9 +92,9 @@
 
                                 <div class="row">
 
-                                    <div class='col-md-8'>
+                                    <div class='col-md-8  col-sm-12'>
                                         <div class="form-group" style="display: block">
-                                            <label for="systemSelect">Layout Mode</label>
+                                            <label for="systemSelect">Select columns to display</label>
                                             <div class="btn-group btn-toggle marginTop5" id="layoutMode"> 
                                                 <button class="btn btn-system btn-xs btn-default " onclick="toggleCol(this,'system');">System</button>
                                                 <button class="btn btn-application btn-xs btn-default" onclick="toggleCol(this,'application');">Application</button>
@@ -107,11 +107,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class='col-md-3'>
+                                    <div class='col-md-2  col-xs-6'>
                                         <label for="maxPreviousExe">Previous Executions displayed</label>
                                         <input type="integer" class="form-control" id="maxPreviousExe"/>
                                     </div>
-                                    <div class='col-md-3'>
+                                    <div class='col-md-2  col-xs-6'>
                                         <label for="displayHorizonMin">Horizon display in min</label>
                                         <input type="integer" class="form-control" id="displayHorizonMin"/>
                                     </div>

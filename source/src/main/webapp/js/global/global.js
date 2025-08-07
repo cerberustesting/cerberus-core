@@ -2248,7 +2248,7 @@ function GetURLParameterBoolean(sParam, defaultValue) {
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] === sParam) {
             if (decodeURIComponent(sParameterName[1]) === "true")
-            return true;
+                return true;
         }
     }
     if (defaultValue === undefined) {
@@ -2663,6 +2663,16 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
     } else {
         return cnt1 + " " + unit;
 }
+}
+
+function getTextPlurial(nb, textSingle, textPlusial) {
+    if (nb > 1) {
+        return "" + nb + textPlusial;
+    } else if (nb === 1) {
+        return "" + nb + textSingle;
+    } else {
+        return "";
+    }
 }
 
 function getClassDuration(duration) {

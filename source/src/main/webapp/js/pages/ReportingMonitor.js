@@ -40,12 +40,12 @@ var boxTimeoutPeriod = 5000;
 var globalTimeout;
 var globalTimeoutPeriod = 2000;
 var colConfig = {
-    "system": true,
-    "application": true,
+    "system": false,
+    "application": false,
     "test": false,
     "testCase": false,
-    "country": false,
-    "environment": false,
+    "country": true,
+    "environment": true,
     "robot": false,
     "campaign": false
 };
@@ -83,9 +83,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 
         feedColConfigSelectOptions();
+
 //        $("#campaignSelect").empty();
 //        $("#campaignSelect").select2({width: "100%"});
-//        feedCampaignCombos("#campaignSelect", campaigns, environments);
+//        feedCampaignSelectOptions("#campaignSelect", campaigns, environments);
+
         $("#systemSelect").empty();
         $("#systemSelect").select2({width: "100%"});
         feedSystemSelectOptions("#systemSelect", systems);
@@ -104,10 +106,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#displayRetry").prop("checked", displayRetry);
         $("#displayMuted").prop("checked", displayMuted);
 
-//        $("#displayRetry").val(displayRetry);
-//        $("#displayMuted").val(displayMuted);
-
-
         openSocketAndBuildTable(systems, environments, countries);
 
         refreshBoxTimings();
@@ -116,24 +114,87 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
+
 function feedColConfigFromURL(paramCol) {
-
-    for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
-        console.info(Object.keys(colConfig)[i]);
-        colConfig[Object.keys(colConfig)[i]] = false;
-    }
-
-    for (var i = 0, max = paramCol.length; i < max; i++) {
-        colConfig[paramCol[i]] = true;
+    // If at least 1 column is specified from URL, we default all values to false.
+    if (paramCol.length > 0) {
+        for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
+//        console.info(Object.keys(colConfig)[i]);
+            colConfig[Object.keys(colConfig)[i]] = false;
+        }
+        for (var i = 0, max = paramCol.length; i < max; i++) {
+            colConfig[paramCol[i]] = true;
+        }
     }
     return colConfig;
 }
 
 
+function feedCampaignSelectOptions(selectElement, defaultCampaigns, environments, gp1s, gp2s, gp3s) {
+
+    var campaignList = $(selectElement);
+    campaignList.empty();
+
+    var jqxhr = $.getJSON("ReadCampaign");
+    $.when(jqxhr).then(function (data) {
+        for (var index = 0; index < data.contentTable.length; index++) {
+            campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description).val(data.contentTable[index].campaign));
+        }
+        $('#campaignSelect').val(defaultCampaigns);
+        $('#campaignSelect').trigger('change');
+
+    });
+}
+
+function feedSystemSelectOptions(selectElement, systemsLoad) {
+    var systemList = $(selectElement);
+    systemList.empty();
+
+    let user = JSON.parse(sessionStorage.getItem('user'));
+    let systems = user.system;
+    let options = $("#systemSelect").html("");
+    $.each(systems, function (index, value) {
+        option = `<option value="${value}">${value}</option>`;
+        systemList.append(option);
+    });
+    $('#systemSelect').val(systemsLoad);
+//    console.info(systemsLoad);
+}
+
+function feedEnvironmentSelectOptions(selectElement, environmentsLoad) {
+    var envList = $(selectElement);
+    envList.empty();
+
+    let envs = getInvariantArray("ENVIRONMENT", false, undefined, false);
+
+    let options = $("#envSelect").html("");
+    $.each(envs, function (index, value) {
+        option = `<option value="${value}">${value}</option>`;
+        envList.append(option);
+    });
+    $('#envSelect').val(environmentsLoad);
+//    console.info(environmentsLoad);
+}
+
+function feedCountrySelectOptions(selectElement, countriesLoad) {
+    var countryList = $(selectElement);
+    countryList.empty();
+
+    let countries = getInvariantArray("COuNTRY", false, undefined, false);
+    let options = $("#countrySelect").html("");
+    $.each(countries, function (index, value) {
+        option = `<option value="${value}">${value}</option>`;
+        countryList.append(option);
+    });
+    $('#countrySelect').val(countriesLoad);
+//    console.info(countriesLoad);
+
+}
+
 function feedColConfigSelectOptions() {
 
     for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
-        console.info(Object.keys(colConfig)[i]);
+//        console.info(Object.keys(colConfig)[i]);
         if (colConfig[Object.keys(colConfig)[i]]) {
             $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).addClass('btn-primary active');
         } else {
@@ -141,6 +202,21 @@ function feedColConfigSelectOptions() {
             $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).removeClass('active');
         }
     }
+}
+
+
+function initPage() {
+    var doc = new Doc();
+    displayHeaderLabel(doc);
+    displayPageLabel(doc);
+    displayFooter(doc);
+}
+
+function displayPageLabel(doc) {
+//    $("#pageTitle").html(doc.getDocLabel("page_campaignreportovertime", "title"));
+//    $("#title").html(doc.getDocOnline("page_campaignreportovertime", "title"));
+//    $("#loadbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
+//    $("#filters").html(doc.getDocOnline("page_global", "filters"));
 }
 
 
@@ -156,21 +232,28 @@ function toggleCol(e, colClicked) {
     }
 }
 
+function goFullscreen() {
+    let myButton = document.getElementById("monitoringChart");
+    if (myButton.classList.contains("overlay")) {
+        myButton.classList.remove('overlay');
+        $(document).unbind("keydown");
+    } else {
+        myButton.classList.add('overlay');
+
+        $(document).bind("keydown", function (e) {
+            e = e || window.event;
+            var charCode = e.which || e.keyCode;
+            // ESC key will remove fullscreen mode
+            if (charCode == 27) {
+                myButton.classList.remove('overlay');
+                $(document).unbind("keydown");
+            }
+        });
+    }
+}
+
 
 function loadBoard() {
-
-//    $("#layoutMode").find('.btn').toggleClass('active');
-//            if ($(this).find('.btn').size() > 0) {
-//    console.info($("#layoutMode").find('.btn-1'));
-//    if (layoutModeNew === "testcase") {
-//        layoutMode = "testcase";
-//        $("#layoutMode").find('.btn-1').addClass('btn-primary active');
-//        $("#layoutMode").find('.btn-2').removeClass('btn-primary active');
-//    } else {
-//        layoutMode = "pileup";
-//        $("#layoutMode").find('.btn-1').removeClass('btn-primary active');
-//        $("#layoutMode").find('.btn-2').addClass('btn-primary active');
-//    }
 
     let systems = [];
     let environments = [];
@@ -239,150 +322,7 @@ function loadBoard() {
 
 }
 
-function goFullscreen() {
-    let myButton = document.getElementById("monitoringChart");
-    if (myButton.classList.contains("overlay")) {
-        myButton.classList.remove('overlay');
-        $(document).unbind("keydown");
-    } else {
-        myButton.classList.add('overlay');
-
-        $(document).bind("keydown", function (e) {
-            e = e || window.event;
-            var charCode = e.which || e.keyCode;
-            // ESC key will remove fullscreen mode
-            if (charCode == 27) {
-                myButton.classList.remove('overlay');
-                $(document).unbind("keydown");
-            }
-        });
-    }
-}
-
-
-/***
- * Feed the TestCase select with all the testcase from test defined.
- * @param {String} selectElement - id of select to refresh.
- * @param {String} defaultCampaigns - value of default campaign.
- * @param {String} environments - list of selected environments.
- * @param {String} gp1s - list of selected gp1s.
- * @param {String} gp2s - list of selected gp2s.
- * @param {String} gp3s - list of selected gp3s.
- * @returns {null}
- */
-function feedCampaignCombos(selectElement, defaultCampaigns, environments, gp1s, gp2s, gp3s) {
-
-    var campaignList = $(selectElement);
-    campaignList.empty();
-
-    var jqxhr = $.getJSON("ReadCampaign");
-    $.when(jqxhr).then(function (data) {
-        for (var index = 0; index < data.contentTable.length; index++) {
-            campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description).val(data.contentTable[index].campaign));
-        }
-        $('#campaignSelect').val(defaultCampaigns);
-        $('#campaignSelect').trigger('change');
-
-    });
-}
-
-function feedSystemSelectOptions(selectElement, systemsLoad) {
-    var systemList = $(selectElement);
-    systemList.empty();
-
-    let user = JSON.parse(sessionStorage.getItem('user'));
-    let systems = user.system;
-    let options = $("#systemSelect").html("");
-    $.each(systems, function (index, value) {
-        option = `<option value="${value}">${value}</option>`;
-        systemList.append(option);
-    });
-    $('#systemSelect').val(systemsLoad);
-//    console.info(systemsLoad);
-
-//    $('#systemSelect').html(options);
-//    $("#systemSelect").multiselect('rebuild');
-}
-
-function feedEnvironmentSelectOptions(selectElement, environmentsLoad) {
-    var envList = $(selectElement);
-    envList.empty();
-
-    let envs = getInvariantArray("ENVIRONMENT", false, undefined, false);
-//    let user = JSON.parse(sessionStorage.getItem('user'));
-//    let envs = user.system;
-
-    let options = $("#envSelect").html("");
-    $.each(envs, function (index, value) {
-        option = `<option value="${value}">${value}</option>`;
-        envList.append(option);
-    });
-    $('#envSelect').val(environmentsLoad);
-//    console.info(environmentsLoad);
-
-}
-
-function feedCountrySelectOptions(selectElement, countriesLoad) {
-    var countryList = $(selectElement);
-    countryList.empty();
-
-    let countries = getInvariantArray("COuNTRY", false, undefined, false);
-    let options = $("#countrySelect").html("");
-    $.each(countries, function (index, value) {
-        option = `<option value="${value}">${value}</option>`;
-        countryList.append(option);
-    });
-    $('#countrySelect').val(countriesLoad);
-//    console.info(countriesLoad);
-
-}
-
-function loadEnvironmentCombo(data) {
-
-    var select = $("#envSelect");
-    select.multiselect('destroy');
-    var array = data.distinct.environments;
-    $("#envSelect option").remove();
-    for (var i = 0; i < array.length; i++) {
-        let n = array[i].name;
-        if (isEmpty(n)) {
-            n = "[Empty]";
-        }
-        $("#envSelect").append($('<option></option>').text(n).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#envSelect option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("envSelect"));
-}
-
-function initPage() {
-    var doc = new Doc();
-    displayHeaderLabel(doc);
-    displayPageLabel(doc);
-    displayFooter(doc);
-}
-
-function displayPageLabel(doc) {
-//    $("#pageTitle").html(doc.getDocLabel("page_campaignreportovertime", "title"));
-//    $("#title").html(doc.getDocOnline("page_campaignreportovertime", "title"));
-//    $("#loadbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
-//    $("#filters").html(doc.getDocOnline("page_global", "filters"));
-}
-
-/*
- * Loading functions
- */
-
 function openSocketAndBuildTable(systems, environments, countries) {
-//    console.info(layoutMode);
-
-//    console.info(socket);
-//    if (socket) {
-//        socket.close();
-//    }
 
     sockets = [];
     var parser = document.createElement('a');
@@ -406,7 +346,6 @@ function openSocketAndBuildTable(systems, environments, countries) {
     socket.onmessage = function (e) {
         var data = JSON.parse(e.data);
         hideLoader("#monitoringChart");
-//        console.info("received data from socket");
         console.info("ws onmessage");
         let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
         console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
@@ -432,94 +371,25 @@ function openSocketAndBuildTable(systems, environments, countries) {
     sockets.push(socket);
 }
 
-function refreshGlobalTimings() {
-//    console.info("refresh Global Last Push");
-    document.querySelectorAll('.global-counter').forEach((item, index) => {
-        let lastPush = item.getAttribute("data-lastpush");
-//        console.info(lastPush);
-        let sinceLast = new Date().getTime() - (lastPush);
-        item.innerHTML = "Time since last data received from server : " + getHumanReadableDuration(sinceLast / 1000, 2);
-    });
-    // Loop on refresh the Global timing
-    globalTimeout = setTimeout(() => {
-        refreshGlobalTimings();
-    }, globalTimeoutPeriod);
-}
-
-function refreshBoxTimings() {
-//    console.info("refresh All Execution Boxes");
-    document.querySelectorAll('.exe-counter').forEach((item, index) => {
-        let lastPush = item.getAttribute("data-exestart");
-//        console.info(lastPush);
-        let sinceLast = new Date().getTime() - (lastPush);
-        item.innerHTML = getHumanReadableDuration(sinceLast / 1000, 1);
-    });
-
-    // monitor-box
-    document.querySelectorAll('.monitor-box').forEach((item, index) => {
-        let lastPush = item.getAttribute("data-exestart");
-//        console.info(lastPush);
-        let sinceLast = new Date().getTime() - (lastPush);
-        // Stop Blinking after 30 sec
-        if ((sinceLast > 30000) && (item.classList.contains("new"))) {
-            console.info("remove blinking " + sinceLast + " " + item.classList);
-//            console.info($("#" + item.id));
-            $("#" + item.id).removeClass("blinking new");
-        }
-        // Hide Box after 
-        if (sinceLast > (displayHorizonMin * 60000)) {
-//            console.info("hide " + sinceLast + " " + item.id);
-//            console.info($("#" + item.id));
-            $("#" + item.id).hide();
-        }
-    });
-
-//    let exeOldMin = (now - exedate) / 60000;
-
-
-    // Loop on refresh all tiles
-    boxTimeout = setTimeout(() => {
-        refreshBoxTimings();
-    }, boxTimeoutPeriod);
-
-}
-
-function containsInArray(value, array) {
-    for (var item in array) {
-//        console.info(array[item]);
-        if (array[item] === value) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-function getColumFromBox(exe, config) {
-//    console.info(exe);
-//    console.info(config);
-    let column = {};
-    column.value = "-";
-    for (var i = 0, max = (Object.keys(config).length - 1); i < max; i++) {
-//        console.info(i + " " + Object.keys(config)[i]);
-        let tmpCol = Object.keys(config)[i];
-        if (config[tmpCol]) {
-//            console.info(tmpCol);
-//            console.info(exe[tmpCol]);
-            if (exe[tmpCol] !== undefined) {
-                column[tmpCol] = exe[tmpCol].replace(" ", "-");
-                column.value += exe[tmpCol].replace(" ", "-") + "-";
-            }
-        }
-    }
-    return column;
-}
-
-
 function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 
     let startProcessing = new Date();
     let monTable = $("#tableMonitor");
+
+
+
+    // Before we empty the table, we Save here the previous execution id values of each tile into an object in order to identify the ones that changed since last refresh
+    var indexPreviousValues = {};
+    document.querySelectorAll('.monitor-box').forEach((item, index) => {
+        exeId = item.getAttribute("data-exeid");
+        id = item.getAttribute("id");
+        indexPreviousValues[id] = exeId;
+
+    });
+//    console.info("INDEX of previous executions");
+//    console.info(indexPreviousValues);
+    monTable.empty();
+
 //    console.info(dataFromWs);
     if (dataFromWs === null || dataFromWs === undefined || dataFromWs.executionBoxes === undefined || (Object.keys(dataFromWs.executionBoxes).length === 0)) {
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
@@ -534,7 +404,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
     $("#MonitorHeader").html("Time since last data received from server : " + getHumanReadableDuration(nbMsSinceLastPushReceived / 1000, 2));
 
 
-    // Clean here all executions according to filters
+    // Clean here all executions according to filters. data is built from dataFromWs and filters.
     let data = {};
     let agregatedStatus = {};
     let agregatedStatusTotal = 0;
@@ -597,19 +467,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 
 
 
-    // Save previous execution id values of each tile into an object in order to identify the ones that changed since last refresh
-    let indexPreviousValues = {};
-    document.querySelectorAll('.monitor-box').forEach((item, index) => {
-        exeId = item.getAttribute("data-exeid");
-        id = item.getAttribute("id");
-        indexPreviousValues[id] = exeId;
-
-    });
-//    console.info("INDEX");
-//    console.info(indexValues);
-
-    monTable.empty();
-
+    // if following all filters, no more executions are to display, we report the no execution message.
     if (Object.keys(data.executionBoxes).length === 0) {
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
 
@@ -617,53 +475,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
         return;
     }
 
-//    console.info(rows);
-//    console.info(columns);
-//    if (layoutMode === undefined) {
-//        layoutMode = "piledup";
-//    } // testcase or piledup
-
-//    console.info(layoutMode);
-
-//    if (layoutMode === "testcase") {
-//        for (var j = 0, maxr = (rows.length + 1); j < maxr; j++) {
-//            var row = $("<tr></tr>");
-//
-//            if (j === 0) {
-//
-//                var cel = $("<td></td>");
-//                row.append(cel);
-//                for (var i = 0, maxc = (columns.length); i < maxc; i++) {
-////                console.info(i + columns[i]);
-//
-//                    var cel = $("<td style='text-align: center'></td>");
-//                    cel.append(columns[i]);
-//                    row.append(cel);
-//                }
-//                monTable.append(row);
-//
-//            } else {
-//
-//                var cel = $("<td style='text-align: center;vertical-align: middle'></td>");
-//                cel.append(rows[j - 1]);
-//                row.append(cel);
-//
-//
-//                for (var i = 0, maxc = (columns.length); i < maxc; i++) {
-////                console.info(i + columns[i]);
-//
-//                    var cel = $("<td></td>");
-////                console.info(rows[j - 1] + SEPARATOR + columns[i]);
-//                    cel.append(renderCel(rows[j - 1] + SEPARATOR + columns[i], data.executionBoxes[rows[j - 1] + SEPARATOR + columns[i]], indexPreviousValues));
-//                    row.append(cel);
-//                }
-//                monTable.append(row);
-//            }
-//        }
-//    } else { //pileup
-
-
-    // 1st row
+    // 1st row of the table.
     var row = $("<tr></tr>");
 //        var cel = $("<td></td>");
 //        row.append(cel);
@@ -677,33 +489,19 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
     }
     monTable.append(row);
 
-    // 2nd row where all execution tiles will be added.
+    // 2nd row where all execution tiles will be added piled up. cel will get the column id so that later we can add all tiles to them.
     var row = $("<tr></tr>");
-//        var cel = $("<td></td>");
-//        row.append(cel);
     for (var i = 0, maxc = (Object.keys(columns).length); i < maxc; i++) {
         let col = Object.keys(columns);
 //        console.info(i);
 //        console.info(col[i]);
         let cel = $("<td style='text-align: center'></td>").attr("id", col[i]);
-//        cel.append(columns[col[i]].obj.value);
         row.append(cel);
     }
     monTable.append(row);
 
-    // 2nd row
-    // 
-    // 2nd row - 1st column
-//    row = $("<tr></tr>");
-//        var cel = $("<td style='text-align: center;vertical-align: middle'></td>");
-//        for (var j = 1, maxr = (rows.length + 1); j < maxr; j++) {
-//            cel.append(rows[j - 1]);
-//            cel.append("<br>");
-//        }
-//        row.append(cel);
 
-    // 2nd row - all other columns
-
+    // Adding all boxes to previously generated td
     for (var j = 0, maxr = (boxesArray.length); j < maxr; j++) {
         curExe = data.executions[data.executionBoxes[boxesArray[j]][data.executionBoxes[boxesArray[j]].length - 1]];
 //        console.info(curExe);
@@ -713,24 +511,6 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
                 , data.executionBoxes[boxesArray[j]]
                 , data.executions, indexPreviousValues));
     }
-
-
-//    for (var i = 0, maxc = (Object.keys(data.executionBoxes).length); i < maxc; i++) {
-////                console.info(i + columns[i]);
-//        let tmpColumn = getColumFromBox(curExe, colConfig);
-//        console.info(tmpColumn);
-//
-////        var cel = $("<td></td>");
-////                console.info(rows[j - 1] + SEPARATOR + columns[i]);
-////        for (var j = 1, maxr = (columns[i].nb + 1); j < maxr; j++) {
-//////                cel.append(renderCel(rows[j - 1] + SEPARATOR + columns[i], data.executionBoxes[rows[j - 1] + SEPARATOR + columns[i]], data.executions, indexPreviousValues));
-////            cel.append(j);
-////            row.append(cel);
-////        }
-////        monTable.append(row);
-//    }
-//    }
-
 
     // Build here global progress bar.
     let statusArray = Object.keys(agregatedStatus);
@@ -754,6 +534,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
     $(".tooltip").remove();
     showTitleWhenTextOverflow();
 
+    // Log and report to console the time it spent to refresh the full table. That time should be lower than the ws load periode refresh.
     let endProcessing = new Date();
     let processingDurationMs = endProcessing - startProcessing;
     console.info("time to process : " + processingDurationMs + " ms");
@@ -761,13 +542,94 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 }
 
 
+function refreshGlobalTimings() {
+//    console.info("refresh Global Last Push");
+    document.querySelectorAll('.global-counter').forEach((item, index) => {
+        let lastPush = item.getAttribute("data-lastpush");
+//        console.info(lastPush);
+        let sinceLast = new Date().getTime() - (lastPush);
+        item.innerHTML = "Time since last data received from server : " + getHumanReadableDuration(sinceLast / 1000, 2);
+    });
+    // Loop on refresh the Global timing
+    globalTimeout = setTimeout(() => {
+        refreshGlobalTimings();
+    }, globalTimeoutPeriod);
+}
+
+function refreshBoxTimings() {
+//    console.info("refresh All Execution Boxes");
+    document.querySelectorAll('.exe-counter').forEach((item, index) => {
+        let lastPush = item.getAttribute("data-exestart");
+//        console.info(lastPush);
+        let sinceLast = new Date().getTime() - (lastPush);
+        item.innerHTML = getHumanReadableDuration(sinceLast / 1000, 1);
+    });
+
+    // monitor-box
+    document.querySelectorAll('.monitor-box').forEach((item, index) => {
+        let lastPush = item.getAttribute("data-exestart");
+//        console.info(lastPush);
+        let sinceLast = new Date().getTime() - (lastPush);
+        // Stop Blinking after 30 sec
+        if ((sinceLast > 30000) && (item.classList.contains("new"))) {
+            console.info("remove blinking " + sinceLast + " " + item.classList);
+//            console.info($("#" + item.id));
+            $("#" + item.id).removeClass("blinking new");
+        }
+        // Hide Box after 
+        if (sinceLast > (displayHorizonMin * 60000)) {
+//            console.info("hide " + sinceLast + " " + item.id);
+//            console.info($("#" + item.id));
+            $("#" + item.id).hide();
+        }
+    });
+
+//    let exeOldMin = (now - exedate) / 60000;
+
+
+    // Loop on refresh all tiles
+    boxTimeout = setTimeout(() => {
+        refreshBoxTimings();
+    }, boxTimeoutPeriod);
+
+}
+
+
+function containsInArray(value, array) {
+    for (var item in array) {
+//        console.info(array[item]);
+        if (array[item] === value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getColumFromBox(exe, config) {
+//    console.info(exe);
+//    console.info(config);
+    let column = {};
+    column.value = "-";
+    for (var i = 0, max = (Object.keys(config).length - 1); i < max; i++) {
+//        console.info(i + " " + Object.keys(config)[i]);
+        let tmpCol = Object.keys(config)[i];
+        if (config[tmpCol]) {
+//            console.info(tmpCol);
+//            console.info(exe[tmpCol]);
+            if (exe[tmpCol] !== undefined) {
+                column[tmpCol] = exe[tmpCol].replace(" ", "-");
+                column.value += exe[tmpCol].replace(" ", "-") + "-";
+            }
+        }
+    }
+    return column;
+}
 
 function renderCel(id, content, contentExe, indexPreviousValues) {
 //    console.info(id);
 
     if (content === undefined) {
         return "";
-//        return $("<div id='cel-" + id + "' style='margin-bottom: 2px'></div>");
     }
 //    console.info(content);
 
@@ -775,7 +637,6 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
 //    console.info(curExe);
 
     let status = curExe.controlStatus;
-//    let fa = "fa fa-bug";   fa fa-check
 
     let fonta = "fa fa-exclamation";
     if (status === "OK") {
@@ -797,27 +658,23 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
 
     let exes = [];
     if (content.length - 1 >= 1) {
-//        for (var i = content.length - 2, min = 0; i >= min; i--) {
-//            exes.push(content[i]);
-//        }
         for (var i = content.length - 2, min = 0; i >= min; i--) {
             exes.push(content[i]);
         }
     }
-
 //    console.info(exes);
 
 
 
     let tooltipcontain = getTooltip(curExe);
-//    let tooltipcontain = "";
-//    let previousCellExeId = $("#" + id).attr("data-exeid");
 //    console.info($("#" + id));
     let previousCellExeId = indexPreviousValues[id];
     let classChange = "";
     if ((previousCellExeId !== undefined) && (previousCellExeId != curExe.id)) {
         console.info("CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + curExe.id);
         classChange = "new blinking";
+//    } else {
+//        console.info("NO CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + curExe.id);
     }
 //    console.info(curExe.id + " " + previousCellExeId);
 
@@ -846,7 +703,6 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
     return cel;
 }
 
-
 function getFinalStatus(status, isFalseNegative) {
     // Final status could be OK if exe is false negative.
 //    console.info(status + " " + isFalseNegative);
@@ -856,7 +712,6 @@ function getFinalStatus(status, isFalseNegative) {
         return status;
     }
 }
-
 
 function getTooltip(data) {
     var htmlRes;
@@ -886,18 +741,6 @@ function getTooltip(data) {
     htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage + '</div>';
 
     return htmlRes;
-}
-
-
-
-function getTextPlurial(nb, textSingle, textPlusial) {
-    if (nb > 1) {
-        return "" + nb + textPlusial;
-    } else if (nb === 1) {
-        return "" + nb + textSingle;
-    } else {
-        return "";
-    }
 }
 
 
