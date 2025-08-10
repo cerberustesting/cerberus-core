@@ -295,9 +295,10 @@ public interface ITagService {
      * 2/ The calculation of main KPI on the campaign <br>
      *
      * @param tag
+     * @return 
      * @throws org.cerberus.core.exception.CerberusException
      */
-    void manageCampaignEndOfExecution(String tag) throws CerberusException;
+    Tag manageCampaignEndOfExecution(String tag) throws CerberusException;
 
     /**
      * At the beginning of an execution, <br>

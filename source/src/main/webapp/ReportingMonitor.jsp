@@ -56,19 +56,19 @@
                             <div class="">
 
                                 <div class="row">
-                                    <div class='col-md-3 col-sm-4'>
+                                    <div class='col-md-2 col-sm-4'>
                                         <div class="form-group">
                                             <label for="systemSelect">System</label>
                                             <select multiple="multiple" class="form-control" id="systemSelect"></select>
                                         </div>
                                     </div>
-                                    <!--                                    <div class='col-md-5'>
-                                                                            <div class="form-group">
-                                                                                <label for="campaignSelect">Campaign</label>
-                                                                                <select multiple="multiple" class="form-control" id="campaignSelect"></select>
-                                                                            </div>
-                                                                        </div>-->
-                                    <div class='col-md-3 col-sm-4'>
+                                    <div class='col-md-2 col-sm-4'>
+                                        <div class="form-group">
+                                            <label for="campaignSelect">Campaign</label>
+                                            <select multiple="multiple" class="form-control" id="campaignSelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-md-2 col-sm-4'>
                                         <div class="form-group" style="display: block">
                                             <label for="envSelect">Environment</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="envSelect"></select>
@@ -80,11 +80,11 @@
                                             <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
                                         </div>
                                     </div>
-                                    <div class="form-group form-group-xs col-md-2 col-xs-6">
+                                    <div class="form-group form-group-xs col-md-2 col-sm-4 col-xs-6">
                                         <label for="displayMuted">Display Muted</label>
                                         <input class="form-control input-xs" id="displayMuted" name="displayMuted" type="checkbox" value="1">
                                     </div>                                    
-                                    <div class="form-group form-group-xs col-md-2 col-xs-6">
+                                    <div class="form-group form-group-xs col-md-2 col-sm-4 col-xs-6">
                                         <label for="displayRetry">Display Retries</label>
                                         <input class="form-control input-xs" id="displayRetry" name="displayRetry" type="checkbox" value="1">
                                     </div>                                    
@@ -96,14 +96,15 @@
                                         <div class="form-group" style="display: block">
                                             <label for="systemSelect">Select columns to display</label>
                                             <div class="btn-group btn-toggle marginTop5" id="layoutMode"> 
-                                                <button class="btn btn-system btn-xs btn-default " onclick="toggleCol(this,'system');">System</button>
-                                                <button class="btn btn-application btn-xs btn-default" onclick="toggleCol(this,'application');">Application</button>
-                                                <button class="btn btn-test btn-xs btn-xs btn-default" onclick="toggleCol(this,'test');">Test Folder</button>
-                                                <button class="btn btn-testCase btn-xs btn-xs btn-default" onclick="toggleCol(this,'testCase');">Testcase ID</button>
-                                                <button class="btn btn-country btn-xs btn-xs btn-default" onclick="toggleCol(this,'country');">Country</button>
-                                                <button class="btn btn-environment btn-xs btn-xs btn-default" onclick="toggleCol(this,'environment');">Environment</button>
-                                                <button class="btn btn-robot btn-xs btn-xs btn-default" onclick="toggleCol(this,'robot');">Robot</button>
-                                                <button class="btn btn-campaign btn-xs btn-xs btn-default" onclick="toggleCol(this,'campaign');">Campaign</button>
+                                                <button class="btn btn-col btn-system btn-xs btn-default " onclick="toggleCol(this, 'system');">System</button>
+                                                <button class="btn btn-col btn-application btn-xs btn-default" onclick="toggleCol(this, 'application');">Application</button>
+                                                <button class="btn btn-col btn-test btn-xs btn-xs btn-default" onclick="toggleCol(this, 'test');">Test Folder</button>
+                                                <button class="btn btn-col btn-testCase btn-xs btn-xs btn-default" onclick="toggleCol(this, 'testCase');">Testcase ID</button>
+                                                <button class="btn btn-col btn-country btn-xs btn-xs btn-default" onclick="toggleCol(this, 'country');">Country</button>
+                                                <button class="btn btn-col btn-environment btn-xs btn-xs btn-default" onclick="toggleCol(this, 'environment');">Environment</button>
+                                                <button class="btn btn-col btn-robot btn-xs btn-xs btn-default" onclick="toggleCol(this, 'robot');">Robot</button>
+                                                <button class="btn btn-col btn-campaign btn-xs btn-xs btn-default" onclick="toggleCol(this, 'campaign');">Campaign</button>
+                                                <button class="btn btn-auto btn-xs btn-xs btn-default" style="margin-left:15px;font-weight:bold" onclick="toggleColAutomode(this);">Auto Mode</button>
                                             </div>
                                         </div>
                                     </div>
@@ -170,7 +171,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div id="progressMonitor"  class="row">
                                 <div class="col-lg-12">
 
                                     <div class="progress marginTop20" id="statusProgress" style="height:15px" >

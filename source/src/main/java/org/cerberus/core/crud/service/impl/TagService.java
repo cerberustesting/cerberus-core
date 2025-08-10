@@ -197,7 +197,7 @@ public class TagService implements ITagService {
             JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign(), executions);
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
             mytag.setCiScoreMax(jsonResponse.getInt("CI_finalResultMax"));
-            
+
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
 
             if (jsonResponse.getString("result").equalsIgnoreCase("PE")) {
@@ -441,11 +441,11 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public void manageCampaignEndOfExecution(String tag) throws CerberusException {
-
+    public Tag manageCampaignEndOfExecution(String tag) throws CerberusException {
+        Tag currentTag = null;
         try {
             if (!StringUtil.isEmptyOrNull(tag)) {
-                Tag currentTag = this.convert(this.readByKey(tag));
+                currentTag = this.convert(this.readByKey(tag));
                 if ((currentTag != null)) {
                     if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
                         AnswerList answerListQueue = new AnswerList<>();
@@ -465,7 +465,7 @@ public class TagService implements ITagService {
         } catch (Exception e) {
             LOG.error(e, e);
         }
-
+        return currentTag;
     }
 
     @Override

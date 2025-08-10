@@ -70,7 +70,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
             }
             registeredSessions.add(session.getId());
             queueStatuss = registeredSessions;
-            send(false);
+            send(true);
         } finally {
             mainLock.unlock();
         }
@@ -84,7 +84,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
         mainLock.lock();
         try {
             sessions.remove(session.getId());
-            Set<String> registeredSessions = queueStatuss;
+            Set<String> registeredSessions = queueStatuss; 
             if (registeredSessions != null) {
                 registeredSessions.remove(session.getId());
             }

@@ -945,7 +945,10 @@ public class ExecutionRunService implements IExecutionRunService {
              * 1/ The update of the EndExeQueue of the tag <br>
              * 2/ We notify the Distribution List with execution report status
              */
-            tagService.manageCampaignEndOfExecution(execution.getTag());
+            Tag exeTag = tagService.manageCampaignEndOfExecution(execution.getTag());
+            if (execution.getTagObj() == null) {
+                execution.setTagObj(exeTag);
+            }
 
             /*
              * Dependency management, At the end of the execution, we RELEASE

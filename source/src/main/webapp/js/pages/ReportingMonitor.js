@@ -23,7 +23,6 @@
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 
 var maxPreviousExe = 2;
-var layoutMode = "piledup";
 var displayHorizonMin = 120;
 var displayRetry = false;
 var displayMuted = false;
@@ -39,6 +38,10 @@ var boxTimeout;
 var boxTimeoutPeriod = 5000;
 var globalTimeout;
 var globalTimeoutPeriod = 2000;
+var reopenWSTimeout;
+var reopenWSTimeoutPeriod = 5000;
+
+// Column selection on monitoring table
 var colConfig = {
     "system": false,
     "application": false,
@@ -49,6 +52,8 @@ var colConfig = {
     "robot": false,
     "campaign": false
 };
+var autoCol = false;
+
 
 var socket;
 
@@ -70,11 +75,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var countries = GetURLParameters("countries");
         var campaigns = GetURLParameters("campaigns");
         var col = GetURLParameters("col");
-        layoutMode = GetURLParameter("layout", layoutMode);
         displayHorizonMin = GetURLParameter("displayHorizonMin", displayHorizonMin);
         maxPreviousExe = GetURLParameter("maxPreviousExe", maxPreviousExe);
         displayRetry = GetURLParameterBoolean("displayRetry", displayRetry);
         displayMuted = GetURLParameterBoolean("displayMuted", displayMuted);
+        autoCol = GetURLParameterBoolean("autoCol", autoCol);
         if (GetURLParameterBoolean("fullscreen", false)) {
             goFullscreen();
         }
@@ -84,9 +89,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         feedColConfigSelectOptions();
 
-//        $("#campaignSelect").empty();
-//        $("#campaignSelect").select2({width: "100%"});
-//        feedCampaignSelectOptions("#campaignSelect", campaigns, environments);
+        $("#campaignSelect").empty();
+        $("#campaignSelect").select2({width: "100%"});
+        feedCampaignSelectOptions("#campaignSelect", campaigns);
 
         $("#systemSelect").empty();
         $("#systemSelect").select2({width: "100%"});
@@ -110,6 +115,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         refreshBoxTimings();
         refreshGlobalTimings();
+        reOpenWSTimings();
 
     });
 });
@@ -130,7 +136,7 @@ function feedColConfigFromURL(paramCol) {
 }
 
 
-function feedCampaignSelectOptions(selectElement, defaultCampaigns, environments, gp1s, gp2s, gp3s) {
+function feedCampaignSelectOptions(selectElement, defaultCampaigns) {
 
     var campaignList = $(selectElement);
     campaignList.empty();
@@ -202,6 +208,14 @@ function feedColConfigSelectOptions() {
             $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).removeClass('active');
         }
     }
+
+    if (autoCol) {
+        $("#layoutMode").find('.btn-auto').addClass('btn-primary active');
+    } else {
+        $("#layoutMode").find('.btn-auto').removeClass('btn-primary');
+        $("#layoutMode").find('.btn-auto').removeClass('active');
+    }
+
 }
 
 
@@ -229,6 +243,26 @@ function toggleCol(e, colClicked) {
     } else {
         $("#layoutMode").find('.btn-' + colClicked).addClass('btn-primary active');
         colConfig[colClicked] = true;
+    }
+}
+
+function toggleColAutomode(e) {
+//    console.info(e);
+//    console.info(colConfig);
+    if (e.classList.contains("btn-primary")) {
+        $("#layoutMode").find('.btn-auto').removeClass('btn-primary');
+        $("#layoutMode").find('.btn-auto').removeClass('active');
+        autoCol = false;
+        for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
+            $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).removeAttr("disabled");
+        }
+    } else {
+        $("#layoutMode").find('.btn-auto').addClass('btn-primary active');
+        autoCol = true;
+        for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
+//            console.info(Object.keys(colConfig)[i]);
+            $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).attr("disabled", true);
+        }
     }
 }
 
@@ -283,6 +317,14 @@ function loadBoard() {
         }
     }
 
+    let campaignsQ = "";
+    if ($("#campaignSelect").val() !== null) {
+        for (var i = 0; i < $("#campaignSelect").val().length; i++) {
+            countriesQ = countriesQ + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
+            countries.push($("#campaignSelect").val()[i]);
+        }
+    }
+
     maxPreviousExe = $("#maxPreviousExe").val();
     displayHorizonMin = $("#displayHorizonMin").val();
 
@@ -302,15 +344,14 @@ function loadBoard() {
     colConfig.campaign = ($(".btn-campaign").attr("class").split('active').length > 1);
     var qSCol = "";
     for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
-        console.info(Object.keys(colConfig)[i]);
+//        console.info(Object.keys(colConfig)[i]);
         if (colConfig[Object.keys(colConfig)[i]]) {
             qSCol += "&col=" + Object.keys(colConfig)[i];
         }
     }
 
-
-    let qS = "fullscreen=false&layout=" + layoutMode + "&maxPreviousExe=" + maxPreviousExe + "&displayHorizonMin=" + displayHorizonMin
-            + "&displayRetry=" + displayRetry + "&displayMuted=" + displayMuted + qSCol
+    let qS = "fullscreen=false&maxPreviousExe=" + maxPreviousExe + "&displayHorizonMin=" + displayHorizonMin
+            + "&autoCol=" + autoCol + "&displayRetry=" + displayRetry + "&displayMuted=" + displayMuted + qSCol
             + systemQ + environmentsQ + countriesQ;
 
     InsertURLInHistory("./ReportingMonitor.jsp?" + qS);
@@ -338,14 +379,16 @@ function openSocketAndBuildTable(systems, environments, countries) {
     socket = new WebSocket(new_uri);
 
     socket.onopen = function (e) {
-        hideLoader("#monitoringChart");
+        hideLoader("#tableMonitor");
+        hideLoader("#progressMonitor");
         console.info("ws onopen");
         wsOpen = true;
     }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
 
     socket.onmessage = function (e) {
         var data = JSON.parse(e.data);
-        hideLoader("#monitoringChart");
+        hideLoader("#tableMonitor");
+        hideLoader("#progressMonitor");
         console.info("ws onmessage");
         let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
         console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
@@ -357,18 +400,43 @@ function openSocketAndBuildTable(systems, environments, countries) {
 
     socket.onclose = function (e) {
         console.info("ws onclose");
-        showLoader("#monitoringChart", "Connection closed from server please refresh page.");
+        showLoader("#tableMonitor", "Connection closed from server please refresh page.");
+        showLoader("#progressMonitor", "Connection closed from server please refresh page.");
         wsOpen = false;
     }; //on est informé lors de la fermeture de la connexion vers le serveur
 
     socket.onerror = function (e) {
         console.info("ws onerror");
-        showLoader("#monitoringChart", "Connection error on server please refresh page.");
+        showLoader("#tableMonitor", "Connection error on server please refresh page.");
+        showLoader("#progressMonitor", "Connection error on server please refresh page.");
         wsOpen = false;
     }; //on traite les cas d'erreur*/
 
     // Remain in memory
     sockets.push(socket);
+}
+
+
+function getColumnsFromConfigAndBoxes(data, localColConfig) {
+    // Calculate here the list of columns to display
+    let boxesArray = Object.keys(data.executionBoxes);
+    let columns = {};
+    for (var j = 0, maxr = (boxesArray.length); j < maxr; j++) {
+        let curExe = data.executions[data.executionBoxes[boxesArray[j]][data.executionBoxes[boxesArray[j]].length - 1]];
+//        console.info(curExe);
+        let tmpColumn = getColumFromBox(curExe, localColConfig);
+        if (columns[tmpColumn.value] === undefined) {
+            columns[tmpColumn.value] = {};
+            columns[tmpColumn.value].nb = 1;
+            columns[tmpColumn.value].obj = tmpColumn;
+            columns[tmpColumn.value].label = getColumnLabel(tmpColumn);
+        } else {
+            columns[tmpColumn.value].nb += 1;
+        }
+    }
+//    console.info("Columns : " + Object.keys(columns).length);
+//    console.info(columns);
+    return columns;
 }
 
 function refreshMonitorTable(dataFromWs, systems, environments, countries) {
@@ -382,8 +450,9 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
     var indexPreviousValues = {};
     document.querySelectorAll('.monitor-box').forEach((item, index) => {
         exeId = item.getAttribute("data-exeid");
+        fn = item.getAttribute("data-fn");
         id = item.getAttribute("id");
-        indexPreviousValues[id] = exeId;
+        indexPreviousValues[id] = exeId + fn;
 
     });
 //    console.info("INDEX of previous executions");
@@ -393,8 +462,8 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 //    console.info(dataFromWs);
     if (dataFromWs === null || dataFromWs === undefined || dataFromWs.executionBoxes === undefined || (Object.keys(dataFromWs.executionBoxes).length === 0)) {
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
-
         monTable.append(divMess);
+        $("#statusProgress").empty();
         return;
     }
 
@@ -448,32 +517,71 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 //    console.info(agregatedStatus);
 
 
-    // Calculate here the list of columnes to display
-    let boxesArray = Object.keys(data.executionBoxes);
-    let columns = {};
-    for (var j = 0, maxr = (boxesArray.length); j < maxr; j++) {
-        let curExe = data.executions[data.executionBoxes[boxesArray[j]][data.executionBoxes[boxesArray[j]].length - 1]];
-//        console.info(curExe);
-        let tmpColumn = getColumFromBox(curExe, colConfig);
-        if (columns[tmpColumn.value] === undefined) {
-            columns[tmpColumn.value] = {};
-            columns[tmpColumn.value].nb = 1;
-            columns[tmpColumn.value].obj = tmpColumn;
+    // Max avalable  width to display all cloumns
+    let maxNbColumns = document.getElementById("progressMonitor").offsetWidth / 120;
+
+    // If automode, we guess here the best display combination.
+    if (autoCol) {
+        console.info("Starting automated column calculation");
+        let sizecol = 0;
+        for (var i = 0, max = 256; i < max; i++) {
+
+//            console.info(i.toString(2).padStart(8, '0'));
+            let binaryValue = i.toString(2).padStart(8, '0');
+
+            let newColConfig = {
+                "system": binaryValue.substr(0, 1) === "1" ? true : false,
+                "application": binaryValue.substr(1, 1) === "1" ? true : false,
+                "test": binaryValue.substr(2, 1) === "1" ? true : false,
+                "testCase": binaryValue.substr(3, 1) === "1" ? true : false,
+                "country": binaryValue.substr(4, 1) === "1" ? true : false,
+                "environment": binaryValue.substr(5, 1) === "1" ? true : false,
+                "robot": binaryValue.substr(6, 1) === "1" ? true : false,
+                "campaign": binaryValue.substr(7, 1) === "1" ? true : false
+            };
+
+//        console.info(newColConfig);
+            tempColumns = getColumnsFromConfigAndBoxes(data, newColConfig);
+            if ((Object.keys(tempColumns).length > sizecol) && (Object.keys(tempColumns).length < maxNbColumns)) {
+                sizecol = Object.keys(tempColumns).length;
+                columns = tempColumns;
+                console.info("Found Better");
+                console.info(columns);
+                colConfig = newColConfig;
+            }
+        }
+        feedColConfigSelectOptions();
+    } else {
+        columns = getColumnsFromConfigAndBoxes(data, colConfig);
+//    console.info(columns);
+        if (Object.keys(columns).length > maxNbColumns) {
+            console.info("Warning : Too many columns " + Object.keys(columns).length + " columns to display - Available space : " + document.getElementById("progressMonitor").offsetWidth);
         } else {
-            columns[tmpColumn.value].nb += 1;
+            console.info("All columns can be displayed !! " + Object.keys(columns).length);
         }
     }
-//    console.info(columns);
 
+
+    // Sort here the list of columns
+    const sortedColumns = Object.keys(columns).sort().reduce(
+            (obj, key) => {
+        obj[key] = columns[key];
+        return obj;
+    },
+            {}
+    );
+//    console.info(sortedColumns);
+    columns = sortedColumns;
 
 
     // if following all filters, no more executions are to display, we report the no execution message.
     if (Object.keys(data.executionBoxes).length === 0) {
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
-
         monTable.append(divMess);
+        $("#statusProgress").empty();
         return;
     }
+
 
     // 1st row of the table.
     var row = $("<tr></tr>");
@@ -483,8 +591,8 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
         let col = Object.keys(columns);
 //        console.info(i);
 //        console.info(col[i]);
-        let cel = $("<td style='text-align: center'></td>").attr("id", "H" + col[i]);
-        cel.append(columns[col[i]].obj.value);
+        let cel = $("<td style='text-align: center;max-width : 120px'></td>").attr("id", "H" + col[i]);
+        cel.append(columns[col[i]].label);
         row.append(cel);
     }
     monTable.append(row);
@@ -499,6 +607,28 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
         row.append(cel);
     }
     monTable.append(row);
+
+    let boxesArray = Object.keys(data.executionBoxes);
+
+    // Sort boxes by testcase, country and environment.
+    sortedBoxesArray = boxesArray.sort(function (a, b) {
+//        console.info("sorting : " + a + " " + b);
+        let a1 = data.executions[data.executionBoxes[a][data.executionBoxes[a].length - 1]];
+        let b1 = data.executions[data.executionBoxes[b][data.executionBoxes[b].length - 1]];
+//        console.info("          " + a1 + " " + b1);
+        if (a1.testCase.localeCompare(b1.testCase) === 0) {
+            if (a1.country.localeCompare(b1.country) === 0) {
+                if (a1.environment.localeCompare(b1.environment) === 0) {
+                } else {
+                    return a1.environment.localeCompare(b1.environment);
+                }
+            } else {
+                return a1.country.localeCompare(b1.country);
+            }
+        } else {
+            return a1.testCase.localeCompare(b1.testCase);
+        }
+    });
 
 
     // Adding all boxes to previously generated td
@@ -594,6 +724,19 @@ function refreshBoxTimings() {
 
 }
 
+function reOpenWSTimings() {
+
+    if (!wsOpen) {
+        loadBoard();
+    }
+
+    // Loop on refresh reopen ws
+    reopenWSTimeout = setTimeout(() => {
+        reOpenWSTimings();
+    }, reopenWSTimeoutPeriod);
+
+}
+
 
 function containsInArray(value, array) {
     for (var item in array) {
@@ -610,7 +753,7 @@ function getColumFromBox(exe, config) {
 //    console.info(config);
     let column = {};
     column.value = "-";
-    for (var i = 0, max = (Object.keys(config).length - 1); i < max; i++) {
+    for (var i = 0, max = (Object.keys(config).length); i < max; i++) {
 //        console.info(i + " " + Object.keys(config)[i]);
         let tmpCol = Object.keys(config)[i];
         if (config[tmpCol]) {
@@ -623,6 +766,17 @@ function getColumFromBox(exe, config) {
         }
     }
     return column;
+}
+
+function getColumnLabel(column) {
+    let colresult = "";
+    for (var i = 0, max = (Object.keys(column).length); i < max; i++) {
+        if (Object.keys(column)[i] !== "value") {
+            colresult += "<b>" + Object.values(column)[i] + "</b>" + "<br>";
+        }
+    }
+    return colresult;
+
 }
 
 function renderCel(id, content, contentExe, indexPreviousValues) {
@@ -670,15 +824,17 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
 //    console.info($("#" + id));
     let previousCellExeId = indexPreviousValues[id];
     let classChange = "";
-    if ((previousCellExeId !== undefined) && (previousCellExeId != curExe.id)) {
-        console.info("CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + curExe.id);
+//    console.info(curExe);
+    let nexVal = "" + curExe.id + curExe.falseNegative;
+    if ((previousCellExeId !== undefined) && (previousCellExeId != nexVal)) {
+        console.info("CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + nexVal);
         classChange = "new blinking";
 //    } else {
-//        console.info("NO CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + curExe.id);
+//        console.info("NO CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + nexVal);
     }
 //    console.info(curExe.id + " " + previousCellExeId);
 
-    let cel = $('<div style="margin-bottom: 2px" data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="' + id + '" data-exeid="' + curExe.id + '"  data-exestart=' + exedate.getTime() + ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
+    let cel = $('<div style="margin-bottom: 2px" data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="' + id + '" data-exeid="' + curExe.id + '" data-fn="' + curExe.falseNegative + '" data-exestart=' + exedate.getTime() + ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
             .addClass(classChange + " monitor-box status-" + getFinalStatus(status, curExe.falseNegative));
     let row1 = $("<div style='margin-right:0px'></div>").addClass("row");
 
@@ -689,7 +845,19 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
     row1.append(r1c2);
 
     let row2 = $("<div style='margin-right:0px'></div>").addClass("row");
-    r2c = $('<div></div>').addClass("col-xs-1 pull-left bold").append(curExe.testCase);
+    let r2c = $('<div></div>').addClass("col-xs-1 pull-left bold");
+    let tmptxt = "";
+    if (!colConfig.testCase) {
+        tmptxt += curExe.testCase + " / ";
+    }
+    if (!colConfig.country) {
+        tmptxt += curExe.country + " / ";
+    }
+    if (!colConfig.environment) {
+        tmptxt += curExe.environment + " / ";
+    }
+    tmptxt = tmptxt.substring(0, tmptxt.length - 3);
+    r2c.append(tmptxt);
     row2.append(r2c);
     for (var i = 0, max = exes.length; ((i < max) && (i < maxPreviousExe)); i++) {
         let r2c;
