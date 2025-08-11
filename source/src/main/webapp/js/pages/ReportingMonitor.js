@@ -26,12 +26,14 @@ var maxPreviousExe = 2;
 var displayHorizonMin = 120;
 var displayRetry = false;
 var displayMuted = false;
+var fullscreen = false;
 
 // Must be the same as the one used on the back
 var SEPARATOR = "-";
 var lastReceivedPush = new Date();
 var lastReceivedData = {};
 var wsOpen = false;
+var socket;
 
 // Variables used for automatic refresh of global last refresh timing and box refresh
 var boxTimeout;
@@ -52,10 +54,7 @@ var colConfig = {
     "robot": false,
     "campaign": false
 };
-var autoCol = false;
-
-
-var socket;
+var autoCol = true;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -80,7 +79,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayRetry = GetURLParameterBoolean("displayRetry", displayRetry);
         displayMuted = GetURLParameterBoolean("displayMuted", displayMuted);
         autoCol = GetURLParameterBoolean("autoCol", autoCol);
-        if (GetURLParameterBoolean("fullscreen", false)) {
+        fullscreen = GetURLParameterBoolean("fullscreen", fullscreen);
+        if (fullscreen) {
             goFullscreen();
         }
         colConfig = feedColConfigFromURL(col);
@@ -271,8 +271,10 @@ function goFullscreen() {
     if (myButton.classList.contains("overlay")) {
         myButton.classList.remove('overlay');
         $(document).unbind("keydown");
+        fullscreen = false;
     } else {
         myButton.classList.add('overlay');
+        fullscreen = true;
 
         $(document).bind("keydown", function (e) {
             e = e || window.event;
@@ -284,6 +286,8 @@ function goFullscreen() {
             }
         });
     }
+    // Size of the screen cahnged. We refresh the loading of the table.
+    loadBoard();
 }
 
 
@@ -350,7 +354,7 @@ function loadBoard() {
         }
     }
 
-    let qS = "fullscreen=false&maxPreviousExe=" + maxPreviousExe + "&displayHorizonMin=" + displayHorizonMin
+    let qS = "fullscreen=" + fullscreen + "&maxPreviousExe=" + maxPreviousExe + "&displayHorizonMin=" + displayHorizonMin
             + "&autoCol=" + autoCol + "&displayRetry=" + displayRetry + "&displayMuted=" + displayMuted + qSCol
             + systemQ + environmentsQ + countriesQ;
 
@@ -365,55 +369,60 @@ function loadBoard() {
 
 function openSocketAndBuildTable(systems, environments, countries) {
 
-    sockets = [];
-    var parser = document.createElement('a');
-    parser.href = window.location.href;
+    if (!wsOpen) {
 
-    var protocol = "ws:";
-    if (parser.protocol === "https:") {
-        protocol = "wss:";
+        sockets = [];
+        var parser = document.createElement('a');
+        parser.href = window.location.href;
+
+        var protocol = "ws:";
+        if (parser.protocol === "https:") {
+            protocol = "wss:";
+        }
+        var path = parser.pathname.split("ReportingMonitor")[0];
+        var new_uri = protocol + parser.host + path + "api/ws/executionmonitor";
+        console.info("Open Socket to : " + new_uri);
+        socket = new WebSocket(new_uri);
+
+        socket.onopen = function (e) {
+            hideLoader("#tableMonitor");
+            hideLoader("#progressMonitor");
+            console.info("ws onopen");
+            wsOpen = true;
+        }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+
+        socket.onmessage = function (e) {
+            var data = JSON.parse(e.data);
+            hideLoader("#tableMonitor");
+            hideLoader("#progressMonitor");
+            console.info("ws onmessage");
+            let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
+            console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
+            lastReceivedPush = new Date();
+            lastReceivedData = data;
+            console.info(data);
+            refreshMonitorTable(data, systems, environments, countries);
+        }; //on récupère les messages provenant du serveur websocket
+
+        socket.onclose = function (e) {
+            console.info("ws onclose");
+            showLoader("#tableMonitor", "Connection closed from server please refresh page.");
+            showLoader("#progressMonitor", "Connection closed from server please refresh page.");
+            wsOpen = false;
+        }; //on est informé lors de la fermeture de la connexion vers le serveur
+
+        socket.onerror = function (e) {
+            console.info("ws onerror");
+            showLoader("#tableMonitor", "Connection error on server please refresh page.");
+            showLoader("#progressMonitor", "Connection error on server please refresh page.");
+            wsOpen = false;
+        }; //on traite les cas d'erreur*/
+
+        // Remain in memory
+        sockets.push(socket);
+
     }
-    var path = parser.pathname.split("ReportingMonitor")[0];
-    var new_uri = protocol + parser.host + path + "api/ws/executionmonitor";
-    console.info("Open Socket to : " + new_uri);
-    socket = new WebSocket(new_uri);
 
-    socket.onopen = function (e) {
-        hideLoader("#tableMonitor");
-        hideLoader("#progressMonitor");
-        console.info("ws onopen");
-        wsOpen = true;
-    }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-
-    socket.onmessage = function (e) {
-        var data = JSON.parse(e.data);
-        hideLoader("#tableMonitor");
-        hideLoader("#progressMonitor");
-        console.info("ws onmessage");
-        let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
-        console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
-        lastReceivedPush = new Date();
-        lastReceivedData = data;
-        console.info(data);
-        refreshMonitorTable(data, systems, environments, countries);
-    }; //on récupère les messages provenant du serveur websocket
-
-    socket.onclose = function (e) {
-        console.info("ws onclose");
-        showLoader("#tableMonitor", "Connection closed from server please refresh page.");
-        showLoader("#progressMonitor", "Connection closed from server please refresh page.");
-        wsOpen = false;
-    }; //on est informé lors de la fermeture de la connexion vers le serveur
-
-    socket.onerror = function (e) {
-        console.info("ws onerror");
-        showLoader("#tableMonitor", "Connection error on server please refresh page.");
-        showLoader("#progressMonitor", "Connection error on server please refresh page.");
-        wsOpen = false;
-    }; //on traite les cas d'erreur*/
-
-    // Remain in memory
-    sockets.push(socket);
 }
 
 
@@ -437,6 +446,26 @@ function getColumnsFromConfigAndBoxes(data, localColConfig) {
 //    console.info("Columns : " + Object.keys(columns).length);
 //    console.info(columns);
     return columns;
+}
+
+function getBoxesWidth(nbPrevExe, tmpColConfig) {
+//    console.info(tmpColConfig);
+//    console.info(nbPrevExe);
+    let t1 = tmpColConfig.testCase === false ? 50 : 0;
+    let t2 = tmpColConfig.country === false ? 70 : 0;
+    let t3 = tmpColConfig.environment === false ? 50 : 0;
+//    console.info((25 * nbPrevExe) + t1 + t2 + t3);
+    return Math.max(120, (25 * nbPrevExe) + t1 + t2 + t3);
+}
+
+function getNbMaxFromArray(tempColumns) {
+    let tmpMaxLines = 0;
+    for (var item in Object.values(tempColumns)) {
+//        console.info(Object.values(tempColumns)[item]);
+        if (Object.values(tempColumns)[item].nb > tmpMaxLines)
+            tmpMaxLines = Object.values(tempColumns)[item].nb;
+    }
+    return tmpMaxLines;
 }
 
 function refreshMonitorTable(dataFromWs, systems, environments, countries) {
@@ -518,11 +547,13 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 
 
     // Max avalable  width to display all cloumns
-    let maxNbColumns = document.getElementById("progressMonitor").offsetWidth / 120;
+    let maxAvailablePixel = document.getElementById("progressMonitor").offsetWidth - 40;
+    let maxNbColumns = maxAvailablePixel / 120;
+    let maxNbBoxLines = 0;
 
     // If automode, we guess here the best display combination.
     if (autoCol) {
-        console.info("Starting automated column calculation");
+        console.info("Starting automated column calculation with available size : " + maxAvailablePixel);
         let sizecol = 0;
         for (var i = 0, max = 256; i < max; i++) {
 
@@ -539,15 +570,37 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
                 "robot": binaryValue.substr(6, 1) === "1" ? true : false,
                 "campaign": binaryValue.substr(7, 1) === "1" ? true : false
             };
-
+            maxNbColumns = maxAvailablePixel / getBoxesWidth(maxPreviousExe, newColConfig);
+//            console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
 //        console.info(newColConfig);
             tempColumns = getColumnsFromConfigAndBoxes(data, newColConfig);
-            if ((Object.keys(tempColumns).length > sizecol) && (Object.keys(tempColumns).length < maxNbColumns)) {
-                sizecol = Object.keys(tempColumns).length;
-                columns = tempColumns;
-                console.info("Found Better");
-                console.info(columns);
-                colConfig = newColConfig;
+            if ((Object.keys(tempColumns).length < maxNbColumns)) {
+
+                if ((Object.keys(tempColumns).length > sizecol)) {
+//                maxNbBoxLines = tempColumns.nb;
+                    sizecol = Object.keys(tempColumns).length;
+                    columns = tempColumns;
+                    console.info("Found Better");
+                    console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+                    console.info(columns);
+                    colConfig = newColConfig;
+                    maxNbBoxLines = getNbMaxFromArray(tempColumns);
+                } else if ((Object.keys(tempColumns).length === sizecol)) {
+                    console.info("option has the same result does it have less max lines ?");
+                    console.info(Object.values(tempColumns));
+                    let tmpMaxLines = getNbMaxFromArray(tempColumns);
+                    if (tmpMaxLines < maxNbBoxLines) {
+                        columns = tempColumns;
+                        console.info(" Yes : Found Even Better combination with lower max nb lines : " + tmpMaxLines + " < " + maxNbBoxLines);
+                        console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+                        console.info(columns);
+                        colConfig = newColConfig;
+                        maxNbBoxLines = tmpMaxLines;
+                    } else {
+                        console.info(" No : Not Better max nb lines : " + tmpMaxLines + " >= " + maxNbBoxLines);
+
+                    }
+                }
             }
         }
         feedColConfigSelectOptions();
@@ -902,8 +955,10 @@ function getTooltip(data) {
         htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.end) + ' <span class=\'' + getClassDuration(dur) + '\'>(' + getHumanReadableDuration(dur / 1000, 2) + ')</span></div>';
     }
     if (!data.usefull || data.muted) {
-        let retryTag = !data.usefull ? "[RETRY]" : "";
-        let mutedTag = data.muted ? "[MUTED]" : "";
+        let retryTag = !data.usefull ? "<span class='glyphicon glyphicon-repeat' aria-hidden='true'></span> [RETRY]" : "";
+        if (!data.usefull && data.muted)
+            retryTag += "<br>";
+        let mutedTag = data.muted ? "<span class='glyphicon glyphicon-volume-off' aria-hidden='true'></span> [MUTED]" : "";
         htmlRes += '<div style=\'margin-top:5px;\'>' + retryTag + " " + mutedTag + '</div>';
     }
     htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage + '</div>';
