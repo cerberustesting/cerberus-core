@@ -81,7 +81,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         autoCol = GetURLParameterBoolean("autoCol", autoCol);
         fullscreen = GetURLParameterBoolean("fullscreen", fullscreen);
         if (fullscreen) {
-            goFullscreen();
+            goFullscreen(false);
         }
         colConfig = feedColConfigFromURL(col);
         console.info(colConfig);
@@ -115,7 +115,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         refreshBoxTimings();
         refreshGlobalTimings();
-        reOpenWSTimings();
+        // Trigger automatic reopen of ws only after 2 sec delay
+        wait(2000, function reOpenWSTimings() {
+            if (!wsOpen) {
+                loadBoard();
+            }
+            // Loop on refresh reopen ws
+            reopenWSTimeout = setTimeout(() => {
+                reOpenWSTimings();
+            }, reopenWSTimeoutPeriod);
+        }
+        );
 
     });
 });
@@ -211,6 +221,10 @@ function feedColConfigSelectOptions() {
 
     if (autoCol) {
         $("#layoutMode").find('.btn-auto').addClass('btn-primary active');
+        for (var i = 0, max = Object.keys(colConfig).length; i < max; i++) {
+//            console.info(Object.keys(colConfig)[i]);
+            $("#layoutMode").find('.btn-' + Object.keys(colConfig)[i]).attr("disabled", true);
+        }
     } else {
         $("#layoutMode").find('.btn-auto').removeClass('btn-primary');
         $("#layoutMode").find('.btn-auto').removeClass('active');
@@ -266,7 +280,7 @@ function toggleColAutomode(e) {
     }
 }
 
-function goFullscreen() {
+function goFullscreen(withRefrash = true) {
     let myButton = document.getElementById("monitoringChart");
     if (myButton.classList.contains("overlay")) {
         myButton.classList.remove('overlay');
@@ -287,7 +301,8 @@ function goFullscreen() {
         });
     }
     // Size of the screen cahnged. We refresh the loading of the table.
-    loadBoard();
+    if (withRefrash)
+        loadBoard();
 }
 
 
@@ -455,7 +470,7 @@ function getBoxesWidth(nbPrevExe, tmpColConfig) {
     let t2 = tmpColConfig.country === false ? 70 : 0;
     let t3 = tmpColConfig.environment === false ? 50 : 0;
 //    console.info((25 * nbPrevExe) + t1 + t2 + t3);
-    return Math.max(120, (25 * nbPrevExe) + t1 + t2 + t3);
+    return Math.max(100, (25 * nbPrevExe) + t1 + t2 + t3);
 }
 
 function getNbMaxFromArray(tempColumns) {
@@ -580,14 +595,14 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
 //                maxNbBoxLines = tempColumns.nb;
                     sizecol = Object.keys(tempColumns).length;
                     columns = tempColumns;
-                    console.info("Found Better");
+                    console.info("Found Better with " + Object.keys(columns).length + " column(s)");
                     console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
                     console.info(columns);
                     colConfig = newColConfig;
                     maxNbBoxLines = getNbMaxFromArray(tempColumns);
                 } else if ((Object.keys(tempColumns).length === sizecol)) {
-                    console.info("option has the same result does it have less max lines ?");
-                    console.info(Object.values(tempColumns));
+//                    console.info("option has the same result does it have less max lines ?");
+//                    console.info(Object.values(tempColumns));
                     let tmpMaxLines = getNbMaxFromArray(tempColumns);
                     if (tmpMaxLines < maxNbBoxLines) {
                         columns = tempColumns;
@@ -596,9 +611,8 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
                         console.info(columns);
                         colConfig = newColConfig;
                         maxNbBoxLines = tmpMaxLines;
-                    } else {
-                        console.info(" No : Not Better max nb lines : " + tmpMaxLines + " >= " + maxNbBoxLines);
-
+//                    } else {
+//                        console.info(" No : Not Better max nb lines : " + tmpMaxLines + " >= " + maxNbBoxLines);
                     }
                 }
             }
@@ -777,18 +791,6 @@ function refreshBoxTimings() {
 
 }
 
-function reOpenWSTimings() {
-
-    if (!wsOpen) {
-        loadBoard();
-    }
-
-    // Loop on refresh reopen ws
-    reopenWSTimeout = setTimeout(() => {
-        reOpenWSTimings();
-    }, reopenWSTimeoutPeriod);
-
-}
 
 
 function containsInArray(value, array) {

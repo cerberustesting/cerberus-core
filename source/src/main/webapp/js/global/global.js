@@ -3414,3 +3414,8 @@ function refreshPopoverDocumentation(containerid) {
     $('#' + containerid + ' [data-toggle="popover"]').popover(popDefinition);
 }
 
+function wait(milliseconds, foo, arg){
+    setTimeout(function () {
+        foo(arg); // will be executed after the specified time
+    }, milliseconds);
+}
