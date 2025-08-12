@@ -33,6 +33,7 @@ var SEPARATOR = "-";
 var lastReceivedPush = new Date();
 var lastReceivedData = {};
 var wsOpen = false;
+var wsStartOpenning = false;
 var socket;
 
 // Variables used for automatic refresh of global last refresh timing and box refresh
@@ -74,8 +75,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var countries = GetURLParameters("countries");
         var campaigns = GetURLParameters("campaigns");
         var col = GetURLParameters("col");
-        displayHorizonMin = GetURLParameter("displayHorizonMin", displayHorizonMin);
-        maxPreviousExe = GetURLParameter("maxPreviousExe", maxPreviousExe);
+        displayHorizonMin = GetURLParameterInteger("displayHorizonMin", displayHorizonMin);
+        maxPreviousExe = GetURLParameterInteger("maxPreviousExe", maxPreviousExe);
         displayRetry = GetURLParameterBoolean("displayRetry", displayRetry);
         displayMuted = GetURLParameterBoolean("displayMuted", displayMuted);
         autoCol = GetURLParameterBoolean("autoCol", autoCol);
@@ -84,7 +85,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             goFullscreen(false);
         }
         colConfig = feedColConfigFromURL(col);
-        console.info(colConfig);
+//        console.info(colConfig);
 
 
         feedColConfigSelectOptions();
@@ -117,7 +118,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         refreshGlobalTimings();
         // Trigger automatic reopen of ws only after 2 sec delay
         wait(2000, function reOpenWSTimings() {
-            if (!wsOpen) {
+            if ((!wsOpen) & (!wsStartOpenning)) {
                 loadBoard();
             }
             // Loop on refresh reopen ws
@@ -311,6 +312,7 @@ function loadBoard() {
     let systems = [];
     let environments = [];
     let countries = [];
+    let campaigns = [];
 
     let systemQ = "";
     if ($("#systemSelect").val() !== null) {
@@ -339,8 +341,8 @@ function loadBoard() {
     let campaignsQ = "";
     if ($("#campaignSelect").val() !== null) {
         for (var i = 0; i < $("#campaignSelect").val().length; i++) {
-            countriesQ = countriesQ + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
-            countries.push($("#campaignSelect").val()[i]);
+            campaignsQ = campaignsQ + "&campaigns=" + encodeURI($("#campaignSelect").val()[i]);
+            campaigns.push($("#campaignSelect").val()[i]);
         }
     }
 
@@ -371,13 +373,13 @@ function loadBoard() {
 
     let qS = "fullscreen=" + fullscreen + "&maxPreviousExe=" + maxPreviousExe + "&displayHorizonMin=" + displayHorizonMin
             + "&autoCol=" + autoCol + "&displayRetry=" + displayRetry + "&displayMuted=" + displayMuted + qSCol
-            + systemQ + environmentsQ + countriesQ;
+            + systemQ + environmentsQ + countriesQ + campaignsQ;
 
     InsertURLInHistory("./ReportingMonitor.jsp?" + qS);
     if (wsOpen) {
-        refreshMonitorTable(lastReceivedData, systems, environments, countries);
-    } else {
-        openSocketAndBuildTable(systems, environments, countries);
+        refreshMonitorTable(lastReceivedData, systems, environments, countries, campaigns);
+    } else if (!wsStartOpenning) {
+        openSocketAndBuildTable(systems, environments, countries, campaigns);
     }
 
 }
@@ -397,6 +399,7 @@ function openSocketAndBuildTable(systems, environments, countries) {
         var path = parser.pathname.split("ReportingMonitor")[0];
         var new_uri = protocol + parser.host + path + "api/ws/executionmonitor";
         console.info("Open Socket to : " + new_uri);
+        wsStartOpenning = true;
         socket = new WebSocket(new_uri);
 
         socket.onopen = function (e) {
@@ -404,6 +407,7 @@ function openSocketAndBuildTable(systems, environments, countries) {
             hideLoader("#progressMonitor");
             console.info("ws onopen");
             wsOpen = true;
+            wsStartOpenning = false;
         }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
 
         socket.onmessage = function (e) {
@@ -424,6 +428,7 @@ function openSocketAndBuildTable(systems, environments, countries) {
             showLoader("#tableMonitor", "Connection closed from server please refresh page.");
             showLoader("#progressMonitor", "Connection closed from server please refresh page.");
             wsOpen = false;
+            wsStartOpenning = false;
         }; //on est informé lors de la fermeture de la connexion vers le serveur
 
         socket.onerror = function (e) {
@@ -431,6 +436,7 @@ function openSocketAndBuildTable(systems, environments, countries) {
             showLoader("#tableMonitor", "Connection error on server please refresh page.");
             showLoader("#progressMonitor", "Connection error on server please refresh page.");
             wsOpen = false;
+            wsStartOpenning = false;
         }; //on traite les cas d'erreur*/
 
         // Remain in memory
@@ -483,7 +489,7 @@ function getNbMaxFromArray(tempColumns) {
     return tmpMaxLines;
 }
 
-function refreshMonitorTable(dataFromWs, systems, environments, countries) {
+function refreshMonitorTable(dataFromWs, systems, environments, countries, campaigns) {
 
     let startProcessing = new Date();
     let monTable = $("#tableMonitor");
@@ -540,6 +546,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
                     && (systems.length === 0 || containsInArray(exeTmp.system, systems))
                     && (environments.length === 0 || containsInArray(exeTmp.environment, environments))
                     && (countries.length === 0 || containsInArray(exeTmp.country, countries))
+                    && (campaigns.length === 0 || containsInArray(exeTmp.campaign, campaigns))
                     ) {
                 tempArrayExe.push(exeid);
             }
@@ -620,7 +627,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries) {
         feedColConfigSelectOptions();
     } else {
         columns = getColumnsFromConfigAndBoxes(data, colConfig);
-//    console.info(columns);
+        console.info(columns);
         if (Object.keys(columns).length > maxNbColumns) {
             console.info("Warning : Too many columns " + Object.keys(columns).length + " columns to display - Available space : " + document.getElementById("progressMonitor").offsetWidth);
         } else {
@@ -827,7 +834,11 @@ function getColumnLabel(column) {
     let colresult = "";
     for (var i = 0, max = (Object.keys(column).length); i < max; i++) {
         if (Object.keys(column)[i] !== "value") {
-            colresult += "<b>" + Object.values(column)[i] + "</b>" + "<br>";
+            if (isEmpty(Object.values(column)[i])) {
+                colresult += "<i>[Empty " + Object.keys(column)[i] + "]</i>" + "<br>";
+            } else {
+                colresult += "<b>" + Object.values(column)[i] + "</b>" + "<br>";
+            }
         }
     }
     return colresult;
@@ -943,14 +954,16 @@ function getTooltip(data) {
         ctrlmessage = data.controlMessage.substring(0, 200) + '...';
     }
     htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>';
-    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Test : </span>' + data.test + SEPARATOR + data.testCase + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Test : </span>' + data.test + " " + SEPARATOR + " " + data.testCase + '</div>';
     htmlRes += '<div>' + data.description + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Environment : </span>' + data.environment + '</div>';
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>';
-    htmlRes += '<div><span class=\'bold\'>Application : </span>' + data.application + '</div>';
-    if ((data.robot !== undefined) && (data.robot !== '')) {
+    if (!isEmpty(data.robot)) {
         htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.robot + '</div>';
     }
+    htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Application : </span>' + data.application + " [" + data.system + "]" + '</div>';
+    if (!isEmpty(data.campaign))
+        htmlRes += '<div><span class=\'bold\'>Campaign : </span>' + data.campaign + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Start : </span>' + getDate(data.start) + '</div>';
     let dur = data.end - data.start;
     if (getDateShort(data.end) !== "") {

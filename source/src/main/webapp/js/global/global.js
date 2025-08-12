@@ -2240,6 +2240,25 @@ function GetURLParameter(sParam, defaultValue) {
         return defaultValue;
     }
 }
+
+function GetURLParameterInteger(sParam, defaultValue) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            if (Number.isInteger(decodeURIComponent(sParameterName[1])))
+                return decodeURIComponent(sParameterName[1]);
+        }
+    }
+    if (defaultValue === undefined) {
+        return null;
+    } else {
+        return defaultValue;
+    }
+}
+
 function GetURLParameterBoolean(sParam, defaultValue) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
@@ -2247,8 +2266,11 @@ function GetURLParameterBoolean(sParam, defaultValue) {
     for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] === sParam) {
-            if (decodeURIComponent(sParameterName[1]) === "true")
+            if (decodeURIComponent(sParameterName[1]) === "true") {
                 return true;
+            } else {
+                return false;
+            }
         }
     }
     if (defaultValue === undefined) {
@@ -3414,7 +3436,7 @@ function refreshPopoverDocumentation(containerid) {
     $('#' + containerid + ' [data-toggle="popover"]').popover(popDefinition);
 }
 
-function wait(milliseconds, foo, arg){
+function wait(milliseconds, foo, arg) {
     setTimeout(function () {
         foo(arg); // will be executed after the specified time
     }, milliseconds);
