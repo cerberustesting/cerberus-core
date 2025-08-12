@@ -112,7 +112,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#displayRetry").prop("checked", displayRetry);
         $("#displayMuted").prop("checked", displayMuted);
 
-        openSocketAndBuildTable(systems, environments, countries);
+        openSocketAndBuildTable(systems, environments, countries, campaigns);
 
         refreshBoxTimings();
         refreshGlobalTimings();
@@ -384,7 +384,7 @@ function loadBoard() {
 
 }
 
-function openSocketAndBuildTable(systems, environments, countries) {
+function openSocketAndBuildTable(systems, environments, countries, campaigns) {
 
     if (!wsOpen) {
 
@@ -420,7 +420,7 @@ function openSocketAndBuildTable(systems, environments, countries) {
             lastReceivedPush = new Date();
             lastReceivedData = data;
             console.info(data);
-            refreshMonitorTable(data, systems, environments, countries);
+            refreshMonitorTable(data, systems, environments, countries, campaigns);
         }; //on récupère les messages provenant du serveur websocket
 
         socket.onclose = function (e) {
