@@ -1320,9 +1320,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException {
 
         final StringBuilder query = new StringBuilder()
-                .append("SELECT id, `System` , Test , TestCase , Description , Application , Environment , EnvironmentData , Country , robot , Tag ")
-                .append(", `Start` , `End` , TestCaseIsMuted , FalseNegative  , IsUseful  , ControlMessage , ControlStatus  ")
-                .append("FROM testcaseexecution exe   ")
+                .append("SELECT exe.id, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
+                .append(", exe.Application, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
+                .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
+                .append("FROM testcaseexecution exe ")
+                .append("LEFT OUTER JOIN tag ON tag.tag=exe.tag ")
                 .append("WHERE start >= DATE(NOW() - INTERVAL 7 DAY) order by id desc limit 10000;");
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
@@ -1429,8 +1431,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
         String environmentData = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environmentData"), "");
         String country = ParameterParserUtil.parseStringParam(resultSet.getString("exe.country"), "");
-        String robot = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robot"), ""); // Host the Selenium IP
-        String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), ""); // Host the Selenium IP
+        String robot = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robot"), "");
+        String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), "");
+        String campaign = ParameterParserUtil.parseStringParam(resultSet.getString("tag.campaign"), "");
 
         long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
         long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
@@ -1446,7 +1449,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .system(system)
                 .test(test).testCase(testcase).description(description)
                 .application(application).environment(environment).environmentData(environmentData)
-                .country(country).robot(robot).tag(tag)
+                .country(country).robot(robot).tag(tag).campaign(campaign)
                 .start(start).end(end)
                 .isMuted(testCaseIsMuted).isUsefull(isUseful).isFalseNegative(falseNegative)
                 .controlStatus(controlStatus).controlMessage(controlMessage).build();

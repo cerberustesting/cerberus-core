@@ -576,7 +576,11 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
     // If automode, we guess here the best display combination.
     if (autoCol) {
         console.info("Starting automated column calculation with available size : " + maxAvailablePixel);
-        let sizecol = 0;
+        let nbMaxCol = 0;
+        let smallestCombination = 1000;
+        let smallestColumns = {};
+        let smallestcolConfig = {};
+        let foundOneConfig = false;
         for (var i = 0, max = 256; i < max; i++) {
 
 //            console.info(i.toString(2).padStart(8, '0'));
@@ -592,22 +596,24 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
                 "robot": binaryValue.substr(6, 1) === "1" ? true : false,
                 "campaign": binaryValue.substr(7, 1) === "1" ? true : false
             };
-            maxNbColumns = maxAvailablePixel / getBoxesWidth(maxPreviousExe, newColConfig);
+            let boxesWidth = getBoxesWidth(maxPreviousExe, newColConfig);
+            maxNbColumns = maxAvailablePixel / boxesWidth;
 //            console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
 //        console.info(newColConfig);
             tempColumns = getColumnsFromConfigAndBoxes(data, newColConfig);
             if ((Object.keys(tempColumns).length < maxNbColumns)) {
 
-                if ((Object.keys(tempColumns).length > sizecol)) {
+                if ((Object.keys(tempColumns).length > nbMaxCol)) {
 //                maxNbBoxLines = tempColumns.nb;
-                    sizecol = Object.keys(tempColumns).length;
+                    nbMaxCol = Object.keys(tempColumns).length;
                     columns = tempColumns;
+                    foundOneConfig = true;
                     console.info("Found Better with " + Object.keys(columns).length + " column(s)");
                     console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
                     console.info(columns);
                     colConfig = newColConfig;
                     maxNbBoxLines = getNbMaxFromArray(tempColumns);
-                } else if ((Object.keys(tempColumns).length === sizecol)) {
+                } else if ((Object.keys(tempColumns).length === nbMaxCol)) {
 //                    console.info("option has the same result does it have less max lines ?");
 //                    console.info(Object.values(tempColumns));
                     let tmpMaxLines = getNbMaxFromArray(tempColumns);
@@ -622,8 +628,26 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
 //                        console.info(" No : Not Better max nb lines : " + tmpMaxLines + " >= " + maxNbBoxLines);
                     }
                 }
+            } else {
+                if (smallestCombination > (Object.keys(tempColumns).length * boxesWidth)) {
+                    smallestCombination = (Object.keys(tempColumns).length * boxesWidth);
+                    smallestColumns = tempColumns;
+                    smallestcolConfig = newColConfig;
+                    console.info("Found smallest combination with " + Object.keys(tempColumns).length + " column(s)");
+                    console.info("nb col : " + Object.keys(tempColumns).length + " box width : " + boxesWidth + " total size : " + (Object.keys(tempColumns).length * boxesWidth));
+                }
+//                console.info();
+//                console.info(Object.keys(tempColumns).length * boxesWidth);
+
             }
         }
+        if (!foundOneConfig) {
+            // Algo could not find any combination that fit the available space constrain --> We pile into 1 single column.
+            console.info("No combination could fit the size screen so we take the smallest we could find : " + Object.keys(smallestColumns).length + " column(s)");
+            colConfig = smallestcolConfig;
+            columns = smallestColumns;
+        }
+
         feedColConfigSelectOptions();
     } else {
         columns = getColumnsFromConfigAndBoxes(data, colConfig);
@@ -797,7 +821,6 @@ function refreshBoxTimings() {
     }, boxTimeoutPeriod);
 
 }
-
 
 
 function containsInArray(value, array) {
