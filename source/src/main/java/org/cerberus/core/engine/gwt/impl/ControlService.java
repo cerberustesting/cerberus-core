@@ -20,9 +20,12 @@
 package org.cerberus.core.engine.gwt.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
 import java.time.Duration;
+
+import com.networknt.schema.ValidationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.*;
@@ -38,6 +41,7 @@ import org.cerberus.core.engine.gwt.IVariableService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.service.json.IJsonService;
+import org.cerberus.core.service.json.impl.JsonSchemaValidator;
 import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
@@ -50,12 +54,7 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -88,6 +87,8 @@ public class ControlService implements IControlService {
     private IVariableService variableService;
     @Autowired
     private IRobotServerService robotServerService;
+    @Autowired
+    private JsonSchemaValidator jsonSchemaValidator;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution controlExecution) {
@@ -412,6 +413,9 @@ public class ControlService implements IControlService {
                     break;
                 case TestCaseStepActionControl.CONTROL_GETPAGESOURCE:
                     res = this.getPageSource(execution, controlExecution.getTestCaseStepActionExecution(), controlExecution);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYJSONFORMAT:
+                    res = this.verifyJsonFormat(controlExecution);
                     break;
 
                 default:
@@ -2117,6 +2121,44 @@ public class ControlService implements IControlService {
         message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine());
         return message;
     }
+
+    private MessageEvent verifyJsonFormat(TestCaseStepActionControlExecution controlExecution) {
+
+        String jsonToVerify = controlExecution.getValue1();
+        String jsonSchema = controlExecution.getValue2();
+
+        LOG.info("Control: verifyJsonFormat on: {}", jsonToVerify);
+        LOG.info("Control: verifyJsonFormat format: {}", jsonSchema);
+
+        MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VERIFYJSONFORMAT);
+        message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
+        message.resolveDescription("JSONSCHEMA",jsonSchema);
+
+        try {
+            StringBuilder differences = new StringBuilder();
+            Set<ValidationMessage> errors = jsonSchemaValidator.getDifferences(jsonToVerify, jsonSchema);
+            LOG.info("Control: verifyJsonFormat differences found: {}", errors.size());
+            if (!errors.isEmpty()) {
+                    errors.forEach(e -> differences.append("- " + e.getMessage()));
+                    message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VERIFYJSONFORMAT);
+                    message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
+                    message.resolveDescription("JSONSCHEMA",jsonSchema);
+                    message.resolveDescription("DIFFERENCES",differences.toString());
+            }
+
+            List<TestCaseExecutionFile> fileList = recorderService.recordJsonFormatComparison(controlExecution, jsonToVerify, jsonSchema, differences.toString());
+            if (!fileList.isEmpty()) {
+                controlExecution.addFileList(fileList);
+            }
+
+            } catch (Exception exception) {
+                LOG.warn(exception);
+                message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                message.resolveDescription("ERROR",exception.toString());
+            }
+        return message;
+    }
+
 
     /**
      * @param exception the exception need to be parsed by Cerberus

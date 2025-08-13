@@ -134,6 +134,7 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYXMLTREESTRUCTURE = "verifyXmlTreeStructure";
     public static final String CONTROL_TAKESCREENSHOT = "takeScreenshot";
     public static final String CONTROL_GETPAGESOURCE = "getPageSource";
+    public static final String CONTROL_VERIFYJSONFORMAT = "verifyJsonFormat";
 
     @JsonIgnore
     public JSONArray getConditionOptions() {
