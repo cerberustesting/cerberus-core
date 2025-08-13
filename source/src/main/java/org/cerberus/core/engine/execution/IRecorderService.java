@@ -90,6 +90,11 @@ public interface IRecorderService {
     TestCaseExecutionFile recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
     /**
+     * @return
+     */
+    List<TestCaseExecutionFile> recordJsonFormatComparison(TestCaseStepActionControlExecution controlExecution, String jsonToVerify, String jsonSchema, String differences);
+
+    /**
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control

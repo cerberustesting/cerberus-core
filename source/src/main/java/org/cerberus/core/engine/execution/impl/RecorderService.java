@@ -628,6 +628,63 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public List<TestCaseExecutionFile> recordJsonFormatComparison(TestCaseStepActionControlExecution controlExecution, String jsonToVerify, String jsonSchema, String differences){
+        // Used for logging purposes
+        //String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        TestCaseExecution execution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+        TestCaseStepActionExecution actionExecution = controlExecution.getTestCaseStepActionExecution();
+        test = execution.getTest();
+        testCase = execution.getTestCase();
+        step = String.valueOf(actionExecution.getStepId());
+        index = String.valueOf(actionExecution.getIndex());
+        sequence = String.valueOf(actionExecution.getSequence());
+        String controlString = String.valueOf(controlExecution.getControlId());
+        long runId = execution.getId();
+        LOG.info("File to save for : {}, {}, {}, {}, {}, {}", test, testCase, step, index, sequence, controlString);
+
+        try {
+            // Store jsonToVerify.
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "jsonToVerify", "json", false);
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), jsonToVerify, execution.getSecrets());
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "jsonToVerify", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+            LOG.info("File saved : {}", recorderRequest.getFullFilename());
+
+            // Store jsonSchema.
+            recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "jsonSchema", "json", false);
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), jsonSchema, execution.getSecrets());
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "jsonSchema", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+            LOG.info("File saved : {}", recorderRequest.getFullFilename());
+
+            // Store differences.
+            recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "differences", "json", false);
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), differences, execution.getSecrets());
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "differences", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+            LOG.info("File saved : {}", recorderRequest.getFullFilename());
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
+        }
+
+        return objectFileList;
+    }
+
+    @Override
     public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, AppService service) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";

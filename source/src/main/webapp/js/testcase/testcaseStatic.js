@@ -178,7 +178,7 @@ var actionOptList = {
 
 // CONTROL
 var operatorOptList = {
-    "unknown": {"value": "unknown", "label": {"en": "---", "fr": "---"}, "control_type": ["unknown", "text_in_page", "text_not_in_page", "text_in_dialog", "take_screenshot", "get_page_source"]},
+    "unknown": {"value": "unknown", "label": {"en": "---", "fr": "---"}, "control_type": ["unknown", "text_in_page", "text_not_in_page", "text_in_dialog", "take_screenshot", "get_page_source","verify_json_format"]},
     "equals": {"value": "equals", "label": {"en": "=", "fr": "="}, "control_type": ["string_comparison", "numeric_comparison", "element", "element_text", "element_numeric", "url", "title"]},
     "different": {"value": "different", "label": {"en": "!=", "fr": "!="}, "control_type": ["string_comparison", "numeric_comparison", "element", "element_numeric", "element_text", "url", "title"]},
     "greater": {"value": "greater", "label": {"en": ">", "fr": ">"}, "control_type": ["string_comparison", "numeric_comparison", "element_numeric"]},
@@ -369,7 +369,10 @@ var convertToGui = {
         "field1": {"label": {"en": "Text to find", "fr": "Texte à rechercher"}, "picto": "images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"}},
     "takeScreenshot": {"control": "take_screenshot", "operator": "unknown",
         "field1": {"label": {"en": "Crop values in pixels (left,right,top,bottom)", "fr": "Cadrer en pixel (gauche,droite,haut,bas)"}, "picto": "images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-    "getPageSource": {"control": "get_page_source", "operator": "unknown"}
+    "getPageSource": {"control": "get_page_source", "operator": "unknown"},
+    "verifyJsonFormat": {"control": "verify_json_format", "operator": "unknown",
+        "field1": {"label": {"en": "Json Object", "fr": "Objet Json"}, "picto": "images/property-json.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},
+        "field2": {"label": {"en": "Json Schema", "fr": "Schéma Json"}, "picto": "images/property-json.png", "class": "col-lg-12 crb-autocomplete-variable"}}
 };
 
 var newControlOptList = {
@@ -385,6 +388,7 @@ var newControlOptList = {
     "text_in_page": {"value": "text_in_page", "label": {"en": "Verify Text in Page", "fr": "Vérifier que la page contient le texte"}, "application_types": ["GUI"], "unknown": "verifyTextInPage"},
     "text_not_in_page": {"value": "text_not_in_page", "label": {"en": "Verify Text not in Page", "fr": "Vérifier que la page ne contient pas le texte"}, "application_types": ["GUI"], "unknown": "verifyTextNotInPage"},
     "text_in_dialog": {"value": "text_in_dialog", "label": {"en": "Verify Text in Dialog", "fr": "Vérifier que la popup contient"}, "application_types": ["GUI"], "unknown": "verifyTextInDialog"},
+    "verify_json_format": {"value": "verify_json_format", "label": {"en": "Verify Json Format", "fr": "Valider le format Json"}, "application_types": ["GUI", "SRV", "IPA", "APK", "BAT", "FAT", "NONE"], "unknown": "verifyJsonFormat"},
     "take_screenshot": {"value": "take_screenshot", "label": {"en": "Take a Screenshot", "fr": "Prendre un Screenshot"}, "application_types": ["GUI"], "unknown": "takeScreenshot"},
     "get_page_source": {"value": "get_page_source", "label": {"en": "Record Page Source", "fr": "Enregistrer les sources de la page"}, "application_types": ["GUI"], "unknown": "getPageSource"}
 };
