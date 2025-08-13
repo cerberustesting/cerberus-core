@@ -19,8 +19,13 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestCaseExecutionDAO;
@@ -31,6 +36,7 @@ import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionData;
 import org.cerberus.core.crud.entity.TestCaseExecutionFile;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
+import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.core.crud.entity.TestCaseStepExecution;
@@ -58,14 +64,6 @@ import org.cerberus.core.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author bcivel
@@ -459,6 +457,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return new ArrayList<>(testCaseExecutionsList.values());
     }
 
+    @Override
+    public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException {
+        LOG.debug("Loading last executions to monitor...");
+        return testCaseExecutionDao.ReadLastExecutionForMonitor();
+    }
+
+    @Override
     public JSONArray getLastByCriteria(String test, String testCase, String tag, Integer numberOfExecution) throws CerberusException {
 
         Map<String, List<String>> map = new HashMap<>();

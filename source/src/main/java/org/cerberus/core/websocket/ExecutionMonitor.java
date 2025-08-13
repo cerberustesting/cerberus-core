@@ -19,18 +19,23 @@
  */
 package org.cerberus.core.websocket;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.StringUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -48,13 +53,32 @@ public class ExecutionMonitor {
     private long lastWebsocketPush;
     private boolean needPush;
 
+    @Autowired
+    ITestCaseExecutionService testCaseExecutionService;
+
+    @Autowired
+    private ExecutionMonitorWebSocket executionMonitorWebSocket;
+
     @PostConstruct
     public void init() {
-        executionHashMap = new HashMap<>();
-        executionBoxHashMap = new HashMap<>();
-        lastWebsocketPush = new Date().getTime();
-        needPush = false;
-        LOG.info("Monitor component build.");
+        try {
+            LOG.info("Monitor component build.");
+            executionHashMap = new HashMap<>();
+            executionBoxHashMap = new HashMap<>();
+            lastWebsocketPush = new Date().getTime();
+            needPush = false;
+
+            LOG.debug("Loading last executions in order to init the monitor class component from oldest to newest.");
+            List<TestCaseExecutionLight> lastExecutions = testCaseExecutionService.ReadLastExecutionForMonitor();
+            if ((lastExecutions != null) && (!lastExecutions.isEmpty())) {
+                for (int i = lastExecutions.size(); i > 0; i--) {
+                    this.addNewExecutionToMonitor(lastExecutions.get(i - 1));
+                }
+                this.setNeedPush(true);
+            }
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+        }
     }
 
     /**
@@ -154,32 +178,4 @@ public class ExecutionMonitor {
         return result;
     }
 
-//    class SortExecutions implements Comparator<JSONObject> {
-//
-//        // Used for sorting Triggers 
-//        @Override
-//        public int compare(JSONObject a, JSONObject b) {
-//
-//            if (a != null && b != null) {
-//                Date dateA;
-//                Date dateB;
-//                try {
-//                    dateA = (Date) a.get("start");
-//                    dateB = (Date) b.get("start");
-//                    if (dateA.equals(dateB)) {
-//
-//                    } else {
-//                        return (dateA.compareTo(dateB));
-//                    }
-//                } catch (JSONException ex) {
-//                    LOG.error("Exception on JSON Parse.", ex);
-//                }
-//
-//            } else {
-//                return 1;
-//            }
-//
-//            return 1;
-//        }
-//    }
 }

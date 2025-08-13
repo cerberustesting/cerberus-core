@@ -19,17 +19,18 @@
  */
 package org.cerberus.core.crud.dao;
 
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.answer.AnswerList;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.cerberus.core.crud.entity.TestCase;
+import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -307,5 +308,12 @@ public interface ITestCaseExecutionDAO {
      * @return object {@link TestCaseExecution}
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException;
 
 }

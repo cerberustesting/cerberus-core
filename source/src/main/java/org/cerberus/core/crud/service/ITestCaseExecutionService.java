@@ -19,17 +19,19 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.json.JSONArray;
 
 /**
@@ -329,6 +331,13 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException
      */
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException;
+
+    /**
+     *
+     * @return 
+     * @throws org.cerberus.core.exception.CerberusException 
+     */
+    public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException;
 
     /**
      *

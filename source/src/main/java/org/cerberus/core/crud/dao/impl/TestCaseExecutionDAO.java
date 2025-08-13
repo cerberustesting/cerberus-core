@@ -19,16 +19,29 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.cerberus.core.crud.dao.IApplicationDAO;
 import org.cerberus.core.crud.dao.ITestCaseDAO;
 import org.cerberus.core.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.core.crud.utils.RequestDbUtils;
 import org.cerberus.core.database.DatabaseSpring;
@@ -43,18 +56,8 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.security.UserSecurity;
-import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import org.springframework.stereotype.Repository;
 
 @AllArgsConstructor
 @Repository
@@ -1314,6 +1317,21 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
+    public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException {
+
+        final StringBuilder query = new StringBuilder()
+                .append("SELECT id, `System` , Test , TestCase , Description , Application , Environment , EnvironmentData , Country , robot , Tag ")
+                .append(", `Start` , `End` , TestCaseIsMuted , FalseNegative  , IsUseful  , ControlMessage , ControlStatus  ")
+                .append("FROM testcaseexecution exe   ")
+                .append("WHERE start >= DATE(NOW() - INTERVAL 7 DAY) order by id desc limit 10000;");
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                },
+                this::loadLightWithDependenciesFromResultSet
+        );
+    }
+
+    @Override
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
         long id = ParameterParserUtil.parseLongParam(resultSet.getString("exe.ID"), 0);
         String test = ParameterParserUtil.parseStringParam(resultSet.getString("exe.test"), "");
@@ -1399,4 +1417,39 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
         return testCaseExecution;
     }
+
+    private TestCaseExecutionLight loadLightWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException {
+        long id = ParameterParserUtil.parseLongParam(resultSet.getString("exe.ID"), 0);
+        String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
+        String test = ParameterParserUtil.parseStringParam(resultSet.getString("exe.test"), "");
+        String testcase = ParameterParserUtil.parseStringParam(resultSet.getString("exe.testcase"), "");
+        String description = ParameterParserUtil.parseStringParam(resultSet.getString("exe.description"), "");
+
+        String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
+        String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
+        String environmentData = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environmentData"), "");
+        String country = ParameterParserUtil.parseStringParam(resultSet.getString("exe.country"), "");
+        String robot = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robot"), ""); // Host the Selenium IP
+        String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), ""); // Host the Selenium IP
+
+        long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
+        long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
+        boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
+        boolean isUseful = resultSet.getBoolean("exe.IsUseful");
+        boolean falseNegative = resultSet.getBoolean("exe.FalseNegative");
+
+        String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
+        String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
+
+        return TestCaseExecutionLight.builder()
+                .id(id)
+                .system(system)
+                .test(test).testCase(testcase).description(description)
+                .application(application).environment(environment).environmentData(environmentData)
+                .country(country).robot(robot).tag(tag)
+                .start(start).end(end)
+                .isMuted(testCaseIsMuted).isUsefull(isUseful).isFalseNegative(falseNegative)
+                .controlStatus(controlStatus).controlMessage(controlMessage).build();
+    }
+
 }

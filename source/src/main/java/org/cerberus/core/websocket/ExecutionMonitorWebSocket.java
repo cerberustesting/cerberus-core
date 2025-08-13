@@ -84,7 +84,7 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
         mainLock.lock();
         try {
             sessions.remove(session.getId());
-            Set<String> registeredSessions = queueStatuss; 
+            Set<String> registeredSessions = queueStatuss;
             if (registeredSessions != null) {
                 registeredSessions.remove(session.getId());
             }
@@ -136,10 +136,6 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
             }
         }
 
-        // Finally set the last push date to the given TestCaseExecution
-//        if (executionMonitor != null) {
-//            executionMonitor.setLastWebsocketPush(new Date().getTime());
-//        }
     }
 
 }
