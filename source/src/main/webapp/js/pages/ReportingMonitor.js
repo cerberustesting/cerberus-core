@@ -514,6 +514,7 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
         monTable.append(divMess);
         $("#statusProgress").empty();
+        $("#MonitorHeaderCounter").html("");
         return;
     }
 
@@ -677,9 +678,11 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
         monTable.append(divMess);
         $("#statusProgress").empty();
-        return;
+         $("#MonitorHeaderCounter").html("");
+       return;
     }
 
+    $("#MonitorHeaderCounter").html("Total : " + Object.keys(data.executionBoxes).length);
 
     // 1st row of the table.
     var row = $("<tr></tr>");
@@ -846,7 +849,7 @@ function getColumFromBox(exe, config) {
 //            console.info(exe[tmpCol]);
             if (exe[tmpCol] !== undefined) {
                 column[tmpCol] = exe[tmpCol].replace(" ", "-");
-                column.value += exe[tmpCol].replace(" ", "-") + "-";
+                column.value += exe[tmpCol].replace(" ", "-").replace(".", "-").replace("/", "-").replace("\\", "-") + "-";
             }
         }
     }

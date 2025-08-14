@@ -160,8 +160,11 @@
 
                         <div class="panel-body collapse in" style="overflow-y: scroll;"  id="monitoringChart">
                             <div class="row">
-                                <div class="col-lg-6 global-counter" id="MonitorHeader">
+                                <div class="col-sm-6 global-counter" id="MonitorHeader">
                                     Last refresh = xx s
+                                </div>
+                                <div class="col-sm-3" id="MonitorHeaderCounter">
+                                    xx Total
                                 </div>
                                 <div class="btn-group pull-right">
                                     <button id="goFullscreen" class="btn btn-default btn-xs marginRight10 togglefullscreen"
