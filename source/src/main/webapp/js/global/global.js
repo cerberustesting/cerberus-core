@@ -2248,7 +2248,8 @@ function GetURLParameterInteger(sParam, defaultValue) {
     for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] === sParam) {
-            if (Number.isInteger(decodeURIComponent(sParameterName[1])))
+            let val = parseInt(decodeURIComponent(sParameterName[1]));
+            if ((val !== "NaN") && (val !== undefined))
                 return decodeURIComponent(sParameterName[1]);
         }
     }

@@ -167,6 +167,10 @@
                                     xx Total
                                 </div>
                                 <div class="btn-group pull-right">
+                                    <button id="reload" class="btn btn-default btn-xs marginRight10"
+                                            onclick="loadBoard();"><span
+                                            class="glyphicon glyphicon-refresh"></span> <label id="goFullscreen">Reload</label>
+                                    </button>
                                     <button id="goFullscreen" class="btn btn-default btn-xs marginRight10 togglefullscreen"
                                             onclick="goFullscreen();"><span
                                             class="glyphicon glyphicon-fullscreen"></span> <label id="goFullscreen">Fullscreen</label>

@@ -25,6 +25,12 @@
     cursor: pointer;
 }
 
+.monitor-box-small{
+    height:42px;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+}
+
 .monitor-sub-box{
     height:20px;
     padding-left: 2px;

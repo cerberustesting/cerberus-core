@@ -22,11 +22,24 @@
 
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 
+var wTestCase = 50;
+var wCountry = 70;
+var wEnvironment = 50;
+var wPrevExe = 25;
+var wMinmum = 100;
+var wOffsetH = 40;
+var wOffsetV = 40;
+var wBoxHeigth = 72;
+
 var maxPreviousExe = 2;
 var displayHorizonMin = 120;
 var displayRetry = false;
 var displayMuted = false;
 var fullscreen = false;
+var systems = [];
+var environments = [];
+var countries = [];
+var campaigns = [];
 
 // Must be the same as the one used on the back
 var SEPARATOR = "-";
@@ -56,6 +69,7 @@ var colConfig = {
     "campaign": false
 };
 var autoCol = true;
+var col = [];
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -70,11 +84,21 @@ $.when($.getScript("js/global/global.js")).then(function () {
         );
 
 //        var campaigns = GetURLParameters("campaigns");
-        var systems = GetURLParameters("systems");
-        var environments = GetURLParameters("environments");
-        var countries = GetURLParameters("countries");
-        var campaigns = GetURLParameters("campaigns");
-        var col = GetURLParameters("col");
+
+        wTestCase = GetURLParameterInteger("wTestCase", wTestCase);
+        wCountry = GetURLParameterInteger("wCountry", wCountry);
+        wEnvironment = GetURLParameterInteger("wEnvironment", wEnvironment);
+        wPrevExe = GetURLParameterInteger("wPrevExe", wPrevExe);
+        wMinmum = GetURLParameterInteger("wMinmum", wMinmum);
+        wOffsetH = GetURLParameterInteger("wOffsetH", wOffsetH);
+        wOffsetV = GetURLParameterInteger("wOffsetV", wOffsetV);
+        wBoxHeigth = GetURLParameterInteger("wBoxHeigth", wBoxHeigth);
+
+            systems = GetURLParameters("systems");
+        environments = GetURLParameters("environments");
+        countries = GetURLParameters("countries");
+        campaigns = GetURLParameters("campaigns");
+        col = GetURLParameters("col");
         displayHorizonMin = GetURLParameterInteger("displayHorizonMin", displayHorizonMin);
         maxPreviousExe = GetURLParameterInteger("maxPreviousExe", maxPreviousExe);
         displayRetry = GetURLParameterBoolean("displayRetry", displayRetry);
@@ -112,7 +136,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#displayRetry").prop("checked", displayRetry);
         $("#displayMuted").prop("checked", displayMuted);
 
-        openSocketAndBuildTable(systems, environments, countries, campaigns);
+        openSocketAndBuildTable();
 
         refreshBoxTimings();
         refreshGlobalTimings();
@@ -384,7 +408,7 @@ function loadBoard() {
 
 }
 
-function openSocketAndBuildTable(systems, environments, countries, campaigns) {
+function openSocketAndBuildTable() {
 
     if (!wsOpen) {
 
@@ -420,7 +444,7 @@ function openSocketAndBuildTable(systems, environments, countries, campaigns) {
             lastReceivedPush = new Date();
             lastReceivedData = data;
             console.info(data);
-            refreshMonitorTable(data, systems, environments, countries, campaigns);
+            refreshMonitorTable(data);
         }; //on récupère les messages provenant du serveur websocket
 
         socket.onclose = function (e) {
@@ -472,11 +496,11 @@ function getColumnsFromConfigAndBoxes(data, localColConfig) {
 function getBoxesWidth(nbPrevExe, tmpColConfig) {
 //    console.info(tmpColConfig);
 //    console.info(nbPrevExe);
-    let t1 = tmpColConfig.testCase === false ? 50 : 0;
-    let t2 = tmpColConfig.country === false ? 70 : 0;
-    let t3 = tmpColConfig.environment === false ? 50 : 0;
+    let t1 = tmpColConfig.testCase === false ? wTestCase : 0;
+    let t2 = tmpColConfig.country === false ? wCountry : 0;
+    let t3 = tmpColConfig.environment === false ? wEnvironment : 0;
 //    console.info((25 * nbPrevExe) + t1 + t2 + t3);
-    return Math.max(100, (25 * nbPrevExe) + t1 + t2 + t3);
+    return Math.max(wMinmum, (wPrevExe * nbPrevExe) + t1 + t2 + t3);
 }
 
 function getNbMaxFromArray(tempColumns) {
@@ -489,7 +513,7 @@ function getNbMaxFromArray(tempColumns) {
     return tmpMaxLines;
 }
 
-function refreshMonitorTable(dataFromWs, systems, environments, countries, campaigns) {
+function refreshMonitorTable(dataFromWs) {
 
     let startProcessing = new Date();
     let monTable = $("#tableMonitor");
@@ -570,23 +594,47 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
 
 
     // Max avalable  width to display all cloumns
-    let maxAvailablePixel = document.getElementById("progressMonitor").offsetWidth - 40;
-    let maxNbColumns = maxAvailablePixel / 120;
-    let maxNbBoxLines = 0;
+    let maxAvailableHPixel = document.getElementById("progressMonitor").offsetWidth - wOffsetH;
+    let maxNbColumns = maxAvailableHPixel / 120;
+
+    let maxAvailableVPixel = document.getElementById("page-layout").offsetHeight - wOffsetV;
+    let boxHeigth = wBoxHeigth;
+
+    let maxNblines = maxAvailableVPixel / boxHeigth;
+
+    let minimumBoxHeigth = false;
+
 
     // If automode, we guess here the best display combination.
     if (autoCol) {
-        console.info("Starting automated column calculation with available size : " + maxAvailablePixel);
-        let nbMaxCol = 0;
-        let smallestCombination = 1000;
-        let smallestColumns = {};
-        let smallestcolConfig = {};
-        let foundOneConfig = false;
-        for (var i = 0, max = 256; i < max; i++) {
+        console.info("Starting automated column calculation with available size : " + maxAvailableHPixel);
+        let bestH_nbMaxCol = 0;
+        let bestH_binary = "";
+        let bestH_columns = {};
+        let bestH_config = {};
+        let bestH_maxNbBoxLines = 0;
+        let bestH_colWidth = 0;
+        let bestH_foundOneConfig = false;
+
+        let bestHV_nbMaxCol = 0;
+        let bestHV_binary = "";
+        let bestHV_columns = {};
+        let bestHV_config = {};
+        let bestHV_maxNbBoxLines = 0;
+        let bestHV_colWidth = 0;
+        let bestHV_foundOneConfig = false;
+
+        let smallestCol_colWidth = 1000;
+        let smallestCol_binary = "";
+        let smallestCol_columns = {};
+        let smallestcol_config = {};
+        let smallestCol_maxNbBoxLines = 0;
+
+        for (var i = 0, max = 256; i < max; i++) { // Loop against all binary combination of a 8 bit number (corresponding to the 8 columns)
 
 //            console.info(i.toString(2).padStart(8, '0'));
+            // convert number to binary version and then to column config
             let binaryValue = i.toString(2).padStart(8, '0');
-
             let newColConfig = {
                 "system": binaryValue.substr(0, 1) === "1" ? true : false,
                 "application": binaryValue.substr(1, 1) === "1" ? true : false,
@@ -598,58 +646,127 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
                 "campaign": binaryValue.substr(7, 1) === "1" ? true : false
             };
             let boxesWidth = getBoxesWidth(maxPreviousExe, newColConfig);
-            maxNbColumns = maxAvailablePixel / boxesWidth;
-//            console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+            maxNbColumns = maxAvailableHPixel / boxesWidth;
+
+//            console.info(binaryValue);
+//            console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailableHPixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
 //        console.info(newColConfig);
             tempColumns = getColumnsFromConfigAndBoxes(data, newColConfig);
-            if ((Object.keys(tempColumns).length < maxNbColumns)) {
+//            console.info(tempColumns);
+            let tmpMaxLines = getNbMaxFromArray(tempColumns);
 
-                if ((Object.keys(tempColumns).length > nbMaxCol)) {
+            if ((Object.keys(tempColumns).length < maxNbColumns)) {
+                // there are not too many columns for the screen.
+
+//                console.info(" maxNbLines : " + maxNblines + " - Total Available size : " + maxAvailableVPixel + " - nb lines : " + tmpMaxLines);
+
+                // this if in order to get the conbination that fit in horizontal and vertical constrain.
+                if ((tmpMaxLines < maxNblines)) {
+
+                    if ((Object.keys(tempColumns).length > bestHV_nbMaxCol)) {
+
+                        bestHV_nbMaxCol = Object.keys(tempColumns).length;
+                        bestHV_columns = tempColumns;
+                        bestHV_config = newColConfig;
+                        bestHV_binary = binaryValue;
+                        bestHV_colWidth = boxesWidth;
+                        bestHV_maxNbBoxLines = tmpMaxLines;
+                        bestHV_foundOneConfig = true;
+                        console.info("Found Better H&V with " + Object.keys(tempColumns).length + " column(s) " + binaryValue);
+                        console.info(" maxNbCol   : " + maxNbColumns + " - Total Available size : " + maxAvailableHPixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+                        console.info(" maxNbLines : " + maxNblines + " - Total Available size : " + maxAvailableVPixel + " - nb lines : " + tmpMaxLines);
+//                        console.info(tempColumns);
+
+                    }
+
+                }
+
+                // The nb of columns is higher than a previous combination.
+                if ((Object.keys(tempColumns).length > bestH_nbMaxCol)) {
+
 //                maxNbBoxLines = tempColumns.nb;
-                    nbMaxCol = Object.keys(tempColumns).length;
-                    columns = tempColumns;
-                    foundOneConfig = true;
-                    console.info("Found Better with " + Object.keys(columns).length + " column(s)");
-                    console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
-                    console.info(columns);
-                    colConfig = newColConfig;
-                    maxNbBoxLines = getNbMaxFromArray(tempColumns);
-                } else if ((Object.keys(tempColumns).length === nbMaxCol)) {
+                    bestH_nbMaxCol = Object.keys(tempColumns).length;
+                    bestH_columns = tempColumns;
+                    bestH_config = newColConfig;
+                    bestH_binary = binaryValue;
+                    bestH_colWidth = boxesWidth;
+                    bestH_maxNbBoxLines = tmpMaxLines;
+                    bestH_foundOneConfig = true;
+                    console.info("Found Better H with " + Object.keys(tempColumns).length + " column(s) " + binaryValue);
+                    console.info("  maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailableHPixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+//                    console.info(tempColumns);
+                    bestH_maxNbBoxLines = getNbMaxFromArray(tempColumns);
+
+                } else if ((Object.keys(tempColumns).length === bestH_nbMaxCol)) {
 //                    console.info("option has the same result does it have less max lines ?");
 //                    console.info(Object.values(tempColumns));
-                    let tmpMaxLines = getNbMaxFromArray(tempColumns);
-                    if (tmpMaxLines < maxNbBoxLines) {
-                        columns = tempColumns;
-                        console.info(" Yes : Found Even Better combination with lower max nb lines : " + tmpMaxLines + " < " + maxNbBoxLines);
-                        console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailablePixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
-                        console.info(columns);
-                        colConfig = newColConfig;
-                        maxNbBoxLines = tmpMaxLines;
+                    if (tmpMaxLines < bestH_maxNbBoxLines) {
+                        bestH_columns = tempColumns;
+                        bestH_config = newColConfig;
+                        bestH_binary = binaryValue;
+                        bestH_colWidth = boxesWidth;
+                        bestH_maxNbBoxLines = tmpMaxLines;
+                        console.info(" Yes : Found Even Better combination with lower max nb lines : " + tmpMaxLines + " < " + bestH_maxNbBoxLines + " " + binaryValue);
+                        console.info(" maxNbCol : " + maxNbColumns + " - Total Available size : " + maxAvailableHPixel + " - Box size : " + getBoxesWidth(maxPreviousExe, newColConfig));
+//                        console.info(tempColumns);
 //                    } else {
 //                        console.info(" No : Not Better max nb lines : " + tmpMaxLines + " >= " + maxNbBoxLines);
                     }
                 }
+
             } else {
-                if (smallestCombination > (Object.keys(tempColumns).length * boxesWidth)) {
-                    smallestCombination = (Object.keys(tempColumns).length * boxesWidth);
-                    smallestColumns = tempColumns;
-                    smallestcolConfig = newColConfig;
-                    console.info("Found smallest combination with " + Object.keys(tempColumns).length + " column(s)");
-                    console.info("nb col : " + Object.keys(tempColumns).length + " box width : " + boxesWidth + " total size : " + (Object.keys(tempColumns).length * boxesWidth));
+
+                if (smallestCol_colWidth > (Object.keys(tempColumns).length * boxesWidth)) {
+
+                    smallestCol_colWidth = (Object.keys(tempColumns).length * boxesWidth);
+                    smallestCol_columns = tempColumns;
+                    smallestcol_config = newColConfig;
+                    smallestCol_binary = binaryValue;
+                    smallestCol_maxNbBoxLines = tmpMaxLines;
+                    console.info("Found smallest combination with " + Object.keys(tempColumns).length + " column(s) " + binaryValue);
+                    console.info("  nb col : " + Object.keys(tempColumns).length + " box width : " + boxesWidth + " total size : " + (Object.keys(tempColumns).length * boxesWidth));
+
                 }
 //                console.info();
 //                console.info(Object.keys(tempColumns).length * boxesWidth);
-
             }
         }
-        if (!foundOneConfig) {
-            // Algo could not find any combination that fit the available space constrain --> We pile into 1 single column.
-            console.info("No combination could fit the size screen so we take the smallest we could find : " + Object.keys(smallestColumns).length + " column(s)");
-            colConfig = smallestcolConfig;
-            columns = smallestColumns;
+
+        // Algo could not find any combination that fit the available space constrain --> We pile into 1 single column (the smallest we could find).
+        if (bestHV_foundOneConfig) {
+            console.info("H&V combination could be found : " + Object.keys(bestHV_columns).length + " column(s) " + bestHV_binary);
+//            console.info("  " + bestHV_binary);
+            console.info("  H : nb col : " + Object.keys(bestHV_columns).length + " box width : " + bestHV_colWidth + " total size : " + (Object.keys(bestHV_columns).length * bestHV_colWidth) + " / " + maxAvailableHPixel);
+            console.info("  V : nb lines : " + bestHV_maxNbBoxLines + " box heigth : " + boxHeigth + " total size : " + (bestHV_maxNbBoxLines * boxHeigth) + " / " + maxAvailableVPixel);
+            columns = bestHV_columns;
+            colConfig = bestHV_config;
+            if (bestHV_maxNbBoxLines > maxNblines) {
+                minimumBoxHeigth = true;
+            }
+        } else if (bestH_foundOneConfig) {
+            console.info("H combination could be found : " + Object.keys(bestH_columns).length + " column(s) " + bestH_binary);
+            console.info("  H : nb col : " + Object.keys(bestH_columns).length + " box width : " + bestH_colWidth + " total size : " + (Object.keys(bestH_columns).length * bestH_colWidth) + " / " + maxAvailableHPixel);
+            console.info("  V : nb lines : " + bestH_maxNbBoxLines + " box heigth : " + boxHeigth + " total size : " + (bestH_maxNbBoxLines * boxHeigth) + " / " + maxAvailableVPixel);
+//            console.info(" " + bestH_binary);
+            columns = bestH_columns;
+            colConfig = bestH_config;
+            if (bestH_maxNbBoxLines > maxNblines) {
+                minimumBoxHeigth = true;
+            }
+        } else {
+            console.info("No combination could fit the size screen so we take the smallest we could find : " + Object.keys(smallestCol_columns).length + " column(s) " + smallestCol_binary);
+            console.info("  H : nb col : " + Object.keys(smallestCol_columns).length + " box width : " + smallestCol_colWidth + " total size : " + (Object.keys(smallestCol_columns).length * smallestCol_colWidth) + " / " + maxAvailableHPixel);
+            console.info("  V : nb lines : " + smallestCol_maxNbBoxLines + " box heigth : " + boxHeigth + " total size : " + (smallestCol_maxNbBoxLines * boxHeigth) + " / " + maxAvailableVPixel);
+//            console.info(" " + smallestCol_binary);
+            if (smallestCol_maxNbBoxLines > maxNblines) {
+                minimumBoxHeigth = true;
+            }
+            columns = smallestCol_columns;
+            colConfig = smallestcol_config;
         }
 
         feedColConfigSelectOptions();
+
     } else {
         columns = getColumnsFromConfigAndBoxes(data, colConfig);
         console.info(columns);
@@ -678,8 +795,8 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
         let divMess = $("<h3 style='text-align: center;'></h3>").append("No execution to display!!!");
         monTable.append(divMess);
         $("#statusProgress").empty();
-         $("#MonitorHeaderCounter").html("");
-       return;
+        $("#MonitorHeaderCounter").html("");
+        return;
     }
 
     $("#MonitorHeaderCounter").html("Total : " + Object.keys(data.executionBoxes).length);
@@ -738,9 +855,14 @@ function refreshMonitorTable(dataFromWs, systems, environments, countries, campa
 //        console.info(curExe);
         tmpColumn = getColumFromBox(curExe, colConfig);
 //        console.info(tmpColumn);
-        $("#" + tmpColumn.value).append(renderCel(boxesArray[j]
-                , data.executionBoxes[boxesArray[j]]
-                , data.executions, indexPreviousValues));
+        $("#" + tmpColumn.value).append(
+                renderCel(
+                        boxesArray[j]
+                        , data.executionBoxes[boxesArray[j]]
+                        , data.executions, indexPreviousValues
+                        , minimumBoxHeigth
+                        )
+                );
     }
 
     // Build here global progress bar.
@@ -871,7 +993,7 @@ function getColumnLabel(column) {
 
 }
 
-function renderCel(id, content, contentExe, indexPreviousValues) {
+function renderCel(id, content, contentExe, indexPreviousValues, minimumHeigth) {
 //    console.info(id);
 
     if (content === undefined) {
@@ -924,17 +1046,27 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
 //    } else {
 //        console.info("NO CHANGE on " + id + " Previous exe cell : " + previousCellExeId + " --> New exe : " + nexVal);
     }
+    let classSize = "";
+    if (minimumHeigth) {
+        classSize = "monitor-box-small";
+    } else {
+        classSize = "monitor-box";
+    }
 //    console.info(curExe.id + " " + previousCellExeId);
 
     let cel = $('<div style="margin-bottom: 2px" data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="' + id + '" data-exeid="' + curExe.id + '" data-fn="' + curExe.falseNegative + '" data-exestart=' + exedate.getTime() + ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
-            .addClass(classChange + " monitor-box status-" + getFinalStatus(status, curExe.falseNegative));
-    let row1 = $("<div style='margin-right:0px'></div>").addClass("row");
+            .addClass(classChange + " " + classSize + " status-" + getFinalStatus(status, curExe.falseNegative));
+    if (!minimumHeigth) {
+        let row1 = $("<div style='margin-right:0px'></div>").addClass("row");
 
-    let r1c1 = $("<div></div>").addClass("col-xs-6 status").append("<span class='" + fonta + "' style='margin-right: 5px;'></span>" + status);
-    row1.append(r1c1);
+        let r1c1 = $("<div></div>").addClass("col-xs-6 status").append("<span class='" + fonta + "' style='margin-right: 5px;'></span>" + status);
+        row1.append(r1c1);
 
-    let r1c2 = $("<div data-exestart=" + exedate.getTime() + " ></div>").addClass("col-xs-6 text-right exe-counter").append(getHumanReadableDuration((now - exedate) / 1000, 1));
-    row1.append(r1c2);
+        let r1c2 = $("<div data-exestart=" + exedate.getTime() + " ></div>").addClass("col-xs-6 text-right exe-counter").append(getHumanReadableDuration((now - exedate) / 1000, 1));
+        row1.append(r1c2);
+
+        cel.append(row1)
+    }
 
     let row2 = $("<div style='margin-right:0px'></div>").addClass("row");
     let r2c = $('<div></div>').addClass("col-xs-1 pull-left bold");
@@ -959,7 +1091,7 @@ function renderCel(id, content, contentExe, indexPreviousValues) {
 
     }
 
-    cel.append(row1).append(row2);
+    cel.append(row2);
     return cel;
 }
 
