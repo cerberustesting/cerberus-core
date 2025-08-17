@@ -94,7 +94,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         wOffsetV = GetURLParameterInteger("wOffsetV", wOffsetV);
         wBoxHeigth = GetURLParameterInteger("wBoxHeigth", wBoxHeigth);
 
-            systems = GetURLParameters("systems");
+        systems = GetURLParameters("systems");
         environments = GetURLParameters("environments");
         countries = GetURLParameters("countries");
         campaigns = GetURLParameters("campaigns");

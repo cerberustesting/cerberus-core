@@ -1325,7 +1325,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
                 .append("FROM testcaseexecution exe ")
                 .append("LEFT OUTER JOIN tag ON tag.tag=exe.tag ")
-                .append("WHERE start >= DATE(NOW() - INTERVAL 7 DAY) and t.ControlStatus != 'PE' order by id desc limit 10000;");
+                .append("WHERE start >= DATE(NOW() - INTERVAL 7 DAY) and exe.ControlStatus != 'PE' order by id desc limit 10000;");
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
                 },
