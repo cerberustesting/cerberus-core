@@ -557,6 +557,11 @@ function refreshMonitorTable(dataFromWs) {
     data.tests = dataFromWs.tests;
     data.executionBoxes = {};
     let listData = Object.keys(dataFromWs.executionBoxes);
+//    console.info("Size before filter : " + listData.length);
+//    console.info(systems);
+//    console.info(environments);
+//    console.info(countries);
+//    console.info(campaigns);
     for (var j = 0, maxr = (listData.length); j < maxr; j++) {
         let tempArrayExe = [];
         let maxi = dataFromWs.executionBoxes[listData[j]].length;
@@ -564,6 +569,9 @@ function refreshMonitorTable(dataFromWs) {
             let exeid = dataFromWs.executionBoxes[listData[j]][i];
             let exeTmp = dataFromWs.executions[exeid];
             let exeOldMin = (new Date().getTime() - exeTmp.start) / 60000;
+//            console.info(exeTmp.system);
+//            console.info(exeOldMin);
+//            console.info((exeTmp.usefull || (!exeTmp.usefull && displayRetry)));
             if (
                     (!exeTmp.muted || (exeTmp.muted && displayMuted))
                     && (exeTmp.usefull || (!exeTmp.usefull && displayRetry))
@@ -590,6 +598,7 @@ function refreshMonitorTable(dataFromWs) {
         }
     }
 //    console.info(data);
+//    console.info("Size after filter : " + Object.keys(data.executionBoxes).length);
 //    console.info(agregatedStatus);
 
 
@@ -769,14 +778,26 @@ function refreshMonitorTable(dataFromWs) {
 
     } else {
         columns = getColumnsFromConfigAndBoxes(data, colConfig);
-        console.info(columns);
+        let tmpMaxLines = getNbMaxFromArray(columns);
+        let boxesWidth = getBoxesWidth(maxPreviousExe, colConfig);
+
         if (Object.keys(columns).length > maxNbColumns) {
             console.info("Warning : Too many columns " + Object.keys(columns).length + " columns to display - Available space : " + document.getElementById("progressMonitor").offsetWidth);
+            console.info("  H : nb col : " + Object.keys(columns).length + " box width : " + boxesWidth + " total size : " + (Object.keys(columns).length * boxesWidth) + " / " + maxAvailableHPixel);
+            console.info("  V : nb lines : " + tmpMaxLines + " box heigth : " + boxHeigth + " total size : " + (tmpMaxLines * boxHeigth) + " / " + maxAvailableVPixel);
         } else {
             console.info("All columns can be displayed !! " + Object.keys(columns).length);
+            console.info("  H : nb col : " + Object.keys(columns).length + " box width : " + boxesWidth + " total size : " + (Object.keys(columns).length * boxesWidth) + " / " + maxAvailableHPixel);
+            console.info("  V : nb lines : " + tmpMaxLines + " box heigth : " + boxHeigth + " total size : " + (tmpMaxLines * boxHeigth) + " / " + maxAvailableVPixel);
+        }
+        if (tmpMaxLines > maxNblines) {
+            minimumBoxHeigth = true;
         }
     }
 
+    if (minimumBoxHeigth) {
+        console.info("Reduced Box activated (box on single line)");
+    }
 
     // Sort here the list of columns
     const sortedColumns = Object.keys(columns).sort().reduce(
@@ -1113,7 +1134,7 @@ function getTooltip(data) {
     }
     htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Test : </span>' + data.test + " " + SEPARATOR + " " + data.testCase + '</div>';
-    htmlRes += '<div>' + data.description + '</div>';
+    htmlRes += '<div>' + data.description.replace("\"", "\'") + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Environment : </span>' + data.environment + '</div>';
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>';
     if (!isEmpty(data.robot)) {
@@ -1134,7 +1155,7 @@ function getTooltip(data) {
         let mutedTag = data.muted ? "<span class='glyphicon glyphicon-volume-off' aria-hidden='true'></span> [MUTED]" : "";
         htmlRes += '<div style=\'margin-top:5px;\'>' + retryTag + " " + mutedTag + '</div>';
     }
-    htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage.replace("\"", "\'") + '</div>';
 
     return htmlRes;
 }
