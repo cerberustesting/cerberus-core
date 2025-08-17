@@ -991,8 +991,8 @@ function getColumFromBox(exe, config) {
 //            console.info(tmpCol);
 //            console.info(exe[tmpCol]);
             if (exe[tmpCol] !== undefined) {
-                column[tmpCol] = exe[tmpCol].replace(" ", "-");
-                column.value += exe[tmpCol].replace(" ", "-").replace(".", "-").replace("/", "-").replace("\\", "-") + "-";
+                column[tmpCol] = exe[tmpCol].replaceAll(" ", "-");
+                column.value += exe[tmpCol].replaceAll(" ", "-").replaceAll(".", "-").replaceAll("/", "-").replaceAll("\\", "-") + "-";
             }
         }
     }
@@ -1134,7 +1134,7 @@ function getTooltip(data) {
     }
     htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Test : </span>' + data.test + " " + SEPARATOR + " " + data.testCase + '</div>';
-    htmlRes += '<div>' + data.description.replace("\"", "\'") + '</div>';
+    htmlRes += '<div>' + data.description.replaceAll("\"", "\'") + '</div>';
     htmlRes += '<div style=\'margin-top:5px;\'><span class=\'bold\'>Environment : </span>' + data.environment + '</div>';
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>';
     if (!isEmpty(data.robot)) {
@@ -1155,7 +1155,7 @@ function getTooltip(data) {
         let mutedTag = data.muted ? "<span class='glyphicon glyphicon-volume-off' aria-hidden='true'></span> [MUTED]" : "";
         htmlRes += '<div style=\'margin-top:5px;\'>' + retryTag + " " + mutedTag + '</div>';
     }
-    htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage.replace("\"", "\'") + '</div>';
+    htmlRes += '<div style=\'margin-top:5px;\'>' + ctrlmessage.replaceAll("\"", "\'") + '</div>';
 
     return htmlRes;
 }
