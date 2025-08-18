@@ -373,7 +373,7 @@ h4 {
 #stepConditionMessageContent {
     font-size: 1.2em;
     padding: 15px;
-    border: 1px solid var(--crb-light-color);
+    border: 1px solid var(--crb-grey-color);
     border-radius: 4px;
     margin-top: 4px;
     display: none;

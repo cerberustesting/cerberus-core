@@ -20,6 +20,7 @@
 
 $(document).ready(function () {
 
+    applySavedTheme();
     //collaspe if the navbar was collaspe in the previous page
     collaspeHandler(localStorage.getItem("navbar-toggle"));
 

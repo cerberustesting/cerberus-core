@@ -35,7 +35,7 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            background-color: var(--crb-bg);
         }
 
         #historySidebar {
@@ -44,7 +44,7 @@
             left: -400px;
             width: 280px;
             height: 100%;
-            background-color: #fff;
+            background-color: var(--crb-bg);
             border-right: 1px solid #ccc;
             padding: 1rem;
             overflow-y: auto;
@@ -124,7 +124,7 @@
 
         .input-bar {
             padding: 1rem;
-            background-color: white;
+            background-color: var(--crb-bg);
             display: flex;
             border-top: 1px solid #ccc;
         }

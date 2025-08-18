@@ -61,9 +61,9 @@
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel no-border" style="margin-top: 10px;">
-                <div style="min-height:150px;background-color:#f5f6fa">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:#f5f6fa">
-                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;" id="testCaseTitle">
+                <div style="min-height:150px;background-color:var(--crb-grey-light-color)">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:var(--crb-grey-light-color)">
+                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: var(--crb-white-color);border: 1px solid var(--crb-grey-light-color);" id="testCaseTitle">
                             <div class="" style="width:100%">
                                 <div class="col-lg-5" style="padding: 0px;">
                                     <div class="row">
@@ -127,7 +127,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-body" id="tcBody" style="display:none;background-color:white">
+                <div class="panel-body" id="tcBody" style="display:none;background-color:var(--crb-white-color)">
                     <div class="tab-content">
                         <div class="center tab-pane fade in active" id="tabSteps">
                             <nav class="col-lg-4 col-md-12" id="nav-execution" style="z-index:1;padding-left: 0px;">
@@ -138,7 +138,7 @@
                                     </div>
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
-                                        <button class="btn btn-block addStep-btn marginTop25" id="addStep" disabled>Add Step</button>
+                                        <button class="btn btn-block btnLightTurquoise marginTop25" id="addStep" disabled>Add Step</button>
                                         <!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
                                     </div>
                                 </div>
@@ -165,10 +165,10 @@
                                                 <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">
                                                     <span class="glyphicon glyphicon-book"></span>
                                                 </button>
-                                                <button class="btn add-btn config-btn" id="stepPlus">
+                                                <button class="btn add-btn btnLightOrange" id="stepPlus">
                                                     <span class="glyphicon glyphicon-cog"></span>
                                                 </button>
-                                                <button class="btn add-btn deleteItem-btn" id="deleteStep" disabled>
+                                                <button class="btn add-btn btnLightRed" id="deleteStep" disabled>
                                                     <span class="glyphicon glyphicon-trash"></span>
                                                 </button>
                                             </div>

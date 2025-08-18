@@ -69,10 +69,10 @@ Control.prototype.generateContent = function () {
                     .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
-    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var plusBtn = $("<button></button>").addClass("btn add-btn btnLightOrange").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn btnLightGreen").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn add-btn btnLightBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var supprBtn = $("<button></button>").addClass("btn add-btn btnLightRed").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("marginRight10 boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
 
     addABtn.click(function () {

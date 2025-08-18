@@ -353,7 +353,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     var doc = new Doc();
     let uniqfieldid = 'p' + uniqid++;
 
-    var deleteBtn = $("<button class='btn add-btn deleteItem-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var deleteBtn = $("<button class='btn add-btn btnLightRed'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     deleteBtn.attr("disabled", !canUpdate);
 
     var table = $("#propTable");
@@ -920,7 +920,7 @@ function drawPropertyList(property, index) {
 
     $(htmlElement).append($("<a ></a>").attr("href", "#propertyLine" + property).text(property));
 
-    var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn add-btn deleteItem-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn add-btn btnLightRed'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     deleteBtn.attr("disabled", !canUpdate);
     $(htmlElement).find("a").append(deleteBtn);
 
@@ -929,14 +929,14 @@ function drawPropertyList(property, index) {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
                     if (!$(this).hasClass("list-group-item-danger")) {
-                        $(this).find("button.btn.add-btn.deleteItem-btn").trigger("click");
+                        $(this).find("button.btn.add-btn.btnLightRed").trigger("click");
                     }
                 }
             });
         } else {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
-                    $(this).find("button.btn.add-btn.deleteItem-btn").trigger("click");
+                    $(this).find("button.btn.add-btn.btnLightRed").trigger("click");
                 }
             });
         }

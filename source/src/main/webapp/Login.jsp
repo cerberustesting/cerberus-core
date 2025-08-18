@@ -40,7 +40,7 @@
         <script type='text/javascript' src='js/global/global.js'></script>
         <title>Login</title>
     </head>
-    <body style="background-color: #fff">
+    <body style="background-color: var(--crb-bg)">
         <%@ include file="include/utils/modal-confirmation.html"%>
 
         <script type="text/javascript">

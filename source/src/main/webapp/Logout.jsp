@@ -28,7 +28,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" type="text/css" href="css/global/crb_style.css">
+        <link rel="stylesheet" type="text/css" href="css/global/crb_style2.css">
 
         <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
         <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
@@ -38,7 +38,7 @@
         <META HTTP-EQUIV="refresh" CONTENT="1;URL=./">
         <title>Logout</title>
     </head>
-    <body style="background-color: #fff">
+    <body style="background-color: var(--crb-blue-light-color)">
         <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
             sessionStorage.clear();

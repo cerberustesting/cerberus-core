@@ -171,7 +171,7 @@
     margin-top: 20px;
     font-size: 19px;
 
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--crb-left-menu-background);
     /*transition: all .1s linear 0s;*/
 }
 /*display the button if the screen is width enought*/
@@ -249,7 +249,8 @@
 /* remove border */
 #page-layout {
     height: 100%;
-    border-top: 1px solid #e7e7e7;
+    border-top: 1px solid var(--crb-grey-light-color);
+    border-left: 1px solid var(--crb-grey-light-color);
 }
 
 #burger{
@@ -283,7 +284,7 @@
 
 .navbar,
 .navbar-default{
-    background-color: #1e2124;
+    background-color: var(--crb-left-menu-background);
 }
 
 /* side navbarbar text color */
@@ -292,7 +293,7 @@
 #side-menu>li>a,
 #side-menu>li>a,
 .navbar-default .controlToggle {
-    color: #ddd;
+    color: var(--crb-left-menu-font);
 }
 
 /* side navbarbar background color when hover*/
@@ -300,45 +301,46 @@
 .nav-second-level>li>a:hover,
 #side-menu>li>a:focus,
 #side-menu>li>a:hover{
-    background-color: rgba(79,84,92,.6);
-    color: #FFF;
+    background-color: var(--crb-left-menu-background-hover);
+    color: var(--crb-left-menu-font-hover);
 }
 /* title color */
 .titleCase{
-    color: whitesmoke !important;
+    color: var(--crb-left-menu-font); !important;
 }
 /* current link */
 .sidebar ul li a.active{
-    background-color: rgba(79,84,92,.6) !important;
-    color: whitesmoke;
+    background-color: var(--crb-left-menu-background-hover) !important;
+    color: var(--crb-left-menu-font);
 }
 
 .navbar-side-choice.active,
 .navbar-default.collapsed .nav-second-level,
 .navbar-default .controlToggle{
-    background: #282b30;
+    background: var(--crb-left-menu-background);
 }
 
 .navbar-side-choice.active{
-    border-left: 4px solid whitesmoke;
+    border-left: 4px solid var(--crb-left-menu-font);
 }
 
 /*  button to toggle style when hover */
 .navbar-default .controlToggle:hover {
-    color: whitesmoke;
+    color: var(--crb-left-menu-font);
 }
 
 /* color topbar */
 .navbar-static-top {
-    background-color: #fff;
+    background-color: var(--crb-white-color);
     height: 50px;
-    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+    -webkit-box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+
 }
 /* color text topbar */
 .navbar-static-top ,
 .navbar-right a {
-    color: #1e2124;
+    color: var(--crb-black-color);
 }
 
 @media (max-width: 768px){
@@ -356,7 +358,7 @@
     }
 
     #tabsScriptEdit{
-        background-color:white;
+        background-color:var(--crb-left-menu-font-hover);
     }
 
     #burger{
@@ -364,7 +366,7 @@
         position:absolute;
         right:20px;
         top:6px;
-        background-color:white;
+        background-color:var(--crb-left-menu-font-hover);
     }
 
     #burger-setting{
@@ -374,11 +376,11 @@
         width:56px;
         height:44px;
         top:6px;
-        background-color:white;
+        background-color:var(--crb-left-menu-font-hover);
     }
 
     .titleCase{
-        color: whitesmoke !important;
+        color: var(--crb-left-menu-font) !important;
         width:50%;
         display:inline-block!important;
     }

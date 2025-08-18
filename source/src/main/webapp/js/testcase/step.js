@@ -324,10 +324,10 @@ Step.prototype.show = function () {
     var thisButtonContainer = object.html.find('.stepButtonContainer');
     thisButtonContainer.append('<div class="fieldRow row" id="UseStepRowButton" style="display: none; color: transparent;"></div>');
     thisButtonContainer.append('<div style="margin-right: auto; margin-left: auto;" id="stepButtons">');
-    $("#stepButtons").append('<button class="btn btn-default useStep-btn" title="Is Use Step" data-toggle="tooltip" id="isUseStep"><span class="glyphicon glyphicon-lock"></span></button>');
-    $("#stepButtons").append('<button class="btn btn-default library-btn" title="Is Library" data-toggle="tooltip" id="isLib"><span class="glyphicon glyphicon-book"></span></button>');
-    $("#stepButtons").append('<button class="btn add-btn config-btn" data-toggle="modal" data-target="#modalStepOptions" id="stepPlus"><span class="glyphicon glyphicon-cog"></span></button>');
-    $("#stepButtons").append('<button class="btn add-btn deleteItem-btn" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>');
+    $("#stepButtons").append('<button class="btn btn-default btnPurple" title="Is Use Step" data-toggle="tooltip" id="isUseStep"><span class="glyphicon glyphicon-lock"></span></button>');
+    $("#stepButtons").append('<button class="btn btn-default btnLightPurple" title="Is Library" data-toggle="tooltip" id="isLib"><span class="glyphicon glyphicon-book"></span></button>');
+    $("#stepButtons").append('<button class="btn add-btn btnLightOrange" data-toggle="modal" data-target="#modalStepOptions" id="stepPlus"><span class="glyphicon glyphicon-cog"></span></button>');
+    $("#stepButtons").append('<button class="btn add-btn btnLightRed" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>');
 
 
     $("#stepPlus").click(function () {
@@ -345,7 +345,7 @@ Step.prototype.show = function () {
 
     $("#isLib").unbind("click");
     if (object.isLibraryStep) {
-        $("#isLib").addClass("useStep-btn");
+        $("#isLib").addClass("btnPurple");
         if (object.isStepInUseByOtherTestCase) {
             $("#isLib").click(function () {
 
@@ -356,7 +356,7 @@ Step.prototype.show = function () {
             $("#isLib").click(changeLib);
         }
     } else {
-        $("#isLib").removeClass("useStep-btn");
+        $("#isLib").removeClass("btnPurple");
         $("#isLib").click(changeLib);
     }
 

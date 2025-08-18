@@ -793,10 +793,10 @@ function changeLib() {
     var stepData = stepHtml.data("item");
     if (stepData.isLibraryStep) {
         stepData.isLibraryStep = false;
-        $(this).removeClass("useStep-btn");
+        $(this).removeClass("btnPurple");
     } else {
         stepData.isLibraryStep = true;
-        $(this).addClass("useStep-btn");
+        $(this).addClass("btnPurple");
     }
 }
 

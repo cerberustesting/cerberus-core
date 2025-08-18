@@ -115,7 +115,7 @@
                                 <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
                             </div>
                             <div class="col-sm-5 col-xs-5 panel panelPE" id="exeRunningPanel" 
-                                 style="margin-top: 5px; padding-top: 10px; background-color: lightgray; color: black; display: none">
+                                 style="margin-top: 5px; padding-top: 10px; background-color: var(--crb-grey-color); color: black; display: none">
                                 <div class="row " style="height: 30px;">
                                     <div class="col-xs-3 status marginBottom10" style="">
                                         <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>

@@ -1,4 +1,4 @@
-/**crb_style.css
+/**
 * - Variable
 * - Color
 * - Page (body / a / input / textarea)
@@ -11,6 +11,9 @@
 * - x-editor customisation
 */
 :root {
+
+    --crb-bg: #f5f6fa;
+
     --crb-blue-color: rgb(44,123,229);
     --crb-blue-light-color: rgb(230,239,252);
     --crb-blue-dark-color: rgb(25, 72, 134);
@@ -27,9 +30,9 @@
     --crb-red-light-color: rgb(252,231,235);
     --crb-red-dark-color: rgb(171, 42, 65);
 
-    --crb-purple-color: #BF00BF;
+    --crb-purple-color: #727cf5;
     --crb-purple-light-color: rgb(221, 223, 247);
-    --crb-purple-dark-color: #5C025C;
+    --crb-purple-dark-color: #4d54a3;
 
     --crb-thistle-color: #D8BFD8;
     --crb-thistle-light-color: rgb(255,255,255);
@@ -43,8 +46,21 @@
     --crb-yellow-light-color: #fcf6e0;
     --crb-yellow-dark-color: #c6a20d;
 
+    --crb-black-color: #1e2124;
     --crb-dark-color: #34495e;
-    --crb-light-color: #aaaaaa;
+    --crb-grey-color: #aaaaaa;
+    --crb-grey-light-color: #e7e7e7;
+    --crb-grey-superlight-color: #f8f8f8;
+    --crb-white-color: white;
+
+    --crb-shadow-left-color: rgba(65, 69, 88, 0.1);
+    --crb-shadow-bottom-color:  rgba(0, 0, 0, 0.07);
+
+    --crb-left-menu-background: #1e2124;
+    --crb-left-menu-background-hover: rgba(79,84,92,.6);
+    --crb-left-menu-font: #e7e7e7;
+    --crb-left-menu-font-hover: white;
+    --crb-top-menu-font: #1e2124;
 
     /*SYNTHESIS*/
     --old-ok: #5CB85C;
@@ -58,7 +74,7 @@
     --old-na: #F1C40F;
     --na: var(--crb-yellow-color);
     --old-ne: #aaa;
-    --ne: var(--crb-light-color);
+    --ne: var(--crb-grey-color);
     --old-qu: #BF00BF;
     --qu: var(--crb-purple-color);
     --old-qe: #5C025C;
@@ -68,6 +84,58 @@
     --old-ca:#F0AD4E;
     --ca: var(--crb-yellow-dark-color);
     --qu: var(--crb-thistle-color);
+}
+
+:root.dark {
+
+    --crb-bg: #1e222a;
+
+    --crb-blue-color: rgb(44,123,229);
+    --crb-blue-light-color: rgb(38, 60, 94);
+    --crb-blue-dark-color: rgb(153, 190, 241);
+
+    --crb-green-color: rgb(0,210,122);
+    --crb-green-light-color: rgb(22, 60, 48);
+    --crb-green-dark-color: rgb(145, 235, 196);
+
+    --crb-orange-color: rgb(245,128,62);
+    --crb-orange-light-color: rgb(66, 41, 28);
+    --crb-orange-dark-color: rgb(247, 189, 157);
+
+    --crb-red-color: rgb(230,55,87);
+    --crb-red-light-color: rgb(70, 34, 42);
+    --crb-red-dark-color: rgb(245, 165, 178);
+
+    --crb-purple-color: #BF00BF;
+    --crb-purple-light-color: rgb(62, 33, 62);
+    --crb-purple-dark-color: #E699E6;
+
+    --crb-thistle-color: #D8BFD8;
+    --crb-thistle-light-color: rgb(80, 70, 80);
+    --crb-thistle-dark-color: #EBD9EB;
+
+    --crb-turquoise-color: rgb(39,188,253);
+    --crb-turquoise-light-color: rgb(27, 54, 65);
+    --crb-turquoise-dark-color: rgb(171, 228, 255);
+
+    --crb-yellow-color: #f1c40f;
+    --crb-yellow-light-color: rgb(72, 65, 33);
+    --crb-yellow-dark-color: #f8e68c;
+
+    --crb-black-color: #f5f5f5;
+    --crb-dark-color: #1e2a36;
+    --crb-grey-color: #bbbbbb;
+    --crb-grey-light-color: #3a3a3a;
+    --crb-white-color: #111111;
+
+    --crb-left-menu-background: #1e2124;
+    --crb-left-menu-background-hover: rgba(79,84,92,.6);
+    --crb-left-menu-font: #e7e7e7;
+    --crb-left-menu-font-hover: white;
+    --crb-top-menu-font: #f5f5f5;
+
+    --crb-shadow-left-color: rgba(255, 255, 255, 0.06);
+    --crb-shadow-bottom-color: rgba(255, 255, 255, 0.17);
 }
 
 .overlay {
@@ -290,33 +358,33 @@
 }
 /* DARK */
 .labelDark {
-    color: var(--crb-light-color);
+    color: var(--crb-grey-color);
     background-color: var(--crb-dark-color);
     border-color: var(--crb-dark-color);
 }
 .btnDark {
-    color: var(--crb-light-color);
+    color: var(--crb-grey-color);
     background-color: var(--crb-dark-color);
     border-color: var(--crb-dark-color);
 }
 .btnDark:hover {
     color: var(--crb-dark-color);
-    background-color: var(--crb-light-color);
-    border-color: var(--crb-light-color);
+    background-color: var(--crb-grey-color);
+    border-color: var(--crb-grey-color);
 }
 /* LIGHT */
 .labelLight {
     color: var(--crb-dark-color);
-    background-color: var(--crb-light-color);
-    border-color: var(--crb-light-color);
+    background-color: var(--crb-grey-color);
+    border-color: var(--crb-grey-color);
 }
 .btnLight {
     color: var(--crb-dark-color);
-    background-color: var(--crb-light-color);
-    border-color: var(--crb-light-color);
+    background-color: var(--crb-grey-color);
+    border-color: var(--crb-grey-color);
 }
 .btnLight:hover {
-    color: var(--crb-light-color);
+    color: var(--crb-grey-color);
     background-color: var(--crb-dark-color);
     border-color: var(--crb-dark-color);
 }
@@ -429,7 +497,7 @@
 }
 .panelWE .panel-heading {
     border-color: var(--crb-dark-color);
-    color: var(--crb-light-color);
+    color: var(--crb-grey-color);
     background-color: var(--crb-dark-color);
 }
 .statusWE {
@@ -519,17 +587,20 @@
 }
 
 .whiteCard{
-    background-color: #FFFFFF;
+    background-color: var(--crb-white-color);
+    color: var(--crb-black-color);
     border-radius: 5px;
-    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+    -webkit-box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+
 }
 
 #page-layout > .panel-default{
-    background-color: #FFFFFF;
+    background-color: var(--crb-white-color);
     border-radius: 5px;
-    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
-    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+    -webkit-box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
+
 }
 
 .manualExecLeftButton{
@@ -545,15 +616,15 @@
 body {
     font-size: 12px;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    background-color: #f5f6fa;
+    background-color: var(--crb-bg);
 }
 .panel-default>.panel-heading {
-    color: #333;
-    background-color: #fff;
-    border-color: #fff;
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);
 }
 .panel-default {
-    border-color: #fffd;
+    border-color: var(--crb-white-color);
 }
 .btn-primary {
     color: var(--crb-blue-light-color);
@@ -593,7 +664,7 @@ pre{
     border-color:var(--crb-orange-color);
     border-width:1px;
     border-style:solid;
-    background-color:var(--crb-light-color);
+    background-color:var(--crb-grey-color);
     color:var(--crb-orange-color);
     text-align: center;
     border-radius: 5px;
