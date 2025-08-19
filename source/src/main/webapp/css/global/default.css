@@ -330,6 +330,11 @@ table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{
 
 .dataTables_info {
     padding-top: 6px;
+    color: var(--crb-dark-color);
+}
+
+.pagination>li>a, .dataTables_length select, .dataTables_filter input{
+    background-color: var(--crb-white-color);
 }
 
 #summaryTableHeader td{
@@ -637,3 +642,17 @@ a.list-group-item.selected, button.list-group-item.selected {
     z-index: 130000000000 !important;
 }
 
+.select2 {
+    background-color: var(--crb-white-color);
+    color: var(--crb-dark-color);
+}
+
+.btn-default {
+    color: var(--crb-dark-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-light-color);
+}
+
+.footer{
+    color: var(--crb-dark-color);
+}

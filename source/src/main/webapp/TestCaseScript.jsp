@@ -61,9 +61,9 @@
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel no-border" style="margin-top: 10px;">
-                <div style="min-height:150px;background-color:var(--crb-grey-light-color)">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:var(--crb-grey-light-color)">
-                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: var(--crb-white-color);border: 1px solid var(--crb-grey-light-color);" id="testCaseTitle">
+                <div style="min-height:150px;background-color:var(--crb-white-color)">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:var(--crb-white-color)">
+                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: var(--crb-white-color);border: 1px solid var(--crb-white-color);" id="testCaseTitle">
                             <div class="" style="width:100%">
                                 <div class="col-lg-5" style="padding: 0px;">
                                     <div class="row">
@@ -117,7 +117,7 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div style="height:60px; background-color: #f5f6fa; padding-top:20px">
+                        <div style="height:60px; background-color: var(--crb-white-color); padding-top:20px">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" class="tabSteps" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" class="tabSteps"  name="tabProperties">Properties</a></li>

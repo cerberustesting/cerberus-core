@@ -47,7 +47,7 @@
     --crb-yellow-dark-color: #c6a20d;
 
     --crb-black-color: #1e2124;
-    --crb-dark-color: #34495e;
+    --crb-dark-color: #292929;
     --crb-grey-color: #aaaaaa;
     --crb-grey-light-color: #e7e7e7;
     --crb-grey-superlight-color: #f8f8f8;
@@ -61,6 +61,7 @@
     --crb-left-menu-font: #e7e7e7;
     --crb-left-menu-font-hover: white;
     --crb-top-menu-font: #1e2124;
+
 
     /*SYNTHESIS*/
     --old-ok: #5CB85C;
@@ -76,9 +77,9 @@
     --old-ne: #aaa;
     --ne: var(--crb-grey-color);
     --old-qu: #BF00BF;
-    --qu: var(--crb-purple-color);
+    --qu: var(--old-qu);
     --old-qe: #5C025C;
-    --qe: var(--crb-purple-dark-color);
+    --qe: var(--old-qe);
     --old-we:#34495E;
     --we: var(--crb-dark-color);
     --old-ca:#F0AD4E;
@@ -106,9 +107,9 @@
     --crb-red-light-color: rgb(70, 34, 42);
     --crb-red-dark-color: rgb(245, 165, 178);
 
-    --crb-purple-color: #BF00BF;
-    --crb-purple-light-color: rgb(62, 33, 62);
-    --crb-purple-dark-color: #E699E6;
+    --crb-purple-color: #727cf5;
+    --crb-purple-light-color: #2d305a;
+    --crb-purple-dark-color: #a3a7f9;
 
     --crb-thistle-color: #D8BFD8;
     --crb-thistle-light-color: rgb(80, 70, 80);
@@ -123,9 +124,10 @@
     --crb-yellow-dark-color: #f8e68c;
 
     --crb-black-color: #f5f5f5;
-    --crb-dark-color: #1e2a36;
+    --crb-dark-color: #dddddd;
     --crb-grey-color: #bbbbbb;
     --crb-grey-light-color: #3a3a3a;
+    --crb-grey-superlight-color: #252525;
     --crb-white-color: #111111;
 
     --crb-left-menu-background: #1e2124;
@@ -1438,7 +1440,22 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
 table.dataTable thead th {
     border-bottom-color: transparent;
     border-top-color: transparent !important;
-    background-color: #E6E6E6 !important;
+    background-color: var(--crb-grey-light-color) !important;
+    color: var(--crb-dark-color);
+}
+
+table.dataTable thead th input {
+    background-color: var(--crb-grey-light-color) !important;
+    color: var(--crb-dark-color);
+}
+
+.table-hover>tbody>tr{
+    background-color: var(--crb-white-color) !important;
+    color: var(--crb-black-color);
+}
+.table-hover>tbody>tr:hover{
+    background-color: var(--crb-grey-light-color) !important;
+    color: var(--crb-dark-color);
 }
 
 .dataTables_scroll {
