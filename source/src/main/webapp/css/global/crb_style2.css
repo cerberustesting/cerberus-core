@@ -628,6 +628,16 @@ body {
 .panel-default {
     border-color: var(--crb-white-color);
 }
+.btn-default {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+.btn-default:hover {
+    color: var(--crb-grey-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);
+}
 .btn-primary {
     color: var(--crb-blue-light-color);
     background-color: var(--crb-blue-color);
@@ -685,6 +695,12 @@ pre{
     border-radius: 5px;
 
 }
+.form-control {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
 select {
     font-size:100%;
 }
@@ -1642,15 +1658,6 @@ table.dataTable thead th input {
 }
 .btn-E {
     background-color: #ffdcdcff
-}
-
-.hpCampaignHeader{
-    background-color: #ffdcdcff
-}
-
-.hpCampaignHeaderNoCampaign{
-    background-color: #ffdcdcff;
-    font-style: italic
 }
 
 .tagDetail{

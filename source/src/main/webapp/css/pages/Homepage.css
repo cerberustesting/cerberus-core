@@ -50,3 +50,15 @@
 .datatable-alignright{
     text-align: right;
 }
+
+.hpCampaignHeader{
+    color: var(--crb-black-color);
+    background-color: var(--crb-yellow-light-color);
+}
+
+.hpCampaignHeaderNoCampaign{
+    color: var(--crb-black-color);
+    background-color: var(--crb-yellow-light-color);
+    font-style: italic
+}
+

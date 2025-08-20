@@ -306,7 +306,7 @@
 }
 /* title color */
 .titleCase{
-    color: var(--crb-left-menu-font); !important;
+    color: var(--crb-left-menu-font) !important;
 }
 /* current link */
 .sidebar ul li a.active{
