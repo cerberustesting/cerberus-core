@@ -266,6 +266,21 @@ function collaspeSubMenu() {
 }
 
 
+function refreshToggleDarkMode(buttonElement, doDisplay) {
+    sessionStorage.setItem(buttonElement, doDisplay);
+    $(buttonElement).find('.btn').toggleClass('active');
+    if (doDisplay === "true") {
+        setTheme('dark');
+        $(buttonElement).find('.btn-ON').addClass('btn-primary');
+        $(buttonElement).find('.btn-OFF').removeClass('btn-info');
+    } else {
+        setTheme('light');
+        $(buttonElement).find('.btn-ON').removeClass('btn-primary');
+        $(buttonElement).find('.btn-OFF').addClass('btn-info');
+    }
+}
+
+
 function displayHeaderLabel(doc) {
     var user = getUser();
 
@@ -284,6 +299,20 @@ function displayHeaderLabel(doc) {
             $("#menuAccount").attr("href", user.menu.accountLink);
             $("#menuAccount").attr("target", "_blank");
             $("#menuAccount").attr("style", "display: block;color: var(--crb-black-color)");
+        }
+
+        if ((window.location.hostname.includes('localhost'))
+                || (window.location.hostname.includes('qa.cerberus-testing.com'))
+                ) {
+            $('#darkModeEntry').show();
+            darkMode = getFromStorage("#menuDarkMode", 'false');
+            refreshToggleDarkMode('#menuDarkMode', darkMode);
+            $('#menuDarkMode').click(function () {
+                darkMode = (darkMode === 'true') ? 'false' : 'true';
+                refreshToggleDarkMode('#menuDarkMode', darkMode);
+            });
+        } else {
+            $('#darkModeEntry').hide();
         }
 
         if (user.menu.logoutLink === "") {

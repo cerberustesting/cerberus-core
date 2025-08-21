@@ -81,8 +81,8 @@
                     <li><a name="menu" id="menuApplicationObjects" href="ApplicationObjectList.jsp">Application Objects</a></li>
                     <li><a name="menu" id="menuAppService" href="AppServiceList.jsp">Service Library</a></li>
                     <li><a name="menu" id="menuDeployType" href="DeployType.jsp">Deploy Type</a></li>
-<!--                    ----DEPRECATED----                         -->
-<!--                    <li><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>-->
+                    <!--                    ----DEPRECATED----                         -->
+                    <!--                    <li><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>-->
                 </ul>
             </li>
             <li class ="navbar-side-choice IntegratorRO navlist" id="navMenuIntegration" style="display:none">
@@ -181,11 +181,25 @@
             </a>
             <ul class="dropdown-menu btn-default" id="userMenu">
                 <li>
-                    <a name="menuitem" class="btn-default" id="menuAccount" href="#"><i class="fa fa-user fa-fw"></i><span id="headerUserAccount">  User Account</span></a>
+                    <a name="menuitem" class="btn-default" id="menuAccount" href="#">
+                        <i class="fa fa-user fa-fw"></i><span id="headerUserAccount">  User Account</span>
+                    </a>
                 </li>
                 <li>
-                    <a name="menuitem" class="btn-default"  id="menuLogout" href="#"><i class="fa fa-sign-out fa-fw "></i><span id="headerLogout">  Logout</span></a>
+                    <a name="menuitem" class="btn-default"  id="menuLogout" href="#">
+                        <i class="fa fa-sign-out fa-fw "></i><span id="headerLogout">  Logout</span>
+                    </a>
                 </li>
+                <li id="darkModeEntry">
+                    <a>
+                        <label class="bold marginTop10">Dark Mode :</label>
+                        <div class="btn-group btn-toggle marginRight10" id="menuDarkMode"> 
+                            <button class="btn btn-ON btn-xs btn-default active">ON</button>
+                            <button class="btn btn-OFF btn-xs btn-info">OFF</button>
+                        </div>
+                    </a>
+                </li>
+
             </ul>
         </li>
     </ul>
