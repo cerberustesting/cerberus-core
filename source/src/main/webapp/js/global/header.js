@@ -279,11 +279,11 @@ function displayHeaderLabel(doc) {
         if (user.menu.accountLink === "") {
             $("#menuAccount").attr("href", user.menu.accountLink);
             $("#menuAccount").attr("target", "_blank");
-            $("#menuAccount").attr("style", "display: none;");
+            $("#menuAccount").attr("style", "display: none;color: var(--crb-black-color)");
         } else {
             $("#menuAccount").attr("href", user.menu.accountLink);
             $("#menuAccount").attr("target", "_blank");
-            $("#menuAccount").attr("style", "display: block;");
+            $("#menuAccount").attr("style", "display: block;color: var(--crb-black-color)");
         }
 
         if (user.menu.logoutLink === "") {
@@ -305,7 +305,7 @@ function displayHeaderLabel(doc) {
             }
             aL = aL + "Logout.jsp";
             $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL)));
-            $("#menuLogout").attr("style", "display: block;");
+            $("#menuLogout").attr("style", "display: block;color: var(--crb-black-color)");
         }
 
         // Refresh History Menu
@@ -367,42 +367,43 @@ function loadUserSystemCombo() {
 
 function refreshHistoryMenu() {
     $(".histo").remove();
+    $(".menuSeparator").remove();
 
     let entryList = localStorage.getItem("historyTestcases");
     entryList = JSON.parse(entryList);
     if (entryList !== null && entryList.length > 0) {
-        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Testcases</span></li>");
+        $("#userMenu").append("<li class='menuSeparator'><span>Last Seen Testcases</span></li>");
         for (var item in entryList) {
             let newitem = entryList.length - item - 1;
             let desc = "<div></div>";
             if ((entryList[newitem].description !== undefined) && (entryList[newitem].description !== "")) {
                 desc = "<div style='font-size: 10px;min-width: 350px'> " + entryList[newitem].description + "</div>";
             }
-            $("#userMenu").append("<li class='histo'><a name='menuitem' href='TestCaseScript.jsp?test=" + encodeURIComponent(entryList[newitem].test) + "&testcase=" + encodeURIComponent(entryList[newitem].testcase) + "'><i class='fa fa-bars'></i>" +
+            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='TestCaseScript.jsp?test=" + encodeURIComponent(entryList[newitem].test) + "&testcase=" + encodeURIComponent(entryList[newitem].testcase) + "'><i class='fa fa-bars'></i>" +
                     "<span>  " + entryList[newitem].test + " " + entryList[newitem].testcase + "</span>" + desc + "</a></li>");
         }
     }
     entryList = localStorage.getItem("historyExecutions");
     entryList = JSON.parse(entryList);
     if (entryList !== null && entryList.length > 0) {
-        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Executions</span></li>");
+        $("#userMenu").append("<li class='menuSeparator'><span>Last Seen Executions</span></li>");
         for (var item in entryList) {
             let newitem = entryList.length - item - 1;
             let desc = "<div style='font-size: 10px;min-width: 350px'> " + entryList[newitem].test + " " + entryList[newitem].testcase + " | " + entryList[newitem].country + " " + entryList[newitem].environment + " " + entryList[newitem].robot + "</div>";
             if ((entryList[newitem].description !== undefined) && (entryList[newitem].description !== "")) {
                 desc += "<div style='font-size: 10px;min-width: 350px'> " + entryList[newitem].description + "</div>";
             }
-            $("#userMenu").append("<li class='histo'><a name='menuitem' href='TestCaseExecution.jsp?executionId=" + entryList[newitem].id + "'><i class='fa fa-gear status" + entryList[newitem].controlStatus + "'></i>" +
+            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='TestCaseExecution.jsp?executionId=" + entryList[newitem].id + "'><i class='fa fa-gear status" + entryList[newitem].controlStatus + "'></i>" +
                     "<span class='status" + entryList[newitem].controlStatus + "'>  " + entryList[newitem].id + "</span>" + desc + "</a></li>");
         }
     }
     entryList = localStorage.getItem("historyCampaigns");
     entryList = JSON.parse(entryList);
     if (entryList !== null && entryList.length > 0) {
-        $("#userMenu").append("<li class='menuSeparator histo'><span>Last Seen Campaigns</span></li>");
+        $("#userMenu").append("<li class='menuSeparator'><span>Last Seen Campaigns</span></li>");
         for (var item in entryList) {
             let newitem = entryList.length - item - 1;
-            $("#userMenu").append("<li class='histo'><a name='menuitem' href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(entryList[newitem].tag) + "'><i class='fa fa-gears'></i><span>  " + entryList[newitem].tag + "</span></a></li>");
+            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(entryList[newitem].tag) + "'><i class='fa fa-gears'></i><span>  " + entryList[newitem].tag + "</span></a></li>");
         }
     }
 }
@@ -415,6 +416,10 @@ function multiSelectConfSystem(name) {
     this.enableCaseInsensitiveFiltering = true;
     this.includeSelectAllOption = true;
     this.includeSelectAllIfMoreThan = 2;
+//    this.optionClass = "btn-default";
+//    this.inheritClass = "btn-default";
+//    this.buttonClass = "btn-default";
+    this.selectedClass = "btn-default";
 }
 
 function ChangeLanguage() {

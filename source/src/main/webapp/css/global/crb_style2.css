@@ -1118,6 +1118,13 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     font-size: 10px;
 }
 
+ul.multiselect-container {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
+
 .navbar-inverse .navbar-nav > li > a {
     color: #AAAAAA;
 }
@@ -1516,7 +1523,14 @@ table.dataTable thead th input {
 }
 
 .menuSeparator{
-    background: lightgrey;
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-color);
+    border-color: var(--crb-grey-color);
+}
+.histo {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
 }
 
 
