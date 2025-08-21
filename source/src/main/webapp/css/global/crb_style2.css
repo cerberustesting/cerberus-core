@@ -146,7 +146,7 @@
     height: 100%;
     left: 0;
     top: 0;
-    background: rgba(255 255 255);
+    background: var(--crb-white-color);
     z-index: 1000;
 }
 

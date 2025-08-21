@@ -45,7 +45,7 @@
             <div class="row" >
 
                 <div class="col-lg-12" id="FiltersPanel">
-                    <div class="panel panel-default">
+                    <div class="panel panel-default whiteCard">
                         <div class="panel-heading card">
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="filters">Filters</label>
@@ -151,7 +151,7 @@
 
                 <div class="col-lg-12" id="MonitorPanel">
 
-                    <div class="panel panel-default">
+                    <div class="panel panel-default whiteCard">
                         <div class="panel-heading card">
 
                             <span class="fa fa-bar-chart fa-fw"></span>
