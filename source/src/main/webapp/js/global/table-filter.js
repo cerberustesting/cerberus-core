@@ -588,14 +588,14 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             if (currentColumn.like == null || !currentColumn.like) {
                 //Add selectAll/unSelectAll button
                 $("#" + tableId + "_wrapper .popover-title").after(
-                        $('<button>').attr('class', 'glyphicon glyphicon-check')
+                        $('<button>').attr('class', 'glyphicon glyphicon-check btn-default')
                         .attr('type', 'button')
                         .attr('title', 'select all').attr('name', 'selectAll')
                         .attr('data-type', 'custom').on('click', function () {
                     $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
                 }));
                 $("#" + tableId + "_wrapper .popover-title").after(
-                        $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                        $('<button>').attr('class', 'glyphicon glyphicon-unchecked  btn-default')
                         .attr('type', 'button')
                         .attr('title', 'unselect all').attr('name', 'unSelectAll')
                         .attr('data-type', 'custom').on('click', function () {

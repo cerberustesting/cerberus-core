@@ -1571,7 +1571,28 @@ table.dataTable thead th input {
 }
 
 .popover{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
     width:  600px;
+}
+
+.panel-body {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
+.dropdown-menu{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
+.popover-title{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
 }
 
 @keyframes blink {

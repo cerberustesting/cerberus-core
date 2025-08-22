@@ -174,7 +174,7 @@ function renderOptionsForTestCaseList(data) {
             contentToAdd += "</div>";
 
             contentToAdd += "<div class='btn-group'>";
-            contentToAdd += "<button id='btnGroupDropIO' type='button' class='btn btn-secondary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Import / Export <span class='caret'></span></button>";
+            contentToAdd += "<button id='btnGroupDropIO' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Import / Export <span class='caret'></span></button>";
             contentToAdd += "<div class='dropdown-menu' aria-labelledby='btnGroupDropIO'>";
             contentToAdd += "<button id='exportTestCaseMenuButton' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export") + "</button>";
 //            contentToAdd += "<button id='exportTestCaseMenuButtonSingleFile' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export1file") + "</button>";
