@@ -1532,6 +1532,11 @@ table.dataTable thead th input {
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);
 }
+.darkMode {
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
 
 
 .pill80 {

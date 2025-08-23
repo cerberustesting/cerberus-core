@@ -6756,3 +6756,6 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 
 -- 1924
 UPDATE robot set `ExtraParam` = REPLACE(`ExtraParam`, ' ', ' | ');
+
+-- 1925
+DELETE FROM `invariant` where idname ='LANGUAGE' and value in ('fa', 'ru');

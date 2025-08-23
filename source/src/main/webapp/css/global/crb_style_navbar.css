@@ -366,7 +366,6 @@
         position:absolute;
         right:20px;
         top:6px;
-        background-color:var(--crb-left-menu-font-hover);
     }
 
     #burger-setting{
@@ -376,7 +375,6 @@
         width:56px;
         height:44px;
         top:6px;
-        background-color:var(--crb-left-menu-font-hover);
     }
 
     .titleCase{
