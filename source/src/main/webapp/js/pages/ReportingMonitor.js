@@ -333,10 +333,10 @@ function goFullscreen(withRefrash = true) {
 
 function loadBoard() {
 
-    let systems = [];
-    let environments = [];
-    let countries = [];
-    let campaigns = [];
+    systems = [];
+    environments = [];
+    countries = [];
+    campaigns = [];
 
     let systemQ = "";
     if ($("#systemSelect").val() !== null) {
@@ -401,9 +401,9 @@ function loadBoard() {
 
     InsertURLInHistory("./ReportingMonitor.jsp?" + qS);
     if (wsOpen) {
-        refreshMonitorTable(lastReceivedData, systems, environments, countries, campaigns);
+        refreshMonitorTable(lastReceivedData);
     } else if (!wsStartOpenning) {
-        openSocketAndBuildTable(systems, environments, countries, campaigns);
+        openSocketAndBuildTable();
     }
 
 }
@@ -557,7 +557,7 @@ function refreshMonitorTable(dataFromWs) {
     data.tests = dataFromWs.tests;
     data.executionBoxes = {};
     let listData = Object.keys(dataFromWs.executionBoxes);
-//    console.info("Size before filter : " + listData.length);
+    console.info("Size before filter : " + listData.length);
 //    console.info(systems);
 //    console.info(environments);
 //    console.info(countries);
@@ -598,7 +598,7 @@ function refreshMonitorTable(dataFromWs) {
         }
     }
 //    console.info(data);
-//    console.info("Size after filter : " + Object.keys(data.executionBoxes).length);
+    console.info("Size after filter : " + Object.keys(data.executionBoxes).length);
 //    console.info(agregatedStatus);
 
 
