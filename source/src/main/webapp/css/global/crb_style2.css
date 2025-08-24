@@ -594,7 +594,6 @@
     border-radius: 5px;
     box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
     -webkit-box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
-
 }
 
 #page-layout > .panel-default{
@@ -602,7 +601,6 @@
     border-radius: 5px;
     box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
     -webkit-box-shadow: 0 7px 14px 0 var(--crb-shadow-left-color), 0 3px 6px 0 var(--crb-shadow-bottom-color);
-
 }
 
 .manualExecLeftButton{
@@ -648,12 +646,26 @@ body {
     background-color: var(--crb-blue-light-color);
     border-color: var(--crb-blue-light-color);
 }
+.pagination>li>a, .pagination>li>span {
+    z-index: 3;
+    color: var(--crb-blue-color);
+    cursor: default;
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-light-color);
+}
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
     z-index: 3;
     color: var(--crb-blue-light-color);
     cursor: default;
     background-color: var(--crb-blue-color);
     border-color: var(--crb-blue-color);
+}
+.pagination>.disabled>a, .pagination>.disabled>a:focus, .pagination>.disabled>a:hover, .pagination>.disabled>span, .pagination>.disabled>span:focus, .pagination>.disabled>span:hover {
+    z-index: 3;
+    color: var(--crb-grey-color);
+    cursor: default;
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-light-color);
 }
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
     z-index: 2;
@@ -700,6 +712,12 @@ pre{
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);
 }
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-light-color);
+    border-color: var(--crb-grey-color);
+}
+
 
 select {
     font-size:100%;
@@ -730,6 +748,31 @@ a {
     color: var(--crb-red-color);
     cursor: pointer;
     margin-right: 5px;
+}
+
+.modal-header, .modal-body, .modal-footer{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);
+}
+
+.well-sm, .well-lg, .well{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-light-color);
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
+button.close>span{
+    color: var(--crb-black-color);
+}
+button.close>span:focus, button.close>span:hover{
+    color: var(--crb-black-color);
 }
 
 .modal-admin {

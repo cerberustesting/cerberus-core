@@ -270,7 +270,7 @@ div button.margin-right5{
 
 /*default styles used by bootstrap*/
 select option{
-    color: #555555;
+    color: var(--crb-grey-color);
     font-size: 14px;
     font-style:normal
 }
