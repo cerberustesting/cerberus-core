@@ -84,7 +84,7 @@
                                         <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-left:10px; margin-top: 10px;">
 
                                             <div class="btn-group marginRight5">
-                                                <button id="btnGroupDrop1" style="border-radius:4px" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <button id="btnGroupDrop1" style="border-radius:4px" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <span class="glyphicon glyphicon-option-horizontal"></span>
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">

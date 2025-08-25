@@ -707,7 +707,7 @@ pre{
     border-radius: 5px;
 
 }
-.form-control {
+.form-control, .input-group-addon {
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);
@@ -766,6 +766,10 @@ a {
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);
+}
+
+.dropdown-menu>li>a{
+    color: var(--crb-dark-color);
 }
 
 button.close>span{
@@ -1625,7 +1629,7 @@ table.dataTable thead th input {
     width:  600px;
 }
 
-.panel-body {
+.panel, .panel-body {
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);

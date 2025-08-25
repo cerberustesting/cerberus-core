@@ -79,11 +79,11 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <label id="countryLabel" class="bold marginTop10">Country :</label>
-                                            <button id="countrySelectAll" class="glyphicon glyphicon-check"
+                                            <button id="countrySelectAll" class="glyphicon glyphicon-check btn-default"
                                                     title="select all countries"></button>
-                                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
+                                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked btn-default"
                                                     title="unselect all countries"></button>
-                                            <button class="btn pull-right marginTop10" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1">
+                                            <button class="btn btn-default pull-right marginTop10" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1">
                                                 <span class="glyphicon glyphicon-chevron-down"></span>
                                             </button>
 
@@ -93,9 +93,9 @@
                                     </div>
 
                                     <label id="statusLabel" class="bold marginTop10">Status :</label>
-                                    <button id="statusSelectAll" class="glyphicon glyphicon-check"
+                                    <button id="statusSelectAll" class="glyphicon glyphicon-check btn-default"
                                             title="select all status"></button>
-                                    <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked"
+                                    <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked btn-default"
                                             title="unselect all status"></button>
                                     <div class="form-group marginBottom20" id="statusFilter">
                                         <label class="checkbox-inline">

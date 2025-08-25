@@ -1766,8 +1766,8 @@ function renderOptionsForExeList(selectTag) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10' id='statusFilterList'>";
         contentToAdd += "<label class='marginRight10'>Status :</label>";
-        contentToAdd += "<button type='button' id='selectAllStatus' class='glyphicon glyphicon-check'></button>";
-        contentToAdd += "<button type='button' id='unselectAllStatus' class='glyphicon glyphicon-unchecked marginRight10'></button>";
+        contentToAdd += "<button type='button' id='selectAllStatus' class='glyphicon glyphicon-check btn-default'></button>";
+        contentToAdd += "<button type='button' id='unselectAllStatus' class='glyphicon glyphicon-unchecked marginRight10 btn-default'></button>";
         contentToAdd += "<label class='checkbox-inline fontOK'><input id='selectAllQueueOK' type='checkbox'></input>OK</label>";
         contentToAdd += "<label class='checkbox-inline fontQE'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
         contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";

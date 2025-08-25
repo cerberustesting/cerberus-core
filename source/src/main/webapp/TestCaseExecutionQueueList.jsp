@@ -91,7 +91,7 @@
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
 
-                            <div class="panel panel-default"  id="QueueJobActive" style="padding:10px;background-color: #fafafa;">
+                            <div class="panel panel-default"  id="QueueJobActive" style="padding:10px;">
                                 <div class="row">
                                     <div class="form-group col-sm-6">
                                         <table>
@@ -115,7 +115,7 @@
                                 </div>
                             </div>
 
-                            <div class="panel panel-default" id="QueueJobStatus" style="padding:10px;background-color: #fafafa;">
+                            <div class="panel panel-default" id="QueueJobStatus" style="padding:10px;">
                                 <div class="row">
                                     <div class="form-group col-sm-6">
                                         <label for="jobRunning" name="jobRunningField">Is Queue Job currently running ?</label>
@@ -173,7 +173,7 @@
                                     </div>
 
                                     <div class="col-sm-2 col-md-2 btn-group marginTop20">
-                                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Preset Range<span class="caret"></span>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">

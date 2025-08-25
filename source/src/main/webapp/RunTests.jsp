@@ -42,7 +42,7 @@
 
 
         <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
-            <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
+            <button type="button" class="feedback btn btn-default " id="runTestCase">Run TestCase</button>
             <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
         </div>
 
