@@ -32,7 +32,7 @@ var wOffsetV = 40;
 var wBoxHeigth = 72;
 
 var maxPreviousExe = 2;
-var displayHorizonMin = 120;
+var displayHorizonMin = 1440;
 var displayRetry = false;
 var displayMuted = false;
 var fullscreen = false;

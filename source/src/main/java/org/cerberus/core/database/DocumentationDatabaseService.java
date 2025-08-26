@@ -2595,6 +2595,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuReportingExecutionList','','fa','فهرست اجرا','',NULL)");
         b.append(",('page_header','menuReportingExecutionThreadMonitoring','','en','Cerberus Monitoring','',NULL)");
         b.append(",('page_header','menuReportingExecutionThreadMonitoring','','fr','Monitoring Cerberus','',NULL)");
+        b.append(",('page_header','menuReportingMonitor','','en','Execution Monitor','',NULL)");
+        b.append(",('page_header','menuReportingMonitor','','fr','Monitoring d\\'éxecution','',NULL)");
         b.append(",('page_header','menuReportingExecutionThreadMonitoring','','fa','پایش سربروس','',NULL)");
         b.append(",('page_header','menuRobot','','en','Robot','',NULL)");
         b.append(",('page_header','menuRobot','','fr','Robot','',NULL)");

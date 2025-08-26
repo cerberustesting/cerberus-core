@@ -30,9 +30,9 @@
     --crb-red-light-color: rgb(252,231,235);
     --crb-red-dark-color: rgb(171, 42, 65);
 
-    --crb-purple-color: #727cf5;
+    --crb-purple-color: #BF00BF;
     --crb-purple-light-color: rgb(221, 223, 247);
-    --crb-purple-dark-color: #4d54a3;
+    --crb-purple-dark-color: #5C025C;
 
     --crb-thistle-color: #D8BFD8;
     --crb-thistle-light-color: rgb(255,255,255);
@@ -50,6 +50,7 @@
     --crb-dark-color: #292929;
     --crb-grey-color: #aaaaaa;
     --crb-grey-light-color: #e7e7e7;
+    --crb-grey-lighter-color: #f5f5f5;
     --crb-grey-superlight-color: #f8f8f8;
     --crb-white-color: white;
 
@@ -62,6 +63,21 @@
     --crb-left-menu-font-hover: white;
     --crb-top-menu-font: #1e2124;
 
+    --crb-alert-warning: #8a6d3b;
+    --crb-alert-warning-background: #fcf8e3;
+    --crb-alert-warning-border: #faebcc;
+
+    --crb-alert-info: #31708f;
+    --crb-alert-info-background: #d9edf7;
+    --crb-alert-info-border: #bce8f1;
+
+    --crb-alert-danger: #a94442;
+    --crb-alert-danger-background: #f2dede;
+    --crb-alert-danger-border: #ebccd1;
+
+    --crb-alert-success: #3c763d;
+    --crb-alert-success-background: #dff0d8;
+    --crb-alert-success-border: #d6e9c6;
 
     /*SYNTHESIS*/
     --old-ok: #5CB85C;
@@ -107,9 +123,9 @@
     --crb-red-light-color: rgb(70, 34, 42);
     --crb-red-dark-color: rgb(245, 165, 178);
 
-    --crb-purple-color: #727cf5;
-    --crb-purple-light-color: #2d305a;
-    --crb-purple-dark-color: #a3a7f9;
+    --crb-purple-color: #E89FE8;
+    --crb-purple-light-color: #2C2D3A;
+    --crb-purple-dark-color: #1C001C;
 
     --crb-thistle-color: #D8BFD8;
     --crb-thistle-light-color: rgb(80, 70, 80);
@@ -127,8 +143,12 @@
     --crb-dark-color: #dddddd;
     --crb-grey-color: #bbbbbb;
     --crb-grey-light-color: #3a3a3a;
+    --crb-grey-lighter-color: #1a1a1a;
     --crb-grey-superlight-color: #252525;
     --crb-white-color: #111111;
+
+    --crb-shadow-left-color: rgba(255, 255, 255, 0.06);
+    --crb-shadow-bottom-color: rgba(255, 255, 255, 0.17);
 
     --crb-left-menu-background: #1e2124;
     --crb-left-menu-background-hover: rgba(79,84,92,.6);
@@ -136,10 +156,54 @@
     --crb-left-menu-font-hover: white;
     --crb-top-menu-font: #f5f5f5;
 
-    --crb-shadow-left-color: rgba(255, 255, 255, 0.06);
-    --crb-shadow-bottom-color: rgba(255, 255, 255, 0.17);
+
+    --crb-alert-warning: #f1c76b;
+    --crb-alert-warning-background: #2e2a1c;
+    --crb-alert-warning-border: #4a3f1f;
+
+    --crb-alert-info: #7fc1e0;
+    --crb-alert-info-background: #1c2a33;
+    --crb-alert-info-border: #2b4958;
+
+    --crb-alert-danger: #e88b89;
+    --crb-alert-danger-background: #2f1e1e;
+    --crb-alert-danger-border: #4b2b2b;
+
+    --crb-alert-success: #7dc47e;
+    --crb-alert-success-background: #1e2b1e;
+    --crb-alert-success-border: #2f4730;
+
+
+    --old-qe: #D38FD3;
+    --qe: var(--old-qe);
+
 }
 
+.alert-info{
+    color: var(--crb-alert-info);
+    background-color: var(--crb-alert-info-background);
+    border-color: var(--crb-alert-info-border);
+}
+.alert-warning{
+    color: var(--crb-alert-warning);
+    background-color: var(--crb-alert-warning-background);
+    border-color: var(--crb-alert-warning-border);
+}
+.alert-danger{
+    color: var(--crb-alert-danger);
+    background-color: var(--crb-alert-danger-background);
+    border-color: var(--crb-alert-danger-border);
+}
+.alert-success{
+    color: var(--crb-alert-success);
+    background-color: var(--crb-alert-success-background);
+    border-color: var(--crb-alert-success-border);
+}
+.progress, .progress-bar{
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-lighter-color);
+    border-color: var(--crb-grey-lighter-color);
+}
 .overlay {
     position: fixed;
     width: 100%;
@@ -404,6 +468,7 @@
     background-color: var(--crb-green-color);
 }
 .statusOK {
+    color: var(--crb-green-light-color);
     background-color: var(--crb-green-color);
 }
 
@@ -421,7 +486,7 @@
 }
 .statusKO {
     background-color: var(--crb-red-color);
-    color: #fff;
+    color: var(--crb-red-light-color);
 }
 
 /* FA */
@@ -438,7 +503,7 @@
 }
 .statusFA {
     background-color: var(--crb-orange-color);
-    color: #fff;
+    color: var(--crb-orange-light-color);
 }
 
 /* CA */
@@ -455,6 +520,7 @@
 }
 .statusCA {
     background-color: var(--crb-yellow-dark-color);
+    color: var(--crb-yellow-light-color);
 }
 
 /* NA */
@@ -471,39 +537,41 @@
 }
 .statusNA {
     background-color: var(--crb-yellow-color);
+    color: var(--crb-yellow-light-color);
 }
 
 /* NE */
 .panelNE {
-    border-color: #aaa;
+    border-color: var(--ne);
 }
 .fontNE {
-    color: #aaa;
+    color: var(--ne);
 }
 .panelNE .panel-heading {
-    border-color: #aaa;
-    color: #FFF;
-    background-color: #aaa;
+    border-color: var(--ne);
+    color: var(--crb-white-color);
+    background-color: var(--ne);
 }
 .statusNE {
-    background-color: #aaa;
+    background-color: var(--ne);
 }
 
 
 /* WE */
 .panelWE {
-    border-color: var(--crb-dark-color);
+    border-color: var(--old-we);
 }
 .fontWE {
-    color: var(--crb-dark-color);
+    color: var(--old-we);
 }
 .panelWE .panel-heading {
-    border-color: var(--crb-dark-color);
+    border-color: var(--old-we);
     color: var(--crb-grey-color);
-    background-color: var(--crb-dark-color);
+    background-color: var(--old-we);
 }
 .statusWE {
-    background-color: var(--crb-dark-color);
+    background-color: var(--old-we);
+    color: var(--crb-grey-color);
 }
 
 /* PE */
@@ -520,6 +588,7 @@
 }
 .statusPE {
     background-color: var(--crb-blue-color);
+    color: var(--crb-blue-light-color);
 }
 
 /* QU */
@@ -536,22 +605,24 @@
 }
 .statusQU {
     background-color: var(--crb-purple-color);
+    color: var(--crb-purple-light-color);
 }
 
 /* PA */
 .panelPA {
-    border-color: var(--crb-thistle-color);
+    border-color: var(--old-pa);
 }
 .fontPA {
-    color: var(--crb-thistle-color);
+    color: var(--old-pa);
 }
 .panelPA .panel-heading {
-    border-color: var(--crb-thistle-color);
+    border-color: var(--old-pa);
     color: var(--crb-thistle-light-color);
-    background-color: var(--crb-thistle-color);
+    background-color: var(--old-pa);
 }
 .statusPA {
-    background-color: var(--crb-thistle-color);
+    background-color: var(--old-pa);
+    color: var(--crb-thistle-light-color);
 }
 
 /* QE */
@@ -568,6 +639,7 @@
 }
 .statusQE {
     background-color: var(--crb-purple-dark-color);
+    color: var(--crb-purple-light-color);
 }
 
 

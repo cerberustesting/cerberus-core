@@ -56,10 +56,10 @@
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel no-border" id="testCaseConfig">
-                <div style="background-color: #f5f6fa">
-                    <div id="divPanelDefault" class="panel no-border" style="z-index:10; top: 0;background-color:#f5f6fa">
+                <div style="">
+                    <div id="divPanelDefault" class="panel no-border" style="z-index:10; top: 0">
                         <div class="panel-heading" id="executionHeader"
-                             style="z-index:2; top: 0;border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;">
+                             style="z-index:2; top: 0;border-radius: 10px;margin-bottom: 0px;border: 1px solid #eee;">
                             <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
                                 <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                     <span class="sr-only"></span>FALSE NEGATIVE
@@ -224,8 +224,8 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        <div id="NavtabsScriptEdit" style="height:40px; background-color: #f5f6fa; padding-top:20px">
-                            <ul id="tabsScriptEdit" class="nav nav-tabs" style="background-color:#f5f6fa" data-tabs="tabs">
+                        <div id="NavtabsScriptEdit" style="height:40px; padding-top:20px">
+                            <ul id="tabsScriptEdit" class="nav nav-tabs" style="" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Bugs</a></li>
