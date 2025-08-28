@@ -170,8 +170,8 @@
                                 </div>
                                 <div class="col-xs-1">
                                     <div class="row" style="margin-top: 120px;">
-                                        <button id="testcaseSelectAll" class="glyphicon glyphicon-check" title="Select All"></button>
-                                        <button id="testcaseSelectNone" class="glyphicon glyphicon-unchecked" title="Select None"></button>
+                                        <button id="testcaseSelectAll" class="btn-default glyphicon glyphicon-check" title="Select All"></button>
+                                        <button id="testcaseSelectNone" class="btn-default glyphicon glyphicon-unchecked" title="Select None"></button>
                                     </div>
                                 </div>
                             </div>
@@ -224,8 +224,8 @@
                                         </div>
                                         <div class="col-xs-1">
                                             <div class="row" style="margin-top: 30px;">
-                                                <button id="countrySelectAll" class="glyphicon glyphicon-check" title="Select All"></button>
-                                                <button id="countrySelectNone" class="glyphicon glyphicon-unchecked" title="Select None"></button>
+                                                <button id="countrySelectAll" class="btn-default glyphicon glyphicon-check" title="Select All"></button>
+                                                <button id="countrySelectNone" class="btn-default glyphicon glyphicon-unchecked" title="Select None"></button>
                                             </div>
                                         </div>
                                     </div>
@@ -256,8 +256,8 @@
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
                                             <div class="col-sm-6">
                                                 <select class="form-control" id="robot" name="robot" multiple></select>
-                                                <button type="button" id="robotEdit" class="glyphicon glyphicon-edit btn" title="Edit Robot"></button>
-                                                <button type="button" id="robotCreate" class="glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
+                                                <button type="button" id="robotEdit" class="btn-default glyphicon glyphicon-edit btn" title="Edit Robot"></button>
+                                                <button type="button" id="robotCreate" class="btn-default glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
                                             </div>
                                             <div class="col-sm-1" style="margin-top: 0px;">
                                             </div>

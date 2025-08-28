@@ -3166,7 +3166,7 @@ function comboConfigTag_format(tag) {
 
 function comboConfigTag_formatSelection(tag) {
     if (!isEmpty(tag.campaign)) {
-        return `${tag.id}[${tag.campaign}]`;
+        return `${tag.id} [${tag.campaign}]`;
     }
     return tag.id;
 }

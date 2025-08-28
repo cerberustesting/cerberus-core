@@ -26,7 +26,7 @@
 }
 
 .select2-result-tag__title {
-    color:black;
+/*    color:black;*/
     font-weight:bold;
     word-wrap:break-word;
     line-height:1.1;
@@ -38,13 +38,13 @@
 }
 .select2-result-tag__detail {
     display:inline-block;
-    color:#000;
+/*    color:#000;*/
     font-size:11px
 }
 
 .select2-result-tag__description {
     font-size:13px;
-    color:#777;
+/*    color:#777;*/
     margin-top:4px
 }
 
