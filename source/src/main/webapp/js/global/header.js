@@ -294,11 +294,11 @@ function displayHeaderLabel(doc) {
         if (user.menu.accountLink === "") {
             $("#menuAccount").attr("href", user.menu.accountLink);
             $("#menuAccount").attr("target", "_blank");
-            $("#menuAccount").attr("style", "display: none;color: var(--crb-black-color)");
+            $("#menuAccount").attr("style", "display: none;");
         } else {
             $("#menuAccount").attr("href", user.menu.accountLink);
             $("#menuAccount").attr("target", "_blank");
-            $("#menuAccount").attr("style", "display: block;color: var(--crb-black-color)");
+            $("#menuAccount").attr("style", "display: block;");
         }
 
         if ((window.location.hostname.includes('localhost'))
@@ -334,7 +334,7 @@ function displayHeaderLabel(doc) {
             }
             aL = aL + "Logout.jsp";
             $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL)));
-            $("#menuLogout").attr("style", "display: block;color: var(--crb-black-color)");
+            $("#menuLogout").attr("style", "display: block;");
         }
 
         // Refresh History Menu
@@ -408,7 +408,7 @@ function refreshHistoryMenu() {
             if ((entryList[newitem].description !== undefined) && (entryList[newitem].description !== "")) {
                 desc = "<div style='font-size: 10px;min-width: 350px'> " + entryList[newitem].description + "</div>";
             }
-            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='TestCaseScript.jsp?test=" + encodeURIComponent(entryList[newitem].test) + "&testcase=" + encodeURIComponent(entryList[newitem].testcase) + "'><i class='fa fa-bars'></i>" +
+            $("#userMenu").append("<li class='histo'><a style='' name='menuitem' href='TestCaseScript.jsp?test=" + encodeURIComponent(entryList[newitem].test) + "&testcase=" + encodeURIComponent(entryList[newitem].testcase) + "'><i class='fa fa-bars'></i>" +
                     "<span>  " + entryList[newitem].test + " " + entryList[newitem].testcase + "</span>" + desc + "</a></li>");
         }
     }
@@ -422,7 +422,7 @@ function refreshHistoryMenu() {
             if ((entryList[newitem].description !== undefined) && (entryList[newitem].description !== "")) {
                 desc += "<div style='font-size: 10px;min-width: 350px'> " + entryList[newitem].description + "</div>";
             }
-            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='TestCaseExecution.jsp?executionId=" + entryList[newitem].id + "'><i class='fa fa-gear status" + entryList[newitem].controlStatus + "'></i>" +
+            $("#userMenu").append("<li class='histo'><a style='' name='menuitem' href='TestCaseExecution.jsp?executionId=" + entryList[newitem].id + "'><i class='fa fa-gear status" + entryList[newitem].controlStatus + "'></i>" +
                     "<span class='status" + entryList[newitem].controlStatus + "'>  " + entryList[newitem].id + "</span>" + desc + "</a></li>");
         }
     }
@@ -432,7 +432,7 @@ function refreshHistoryMenu() {
         $("#userMenu").append("<li class='menuSeparator'><span>Last Seen Campaigns</span></li>");
         for (var item in entryList) {
             let newitem = entryList.length - item - 1;
-            $("#userMenu").append("<li class='histo'><a style='color: var(--crb-black-color)' name='menuitem' href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(entryList[newitem].tag) + "'><i class='fa fa-gears'></i><span>  " + entryList[newitem].tag + "</span></a></li>");
+            $("#userMenu").append("<li class='histo'><a style='' name='menuitem' href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(entryList[newitem].tag) + "'><i class='fa fa-gears'></i><span>  " + entryList[newitem].tag + "</span></a></li>");
         }
     }
 }
