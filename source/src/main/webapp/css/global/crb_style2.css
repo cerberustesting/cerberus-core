@@ -792,6 +792,16 @@ select[multiple] {
     height: auto;
 }
 
+.select2-container--default .select2-selection--multiple{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
 .select2-container--default .select2-selection--single{
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
