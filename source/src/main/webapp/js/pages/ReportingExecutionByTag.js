@@ -2290,7 +2290,7 @@ function renderDependency(id) {
 }
 
 function generateAnchor(test, testcase, country, env) {
-    return (encodeURIComponent(test).replace("%", "") + "_" + encodeURIComponent(testcase).replace("%", "") + "_" + encodeURIComponent(country).replace("%", "") + "_" + encodeURIComponent(env).replace("%", "") + "_");
+    return (encodeURIComponent(test).replaceAll("%", "") + "_" + encodeURIComponent(testcase).replaceAll("%", "") + "_" + encodeURIComponent(country).replaceAll("%", "") + "_" + encodeURIComponent(env).replaceAll("%", "") + "_");
 }
 
 function customConfig(config) {
