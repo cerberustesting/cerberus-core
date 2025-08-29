@@ -1,0 +1,16 @@
+.mce-content-body {
+    background: var(--crb-white-color);
+/*    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);*/
+}
+
+.tox .tox-statusbar{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+}
+
+
+
+

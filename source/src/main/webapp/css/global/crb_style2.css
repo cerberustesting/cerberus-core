@@ -17,6 +17,7 @@
     --crb-blue-color: rgb(44,123,229);
     --crb-blue-light-color: rgb(230,239,252);
     --crb-blue-dark-color: rgb(25, 72, 134);
+    --crb-blue-verydark-color: #34495E;
 
     --crb-green-color: rgb(0,210,122);
     --crb-green-light-color: rgb(224,250,239);
@@ -80,27 +81,40 @@
     --crb-alert-success-border: #d6e9c6;
 
     /*SYNTHESIS*/
-    --old-ok: #5CB85C;
     --ok: var(--crb-green-color);
-    --old-ko: #D9534F;
+    --static-ok: rgb(0,210,122);
+    --static-ok-hex: #00d27a;
     --ko: var(--crb-red-color);
-    --old-fa: #F0AD4E;
+    --static-ko: rgb(230,55,87);
+    --static-ko-hex: #e63757;
     --fa: var(--crb-orange-color);
-    --old-pe: #3498DB;
-    --pe: var(--crb-blue-color);
-    --old-na: #F1C40F;
+    --static-fa: rgb(245,128,62);
+    --static-fa-hex: #f5803e;
     --na: var(--crb-yellow-color);
-    --old-ne: #aaa;
+    --static-na: #f1c40f;
+    --static-na-hex: #f1c40f;
     --ne: var(--crb-grey-color);
-    --old-qu: #BF00BF;
-    --qu: var(--old-qu);
-    --old-qe: #5C025C;
-    --qe: var(--old-qe);
-    --old-we:#34495E;
-    --we: var(--crb-dark-color);
-    --old-ca:#F0AD4E;
+    --static-ne: #aaaaaa;
+    --static-ne-hex: #aaaaaa;
+    --we: var(--crb-blue-verydark-color);
+    --static-we: #34495E;
+    --static-we-hex: #34495E;
+    --pe: var(--crb-blue-color);
+    --static-pe: rgb(44,123,229);
+    --static-pe-hex: #2c7be5;
+    --qu: var(--crb-purple-color);
+    --static-qu: #BF00BF;
+    --static-qu-hex: #BF00BF;
+    --qe: var(--crb-purple-dark-color);
+    --static-qe: #5C025C;
+    --static-qe-hex: #5C025C;
+    --pa: var(--crb-thistle-color);
+    --static-pa: #D8BFD8;
+    --static-pa-hex: #D8BFD8;
     --ca: var(--crb-yellow-dark-color);
-    --qu: var(--crb-thistle-color);
+    --static-ca: #c6a20d;
+    --static-ca-hex: #c6a20d;
+
 }
 
 :root.dark {
@@ -172,10 +186,6 @@
     --crb-alert-success: #7dc47e;
     --crb-alert-success-background: #1e2b1e;
     --crb-alert-success-border: #2f4730;
-
-
-    --old-qe: #D38FD3;
-    --qe: var(--old-qe);
 
 }
 
@@ -526,34 +536,34 @@
 
 /* NE */
 .panelNE {
-    border-color: var(--ne);
+    border-color: var(--crb-grey-color);
 }
 .fontNE {
-    color: var(--ne);
+    color: var(--crb-grey-color);
 }
 .panelNE .panel-heading {
-    border-color: var(--ne);
+    border-color: var(--crb-grey-color);
     color: var(--crb-white-color);
-    background-color: var(--ne);
+    background-color: var(--crb-grey-color);
 }
 .statusNE {
-    background-color: var(--ne);
+    background-color: var(--crb-grey-color);
 }
 
 /* WE */
 .panelWE {
-    border-color: var(--old-we);
+    border-color: var(--crb-blue-verydark-color);
 }
 .fontWE {
-    color: var(--old-we);
+    color: var(--crb-blue-verydark-color);
 }
 .panelWE .panel-heading {
-    border-color: var(--old-we);
+    border-color: var(--crb-blue-verydark-color);
     color: var(--crb-grey-color);
-    background-color: var(--old-we);
+    background-color: var(--crb-blue-verydark-color);
 }
 .statusWE {
-    background-color: var(--old-we);
+    background-color: var(--crb-blue-verydark-color);
     color: var(--crb-grey-color);
 }
 
@@ -733,7 +743,16 @@ body {
     background-color: var(--crb-blue-color);
     border-color: var(--crb-blue-color);
 }
-
+.list-group-item{
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-superlight-color);
+    border-color: var(--crb-grey-superlight-color);
+}
+.list-group-item.disabled, .list-group-item.disabled:focus, .list-group-item.disabled:hover{
+    color: var(--crb-grey-color);
+    background-color: var(--crb-grey-light-color);
+    border-color: var(--crb-grey-light-color);
+}
 input{
     font-size:100%;
 }
@@ -854,6 +873,29 @@ select[multiple] {
 .select2-results__option{
     font-size:14px;
 }
+
+/*TINY*/
+.tox:not([dir=rtl]) .tox-statusbar__branding{
+    display: none;
+}
+/*.tox .tox-edit-area__iframe, .mce-content-body, .tox-tinymce, .mce-content-body{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);
+}*/
+/*.mce-content-body {
+    background: #eeeeee
+}*/
+/*.tox .tox-statusbar{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+}
+.tox .tox-statusbar__path-item{
+    color: var(--crb-black-color);
+}*/
+
+
 
 a {
     color: var(--crb-blue-color);

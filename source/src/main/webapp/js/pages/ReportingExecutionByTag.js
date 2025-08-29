@@ -38,7 +38,13 @@ tinyMCE.init({
 //    statusbar: false,
     toolbar: false,
     height: 100,
-    resize: true
+    resize: true,
+    skin: 'oxide-dark'
+//    content_css: "css/global/crb_style_ace.css",
+//    iframe_attrs: {
+//        'style': 'background-color: var(--crb-grey-color);border-color: var(--crb-white-color);',
+//        'class': 'custom-editor-frame'
+//    }
 });
 
 
@@ -576,13 +582,13 @@ function loadReportingData(selectTag) {
         //Collapse mechanism for TagInfo.
         var collapseTagContainer = $('div[data-target="#TagInfo"]');
         collapseTagContainer.on('click', function (event) {
-          var clickedButton = event.target;
+            var clickedButton = event.target;
 
-          if (clickedButton.id === 'refreshAll') {
-            //Prevent collapse
-            event.preventDefault();
-            event.stopPropagation();
-          }
+            if (clickedButton.id === 'refreshAll') {
+                //Prevent collapse
+                event.preventDefault();
+                event.stopPropagation();
+            }
         });
 
         //Event fired when we resize a column on the datatable. Need to re-execute functions because datatable is regenerated
@@ -792,7 +798,7 @@ function getHistoryCampaign(object) {
 function buildDetailCI(obj) {
 
     $("#tagDetailCI").empty();
-    let ciScoreBar = '<div style="display: inline; color: ' + getExeStatusRowColor(obj.ciResult) + '"><b>' + obj.ciResult + ' (Score : ' + obj.ciScore + ' / ' + obj.ciScoreThreshold + ')</b></div>';
+    let ciScoreBar = '<div class="font' + obj.ciResult + '" style="display: inline;"><b>' + obj.ciResult + ' (Score : ' + obj.ciScore + ' / ' + obj.ciScoreThreshold + ')</b></div>';
     $("#tagDetailCI").append(ciScoreBar);
 
 }

@@ -20,6 +20,31 @@
     Created on : 20 août 2015, 13:47:28
     Author     : cerberus
 */
+
+/*.tox .tox-statusbar{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+}
+.tox .tox-statusbar__path-item{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+    
+}
+.tox .tox-statusbar__path{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+}
+.tox:not([dir=rtl]) .tox-statusbar__path>*{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-white-color);    
+}*/
+
+
+
 .select2-result-tag {
     padding-top:4px;
     padding-bottom:3px
@@ -72,13 +97,13 @@
 
 .progress-bar span {
     font-weight: bold;
-    color: white;
+/*    color: white;*/
     margin-top: 10px;
 }
 
 .progress-bar-queue span {
     font-weight: bold;
-    color: white;
+/*    color: white;*/
     margin-top: 0px;
 }
 

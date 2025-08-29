@@ -2536,22 +2536,23 @@ function getExeStatusRowColor(status) {
         return '#e63757';
     } else if (status === "FA") {
         return '#f5803e';
-    } else if (status === "CA") {
-        return '#c6a20d';
-    } else if (status === "PE") {
-        return 'rgb(44,123,229)';
+    } else if (status === "NA") {
+        return '#f1c40f';
     } else if (status === "NE") {
-        return '#FFFFFF';
+        return '#aaaaaa';
     } else if (status === "WE") {
         return '#34495E';
-    } else if (status === "NA") {
-        return '#F1C40F';
+    } else if (status === "PE") {
+        return '#2c7be5';
     } else if (status === "QU") {
         return '#BF00BF';
-    } else if (status === "PA") {
-        return '#D8BFD8';
     } else if (status === "QE") {
         return '#5C025C';
+    } else if (status === "PA") {
+        return '#D8BFD8';
+    } else if (status === "CA") {
+        return '#c6a20d';
+        
     } else {
         return 'lightgrey';
     }

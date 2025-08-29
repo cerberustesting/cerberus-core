@@ -92,7 +92,8 @@
 
 .property-list li a{
     padding: 10px 15px;
-    color: #333;
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-light-color);
     font-size: 14px;
 }
 
@@ -144,6 +145,8 @@
     border: 1px solid #e5e5e5;
     border-left: 6px solid #f0ad4e;
     border-radius: 3px 3px 0 0;
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);    
 }
 @media (min-width: 1200px) {
     .propertyButtons {
