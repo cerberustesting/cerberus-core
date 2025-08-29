@@ -328,7 +328,7 @@ public class ReadLabel extends HttpServlet {
                     text += " <span class='glyphicon glyphicon-list'></span></button>";
                 }
 
-                text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
+                text += "<span class='label label-primary' style='background-color:" + label.getColor() + ";color:white;' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
                 text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
 
                 text += "%COUNTER1TEXT%";

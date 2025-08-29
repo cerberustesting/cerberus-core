@@ -927,7 +927,8 @@ select[multiple] {
 }
 
 /*TINY*/
-.tox:not([dir=rtl]) .tox-statusbar__branding{
+.tox:not([dir=rtl]) .tox-statusbar__branding,
+.tox .tox-promotion{
     display: none;
 }
 /*.tox .tox-edit-area__iframe, .mce-content-body, .tox-tinymce, .mce-content-body{
@@ -1554,61 +1555,61 @@ ul.multiselect-container {
 
 /* Various Execution status code. */
 
-.OK {
-    background-color:#00ff00; /* Green */
+/*.OK {
+    background-color:#00ff00;  Green 
 }
 .OKF {
     color:green;
 }
 .KO {
-    background-color:#FF0000; /* Red */
+    background-color:#FF0000;  Red 
 }
 .KOF {
     color:darkred;
 }
 .NA {
-    background-color:yellow ; /* Jaune */
+    background-color:yellow ;  Jaune 
 }
 .NAF {
     color:darkyellow;
 }
 .PE {
-    background-color:#3366FF; /* Blue */
+    background-color:#3366FF;  Blue 
 }
 .PEF {
     color:darkblue;
 }
 .FA {
-    background-color:mistyrose; /* Purple */
+    background-color:mistyrose;  Purple 
 }
 .FAF {
     color:purple;
 }
 .CA {
-    background-color:mistyrose; /* Purple */
+    background-color:mistyrose;  Purple 
 }
 .CAF {
     color:purple;
 }
 .NE {
-    background-color:black; /* Purple */
+    background-color:black;  Purple 
 }
 .NEF {
     color:white;
-}
-.NotExecuted {
-    background-color:whitesmoke; /* White */
+}*/
+/*.NotExecuted {
+    background-color:whitesmoke;  White 
 }
 .NotExecutedF {
     text-decoration:none;
     color:lightgray;
-}
-.NOINF{
+}*/
+/*.NOINF{
     background-color:#CFCFCF;
 }
 .NOINFF{
     color:#CFCFCF;
-}
+}*/
 
 
 .NonRanYet {
