@@ -1,0 +1,116 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+* AS CSS
+*/
+
+.astitle{
+    font-size: small;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.assubtitle{
+    font-size: smaller;
+    text-align: center;
+}
+.askpi{
+    font-size: x-large;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.ascommentOK{
+    font-size: large;
+    color: green;
+    text-align: center
+}
+.ascommentKO{
+    font-size: x-large;
+    color: red;
+    text-align: center
+}
+.ascommentWARNING{
+    font-size: x-large;
+    color: orange;
+    text-align: center
+}
+.ascommentL2OK{
+    font-size: medium;
+    color: green;
+    text-align: center
+}
+.ascommentL2KO{
+    font-size: medium;
+    color: red;
+    text-align: center
+}
+.ascommentL2WARNING{
+    font-size: medium;
+    color: orange;
+    text-align: center
+}
+
+.ASButton.active {
+    font-size: 15px;
+}
+.ASButton{
+    font-size: 8px;
+    padding: 6px 6px;
+}
+
+.btn-A.active {
+    background-color: green
+}
+.btn-B.active {
+    background-color: lightgreen
+}
+.btn-C.active {
+    background-color: yellow
+}
+.btn-D.active {
+    background-color: orange
+}
+.btn-E.active {
+    background-color: red
+}
+.btn-A {
+    background-color: #c4ffc1ff
+}
+.btn-B {
+    background-color: #deffdcff
+}
+.btn-C {
+    background-color: #feffdcff
+}
+.btn-D {
+    background-color: #fffbdcff
+}
+.btn-E {
+    background-color: #ffdcdcff
+}
+
+.tagDetail{
+    margin-left: 15px;
+}
+

@@ -283,9 +283,9 @@ function updatePageQueueStatus(data) {
         $("#progress-barUsed").attr('data-original-title', data.queueStats.running + " running")
         $("#progress-barIdle").attr('data-original-title', (data.queueStats.globalLimit - data.queueStats.running) + " available slot")
         $("#progress-barQueue").attr('data-original-title', (data.queueStats.queueSize) + " still in queue")
-        $("#progress-barUsed").attr('aria-valuenow', perRunning)
-        $("#progress-barIdle").attr('aria-valuenow', perIdle)
-        $("#progress-barQueue").attr('aria-valuenow', perQueue)
+        $("#progress-barUsed").attr('aria-valuenow', perRunning);
+        $("#progress-barIdle").attr('aria-valuenow', perIdle);
+        $("#progress-barQueue").attr('aria-valuenow', perQueue);
         $("#progress-barUsed").attr('style', "width: " + perRunning + "%;")
         $("#progress-barIdle").attr('style', "width: " + perIdle + "%;")
         $("#progress-barQueue").attr('style', "width: " + perQueue + "%;")
@@ -311,7 +311,7 @@ function updatePageQueueStatus(data) {
         }
 //        console.info(data.runningExecutionsList);
         for (var i = 0; i < newList.length; i++) {
-            let exe = newList[i];
+            let exe = newList[i]; 
             contentCel = "<div class='Exe-tooltip'><strong>Exe : </strong>" + exe.id + "</div>"
             contentCel += "<div class='Exe-tooltip'><strong>Application : </strong>" + exe.application + "</div>"
             contentCel += "<div class='Exe-tooltip'><strong>Testcase : </strong>" + exe.test + " - " + exe.testcase + "</div>"
@@ -322,7 +322,7 @@ function updatePageQueueStatus(data) {
             } else {
                 $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-expand\'></span></a>')
                         .attr("href", "TestCaseExecution.jsp?executionId=" + exe.id)
-                        .attr('style', 'margin-left: 10px; font-size: 10px; background-color: lightgray; color :black')
+                        .attr('style', 'margin-left: 10px; font-size: 10px; background-color: var(--crb-grey-superlight-color); color: var(--crb-black-color)')
                         .attr('data-original-title', contentCel)
                         .attr('data-toggle', 'tooltip')
                         .attr('data-placement', 'bottom')
@@ -335,7 +335,7 @@ function updatePageQueueStatus(data) {
         if (contentCelNotDisplayed !== "") {
             $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-option-horizontal\'></span></a>')
                     .attr("href", "TestCaseExecutionList.jsp")
-                    .attr('style', 'margin-left: 10px; font-size: 10px; background-color: lightgray; color :black')
+                    .attr('style', 'margin-left: 10px; font-size: 10px; background-color: var(--crb-grey-superlight-color); color: var(--crb-black-color)')
                     .attr('data-original-title', contentCelNotDisplayed)
                     .attr('data-toggle', 'tooltip')
                     .attr('data-placement', 'bottom')

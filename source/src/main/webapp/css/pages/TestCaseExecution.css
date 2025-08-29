@@ -24,7 +24,6 @@
 
 #NavtabsScriptEdit {
     height: 40px;
-    background-color: white;
 }
 
 @media (max-width: 768px) {
@@ -180,29 +179,34 @@
     background-color: #f8f8f8;
     color: #555;
 }
-
 .stepStatusOK, .stepStatusOK:not(:focus) {
+    color: var(--crb-black-color);
     background-color: var(--crb-green-light-color);
 }
 
-.stepStatusFA, .stepStatusFA:not(:focus) {
-    background-color: var(--crb-orange-light-color);
-}
-
 .stepStatusKO, .stepStatusKO:not(:focus) {
+    color: var(--crb-black-color);
     background-color: var(--crb-red-light-color);
 }
 
+.stepStatusFA, .stepStatusFA:not(:focus) {
+    color: var(--crb-black-color);
+    background-color: var(--crb-orange-light-color);
+}
+
 .itemStatusOK {
+    color: var(--crb-black-color);
     background-color: var(--crb-green-light-color) !important;
 }
 
-.itemStatusFA {
-    background-color: var(--crb-orange-light-color) !important;
+.itemStatusKO {
+    color: var(--crb-black-color);
+    background-color: var(--crb-red-light-color) !important;
 }
 
-.itemStatusKO {
-    background-color: var(--crb-red-light-color) !important;
+.itemStatusFA {
+    color: var(--crb-black-color);
+    background-color: var(--crb-orange-light-color) !important;
 }
 
 .stepStatusOK:hover, .stepStatusFA:hover, .stepStatusKO:hover, .itemStatusOK:hover, .itemStatusFA:hover, .itemStatusKO:hover {

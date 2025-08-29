@@ -1076,7 +1076,7 @@ function renderCel(id, content, contentExe, indexPreviousValues, minimumHeigth) 
 //    console.info(curExe.id + " " + previousCellExeId);
 
     let cel = $('<div style="margin-bottom: 2px" data-toggle="tooltip" data-html="true" title data-original-title="' + tooltipcontain + '" id="' + id + '" data-exeid="' + curExe.id + '" data-fn="' + curExe.falseNegative + '" data-exestart=' + exedate.getTime() + ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + curExe.id + '\');"></div>')
-            .addClass(classChange + " " + classSize + " status-" + getFinalStatus(status, curExe.falseNegative));
+            .addClass(classChange + " " + classSize + " status" + getFinalStatus(status, curExe.falseNegative));
     if (!minimumHeigth) {
         let row1 = $("<div style='margin-right:0px'></div>").addClass("row");
 
@@ -1107,7 +1107,7 @@ function renderCel(id, content, contentExe, indexPreviousValues, minimumHeigth) 
     for (var i = 0, max = exes.length; ((i < max) && (i < maxPreviousExe)); i++) {
         let r2c;
         r2c = $('<div data-toggle="tooltip" data-html="true" title data-original-title="' + getTooltip(contentExe[exes[i]]) + '" onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + exes[i] + '\');stopPropagation(event);"></div>')
-                .addClass("monitor-sub-box col-xs-1 pull-right status-" + getFinalStatus(contentExe[exes[i]].controlStatus, contentExe[exes[i]].falseNegative));
+                .addClass("monitor-sub-box col-xs-1 pull-right status" + getFinalStatus(contentExe[exes[i]].controlStatus, contentExe[exes[i]].falseNegative));
         row2.prepend(r2c);
 
     }

@@ -652,9 +652,9 @@ function appendDepRow(dep, targetTableBody) {
 
     var row = $("<tr></tr>");
     if (dep.status === "RELEASED")
-        row.addClass("success");
+        row.addClass("dep-success");
     if (dep.status === "IGNORED")
-        row.addClass("info");
+        row.addClass("dep-info");
 
     var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
     var drow01 = $("<div class='row'></div>").append(type);

@@ -70,10 +70,10 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
             }
             registeredSessions.add(session.getId());
             queueStatuss = registeredSessions;
-            send(true);
         } finally {
             mainLock.unlock();
         }
+        send(true);
     }
 
     @Override
@@ -116,15 +116,15 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
         }
         // Send the given TestCaseExecution to all registered sessions
         LOG.debug("Trying to send execution monitor to sessions");
+        boolean atLeastOneWasSent = false;
         for (WebSocketSession registeredSession : registeredSessions) {
             try {
                 if ((executionMonitor.isNeedPush()) && (executionMonitor != null)) {
                     long nbMsSinceLastPush = new Date().getTime() - executionMonitor.getLastWebsocketPush();
                     if ((nbMsSinceLastPush > PERIOD_MIN)) {
-                        executionMonitor.setLastWebsocketPush(new Date().getTime());
                         registeredSession.sendMessage(new TextMessage(executionMonitor.toJson(true).toString()));
                         LOG.debug("Execution monitor sent to session " + registeredSession.getId());
-                        executionMonitor.setNeedPush(false);
+                        atLeastOneWasSent = true;
                     } else {
                         LOG.debug("Execution monitor not sent to session " + registeredSession.getId() + " because last push is too recent : " + nbMsSinceLastPush + " ms");
                     }
@@ -134,6 +134,10 @@ public class ExecutionMonitorWebSocket extends TextWebSocketHandler {
             } catch (Exception e) {
                 LOG.warn("Unable to send execution monitor to session " + registeredSession.getId() + " due to " + e.getMessage() + " --> Closing it.");
             }
+        }
+        if (atLeastOneWasSent) {
+            executionMonitor.setNeedPush(false);
+            executionMonitor.setLastWebsocketPush(new Date().getTime());
         }
 
     }

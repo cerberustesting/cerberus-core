@@ -21,6 +21,7 @@
 
     --crb-green-color: rgb(0,210,122);
     --crb-green-light-color: rgb(224,250,239);
+    --crb-green-lighter-color: rgb(233, 251, 244);
     --crb-green-dark-color: rgb(1, 131, 76);
 
     --crb-orange-color: rgb(245,128,62);
@@ -189,32 +190,83 @@
 
 }
 
+/*  --- BOOTSTRAP ALERTS --- */
 .alert-info{
     color: var(--crb-alert-info);
     background-color: var(--crb-alert-info-background);
     border-color: var(--crb-alert-info-border);
+}
+.table>tbody>tr.dep-info,
+.table>tfoot>tr.dep-info, 
+.table>thead>tr.dep-info{
+    background-color: var(--crb-alert-info-background) !important;
+    color: var(--crb-alert-info);
+}
+.table>tbody>tr.dep-info:hover,
+.table>tfoot>tr.dep-info:hover, 
+.table>thead>tr.dep-info:hover{
+    background-color: var(--crb-alert-info-border) !important;
+    color: var(--crb-alert-info);
 }
 .alert-warning{
     color: var(--crb-alert-warning);
     background-color: var(--crb-alert-warning-background);
     border-color: var(--crb-alert-warning-border);
 }
+.table>tbody>tr.dep-warning,
+.table>tfoot>tr.dep-warning, 
+.table>thead>tr.dep-warning{
+    background-color: var(--crb-alert-warning-background) !important;
+    color: var(--crb-alert-warning);
+}
+.table>tbody>tr.dep-warning:hover,
+.table>tfoot>tr.dep-warning:hover, 
+.table>thead>tr.dep-warning:hover{
+    background-color: var(--crb-alert-warning-border) !important;
+    color: var(--crb-alert-warning);
+}
 .alert-danger{
     color: var(--crb-alert-danger);
     background-color: var(--crb-alert-danger-background);
     border-color: var(--crb-alert-danger-border);
+}
+.table>tbody>tr.dep-danger,
+.table>tfoot>tr.dep-danger, 
+.table>thead>tr.dep-danger{
+    background-color: var(--crb-alert-danger-background) !important;
+    color: var(--crb-alert-danger);
+}
+.table>tbody>tr.dep-danger:hover,
+.table>tfoot>tr.dep-danger:hover, 
+.table>thead>tr.dep-danger:hover{
+    background-color: var(--crb-alert-danger-border) !important;
+    color: var(--crb-alert-danger);
 }
 .alert-success{
     color: var(--crb-alert-success);
     background-color: var(--crb-alert-success-background);
     border-color: var(--crb-alert-success-border);
 }
+.table>tbody>tr.dep-success,
+.table>tfoot>tr.dep-success, 
+.table>thead>tr.dep-success{
+    background-color: var(--crb-alert-success-background) !important;
+    color: var(--crb-alert-success);
+}
+.table>tbody>tr.dep-success:hover,
+.table>tfoot>tr.dep-success:hover, 
+.table>thead>tr.dep-success:hover{
+    background-color: var(--crb-alert-success-border) !important;
+    color: var(--crb-alert-success);
+}
 
+/* PROGRESS BAR */
 .progress, .progress-bar{
     color: var(--crb-black-color);
     background-color: var(--crb-grey-lighter-color);
     border-color: var(--crb-grey-lighter-color);
 }
+/* FULLSCREEN MODE */
 .overlay {
     position: fixed;
     width: 100%;
@@ -916,6 +968,11 @@ a {
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-white-color);
+}
+.modal-secondary{
+    color: var(--crb-black-color);
+    background-color: var(--crb-grey-light-color);
+    border-color: var(--crb-grey-light-color);
 }
 
 .well-sm, .well-lg, .well{
@@ -1689,7 +1746,6 @@ table.dataTable thead th input {
     background-color: var(--crb-grey-light-color) !important;
     color: var(--crb-dark-color);
 }
-
 .dataTables_scroll {
     /*overflow: auto;
     clear: both;*/
@@ -1816,109 +1872,4 @@ table.dataTable thead th input {
     50% {
         opacity: 0
     }
-}
-
-/**
-* AS CSS
-*/
-
-.astitle{
-    font-size: small;
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.assubtitle{
-    font-size: smaller;
-    text-align: center;
-}
-.askpi{
-    font-size: x-large;
-    text-align: center;
-    font-weight: bold;
-    margin-top: 15px;
-}
-
-.ascommentOK{
-    font-size: large;
-    color: green;
-    text-align: center
-}
-.ascommentKO{
-    font-size: x-large;
-    color: red;
-    text-align: center
-}
-.ascommentWARNING{
-    font-size: x-large;
-    color: orange;
-    text-align: center
-}
-.ascommentL2OK{
-    font-size: medium;
-    color: green;
-    text-align: center
-}
-.ascommentL2KO{
-    font-size: medium;
-    color: red;
-    text-align: center
-}
-.ascommentL2WARNING{
-    font-size: medium;
-    color: orange;
-    text-align: center
-}
-
-.ASButton.active {
-    font-size: 15px;
-}
-.ASButton{
-    font-size: 8px;
-    padding: 6px 6px;
-}
-
-.btn-A.active {
-    background-color: green
-}
-.btn-B.active {
-    background-color: lightgreen
-}
-.btn-C.active {
-    background-color: yellow
-}
-.btn-D.active {
-    background-color: orange
-}
-.btn-E.active {
-    background-color: red
-}
-.btn-A {
-    background-color: #c4ffc1ff
-}
-.btn-B {
-    background-color: #deffdcff
-}
-.btn-C {
-    background-color: #feffdcff
-}
-.btn-D {
-    background-color: #fffbdcff
-}
-.btn-E {
-    background-color: #ffdcdcff
-}
-
-.tagDetail{
-    margin-left: 15px;
-}
-
-.status-OK{
-    background-color: var(--ok);
-}
-.status-FA{
-    background-color: var(--fa);
-}
-.status-KO{
-    background-color: var(--ko);
 }
