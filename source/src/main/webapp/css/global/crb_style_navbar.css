@@ -357,10 +357,6 @@
         display:none;
     }
 
-    #tabsScriptEdit{
-        background-color:var(--crb-left-menu-font-hover);
-    }
-
     #burger{
         display:inline-block;
         position:absolute;
