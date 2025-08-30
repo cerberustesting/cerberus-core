@@ -2680,7 +2680,7 @@ Action.prototype.draw = function (idMotherStep, id) {
 
 // STATUS & BUTTON
     var status = $("<div class='status'></div>").addClass("col-sm-1");
-    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
+    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;text-overflow: ellipsis;");
     /**
      * If returnCode is NE, display button, else display status & elapsed time
      */

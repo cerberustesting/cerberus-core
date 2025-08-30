@@ -957,7 +957,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function (data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -973,7 +973,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "STICKER") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;
@@ -991,7 +991,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "REQUIREMENT") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;
@@ -1009,7 +1009,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "BATTERY") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.entity;
 
+import java.awt.Color;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +45,7 @@ public class Label {
     private String label;
     private String type;
     private String color;
+    private String fontColor;
     private Integer parentLabelID;
     private String requirementType;
     private String requirementStatus;
@@ -80,6 +82,7 @@ public class Label {
             labelJson.put("label", this.getLabel());
             labelJson.put("type", this.getType());
             labelJson.put("color", this.getColor());
+            labelJson.put("fontColor", this.guessFontColor());
             labelJson.put("parentLabelID", this.getParentLabelID());
             labelJson.put("requirementType", this.getRequirementType());
             labelJson.put("requirementStatus", this.getRequirementStatus());
@@ -106,6 +109,7 @@ public class Label {
             labelJson.put("label", this.getLabel());
             labelJson.put("type", this.getType());
             labelJson.put("color", this.getColor());
+            labelJson.put("fontColor", this.guessFontColor());
             labelJson.put("parentLabelID", this.getParentLabelID());
             labelJson.put("requirementType", this.getRequirementType());
             labelJson.put("requirementStatus", this.getRequirementStatus());
@@ -129,9 +133,38 @@ public class Label {
             result.put("label", this.getLabel());
             result.put("type", this.getType());
             result.put("color", this.getColor());
+            result.put("fontColor", this.guessFontColor());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
         return result;
     }
+
+    public String guessFontColor() {
+        return (this.isColorDark(this.getColor()) ? "white" : "black");
+    }
+
+    public boolean isColorDark(String hexaCodeColor) {
+
+        try {
+            // remove hash character from string
+            String rawFontColor = hexaCodeColor.substring(1, hexaCodeColor.length());
+
+            // convert hex string to int
+            int rgb = Integer.parseInt(rawFontColor, 16);
+
+            Color c = new Color(rgb);
+
+            float[] hsb = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+
+            float brightness = hsb[2];
+
+            LOG.debug("is the Color Dark ? " + hexaCodeColor + " : " + (brightness < 0.5));
+            return (brightness < 0.5);
+        } catch (Exception e) {
+            LOG.warn("Could not guess is color " + hexaCodeColor + "is Dark.", e);
+        }
+        return true;
+    }
+
 }

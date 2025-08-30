@@ -301,19 +301,15 @@ function displayHeaderLabel(doc) {
             $("#menuAccount").attr("style", "display: block;");
         }
 
-        if ((window.location.hostname.includes('localhost'))
-                || (window.location.hostname.includes('qa.cerberus-testing.com'))
-                ) {
-            $('#darkModeEntry').show();
-            darkMode = getFromStorage("#menuDarkMode", 'false');
+
+        $('#darkModeEntry').show();
+        darkMode = getFromStorage("#menuDarkMode", 'false');
+        refreshToggleDarkMode('#menuDarkMode', darkMode);
+        $('#menuDarkMode').click(function () {
+            darkMode = (darkMode === 'true') ? 'false' : 'true';
             refreshToggleDarkMode('#menuDarkMode', darkMode);
-            $('#menuDarkMode').click(function () {
-                darkMode = (darkMode === 'true') ? 'false' : 'true';
-                refreshToggleDarkMode('#menuDarkMode', darkMode);
-            });
-        } else {
-            $('#darkModeEntry').hide();
-        }
+        });
+
 
         if (user.menu.logoutLink === "") {
             $("#menuLogout").attr("style", "display: none;");

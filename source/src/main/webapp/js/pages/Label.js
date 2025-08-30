@@ -556,7 +556,7 @@ function aoColumnsFunc(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "render": function (data, type, full, meta) {
-                return '<span class="label label-primary" style="background-color:' + data.color + '">' + data.label + '</span> ';
+                return '<span class="label label-primary" style="background-color:' + data.color + ';color:' + data.fontColor + '">' + data.label + '</span> ';
             }
         },
         {"sName": "parentLabelid",

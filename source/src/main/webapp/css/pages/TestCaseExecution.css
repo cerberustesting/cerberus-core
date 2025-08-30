@@ -21,7 +21,9 @@
     Author     : cerberus
 */
 
-
+a.list-group-item, button.list-group-item{
+    color: inherit;
+}
 #NavtabsScriptEdit {
     height: 40px;
 }

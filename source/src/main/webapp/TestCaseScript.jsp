@@ -138,7 +138,7 @@
                                     </div>
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
-                                        <button class="btn btn-block btnLightTurquoise marginTop25" id="addStep" disabled>Add Step</button>
+                                        <button class="btn btn-block btnLightTurquoise marginTop25 marginBottom20" id="addStep" disabled>Add Step</button>
                                         <!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
                                     </div>
                                 </div>
