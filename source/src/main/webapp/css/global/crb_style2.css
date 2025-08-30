@@ -1838,7 +1838,7 @@ table.dataTable thead th input {
 }
 
 .muted {
-    background-color:  #f8f8f8;
+    background-color:  var(--crb-grey-lighter-color);
 }
 
 .popover{

@@ -3154,7 +3154,7 @@ function comboConfigTag_format(tag) {
     }
     if (tag.nbExeUsefull > 0) {
         markup += "<div class='select2-result-tag__detail'> " + tag.nbExeUsefull + " Exe(s)</div>";
-        markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.ciResult + "</div>";
+        markup += "<div class='select2-result-tag__detail status" + tag.ciResult + "'> " + tag.ciResult + "</div>";
     }
     if (tag.campaign) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";

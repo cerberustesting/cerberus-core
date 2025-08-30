@@ -529,8 +529,8 @@ function refreshMonitorTable(dataFromWs) {
         indexPreviousValues[id] = exeId + fn;
 
     });
-//    console.info("INDEX of previous executions");
-//    console.info(indexPreviousValues);
+    console.info("INDEX of previous executions");
+    console.info(indexPreviousValues);
     monTable.empty();
 
 //    console.info(dataFromWs);
@@ -946,7 +946,7 @@ function refreshBoxTimings() {
         let sinceLast = new Date().getTime() - (lastPush);
         // Stop Blinking after 30 sec
         if ((sinceLast > 30000) && (item.classList.contains("new"))) {
-            console.info("remove blinking " + sinceLast + " " + item.classList);
+            console.info("remove blinking " + item.id + " sinceLast: "+sinceLast + " classList: " + item.classList);
 //            console.info($("#" + item.id));
             $("#" + item.id).removeClass("blinking new");
         }

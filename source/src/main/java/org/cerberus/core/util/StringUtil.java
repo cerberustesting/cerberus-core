@@ -369,6 +369,7 @@ public final class StringUtil {
     public static String cleanFromSpecialCharacters(String in) {
         return in.replace(" ", SPECIAL_CHAR_REPLACEMENT)
                 .replace("<", SPECIAL_CHAR_REPLACEMENT)
+                .replace(":", SPECIAL_CHAR_REPLACEMENT)
                 .replace(">", SPECIAL_CHAR_REPLACEMENT)
                 .replace("|", SPECIAL_CHAR_REPLACEMENT)
                 .replace("/", SPECIAL_CHAR_REPLACEMENT)
