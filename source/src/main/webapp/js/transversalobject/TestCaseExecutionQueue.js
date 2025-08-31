@@ -622,7 +622,7 @@ function appendDepRow(dep, targetTableBody) {
     var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
     var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDate(dep.releaseDate));
     var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
-    var exeButton = $("<button>").attr("type", "button").addClass("btn btn-sm").append($("<span>").addClass("glyphicon glyphicon-new-window"));
+    var exeButton = $("<button>").attr("type", "button").addClass("btn btn-sm btn-default").append($("<span>").addClass("glyphicon glyphicon-new-window"));
     var exeButtonA = $("<a>");
     if (dep.exeId > 0) {
         exeButtonA.attr("href", "./TestCaseExecution.jsp?executionId=" + dep.exeId);
@@ -631,7 +631,7 @@ function appendDepRow(dep, targetTableBody) {
     }
     exeButtonA.append(exeButton);
 
-    var queButton = $("<button>").attr("type", "button").addClass("btn btn-sm").append($("<span>").addClass("glyphicon glyphicon-new-window"));
+    var queButton = $("<button>").attr("type", "button").addClass("btn btn-sm btn-default").append($("<span>").addClass("glyphicon glyphicon-new-window"));
     var queButtonA = $("<a>");
     if (dep.exeId > 0) {
         queButtonA.attr("href", "./TestCaseExecution.jsp?executionQueueId=" + dep.queueId);

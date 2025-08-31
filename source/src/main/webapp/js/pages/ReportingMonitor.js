@@ -903,7 +903,20 @@ function refreshMonitorTable(dataFromWs) {
     $("#statusProgress").empty();
 //    console.info(buildBar);
     $("#statusProgress").append(buildBar);
-
+    
+    // Refresh Favicon value in order to notify KO if necessary
+    let faviconStat="KO";
+    if ((Object.keys(agregatedStatus).length===1) && (Object.keys(agregatedStatus)[0] === "OK")) {
+        faviconStat="OK";
+    }
+    var favicon = new Favico({
+        animation: 'slide',
+        bgColor: getExeStatusRowColor(faviconStat)
+//        textColor: "green"
+    });
+    favicon.badge("!");
+    
+    
     // Remove all remaining tooltip that may still be displayed
     $(".tooltip").remove();
     showTitleWhenTextOverflow();
