@@ -366,7 +366,8 @@ table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{
     padding: 4px 0;
     margin: 2px 0 0 0;
     list-style: none;
-    background-color: #ffffff;
+    background-color: var(--crb-white-color);
+    color: var(--crb-black-color);
     border-color: #ccc;
     border-color: rgba(0, 0, 0, 0.2);
     border-style: solid;
@@ -390,13 +391,13 @@ table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{
     clear: both;
     font-weight: normal;
     line-height: 18px;
-    color: #555555;
+    color: var(--crb-black-color);
     white-space: nowrap;
 }
 .ui-widget-content .ui-state-focus {
     color: #ffffff;
     text-decoration: none;
-    background-color: #c4e3f3;
+    background-color: var(--crb-blue-light-color);
     border-radius: 0px;
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
@@ -510,9 +511,9 @@ img.selectedPicture{
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
-    background: #ff8a00;
+    background: var(--crb-blue-light-color);
     border: none;
-    color:#000;
+    color:var(--crb-black-color);
     border-radius:0;
     font-weight: normal;
 }
