@@ -67,7 +67,13 @@ function initModalTestCase() {
     var doc = new Doc();
 
     tinymce.init({
-        selector: ".wysiwyg"
+        selector: ".wysiwyg",
+        menubar: true,
+        statusbar: false,
+        toolbar: true,
+        resize: true,
+        height: 300,
+        skin: 'oxide-dark'
     });
 
     var availableUsers = getUserArray(true);

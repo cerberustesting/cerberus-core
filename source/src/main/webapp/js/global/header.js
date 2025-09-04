@@ -267,7 +267,7 @@ function collaspeSubMenu() {
 
 
 function refreshToggleDarkMode(buttonElement, doDisplay) {
-    sessionStorage.setItem(buttonElement, doDisplay);
+    localStorage.setItem(buttonElement, doDisplay);
     $(buttonElement).find('.btn').toggleClass('active');
     if (doDisplay === "true") {
         setTheme('dark');
@@ -303,7 +303,7 @@ function displayHeaderLabel(doc) {
 
 
         $('#darkModeEntry').show();
-        darkMode = getFromStorage("#menuDarkMode", 'false');
+        darkMode = getFromStorageLocal("#menuDarkMode", 'false');
         refreshToggleDarkMode('#menuDarkMode', darkMode);
         $('#menuDarkMode').click(function () {
             darkMode = (darkMode === 'true') ? 'false' : 'true';

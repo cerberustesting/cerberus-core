@@ -259,6 +259,9 @@
     background-color: var(--crb-alert-success-border) !important;
     color: var(--crb-alert-success);
 }
+.dep-parent{
+    background-color: var(--crb-alert-info-background);
+}
 
 /* PROGRESS BAR */
 .progress, .progress-bar{
@@ -1847,6 +1850,12 @@ table.dataTable thead th input {
     border-color: var(--crb-grey-color);
     width:  600px;
 }
+.popover-title{
+    color: var(--crb-black-color);
+    background-color: var(--crb-white-color);
+    border-color: var(--crb-grey-color);
+}
+
 
 .panel, .panel-body {
     color: var(--crb-black-color);
@@ -1855,12 +1864,6 @@ table.dataTable thead th input {
 }
 
 .dropdown-menu{
-    color: var(--crb-black-color);
-    background-color: var(--crb-white-color);
-    border-color: var(--crb-grey-color);
-}
-
-.popover-title{
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);

@@ -45,7 +45,13 @@ function initPage() {
 //    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
 //
     tinymce.init({
-        selector: ".wysiwyg"
+        selector: ".wysiwyg",
+        menubar: true,
+        statusbar: false,
+        toolbar: true,
+        resize: true,
+        height: 300,
+        skin: 'oxide-dark'
     });
 
     //configure and create the dataTable

@@ -2213,7 +2213,7 @@ function envTuning(myenv) {
 //        document.getElementById("menuDocumentationD3").style.display = "none";
 //        document.getElementById("menuSwagger").style.display = "none";
 
-        // Hide Russia language entry.
+    // Hide Russia language entry.
 //        document.getElementById("MyLang")[2].style.display = "none";
 //    }
 }
@@ -2552,7 +2552,7 @@ function getExeStatusRowColor(status) {
         return '#D8BFD8';
     } else if (status === "CA") {
         return '#c6a20d';
-        
+
     } else {
         return 'lightgrey';
     }
@@ -2739,6 +2739,14 @@ function formatnumberKM(number) {
 function getFromStorage(sSessionEntry, defaultValue) {
     if (sessionStorage.getItem(sSessionEntry) !== null) {
         return sessionStorage.getItem(sSessionEntry);
+    } else {
+        return defaultValue;
+    }
+}
+
+function getFromStorageLocal(sSessionEntry, defaultValue) {
+    if (localStorage.getItem(sSessionEntry) !== null) {
+        return localStorage.getItem(sSessionEntry);
     } else {
         return defaultValue;
     }

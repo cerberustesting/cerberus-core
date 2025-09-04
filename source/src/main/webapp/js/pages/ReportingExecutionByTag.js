@@ -35,18 +35,19 @@ var cptDep = 0;
 tinyMCE.init({
     selector: ".wysiwyg",
     menubar: false,
-//    statusbar: false,
+    statusbar: false,
     toolbar: false,
     height: 100,
     resize: true,
+//    skin: 'oxide'
     skin: 'oxide-dark'
+//    skin: gettinyMCETheme()
 //    content_css: "css/global/crb_style_ace.css",
 //    iframe_attrs: {
 //        'style': 'background-color: var(--crb-grey-color);border-color: var(--crb-white-color);',
 //        'class': 'custom-editor-frame'
 //    }
 });
-
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -2257,7 +2258,7 @@ function renderDependency(id) {
     // Remove all already open popover
     $(".popover").remove();
 
-    $(".mainCell").parent().removeClass("info");
+    $(".mainCell").parent().removeClass("dep-parent");
 
     for (var i in localDepenMap) {
         let dep = localDepenMap[i];
@@ -2272,7 +2273,7 @@ function renderDependency(id) {
                 }
                 text += "<div class='marginTop5'><a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a>&nbsp;&nbsp;<a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a>" + textdelay + " [" + dep.status + "]<br></div>";
                 // Add background of mainCell that are dependent.
-                $("#" + idProgressBar).parent().addClass("info");
+                $("#" + idProgressBar).parent().addClass("dep-parent");
             } else {
                 text += "<div class='marginTop5'><span class='glyphicon glyphicon-time' aria-hidden='true'></span>&nbsp;" + dep.date + " [" + dep.status + "]</div>";
             }
@@ -2282,10 +2283,11 @@ function renderDependency(id) {
 
     $("#dep" + id).attr('title', "Dependency")
             .addClass("info")
+//            .addClass("right")
             .addClass("popoverdep")
-            .popover('fixTitle')
             .attr("data-content", text)
             .attr("data-placement", "right")
+            .popover('fixTitle')
             .popover('show');
 }
 
