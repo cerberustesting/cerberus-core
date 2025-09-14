@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                             <div class="progress">
-                                <div id="progress-bar" style="margin-bottom: 0px;" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div id="progress-bar" style="margin-bottom: 0px;" class="progress-bar statusPE" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                     <span class="sr-only"></span>
                                 </div>
                             </div>

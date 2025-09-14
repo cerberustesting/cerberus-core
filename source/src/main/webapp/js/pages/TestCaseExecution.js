@@ -1748,7 +1748,7 @@ function updateDataBarVisual(controlStatus, progress = 100) {
     });
 
     if (controlStatus !== "PE") {
-        $("#progress-bar").removeClass("progress-bar statusOK statusKO statusNE statusNA statusWE statusFA progress-bar-warning");
+        $("#progress-bar").removeClass("progress-bar statusPE statusOK statusKO statusNE statusNA statusWE statusFA progress-bar-warning");
         if (controlStatus === "OK") {
             $("#progress-bar").addClass("progress-bar statusOK");
         } else if (controlStatus === "KO") {
