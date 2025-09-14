@@ -123,6 +123,7 @@ public class TestCase {
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
 
     public static final String TESTCASE_ORIGIN_SIDE = "SeleniumIDE";
+    public static final String TESTCASE_ORIGIN_JSONPUPPETEER = "JSONPuppeteer";
     public static final String TESTCASE_ORIGIN_TESTLINK = "TestLink";
     public static final String TESTCASE_ORIGIN_JIRAXRAYCLOUD = "JiraXray-Cloud";
     public static final String TESTCASE_ORIGIN_JIRAXRAYDC = "JiraXray-DC";

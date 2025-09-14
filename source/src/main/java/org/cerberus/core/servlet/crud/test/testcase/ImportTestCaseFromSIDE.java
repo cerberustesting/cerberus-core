@@ -143,58 +143,98 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     String val = entry.getValue();
                     if (key.startsWith("file")) {
 
-                        JSONObject json = new JSONObject(val);
+                        try {
 
-                        if (isCompatible(json)) {
+                            JSONObject json = new JSONObject(val);
 
-                            String masterSIDEURL = json.getString("url");
-                            JSONArray testList = new JSONArray();
-                            testList = json.getJSONArray("tests");
-                            for (int i = 0; i < testList.length(); i++) {
+                            if (isCompatible(json)) {
 
-                                JSONObject test = new JSONObject();
-                                test = testList.getJSONObject(i);
-                                LOG.debug("importing :" + i + " : " + test.toString());
+                                String masterSIDEURL = json.getString("url");
+                                JSONArray testList = new JSONArray();
+                                testList = json.getJSONArray("tests");
+                                for (int i = 0; i < testList.length(); i++) {
 
-                                // Dynamically get a new testcase ID.
-                                String targetTestcase = testcaseService.getNextAvailableTestcaseId(targetFolder);
-                                TestCase newTC = testcaseFactory.create(targetFolder, targetTestcase, test.getString("name"));
-                                newTC.setComment("Imported from Selenium IDE. Test ID : " + test.getString("id"));
-                                newTC.setApplication(targetApplication);
-                                newTC.setType(TestCase.TESTCASE_TYPE_AUTOMATED);
-                                newTC.setConditionOperator("always");
-                                newTC.setOrigine(TestCase.TESTCASE_ORIGIN_SIDE);
-                                newTC.setRefOrigine(test.getString("id"));
-                                newTC.setStatus(invariantService.convert(invariantService.readFirstByIdName(Invariant.IDNAME_TCSTATUS)).getValue());
-                                newTC.setUsrCreated(userCreated);
+                                    JSONObject test = new JSONObject();
+                                    test = testList.getJSONObject(i);
+                                    LOG.debug("importing :" + i + " : " + test.toString());
 
-                                countries.forEach(country -> {
-                                    newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
-                                });
-                                // Step
-                                TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                    // Dynamically get a new testcase ID.
+                                    String targetTestcase = testcaseService.getNextAvailableTestcaseId(targetFolder);
+                                    TestCase newTC = testcaseFactory.create(targetFolder, targetTestcase, test.getString("name"));
+                                    newTC.setComment("Imported from Selenium IDE. Test ID : " + test.getString("id"));
+                                    newTC.setApplication(targetApplication);
+                                    newTC.setType(TestCase.TESTCASE_TYPE_AUTOMATED);
+                                    newTC.setConditionOperator("always");
+                                    newTC.setOrigine(TestCase.TESTCASE_ORIGIN_SIDE);
+                                    newTC.setRefOrigine(test.getString("id"));
+                                    newTC.setStatus(invariantService.convert(invariantService.readFirstByIdName(Invariant.IDNAME_TCSTATUS)).getValue());
+                                    newTC.setUsrCreated(userCreated);
 
-                                // Action
-                                for (int j = 0; j < test.getJSONArray("commands").length(); j++) {
-                                    JSONObject command = test.getJSONArray("commands").getJSONObject(j);
-                                    TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
-                                    if (newA != null) {
-                                        newStep.appendActions(newA);
+                                    countries.forEach(country -> {
+                                        newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
+                                    });
+                                    // Step
+                                    TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+
+                                    // Action
+                                    for (int j = 0; j < test.getJSONArray("commands").length(); j++) {
+                                        JSONObject command = test.getJSONArray("commands").getJSONObject(j);
+                                        TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
+                                        if (newA != null) {
+                                            newStep.appendActions(newA);
+                                        }
                                     }
+
+                                    newTC.appendSteps(newStep);
+
+                                    testcaseService.createTestcaseWithDependencies(newTC);
+
                                 }
-
-                                newTC.appendSteps(newStep);
-
-                                testcaseService.createTestcaseWithDependencies(newTC);
-
+                            } else {
+                                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
+                                        .replace("%OPERATION%", "Import")
+                                        .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
+                                ans.setResultMessage(msg);
+                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                             }
-                        } else {
-                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
-                                    .replace("%OPERATION%", "Import")
-                                    .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
-                            ans.setResultMessage(msg);
-                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
+
+                        } catch (JSONException e) {
+
+                            JSONArray test = new JSONArray(val);
+
+                            LOG.debug("importing : " + test.toString());
+                            String masterSIDEURL = "";
+                            // Dynamically get a new testcase ID.
+                            String targetTestcase = testcaseService.getNextAvailableTestcaseId(targetFolder);
+                            TestCase newTC = testcaseFactory.create(targetFolder, targetTestcase, "");
+                            newTC.setComment("Imported from JSONPuppeteer.");
+                            newTC.setApplication(targetApplication);
+                            newTC.setType(TestCase.TESTCASE_TYPE_AUTOMATED);
+                            newTC.setConditionOperator("always");
+                            newTC.setOrigine(TestCase.TESTCASE_ORIGIN_JSONPUPPETEER);
+                            newTC.setStatus(invariantService.convert(invariantService.readFirstByIdName(Invariant.IDNAME_TCSTATUS)).getValue());
+                            newTC.setUsrCreated(userCreated);
+
+                            countries.forEach(country -> {
+                                newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
+                            });
+                            // Step
+                            TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+
+                            // Action
+                            for (int j = 0; j < test.length(); j++) {
+                                JSONObject command = test.getJSONObject(j);
+                                TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
+                                if (newA != null) {
+                                    newStep.appendActions(newA);
+                                }
+                            }
+
+                            newTC.appendSteps(newStep);
+
+                            testcaseService.createTestcaseWithDependencies(newTC);
+
                         }
 
                     }
@@ -226,15 +266,18 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
             String action_value2 = "";
             String control = null;
             String control_value1 = "";
-            String description = command.getString("comment");
+            String description = command.has("comment") ? command.getString("comment") : "";
             String cond = TestCaseStepAction.CONDITIONOPERATOR_ALWAYS;
-            String commandS = command.getString("command");
-            if (commandS.startsWith("//")) {
+            String commentJSON = command.has("comment") ? command.getString("comment") : "";
+            String targetJSON = command.has("target") ? command.getString("target") : "";
+            String valueJSON = command.has("value") ? command.getString("value") : "";
+            String commandJSON = command.has("command") ? command.getString("command") : "";
+            if (commandJSON.startsWith("//")) {
                 cond = TestCaseStepAction.CONDITIONOPERATOR_NEVER;
-                commandS = commandS.substring(2);
+                commandJSON = commandJSON.substring(2);
             }
 
-            switch (commandS) {
+            switch (commandJSON) {
                 case "setWindowSize":
                 case "mouseOut":
                     // Those commands are ignored.
@@ -242,18 +285,18 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 case "open":
                     LOG.debug(masterSIDEURL);
                     LOG.debug(applicationURLs);
-                    action_value1 = masterSIDEURL + command.getString("target");
+                    action_value1 = masterSIDEURL + targetJSON;
                     if (!isURLInApplication(action_value1, applicationURLs)) {
                         action = TestCaseStepAction.ACTION_OPENURL;
                     } else {
                         action = TestCaseStepAction.ACTION_OPENURLWITHBASE;
-                        action_value1 = command.getString("target");
+                        action_value1 = targetJSON;
                     }
                     break;
                 case "type":
                     action = TestCaseStepAction.ACTION_TYPE;
                     action_value1 = convertElement(command);
-                    action_value2 = command.getString("value");
+                    action_value2 = valueJSON;
                     break;
                 case "click":
                     action = TestCaseStepAction.ACTION_CLICK;
@@ -266,7 +309,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 case "sendKeys":
                     action = TestCaseStepAction.ACTION_KEYPRESS;
                     action_value1 = convertElement(command);
-                    action_value2 = mappKey(command.getString("value"));
+                    action_value2 = mappKey(valueJSON);
                     break;
                 case "mouseUp":
                     action = TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE;
@@ -287,15 +330,15 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     break;
                 default:
                     action = TestCaseStepAction.ACTION_DONOTHING;
-                    description = "Unknow Selenium IDE command '" + commandS + "'";
-                    if (!StringUtil.isEmptyOrNull(command.getString("target"))) {
-                        description += " on target '" + convertElement(command) + "'";
+                    description = "Unknow Selenium IDE command '" + commandJSON + "'";
+                    if (!StringUtil.isEmptyOrNull(targetJSON)) {
+                        description += " on target '" + targetJSON + "'";
                     }
-                    if (!StringUtil.isEmptyOrNull(command.getString("value"))) {
-                        description += " with value '" + command.getString("value") + "'";
+                    if (!StringUtil.isEmptyOrNull(valueJSON)) {
+                        description += " with value '" + valueJSON + "'";
                     }
-                    if (!StringUtil.isEmptyOrNull(command.getString("comment"))) {
-                        description += " - " + command.getString("comment");
+                    if (!StringUtil.isEmptyOrNull(commentJSON)) {
+                        description += " - " + commentJSON;
                     }
             }
             if (action != null) {
@@ -425,7 +468,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 }
             }
         } catch (FileUploadException ex) {
-            LOG.error(ex,ex);
+            LOG.error(ex, ex);
         }
         LOG.debug("result : " + result.size());
         return result;
@@ -462,7 +505,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 }
             }
         } catch (FileUploadException ex) {
-            LOG.error(ex,ex);
+            LOG.error(ex, ex);
         }
         LOG.debug("result Param : " + result.size());
         return result;
