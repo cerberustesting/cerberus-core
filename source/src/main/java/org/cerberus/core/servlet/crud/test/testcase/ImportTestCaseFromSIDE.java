@@ -57,6 +57,7 @@ import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.servlet.reporting.TestCaseActionExecutionDetail;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -72,6 +73,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ImportTestCaseFromSIDE", urlPatterns = {"/ImportTestCaseFromSIDE"})
 public class ImportTestCaseFromSIDE extends HttpServlet {
+
+    private static final Integer MAXACTIONINSTEP = 5;
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCaseFromSIDE.class);
     private ITestCaseService testcaseService;
@@ -174,18 +177,42 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                         newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
                                     });
                                     // Step
-                                    TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                    int stepId = 1;
+                                    TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
 
                                     // Action
+                                    int actionAdded = 0;
+                                    int actionAddedInCurrentStep = 0;
                                     for (int j = 0; j < test.getJSONArray("commands").length(); j++) {
                                         JSONObject command = test.getJSONArray("commands").getJSONObject(j);
-                                        TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
+                                        TestCaseStepAction newA = getActionFromSIDE(stepId, command, (actionAddedInCurrentStep + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
                                         if (newA != null) {
+                                            if ((TestCaseStepAction.ACTION_OPENURL.equals(newA.getAction()) || TestCaseStepAction.ACTION_OPENURLWITHBASE.equals(newA.getAction()))
+                                                    && actionAddedInCurrentStep > 0) {
+                                                newTC.appendSteps(newStep);
+                                                stepId++;
+                                                actionAddedInCurrentStep = 0;
+                                                newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                                newA.setStepId(stepId);
+                                                newA.setActionId((actionAddedInCurrentStep + 1));
+                                                newA.setSort((actionAddedInCurrentStep + 1));
+                                            }
                                             newStep.appendActions(newA);
+                                            actionAdded++;
+                                            actionAddedInCurrentStep++;
+                                            LOG.debug(" StepId " + stepId + " ActionAdded " + actionAdded + " - " + actionAddedInCurrentStep);
+                                            if ((actionAddedInCurrentStep >= MAXACTIONINSTEP)) {
+                                                newTC.appendSteps(newStep);
+                                                stepId++;
+                                                actionAddedInCurrentStep = 0;
+                                                newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                            }
                                         }
                                     }
 
-                                    newTC.appendSteps(newStep);
+                                    if (!newStep.getActions().isEmpty()) {
+                                        newTC.appendSteps(newStep);
+                                    }
 
                                     testcaseService.createTestcaseWithDependencies(newTC);
 
@@ -219,20 +246,58 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                             countries.forEach(country -> {
                                 newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
                             });
+
                             // Step
-                            TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                            int stepId = 1;
+                            TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
 
                             // Action
+                            int actionAdded = 0;
+                            int actionAddedInCurrentStep = 0;
                             for (int j = 0; j < test.length(); j++) {
                                 JSONObject command = test.getJSONObject(j);
-                                TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
+                                TestCaseStepAction newA = getActionFromSIDE(stepId, command, (actionAddedInCurrentStep + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
                                 if (newA != null) {
+                                    if ((TestCaseStepAction.ACTION_OPENURL.equals(newA.getAction()) || TestCaseStepAction.ACTION_OPENURLWITHBASE.equals(newA.getAction()))
+                                            && actionAddedInCurrentStep > 0) {
+                                        newTC.appendSteps(newStep);
+                                        stepId++;
+                                        actionAddedInCurrentStep = 0;
+                                        newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                        newA.setStepId(stepId);
+                                        newA.setActionId((actionAddedInCurrentStep + 1));
+                                        newA.setSort((actionAddedInCurrentStep + 1));
+                                    }
                                     newStep.appendActions(newA);
+                                    actionAdded++;
+                                    actionAddedInCurrentStep++;
+                                    LOG.debug(" StepId " + stepId + " ActionAdded " + actionAdded + " - " + actionAddedInCurrentStep);
+                                    if ((actionAddedInCurrentStep >= MAXACTIONINSTEP)) {
+                                        newTC.appendSteps(newStep);
+                                        stepId++;
+                                        actionAddedInCurrentStep = 0;
+                                        newStep = testcaseStepFactory.create(targetFolder, targetTestcase, stepId, stepId, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+                                    }
                                 }
                             }
 
-                            newTC.appendSteps(newStep);
+                            if (!newStep.getActions().isEmpty()) {
+                                newTC.appendSteps(newStep);
+                            }
 
+//                            // Step
+//                            TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
+//
+//                            // Action
+//                            for (int j = 0; j < test.length(); j++) {
+//                                JSONObject command = test.getJSONObject(j);
+//                                TestCaseStepAction newA = getActionFromSIDE(1, command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
+//                                if (newA != null) {
+//                                    newStep.appendActions(newA);
+//                                }
+//                            }
+//
+//                            newTC.appendSteps(newStep);
                             testcaseService.createTestcaseWithDependencies(newTC);
 
                         }
@@ -257,7 +322,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
         httpServletResponse.getWriter().print(jsonResponse.toString());
     }
 
-    private TestCaseStepAction getActionFromSIDE(JSONObject command, Integer i, String masterSIDEURL, List<String> applicationURLs, String targetFolder, String targetTestcase) {
+    private TestCaseStepAction getActionFromSIDE(int stepId, JSONObject command, Integer actionId, String masterSIDEURL, List<String> applicationURLs, String targetFolder, String targetTestcase) {
         TestCaseStepAction newAction = null;
         TestCaseStepActionControl newControl = null;
         try {
@@ -298,8 +363,21 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     action_value1 = convertElement(command);
                     action_value2 = valueJSON;
                     break;
+                case "select":
+                    action = TestCaseStepAction.ACTION_SELECT;
+                    action_value1 = convertElement(command);
+                    action_value2 = valueJSON;
+                    break;
                 case "click":
                     action = TestCaseStepAction.ACTION_CLICK;
+                    action_value1 = convertElement(command);
+                    break;
+                case "doubleClick":
+                    action = TestCaseStepAction.ACTION_DOUBLECLICK;
+                    action_value1 = convertElement(command);
+                    break;
+                case "selectFrame":
+                    action = TestCaseStepAction.ACTION_FOCUSTOIFRAME;
                     action_value1 = convertElement(command);
                     break;
                 case "mouseDown":
@@ -342,11 +420,11 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     }
             }
             if (action != null) {
-                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, action_value1, action_value2, "",
+                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, stepId, actionId, actionId, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, action_value1, action_value2, "",
                         new JSONArray(), false, description, null,
                         false, false, 0, 0);
                 if (control != null) {
-                    newControl = testcaseStepActionControlFactory.create(targetFolder, targetTestcase, 1, i, 1, 1, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), control, control_value1, "", "", new JSONArray(), true, description, null, false, false, 0, 0);
+                    newControl = testcaseStepActionControlFactory.create(targetFolder, targetTestcase, 1, actionId, 1, 1, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), control, control_value1, "", "", new JSONArray(), true, description, null, false, false, 0, 0);
                     List<TestCaseStepActionControl> controlList = new ArrayList<>();
                     controlList.add(newControl);
                     newAction.setControls(controlList);
