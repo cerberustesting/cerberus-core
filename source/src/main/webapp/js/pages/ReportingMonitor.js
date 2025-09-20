@@ -522,10 +522,11 @@ function refreshMonitorTable(dataFromWs) {
 
     // Before we empty the table, we Save here the previous execution id values of each tile into an object in order to identify the ones that changed since last refresh
     var indexPreviousValues = {};
-    document.querySelectorAll('.monitor-box').forEach((item, index) => {
+    document.querySelectorAll('.mon-box').forEach((item, index) => {
         exeId = item.getAttribute("data-exeid");
         fn = item.getAttribute("data-fn");
         id = item.getAttribute("id");
+        console.info(item);
         indexPreviousValues[id] = exeId + fn;
 
     });
@@ -952,8 +953,8 @@ function refreshBoxTimings() {
         item.innerHTML = getHumanReadableDuration(sinceLast / 1000, 1);
     });
 
-    // monitor-box
-    document.querySelectorAll('.monitor-box').forEach((item, index) => {
+    // mon-box
+    document.querySelectorAll('.mon-box').forEach((item, index) => {
         let lastPush = item.getAttribute("data-exestart");
 //        console.info(lastPush);
         let sinceLast = new Date().getTime() - (lastPush);
@@ -1082,9 +1083,9 @@ function renderCel(id, content, contentExe, indexPreviousValues, minimumHeigth) 
     }
     let classSize = "";
     if (minimumHeigth) {
-        classSize = "monitor-box-small";
+        classSize = "mon-box monitor-box-small";
     } else {
-        classSize = "monitor-box";
+        classSize = "mon-box monitor-box";
     }
 //    console.info(curExe.id + " " + previousCellExeId);
 

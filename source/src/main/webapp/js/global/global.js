@@ -3346,7 +3346,7 @@ function comboConfigApplication_format(application) {
 function getBugIdList(data, appUrl) {
     let link = "";
     $.each(data, function (_, obj) {
-        link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl, buttonMode);
+        link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl);
     });
     return link;
 }
