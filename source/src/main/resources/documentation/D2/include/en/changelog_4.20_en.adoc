@@ -34,6 +34,7 @@
 * Selenium 4 and Appium 2 support securing recent browser support.
 * New Monitor page that display in real time results of latest executions.
 * New Dark theme.
+* Improvements on recorder import (new actions supported, Spred actions into different steps for better readability and JSON Puppeteer support allowing to use Katalon Recorder for Chrome Extention)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
