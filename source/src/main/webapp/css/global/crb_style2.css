@@ -967,7 +967,10 @@ a {
     cursor: pointer;
     margin-right: 5px;
 }
-
+.modal-content{
+    box-shadow: 0 0px 15px var(--crb-black-color);
+    background-color : var(--crb-black-color);
+}
 .modal-header, .modal-body, .modal-footer{
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);

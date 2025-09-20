@@ -2213,9 +2213,9 @@ function aoColumnsFunc(Columns, durationMax) {
                     let renderBug = "";
                     let bugList = getBugIdList(data, obj.AppBugURL);
                     let editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag_withBug(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                class="editEntry btn btn-block btn-default btn-xs margin-right5" \n\
                                 name="editEntry" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button><br>';
+                                <span class="glyphicon glyphicon-pencil"></span></button>';
                     if ((obj.NbExeUsefullHasBug > 0) || (bugList !== "")) {
                         return editEntry + bugList;
                     }

@@ -3355,6 +3355,11 @@ function getBugIdList(data, appUrl) {
 function getBugIdRow(id, desc, url, act, appUrl) {
     let bugUrl = "";
     let link = "";
+    if (isEmpty(desc)) {
+        desc = id;
+    } else {
+        desc = id + " - " + desc;
+    }
 
     if (!isEmpty(url)) {
         bugUrl = url;
@@ -3367,13 +3372,13 @@ function getBugIdRow(id, desc, url, act, appUrl) {
 
         if (!isEmpty(bugUrl)) {
             let icon = "<span class='glyphicon glyphicon-new-window'></span>";
-            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " +desc + "</button>";
+            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " + desc + "</button>";
             let linkh = "<a target='_blank' href='" + bugUrl + "'>" + button + "</a>";
             return linkh;
 
         } else {
             let icon = "<span class='glyphicon glyphicon-new-window'></span>";
-            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " +desc + "</button>";
+            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " + desc + "</button>";
             let linkh = "<a href=''>" + button + "</a>";
             return linkh;
         }
