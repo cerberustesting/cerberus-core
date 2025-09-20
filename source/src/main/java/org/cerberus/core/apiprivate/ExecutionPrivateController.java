@@ -136,8 +136,8 @@ public class ExecutionPrivateController {
             executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, true);
             executionMonitorWebSocket.send(true);
-        } catch (CerberusException ex) {
-            LOG.warn(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
             return ex.toString();
         }
         return "";
@@ -156,8 +156,8 @@ public class ExecutionPrivateController {
             executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, false);
             executionMonitorWebSocket.send(true);
-        } catch (CerberusException ex) {
-            LOG.warn(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
             return ex.toString();
         }
         return "";

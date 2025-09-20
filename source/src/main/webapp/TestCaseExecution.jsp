@@ -60,14 +60,23 @@
                     <div id="divPanelDefault" class="panel no-border" style="z-index:10; top: 0">
                         <div class="panel-heading" id="executionHeader"
                              style="z-index:2; top: 0;border-radius: 10px;margin-bottom: 0px;border: 1px solid #eee;">
-                            <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
-                                <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    <span class="sr-only"></span>FALSE NEGATIVE
-                                </div>
-                            </div>
-                            <div class="progress">
-                                <div id="progress-bar" style="margin-bottom: 0px;" class="progress-bar statusPE" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    <span class="sr-only"></span>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="input-group">
+                                        <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
+                                            <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="sr-only"></span>FALSE NEGATIVE
+                                            </div>
+                                        </div>
+                                        <div class="progress" style="margin-bottom: 0px;">
+                                            <div id="progress-bar" style="margin-bottom: 0px;" class="progress-bar statusPE btn-group" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                <span class="sr-only"></span>
+                                            </div>
+                                        </div>
+                                        <span class="input-group-btn">
+                                            <button id="falseNegative" name="falseNegative" class="btn btn-xs" title="Declare/Undeclare this execution as a False Negative"><span class="glyphicon glyphicon-ok"></span></button>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -399,7 +408,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status" readonly>
                                             <span class="input-group-btn">
-                                                <button id="falseNegative" class="btn btn-default" title="Declare/Undeclare this execution as a False Negative"><span class="glyphicon glyphicon-ok"></span></button>
+                                                <button id="falseNegative" name="falseNegative" class="btn btn-default" title="Declare/Undeclare this execution as a False Negative"><span class="glyphicon glyphicon-ok"></span></button>
                                             </span>
                                         </div>
                                     </div>

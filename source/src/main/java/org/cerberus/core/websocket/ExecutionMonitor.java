@@ -119,7 +119,9 @@ public class ExecutionMonitor {
     }
 
     public void updateExecutionToMonitor(long executionId, boolean isFalseNegative) {
-        executionHashMap.get(executionId).setFalseNegative(isFalseNegative);
+        if (executionHashMap.containsKey(executionId)) {
+            executionHashMap.get(executionId).setFalseNegative(isFalseNegative);
+        }
     }
 
     public void addNewExecutionToMonitor(TestCaseExecutionLight newexecution) {

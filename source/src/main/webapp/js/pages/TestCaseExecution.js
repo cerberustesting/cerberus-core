@@ -86,7 +86,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#TestCaseButton").show();
             $("#RefreshQueueButton").hide();
 
-            $("#falseNegative").click(function () {
+            $("[name='falseNegative']").click(function () {
                 toggleFalseNegative(executionId);
             });
 
@@ -469,11 +469,11 @@ function updatePage(data, steps) {
     $("#lastExecutionoTwithEnvCountry").attr("disabled", false);
     $("#lastExecutionoTwithEnvCountry").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase + "&countrys=" + data.country + "&environments=" + data.environment);
     falseNegative = data.falseNegative;
-    if (data.controlStatus === "OK") {
-        $("#falseNegative").hide();
+    if ((data.controlStatus === "OK") || (data.controlStatus === "PE")) {
+        $("[name='falseNegative']").attr("disabled", true);
         $("#false-negative-bar").hide();
     } else {
-        $("#falseNegative").show();
+        $("[name='falseNegative']").attr("disabled", false);
         if (data.falseNegative) {
             $("#false-negative-bar").show();
             $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
@@ -1072,7 +1072,7 @@ function toggleFalseNegative(executionId) {
             success: function (data) {
                 falseNegative = false;
                 $("#false-negative-bar").hide();
-                $("#falseNegative .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
+                $("[name='falseNegative'] .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
             }
         });
 
@@ -1084,7 +1084,7 @@ function toggleFalseNegative(executionId) {
             success: function (data) {
                 falseNegative = true;
                 $("#false-negative-bar").show();
-                $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+                $("[name='falseNegative'] .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
             }
         });
     }

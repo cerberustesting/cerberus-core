@@ -751,12 +751,12 @@ body {
     border-color: var(--crb-white-color);
 }
 
-.btn-default {
+.btn-default, .btn-xs {
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-color);
 }
-.btn-default:hover {
+.btn-default:hover, .btn-xs:hover {
     color: var(--crb-grey-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-white-color);

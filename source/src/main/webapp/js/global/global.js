@@ -3346,7 +3346,7 @@ function comboConfigApplication_format(application) {
 function getBugIdList(data, appUrl) {
     let link = "";
     $.each(data, function (_, obj) {
-        link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl);
+        link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl, buttonMode);
     });
     return link;
 }
@@ -3364,20 +3364,18 @@ function getBugIdRow(id, desc, url, act, appUrl) {
         }
     }
     if (act) {
+
         if (!isEmpty(bugUrl)) {
-            link = link + '<a target="_blank" href="' + bugUrl + '">' + id;
-            if (desc !== "") {
-                link = link + " - " + desc;
-            }
-            link = link + "</a><br>";
+            let icon = "<span class='glyphicon glyphicon-new-window'></span>";
+            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " +desc + "</button>";
+            let linkh = "<a target='_blank' href='" + bugUrl + "'>" + button + "</a>";
+            return linkh;
 
         } else {
-            link = link + '' + id;
-            if (desc !== "") {
-                link = link + " - " + desc;
-            }
-            link = link + "<br>";
-
+            let icon = "<span class='glyphicon glyphicon-new-window'></span>";
+            let button = "<button type='button' class='btn-xs btn-primary btn-block'>" + icon + " " +desc + "</button>";
+            let linkh = "<a href=''>" + button + "</a>";
+            return linkh;
         }
     }
     return link;
