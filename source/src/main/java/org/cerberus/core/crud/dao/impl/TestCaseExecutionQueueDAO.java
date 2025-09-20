@@ -802,7 +802,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(exq.").append(columnName).append(",'')");
+        query.append(" group by exq.").append(columnName).append("");
         query.append(" order by exq.").append(columnName).append(" asc");
 
         // Debug message on SQL.

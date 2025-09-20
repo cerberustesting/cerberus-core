@@ -3,34 +3,39 @@
 * Numeric comparison allow negative values.
 * Fixed regression on space character encoding on notifications.
 * Fixed regression that could duplicate notification on campaign definition.
-* Fixed issue when adding a new application on Environment modal
-* Fixed date/Time picker on queue follow-up screen for Last Hour and Last 6 Hours
+* Fixed issue when adding a new application on Environment modal.
+* Fixed date/time picker on queue follow-up screen for Last Hour and Last 6 Hours.
 * Fixed emptying host password when renaming or duplicating a robot. #2591
 * Fixed an issue affecting some controls in mobile tests when cerberus_selenium_autoscroll is enabled. #2592
 * Fixed sorting on tag list of campaign modal. #2573
+* Fixed Filters on Execution Queue list page. #2607
 
 *Improvements / New features*
 [square]
-* On Campaign execution report, you can now cancel, pause and resume the campaign execution #2211
-* On Campaign execution report, display first Execution start time, Last execution start and end time.
+* On Campaign execution report, you can now cancel, pause and resume the campaign execution. #2211
+* On Campaign execution report, display first Execution start time, Last execution start and end time for each testcase line.
 * On Campaign execution report, identify flaky test cases and direct button display to edit bug.
 * On Campaign execution report, Sort columns by environment, country and then robot declination.
-* Ace editor layout improvement (Readonly when necessary and bigger font)
+* Ace editor layout improvement (Readonly when necessary and bigger font).
 * Sort label on testcase list and campaign execution report pages. #2581
-* Added operator : different, contains, notContains and matchRegex on both controls : verifyTitle and verifyUrl #2585
+* Added operator : different, contains, notContains and matchRegex on both controls : verifyTitle and verifyUrl. #2585
 * Added Azure DevOps Work Item connector. #2532
 * Added Gitlab issue creation connector. #2587
-* Allow to view and sort test cases with timestamp of latest execution triggered
+* Allow to view and sort test cases with timestamp of latest execution triggered.
 * Password and Authorization key on service calls can now include variables.
-* Any testcase can now have a Mute mode that will avoid alert to be raised.
+* Any testcase can now have a Mute mode that will avoid alert and notifications to be raised.
 * Muted and Flaky campaign executions are now saved on every tag. Those information can be monitored on history graphs.
-* You can now perform a service simulation call without saving the service (allowing to tune the call before commit the change to the database)
+* You can now perform a service simulation call without saving the service (allowing to tune the call before commit the change to the database).
 * Every text editor field can now move to full screen mode.
 * verifyURL is more clever, waiting for a timeout before providing result (just like element checks). #2593
 * Added duration display on campaign execution report and execution list. #2594
-* New system variable %system.LASTSERVICE_RESPONSETIME% getting the last API call response time in ms #2589
-* Homepage now diaplay last executed tags grouped by campaign (cerberus_homepage_nbdisplayedcampaign can be used to limit nb of displayed campaign and cerberus_homepage_nbdisplayedtagpercampaign nb of tags per campaign)
+* New system variable %system.LASTSERVICE_RESPONSETIME% getting the last API call response time in ms. #2589
+* Homepage now diaplay last executed tags grouped by campaign (cerberus_homepage_nbdisplayedcampaign can be used to limit nb of displayed campaign and cerberus_homepage_nbdisplayedtagpercampaign nb of tags per campaign).
+* Selenium 4 and Appium 2 support securing recent browser support.
+* New Monitor page that display in real time results of latest executions.
+* New Dark theme.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * The character to parse the "Extra Parameters" field on Robot definition was changed. Please use now the "|" character, with a space before and after, for readability reason. (ex: --start-maximized | --no-sandbox)
+* This version of Cerberus is no longer compatible with Appium 1. If you have robots still using Appium 1 you need to move to Appium 2 when upgrading Cerberus (Selenium 3 is still compatible).
