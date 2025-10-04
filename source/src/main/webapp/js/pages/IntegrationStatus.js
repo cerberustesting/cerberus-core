@@ -55,7 +55,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
 

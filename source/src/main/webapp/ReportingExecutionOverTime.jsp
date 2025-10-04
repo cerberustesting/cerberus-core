@@ -27,8 +27,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="reporting">
+        <meta name="active-submenu" content="ReportingExecutionOverTime.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
@@ -37,9 +39,9 @@
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js"></script>
         <title id="pageTitle">Execution History</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
@@ -295,6 +297,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

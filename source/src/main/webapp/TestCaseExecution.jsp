@@ -21,9 +21,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta name="active-menu" content="reporting">
+        <meta name="active-submenu" content="TestCaseExecution.jsp">
+        <<meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -41,8 +43,8 @@
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
 
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
         <%@ include file="include/utils/modal-generic.html" %>
         <%@ include file="include/pages/testcasescript/manageProperties.html" %>
         <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
@@ -52,7 +54,8 @@
         <%@ include file="include/transversalobject/Robot.html" %>
         <%@ include file="include/transversalobject/Application.html" %>
         <%@ include file="include/transversalobject/Invariant.html" %>
-        <div id="page-layout" class="container-fluid center">
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel no-border" id="testCaseConfig">
@@ -733,7 +736,7 @@
                             <div id="listPanelDep">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <table class="table table-bordered table-hover nomarginbottom" id="depTable">
+                                        <table class="table table-hover nomarginbottom" id="depTable">
                                             <tbody id="depTableBody">
                                             </tbody>
                                         </table>
@@ -824,7 +827,7 @@
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
                                 <div class="panel-body collapse in" id="NS3">
-                                    <table id="requestTable" class="table table-bordered table-hover display"
+                                    <table id="requestTable" class="table table-hover display"
                                            name="requestTable"></table>
                                 </div>
                             </div>
@@ -873,7 +876,7 @@
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>
             </footer>
-        </div>
+        </main>
     </div>
 </body>
 </html>

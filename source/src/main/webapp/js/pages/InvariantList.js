@@ -48,7 +48,7 @@ function displayPrivateTable() {
     } else {
         //configure and create the dataTable
         var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFuncPrivate(), [1, 'asc']);
-        createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList", undefined, true);
+        createDataTableWithPermissionsNew(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList", undefined, true);
     }
 }
 
@@ -58,7 +58,7 @@ function displayPublicTable() {
     } else {
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("invariantsTable", "ReadInvariant?access=PUBLIC", "contentTable", aoColumnsFuncPublic(), [1, 'asc']);
-        createDataTableWithPermissions(configurations, renderOptionsForApplication, "#invariantList", undefined, true);
+        createDataTableWithPermissionsNew(configurations, renderOptionsForApplication, "#invariantList", undefined, true);
     }
 }
 
@@ -73,7 +73,7 @@ function displayPageLabel() {
     $("a[href='#public']").html(doc.getDocLabel("page_invariant", "public"));
     $("a[href='#private']").html(doc.getDocLabel("page_invariant", "private"));
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     $("[name='systemField']").html(doc.getDocLabel("page_invariant", "system_field") + " (" + getSys() + ")");
 
@@ -83,16 +83,31 @@ function displayPageLabel() {
 
 function renderOptionsForApplication(data) {
     var doc = new Doc();
-    if ($("#createInvariantButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><button id='createInvariantButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_invariant", "button_create") + "</button></div>";
-        $("#invariantsTable_wrapper div#invariantsTable_length").before(contentToAdd);
 
-        $("#invariantList #createInvariantButton").off("click");
-        $("#invariantList #createInvariantButton").click(function () {
+    if ($("#createInvariantButton").length === 0) {
+        var contentToAdd = `
+            <button id='createInvariantButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded mr-2 h-10 w-auto'>
+                <i class='glyphicon glyphicon-plus-sign'></i>
+                <span>` + doc.getDocLabel("page_invariant", "button_create") + `</span>
+            </button>
+        `;
+
+        // Cherche ton _buttonWrapper
+        var $wrapper = $("#invariantsTable_buttonWrapper");
+
+        if ($wrapper.length) {
+            // Ajoute le bouton au **début** du wrapper
+            $wrapper.prepend(contentToAdd);
+        } else {
+            // fallback si le wrapper n’existe pas encore
+            console.warn("Wrapper #invariantsTable_buttonWrapper introuvable, insertion avant length");
+            $("#invariantsTable_wrapper div#invariantsTable_length").before("<div id='invariantsTable_buttonWrapper'>" + contentToAdd + "</div>");
+        }
+
+        $("#createInvariantButton").off("click").on("click", function () {
             openModalInvariant(undefined, undefined, "ADD");
         });
-
     }
 }
 
@@ -140,27 +155,61 @@ function aoColumnsFuncPublic(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "80px",
+            "className": "w-[30px] text-center", // largeur fixée côté table
             "title": doc.getDocLabel("page_invariant", "button_col"),
             "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-
                 var newValue = escapeHtml(obj["value"]);
-                var editInvariant = '<button id="editInvariant" onclick="openModalInvariant(\'' + obj["idName"] + '\',\'' + newValue + '\', \'EDIT\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="editInvariant" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-                var duplicateInvariant = '<button id="duplicateInvariant" onclick="openModalInvariant(\'' + obj["idName"] + '\',\'' + newValue + '\', \'DUPLICATE\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateInvariant" title="' + doc.getDocLabel("page_invariant", "button_duplicate") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-duplicate  "></span></button>';
-                var removeInvariant = '<button id="removeInvariant" onclick="removeEntryClick(\'' + obj["idName"] + '\',\'' + obj["value"] + '\');"\n\
-                                        class="removeInvariant btn btn-default btn-xs margin-right5" \n\
-                                        name="removeInvariant" title="' + doc.getDocLabel("page_invariant", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
+                var uid = "menu-" + obj["idName"]; // identifiant unique
 
-                return '<div class="center btn-group width150">' + editInvariant + duplicateInvariant + removeInvariant + '</div>';
+                return `
+            <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null }" class="inline-block">
+                
+                <!-- Bouton "…" -->
+                <button @mouseenter="
+                            clearTimeout(timer);
+                            open = true;
+                            const rect = $el.getBoundingClientRect();
+                            pos = { 
+                                top: rect.top + window.scrollY, 
+                                left: rect.right + window.scrollX 
+                            };
+                        "
+                        @mouseleave="timer = setTimeout(() => open = false, 200)"
+                        class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <i data-lucide="ellipsis" class="w-4 h-4"></i>
+                </button>
 
+                <!-- Tooltip via teleport -->
+                <template x-teleport="body">
+                    <div x-show="open"
+                         x-transition
+                         @mouseenter="clearTimeout(timer); open=true"
+                         @mouseleave="open=false"
+                         x-init="$nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+                         class="absolute z-50 w-44 bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
+                         :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
+
+                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             onclick="openModalInvariant('${obj["idName"]}','${newValue}','EDIT')">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                            ${doc.getDocLabel("page_invariant", "button_edit")}
+                        </div>
+
+                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             onclick="openModalInvariant('${obj["idName"]}','${newValue}','DUPLICATE')">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                            ${doc.getDocLabel("page_invariant", "button_duplicate")}
+                        </div>
+
+                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             onclick="removeEntryClick('${obj["idName"]}','${obj["value"]}')">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            ${doc.getDocLabel("page_invariant", "button_remove")}
+                        </div>
+                    </div>
+                </template>
+            </div>
+        `;
             }
         },
         {

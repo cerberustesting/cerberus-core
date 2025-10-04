@@ -66,50 +66,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
         });
 
-//        $("#saveTagList").on('click', function () {
-//            var tagListForm = $("#tagListForm input");
-//            var tagList = [];
-//
-//
-//            $.each(tagListForm.serializeArray(), function () {
-//                tagList.push(this.value);
-//            });
-//
-//            localStorage.setItem("tagList", JSON.stringify(tagList));
-//
-//            var searchStringTag = $("#searchStringTag").val();
-//            localStorage.setItem("tagSearchString", searchStringTag);
-//
-//
-//            $("#tagSettingsModal").modal('hide');
-//            $('#tagExecStatus').empty();
-//            loadLastTagResultList();
-//        });
-
-//        $("#tagSettings").on('click', function (event) {
-//            stopPropagation(event);
-//            var tagListForm = $("#tagList");
-//            var tagList = JSON.parse(localStorage.getItem("tagList"));
-//            var tagSearchString = localStorage.getItem("tagSearchString");
-//
-//            if (tagList !== null) {
-//                for (var index = 0; index < tagList.length; index++) {
-//                    tagListForm.append('<div class="input-group">\n\
-//                                        <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
-//                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index] + '" readonly>\n\
-//                                        </div>');
-//                }
-//            }
-//            loadTagFilter();
-//            $("#searchStringTag").val(tagSearchString);
-//
-//            $(".removeTag").on('click', function () {
-//                $(this).parent().remove();
-//            });
-//
-//            $("#tagSettingsModal").modal('show');
-//        });
-
         //configure and create the dataTable
         var jqxhr = $.getJSON("Homepage", "e=1" + getUser().defaultSystemsQuery);
 
@@ -141,7 +97,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#changelogLabel").html("Changelog 4.21");
 
         //close all sidebar menu
-        closeEveryNavbarMenu();
+        //closeEveryNavbarMenu();
     });
 
     updateHeaderStats();
@@ -185,7 +141,7 @@ function loadQueueStatusWebSocket(sockets) {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     $("#lastTagExec").html(doc.getDocOnline("homepage", "lastTagExecution"));
 //    $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
@@ -207,9 +163,15 @@ function displayPageLabel() {
 }
 
 function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
+    const workspaceEl = document.querySelector('[x-data="workspaceSelector()"]');
+
+    // Alpine pas encore prêt → fallback sessionStorage
+    if (!workspaceEl || !workspaceEl.__x) {
+        let user = JSON.parse(sessionStorage.getItem("user")) || {};
+        return user.defaultSystems || [];
+    }
+
+    return workspaceEl.__x.$data.selected;
 }
 
 function readStatus() {
@@ -269,10 +231,6 @@ function updatePageQueueStatus(data) {
 
     if ((data.queueStats.running > 0) || (data.queueStats.queueSize > 0)) {
         $("#exeRunningPanel").show();
-        $("#hp_TestExecutionNumberParent").removeAttr("class");
-        $("#hp_TestExecutionNumberParent").attr("class", "col-sm-6 col-xs-6");
-        $("#sc4").attr("class", "col-lg-4 col-md-6 col-sm-12");
-        $("#sc5").attr("class", "col-lg-2 col-md-6 col-sm-12 hidden-xs");
 
         // Execution Queue progress bar
         let totalQueue = data.queueStats.globalLimit + data.queueStats.queueSize
@@ -345,12 +303,7 @@ function updatePageQueueStatus(data) {
 
     } else {
         $("#exeRunningPanel").hide();
-        $("#hp_TestExecutionNumberParent").removeAttr("class");
-        $("#hp_TestExecutionNumberParent").attr("class", "col-sm-12 col-xs-12");
-        $("#sc4").attr("class", "col-lg-3 col-md-6 col-sm-12");
-        $("#sc5").attr("class", "col-lg-3 col-md-6 col-sm-12 hidden-xs");
 
-//        
     }
 }
 
@@ -378,13 +331,11 @@ function loadExeCurrentlyRunning() {
 function loadExecutionsHistoBar() {
     showLoader($("#panelHistory"));
 
-    fromD = new Date();
-    fromD.setMonth(fromD.getMonth() - 3);
-    toD = new Date();
-//    toD.setMonth(fromD.getMonth() - 1);
+    const period = localStorage.getItem("execHistoryPeriod") || "1m";
+    const { from, to } = getFromToByPeriod(period);
 
     $.ajax({
-        url: "ReadExecutionTagHistory?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
+        url: "ReadExecutionTagHistory?from=" + from.toISOString() + "&to=" + to.toISOString() + getUser().defaultSystemsQuery,
         method: "GET",
         async: true,
         dataType: 'json',
@@ -446,16 +397,28 @@ function buildExeBar(data) {
     window.myLineExeHistoBar.update();
 }
 
+function getFromToByPeriod(period) {
+    const to = new Date();
+    const from = new Date();
+    switch(period) {
+        case "1w": from.setDate(to.getDate() - 7); break;
+        case "2w": from.setDate(to.getDate() - 14); break;
+        case "1m": from.setMonth(to.getMonth() - 1); break;
+        case "2m": from.setMonth(to.getMonth() - 2); break;
+        case "3m": from.setMonth(to.getMonth() - 3); break;
+        default: from.setMonth(to.getMonth() - 1);
+    }
+    return { from, to };
+}
+
 function loadTestcaseHistoGraph() {
     showLoader($("#panelTcHistory"));
 
-    fromD = new Date();
-    fromD.setMonth(fromD.getMonth() - 3);
-    toD = new Date();
-//    toD.setMonth(fromD.getMonth() - 1);
+    const period = localStorage.getItem("tcHistoryPeriod") || "1m";
+    const { from, to } = getFromToByPeriod(period);
 
     $.ajax({
-        url: "ReadTestCaseStat?from=" + fromD.toISOString() + "&to=" + toD.toISOString() + getUser().defaultSystemsQuery,
+        url: "ReadTestCaseStat?from=" + from.toISOString() + "&to=" + to.toISOString() + getUser().defaultSystemsQuery,
         method: "GET",
         async: true,
         dataType: 'json',
@@ -724,140 +687,223 @@ function loadLastTagResultList() {
 }
 
 
-function refreshTagList(tagList1, reportArea) {
-
-    var tagScheduled = readNextTagScheduled();
-    if (tagScheduled.length > 0) {
-        for (var index = 0; index < tagScheduled.length; index++) {
-            var idDiv = '<div id="tagScheduledStatusRow' + index + '"<div class="progress" style="">' + tagScheduled[index] + '</div></div>';
-            reportArea.append(idDiv);
-        }
-    }
-
-//    console.info("-------------------------");
-//    console.info(tagList1);
-
-    let elementid = 0;
-    for (var i = 0; i < tagList1.campaigns.length; i++) {
-        let tagList = tagList1.tagLists[tagList1.campaigns[i]];
-//        console.info("-------------------------1");
-//        console.info(tagList);
-        if (tagList1.campaigns[i] === "noCampaign") {
-            var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeaderNoCampaign">---- no campaign defined ---</div>';
-        } else {
-            var idDiv = '<div id="campaignExecStatusRow' + i + '" class="hpCampaignHeader">' + tagList1.campaigns[i] + '</div>';
-        }
-        reportArea.append(idDiv);
-
-        if (tagList.length > 0) {
-            for (var index = 0; index < tagList.length; index++) {
-                let tagName = tagList[index];
-                var idDiv = '<div id="tagExecStatusRow' + elementid++ + '" class="tagDetail" data-tag="' + encodeURIComponent(tagName) + '"></div>';
-                reportArea.append(idDiv);
-            }
-        }
-    }
-
-    document.querySelectorAll('.tagDetail').forEach((item, index) => {
-//        console.info(item);
-//        console.info(index);
-//
-//        console.info(item.getAttribute("data-tag"));
-        tagName = item.getAttribute("data-tag");
-
-        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
-        var jqxhr = $.get(requestToServlet, null, "json");
-
-        $.when(jqxhr).then(function (data) {
-            generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho, data.tagObject);
-            nbTagLoaded++;
-            hideLoaderTag();
-        });
-
-    });
-
-    updateNextFireTime();
-
-}
-
-
-
 function hideLoaderTag() {
     if (nbTagLoaded >= nbTagLoadedTarget) {
         hideLoader($("#LastTagExecPanel"));
     }
 }
 
+function refreshTagList(tagList1, reportArea) {
+
+    const tagScheduled = readNextTagScheduled();
+    reportArea.empty();
+
+    // ===== Init loader =====
+    nbTagLoaded = 0;
+    nbTagLoadedTarget = 0;
+
+
+    const savedConfig = JSON.parse(localStorage.getItem("cerberus_homepage_lasttagexecutionconfig") || "{}");
+    const displayNextCampaign = savedConfig.displayNextCampaign !== false; // default true
+
+    // Compter tous les tags pour le loader
+    tagList1.campaigns.forEach(c => {
+        nbTagLoadedTarget += (tagList1.tagLists[c] || []).length;
+    });
+
+    // ===== 1) Next runs =====
+    if (tagScheduled && tagScheduled.length > 0 && displayNextCampaign) {
+        const topRow = $(`
+            <div id="upcomingExecutions" class="mb-4">
+                <div class="font-semibold mb-2">Next runs</div>
+                <div id="upcomingExecutionsContainer" class="flex gap-2 overflow-x-auto py-1 no-scrollbar border-b border-gray-200"></div>
+            </div>
+        `);
+        reportArea.append(topRow);
+        const container = topRow.find('#upcomingExecutionsContainer');
+
+        tagScheduled.forEach(scheduledHTML => {
+            const pill = $(`<div class="px-3 py-1 text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50 text-xs font-light rounded-full flex-shrink-0">${scheduledHTML}</div>`);
+            container.append(pill);
+        });
+    }
+
+    // ===== 2) Lignes par campagne =====
+    tagList1.campaigns.forEach((campaignName, i) => {
+        const tagList = tagList1.tagLists[campaignName] || [];
+        const headerText = (campaignName === "noCampaign") ? "---- no campaign defined ----" : campaignName;
+
+        const row = $(`
+            <div class="flex items-center gap-4 py-2 border-b border-gray-200">
+                <div class="w-48 font-semibold truncate">${headerText}</div>
+            </div>
+        `);
+
+        const tagContainer = $(`<div class="flex gap-2 overflow-x-auto py-1 no-scrollbar flex-1"></div>`);
+        row.append(tagContainer);
+        reportArea.append(row);
+
+        tagList.slice().reverse().forEach((obj, index) => {
+            const rawTagName = obj.tag;
+            const status = obj.ciResult || "NA";
+            const encodedTag = encodeURIComponent(rawTagName);
+            const tagId = `tagExecStatusRow_${i}_${index}`;
+            const cssClass = getStatusColor(status);
+
+            const tooltipContent = `
+    <div class="space-y-2">
+        <div><strong>Tag :</strong> ${rawTagName}</div>
+        <div><strong>Status :</strong> ${status}</div>
+        <div><strong>Env :</strong> ${obj.reqEnvironmentList?.replace(/[\[\]"]/g, '') || '-'}</div>
+        <div><strong>Country :</strong> ${obj.reqCountryList?.replace(/[\[\]"]/g, '') || '-'}</div>
+        <div><strong>Créé le :</strong> ${obj.DateCreated}</div>
+
+        <!-- Score -->
+        <div>
+            <div class="flex justify-between text-xs mb-1">
+                <span>CI Score</span>
+                <span>${obj.ciScore || 0} / ${obj.ciScoreMax || 100}</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded h-2">
+                <div class="bg-blue-500 h-2 rounded" style="width: ${100*obj.ciScore/obj.ciScoreMax || 0}%;"></div>
+            </div>
+        </div>
+
+        <!-- Stats badges -->
+        <div class="grid grid-cols-3 gap-1 pt-2 text-center text-xs">
+            <div class="px-2 py-1 rounded bg-green-500/80 text-white">OK: ${obj.nbOK}</div>
+            <div class="px-2 py-1 rounded bg-red-500/80 text-white">KO: ${obj.nbKO}</div>
+            <div class="px-2 py-1 rounded bg-orange-500/80 text-white">FA: ${obj.nbFA}</div>
+            <div class="px-2 py-1 rounded bg-blue-500/80 text-white">PE: ${obj.nbPE}</div>
+            <div class="px-2 py-1 rounded bg-gray-500/80 text-white">NA: ${obj.nbNA}</div>
+            <div class="px-2 py-1 rounded bg-purple-500/80 text-white">WE: ${obj.nbWE}</div>
+        </div>
+    </div>
+`;
+
+            const tagDiv = $(`
+    <div id="${tagId}"
+         class="tagDetail relative cursor-pointer px-3 py-1 rounded-full text-xs font-light flex-shrink-0 ${cssClass}"
+         data-tag="${encodedTag}"
+         data-tooltip-content='${tooltipContent}'
+    >
+        ${rawTagName}
+    </div>
+`);
+
+            tagContainer.append(tagDiv);
+
+// Tooltip indépendant
+            tagDiv.on('mouseenter', function() {
+                const el = this;
+                if (el._tooltipEl) document.body.removeChild(el._tooltipEl);
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute z-50 rounded-lg bg-gray-800 text-white text-xs p-3 shadow-lg max-w-xs';
+                tooltip.innerHTML = el.dataset.tooltipContent;
+                document.body.appendChild(tooltip);
+
+                const rect = el.getBoundingClientRect();
+                tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 8) + 'px';
+                tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2 + window.scrollX) + 'px';
+
+                el._tooltipEl = tooltip;
+            });
+
+            tagDiv.on('mouseleave', function() {
+                const el = this;
+                if (el._tooltipEl) {
+                    document.body.removeChild(el._tooltipEl);
+                    el._tooltipEl = null;
+                }
+            });
+
+
+            // Incrémenter nbTagLoaded
+            nbTagLoaded++;
+            hideLoaderTag();
+        });
+
+        // Scroll initial à droite
+        Alpine.nextTick(() => {
+            tagContainer.scrollLeft(tagContainer[0].scrollWidth);
+        });
+    });
+
+    updateNextFireTime();
+}
+
 function readLastTagExec(searchString, reportArea) {
-    var tagList = [];
-
     var tagListResult = {};
-
     var tagAgregated = {};
     var campaignList = [];
 
-    let paramMaxTagToDisplay = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, true).value;
-    let maxCampaign = getParameter("cerberus_homepage_nbdisplayedcampaign", getUser().defaultSystem, true).value;
-    let maxPerCampaign = getParameter("cerberus_homepage_nbdisplayedtagpercampaign", getUser().defaultSystem, true).value;
+    // Charger config depuis localStorage
+    const savedConfig = JSON.parse(localStorage.getItem("cerberus_homepage_lasttagexecutionconfig") || "{}");
 
-    if (!((paramMaxTagToDisplay >= 0) && (paramMaxTagToDisplay <= 20))) {
-        paramMaxTagToDisplay = 5;
-    }
-    nbTagLoadedTarget = paramMaxTagToDisplay;
+// Valeurs par défaut et validation
+    const maxCampaign = (savedConfig.maxCampaign >= 0 && savedConfig.maxCampaign <= 20) ? savedConfig.maxCampaign : 5;
+    const maxPerCampaign = (savedConfig.maxPerCampaign >= 0 && savedConfig.maxPerCampaign <= 20) ? savedConfig.maxPerCampaign : 5;
 
-    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=100" + getUser().defaultSystemsQuery;
+    let resultSetSize = parseInt(savedConfig.resultSetSize);
+    if (!(resultSetSize >= 10 && resultSetSize <= 5000)) resultSetSize = 1000;
+
+    const displayNoCampaign = savedConfig.displayNoCampaign !== false; // default true
+    const displayNextCampaign = savedConfig.displayNextCampaign !== false; // default true
+
+    const tagFilterList = savedConfig.tagFilterList || "";
+
+    // === Construction de l’URL ===
+    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description" +
+        "&iDisplayLength=" + resultSetSize +
+        getUser().defaultSystemsQuery;
+
     if (!isEmpty(searchString)) {
-        myUrl = myUrl + "&sSearch=" + searchString;
+        myUrl += "&sSearch=" + searchString;
     }
-    let newArray = [];
 
-    let campaignAdded = 0;
+    if (tagFilterList.trim().length > 0) {
+        myUrl += "&sSearch_2="+encodeURIComponent(tagFilterList);
+    }
 
-    let totalLinesAdded = 0;
+    // === Appel AJAX ===
     $.ajax({
         type: "GET",
         url: myUrl,
         async: true,
         dataType: 'json',
         success: function (data) {
-            nbTagLoadedTarget = data.contentTable.length;
+            var campaignAdded = 0;
+
             for (var s = 0; s < data.contentTable.length; s++) {
-                if (totalLinesAdded < paramMaxTagToDisplay) {
-                    tagList.push(data.contentTable[s].tag);
+                let row = data.contentTable[s];
+                let campaignName = row.campaign && row.campaign.length > 0 ? row.campaign : "noCampaign";
 
-                    let campaignName = "noCampaign";
-                    if (data.contentTable[s].campaign && data.contentTable[s].campaign.length > 0) {
-                        campaignName = data.contentTable[s].campaign;
+                // Skip noCampaign si désactivé
+                if (campaignName === "noCampaign" && !displayNoCampaign) {
+                    continue;
+                }
+
+                if (!tagAgregated[campaignName]) {
+                    if (campaignAdded < maxCampaign) {
+                        tagAgregated[campaignName] = [row];
+                        campaignList.push(campaignName);
+                        campaignAdded++;
                     }
-
-                    if (tagAgregated[campaignName]) {
-                        newArray = tagAgregated[campaignName];
-                        if (newArray.length < maxPerCampaign) {
-                            newArray.push(data.contentTable[s].tag);
-                            totalLinesAdded++;
-                            tagAgregated[campaignName] = newArray;
-                        }
-
-                    } else {
-                        if (campaignAdded < maxCampaign) {
-                            campaignList.push(campaignName);
-                            newArray = [];
-                            newArray.push(data.contentTable[s].tag);
-                            totalLinesAdded++;
-                            tagAgregated[campaignName] = newArray;
-                            campaignAdded++;
-                        }
+                } else {
+                    if (tagAgregated[campaignName].length < maxPerCampaign) {
+                        tagAgregated[campaignName].push(row);
                     }
-
                 }
             }
-            nbTagLoadedTarget = totalLinesAdded;
+
             tagListResult.campaigns = campaignList;
             tagListResult.tagLists = tagAgregated;
-            refreshTagList(tagListResult, reportArea);
 
+            refreshTagList(tagListResult, reportArea);
         }
     });
+
     return tagListResult;
 }
 
@@ -975,6 +1021,41 @@ function aoColumnsFunc() {
     return aoColumns;
 }
 
+function toggleConfigPanel() {
+    const panel = $("#tagConfigPanel");
+    panel.toggleClass("hidden");
+
+    if (!panel.hasClass("hidden")) {
+        const config = JSON.parse(localStorage.getItem("cerberus_homepage_lasttagexecutionconfig") || "{}");
+
+        $("#conf_maxCampaign").val(config.maxCampaign || 10); // défaut 10
+        $("#conf_maxPerCampaign").val(config.maxPerCampaign || 5); // défaut 5
+        $("#conf_resultSetSize").val(config.resultSetSize || 1000);
+        $("#conf_displayNoCampaign").prop("checked", config.displayNoCampaign !== false);
+        $("#conf_displayNextCampaign").prop("checked", config.displayNextCampaign !== false);
+        $("#conf_tagFilterList").val(config.tagFilterList || "");
+    }
+}
+
+
+function saveConfigPanel() {
+    const localConfig = {
+        maxCampaign: $("#conf_maxCampaign").val(),
+        maxPerCampaign: $("#conf_maxPerCampaign").val(),
+        resultSetSize: $("#conf_resultSetSize").val(),
+        displayNoCampaign: $("#conf_displayNoCampaign").is(":checked"),
+        displayNextCampaign: $("#conf_displayNextCampaign").is(":checked"),
+        tagFilterList: $("#conf_tagFilterList").val()
+    };
+
+    localStorage.setItem("cerberus_homepage_lasttagexecutionconfig", JSON.stringify(localConfig));
+
+    toastr.success("Configuration locale mise à jour.");
+
+    $("#tagConfigPanel").addClass("hidden");
+    loadLastTagResultList();
+}
+
 
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
@@ -1027,30 +1108,43 @@ function appendBuildRevRow(dtb) {
 
 function updateHeaderStats() {
 
-    $("#hp_TestcaseNumber").text("Calculating existing test cases...");
-    $("#hp_TestExecutionNumber").text("Calculating launched test cases...");
-    $("#hp_ApplicationNumber").text("Calculating configured applications...");
+    $("#hp_TestcaseNumber").text("...");
+    $("#hp_TestExecutionNumber").text("...");
+    $("#hp_ApplicationNumber").text("...");
 
 
     var jqxhr = $.getJSON("api/testcases/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
-        $("#hp_TestcaseNumber").text(result["iTotalRecords"] + " existing test cases");
+        $("#hp_TestcaseNumber").text(result["iTotalRecords"]);
     }).fail(handleErrorAjaxAfterTimeout);
 
     var jqxhr = $.getJSON("api/executions/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
-        $("#hp_TestExecutionNumber").text(formatnumberKM(result["iTotalRecords"]) + " launched test cases");
+        $("#hp_TestExecutionNumber").text(formatnumberKM(result["iTotalRecords"]));
     }).fail(handleErrorAjaxAfterTimeout);
 
     var jqxhr = $.getJSON("api/applications/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
-        $("#hp_ApplicationNumber").text(result["iTotalRecords"] + " configured applications");
+        $("#hp_ApplicationNumber").text(result["iTotalRecords"]);
     }).fail(handleErrorAjaxAfterTimeout);
 
     var jqxhr = $.getJSON("api/services/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
-        $("#hp_ServiceNumber").text(result["iTotalRecords"] + " configured services");
+        $("#hp_ServiceNumber").text(result["iTotalRecords"]);
     }).fail(handleErrorAjaxAfterTimeout);
 
+}
+
+
+function getStatusColor(status) {
+    switch (status) {
+        case "OK": return "text-emerald-600 bg-emerald-100/50 dark:text-emerald-400 dark:bg-emerald-900/50";
+        case "KO": return "text-red-600 bg-red-100/50 dark:text-red-400 dark:bg-red-900/50";
+        case "FA": return "bg-yellow-500";
+        case "NA": return "text-gray-600 bg-gray-100/50 dark:text-gray-400 dark:bg-gray-900/50";
+        case "NE": return "bg-blue-500";
+        case "PE": return "bg-purple-500";
+        default: return "text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50";
+    }
 }
 

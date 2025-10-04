@@ -21,85 +21,89 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/BuildContent.js"></script>
-        <title id="pageTitle">Build Content</title>
-    </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/pages/buildcontent/addBuildContent.html"%>
-            <%@ include file="include/pages/buildcontent/editBuildContent.html"%>
-            <%@ include file="include/pages/buildcontent/massActionBuildContent.html"%>
-            <%@ include file="include/pages/buildcontent/listInstallInstructions.html"%>
+<html class="h-full">
+<head>
+    <meta name="active-menu" content="integration">
+    <meta name="active-submenu" content="BuildContent.jsp">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%@ include file="include/global/dependenciesInclusions.html" %>
+    <script type="text/javascript" src="js/pages/BuildContent.js"></script>
+    <title id="pageTitle">Build Content</title>
+</head>
+<body x-data x-cloak class="crb_body">
+<jsp:include page="include/global/header2.html"/>
 
-            <h1 class="page-title-line" id="title">Build Content</h1>
+<div class="min-h-screen flex flex-col">
+    <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <%@ include file="include/global/messagesArea.html"%>
+        <%@ include file="include/utils/modal-confirmation.html"%>
+        <%@ include file="include/pages/buildcontent/addBuildContent.html"%>
+        <%@ include file="include/pages/buildcontent/editBuildContent.html"%>
+        <%@ include file="include/pages/buildcontent/massActionBuildContent.html"%>
+        <%@ include file="include/pages/buildcontent/listInstallInstructions.html"%>
 
-            <div class="row">
-                <div class="col-lg-12" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card">
-                            <span class="glyphicon glyphicon-filter"></span>
-                            <label id="filters" name="filtersField">Filters</label>
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-3 ">
-                                    <label for="selectSystem" name="systemField">System :</label>
-                                    <select class="form-control" id="selectSystem" name="system" ></select>
-                                </div>
-                                <div class="col-md-3 ">
-                                    <label for="selectApplication" name="applicationField">Application :</label>
-                                    <select class="form-control" id="selectApplication" name="application" ></select>
-                                </div>
-                                <div class="col-md-3 ">
-                                    <label for="selectBuild" name="buildField">Build :</label>
-                                    <select class="form-control" id="selectBuild" name="buildf" ></select>
-                                </div>
-                                <div class="col-md-3 ">
-                                    <label for="selectRevision" name="revisionField">Revision :</label>
-                                    <select class="form-control" id="selectRevision" name="revisionf" ></select>
-                                </div>
+        <h1 class="page-title-line" id="title">Build Content</h1>
+
+        <div class="row">
+            <div class="col-lg-12" id="FiltersPanel">
+                <div class="crb_card">
+                    <div>
+                        <span class="glyphicon glyphicon-filter"></span>
+                        <label id="filters" name="filtersField">Filters</label>
+                    </div>
+                    <div>
+                        <div class="row">
+                            <div class="col-md-3 ">
+                                <label for="selectSystem" name="systemField">System :</label>
+                                <select class="form-control" id="selectSystem" name="system" ></select>
                             </div>
-                            <div class="marginTop20">
-<!--                                <div class=" ">-->
-                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
-                                    <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
-                                    <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
-                                    <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
-                                    <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
-<!--                                </div>-->
+                            <div class="col-md-3 ">
+                                <label for="selectApplication" name="applicationField">Application :</label>
+                                <select class="form-control" id="selectApplication" name="application" ></select>
                             </div>
-                            <!--                                <div class="row">
-                                                                <div class="marginLeft5">
-                                                                </div>
-                                                            </div>-->
+                            <div class="col-md-3 ">
+                                <label for="selectBuild" name="buildField">Build :</label>
+                                <select class="form-control" id="selectBuild" name="buildf" ></select>
+                            </div>
+                            <div class="col-md-3 ">
+                                <label for="selectRevision" name="revisionField">Revision :</label>
+                                <select class="form-control" id="selectRevision" name="revisionf" ></select>
+                            </div>
                         </div>
+                        <div class="marginTop20">
+                            <!--                                <div class=" ">-->
+                            <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
+                            <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
+                            <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
+                            <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
+                            <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
+                            <!--                                </div>-->
+                        </div>
+                        <!--                                <div class="row">
+                                                            <div class="marginLeft5">
+                                                            </div>
+                                                        </div>-->
                     </div>
                 </div>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading card">
-                    <span class="glyphicon glyphicon-list"></span>
-                    <label id="shortcuts" name="listField">Build Content List</label>
-                </div>
-                <form id="massActionForm" name="massActionForm"  title="" role="form">
-                    <div class="panel-body" id="buildContentList">
-                        <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
-                        <div class="marginBottom20"></div>
-                    </div>
-                </form>
-            </div>
-
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
         </div>
-    </body>
+
+        <div class="crb_card">
+            <div>
+                <span class="glyphicon glyphicon-list"></span>
+                <label id="shortcuts" name="listField">Build Content List</label>
+            </div>
+            <form id="massActionForm" name="massActionForm"  title="" role="form">
+                <div id="buildContentList">
+                    <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer class="footer" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <div class="container-fluid" id="footer"></div>
+    </footer>
+</div>
+</body>
 </html>

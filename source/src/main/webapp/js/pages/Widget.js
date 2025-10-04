@@ -18,10 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var cols=12, rows=5;
+var cols=12, rows=20;
 var margin=10;
 var gridW=$("#grid").width(), gridH=$("#grid").height();
-var cellW=gridW/cols, cellH=gridH/rows;
 var editMode=false;
 
 var widgetsType={
@@ -47,7 +46,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         bindToggleCollapse();
         //close all sidebar menu
-        closeEveryNavbarMenu();
+        //closeEveryNavbarMenu();
 
         $("#show-hidden").on("click", function () {
             showWidgetToggleModal();
@@ -104,14 +103,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         // Delete widget
         $(document).on("click",".delete-widget",function(){
-            var id=$(this).closest(".widget").attr("data-id");
+            var id=$(this).closest(".crb_card").attr("data-id");
             widgetData=widgetData.filter(w=>w.id!=id);
             renderGridWidgets();
         });
 
         // Editer widget
         $(document).on("click",".edit-widget",function(){
-            var $w=$(this).closest(".widget");
+            var $w=$(this).closest(".crb_card");
             var id=$w.attr("data-id");
             var wd=widgetData.find(o=>o.id==id);
             if(wd.type === "count") {
@@ -129,7 +128,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         // Sauver widget
         $(document).on("click",".save-widget",function(){
-            var $w=$(this).closest(".widget");
+            var $w=$(this).closest(".crb_card");
             var id=$w.attr("data-id");
             var wd=widgetData.find(o=>o.id==id);
             if(wd.type === "count") {
@@ -149,14 +148,15 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function drawGuides(){
-    var cols=12, rows=5;
+    var cols=12, rows=20;
     var margin=10;
     var gridW=$("#grid").width(), gridH=$("#grid").height();
-    var cellW=gridW/cols, cellH=gridH/rows;
+    var cellW=gridW/cols, cellH=cellW;
     var $g=$("#grid .guides").empty();
     for(var c=1;c<cols;c++){
         var x=c*cellW;
-        $("<div class='line'>").css({left:x,top:0,height:"100%",width:0}).appendTo($g);
+        var h = cellH*rows;
+        $("<div class='line'>").css({left:x,top:0,height:h,width:0}).appendTo($g);
     }
     for(var r=1;r<rows;r++){
         var y=r*cellH;
@@ -165,11 +165,11 @@ function drawGuides(){
 }
 
 function layoutWidgets(){
-    var cols=12, rows=5;
+    var cols=12, rows=20;
     var gridW=$("#grid").width(), gridH=$("#grid").height();
-    var cellW=gridW/cols, cellH=gridH/rows;
+    var cellW=gridW/cols, cellH=cellW;
     var margin=10;
-    $(".widget").each(function(){
+    $(".crb_card").each(function(){
         var id=$(this).attr("data-id");
         var w=widgetData.find(o=>o.id==id);
         $(this).css({
@@ -182,10 +182,12 @@ function layoutWidgets(){
 }
 
 function makeDraggable($w,enable){
-    var cols=12, rows=5;
+    var $grid=$("#grid");
+    var cols=12, rows=20;
     var margin=10;
     var gridW=$("#grid").width(), gridH=$("#grid").height();
-    var cellW=gridW/cols, cellH=gridH/rows;
+    var cellW=gridW/cols, cellH=cellW;
+    $grid.height(cellH * rows);
     if(enable){
         $w.draggable({
             containment:"#grid",
@@ -206,7 +208,7 @@ function makeDraggable($w,enable){
 
 function renderGridWidgets(){
     var $grid=$("#grid");
-    $grid.find(".widget").remove();
+    $grid.find(".crb_card").remove();
     widgetData.forEach(function(w){
         console.log(w);
         if(w.type === "count") {
@@ -236,19 +238,27 @@ function renderGridWidgets(){
     layoutWidgets();
     $("#grid").toggleClass("edit-mode",editMode);
     $("#addWidgetBtn").toggle(editMode);
-    if(editMode) drawGuides(); else $("#grid .guides").empty();
+    if(editMode) {
+        drawGuides();
+    } else {
+        $("#grid .guides").empty();
+
+        var maxBottom = 0;
+        $grid.find(".crb_card").each(function(){
+            var bottom = $(this).position().top + $(this).outerHeight(true);
+            if(bottom > maxBottom) maxBottom = bottom;
+        });
+        $grid.height(maxBottom + 10);
+    }
+
 }
 
 
 function displayPageLabel() {
     var doc = new Doc();
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);
 }
 
-function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
-}
+

@@ -1,0 +1,125 @@
+@layer components {
+
+/* ===========================
+        Card
+=========================== */
+    .crb_card {
+        background: var(--crb-new-bg);
+        border: 1px solid var(--crb-new-border);
+        backdrop-filter: blur(20px);
+
+        @apply rounded-2xl p-6 mb-10;
+
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .crb_card:hover {
+        transform: translateY(-2px);
+        box-shadow:
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 20px rgba(99, 102, 241, 0.3);
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* ===========================
+    Datatable
+=========================== */
+    .dataTables_scroll {
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--crb-grey-light-color);
+        overflow: hidden;
+        background: var(--crb-new-bg) !important;
+    }
+
+    .dataTables_scrollHead {
+        border-top-left-radius: var(--radius-2xl);
+        border-top-right-radius: var(--radius-2xl);
+        overflow: hidden;
+    }
+
+    .dataTables_scrollHead th,
+    .dataTables_scrollHead thead {
+        border-radius: 0 !important;
+    }
+
+    .dataTables_scrollHeadInner{
+        width:100%!important;
+    }
+
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
+        border-top: 1px solid var(--crb-grey-light-color)!important;
+    }
+
+    table.dataTable thead th {
+        border-bottom-color: transparent !important;
+        border-top-color: transparent !important;
+        background: var(--crb-new-bg) !important;
+        /*background-color: var(--crb-grey-light-color) !important;
+        color: var(--crb-dark-color);*/
+    }
+
+    table.dataTable thead th input {
+        background: var(--crb-new-bg) !important;
+    }
+
+    .table-hover>tbody>tr{
+        /**background-color: var(--crb-white-color) !important;
+        color: var(--crb-black-color);*/
+    }
+
+    .table-hover>tbody>tr:hover{
+        background-color: var(--crb-grey-light-color) !important;
+        color: var(--crb-dark-color);
+    }
+
+    .table-bordered>tbody>tr>th,.table-bordered>tfoot>tr>th,.table-bordered>thead>tr>th{
+        border:none;
+
+    }
+
+    .dataTables_scroll {
+        /*overflow: auto;
+        clear: both;*/
+        width: 100%;
+        overflow: auto;
+    }
+
+    .editable-checklist {
+        max-height: 350px;
+        width: 120%;
+        max-width: 500px;
+        overflow: auto;
+    }
+
+}
+
+
+
+/* ===========================
+    CHECKBOX
+=========================== */
+.select-brp input {
+    @apply absolute opacity-0 w-0 h-0;
+}
+
+.select-brp input + span svg {
+    @apply hidden;
+}
+
+.select-brp input:checked + span {
+    @apply bg-sky-500;
+}
+
+.select-brp input:checked + span svg {
+    @apply block;
+}

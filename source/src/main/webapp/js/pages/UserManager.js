@@ -89,7 +89,7 @@ function displayPageLabel() {
     $("[name='buttonClose']").html(doc.getDocLabel("page_user", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_user", "save_btn"));
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

@@ -33,7 +33,7 @@ var configTime = {};
 function WidgetTimelineTemplate(w) {
 
     return `
-        <div class="widget" data-id="${w.id}">
+        <div class="crb_card absolute p-2.5" data-id="${w.id}">
           <div class="drag-handle drag-widget">⋮⋮⋮</div>
           <div class="widget-controls">
             <button class="btn btn-xs btn-info edit-widget">Edit</button>
@@ -97,16 +97,17 @@ function saveWidgetTimeline(wd, $w) {
     wd.option = newTitle;
     wd.content = newContent;
 
-    $w.find("select.widget-title").replaceWith(`<h4 class="widget-header">${newTitle}</h4>`);
-
+    $w.find("select.widget-title").replaceWith(
+        `<h4 class="widget-header">${newTitle}</h4>`
+    );
     $w.find("select.widget-content").remove();
-
     $w.find(".timelineChart").show();
 
     wd.option=newTitle; wd.content=newContent;
     localStorage.setItem("widgets",JSON.stringify(widgetData));
 
 }
+
 
 function buildWidgetTimelineGraphs(id, data, chart) {
     const curves = [...data.datasetExeTime].sort((a, b) => {

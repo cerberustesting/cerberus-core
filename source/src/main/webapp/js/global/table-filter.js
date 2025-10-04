@@ -214,9 +214,14 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     }
 
     //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='pull-right col-xs-12 filterTable marginBottom10'><div class='col-xs-11 row' id='activatedFilters'></div><div class='col-xs-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
+    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='pull-right col-xs-12 filterTable marginBottom10 border-gray-200 dark:border-gray-800'><div class='col-xs-11 row' id='activatedFilters'></div><div class='col-xs-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
     $("#filterAlertDiv").remove();
-    $("#" + tableId + "_filter").after($(showFilteredColumnsAlertMessage).hide());
+    if ($("#" + tableId + "_filterresult").length > 0) {
+        $(showFilteredColumnsAlertMessage).appendTo($("#" + tableId + "_filterresult")).hide();
+    } else {
+        $("#" + tableId + "_filter").after($(showFilteredColumnsAlertMessage).hide());
+    }
+
     //if ($("#" + tableId + "_paginate").length !== 0) {
     //Hide filtered alert message displayed when filtered column
     //  $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());

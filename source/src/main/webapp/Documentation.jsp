@@ -21,21 +21,21 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Documentation.js"></script>
         <title id="pageTitle">Documentation</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <h1 class="page-title-line" id="title">Documentation</h1>
             <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="no"/></iframe>
         <footer class="footer">
             <div class="container-fluid" id="footer"></div>
         </footer>
-    </div>
+    </main>
 </body>
 </html>

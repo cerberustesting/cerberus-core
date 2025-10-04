@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="test">
+        <meta name="active-submenu" content="TestCaseScript.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Case</title>
@@ -40,9 +42,9 @@
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
-    <body>
-        <%@ include file="include/global/header.html"%>
-        <div id="page-layout" class="container-fluid center">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
@@ -232,6 +234,6 @@
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

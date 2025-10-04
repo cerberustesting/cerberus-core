@@ -122,7 +122,7 @@ function loadCombo() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+   // displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_buildcontent", "title"));
     $("#title").html(doc.getDocOnline("page_buildcontent", "title"));
     $("[name='createBrpField']").html(doc.getDocLabel("page_buildcontent", "button_create"));

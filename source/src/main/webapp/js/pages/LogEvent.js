@@ -56,7 +56,7 @@ function renderOptionsForLogViewer() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_logviewer", "title"));
     $("#title").html(doc.getDocOnline("page_logviewer", "title"));
     $("[name='editLogEventField']").html(doc.getDocOnline("page_logviewer", "button_view"));

@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="data">
+        <meta name="active-submenu" content="TestDataLibList.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Data Library</title>        
@@ -31,10 +33,9 @@
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/global/autocomplete.js"></script>
     </head>
-    <body>
-        <%@ include file="include/global/header.html"%>
-
-        <div id="page-layout" class="container-fluid center">     
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/utils/modal-upload.html"%>
@@ -43,16 +44,16 @@
             <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
             <%@ include file="include/transversalobject/AppService.html"%>      
             <h1 class="page-title-line" id="title">Test Data Library</h1>
-            <div class="panel panel-default">
-                <div class="panel-body" id="testDataLibList">
-                    <table id="listOfTestDataLib" class="table table-bordered table-hover display" name="listOfTestDataLib"></table>
+            <div class="crb_card">
+                <div id="testDataLibList">
+                    <table id="listOfTestDataLib" class="table table-hover display" name="listOfTestDataLib"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>     
+        </main>
     </body> 
 
 </html>

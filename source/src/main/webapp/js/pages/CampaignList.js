@@ -105,7 +105,7 @@ function displayPageLabel() {
     $("[name='notifySlackstartField']").html(doc.getDocOnline("testcampaign", "SlackNotifyStartTagExecution"));
     $("[name='notifySlackendField']").html(doc.getDocOnline("testcampaign", "SlackNotifyEndTagExecution"));
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

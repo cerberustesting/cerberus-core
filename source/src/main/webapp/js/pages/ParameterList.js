@@ -42,7 +42,7 @@ function displayPageLabel() {
     $("#pageTitle").html(doc.getDocLabel("page_parameter", "allParameters"));
     $("#title").html(doc.getDocOnline("page_parameter", "allParameters"));
     
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

@@ -302,15 +302,6 @@ function displayHeaderLabel(doc) {
         }
 
 
-        $('#darkModeEntry').show();
-        darkMode = getFromStorageLocal("#menuDarkMode", 'false');
-        refreshToggleDarkMode('#menuDarkMode', darkMode);
-        $('#menuDarkMode').click(function () {
-            darkMode = (darkMode === 'true') ? 'false' : 'true';
-            refreshToggleDarkMode('#menuDarkMode', darkMode);
-        });
-
-
         if (user.menu.logoutLink === "") {
             $("#menuLogout").attr("style", "display: none;");
         } else {

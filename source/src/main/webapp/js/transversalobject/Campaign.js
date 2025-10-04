@@ -847,11 +847,6 @@ function removeParameterEntryClick(tableId, key, key1) {
     updateSelectParameter(tableId);
 }
 
-function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
-}
 
 function updateSelectParameter(id) {
     var val = $("#" + id + '_wrapper #parameterTestSelect').find(":selected").val();

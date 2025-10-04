@@ -27,27 +27,28 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="integration">
+        <meta name="active-submenu" content="IntegrationStatus.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/IntegrationStatus.js"></script>
         <title id="pageTitle">Integration Status</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Integration Status</h1>
             <div class="row">
                 <div class="col-lg-12" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#DeployHisto">
+                    <div class="crb_card">
+                        <div>
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="reportChanges">Last deploy Operations</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="DeployHisto">
+                        <div id="DeployHisto">
                             <div class="row">
                                 <div class="col-lg-12" id="filterContainer">
                                     <div class="row" id="tagFilter">
@@ -64,7 +65,7 @@
                                         </div>
                                     </div>
                                     <div class="row" id="tagFilter">
-                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="histoTable">
+                                        <table class="table table-hover nomarginbottom dataTable" id="histoTable">
                                             <thead id="histoTableHead">
                                             </thead>
                                             <tbody id="histoTableBody">
@@ -77,16 +78,15 @@
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-9" id="ReportByStatusPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
+                    <div class="crb_card">
+                        <div>
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="reportStatus">Environment Status</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="EnvStatus">
+                        <div id="EnvStatus">
                             <div class="row">
                                 <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="envTable">
+                                    <table class="table table-hover nomarginbottom dataTable" id="envTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">System</th>
@@ -110,6 +110,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

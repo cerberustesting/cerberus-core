@@ -296,20 +296,6 @@ select option{
     filter: alpha(opacity=0);
 }
 
-.page-title-line {
-    /*border-bottom: 2px solid #3D3D3D; */
-    border-bottom: 1px solid var(--crb-green-light-color);
-    color: var(--crb-black-color);
-    font-size: 20px;
-    /*font-size: 30px;*/
-    font-weight: 700;
-    /*font-weight: 600;*/
-    margin-bottom: 30px;
-    margin-top:20px;
-    /*margin: 40px 0 20px;
-    padding-bottom: 10px;*/
-    text-transform: uppercase;
-}
 
 
 table.display {
@@ -652,8 +638,4 @@ a.list-group-item.selected, button.list-group-item.selected {
     color: var(--crb-dark-color);
     background-color: var(--crb-white-color);
     border-color: var(--crb-grey-light-color);
-}
-
-.footer{
-    color: var(--crb-dark-color);
 }

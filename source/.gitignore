@@ -3,6 +3,8 @@ target/
 .settings
 .project
 *.log
-/src/main/webapp/documentation/
+/src/main/webapp/documentation
+/src/main/webapp/css/tailwind/node
+/src/main/webapp/css/tailwind/node_modules
 localdata
 nb-configuration.xml

@@ -94,7 +94,7 @@ $.when($.getScript("js/global/global.js")
         var tabactive = GetURLParameter("tabactive");
         var step = GetURLParameter("stepId");
 
-        displayHeaderLabel(doc);
+        //displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
         displayPageLabel(doc);
@@ -410,7 +410,7 @@ $.when($.getScript("js/global/global.js")
 
         }
         // close all Navbar menu
-        closeEveryNavbarMenu();
+        //closeEveryNavbarMenu();
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',

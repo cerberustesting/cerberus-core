@@ -27,9 +27,11 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="active-menu" content="reporting">
+        <meta name="active-submenu" content="ReportingAutomateScore.jsp">
+        <<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/ReportingAutomateScore.css" type="text/css"/>
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
@@ -38,9 +40,9 @@
         <script type="text/javascript" src="js/pages/ReportingAutomateScore.js"></script>
         <title id="pageTitle">Automate Score</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
 
             <h1 class="page-title-line" id="title">Automate Score</h1>
@@ -529,7 +531,7 @@
                                                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                                             </div>-->
                                 <div class="panel-body collapse in" id="testcaseList">
-                                    <table id="testcasesTable" class="table table-bordered table-hover display" name="testcasesTable"></table>
+                                    <table id="testcasesTable" class="table table-hover display" name="testcasesTable"></table>
                                 </div>
                             </div>
                         </div>
@@ -537,7 +539,7 @@
                         <div class="center tab-pane fade in" id="tabCampaigns">
                             <div class="panel panel-default">
                                 <div class="panel-body" id="campaignList">
-                                    <table id="campaignsTable" class="table table-bordered table-hover display" name="campaignsTable"></table>
+                                    <table id="campaignsTable" class="table table-hover display" name="campaignsTable"></table>
                                 </div>
                             </div>
                         </div>
@@ -554,5 +556,6 @@
                     <div class="container-fluid" id="footer"></div>
                 </footer>
             </div>
+        </main>
     </body>
 </html>

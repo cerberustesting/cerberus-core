@@ -67,7 +67,7 @@ function refreshTestcaseResultSummary(data) {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_impactAnalysis", "title"));
     $("#title").html(doc.getDocOnline("page_impactAnalysis", "title"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "btn_search"));

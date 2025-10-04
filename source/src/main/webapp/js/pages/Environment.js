@@ -89,7 +89,7 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_environment", "title"));
     $("#title").html(doc.getDocOnline("page_environment", "title"));
     $("[name='createEnvField']").html(doc.getDocLabel("page_environment", "button_create"));
@@ -189,7 +189,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
-    $("#environmentList").html('<table id="environmentsTable" class="table table-bordered table-hover display" name="environmentsTable">\n\
+    $("#environmentList").html('<table id="environmentsTable" class="table table-hover display" name="environmentsTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable

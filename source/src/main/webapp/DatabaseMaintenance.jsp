@@ -37,16 +37,18 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="admin">
+        <meta name="active-submenu" content="DatabaseMaintenance.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Cerberus Database Maintenance</title>
         <script type="text/javascript" src="js/pages/DatabaseMaintenance.js"></script>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <h1 class="page-title-line" id="title">Database Maintenance</h1>
@@ -255,7 +257,7 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
         <br>
     </body>
 </html>

@@ -27,8 +27,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="reporting">
+        <meta name="active-submenu" content="ReportingExecutionByTag.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -43,9 +45,9 @@
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
             <%@ include file="include/transversalobject/TestCase.html" %>
@@ -57,12 +59,12 @@
             <div class="row">
 
                 <div class="col-lg-6" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card">
+                    <div class="crb_card">
+                        <div >
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="filters">Filters</label>
                         </div>
-                        <div class="panel-body">
+                        <div>
                             <div class="row">
                                 <div class="col-lg-12" id="filterContainer">
 
@@ -192,13 +194,13 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default" id="BugReportByStatusPanel">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#BugReportByStatus">
+                    <div class="crb_card" id="BugReportByStatusPanel">
+                        <div data-toggle="collapse" data-target="#BugReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="BugReportByStatus">
+                        <div id="BugReportByStatus">
                             <div class="row">
                                 <div class="col-xs-8" id="BugReportDetailTable">
                                     <table id="bugTable" name="bugTable" class="table table-hover display">
@@ -218,13 +220,13 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default" id="ManualReportByExecutorPanel">
-                        <div class="panel-heading card refreshButtonHeader">
+                    <div class="crb_card" id="ManualReportByExecutorPanel">
+                        <div class="refreshButtonHeader">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Manual Executor Status</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" id="ManualReportByExecutor">
+                        <div id="ManualReportByExecutor">
                             <div class="row">
                                 <div class="col-xs-8" id="ManualReportDetailTable">
                                     <table id="bugTable" name="bugTable" class="table table-hover display">
@@ -247,13 +249,13 @@
                 </div>
 
                 <div class="col-lg-6" id="ReportByStatusPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card refreshButtonHeader">
+                    <div class="crb_card">
+                        <div class="refreshButtonHeader">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="reportStatus">Report by Status</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" id="ReportByStatus">
+                        <div id="ReportByStatus">
                             <div class="row">
                                 <div class="col-xs-6" id="ReportByStatusTable"></div>
                                 <div class="col-xs-6" id="statusChart"></div>
@@ -313,13 +315,12 @@
             <div class="row">
                 <div class="col-sm-12">
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading card refreshButtonHeader" data-toggle="collapse" data-target="#TagInfo">
+                    <div class="crb_card">
+                        <div class="refreshButtonHeader">
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="TagDetailLab">Tag Information</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="TagInfo">
+                        <div id="TagInfo">
                             <div class="row">
                                 <div class="col-sm-4">
                                     <label for="startExe">Submitted :</label>
@@ -408,13 +409,13 @@
 
             <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card refreshButtonHeader">
+                    <div class="crb_card">
+                        <div class="refreshButtonHeader">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="reportTestFolder">Report by Test folder</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" id="testFolderChart">
+                        <div id="testFolderChart">
                             <div class="row">
                                 <div class="col-xs-12" id="ReportTestFolderChart"></div>
                             </div>
@@ -426,8 +427,8 @@
 
             <div class="row" id="reportByEnvCountryBrowser">
                 <div class="col-lg-12" >
-                    <div class="panel panel-default">
-                        <div class="panel-heading card clearfix refreshButtonHeader">
+                    <div class="crb_card">
+                        <div class="clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
@@ -435,7 +436,7 @@
                                 <li class="" id="tab"><a>Tab</a></li>
                             </ul>
                         </div>
-                        <div class="panel-body collapse in" id="reportEnvCountryBrowser">
+                        <div id="reportEnvCountryBrowser">
                             <label id="splitLabel" class="bold">Split by :</label>
                             <div class="form-group marginBottom20" id="splitFilter">
                                 <label class="checkbox-inline">
@@ -498,8 +499,8 @@
 
             <div class="row" id="reportByLabel">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card clearfix refreshButtonHeader">
+                    <div class="crb_card">
+                        <div class="clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by Label</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
@@ -507,7 +508,7 @@
                                 <li class="" id="requirements"><a>Requirements</a></li>
                             </ul>
                         </div>
-                        <div class="panel-body collapse in" id="reportLabel">
+                        <div id="reportLabel">
                             <div class='marginTop20' id="mainTreeExeS"></div>
                             <div class='marginTop20' id="mainTreeExeR" style="display: none;"></div>
                         </div>
@@ -518,12 +519,12 @@
 
             <div class="row">
                 <div class="col-lg-12" id="ListPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card refreshButtonsHeader" id="listPanelHeader">
+                    <div class="crb_card">
+                        <div class="refreshButtonsHeader" id="listPanelHeader">
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="List">List</label>
                         </div>
-                        <div class="panel-body collapse in" id="listReport">
+                        <div id="listReport">
                             <div id="tableArea">
                                 <form id="massActionForm" name="massActionForm" title="" role="form">
                                     <table id="listTable" class="table display" name="listTable"></table>
@@ -540,6 +541,6 @@
                 <div class="container-fluid" id="footer"></div>
             </footer>
 
-        </div>
+        </main>
     </body>
 </html>

@@ -304,7 +304,7 @@ function displayPageLabel() {
     $("#labelToPicker").html(doc.getDocLabel("page_campaignstatistics", "labelToPicker"));
     $("#loadButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
     $("#loadDetailButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);
 }

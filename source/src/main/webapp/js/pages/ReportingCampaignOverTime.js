@@ -176,7 +176,7 @@ function feedCampaignGp(selectId, data) {
 
 function initPage() {
     var doc = new Doc();
-    displayHeaderLabel(doc);
+   // displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
     initGraph();

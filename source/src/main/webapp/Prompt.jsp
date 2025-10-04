@@ -22,7 +22,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
     <%@ include file="include/global/dependenciesInclusions.html" %>
@@ -171,11 +171,10 @@
     </style>
 </head>
 
-<body>
-<%@ include file="include/global/header.html"%>
+<body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 
-<!-- Main content wrapper -->
-<div class="container-fluid center" id="page-layout">
     <%@ include file="include/global/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
 
@@ -183,7 +182,7 @@
     <h1 class="page-title-line" id="title"><span class="card-img-top glyphicon glyphicon-menu-hamburger" id="sidebarToggle" onclick="toggleSidebar()"></span>  Ask Cerberus</h1>
 
 
-    <div class="panel panel-default">
+    <div class="crb_card">
         <!-- Sidebar Toggle and Sidebar -->
         <div id="mainContainer">
             <div id="historySidebar">
@@ -205,7 +204,7 @@
     <footer class="footer">
         <div class="container-fluid" id="footer"></div>
     </footer>
-</div>
+</main>
 
 </body>
 </html>

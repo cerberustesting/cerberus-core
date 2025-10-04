@@ -42,7 +42,7 @@ var widgetCountOptions={
          }
      }
      return `
-        <div class="widget" data-id="${w.id}">
+        <div class="crb_card absolute p-2.5" data-id="${w.id}">
           <div class="drag-handle drag-widget">⋮⋮⋮</div>
           <div class="widget-controls">
             <button class="btn btn-xs btn-info edit-widget">Edit</button>
@@ -85,10 +85,10 @@ var widgetCountOptions={
     });
 }
 
-function saveWidgetCount(wd, $w){
+function saveWidgetCount(wd, $w) {
+    var newTitle = $w.find("select").first().val();
+    var newContent = $w.find("select").last().val();
 
-    var newTitle=$w.find("select").first().val();
-    var newContent=$w.find("select").last().val();
     $w.find("select").first().replaceWith(`<h4 class="widget-header">${newTitle}</h4>`);
     $w.find("select").last().replaceWith(`<p class="widget-content">${newContent}</p>`);
 

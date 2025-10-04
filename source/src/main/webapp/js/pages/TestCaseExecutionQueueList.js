@@ -267,7 +267,7 @@ function displayPageLabel() {
     $("#pageTitle").html(doc.getDocLabel("page_testcaseexecutionqueue", "allExecution"));
 
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

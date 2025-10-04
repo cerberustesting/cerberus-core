@@ -50,7 +50,7 @@
 }
 
 #logo {
-    margin-top:-5px;
+    /*margin-top:-5px;*/
     max-height: 42px;
 }
 
@@ -382,4 +382,14 @@
     #steps{
         overflow-y:initial!important;
     }
+}
+
+/*TO REMOVE AFTER OLD MENU REMOVAL*/
+.collapse.in {
+    display: block;
+}
+
+/*TO REMOVE AFTER OLD MENU REMOVAL*/
+.MainItem{
+    display: flex;
 }

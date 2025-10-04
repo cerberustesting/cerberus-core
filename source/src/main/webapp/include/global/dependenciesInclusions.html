@@ -1,71 +1,133 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
-<!--Styles inclusions-->
+
+<!--Favicon-->
+<link rel="icon" type="image/png" href="images/favicon.ico.png">
+<!--Static content-->
+<script type="text/javascript" src="js/static-data/labels.js"></script>
+
+<!--Favico JS-->
+<script src="dependencies/favico.js-0.3.10/favico-0.3.10.min.js"></script>
+
+<!--Font Awesome-->
 <link rel="stylesheet" type="text/css" href="dependencies/FontAwesome-4.5.0/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-3.3.6/css/bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-editable-1.5.1/css/bootstrap-editable.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-multiselect-2.0/css/bootstrap-multiselect.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-colorpicker-2.3.3/css/bootstrap-colorpicker.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.css"/>
+<!--Font Inter-->
+<link rel="stylesheet" type="text/css" href="fonts/inter/inter.css">
+
+<!--Flag 16-->
 <link rel="stylesheet" type="text/css" href="dependencies/Flags16/css/flags16.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Select2-4.0.13/css/select2.min.css">
-<link rel="stylesheet" type="text/css" href="dependencies/DataTables-1.10.12/css/dataTables.bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/ColReorder-1.3.2/css/colReorder.bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/Buttons-1.2.1/css/buttons.bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/FixedColumns-3.2.2/css/fixedColumns.bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="dependencies/FixedHeader-3.1.2/css/fixedHeader.bootstrap.min.css"/>
+
+<!--Lucide-->
+<script src="dependencies/Lucide-0.544.0/lucide.min.js"></script>
+
+<!--JQuery tools-->
+<script src="dependencies/jQuery-2.2.3/jquery-2.2.3.min.js"></script>
+<script src="dependencies/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
+<script src="dependencies/BlockUI-2.70.0/jquery.blockUI.js"></script>
+
+<!-- Alpine.js Core -->
+<script src="dependencies/Alpine-3.15.0/alpine.min.js" defer></script>
+
+<!-- Plugins Alpine -->
+<script src="dependencies/Alpine-3.15.0/persist.min.js" defer></script>
+<script src="dependencies/Alpine-3.15.0/collapse.min.js" defer></script>
+<script src="dependencies/Alpine-3.15.0/morph.min.js" defer></script>
+
+<!-- Init Alpine -->
+<script type="text/javascript" src="js/global/initAlpineStore.js"></script>
+
+<!-- Toastr -->
+<link href="dependencies/Toastr-2.1.3/toastr.min.css" rel="stylesheet"/>
+<script src="dependencies/Toastr-2.1.3/toastr.min.js"></script>
+
+<!--Bootstrap 3.3.6-->
+<script src="dependencies/Bootstrap-3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-3.3.6/css/bootstrap.min.css"/>
 <link rel="stylesheet" type="text/css" href="dependencies/sb-admin2-3.3.7/sb-admin-2.min.css"/>
+
+<!--Bootstrap Editable 1.5.1-->
+<script src="dependencies/Bootstrap-editable-1.5.1/js/bootstrap-editable.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-editable-1.5.1/css/bootstrap-editable.css"/>
+
+<!--Bootstrap Multiselect 2.0-->
+<script src="dependencies/Bootstrap-multiselect-2.0/js/bootstrap-multiselect-multilang.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-multiselect-2.0/css/bootstrap-multiselect.css"/>
+
+<!--Bootstrap Color Picker 2.3.3-->
+<script src="dependencies/Bootstrap-colorpicker-2.3.3/js/bootstrap-colorpicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-colorpicker-2.3.3/css/bootstrap-colorpicker.min.css"/>
+
+<!--Bootstrap Datetimepicker 4.17.47-->
+<link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.css"/>
+
+<!--Datatable 1.10.12-->
+<script src="dependencies/DataTables-1.10.12/js/jquery.dataTables.min.custom.js"></script>
+<script src="dependencies/DataTables-1.10.12/js/dataTables.bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/DataTables-1.10.12/css/dataTables.bootstrap.min.css"/>
+
+<!--Datatable Col Resize 0.0.11-->
+<script src="dependencies/colResize-0.0.11/js/dataTables.colResize.js"></script>
+
+<!--Datatable Col Reorder 1.3.2-->
+<script src="dependencies/ColReorder-1.3.2/js/dataTables.colReorder.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/ColReorder-1.3.2/css/colReorder.bootstrap.min.css"/>
+
+<!--Datatable Buttons 1.2.1-->
+<script src="dependencies/Buttons-1.2.1/js/dataTables.buttons.min.js"></script>
+<script src="dependencies/Buttons-1.2.1/js/buttons.bootstrap.min.js"></script>
+<script src="dependencies/Buttons-1.2.1/js/buttons.colVis.min.custom.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Buttons-1.2.1/css/buttons.bootstrap.min.css"/>
+
+<!--Datatable Fixed Columns 3.2.2-->
+<script src="dependencies/FixedColumns-3.2.2/js/dataTables.fixedColumns.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/FixedColumns-3.2.2/css/fixedColumns.bootstrap.min.css"/>
+
+<!--Datatable Fixed Header 3.1.2-->
+<script src="dependencies/FixedHeader-3.1.2/js/dataTables.fixedHeader.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/FixedHeader-3.1.2/css/fixedHeader.bootstrap.min.css"/>
+
+<!--Select2 4.0.13-->
+<script src="dependencies/Select2-4.0.13/js/select2.full.min.js"></script>
+<link rel="stylesheet" type="text/css" href="dependencies/Select2-4.0.13/css/select2.min.css">
+
+<!--Linkify 2.1.4-->
+<script src="dependencies/Linkify-2.1.4/linkify.min.js"></script>
+<script src="dependencies/Linkify-2.1.4/linkify-string.min.js"></script>
+
+<!--IntroJS 2.9.3-->
+<script src="dependencies/intro.js-2.9.3/intro.js"></script>
 <link rel="stylesheet" type="text/css" href="dependencies/intro.js-2.9.3/minified/introjs.min.css"/>
+
+<!--Ace-->
+<!--<script src="dependencies/Ace-1.38.0/ace.js"></script>-->
+<script src="dependencies/Ace-1.2.6/ace.js"></script>
+
+<!--JS Beautify-->
+<script src="dependencies/Js-Beautify-1.6.12/beautify.js"></script>
+<script src="dependencies/Js-Beautify-1.6.12/beautify-html.js"></script>
+
+<!--JS metisMenu-->
+<script src="dependencies/MetisMenu-2.7.0/metisMenu.min.js"></script>
+
+<!--vkbeautify-->
+<script src="dependencies/vkbeautify-0.99.00.beta/vkbeautify.0.99.00.beta.js"></script>
+
+<script src="dependencies/Tether-1.4.0/tether.min.js"></script>
 
 <!--Custom styles inclusions-->
 <link rel="stylesheet" type="text/css" href="css/global/default.css">
 <link rel="stylesheet" type="text/css" href="css/global/crb_style2.css">
 <link rel="stylesheet" type="text/css" href="css/global/crb_style_navbar.css">
-<!--Favicon-->
-<link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
-<!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
-
-<!--script dependencies-->
-<script src="dependencies/jQuery-2.2.3/jquery-2.2.3.min.js"></script>
-<script src="dependencies/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
-<script src="dependencies/BlockUI-2.70.0/jquery.blockUI.js"></script>
-
-<!-- Test -->
-<script src="dependencies/Tether-1.4.0/tether.min.js"></script>
-<!-- -->
-
-<script src="dependencies/Bootstrap-3.3.6/js/bootstrap.min.js"></script>
-<script src="dependencies/DataTables-1.10.12/js/jquery.dataTables.min.custom.js"></script>
-<script src="dependencies/DataTables-1.10.12/js/dataTables.bootstrap.min.js"></script>
-<script src="dependencies/FixedColumns-3.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="dependencies/FixedHeader-3.1.2/js/dataTables.fixedHeader.min.js"></script>
-<script src="dependencies/ColReorder-1.3.2/js/dataTables.colReorder.min.js"></script>
-<script src="dependencies/Buttons-1.2.1/js/dataTables.buttons.min.js"></script>
-<script src="dependencies/colResize-0.0.11/js/dataTables.colResize.js"></script>
-<script src="dependencies/Buttons-1.2.1/js/buttons.bootstrap.min.js"></script>
-<script src="dependencies/Buttons-1.2.1/js/buttons.colVis.min.custom.js"></script>
-<script src="dependencies/Bootstrap-editable-1.5.1/js/bootstrap-editable.min.js"></script>
-<script src="dependencies/Select2-4.0.13/js/select2.full.min.js"></script>
-<script src="dependencies/Bootstrap-multiselect-2.0/js/bootstrap-multiselect-multilang.js"></script>
-<script src="dependencies/Bootstrap-colorpicker-2.3.3/js/bootstrap-colorpicker.min.js"></script>
-<script src="dependencies/Linkify-2.1.4/linkify.min.js"></script>
-<script src="dependencies/Linkify-2.1.4/linkify-string.min.js"></script>
-<!--<script src="dependencies/Ace-1.38.0/ace.js"></script>-->
-<script src="dependencies/Ace-1.2.6/ace.js"></script>
-<script src="dependencies/Js-Beautify-1.6.12/beautify.js"></script>
-<script src="dependencies/Js-Beautify-1.6.12/beautify-html.js"></script>
-<script src="dependencies/MetisMenu-2.7.0/metisMenu.min.js"></script>
-<script src="dependencies/intro.js-2.9.3/intro.js"></script>
-<script src="dependencies/favico.js-0.3.10/favico-0.3.10.min.js"></script>
-<script src="dependencies/vkbeautify-0.99.00.beta/vkbeautify.0.99.00.beta.js"></script>
+<link rel="stylesheet" type="text/css" href="css/global/crb_style.css">
 
 <!--Custom scripts inclusions-->
 <script type='text/javascript' src='js/global/doc.js'></script>
 <script type="text/javascript" src="js/global/cerberusInformation.js"></script>
+<script type="text/javascript" src="js/global/cerberusDatatable.js"></script>
 <script type="text/javascript" src="js/global/table-filter.js"></script>
 <script type="text/javascript" src="js/global/global.js"></script>
 <script type="text/javascript" src="js/global/user.js"></script>
 <script type='text/javascript' src='js/global/messageInfoAndSplashPage.js'></script>
-<script type="text/javascript" src="js/transversalobject/TestCaseSimpleCreation.js"></script>
-<script type="text/javascript" src="js/global/header.js"></script>
+<script type="text/javascript" src="js/global/header2.js"></script>
 <script type="text/javascript" src="js/global/interactiveTutorial.js"></script>
+

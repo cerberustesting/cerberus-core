@@ -31,251 +31,346 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <title>Cerberus Homepage</title>
-        <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
-        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
-        <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
-        <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
-        <script type="text/javascript" src="js/pages/Homepage.js"></script>
-    </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
-        <%@ include file="include/utils/modal-confirmation.html" %>
+<html class="h-full">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Cerberus Homepage</title>
+    <%@ include file="include/global/dependenciesInclusions.html" %>
+    <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
+    <script type="text/javascript" src="js/pages/Homepage.js"></script>
+</head>
+<body x-data x-cloak class="crb_body">
+<jsp:include page="include/global/header2.html"/>
+<%@ include file="include/utils/modal-confirmation.html" %>
 
-        <%
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+<%
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-            IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
-            if (!(DatabaseVersioningService.isDatabaseUpToDate()) && request.isUserInRole("Administrator")) {%>
-        <script>
-            var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
-            if (r == true) {
-                location.href = './DatabaseMaintenance.jsp';
-            }
-        </script>
+    IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
+    if (!(DatabaseVersioningService.isDatabaseUpToDate()) && request.isUserInRole("Administrator")) {%>
+<script>
+    var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
+    if (r == true) {
+        location.href = './DatabaseMaintenance.jsp';
+    }
+</script>
 
-        <% }
-        %>
-        <style>
-
-            .DataTables_sort_wrapper {
-                font-size: 9px
-            }
-
-        </style>
-        <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/global/messagesArea.html" %>
-            <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
-
-            <div class="row marginBottom20 ">
-                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row" style="height: 100px;">
-                            <div class="col-sm-12">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
-                                <a href="./ApplicationList.jsp" class="marginLeft15">See or Create Application</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc2">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row" style="height: 100px;">
-                            <div class="col-sm-12">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-pencil"></span>  Test Cases</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_TestcaseNumber"></div>
-                                <a href="./TestCaseList.jsp" class="marginLeft15">See or Create TestCase</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc3">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row" style="height: 100px;">
-                            <div class="col-sm-12">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Services</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_ServiceNumber"></div>
-                                <a href="./AppServiceList.jsp" class="marginLeft15">Edit & Call Service</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12" id="sc4">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row" style="height: 100px;">
-                            <div class="col-sm-6 col-xs-6" id="hp_TestExecutionNumberParent">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
-                                <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
-                            </div>
-                            <div class="col-sm-5 col-xs-5 panel panelPE" id="exeRunningPanel" 
-                                 style="margin-top: 5px; padding-top: 10px; background-color: var(--crb-grey-light-color); color: var(--crb-black-color); display: none">
-                                <div class="row " style="height: 30px;">
-                                    <div class="col-xs-3 status marginBottom10" style="">
-                                        <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>
-                                    </div>
-                                    <div class="col-xs-8 text-right " style="">
-                                        <div class="total" style="" id="exeRunningPanelCnt">27
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row" style="height: 20px;" id="queueStats">
-                                    <div class='progress' style='height:12px;margin-left: 10px;margin-right: 10px'>
-                                        <div id='progress-barUsed' class='progress-bar statusPE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
-                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                                        <div id='progress-barIdle' class='progress-bar statusWE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
-                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                                        <div id='progress-barQueue' class='progress-bar statusQU' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
-                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                                    </div>
-                                </div>
-                                <div class="row" style="height: 20px;" id="exeRunningList">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-6 col-sm-12 hidden-xs" id="sc5">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row">
-                            <div class="col-sm-12" style="height: 100px;">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-question-sign"></span>  Documentation</h5>
-                                <div class="marginLeft15 marginBottom10"></div>
-                                <a href="./documentation/D1/documentation_en.html" target="_blank" class="marginLeft15">See online documentation</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<% }
+%>
+<main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+    <div>
+        <%@ include file="include/global/messagesArea.html" %>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div class="crb_card" id="sc1">
+                    <span class="flex items-center font-medium text-lg mb-2">
+                        <i class="fa fa-windows mr-2 text-blue-600"></i>
+                        <span> Applications</span>
+                    </span>
+                <a href="./ApplicationList.jsp">
+                    <p id="hp_ApplicationNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                </a>
+                <p class="text-xs font-medium mt-0">configured applications</p>
             </div>
-            <div class="row">
-                <div class="col-lg-6" id="LastTagExecPanel">
-                    <div class="panel panel-default whiteCard">
-                        <div class="panel-heading card clearfix" data-target="#tagExecStatus">
-                            <div class="btn-group pull-right">
-                                <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadLastTagResultList();"><span
-                                        class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                                <!--                                <button id="tagSettings" class="btn btn-default btn-xs"><span
-                                                                        class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label>
-                                                                </button>-->
-                            </div>
-                            <span class="fa fa-tag fa-fw"></span>
-                            <label id="lastTagExec">Last tag executions</label>
-                        </div>
-                        <div class="panel-body collapse in" id="tagExecStatus">
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6" id="LastTagExecPanel">
-                    <div id="panelHistory" class="panel panel-default whiteCard" style="display: block;">
-                        <div class="panel-heading card" data-target="#histoChart1">
-                            <div class="btn-group pull-right">
-                                <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadExecutionsHistoBar();"><span
-                                        class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                            </div>
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfParty">Execution History</label>
-                        </div>
-                        <div class="panel-body collapse in" id="histoChart1">
-                            <canvas id="canvasHistExePerStatus" class=""></canvas>
-                        </div>
-                    </div>
-                </div>
+            <div class="crb_card" id="sc2">
+                    <span class="flex items-center font-medium text-lg mb-2">
+                        <i class="fa fa-list mr-2 text-blue-600"></i>
+                        <span> Test Cases</span>
+                    </span>
+                <a href="./TestCaseList.jsp">
+                    <p id="hp_TestcaseNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                </a>
+                <p class="text-xs font-medium mt-0">created testcases</p>
             </div>
-            <div class="row">
-                <div class="col-lg-6" id="TcStatPanel">
-                    <div id="panelTcHistory" class="panel panel-default whiteCard" style="display: block;">
-                        <div class="panel-heading card" data-target="#histoChart2">
-                            <div class="btn-group pull-right">
-                                <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTestcaseHistoGraph();"><span
-                                        class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                            </div>
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfParty">Testcase History Status</label>
-                        </div>
-                        <div class="panel-body collapse in" id="histoChart2">
-                            <canvas id="canvasHistTcPerStatus" class=""></canvas>
-                        </div>
-                    </div>
+            <div class="crb_card" id="sc3">
+                    <span class="flex items-center font-medium text-lg mb-2">
+                        <i class="fa fa-plug mr-2 text-blue-600"></i>
+                        <span> Services</span>
+                    </span>
+                <a href="./AppServiceList.jsp">
+                    <p id="hp_ServiceNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                </a>
+                <p class="text-xs font-medium mt-0">configured services</p>
+            </div>
+            <div class="col-span-2 crb_card" id="sc4">
+                <div id="hp_TestExecutionNumberParent">
+                        <span class="flex items-center font-medium text-lg mb-2">
+                        <i class="fa fa-youtube-play mr-2 text-blue-600"></i>
+                        <span> Test Execution</span>
+                    </span>
                 </div>
-                <div class="col-lg-6">
-                    <div id="ReportByStatusPanel">
-                        <div class="panel panel-default whiteCard">
-                            <div class="panel-heading card" data-target="#EnvStatus">
-                                <span class="fa fa-pie-chart fa-fw"></span>
-                                <label id="reportStatus">Environment Status</label>
+                <div class="grid grid-cols-2">
+                    <div>
+                        <a href="./RunTests.jsp">
+                            <p id="hp_TestExecutionNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                        </a>
+                        <p class="text-xs font-medium mt-0">launched tests</p>
+                    </div>
+                    <div id="exeRunningPanel" style="margin-top: 5px; padding-top: 10px; color: var(--crb-black-color); display: none">
+                        <div class="row " style="height: 30px;">
+                            <div class="col-xs-3 status marginBottom10" style="">
+                                <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>
                             </div>
-                            <div class="panel-body collapse in" id="EnvStatus">
-                                <div id="homePageTable1_wrapper" class="dataTables_scroll" style="position: relative">
-                                    <div class="row">
-                                        <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                            <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center" id="systemHeader" name="systemHeader">System</th>
-                                                        <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
-                                                        <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
-                                                        <th class="text-center" id="devHeader" name="devHeader">DEV</th>
-                                                        <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
-                                                        <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
-                                                        <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="envTableBody">
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                            <div class="col-xs-8 text-right " style="">
+                                <div class="total" style="" id="exeRunningPanelCnt">27
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="homeTableDiv" class="panel panel-default whiteCard">
-                <div class="panel-heading card" data-target="#applicationPanel">
-                    <span class="fa fa-retweet fa-fw"></span>
-                    <label id="testCaseStatusByApp">Test Case Status by Application</label>
-                </div>
-                <div class="panel-body collapse in" id="applicationPanel">
-                    <table id="homePageTable" class="table table-bordered table-hover display" name="homePageTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div id="ChangelogPanel">
-                        <div class="panel panel-default whiteCard">
-                            <div class="panel-heading card" data-target="#Changelog421000">
-                                <span class="fa fa-pie-chart fa-fw"></span>
-                                <label id="changelogLabel">Changelog</label>
-                            </div>
-                            <div class="panel-body collapse in" id="Changelog421000">
-                                <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
-                                </iframe>
+                        <div class="row" style="height: 20px;" id="queueStats">
+                            <div class='progress' style='height:12px;margin-left: 10px;margin-right: 10px'>
+                                <div id='progress-barUsed' class='progress-bar statusPE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
+                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
+                                <div id='progress-barIdle' class='progress-bar statusWE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
+                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
+                                <div id='progress-barQueue' class='progress-bar statusQU' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
+                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
                             </div>
                         </div>
+                        <div class="row" style="height: 20px;" id="exeRunningList">
+                        </div>
                     </div>
+
                 </div>
-
             </div>
-
-
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
         </div>
-    </body>
+        <div class="row">
+            <div class="col-lg-12" id="LastTagExecPanel">
+                <div class="crb_card">
+                    <div class="flex justify-between items-center" data-target="#tagExecStatus">
+                    <span class="flex items-center font-medium text-lg">
+                        <i class="fa fa-tag fa-fw mr-2 text-blue-600"></i>
+                        <span>Last tag executions</span>
+                    </span>
+                        <!-- Bouton configuration -->
+                        <div class="btn-group">
+                            <button id="configTags"
+                                    class="btn btn-default btn-xs"
+                                    onclick="stopPropagation(event); toggleConfigPanel();">
+                                <i class="fa fa-cog"></i> <span>Config</span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- Zone configuration (hidden par défaut) -->
+                    <div id="tagConfigPanel" class="hidden mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200">
+                        <div class="grid grid-cols-2 gap-4">
+
+                            <!-- Max campagnes -->
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nombre de campagnes</label>
+                                <input id="conf_maxCampaign" type="number" min="1" max="20"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                            </div>
+
+                            <!-- Max exécutions -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exécutions par campagne</label>
+                                <input id="conf_maxPerCampaign" type="number" min="1" max="20"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                            </div>
+
+                            <!-- Taille du resultset -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Taille du resultset</label>
+                                <input id="conf_resultSetSize" type="number" min="10" max="5000"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                            </div>
+
+                            <!-- Affichage noCampaign -->
+                            <div class="flex items-center gap-2 mt-6">
+                                <input id="conf_displayNoCampaign" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                                <label for="conf_displayNoCampaign" class="text-sm text-gray-700 dark:text-gray-300">Afficher "no campaign"</label>
+                            </div>
+
+                            <!-- Affichage nextCampaign -->
+                            <div class="flex items-center gap-2 mt-6">
+                                <input id="conf_displayNextCampaign" type="checkbox"
+                                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                                <label for="conf_displayNextCampaign" class="text-sm text-gray-700 dark:text-gray-300">Afficher "next campaign"</label>
+                            </div>
+
+                            <!-- Liste des tags -->
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtre des tags (séparés par ,)</label>
+                                <input id="conf_tagFilterList" type="text"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                            </div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="flex justify-end gap-2 mt-4">
+                            <button onclick="saveConfigPanel()" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
+                                Sauvegarder
+                            </button>
+                            <button onclick="toggleConfigPanel()" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="tagExecStatus" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Zone d'affichage -->
+        <div id="tagExecStatus"></div>
+    </div>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6" id="LastTagExecPanel">
+            <div id="panelHistory" class="crb_card p-4" style="display: block;">
+                <div class="flex justify-between items-center mb-4">
+            <span class="flex items-center font-medium text-lg">
+                <i class="fa fa-bar-chart fa-fw mr-2 text-blue-600"></i>
+                <span>Execution History</span>
+            </span>
+
+                    <!-- Bouton config avec Alpine -->
+                    <div x-data="{ open: false, period: localStorage.getItem('execHistoryPeriod') || '1m' }" class="relative">
+                        <button @click="open = !open" class="btn btn-default btn-xs flex items-center gap-1">
+                            <i class="fa fa-cog"></i> <span>Config</span>
+                        </button>
+
+                        <div x-show="open"
+                             x-transition.opacity
+                             @click.outside="open = false"
+                             class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-3 z-50">
+                            <select x-model="period" class="form-select form-select-sm mb-2 w-full">
+                                <option value="1w">Last week</option>
+                                <option value="2w">Last 2 weeks</option>
+                                <option value="1m">Last month</option>
+                                <option value="2m">Last 2 months</option>
+                                <option value="3m">Last 3 months</option>
+                            </select>
+                            <button @click="
+                        localStorage.setItem('execHistoryPeriod', period);
+                        open = false;
+                        loadExecutionsHistoBar();
+                    " class="btn btn-sm btn-primary w-full">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="histoChart1">
+                    <canvas id="canvasHistExePerStatus"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6" id="TcStatPanel">
+            <div id="panelTcHistory" class="crb_card p-4" style="display: block;">
+                <div class="flex justify-between items-center mb-4" data-target="#histoChart2">
+        <span class="flex items-center font-medium text-lg">
+            <i class="fa fa-bar-chart fa-fw mr-2 text-blue-600"></i>
+            <span>Testcase History Status</span>
+        </span>
+
+                    <!-- Bouton config Alpine -->
+                    <div x-data="{ open: false, period: localStorage.getItem('tcHistoryPeriod') || '1m' }" class="relative">
+                        <button @click="open = !open" class="btn btn-default btn-xs flex items-center gap-1">
+                            <i class="fa fa-cog"></i> <span>Config</span>
+                        </button>
+
+                        <div x-show="open"
+                             x-transition.opacity
+                             @click.outside="open = false"
+                             class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg p-3 z-50">
+                            <select x-model="period" class="form-select form-select-sm mb-2 w-full">
+                                <option value="1w">Last week</option>
+                                <option value="2w">Last 2 weeks</option>
+                                <option value="1m">Last month</option>
+                                <option value="2m">Last 2 months</option>
+                                <option value="3m">Last 3 months</option>
+                            </select>
+                            <button @click="
+                    localStorage.setItem('tcHistoryPeriod', period);
+                    open = false;
+                    loadTestcaseHistoGraph();
+                " class="btn btn-sm btn-primary w-full">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="histoChart2">
+                    <canvas id="canvasHistTcPerStatus"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="homeTableDiv" class="crb_card">
+        <div class="" data-target="#applicationPanel">
+                <span class="flex items-center font-medium text-lg mb-2">
+                        <i class="fa fa-retweet fa-fw mr-2 text-blue-600"></i>
+                        <span> Test Case Status by Application</span>
+                </span>
+        </div>
+        <div class="" id="applicationPanel">
+            <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
+            <div class="marginBottom20"></div>
+        </div>
+    </div>
+
+    <div class="row hidden">
+        <div class="col-lg-6">
+            <div id="ReportByStatusPanel">
+                <div class="crb_card">
+                    <div class="" data-target="#EnvStatus">
+                        <span class="fa fa-pie-chart fa-fw"></span>
+                        <label id="reportStatus">Environment Status</label>
+                    </div>
+                    <div class="" id="EnvStatus">
+                        <div id="homePageTable1_wrapper" class="dataTables_scroll" style="position: relative">
+                            <div class="row">
+                                <div class="col-xs-12" id="EnvByBuildRevisionTable">
+                                    <table class="table dataTable table-hover nomarginbottom" id="envTable">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center" id="systemHeader" name="systemHeader">System</th>
+                                            <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                            <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                            <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                            <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                            <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                            <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="envTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="ChangelogPanel">
+                <div class="crb_card">
+                    <div class="" data-target="#Changelog42000">
+                        <span class="fa fa-pie-chart fa-fw"></span>
+                        <label id="changelogLabel">Changelog</label>
+                    </div>
+                    <div class="" id="Changelog42000">
+                        <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container-fluid" id="footer"></div>
+    </footer>
+    </div>
+</main>
+</body>
 </html>

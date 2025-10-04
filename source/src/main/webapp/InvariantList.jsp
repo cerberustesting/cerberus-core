@@ -21,51 +21,58 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Invariant</title>
-        <script type="text/javascript" src="js/pages/InvariantList.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
-    </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/Invariant.html"%>
+<html class="h-full">
+<head>
+    <meta name="active-menu" content="admin">
+    <meta name="active-submenu" content="InvariantList.jsp">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%@ include file="include/global/dependenciesInclusions.html" %>
+    <title>Invariant</title>
+    <script type="text/javascript" src="js/pages/InvariantList.js"></script>
+    <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
+</head>
+<body x-data x-cloak class="crb_body">
+<jsp:include page="include/global/header2.html"/>
+    <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <%@ include file="include/global/messagesArea.html"%>
+        <%@ include file="include/utils/modal-confirmation.html"%>
+        <%@ include file="include/transversalobject/Invariant.html"%>
 
-            <h1 class="page-title-line" id="title">Invariants</h1>
+        <h1 class="page-title-line" x-text="$store.labels.getLabel('page_invariant','title')">Invariant</h1>
+        <p class="page-subtitle-line" x-text="$store.labels.getLabel('page_invariant','subtitle')">Manage the application’s constants and fixed elements.</p>
 
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#public">Public</a></li>
-                <li><a data-toggle="tab" href="#private">Private</a></li>
-            </ul>
-
-            <div class="tab-content">
-                <div id="public" class="tab-pane fade in active">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="invariantList">
-                            <table id="invariantsTable" class="table table-bordered table-hover display" name="invariantsTable"></table>
-                            <div class="marginBottom20"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="private" class="tab-pane fade">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="invariantPrivateList">
-                            <table id="invariantsPrivateTable" class="table table-bordered table-hover display" name="invariantsPrivateTable"></table>
-                            <div class="marginBottom20"></div>
-                        </div>
-                    </div>
+        <div x-data="{ tab: 'public' }" class="w-full">
+            <!-- Tabs -->
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                <!-- Public -->
+                <button @click="tab = 'public';displayPublicTable();"
+                        :class="tab === 'public' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                    <i data-lucide="users" class="w-4 h-4"></i>Public
+                </button>
+                <!-- Private -->
+                <button @click="tab = 'private';displayPrivateTable();"
+                        :class="tab === 'private' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                    <i data-lucide="lock" class="w-4 h-4"></i>Private
+                </button>
+            </div>
+            <!-- Content Public -->
+            <div x-show="tab === 'public'" class="">
+                <div id="invariantList">
+                    <table id="invariantsTable" class="table table-hover display"></table>
                 </div>
             </div>
-            
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
-            
+            <!-- Content Private -->
+            <div x-show="tab === 'private'" class="">
+                <div id="invariantPrivateList">
+                    <table id="invariantsPrivateTable" class="table table-hover display"></table>
+                </div>
+            </div>
         </div>
-    </body>
+        <footer class="footer">
+            <div class="container-fluid" id="footer"></div>
+        </footer>
+    </main>
+</body>
 </html>

@@ -86,7 +86,7 @@ function displayPageLabel() {
     $("[name='buttonAdd']").html(doc.getDocLabel("page_sqlLibrary", "save_btn"));
     $("#sqlLibraryListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_sqlLibrary", "sqlLibrary"));
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

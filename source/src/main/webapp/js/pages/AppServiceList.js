@@ -45,7 +45,7 @@ function displayPageLabel() {
 
     $("#title").html(doc.getDocLabel("page_appservice", "title"));
     $("#pageTitle").html(doc.getDocLabel("page_appservice", "title"));
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);
 

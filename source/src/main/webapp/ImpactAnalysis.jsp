@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="test">
+        <meta name="active-submenu" content="ImpactAnalysis.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -30,10 +32,9 @@
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <title id="pageTitle">Impact Analysis</title>
     </head>
-    <body>
-
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
@@ -42,8 +43,8 @@
 
             <div class="row">
                 <div class="col-lg-12" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
+                    <div class="crb_card">
+                        <div>
                             <label class="input-group">
                                 <input class="form-control input-md" id="searchQ" name="searchQ" placeholder="Type any references here .... (xpath, variable, property,...)" onkeydown="searchKeyDown()">
                                 <span class="input-group-btn">
@@ -68,28 +69,28 @@
                 <div class="center tab-pane fade in active" id="tabTestCases">
                     <div class="panel panel-default">
                         <div class="panel-body" id="tcList">
-                            <table id="tcTable" class="table table-bordered table-hover display" name="tcTable"></table>
+                            <table id="tcTable" class="table table-hover display" name="tcTable"></table>
                         </div>
                     </div>
                 </div>
                 <div class="center tab-pane fade in" id="tabDataLib">
                     <div class="panel panel-default">
                         <div class="panel-body" id="dlList">
-                            <table id="dlTable" class="table table-bordered table-hover display" name="dlTable"></table>
+                            <table id="dlTable" class="table table-hover display" name="dlTable"></table>
                         </div>
                     </div>
                 </div>
                 <div class="center tab-pane fade in" id="tabApplications">
                     <div class="panel panel-default">
                         <div class="panel-body" id="appList">
-                            <table id="appTable" class="table table-bordered table-hover display" name="appTable"></table>
+                            <table id="appTable" class="table table-hover display" name="appTable"></table>
                         </div>
                     </div>
                 </div>
                 <div class="center tab-pane fade in" id="tabServices">
                     <div class="panel panel-default">
                         <div class="panel-body" id="srvList">
-                            <table id="srvTable" class="table table-bordered table-hover display" name="srvTable"></table>
+                            <table id="srvTable" class="table table-hover display" name="srvTable"></table>
                         </div>
                     </div>
                 </div>
@@ -97,6 +98,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

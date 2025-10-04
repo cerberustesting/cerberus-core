@@ -24,7 +24,7 @@
 <%@page import="org.cerberus.core.session.SessionCounter"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
@@ -38,7 +38,7 @@
         <META HTTP-EQUIV="refresh" CONTENT="1;URL=./">
         <title>Logout</title>
     </head>
-    <body style="background-color: var(--crb-blue-light-color)">
+    <body class="crb_body">
         <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
             sessionStorage.clear();

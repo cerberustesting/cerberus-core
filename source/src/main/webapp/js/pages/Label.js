@@ -114,13 +114,13 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?q=1" + getUser().defaultSystemsQuery, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+   // displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_label", "title"));
     $("#title").html(doc.getDocOnline("page_label", "title"));
     $("[name='createLabelField']").html(doc.getDocLabel("page_label", "btn_create"));
@@ -175,16 +175,32 @@ function refreshParentLabelCombo(type, form) {
     $("#" + form + " #parentLabel").select2(getComboConfigLabel(type, getUser().defaultSystem));
 }
 
+
 function renderOptionsForLabel(data) {
     var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createLabelButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createLabelButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_label", "btn_create") + "</button></div>";
-            $("#labelsTable_wrapper div#labelsTable_length").before(contentToAdd);
-            $('#labelList #createLabelButton').click(addEntryClick);
+
+    if (data["hasPermissions"] && $("#createLabelButton").length === 0) {
+        var contentToAdd = `
+            <button id='createLabelButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded mr-2 h-10 w-auto'>
+                <i class='glyphicon glyphicon-plus-sign'></i>
+                <span>` + doc.getDocLabel("page_label", "btn_create") + `</span>
+            </button>
+        `;
+
+        // Cherche ton _buttonWrapper
+        var $wrapper = $("#labelsTable_buttonWrapper");
+
+        if ($wrapper.length) {
+            // Ajoute le bouton au **début** du wrapper
+            $wrapper.prepend(contentToAdd);
+        } else {
+            // fallback si le wrapper n’existe pas encore
+            console.warn("Wrapper #labelsTable_buttonWrapper introuvable, insertion avant length");
+            $("#labelsTable_wrapper div#labelsTable_length").before("<div id='labelsTable_buttonWrapper'>" + contentToAdd + "</div>");
         }
+
+        $('#labelList #createLabelButton').off("click").click(addEntryClick);
     }
 }
 

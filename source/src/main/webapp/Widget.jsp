@@ -31,7 +31,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>My Dashboard</title>
@@ -120,18 +120,18 @@
             #grid.edit-mode .drag-widget { display:block; }
             #grid .guides { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
             #grid .guides .line {
-                position:absolute;
-                border:1px dashed #aaa;
+                position: absolute;
+                border: 1px dashed #aaa;
             }
         </style>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
         <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
         <%@ include file="include/utils/modal-confirmation.html" %>
 
-
-        <div class="container-fluid center" id="page-layout">
+<main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <div>
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line" id="title">
                 My Dashboard
@@ -166,5 +166,6 @@
                 <div class="container-fluid" id="footer"></div>
             </footer>
         </div>
+        </main>
     </body>
 </html>

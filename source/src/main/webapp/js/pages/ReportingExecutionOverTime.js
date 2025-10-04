@@ -179,7 +179,7 @@ function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types,
 
 function initPage() {
     var doc = new Doc();
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
     initGraph();

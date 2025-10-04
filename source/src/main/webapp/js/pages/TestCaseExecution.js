@@ -32,7 +32,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         var steps = [];
         var doc = new Doc();
-        displayHeaderLabel(doc);
+        //displayHeaderLabel(doc);
         displayFooter(doc);
         displayPageLabel(doc);
 

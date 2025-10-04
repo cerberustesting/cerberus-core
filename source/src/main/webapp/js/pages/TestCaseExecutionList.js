@@ -63,7 +63,7 @@ function initPage() {
 function loadTable(searchArray) {
     //clear the old report content before reloading it
     $("#testCaseExecution").empty();
-    $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable">\n\
+    $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-hover display" name="testCaseExecutionTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     var contentUrl = "ReadTestCaseExecution";
@@ -82,7 +82,7 @@ function loadTable(searchArray) {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_testcaseexecution", "title"));
     $("#title").html(doc.getDocOnline("page_testcaseexecution", "title"));
     $("[name='editLogEventField']").html(doc.getDocOnline("page_testcaseexecution", "button_view"));

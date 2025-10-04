@@ -21,7 +21,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
 
-        displayHeaderLabel(doc);
+        //displayHeaderLabel(doc);
         displayFooter(doc);
         bindToggleCollapseCustom();
         displayPageLabel(doc);

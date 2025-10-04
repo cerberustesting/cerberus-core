@@ -55,7 +55,7 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_applicationObject", "title"));
     $("#title").html(doc.getDocOnline("page_applicationObject", "title"));

@@ -490,7 +490,7 @@ function multiSelectConfPerf(name) {
 
 function initPage() {
     var doc = new Doc();
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
     initGraph();
@@ -521,8 +521,10 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         environments = [];
     }
 
-    let to = new Date($('#topicker').data("DateTimePicker").date());
+    //let to = new Date($('#topicker').data("DateTimePicker").date());
+    let to = document.getElementById('topicker').value;
 
+    /*
     if ($("#envSelect").val() !== null) {
         environments = $("#envSelect").val();
     }
@@ -530,7 +532,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
     var environmentsQ = "";
     for (var i = 0; i < len; i++) {
         environmentsQ += "&environments=" + encodeURI(environments[i]);
-    }
+    }*/
 
     var campaignString = "";
     if ($("#campaignSelect").val() !== null) {
@@ -545,7 +547,7 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
             systemString = systemString + "&systems=" + encodeURI($("#systemSelect").val()[i]);
         }
     }
-
+/*
     if ($("#gp1Select").val() !== null) {
         gp1s = $("#gp1Select").val();
     }
@@ -578,10 +580,11 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
             gp3sQ += "&group3s=" + encodeURI(gp3s[i]);
         }
     }
-
+*/
     nbWeeks = document.getElementById("trendWeeks").value;
 
-    let qS = "nbWeeks=" + nbWeeks + "&to=" + mimicISOString(to) + campaignString + systemString + environmentsQ + gp1sQ + gp2sQ + gp3sQ;
+    let qS = "nbWeeks=" + nbWeeks + "&to=" + mimicISOString(to) + campaignString + systemString;
+    //+ environmentsQ + gp1sQ + gp2sQ + gp3sQ;
 
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingAutomateScore.jsp?" + qS);
@@ -884,84 +887,33 @@ function chartBarColorLabel(current, final) {
 }
 
 function renderGlobalAS(asValue) {
+    // reset tous les spans
+    $("#ASButtons span").removeClass("ring-2 ring-offset-2 ring-black scale-125");
 
-    $("#ASA").removeClass('btn-default btn-info active');
-    $("#ASB").removeClass('btn-default btn-info active');
-    $("#ASC").removeClass('btn-default btn-info active');
-    $("#ASD").removeClass('btn-default btn-info active');
-    $("#ASE").removeClass('btn-default btn-info active');
-
-    $("#ASA").removeAttr('style');
-    $("#ASB").removeAttr('style');
-    $("#ASC").removeAttr('style');
-    $("#ASD").removeAttr('style');
-    $("#ASE").removeAttr('style');
-
+    // mettre la lettre sélectionnée en grand + encadrée
     switch (asValue) {
         case "A":
-            $("#ASA").addClass('btn-info active');
-            $("#ASB").addClass('btn-default');
-            $("#ASC").addClass('btn-default');
-            $("#ASD").addClass('btn-default');
-            $("#ASE").addClass('btn-default');
-            $("#ASA").attr('style', 'font-size: 40px;background-color: green');
-            $("#ASB").attr('style', 'font-size: 30px');
-            $("#ASC").attr('style', 'font-size: 30px');
-            $("#ASD").attr('style', 'font-size: 30px');
-            $("#ASE").attr('style', 'font-size: 30px');
+            $("#ASA").addClass("ring-2 ring-offset-2 ring-black scale-125");
             break;
         case "B":
-            $("#ASB").addClass('btn-info active');
-            $("#ASA").addClass('btn-default');
-            $("#ASC").addClass('btn-default');
-            $("#ASD").addClass('btn-default');
-            $("#ASE").addClass('btn-default');
-            $("#ASB").attr('style', 'font-size: 40px;background-color: lightgreen');
-            $("#ASA").attr('style', 'font-size: 30px');
-            $("#ASC").attr('style', 'font-size: 30px');
-            $("#ASD").attr('style', 'font-size: 30px');
-            $("#ASE").attr('style', 'font-size: 30px');
+            $("#ASB").addClass("ring-2 ring-offset-2 ring-black scale-125");
             break;
         case "C":
-            $("#ASC").addClass('btn-info active');
-            $("#ASB").addClass('btn-default');
-            $("#ASA").addClass('btn-default');
-            $("#ASD").addClass('btn-default');
-            $("#ASE").addClass('btn-default');
-            $("#ASC").attr('style', 'font-size: 40px;background-color: yellow;color: black');
-            $("#ASB").attr('style', 'font-size: 30px');
-            $("#ASA").attr('style', 'font-size: 30px');
-            $("#ASD").attr('style', 'font-size: 30px');
-            $("#ASE").attr('style', 'font-size: 30px');
+            $("#ASC").addClass("ring-2 ring-offset-2 ring-black scale-125");
             break;
         case "D":
-            $("#ASD").addClass('btn-info active');
-            $("#ASB").addClass('btn-default');
-            $("#ASC").addClass('btn-default');
-            $("#ASA").addClass('btn-default');
-            $("#ASE").addClass('btn-default');
-            $("#ASD").attr('style', 'font-size: 40px;background-color: orange');
-            $("#ASB").attr('style', 'font-size: 30px');
-            $("#ASC").attr('style', 'font-size: 30px');
-            $("#ASA").attr('style', 'font-size: 30px');
-            $("#ASE").attr('style', 'font-size: 30px');
+            $("#ASD").addClass("ring-2 ring-offset-2 ring-black scale-125");
             break;
         case "E":
-            $("#ASE").addClass('btn-info active');
-            $("#ASB").addClass('btn-default');
-            $("#ASC").addClass('btn-default');
-            $("#ASD").addClass('btn-default');
-            $("#ASA").addClass('btn-default');
-            $("#ASE").attr('style', 'font-size: 40px;background-color: red');
-            $("#ASB").attr('style', 'font-size: 30px');
-            $("#ASC").attr('style', 'font-size: 30px');
-            $("#ASD").attr('style', 'font-size: 30px');
-            $("#ASA").attr('style', 'font-size: 30px');
+            $("#ASE").addClass("ring-2 ring-offset-2 ring-black scale-125");
             break;
         default:
             break;
     }
+
+    $("#ASValue").text(asValue);
 }
+
 
 function renderKPITrend(idBlock, kpiDesc) {
 

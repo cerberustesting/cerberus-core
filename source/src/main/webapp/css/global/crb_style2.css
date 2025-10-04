@@ -1,6 +1,4 @@
 /**
-* - Variable
-* - Color
 * - Page (body / a / input / textarea)
 * - Table >> (TODO Refactor)
 * - Header
@@ -9,6 +7,7 @@
 * - Various Execution status code.
 * - Documentation >> crb_style_doc.css
 * - x-editor customisation
+* - TO REMOVE AFTER REMOVE OF BOOTSTRAP
 */
 :root {
 
@@ -197,13 +196,13 @@
     border-color: var(--crb-alert-info-border);
 }
 .table>tbody>tr.dep-info,
-.table>tfoot>tr.dep-info, 
+.table>tfoot>tr.dep-info,
 .table>thead>tr.dep-info{
     background-color: var(--crb-alert-info-background) !important;
     color: var(--crb-alert-info);
 }
 .table>tbody>tr.dep-info:hover,
-.table>tfoot>tr.dep-info:hover, 
+.table>tfoot>tr.dep-info:hover,
 .table>thead>tr.dep-info:hover{
     background-color: var(--crb-alert-info-border) !important;
     color: var(--crb-alert-info);
@@ -214,13 +213,13 @@
     border-color: var(--crb-alert-warning-border);
 }
 .table>tbody>tr.dep-warning,
-.table>tfoot>tr.dep-warning, 
+.table>tfoot>tr.dep-warning,
 .table>thead>tr.dep-warning{
     background-color: var(--crb-alert-warning-background) !important;
     color: var(--crb-alert-warning);
 }
 .table>tbody>tr.dep-warning:hover,
-.table>tfoot>tr.dep-warning:hover, 
+.table>tfoot>tr.dep-warning:hover,
 .table>thead>tr.dep-warning:hover{
     background-color: var(--crb-alert-warning-border) !important;
     color: var(--crb-alert-warning);
@@ -231,13 +230,13 @@
     border-color: var(--crb-alert-danger-border);
 }
 .table>tbody>tr.dep-danger,
-.table>tfoot>tr.dep-danger, 
+.table>tfoot>tr.dep-danger,
 .table>thead>tr.dep-danger{
     background-color: var(--crb-alert-danger-background) !important;
     color: var(--crb-alert-danger);
 }
 .table>tbody>tr.dep-danger:hover,
-.table>tfoot>tr.dep-danger:hover, 
+.table>tfoot>tr.dep-danger:hover,
 .table>thead>tr.dep-danger:hover{
     background-color: var(--crb-alert-danger-border) !important;
     color: var(--crb-alert-danger);
@@ -248,13 +247,13 @@
     border-color: var(--crb-alert-success-border);
 }
 .table>tbody>tr.dep-success,
-.table>tfoot>tr.dep-success, 
+.table>tfoot>tr.dep-success,
 .table>thead>tr.dep-success{
     background-color: var(--crb-alert-success-background) !important;
     color: var(--crb-alert-success);
 }
 .table>tbody>tr.dep-success:hover,
-.table>tfoot>tr.dep-success:hover, 
+.table>tfoot>tr.dep-success:hover,
 .table>thead>tr.dep-success:hover{
     background-color: var(--crb-alert-success-border) !important;
     color: var(--crb-alert-success);
@@ -739,7 +738,8 @@
 
 body {
     font-size: 12px;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     background-color: var(--crb-bg);
 }
 .panel-default>.panel-heading {
@@ -813,12 +813,14 @@ input{
 }
 pre{
     font-size:100%;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-family: 'Inter', system-ui, sans-serif;
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
 }
 .buttonAddStep{
     height:20px;
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     border-color:var(--crb-orange-color);
     border-width:1px;
     border-style:solid;
@@ -831,7 +833,8 @@ pre{
 .buttonSaveChanges{
     height:20px;
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     border-color:#333333;
     border-width:1px;
     border-style:solid;
@@ -843,8 +846,8 @@ pre{
 }
 .form-control{
     color: var(--crb-black-color);
-    background-color: var(--crb-white-color);
-    border-color: var(--crb-grey-color);
+    background-color: transparent;
+    border-color: var(--crb-grey-light-color);
 }
 .input-group-addon {
     color: var(--crb-black-color);
@@ -945,7 +948,7 @@ select[multiple] {
 /*.tox .tox-statusbar{
     color: var(--crb-black-color);
     background-color: var(--crb-white-color);
-    border-color: var(--crb-white-color);    
+    border-color: var(--crb-white-color);
 }
 .tox .tox-statusbar__path-item{
     color: var(--crb-black-color);
@@ -1047,7 +1050,7 @@ textarea{
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 * {
-    margin: 0;
+   /* margin: 0;*/
 }
 .underlinedDiv{
     border-bottom-color:#555555;
@@ -1084,7 +1087,8 @@ input#wob {
 /**Title of the parts in pages*/
 .dttTitle{
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     color:#555555;
     font-size:14px;
 }
@@ -1094,7 +1098,8 @@ input#wob {
     background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC);
     background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC);
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     color:#555555;
     text-align: center;
 }
@@ -1103,7 +1108,8 @@ input#wob {
     background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8);
     background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8);
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     color:#555555;
     text-align: center;
 }
@@ -1119,7 +1125,8 @@ div#header {
     background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8);
     background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8);
     font-weight:bold;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    /**font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";*/
+    font-family: 'Inter', system-ui, sans-serif;
     color:#555555;
     text-align: center;
 }
@@ -1352,10 +1359,6 @@ input#submitButtonDuplicate {
     background-color: #333333;
 }
 
-.dataTables_scrollHeadInner{
-    width:100%!important;
-}
-
 ul.nav li.dropdown:hover > ul.dropdown-menu {
     display: block;
 }
@@ -1562,49 +1565,49 @@ ul.multiselect-container {
 /* Various Execution status code. */
 
 /*.OK {
-    background-color:#00ff00;  Green 
+    background-color:#00ff00;  Green
 }
 .OKF {
     color:green;
 }
 .KO {
-    background-color:#FF0000;  Red 
+    background-color:#FF0000;  Red
 }
 .KOF {
     color:darkred;
 }
 .NA {
-    background-color:yellow ;  Jaune 
+    background-color:yellow ;  Jaune
 }
 .NAF {
     color:darkyellow;
 }
 .PE {
-    background-color:#3366FF;  Blue 
+    background-color:#3366FF;  Blue
 }
 .PEF {
     color:darkblue;
 }
 .FA {
-    background-color:mistyrose;  Purple 
+    background-color:mistyrose;  Purple
 }
 .FAF {
     color:purple;
 }
 .CA {
-    background-color:mistyrose;  Purple 
+    background-color:mistyrose;  Purple
 }
 .CAF {
     color:purple;
 }
 .NE {
-    background-color:black;  Purple 
+    background-color:black;  Purple
 }
 .NEF {
     color:white;
 }*/
 /*.NotExecuted {
-    background-color:whitesmoke;  White 
+    background-color:whitesmoke;  White
 }
 .NotExecutedF {
     text-decoration:none;
@@ -1729,44 +1732,6 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
     font-size : 130%;
 }
 
-
-/**
-* Datatable th
-*/
-table.dataTable thead th {
-    border-bottom-color: transparent;
-    border-top-color: transparent !important;
-    background-color: var(--crb-grey-light-color) !important;
-    color: var(--crb-dark-color);
-}
-
-table.dataTable thead th input {
-    background-color: var(--crb-grey-light-color) !important;
-    color: var(--crb-dark-color);
-}
-
-.table-hover>tbody>tr{
-    background-color: var(--crb-white-color) !important;
-    color: var(--crb-black-color);
-}
-.table-hover>tbody>tr:hover{
-    background-color: var(--crb-grey-light-color) !important;
-    color: var(--crb-dark-color);
-}
-.dataTables_scroll {
-    /*overflow: auto;
-    clear: both;*/
-    width: 100%;
-    overflow: auto;
-}
-
-
-.editable-checklist {
-    max-height: 350px;
-    width: 120%;
-    max-width: 500px;
-    overflow: auto;
-}
 
 .list-label {
     height : 40px;

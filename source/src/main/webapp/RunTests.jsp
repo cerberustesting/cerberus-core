@@ -27,8 +27,10 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="run">
+        <meta name="active-submenu" content="RunTests.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css"/>
@@ -36,17 +38,18 @@
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <title id="pageTitle">Run Test</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html"%>
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
         <%@ include file="include/utils/modal-confirmation.html"%>
 
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 
         <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
             <button type="button" class="feedback btn btn-default " id="runTestCase">Run TestCase</button>
             <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
         </div>
 
-        <div class="container-fluid center" id="page-layout">
+
 
             <div id="DialogMessagesArea">
                 <div class="alert" id="DialogMessagesAlert"  style="display:none;">
@@ -63,7 +66,7 @@
             <div class="row">
                 <div class="col-lg-12">
 
-                    <div class="panel panel-default" id="selectionPanel">
+                    <div class="crb_card" id="selectionPanel">
                         <div class="panel-heading">
                             Selection Type
                         </div>
@@ -87,17 +90,16 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default" id="TestPanel">
+                    <div class="crb_card" id="TestPanel">
                         <div class="panel-heading" id="ChooseTestHeader">
                             Choose Test Case / Environment / Country
                         </div>
                         <div class="panel-body" id="chooseTest">
                             <div class="panel panel-default" id="filtersPanelContainer">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel" id="FilterPanelHeader">
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                <div class="panel-heading" id="FilterPanelHeader">
                                     <span id="FilterHeader">Extended Test Case Filters</span>
                                 </div>
-                                <div class="panel-body collapse defaultNotExpanded" id="filtersPanel">
+                                <div class="panel-body" id="filtersPanel">
                                     <form id="filters">
                                         <div class="row">
                                             <div class="form-group col-xs-2">
@@ -244,13 +246,12 @@
 
                     <div class="row">
                         <div class="col-lg-6">
-                            <div class="panel panel-default" id="RobotPanel">
+                            <div class="crb_card" id="RobotPanel">
 
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#robotSettings">
+                                <div class="panel-heading">
                                     <label id="rbtLabel">Robot settings</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="robotSettings">
+                                <div class="panel-body" id="robotSettings">
                                     <form class="form-horizontal" id="robotSettingsForm">
                                         <div class="form-group">
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
@@ -291,12 +292,12 @@
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="panel panel-default" id="executionPanel">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#executionSettings">
+                            <div class="crb_card" id="executionPanel">
+                                <div class="panel-heading">
                                     <label id="exeLabel">Execution settings</label>
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="executionSettings">
+                                <div class="panel-body" id="executionSettings">
                                     <form class="form-horizontal"id="executionSettingsForm">
                                         <div class="form-group">
                                             <label for="tag" class="col-sm-3 control-label bold">Tag</label>
@@ -425,6 +426,6 @@
             <footer class="footer marginTop25">
                 <div class="col-xs-6 container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

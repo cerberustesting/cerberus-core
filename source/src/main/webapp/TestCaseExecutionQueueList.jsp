@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="run">
+        <meta name="active-submenu" content="TestCaseExecutionQueueList.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
@@ -36,9 +38,9 @@
         <title id="pageTitle">Executions in Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
@@ -63,7 +65,7 @@
                     <div class="panel panel-default">
                         <form id="massActionForm" name="massActionForm"  title="" role="form">
                             <div class="panel-body" id="executionList">
-                                <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
+                                <table id="executionsTable" class="table table-hover display" name="executionsTable"></table>
                                 <div class="marginBottom20"></div>
                             </div>
                         </form>
@@ -77,7 +79,7 @@
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
                             </div>
                             <div id="followUpTableList">
-                                <table id="followUpTable" class="table table-bordered table-hover display" name="followUpTable"></table>
+                                <table id="followUpTable" class="table table-hover display" name="followUpTable"></table>
                                 <div class="marginBottom20"></div>
                             </div>
                         </div>
@@ -231,6 +233,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

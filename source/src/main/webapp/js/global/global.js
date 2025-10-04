@@ -1595,7 +1595,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.searchText = "";
     this.searchMenu = "";
     this.tableWidth = "1500px";
-    this.displayLength = 15;
+    this.displayLength = 10;
     this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
     this.bPaginate = true;
     this.sPaginationType = "full_numbers";
@@ -2166,7 +2166,13 @@ function displayGlobalLabel(doc) {
  */
 function displayFooter(doc) {
     var cerberusInformation = getCerberusInformation();
+    var $footer = $("#footer");
+
     if (cerberusInformation !== null) {
+        // Texte statique
+        var staticFooter = 'Cerberus 2025&trade;';
+
+        // Texte généré dynamiquement
         var footerString = doc.getDocLabel("page_global", "footer_text");
         var footerBugString = doc.getDocLabel("page_global", "footer_bug");
         var date = new Date();
@@ -2179,12 +2185,26 @@ function displayFooter(doc) {
         footerString = footerString.replace("%TIMING%", loadTime);
         footerString = footerString.replace("%SERVERDATE%", cerberusInformation.serverDate);
         footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
-        $("#footer").html(footerString + " - " + footerBugString);
 
-        // Tune the page layout to the environment where Cerberus is running.
+        var dynamicFooter = footerString + " - " + footerBugString;
+
+        // État courant (statique par défaut)
+        var isStatic = true;
+        $footer.html(staticFooter);
+
+        // Toggle au clic
+        $footer.off("click").on("click", function () {
+            if (isStatic) {
+                $footer.html(dynamicFooter);
+            } else {
+                $footer.html(staticFooter);
+            }
+            isStatic = !isStatic;
+        });
+
+        // Tune l’environnement comme avant
         envTuning(cerberusInformation.environment);
     }
-
 }
 
 /**
@@ -2530,29 +2550,29 @@ function getRowClass(status) {
 }
 
 function getExeStatusRowColor(status) {
+    var style = getComputedStyle(document.body);
     if (status === "OK") {
-        return '#00d27a';
+        return style.getPropertyValue("--ok");
     } else if (status === "KO") {
-        return '#e63757';
+        return style.getPropertyValue("--ko");
     } else if (status === "FA") {
-        return '#f5803e';
-    } else if (status === "NA") {
-        return '#f1c40f';
-    } else if (status === "NE") {
-        return '#aaaaaa';
-    } else if (status === "WE") {
-        return '#34495E';
-    } else if (status === "PE") {
-        return '#2c7be5';
-    } else if (status === "QU") {
-        return '#BF00BF';
-    } else if (status === "QE") {
-        return '#5C025C';
-    } else if (status === "PA") {
-        return '#D8BFD8';
+        return style.getPropertyValue("--fa");
     } else if (status === "CA") {
-        return '#c6a20d';
-
+        return style.getPropertyValue("--ca");
+    } else if (status === "PE") {
+        return style.getPropertyValue("--pe");
+    } else if (status === "NE") {
+        return style.getPropertyValue("--ne");
+    } else if (status === "WE") {
+        return style.getPropertyValue("--we");
+    } else if (status === "NA") {
+        return style.getPropertyValue("--na");
+    } else if (status === "QU") {
+        return style.getPropertyValue("--qu");
+    } else if (status === "PA") {
+        return style.getPropertyValue("--pa");
+    } else if (status === "QE") {
+        return style.getPropertyValue("--qe");
     } else {
         return 'lightgrey';
     }
@@ -3140,8 +3160,15 @@ function jsonPost(conf) {
 }
 
 function getSys() {
-    const sel = document.getElementById("MySystem");
-    return sel.options[sel.selectedIndex].value;
+    const workspaceEl = document.querySelector('[x-data="workspaceSelector()"]');
+
+    // Alpine pas encore prêt → fallback sessionStorage
+    if (!workspaceEl || !workspaceEl.__x) {
+        let user = JSON.parse(sessionStorage.getItem("user")) || {};
+        return user.defaultSystems || [];
+    }
+
+    return workspaceEl.__x.$data.selected;
 }
 
 /********************************SELECT2 COMBO*******************************************/

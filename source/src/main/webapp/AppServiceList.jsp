@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="application">
+        <meta name="active-submenu" content="AppServiceList.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Service Library</title>
@@ -31,9 +33,9 @@
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <script type="text/javascript" src="js/global/autocomplete.js"></script>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/utils/modal-confirmation.html" %>
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
@@ -42,9 +44,9 @@
 
             <h1 class="page-title-line" id="title">Application Service</h1>
 
-            <div class="panel panel-default">
-                <div class="panel-body" id="soapLibraryList">
-                    <table id="soapLibrarysTable" class="table table-bordered table-hover display"
+            <div class="crb_card">
+                <div id="soapLibraryList">
+                    <table id="soapLibrarysTable" class="table table-hover display"
                            name="soapLibrarysTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
@@ -53,5 +55,6 @@
                 <div class="container-fluid" id="footer"></div>
             </footer>
         </div>
+        </main>
     </body>
 </html>

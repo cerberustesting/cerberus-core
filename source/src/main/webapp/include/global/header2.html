@@ -1,0 +1,867 @@
+<!-- Sidebar -->
+<aside class="crb_sidebar"
+       :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
+       @mouseenter="$store.sidebar.handleEnter()"
+       @mouseleave="$store.sidebar.handleLeave()">
+
+    <!-- Logo & Header -->
+    <div class="flex items-center justify-between p-6 border-b border-slate-700/50">
+        <!-- Logo Cerberus -->
+        <div class="flex items-center space-x-3"
+             x-show="$store.sidebar.expanded || $store.sidebar.showLogo"
+             x-transition.opacity.scale.duration.200ms
+             @click="window.location.href='./'">
+            <img id="logo" alt="Cerberus" src="images/Logo-cerberus_menu.png" width="40"/>
+            <span x-show="$store.sidebar.expanded" x-transition.opacity.duration.200ms class="font-bold text-xl tracking-tight">
+                Cerberus
+            </span>
+        </div>
+
+        <!-- Burger menu -->
+        <button class="p-2 h-8 rounded-lg hover:bg-slate-700/50 transition-colors duration-200"
+                @click="$store.sidebar.toggleSidebar()"
+                x-show="$store.sidebar.expanded || (!$store.sidebar.expanded && $store.sidebar.hover && !$store.sidebar.showLogo)"
+                x-transition.opacity.scale.duration.200ms>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Workspace -->
+    <div class="items-center justify-between p-6 border-b border-slate-700/50"
+         x-data="workspaceSelector()"
+         x-init="init()"
+         @click.outside="close()">
+
+        <!-- Label + Boutons -->
+        <div x-show="$store.sidebar.expanded"
+             class="flex items-center justify-between mb-2"
+             x-transition.opacity.duration.200ms>
+            <label class="text-xs text-slate-400">Workspace</label>
+
+            <!-- Boutons Select All / None -->
+            <div x-show="open" class="flex gap-2">
+                <button type="button" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300"
+                        @click="selectAll()">All
+                </button>
+                <button type="button" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300"
+                        @click="selectNone()">None
+                </button>
+            </div>
+        </div>
+
+        <!-- Combobox Sidebar Open -->
+        <div x-show="$store.sidebar.expanded" x-transition.opacity.duration.200ms class="relative">
+            <button type="button" @click="toggleOpen()"
+                    class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                   bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all">
+                <div class="flex items-center gap-2">
+                    <!-- Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                    </svg>
+                    <span x-text="selectedLabel()"></span>
+                </div>
+            </button>
+
+            <!-- Dropdown Sidebar Open -->
+            <div x-show="open" x-transition
+                 class="mt-1 w-full rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-50">
+                <ul class="py-1 text-sm text-slate-300">
+                    <template x-for="workspace in workspaces" :key="workspace">
+                        <li>
+                            <button type="button"
+                                    @click.stop="toggle(workspace)"
+                                    class="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-700 transition-colors">
+                                <svg x-show="selected.includes(workspace)" xmlns="http://www.w3.org/2000/svg"
+                                     class="h-3 w-3 text-blue-500" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 6 9 17l-5-5"></path>
+                                </svg>
+                                <span x-text="workspace"></span>
+                            </button>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Combobox Sidebar Closed -->
+        <div x-show="!$store.sidebar.expanded" x-transition.opacity.duration.200ms
+             class="relative group w-10 h-10">
+            <div class="flex items-center justify-center w-8 h-8 text-slate-300 text-xs cursor-pointer"
+                 @click="toggleOpen()">
+                <!-- Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                </svg>
+            </div>
+
+            <!-- Badge Selected Number -->
+            <div x-show="selected.length > 0"
+                 class="absolute bottom-0 right-0 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span x-text="selected.length"></span>
+            </div>
+
+            <!-- Dropdown Sidebar Closed (téléporté) -->
+            <template x-if="!$store.sidebar.expanded">
+            <template x-teleport="body">
+                <div x-show="open" x-transition
+                     class="mt-1 w-80 rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-[9999] ml-20"
+                     :style="{
+                     top: $root.querySelector('.group').getBoundingClientRect().top + 'px'
+                 }">
+                    <ul class="py-1 text-sm text-slate-300">
+                        <template x-for="workspace in workspaces" :key="workspace">
+                            <li>
+                                <button type="button"
+                                        @click.stop="toggle(workspace)"
+                                        class="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-700 transition-colors">
+                                    <svg x-show="selected.includes(workspace)" xmlns="http://www.w3.org/2000/svg"
+                                         class="h-3 w-3 text-blue-500" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 6 9 17l-5-5"></path>
+                                    </svg>
+                                    <span x-text="workspace"></span>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+            </template>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-4 py-6 space-y-3 overflow-y-auto overflow-x-visible">
+
+        <!-- Test -->
+        <div class="space-y-2" id="navMenuTest">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('test')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'test')"
+                        @mouseleave="$store.sidebar.leaveMenu('test')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                        <i data-lucide="test-tube" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                        <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','test')"></span>
+                        <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                        :class="$store.sidebar.activeMenu === 'test' ? 'rotate-90' : ''"
+                        class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'test'"
+                     class="ml-12 space-y-1"
+                     x-ref="testMenuInline"
+                     x-html="$refs.testMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.testMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.test"
+                         :style="$store.sidebar.showSubMenu.test ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
+                         @mouseenter="$store.sidebar.enterSubMenu('test')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('test')"
+                         x-ref="testMenuTeleport"
+                         x-html="$refs.testMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.testMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="testMenuItems">
+                    <a href="QuickStart.jsp" id="menuTestCaseCreate" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'QuickStart.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="zap" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','createtestcase')"></span>
+                    </a>
+                    <a href="TestCaseList.jsp" id="menuTestCaseList" class="group flex items-center gap-2 px-4 py-2 text-xs  rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'TestCaseList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="layout-list" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','testcaselist')"></span>
+                    </a>
+                    <a href="TestCaseScript.jsp" id="menuEditTestCase" class="group flex items-center gap-2 px-4 py-2 text-xs  rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'TestCaseScript.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="edit" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','edittestcase')"></span>
+                    </a>
+                    <a href="Label.jsp" id="menuLabel" class="group flex items-center gap-2 px-4 py-2 text-xs  rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'Label.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="tag" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','label')"></span>
+                    </a>
+                    <a href="ImpactAnalysis.jsp" id="menuImpactAnalysis" class="group flex items-center gap-2 px-4 py-2 text-xs  rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ImpactAnalysis.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="scan-search" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','impactanalysis')"></span>
+                    </a>
+                    <a href="Test.jsp" id="menuEditTest" class="group flex items-center gap-2 px-4 py-2 text-xs  rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'Test.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="folder" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','testfolder')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Data -->
+        <div class="space-y-2" id="navMenuData">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('data')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'data')"
+                        @mouseleave="$store.sidebar.leaveMenu('data')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="database" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','data')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'data' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                    </svg>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'data'"
+                     class="ml-12 space-y-1"
+                     x-ref="dataMenuInline"
+                     x-html="$refs.dataMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.dataMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.data"
+                         :style="$store.sidebar.showSubMenu.data ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('data')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('data')"
+                         x-ref="dataMenuTeleport"
+                         x-html="$refs.dataMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.dataMenuTeleport))">
+                    </div>
+                </template>
+
+                <template x-ref="dataMenuItems">
+                    <a href="TestDataLibList.jsp" id="menuTestDataLib" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'TestDataLibList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="database-backup" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','datalibrary')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Run -->
+        <div class="space-y-2" id="navMenuRun">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('run')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'run')"
+                        @mouseleave="$store.sidebar.leaveMenu('run')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="play" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','run')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'run' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'run'"
+                     class="ml-12 space-y-1"
+                     x-ref="runMenuInline"
+                     x-html="$refs.runMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.runMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.run"
+                         :style="$store.sidebar.showSubMenu.run ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('run')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('run')"
+                         x-ref="runMenuTeleport"
+                         x-html="$refs.runMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.runMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="runMenuItems">
+                    <a href="RunTests.jsp" id="menuRunTestCase" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'RunTests.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="square-play" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','runtestcase')"></span>
+                    </a>
+                    <a href="RobotList.jsp" id="menuRobot" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'RobotList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="monitor-play" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','robot')"></span>
+                    </a>
+                    <a href="CampaignList.jsp" id="menuTestCampaign" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'CampaignList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="group" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','campaign')"></span>
+                    </a>
+                    <a href="TestCaseExecutionQueueList.jsp" id="menuRunTestSeePendingExecution" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'TestCaseExecutionQueueList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="list-end" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','executioninqueue')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Execution Reporting -->
+        <div class="space-y-2" id="navMenuExecutionReporting">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('reporting')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'reporting')"
+                        @mouseleave="$store.sidebar.leaveMenu('reporting')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" id="menuReportingExecution" x-text="$store.labels.getLabel('header','reportingexecution')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'reporting' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'reporting'"
+                     class="ml-12 space-y-1"
+                     x-ref="reportingMenuInline"
+                     x-html="$refs.reportingMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.reportingMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.reporting"
+                         :style="$store.sidebar.showSubMenu.reporting ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('reporting')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('reporting')"
+                         x-ref="reportingMenuTeleport"
+                         x-html="$refs.reportingMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.reportingMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="reportingMenuItems">
+                    <a href="TestCaseExecutionList.jsp" id="menuReportingExecutionList" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'TestCaseExecutionList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="list-video" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','reportingexecutionlist')"></span>
+                    </a>
+                    <a href="ReportingExecutionOverTime.jsp" id="menuReportingExecutionOverTime" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ReportingExecutionOverTime.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="clock-arrow-down" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','reportingmonitor')"></span>
+                    </a>
+                    <a href="ReportingExecutionByTag.jsp" id="menuReportingExecutionByTag" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ReportingExecutionByTag.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="tags" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','reportingexecutionbytag')"></span>
+                    </a>
+                    <a href="ReportingCampaignOverTime.jsp" id="menuReportingCampaignOverTime" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ReportingCampaignOverTime.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="calendar-arrow-down" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','reportingexecutionovertime')"></span>
+                    </a>
+                    <a href="ReportingCampaignStatistics.jsp" id="menuReportingCampaignStatistics" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ReportingCampaignStatistics.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="chart-network" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','reportingcampaignstatistics')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Application -->
+        <div class="space-y-2" id="navMenuApplication">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('application')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'application')"
+                        @mouseleave="$store.sidebar.leaveMenu('application')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="app-window" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','application')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'application' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'application'"
+                     class="ml-12 space-y-1"
+                     x-ref="applicationMenuInline"
+                     x-html="$refs.applicationMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.applicationMenuInline))"
+                ></div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.application"
+                         :style="$store.sidebar.showSubMenu.application ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('application')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('application')"
+                         x-ref="applicationMenuTeleport"
+                         x-html="$refs.applicationMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.applicationMenuTeleport))"
+                    ></div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="applicationMenuItems">
+                    <a href="ApplicationList.jsp" id="menuApplications" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ApplicationList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="dock" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','applicationlist')"></span>
+                    </a>
+                    <a href="ApplicationObjectList.jsp" id="menuApplicationObjects" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ApplicationObjectList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="library" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','applicationobjects')"></span>
+                    </a>
+                    <a href="AppServiceList.jsp" id="menuAppService" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'AppServiceList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="globe" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','appservice')"></span>
+                    </a>
+                    <a href="DeployType.jsp" id="menuDeployType" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'DeployType.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="rows-4" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','deploytype')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Integration -->
+        <div class="space-y-2" id="navMenuIntegration">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('integration')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'integration')"
+                        @mouseleave="$store.sidebar.leaveMenu('integration')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="cable" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','integration')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'integration' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'integration'"
+                     class="ml-12 space-y-1"
+                     x-ref="integrationMenuInline"
+                     x-html="$refs.integrationMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.integrationMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.integration"
+                         :style="$store.sidebar.showSubMenu.integration ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('integration')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('integration')"
+                         x-ref="integrationMenuTeleport"
+                         x-html="$refs.integrationMenuItems.innerHTML"
+                    x-effect="$nextTick(() => lucide.createIcons($refs.integrationMenuTeleport))">
+                </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="integrationMenuItems">
+                    <a href="IntegrationStatus.jsp" id="menuIntegrationStatus" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'IntegrationStatus.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="cable" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','integrationstatus')"></span>
+                    </a>
+                    <a href="Environment.jsp" id="menuEnvironments" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'Environment.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="container" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','environments')"></span>
+                    </a>
+                    <a href="BuildRevDefinition.jsp" id="menuBuildRevision" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'BuildRevDefinition.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="list-ordered" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','buildrevision')"></span>
+                    </a>
+                    <a href="BuildContent.jsp" id="menuBuildContent" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'BuildContent.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="table-of-contents" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','buildcontent')"></span>
+                    </a>
+                    <a href="BatchInvariant.jsp" id="menuBatchInvariant" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'BatchInvariant.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="message-square-diff" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','batchinvariants')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="space-y-2" id="navMenuAdmin">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('admin')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'admin')"
+                        @mouseleave="$store.sidebar.leaveMenu('admin')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="cog" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','admin')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'admin' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'admin'"
+                     class="ml-12 space-y-1"
+                     x-ref="adminMenuInline"
+                     x-html="$refs.adminMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.adminMenuInline))">
+
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.admin"
+                         :style="$store.sidebar.showSubMenu.admin ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('admin')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('admin')"
+                         x-ref="adminMenuTeleport"
+                         x-html="$refs.adminMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.adminMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="adminMenuItems">
+                    <a href="UserManager.jsp" id="menuUsersManager" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'UserManager.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','usersmanager')"></span>
+                        <span x-show="!$store.user.data.group.includes('Administrator')">Ask</span>
+                    </a>
+                    <a href="LogEvent.jsp" id="menuLogViewer" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'LogEvent.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="receipt-text" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','logviewer')"></span>
+                    </a>
+                    <a href="DatabaseMaintenance.jsp" id="menuDatabaseMaintenance" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'DatabaseMaintenance.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="database-backup" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','databasemaintenance')"></span>
+                    </a>
+                    <a href="ParameterList.jsp" id="menuParameter" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'ParameterList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="cog" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','parameter')"></span>
+                    </a>
+                    <a href="InvariantList.jsp" id="menuInvariants" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'InvariantList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="text-select" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','invariants')"></span>
+                    </a>
+                    <a href="CerberusInformation.jsp" id="menuReportingExecutionThreadMonitoring" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'CerberusInformation.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="info" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','monitoring')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Developer -->
+        <div class="space-y-2" id="navMenuDev">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('developer')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'developer')"
+                        @mouseleave="$store.sidebar.leaveMenu('developer')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="test-tube" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','dev')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'developer' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'developer'"
+                     class="ml-12 space-y-1"
+                     x-ref="devMenuInline"
+                     x-html="$refs.developerMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.devMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.developer"
+                         :style="$store.sidebar.showSubMenu.developer ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('developer')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('developer')"
+                         x-ref="devMenuTeleport"
+                         x-html="$refs.developerMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.devMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="developerMenuItems">
+                    <a href="SwaggerUI.jsp" id="menuSwagger" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'SwaggerUI.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="book-open-text" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','swagger')"></span>
+                    </a>
+                    <a href="EventHookList.jsp" id="menuEventhooks" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'EventHookList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="webhook" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white"  x-text="$store.labels.getLabel('header','eventhooks')"></span>
+                    </a>
+                </template>
+            </div>
+        </div>
+
+        <!-- Help -->
+        <div class="space-y-2" id="navMenuHelp">
+            <div class="relative">
+                <button @click="$store.sidebar.toggleActiveMenu('help')"
+                        @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'help')"
+                        @mouseleave="$store.sidebar.leaveMenu('help')"
+                        class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
+                    <i data-lucide="test-tube" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','help')"></span>
+                    <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
+                       :class="$store.sidebar.activeMenu === 'help' ? 'rotate-90' : ''"
+                       class="w-4 h-4 ml-auto transition-transform duration-200"></i>
+                </button>
+
+                <!-- Sous-menu inline (quand sidebar ouverte) -->
+                <div x-cloak x-transition.opacity.duration.200ms
+                     x-show="$store.sidebar.expanded && $store.sidebar.activeMenu === 'help'"
+                     class="ml-12 space-y-1"
+                     x-ref="helpMenuInline"
+                     x-html="$refs.helpMenuItems.innerHTML"
+                     x-effect="$nextTick(() => lucide.createIcons($refs.helpMenuInline))">
+                </div>
+
+                <!-- Sous-menu téléporté (quand sidebar fermée) -->
+                <template x-teleport="body">
+                    <div x-cloak x-transition.opacity.duration.300ms
+                         x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.help"
+                         :style="$store.sidebar.showSubMenu.help ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         @mouseenter="$store.sidebar.enterSubMenu('help')"
+                         @mouseleave="$store.sidebar.leaveSubMenu('help')"
+                         x-ref="helpMenuTeleport"
+                         x-html="$refs.helpMenuItems.innerHTML"
+                         x-effect="$nextTick(() => lucide.createIcons($refs.helpMenuTeleport))">
+                    </div>
+                </template>
+
+                <!-- Template factorisé (non affiché directement) -->
+                <template x-ref="helpMenuItems">
+                    <a href="./documentation/D1/documentation_en.html" target="_blank" id="menuDocumentationD1" class="flex items-center gap-2 px-4 py-2 text-xs !text-slate-300 rounded-lg hover:text-white hover:!bg-slate-700/30 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span x-text="$store.labels.getLabel('header','documentationd1')"></span>
+                    </a>
+                    <a href="./documentation/D2/documentation_en.html" target="_blank" id="menuDocumentationD2" class="flex items-center gap-2 px-4 py-2 text-xs !text-slate-300 rounded-lg hover:text-white hover:!bg-slate-700/30 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span x-text="$store.labels.getLabel('header','documentationd2')"></span>
+                    </a>
+                    <a href="./documentation/D3/documentation_en.html" target="_blank" id="menuDocumentationD3" class="flex items-center gap-2 px-4 py-2 text-xs !text-slate-300 rounded-lg hover:text-white !hover:bg-slate-700/30 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span x-text="$store.labels.getLabel('header','documentationd3')"></span>
+                    </a>
+                    <button id="openInteractiveTutoModal" class="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-slate-300 rounded-lg hover:text-white hover:bg-slate-700/30 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m2-10v18l-4-4H6a2 2 0 01-2-2V4a2 2 0 012-2h12a2 2 0 012 2z"/>
+                        </svg>
+                        <span x-text="$store.labels.getLabel('header','interactivetuto')"></span>
+                    </button>
+                </template>
+            </div>
+        </div>
+
+    </nav>
+    <!-- User Menu -->
+    <div class="mt-auto sticky bottom-0 z-50 bg-slate-800/90 border-t border-slate-700"
+         x-data="userMenu()" @click.outside="close()">
+
+        <!-- Avatar / bouton user -->
+        <div @click="toggleOpen()"
+             class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors">
+            <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
+                <span class="text-white font-semibold text-sm">BC</span>
+            </div>
+            <div x-show="$store.sidebar.expanded">
+                <p class="text-sm font-medium" x-text="username">Benoit Civel</p>
+                <p class="text-xs text-slate-400">Administrateur</p>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto transition-transform duration-200"
+                 :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                 x-show="$store.sidebar.expanded">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+
+        <!-- Dropdown -->
+        <div x-show="open" x-transition.opacity.duration.200ms
+             class="absolute bottom-14 right-0 mb-2 w-72 rounded-md border border-slate-600 bg-slate-800 shadow-lg z-50 overflow-auto max-h-96">
+
+            <ul class="py-2 text-sm space-y-1">
+
+                <!-- Logout -->
+                <li x-show="logoutHref" x-transition>
+                    <a :href="logoutHref"
+                       class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
+                        --> Logout
+                    </a>
+                </li>
+
+                <!-- Theme Switch -->
+                <li class="px-4 py-2">
+                    <span class="block mb-1 text-gray-300 text-sm">Thème</span>
+                    <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+
+                        <!-- Light Theme -->
+                        <button
+                                @click="applyTheme('light')"
+                                :class="{
+        'bg-slate-300 text-slate-800': $store.user.theme === 'light',
+        'bg-slate-600 text-gray-300': $store.user.theme !== 'light'
+    }"
+                                class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                aria-label="Light Theme"
+                        >
+                            <!-- Sun Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-current"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.36 5.36l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728l-.707-.707M6.343 17.657l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z" />
+                            </svg>
+                        </button>
+
+                        <!-- Dark Theme -->
+                        <button
+                                @click="applyTheme('dark')"
+                                :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
+                                        'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'
+                                    }"
+                                class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                aria-label="Dark Theme"
+                        >
+                            <!-- Moon Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-current"
+                                 fill="currentColor"
+                                 viewBox="0 0 20 20">
+                                <path d="M17.293 13.293a8 8 0 01-10.586-10.586 8 8 0 1010.586 10.586z" />
+                            </svg>
+                        </button>
+
+                    </div>
+                </li>
+
+                <!-- Language -->
+                <li class="px-4 py-2 flex items-center justify-between">
+                    <span>Langue</span>
+                    <select x-model="$store.user.language" @change="changeLanguage($store.user.language)"
+                            class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
+                        <option value="fr">FR</option>
+                        <option value="en">EN</option>
+                    </select>
+                </li>
+
+                <hr class="border-slate-700 my-1">
+
+                <!-- Last Testcases -->
+                <template x-if="lastTests.length > 0">
+                    <li class="px-4 py-2 font-semibold text-slate-400">Derniers cas de test</li>
+                </template>
+                <template x-for="test in lastTests" :key="test.href">
+                    <li>
+                        <a :href="test.href"
+                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
+                            <span x-text="test.name"></span>
+                            <div x-show="test.description" class="text-xs text-slate-400" x-text="test.description"></div>
+                        </a>
+                    </li>
+                </template>
+
+                <!-- Last Executions -->
+                <template x-if="lastExecutions.length > 0">
+                    <li class="px-4 py-2 font-semibold text-slate-400">Dernières exécutions</li>
+                </template>
+                <template x-for="exec in lastExecutions" :key="exec.href">
+                    <li>
+                        <a :href="exec.href"
+                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
+                            <span x-text="exec.id"></span>
+                            <div class="text-xs text-slate-400" x-text="exec.description"></div>
+                        </a>
+                    </li>
+                </template>
+
+                <!-- Last Campaigns -->
+                <template x-if="lastCampaigns.length > 0">
+                    <li class="px-4 py-2 font-semibold text-slate-400">Dernières campagnes</li>
+                </template>
+                <template x-for="camp in lastCampaigns" :key="camp.href">
+                    <li>
+                        <a :href="camp.href"
+                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors"
+                           x-text="camp.tag"></a>
+                    </li>
+                </template>
+
+            </ul>
+        </div>
+    </div>
+</aside>
+<div class="hidden ml-72 ml-20 w-72 w-20 dark:text-white"></div>

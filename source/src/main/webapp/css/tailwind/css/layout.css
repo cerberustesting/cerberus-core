@@ -1,0 +1,75 @@
+@layer components {
+
+/* ===========================
+    Sidebar
+=========================== */
+    .crb_sidebar {
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b  100%);
+
+        @apply fixed top-0 left-0 h-screen text-white transition-all duration-500 ease-in-out flex flex-col shadow-2xl;
+    }
+
+    .crb_sidebar-expanded {
+        @apply w-72;
+    }
+    .crb_sidebar-collapsed {
+        @apply w-20;
+    }
+
+
+/* ===========================
+    Body
+=========================== */
+    .crb_body {
+        @apply h-full flex bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900;
+    }
+
+
+/* ===========================
+   Main content
+=========================== */
+    .crb_main {
+        color: var(--crb-black-color);
+        @apply flex-1 p-6  overflow-auto transition-all duration-500 ease-in-out
+    }
+
+    .crb_main_sidebar-expanded{
+        @apply ml-72;
+    }
+
+    .crb_main_sidebar-collapsed {
+        @apply ml-20;
+    }
+
+
+/* ===========================
+      Page Title
+=========================== */
+    .page-title-line{
+        @apply !text-3xl !font-bold pb-2 !mb-2 !m-0
+    }
+
+    .page-subtitle-line{
+        @apply text-gray-400 !mb-8
+    }
+
+
+/* ===========================
+      Page Modal
+=========================== */
+    .crb_modal{
+        color: var(--crb-black-color);
+        @apply fixed inset-0 z-50 flex items-center justify-center overflow-auto
+    }
+}
+
+/* ===========================
+      Footer
+=========================== */
+#footer {
+    @apply text-[0.85rem] text-slate-500 dark:text-slate-400 p-1 cursor-pointer transition-colors duration-300;
+}
+
+#footer:hover {
+    @apply text-slate-600 dark:text-slate-300 underline decoration-dotted;
+}

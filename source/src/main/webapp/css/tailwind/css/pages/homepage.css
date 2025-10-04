@@ -1,0 +1,40 @@
+.tag-tooltip {
+    line-height: 1;
+}
+
+.input-group-addon span {
+    color: #D9534F;
+}
+
+.removeTag {
+    cursor: pointer;
+}
+
+.modal-title-line {
+    border-bottom: 2px solid #3D3D3D;
+    color: #3D3D3D;
+    font-weight: 900;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+    text-transform: uppercase;
+}
+
+.datatable-alignright{
+    text-align: right;
+}
+
+.hpCampaignHeader{
+    color: var(--crb-black-color);
+    background-color: var(--crb-yellow-light-color);
+}
+
+.hpCampaignHeaderNoCampaign{
+    color: var(--crb-black-color);
+    background-color: var(--crb-yellow-light-color);
+    font-style: italic
+}
+
+.DataTables_sort_wrapper {
+    font-size: 9px
+}

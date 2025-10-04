@@ -21,74 +21,74 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title>Change Password</title>
-        <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
-    </head>
-    <body>
+<html class="h-full">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%@ include file="include/global/dependenciesInclusions.html" %>
+    <title>Change Password</title>
+    <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
+</head>
+<body x-data x-cloak class="crb_body">
+<%@ include file="include/global/messagesArea.html"%>
+<div class="crb_card lg:pt-[10%]">
+    <div class="col-md-2"></div>
 
-        <%@ include file="include/global/messagesArea.html"%>
-        <div class="body-login">
-            <div class="col-md-2"></div>
+    <div class="col-md-8 lg:bg-[#f9f9f9]" >
 
-            <div class="col-md-8 panel panel-default panel-login" >
+        <div class="col-md-12">
+            <%@ include file="include/global/messagesArea.html"%>
+            <div id="error" style="display:none"><%="0"/*display*/%></div>
+        </div>
 
-                <div class="col-md-12">
-                    <%@ include file="include/global/messagesArea.html"%>
-                    <div id="error" style="display:none"><%="0"/*display*/%></div>
-                </div>
+        <div class="col-md-12 login-box-form">
 
-                <div class="col-md-12 login-box-form">
+            <div class="col-md-6">
+                <img src="images/Logo-cerberus_250.png" class="img-responsive center-block logo-login"></img>
+            </div>
+            <div class="col-md-6">
 
-                    <div class="col-md-6">
-                        <img src="images/Logo-cerberus_250.png" class="img-responsive center-block logo-login"></img>
-                    </div>
-                    <div class="col-md-6">
-
-                        <form id="changePasswordForm" title="Change Password" method="post">
-                            <H3>Password Recovery</H3>
-                            <span>
+                <form id="changePasswordForm" title="Change Password" method="post">
+                    <H3>Password Recovery</H3>
+                    <span>
                                 Dear,<br><br>
                                 A request password request has been submitted to your account.
                                 Please feed the reset password formulary to acheive the change.
                                 <br><br>
                             </span>
 
-                            <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal() == null ? request.getParameter("login") : request.getUserPrincipal().getName()%>">
-                            <input type="hidden" name="resetPasswordToken" id="resetPasswordToken"/>
+                    <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal() == null ? request.getParameter("login") : request.getUserPrincipal().getName()%>">
+                    <input type="hidden" name="resetPasswordToken" id="resetPasswordToken"/>
 
-                            <div class="form-group"  id="currentPasswordDiv">
-                                <label>
-                                    Current Password:
-                                </label>
-                                <div class="input-group">
+                    <div class="form-group"  id="currentPasswordDiv">
+                        <label>
+                            Current Password:
+                        </label>
+                        <div class="input-group">
                                     <span class="input-group-addon " id="user-icon">
 		                       	 		<span class="glyphicon glyphicon-lock"></span>
 		                       	 	</span>
-                                    <input class="form-control" type="password" name="currentPassword" id="currentPassword" maxlength="20"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                 <label>
-                                    New password:
-                                 </label>
-                                 <input  class="form-control" type="password" name="newPassword" id="newPassword" maxlength="20"/>
-                            </div>
-
-                            <div class="form-group">
-                                <label>
-                                    New password confirmation:
-                                </label>
-                                <input class="form-control" type="password" name="confirmPassword" id="confirmPassword" maxlength="20"/>
-                            </div>
-                            <a href="./" class="btn btn-default">Cancel</a>
-                            <button type ="button" class="btn btn-primary" id="changePassword">Change Password</button>
-                        </form>
+                            <input class="form-control" type="password" name="currentPassword" id="currentPassword" maxlength="20"/>
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>
+                            New password:
+                        </label>
+                        <input  class="form-control" type="password" name="newPassword" id="newPassword" maxlength="20"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            New password confirmation:
+                        </label>
+                        <input class="form-control" type="password" name="confirmPassword" id="confirmPassword" maxlength="20"/>
+                    </div>
+                    <a href="./" class="btn btn-default">Cancel</a>
+                    <button type ="button" class="btn btn-primary" id="changePassword">Change Password</button>
+                </form>
+            </div>
         </div>
-    </body>
+
+</body>
 </html>

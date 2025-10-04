@@ -48,7 +48,7 @@ function displayPageLabel() {
 
 
 
-    displayHeaderLabel(doc);
+   // displayHeaderLabel(doc);
 
     displayFooter(doc);
     displayGlobalLabel(doc);

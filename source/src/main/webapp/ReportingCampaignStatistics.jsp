@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="reporting">
+        <meta name="active-submenu" content="ReportingCampaignStatistics.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Campaign statistics</title>
@@ -33,9 +35,9 @@
         <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
         <script type="text/javascript" src="js/pages/ReportingCampaignStatistics.js"></script>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
@@ -120,19 +122,17 @@
                     <img src="images/loading.gif" alt="Loading...">
                 </div>
                 <div class="panel-body" id="tagStatisticList">
-                    <table id="tagStatisticTable" class="table table-bordered table-hover display" name="tagStatisticTable"></table>
+                    <table id="tagStatisticTable" class="table table-hover display" name="tagStatisticTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
                 <div class="panel-body" id="tagStatisticDetailList"  style="display: none;">
-                    <table id="tagStatisticDetailTable" class="table table-bordered table-hover display" name="tagStatisticDetailTable"></table>
+                    <table id="tagStatisticDetailTable" class="table table-hover display" name="tagStatisticDetailTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
-        <script>
-        </script>
+        </main>
     </body>
 </html>

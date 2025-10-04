@@ -27,25 +27,27 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="test">
+        <meta name="active-submenu" content="Test.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Test.js"></script>
         <title id="pageTitle">Test</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html"%>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/test/editTest.html" %>
             <%@ include file="include/pages/test/addTest.html" %>
 
             <h1 class="page-title-line" id="title">Test</h1>
-            <div class="panel panel-default">
-                <div class="panel-body" id="testList">
-                    <table id="testTable" class="table table-bordered table-hover display" name="testTable">
+            <div class="crb_card">
+                <div id="testList">
+                    <table id="testTable" class="table table-hover display" name="testTable">
                     </table>
                     <div class="marginBottom20"></div>
                 </div>
@@ -53,6 +55,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>

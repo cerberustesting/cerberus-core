@@ -1,0 +1,16 @@
+/* ===========================
+    Specific class during Bootstrap removal
+=========================== */
+.crb_body aside {
+    display: flex;
+}
+
+.crb_sidebar a:hover{
+    @apply bg-slate-700/50 text-white;
+    text-decoration: none;
+}
+
+.crb_submenu a:hover{
+    @apply bg-slate-700/50 ;
+    text-decoration: none;
+}

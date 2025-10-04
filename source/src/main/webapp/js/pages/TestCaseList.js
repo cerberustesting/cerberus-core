@@ -105,7 +105,7 @@ function initMassActionModal() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
     $("#pageTitle").html(doc.getDocOnline("page_testcaselist", "title"));
@@ -118,7 +118,7 @@ function loadTable(selectTest, sortColumn) {
 
     //clear the old report content before reloading it
     $("#testCaseList").empty();
-    $("#testCaseList").html('<table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable">\n\
+    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     var contentUrl = "ReadTestCase";
@@ -132,7 +132,7 @@ function loadTable(selectTest, sortColumn) {
         var lengthMenu = [10, 15, 20, 30, 50, 100, 500, 1000];
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc'], lengthMenu);
 
-        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
+        var table = createDataTableWithPermissionsNew(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
 
 
         var app = GetURLParameter('application');
@@ -160,53 +160,75 @@ function loadTable(selectTest, sortColumn) {
 
 function renderOptionsForTestCaseList(data) {
     var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissionsCreate"]) {
-        if ($("#createTestCaseButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'>";
 
-            contentToAdd += "<div class='btn-group marginRight10'>";
-            contentToAdd += "<button id='createTestCaseButtonSimple' type='button' class='btn btn-default' onclick='openModalTestCaseSimple();'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button>";
-            contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
-            contentToAdd += "<div class='dropdown-menu'>";
-            contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + " (From Header)</button>";
-            contentToAdd += "</div>";
-            contentToAdd += "</div>";
+    // Toujours créer les boutons
+    if ($("#createTestCaseButton").length === 0) {
+        var disabledCreate = data["hasPermissionsCreate"] ? "" : "disabled";
 
-            contentToAdd += "<div class='btn-group'>";
-            contentToAdd += "<button id='btnGroupDropIO' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Import / Export <span class='caret'></span></button>";
-            contentToAdd += "<div class='dropdown-menu' aria-labelledby='btnGroupDropIO'>";
-            contentToAdd += "<button id='exportTestCaseMenuButton' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export") + "</button>";
-//            contentToAdd += "<button id='exportTestCaseMenuButtonSingleFile' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export1file") + "</button>";
-            contentToAdd += "<button id='importTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-import'></span> " + doc.getDocLabel("page_testcaselist", "btn_import") + "</button>";
-            contentToAdd += "<button id='importFromSIDETestCaseMenuButton' type='button' class='btn btn-default'><img height='20 px' src='./images/SeleniumIDE.jpg'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_ide") + "</button>";
-            contentToAdd += "<button id='importFromTestLinkTestCaseMenuButton' type='button' style='display: none1;' class='btn btn-default'><img height='20 px' src='./images/TestLink.png'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_testlink") + "</button>";
-            contentToAdd += "</div>";
-            contentToAdd += "</div>";
-            contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
-            contentToAdd += "</div>";
+        var contentToAdd = "";
 
-            $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
+        // Bouton Create
+        contentToAdd += `
+            <button id='createTestCaseButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded h-10 w-auto'
+                ${disabledCreate}>
+                <span class='glyphicon glyphicon-plus-sign'></span>
+                <span>${doc.getDocLabel("page_testcaselist", "btn_create")}</span>
+            </button>
+        `;
 
-            $('#testCaseList #createTestCaseButton').click(data, function () {
-                // Getting the Test from the 1st row of the testcase table.
-                if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
-                    var firstRowTest = testAutomaticModal;
-//                    addTestCaseClick(firstRowTest);
-                    openModalTestCase(firstRowTest, undefined, "ADD");
-                } else {
-                    var testQueryString = GetURLParameter("test", undefined);
-//                    addTestCaseClick();
-                    openModalTestCase(testQueryString, undefined, "ADD");
-                }
-            });
-            $("#testCaseList #exportTestCaseMenuButton").click(exportTestCasesMenuClick);
-            $("#testCaseList #exportTestCaseMenuButtonSingleFile").click(exportTestCasesMenuClick);
-            $('#testCaseList #importTestCaseButton').click(importTestCasesMenuClick);
-            $('#testCaseList #importFromSIDETestCaseMenuButton').click(importTestCasesFromSIDEMenuClick);
-            $('#testCaseList #importFromTestLinkTestCaseMenuButton').click(importTestCasesFromTestLinkMenuClick);
-            $('#testCaseList #createBrpMassButton').click(massActionClick);
+        // Bouton Export
+        contentToAdd += `
+            <button id='exportTestCaseButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
+                <span class='glyphicon glyphicon-export'></span>
+                <span>${doc.getDocLabel("page_testcaselist", "btn_export")}</span>
+            </button>
+        `;
+
+        // Bouton Import
+        contentToAdd += `
+            <button id='importTestCaseButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
+                <span class='glyphicon glyphicon-import'></span>
+                <span>${doc.getDocLabel("page_testcaselist", "btn_import")}</span>
+            </button>
+        `;
+
+        // Bouton Mass Action
+        contentToAdd += `
+            <button id='createBrpMassButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
+                <span class='glyphicon glyphicon-th-list'></span>
+                <span>${doc.getDocLabel("page_global", "button_massAction")}</span>
+            </button>
+        `;
+
+
+
+        // Cherche ton buttonWrapper
+        var $wrapper = $("#testCaseTable_buttonWrapper");
+
+        if ($wrapper.length) {
+            // Ajoute le bouton au **début** du wrapper
+            $wrapper.append(contentToAdd);
+        } else {
+            // fallback si le wrapper n’existe pas encore
+            console.warn("Wrapper #testCaseTable_buttonWrapper introuvable, insertion avant length");
+            $("#testCaseTable_wrapper div#testCaseTable_length").before("<div id='testCaseTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
         }
+
+        // Bind des events seulement si le bouton n'est pas disabled
+        if (data["hasPermissionsCreate"]) {
+            $("#createTestCaseButton").off("click").on("click", function () {
+                var firstRowTest = $("#testCaseTable td.sorting_1")[0] !== undefined ? testAutomaticModal : GetURLParameter("test", undefined);
+                openModalTestCase(firstRowTest, undefined, "ADD");
+            });
+        }
+
+        $("#exportTestCaseButton").off("click").on("click", exportTestCasesMenuClick);
+        $("#importTestCaseButton").off("click").on("click", importTestCasesMenuClick);
+        $("#createBrpMassButton").off("click").on("click", massActionClick);
     }
 }
 
@@ -839,15 +861,37 @@ function aoColumnsFunc(countries, tableId) {
     var countryLen = countries.length;
     var aoColumns = [
         {"data": null,
-            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
+            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox" class="appearance-none w-5 h-5 border border-sky-500 rounded checked:bg-sky-500 checked:sky-blue-500 bg-transparent cursor-pointer"></input>',
             "bSortable": false,
             "sWidth": "30px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var selectBrp = '<input id="selectLine" \n\
-                                class="selectBrp margin-right5" \n\
-                                name="test-' + obj["test"] + 'testcase-' + obj["testcase"] + '" data-line="select" data-id="' + obj["test"] + obj["testcase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
-                                </input>';
+                var selectBrp = `
+  <label class="select-brp inline-flex items-center cursor-pointer">
+    <!-- checkbox masqué mais cliquable car dans le label -->
+    <input 
+      id="selectLine_${obj['test']}${obj['testcase']}"
+      type="checkbox"
+      name="test-${obj["test"]}testcase-${obj["testcase"]}"
+      data-line="select"
+      data-id="${obj["test"]}${obj["testcase"]}"
+      title="${doc.getDocLabel("page_global", "tooltip_massActionLine")}"
+    >
+    <!-- case custom -->
+    <span class="w-5 h-5 border border-sky-500 rounded flex items-center justify-center transition-colors">
+      <svg class="w-3 h-3 text-white" 
+           xmlns="http://www.w3.org/2000/svg" 
+           viewBox="0 0 20 20" 
+           fill="currentColor">
+        <path fill-rule="evenodd" 
+              d="M16.707 5.293a1 1 0 010 1.414L9 14.414 
+                 5.293 10.707a1 1 0 011.414-1.414L9 11.586 
+                 l6.293-6.293a1 1 0 011.414 0z" 
+              clip-rule="evenodd"/>
+      </svg>
+    </span>
+  </label>
+`;
                 if (data.hasPermissionsUpdate) { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width50">' + selectBrp + '</div>';
                 }
@@ -861,61 +905,93 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "175px",
+            "sWidth": "30px",
             "mRender": function (data, type, obj) {
-                var buttons = "";
+                var newTest = escapeHtml(obj["test"]);
+                var newTestCase = escapeHtml(obj["testcase"]);
+                var uid = "menu-" + obj["testcase"]; // identifiant unique
 
-                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'EDIT\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'EDIT\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\');"\n\
-                                        class="deleteEntry btn btn-default btn-xs margin-right25" \n\
-                                        name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
-                var exportEntry = '<a id="exportEntry" href="./ExportTestCase?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '"\n\
-                                        class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="exportEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_export") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-export"></span></a>';
-                var duplicateEntry = '<button id="duplicateEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'DUPLICATE\');"\n\
-                                        class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var editScript = '<a id="testCaseLink" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
-                                    <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </a>';
-                var runTest = '<button id="runTest" onclick="openModalExecutionSimple(\'' + data.application + '\',\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'' + data.description + '\');"\n\
-                                        class="btn btn-default btn-xs marginRight5 marginLeft20" \n\
-                                        data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-play"></span></button>';
+                return `
+        <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null }" class="inline-block">
+            
+            <!-- Bouton "…" -->
+            <button @mouseenter="
+                        clearTimeout(timer);
+                        open = true;
+                        const rect = $el.getBoundingClientRect();
+                        pos = { 
+                            top: rect.top + window.scrollY, 
+                            left: rect.right + window.scrollX 
+                        };
+                    "
+                    @mouseleave="timer = setTimeout(() => open = false, 200)"
+                    class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+                <i data-lucide="ellipsis" class="w-4 h-4"></i>
+            </button>
 
-                if (data.hasPermissionsUpdate) {
-                    buttons += editEntry;
-                    buttons += editScript;
-                    buttons += duplicateEntry;
-                } else {
-                    buttons += viewEntry;
-                    buttons += editScript;
-                    if (data.hasPermissionsCreate) {
-                        buttons += duplicateEntry;
-                    }
-                }
-                if (data.hasPermissionsUpdate) {
-                    buttons += exportEntry;
-                }
-                if (data.hasPermissionsDelete) {
-                    buttons += deleteEntry;
-                }
-                buttons += runTest;
+            <!-- Tooltip via teleport -->
+            <template x-teleport="body">
+                <div x-show="open"
+                     x-transition
+                     @mouseenter="clearTimeout(timer); open=true"
+                     @mouseleave="open=false"
+                     x-init="$nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+                     class="absolute z-50 w-60 bg-slate-50 dark:bg-slate-900 border dark:text-slate-50 text-slate-900 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
+                     :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
 
-                return '<div class="center btn-group width250">' + buttons + '</div>';
+                    ${data.hasPermissionsUpdate ? `
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         onclick="openModalTestCase('${newTest}','${newTestCase}','EDIT')">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_edit")}
+                    </div>` : `
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         onclick="openModalTestCase('${newTest}','${newTestCase}','EDIT')">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_view")}
+                    </div>`}
+
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         onclick="openModalTestCase('${newTest}','${newTestCase}','DUPLICATE')">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_duplicate")}
+                    </div>
+
+                    ${data.hasPermissionsUpdate ? `
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                        <a href="./ExportTestCase?test=${encodeURIComponent(obj["test"])}&testcase=${encodeURIComponent(obj["testcase"])}">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            ${doc.getDocLabel("page_testcaselist", "btn_export")}
+                        </a>
+                    </div>` : ''}
+
+                    ${data.hasPermissionsDelete ? `
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 text-red-600 dark:hover:bg-gray-800 cursor-pointer"
+                         onclick="deleteEntryClick('${newTest}','${newTestCase}')">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_delete")}
+                    </div>` : ''}
+
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         onclick="openModalExecutionSimple('${data.application}','${newTest}','${newTestCase}','${data.description}')">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_runTest")}
+                    </div>
+
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                        <a href="./TestCaseScript.jsp?test=${encodeURIComponent(obj["test"])}&testcase=${encodeURIComponent(obj["testcase"])}">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            ${doc.getDocLabel("page_testcaselist", "btn_editScript")}
+                        </a>
+                    </div>
+
+                </div>
+            </template>
+        </div>
+        `;
             }
-        },
+        }
+        ,
         {
             "data": "test",
             "sName": "tec.test",

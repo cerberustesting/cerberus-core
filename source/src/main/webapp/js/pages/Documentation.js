@@ -30,7 +30,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
 
     var lang = $("#MyLang").val();
     var windowsHeight = $(window).height() + 'px';

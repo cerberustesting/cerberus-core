@@ -63,7 +63,7 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     displayFooter(doc);
     $("#pageTitle").html(doc.getDocLabel("page_testdatalib", "page_title"));

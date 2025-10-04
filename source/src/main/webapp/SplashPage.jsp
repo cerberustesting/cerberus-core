@@ -22,7 +22,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
@@ -47,7 +47,7 @@
             }
         </style>
     </head>
-    <body>
+    <body class="crb_body">
         <div class="container-fluid center" id="">
             <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" style="text-align: center" id="title">Cerberus is down for maintenance</h1>

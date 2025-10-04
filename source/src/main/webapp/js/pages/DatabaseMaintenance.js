@@ -38,7 +38,7 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     //$("#pageTitle").html(doc.getDocLabel("page_application", "title"));
     //$("#title").html(doc.getDocOnline("page_application", "title"));
 

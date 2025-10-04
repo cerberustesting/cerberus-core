@@ -21,16 +21,18 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="admin">
+        <meta name="active-submenu" content="CerberusInformation.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/CerberusInformation.js"></script>
         <title id="pageTitle">Cerberus Information</title>
     </head>
-    <body>
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
 
@@ -45,17 +47,16 @@
 
             <div id="FiltersPanel">
 
-                <div class="panel panel-default" id="panelActivity">
-                    <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#cerberusActivity">
+                <div class="crb_card" id="panelActivity">
+                    <div class="clearfix">
                         <span class="fa fa-tag fa-fw"></span>
                         <label id="filters" name="filtersField">Cerberus Instance Activity</label>
-                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                     </div>
-                    <div class="panel-body collapse in" id="cerberusActivity">
+                    <div id="cerberusActivity">
                         <div id="cerberusActivity_wrapper" class="dataTables_scroll" style="position: relative">
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeNbTable">
+                                    <table class="table table-hover nomarginbottom dataTable" id="exeNbTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Number of Pending Execution on that instance</th>
@@ -69,7 +70,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeTable">
+                                    <table class="table table-hover nomarginbottom dataTable" id="exeTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">ID</th>
@@ -98,17 +99,16 @@
                 <div class="form-group col-md-6">
 
                     <div class="" id="FiltersPanel">
-                        <div class="panel panel-default" id="panelInformation">
-                            <div class="panel-heading card" data-toggle="collapse"  data-target="#cerberusInformation">
+                        <div class="crb_card" id="panelInformation">
+                            <div>
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">Cerberus Information</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <div class="panel-body collapse in" id="cerberusInformation">
+                            <div id="cerberusInformation">
                                 <div id="cerberusInformation_wrapper" class="dataTables_scroll" style="position: relative">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="cerberusTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="projectHeader" name="systemHeader">Project</th>
@@ -126,7 +126,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusAuthTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="cerberusAuthTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="authHeader" name="authHeader">Authentification</th>
@@ -143,7 +143,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusSaaSTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="cerberusSaaSTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="saaS" name="saaS">SaaS</th>
@@ -165,17 +165,16 @@
 
                 <div class="form-group col-md-6">
                     <div class="" id="FiltersPanel">
-                        <div class="panel panel-default" id="paneljvmInformation">
-                            <div class="panel-heading card" data-toggle="collapse"  data-target="#jvmInformation">
+                        <div class="crb_card" id="paneljvmInformation">
+                            <div>
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">JVM Information</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <div class="panel-body collapse in" id="jvmInformation">
+                            <div id="jvmInformation">
                                 <div id="jvmInformation_wrapper" class="dataTables_scroll" style="position: relative">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="jvmTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="jvmTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">JAVA Version</th>
@@ -188,7 +187,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="appjvmTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="appjvmTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="appVer" name="appVer">Application Server Version</th>
@@ -201,7 +200,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="jvmMemTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="jvmMemTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Total Memory (Mb)</th>
@@ -232,17 +231,16 @@
                 <div class="form-group col-md-6">
 
                     <div id="FiltersPanel">
-                        <div class="panel panel-default" id="paneldtbInformation">
-                            <div class="panel-heading card" data-toggle="collapse"  data-target="#dtbInformation">
+                        <div class="crb_card" id="paneldtbInformation">
+                            <div>
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="filters" name="filtersField">Database Information</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <div class="panel-body collapse in" id="dtbInformation">
+                            <div id="dtbInformation">
                                 <div id="jvmInformation_wrapper" class="dataTables_scroll" style="position: relative">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="databaseTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="databaseTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Database</th>
@@ -258,7 +256,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="driverTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="driverTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Driver Name</th>
@@ -274,7 +272,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="jdbcTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="jdbcTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">JDBC Minor Version</th>
@@ -297,17 +295,16 @@
                 <div class="form-group col-md-6">
 
                     <div id="FiltersPanel">
-                        <div class="panel panel-default" id="panelschInformation">
-                            <div class="panel-heading card" data-toggle="collapse"  data-target="#schInformation">
+                        <div class="crb_card" id="panelschInformation">
+                            <div>
                                 <span class="fa fa-tag fa-fw"></span>
                                 <label id="schedulerfilters" name="filtersField">Scheduler Instance Information</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <div class="panel-body collapse in" id="schInformation">
+                            <div id="schInformation">
                                 <div id="schInformation_wrapper" class="dataTables_scroll" style="position: relative">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="schedulerTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="schedulerTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Version</th>
@@ -321,7 +318,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="schedulerDateTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="schedulerDateTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Server Date</th>
@@ -335,7 +332,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="schDetTable">
+                                            <table class="table table-hover nomarginbottom dataTable" id="schDetTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Type</th>
@@ -364,5 +361,6 @@
                 <div class="container-fluid" id="footer"></div>
             </footer>
         </div>
+        </main>
     </body>
 </html>

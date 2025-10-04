@@ -36,7 +36,7 @@ var widgetAvailabilityOptions={
 function WidgetAvailabilityTemplate(w) {
 
     return `
-        <div class="widget" data-id="${w.id}">
+        <div class="crb_card absolute p-2.5" data-id="${w.id}">
           <div class="drag-handle drag-widget">⋮⋮⋮</div>
           <div class="widget-controls">
             <button class="btn btn-xs btn-info edit-widget">Edit</button>
@@ -133,24 +133,19 @@ function saveWidgetAvailability(wd, $w) {
     var newTest = $w.find("select.widget-test").val();
     var newTestcase = $w.find("select.widget-testcase").val();
 
-    // Construire le nouvel objet content
     wd.title = newTitle;
     wd.content = {
-        label: newTestcase, // affichage principal
+        label: newTestcase,
         test: newTest,
         testcase: newTestcase
     };
 
-    // Remplacer le select du titre par un h4 affichant le label (= testcase)
     $w.find("select.widget-title").replaceWith(
         `<h4 class="widget-header">${wd.content.label}</h4>`
     );
-
-    // Supprimer les selects test et testcase
     $w.find("select.widget-test").remove();
     $w.find("select.widget-testcase").remove();
 
-    // Réafficher le graphique et le contenu
     $w.find(".availabiltyChart").show();
     $w.find(".widget-content").show();
 

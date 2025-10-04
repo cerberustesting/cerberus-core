@@ -21,8 +21,10 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html class="h-full">
     <head>
+        <meta name="active-menu" content="test">
+        <meta name="active-submenu" content="Label.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -30,10 +32,9 @@
         <script type="text/javascript" src="js/pages/Label.js"></script>
         <title id="pageTitle">Label</title>
     </head>
-    <body>
-
-        <%@ include file="include/global/header.html" %>
-        <div class="container-fluid center" id="page-layout">
+    <body x-data x-cloak class="crb_body">
+        <jsp:include page="include/global/header2.html"/>
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/label/addLabel.html"%> 
@@ -41,85 +42,115 @@
 
             <h1 class="page-title-line" id="title">Label</h1>
 
-            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>
-                <li><a data-toggle="tab" href="#tabTreeR" id="editTabTressR" name="tabTree">Requirement Tree</a></li>
-                <li><a data-toggle="tab" href="#tabTreeS" id="editTabTressS" name="tabTree">Sticker Tree</a></li>
-                <li><a data-toggle="tab" href="#tabTreeB" id="editTabTressB" name="tabTree">Battery Tree</a></li>
-            </ul>
+            <div x-data="{ tab: 'list' }" class="w-full">
+                  <!-- Onglets -->
+               <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                    <!-- List -->
+                    <button
+                        @click="tab = 'list'"
+                        :class="tab === 'list' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="list" class="w-4 h-4"></i>
+                        List
+                    </button>
 
-            <div class="tab-content">
-                <div class="center tab-pane fade in active" id="tabDetails">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="labelList">
-                            <table id="labelsTable" class="table table-bordered table-hover display" name="labelsTable"></table>
-                            <!--                            <div class="marginBottom20"></div>-->
-                        </div>
-                    </div>
+                    <!-- Requirement Tree -->
+                    <button
+                        @click="tab = 'treeR'"
+                        :class="tab === 'treeR' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="git-branch" class="w-4 h-4"></i>
+                        Requirement Tree
+                    </button>
+
+                    <!-- Sticker Tree -->
+                    <button
+                        @click="tab = 'treeS'"
+                        :class="tab === 'treeS' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="tag" class="w-4 h-4"></i>
+                        Sticker Tree
+                    </button>
+
+                    <!-- Battery Tree -->
+                    <button
+                        @click="tab = 'treeB'"
+                        :class="tab === 'treeB' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="battery" class="w-4 h-4"></i>
+                        Battery Tree
+                    </button>
                 </div>
-                <div class="center tab-pane fade in" id="tabTreeR">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="labelRList">
-                            <div class="row">
-                                <div class='marginBottom20 marginLeft30'>
-                                    <button id='refreshButtonTreeR' type='button' class='btn btn-default pull-left marginLeft15'>
-                                        <span class='glyphicon glyphicon-refresh'></span> Refresh</button>
-                                    <button id='createLabelButtonTreeR' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-plus-sign'></span> Create</button>
-                                    <button id='collapseAllTreeR' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-up'></span> Collapse All</button>
-                                    <button id='expandAllTreeR' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-down'></span> Expand All</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='marginTop20' id="mainTreeR"></div>
+
+               <!-- Contenu onglets -->
+               <div class="">
+                    <!-- List -->
+                    <div x-show="tab === 'list'" x-transition.opacity>
+                      <table id="labelsTable" class="table table-hover display"></table>
                     </div>
-                </div>
-                <div class="center tab-pane fade in" id="tabTreeS">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="labelSList">
-                            <div class="row">
-                                <div class='marginBottom20 marginLeft20'>
-                                    <button id='refreshButtonTreeS' type='button' class='btn btn-default pull-left marginLeft15'>
-                                        <span class='glyphicon glyphicon-refresh'></span> Refresh</button>
-                                    <button id='createLabelButtonTreeS' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-plus-sign'></span> Create</button>
-                                    <button id='collapseAllTreeS' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-up'></span> Collapse All</button>
-                                    <button id='expandAllTreeS' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-down'></span> Expand All</button>
-                                </div>
-                            </div>
-                            <div class='marginTop20' id="mainTreeS"></div>
+
+                    <!-- Requirement Tree -->
+                    <div x-show="tab === 'treeR'" x-transition.opacity>
+                        <div class="mb-5 ml-6 flex space-x-2">
+                            <button id="refreshButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                              <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
+                            </button>
+                            <button id="createLabelButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                              <i data-lucide="plus" class="w-4 h-4"></i> Create
+                            </button>
+                            <button id="collapseAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                              <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
+                            </button>
+                            <button id="expandAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                              <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
+                            </button>
                         </div>
+                        <div class="mt-5" id="mainTreeR"></div>
                     </div>
-                </div>
-                <div class="center tab-pane fade in" id="tabTreeB">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="labelBList">
-                            <div class="row">
-                                <div class='marginBottom20 marginLeft20'>
-                                    <button id='refreshButtonTreeB' type='button' class='btn btn-default pull-left marginLeft15'>
-                                        <span class='glyphicon glyphicon-refresh'></span> Refresh</button>
-                                    <button id='createLabelButtonTreeB' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-plus-sign'></span> Create</button>
-                                    <button id='collapseAllTreeB' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-up'></span> Collapse All</button>
-                                    <button id='expandAllTreeB' type='button' class='btn btn-default pull-left'>
-                                        <span class='glyphicon glyphicon-collapse-down'></span> Expand All</button>
-                                </div>
-                            </div>
-                            <div class='marginTop20' id="mainTreeB"></div>
-                        </div>
+
+                    <!-- Sticker Tree -->
+                    <div x-show="tab === 'treeS'" x-transition.opacity>
+                      <div class="mb-5 ml-6 flex space-x-2">
+                        <button id="refreshButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
+                        </button>
+                        <button id="createLabelButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="plus" class="w-4 h-4"></i> Create
+                        </button>
+                        <button id="collapseAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
+                        </button>
+                        <button id="expandAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
+                        </button>
+                      </div>
+                      <div class="mt-5" id="mainTreeS"></div>
                     </div>
+
+                    <!-- Battery Tree -->
+                    <div x-show="tab === 'treeB'" x-transition.opacity>
+                      <div class="mb-5 ml-6 flex space-x-2">
+                        <button id="refreshButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
+                        </button>
+                        <button id="createLabelButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="plus" class="w-4 h-4"></i> Create
+                        </button>
+                        <button id="collapseAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
+                        </button>
+                        <button id="expandAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                          <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
+                        </button>
+                      </div>
+                      <div class="mt-5" id="mainTreeB"></div>
+                    </div>
+                  </div>
                 </div>
-            </div>
-            <!--                </div>-->
-            <!--            </div>-->
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
+        </main>
     </body>
 </html>
