@@ -24,25 +24,47 @@
 #       - <next development version> is the next needed development version
 #       - <current database version> is the current database version
 
+# Define variables
+#export RELEASE_VERSION=4.20
+#export NEXT_DEVELOPMENT_VERSION=4.21-SNAPSHOT
+#export DATABASE_VERSION=1925
 
 #clone cerberus repository
 rm -rf cerberus-source
 git clone https://github.com/cerberustesting/cerberus-source.git
 cd cerberus-source
 
+# RELEASE VERSION
+######################
+
 # Prepare the release version
 # Update database version 
 database_version=$((${DATABASE_VERSION}+1))
+
 sqlLimit="Integer SQLLimit = "$database_version"; // "${RELEASE_VERSION}" Version LEVEL."
 awk -v sqlLimit="$sqlLimit" '{gsub(/Integer SQLLimit = (.*)/,sqlLimit,$0); print }' source/src/main/webapp/DatabaseMaintenance.jsp > source/src/main/webapp/DatabaseMaintenance.jsp.back && mv source/src/main/webapp/DatabaseMaintenance.jsp.back source/src/main/webapp/DatabaseMaintenance.jsp
-
 git add source/src/main/webapp/DatabaseMaintenance.jsp
-git commit -m 'chore:source prepare the new ${RELEASE_VERSION} version and update database version to ${DATABASE_VERSION}'
+
+releaseversion="<version>"$RELEASE_VERSION"</version>"
+# FIXME only treat the main <version>
+awk -v releaseversion="$releaseversion" '{gsub(/<version>(.*)/,releaseversion,$0); print }' source/pom.xml > source/pom.xml.back && mv source/pom.xml.back source/pom.xml
+git add source/pom.xml
+
+export COMMIT_MESSAGE="chore:source new $RELEASE_VERSION version and update database version to $DATABASE_VERSION"
+git commit -m "$COMMIT_MESSAGE"
 
 # Execute release
-mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
-mvn release:perform -Darguments="-Dmaven.javadoc.skip=true"
+#mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
+#mvn release:perform -Darguments="-Dmaven.javadoc.skip=true"
 git push origin master
+
+# NEW SNAPSHOT VERSION
+######################
+
+# FIXME only treat the main <version>
+releaseversion="<version>"$NEXT_DEVELOPMENT_VERSION"</version>"
+awk -v releaseversion="$releaseversion" '{gsub(/<version>(.*)/,releaseversion,$0); print }' source/pom.xml > source/pom.xml.back && mv source/pom.xml.back source/pom.xml
+git add source/pom.xml
 
 # Create new changelog file
 nextRelease=$(echo ${NEXT_DEVELOPMENT_VERSION} | grep -P '^.*(?=(\-SNAPSHOT))' -o)
