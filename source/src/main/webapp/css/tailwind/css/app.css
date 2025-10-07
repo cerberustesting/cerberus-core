@@ -33,12 +33,13 @@ src/main/webapp/css/
 */
 
 
-/* Importation des modules */
+/* Import modules */
 @import "tailwindcss" source("./../../../../webapp");
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* To remove after bootstrap removal */
 @import "./migration.css";
+
 
 @import "./base.css";
 @import "./layout.css";

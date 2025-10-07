@@ -202,7 +202,7 @@ function loadExecutionInformation(executionId, steps, sockets) {
 
             // Save history of execution into sessionStorage.
             saveHistory(getHistoryExecution(tce), "historyExecutions", 5);
-            refreshHistoryMenu();
+            //Alpine.store('userMenu').refreshHistoryMenu();
 
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {

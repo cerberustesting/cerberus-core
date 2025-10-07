@@ -151,7 +151,7 @@ $.when($.getScript("js/global/global.js")
 
                     // Save history entries
                     saveHistory(getHistoryTestcase(data.contentTable[0]), "historyTestcases", 5);
-                    refreshHistoryMenu();
+                    //Alpine.store('userMenu').refreshHistoryMenu();
 
                     canUpdate = data.hasPermissionsUpdate;
                     loadLibraryStep(undefined, data.contentTable[0].system);
@@ -418,8 +418,6 @@ $.when($.getScript("js/global/global.js")
         }
         );
 
-        // open Run navbar Menu
-        openNavbarMenu("navMenuTest");
 
         if (oneclickcreation === "true") {
             var message = "TestCase has been successfully created.";

@@ -89,26 +89,27 @@ function arraysEqual(a, b) {
 
 function userMenu() {
     return {
-        open: false,
-        username: "Benoit Civel",
+        user: JSON.parse(sessionStorage.getItem('user') || '{}'),
+        username: '',
+        initials: '',
+        roleText: '',
+        userMenuOpen: false,
         language: "fr",
-        lastExecutions: [],
-        lastCampaigns: [],
-        lastTests: [],
         logoutHref: '',
 
         init() {
             this.applyTheme(Alpine.store('user').theme);
             this.updateLogoutLink();
+            this.userInfo();
         },
 
         toggleOpen() {
-            this.open = !this.open;
-            if (this.open) this.refreshHistoryMenu();
+            this.userMenuOpen = !this.userMenuOpen;
+            //if (this.open) this.refreshHistoryMenu();
         },
 
         close() {
-            this.open = false;
+            this.userMenuOpen = false;
         },
 
         applyTheme(theme) {
@@ -148,37 +149,10 @@ function userMenu() {
 
                     //location.reload();
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Erreur lors du changement de langue :", error);
                 }
             });
-        },
-
-        refreshHistoryMenu() {
-            // Testcases
-            let testcases = JSON.parse(localStorage.getItem("historyTestcases") || "[]").reverse();
-            this.lastTests = testcases.map(item => ({
-                name: item.test + " " + item.testcase,
-                description: item.description || "",
-                href: "TestCaseScript.jsp?test=" + encodeURIComponent(item.test) + "&testcase=" + encodeURIComponent(item.testcase)
-            }));
-
-            // Executions
-            let executions = JSON.parse(localStorage.getItem("historyExecutions") || "[]").reverse();
-            this.lastExecutions = executions.map(item => ({
-                id: item.id,
-                status: item.controlStatus,
-                description: (item.test + " " + item.testcase + " | " + item.country + " " + item.environment + " " + item.robot) +
-                    (item.description ? " | " + item.description : ""),
-                href: "TestCaseExecution.jsp?executionId=" + item.id
-            }));
-
-            // Campaigns
-            let campaigns = JSON.parse(localStorage.getItem("historyCampaigns") || "[]").reverse();
-            this.lastCampaigns = campaigns.map(item => ({
-                tag: item.tag,
-                href: "ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(item.tag)
-            }));
         },
 
         updateLogoutLink() {
@@ -200,10 +174,58 @@ function userMenu() {
                 aL += "Logout.jsp";
                 this.logoutHref = user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL));
             }
+        },
+
+        userInfo(){
+            const user = getUser();
+            this.username = (user.name && user.name.trim() !== '') ? user.name : user.login;
+
+            // Initiales
+            if (this.username.includes(' ')) {
+                const parts = this.username.split(' ');
+                this.initials = (parts[0][0] || '') + (parts[1][0] || '');
+            } else {
+                this.initials = this.username.slice(0, 2);
+            }
+            this.initials = this.initials.toUpperCase();
+
+            // Role (To improve)
+            this.roleText = user.isAdmin ? 'Administrator' : 'Automatician';
         }
     }
 }
 
+/*function refreshHistoryMenu() {
+
+    var lastExecutions= [];
+    var lastCampaigns= [];
+    var lastTests= [];
+
+        // Testcases
+    let testcases = JSON.parse(localStorage.getItem("historyTestcases") || "[]").reverse();
+    lastTests = testcases.map(item => ({
+        name: item.test + " " + item.testcase,
+        description: item.description || "",
+        href: "TestCaseScript.jsp?test=" + encodeURIComponent(item.test) + "&testcase=" + encodeURIComponent(item.testcase)
+    }));
+
+    // Executions
+    let executions = JSON.parse(localStorage.getItem("historyExecutions") || "[]").reverse();
+    lastExecutions = executions.map(item => ({
+        id: item.id,
+        status: item.controlStatus,
+        description: (item.test + " " + item.testcase + " | " + item.country + " " + item.environment + " " + item.robot) +
+            (item.description ? " | " + item.description : ""),
+        href: "TestCaseExecution.jsp?executionId=" + item.id
+    }));
+
+    // Campaigns
+    let campaigns = JSON.parse(localStorage.getItem("historyCampaigns") || "[]").reverse();
+    lastCampaigns = campaigns.map(item => ({
+        tag: item.tag,
+        href: "ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(item.tag)
+    }));
+}*/
 
 /**
  * CHANGE SYSTEM (WORKSPACE)

@@ -729,139 +729,160 @@
          x-data="userMenu()" @click.outside="close()">
 
         <!-- Avatar / bouton user -->
-        <div @click="toggleOpen()"
-             class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors">
-            <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
-                <span class="text-white font-semibold text-sm">BC</span>
-            </div>
-            <div x-show="$store.sidebar.expanded">
-                <p class="text-sm font-medium" x-text="username">Benoit Civel</p>
-                <p class="text-xs text-slate-400">Administrateur</p>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto transition-transform duration-200"
-                 :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                 x-show="$store.sidebar.expanded">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
+        <div @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors"
+                 x-ref="userBtn">
+                <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm" x-text="initials"></span>
+                </div>
+                <div x-show="$store.sidebar.expanded">
+                    <p class="text-sm font-medium" x-text="username"></p>
+                    <p class="text-xs text-slate-400" x-text="roleText"></p>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto transition-transform duration-200"
+                     :class="userMenuOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                     x-show="$store.sidebar.expanded">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
         </div>
 
-        <!-- Dropdown -->
-        <div x-show="open" x-transition.opacity.duration.200ms
-             class="absolute bottom-14 right-0 mb-2 w-72 rounded-md border border-slate-600 bg-slate-800 shadow-lg z-50 overflow-auto max-h-96">
+        <!-- Dropdown téléporté dans le body -->
+        <template x-teleport="body">
+            <div x-show="userMenuOpen"
+                 x-transition.opacity.duration.200ms
+                 x-ref="dropdown"
+                 class="fixed w-72 h-[400px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
+                 :style="`left: ${$refs.userBtn.getBoundingClientRect().left}px; top: ${$refs.userBtn.getBoundingClientRect().top - $refs.dropdown.offsetHeight}px;`"
+                 @click.outside="if(!$refs.dropdown.contains($event.target)) userMenuOpen = false">
 
-            <ul class="py-2 text-sm space-y-1">
+                <ul class="py-2 text-sm space-y-1 px-2">
 
-                <!-- Logout -->
-                <li x-show="logoutHref" x-transition>
-                    <a :href="logoutHref"
-                       class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
-                        --> Logout
-                    </a>
-                </li>
+                    <!-- Logout -->
+                    <li x-show="logoutHref" x-transition>
+                        <a :href="logoutHref"
+                           class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
+                            --> Logout
+                        </a>
+                    </li>
 
-                <!-- Theme Switch -->
-                <li class="px-4 py-2">
-                    <span class="block mb-1 text-gray-300 text-sm">Thème</span>
-                    <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+                    <!-- Theme Switch -->
+                    <li class="px-4 py-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-300 text-sm">Thème</span>
+                            <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+                                <button
+                                        @click.stop="applyTheme('light')"
+                                        :class="{
+                    'bg-slate-300 text-slate-800': $store.user.theme === 'light',
+                    'bg-slate-600 text-gray-300': $store.user.theme !== 'light'
+                }"
+                                        class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                        aria-label="Light Theme"
+                                >
+                                    <!-- Icône Soleil (Lucide) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="w-5 h-5"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor"
+                                         stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" />
+                                    </svg>
+                                </button>
+                                <button
+                                        @click.stop="applyTheme('dark')"
+                                        :class="{
+                    'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
+                    'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'
+                }"
+                                        class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                        aria-label="Dark Theme"
+                                >
+                                    <!-- Icône Lune (Lucide) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="w-5 h-5"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor"
+                                         stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
 
-                        <!-- Light Theme -->
-                        <button
-                                @click="applyTheme('light')"
-                                :class="{
-        'bg-slate-300 text-slate-800': $store.user.theme === 'light',
-        'bg-slate-600 text-gray-300': $store.user.theme !== 'light'
-    }"
-                                class="p-2 rounded-full transition-colors flex items-center justify-center"
-                                aria-label="Light Theme"
-                        >
-                            <!-- Sun Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="h-5 w-5 text-current"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.36 5.36l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728l-.707-.707M6.343 17.657l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z" />
-                            </svg>
-                        </button>
+                    <!-- Language -->
+                    <li class="px-4 py-2 flex items-center justify-between">
+                        <span>Langue</span>
+                        <select x-model="$store.user.language" @change="changeLanguage($store.user.language)" class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
+                            <option value="fr">FR</option>
+                            <option value="en">EN</option>
+                        </select>
+                    </li>
 
-                        <!-- Dark Theme -->
-                        <button
-                                @click="applyTheme('dark')"
-                                :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
-                                        'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'
-                                    }"
-                                class="p-2 rounded-full transition-colors flex items-center justify-center"
-                                aria-label="Dark Theme"
-                        >
-                            <!-- Moon Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="h-5 w-5 text-current"
-                                 fill="currentColor"
-                                 viewBox="0 0 20 20">
-                                <path d="M17.293 13.293a8 8 0 01-10.586-10.586 8 8 0 1010.586 10.586z" />
-                            </svg>
-                        </button>
+                    <hr class="border-slate-700 my-1">
+
+                    <!-- History: Testcases, Executions, Campaigns -->
+                    <div x-data="{ lastTests: [], lastExecutions: [], lastCampaigns: [] }" x-init="
+                lastTests = JSON.parse(localStorage.getItem('historyTestcases')||'[]').reverse().map(item=>({
+                    name: item.test + ' ' + item.testcase,
+                    description: item.description||'',
+                    href: 'TestCaseScript.jsp?test=' + encodeURIComponent(item.test) + '&testcase=' + encodeURIComponent(item.testcase)
+                }));
+                lastExecutions = JSON.parse(localStorage.getItem('historyExecutions')||'[]').reverse().map(item=>({
+                    id: item.id,
+                    status: item.controlStatus,
+                    description: (item.test + ' ' + item.testcase + ' | ' + item.country + ' ' + item.environment + ' ' + item.robot) + (item.description ? ' | '+item.description:''),
+                    href: 'TestCaseExecution.jsp?executionId=' + item.id
+                }));
+                lastCampaigns = JSON.parse(localStorage.getItem('historyCampaigns')||'[]').reverse().map(item=>({
+                    tag: item.tag,
+                    href: 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(item.tag)
+                }));
+            ">
+
+                        <!-- Last Testcases -->
+                        <template x-if="lastTests.length>0">
+                            <li class="px-4 py-2 font-semibold text-slate-400">Derniers cas de test</li>
+                        </template>
+                        <template x-for="test in lastTests" :key="test.href">
+                            <li>
+                                <a :href="test.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
+                                    <span x-text="test.name"></span>
+                                    <div x-show="test.description" class="text-xs text-slate-400" x-text="test.description"></div>
+                                </a>
+                            </li>
+                        </template>
+
+                        <!-- Last Executions -->
+                        <template x-if="lastExecutions.length>0">
+                            <li class="px-4 py-2 font-semibold text-slate-400">Dernières exécutions</li>
+                        </template>
+                        <template x-for="exec in lastExecutions" :key="exec.href">
+                            <li>
+                                <a :href="exec.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
+                                    <span x-text="exec.id"></span>
+                                    <div class="text-xs text-slate-400" x-text="exec.description"></div>
+                                </a>
+                            </li>
+                        </template>
+
+                        <!-- Last Campaigns -->
+                        <template x-if="lastCampaigns.length>0">
+                            <li class="px-4 py-2 font-semibold text-slate-400">Dernières campagnes</li>
+                        </template>
+                        <template x-for="camp in lastCampaigns" :key="camp.href">
+                            <li>
+                                <a :href="camp.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors" x-text="camp.tag"></a>
+                            </li>
+                        </template>
 
                     </div>
-                </li>
-
-                <!-- Language -->
-                <li class="px-4 py-2 flex items-center justify-between">
-                    <span>Langue</span>
-                    <select x-model="$store.user.language" @change="changeLanguage($store.user.language)"
-                            class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
-                        <option value="fr">FR</option>
-                        <option value="en">EN</option>
-                    </select>
-                </li>
-
-                <hr class="border-slate-700 my-1">
-
-                <!-- Last Testcases -->
-                <template x-if="lastTests.length > 0">
-                    <li class="px-4 py-2 font-semibold text-slate-400">Derniers cas de test</li>
-                </template>
-                <template x-for="test in lastTests" :key="test.href">
-                    <li>
-                        <a :href="test.href"
-                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
-                            <span x-text="test.name"></span>
-                            <div x-show="test.description" class="text-xs text-slate-400" x-text="test.description"></div>
-                        </a>
-                    </li>
-                </template>
-
-                <!-- Last Executions -->
-                <template x-if="lastExecutions.length > 0">
-                    <li class="px-4 py-2 font-semibold text-slate-400">Dernières exécutions</li>
-                </template>
-                <template x-for="exec in lastExecutions" :key="exec.href">
-                    <li>
-                        <a :href="exec.href"
-                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
-                            <span x-text="exec.id"></span>
-                            <div class="text-xs text-slate-400" x-text="exec.description"></div>
-                        </a>
-                    </li>
-                </template>
-
-                <!-- Last Campaigns -->
-                <template x-if="lastCampaigns.length > 0">
-                    <li class="px-4 py-2 font-semibold text-slate-400">Dernières campagnes</li>
-                </template>
-                <template x-for="camp in lastCampaigns" :key="camp.href">
-                    <li>
-                        <a :href="camp.href"
-                           class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors"
-                           x-text="camp.tag"></a>
-                    </li>
-                </template>
-
-            </ul>
-        </div>
+                </ul>
+            </div>
+        </template>
     </div>
 </aside>
 <div class="hidden ml-72 ml-20 w-72 w-20 dark:text-white"></div>

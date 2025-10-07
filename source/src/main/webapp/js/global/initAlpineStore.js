@@ -153,12 +153,15 @@ function mountDropdown(el, props) {
 };
 
 document.addEventListener('alpine:initialized', () => {
-    // Le DOM et les stores sont prêts
     lucide.createIcons();
 });
 
 document.addEventListener("alpine:mutated", () => {
     lucide.createIcons();
+});
+
+document.addEventListener('alpine:initialized', () => {
+    document.body.classList.add('alpine-ready');
 });
 
 document.addEventListener('DOMContentLoaded', () => {

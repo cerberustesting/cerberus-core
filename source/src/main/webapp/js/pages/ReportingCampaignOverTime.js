@@ -37,7 +37,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         initPage();
         bindToggleCollapse();
         //open Run navbar Menu
-        openNavbarMenu("navMenuExecutionReporting");
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}

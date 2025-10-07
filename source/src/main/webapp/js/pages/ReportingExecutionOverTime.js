@@ -41,7 +41,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var urlTest = GetURLParameter('Test');
         var urlTestCase = GetURLParameter('TestCase');
         //open Run navbar Menu
-        openNavbarMenu("navMenuExecutionReporting");
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}

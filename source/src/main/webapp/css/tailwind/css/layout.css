@@ -18,6 +18,14 @@
 
 
 /* ===========================
+    HTML
+=========================== */
+   html{
+       @apply h-full !text-base
+   }
+
+
+/* ===========================
     Body
 =========================== */
     .crb_body {
@@ -30,8 +38,12 @@
 =========================== */
     .crb_main {
         color: var(--crb-black-color);
-        @apply flex-1 p-6  overflow-auto transition-all duration-500 ease-in-out
+        @apply flex-1 p-6 overflow-auto;
     }
+
+  /*  body.alpine-ready .crb_main {
+        @apply transition-all duration-500 ease-in-out;
+    }*/
 
     .crb_main_sidebar-expanded{
         @apply ml-72;

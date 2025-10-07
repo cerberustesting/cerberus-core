@@ -137,8 +137,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#countryList input").prop('checked', false);
         });
 
-        //open Run navbar Menu
-        openNavbarMenu("navMenuRun");
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',

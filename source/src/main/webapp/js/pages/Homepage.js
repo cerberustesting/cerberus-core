@@ -786,6 +786,7 @@ function refreshTagList(tagList1, reportArea) {
          class="tagDetail relative cursor-pointer px-3 py-1 rounded-full text-xs font-light flex-shrink-0 ${cssClass}"
          data-tag="${encodedTag}"
          data-tooltip-content='${tooltipContent}'
+         <div onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}';"
     >
         ${rawTagName}
     </div>

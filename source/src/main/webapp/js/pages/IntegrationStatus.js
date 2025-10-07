@@ -38,8 +38,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         //Loading history deploy table
         loadHistoTable();
 
-        //open Run navbar Menu
-        openNavbarMenu("navMenuIntegration");
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',

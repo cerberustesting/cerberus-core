@@ -21,7 +21,7 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html class="h-full">
+<html class="crb_html">
     <head>
         <meta name="active-menu" content="application">
         <meta name="active-submenu" content="ApplicationList.jsp">
@@ -33,7 +33,7 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <main class="crb_main" :class="$store.sidebar.expanded ? 'ml-72' : 'ml-20'">
         <div>
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>

@@ -163,8 +163,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             selector: '[data-toggle="tooltip"]'
         });
 
-        //open Run navbar Menu
-        openNavbarMenu("navMenuExecutionReporting");
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
@@ -421,7 +419,7 @@ function loadReportingData(selectTag) {
 
             // Save history entries
             saveHistory(getHistoryCampaign(data.tagObject), "historyCampaigns", 5);
-            refreshHistoryMenu();
+            //refreshHistoryMenu();
 
             // Tag Detail feed.
             $("#startExe").val(getDate(data.tagObject.DateStartExe));

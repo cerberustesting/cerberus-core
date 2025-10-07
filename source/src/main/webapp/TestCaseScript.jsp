@@ -62,11 +62,11 @@
             <%@ include file="include/utils/modal-generic.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
-            <div class="panel no-border" style="margin-top: 10px;">
-                <div style="min-height:150px;background-color:var(--crb-white-color)">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:var(--crb-white-color)">
-                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: var(--crb-white-color);border: 1px solid var(--crb-white-color);" id="testCaseTitle">
-                            <div class="" style="width:100%">
+            <div>
+                <div>
+                    <div id="divPanelDefault">
+                        <div class="crb_card sticky top-0 z-50" id="testCaseTitle">
+                            <div>
                                 <div class="col-lg-5" style="padding: 0px;">
                                     <div class="row">
                                         <div class="testTestCase col-lg-8 col-xs-6" style="margin-top:4px; margin-bottom: 4px;">
@@ -119,108 +119,127 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div style="height:60px; background-color: var(--crb-white-color); padding-top:20px">
-                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                                <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" class="tabSteps" name="tabSteps">Steps</a></li>
-                                <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" class="tabSteps"  name="tabProperties">Properties</a></li>
-                                <li><a data-toggle="tab" href="#tabInheritedProperties" id="editTabInheritedProperties" class="tabSteps"  name="tabInheritedProperties">InheritedProperties</a></li>
-                                <!--                                <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>-->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-body" id="tcBody" style="display:none;background-color:var(--crb-white-color)">
-                    <div class="tab-content">
-                        <div class="center tab-pane fade in active" id="tabSteps">
-                            <nav class="col-lg-4 col-md-12" id="nav-execution" style="z-index:1;padding-left: 0px;">
-                                <div id="list-wrapper" style="top:107px;">
-                                    <div id="stepsWrapper">
-                                        <!--<h4>Steps</h4>-->
-                                        <ul class="list-group step-list side-item nav nav-pills" id="steps" style="max-height: 600px;overflow-y: auto"></ul>
-                                    </div>
-                                    <div id="tcButton">
-                                        <!--<h4>Actions</h4>-->
-                                        <button class="btn btn-block btnLightTurquoise marginTop25 marginBottom20" id="addStep" disabled>Add Step</button>
-                                        <!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
-                                    </div>
-                                </div>
-                            </nav>
-                            <div class="col-lg-8 col-md-12" id="contentWrapper" style="padding-left: 30px;border-left: 1px solid rgb(39,188,253);">
-                                <div id="stepHeader" style="margin-bottom: 15px; display:none;">
-                                    <div class="row step">
-                                        <div class="content col-lg-10">
-                                            <div class="fieldRow row" id="UseStepRow" style="display: none;">
-                                            </div>
-                                            <div style="margin-top:15px;" class="input-group marginBottom20">
-                                                <span class="input-group-addon" style="font-weight: 700;border-radius:4px;border:1px solid #ccc" id="stepId"></span>
-                                                <input aria-describedby="stepId" class="description form-control crb-autocomplete-variable" id="stepDescription" placeholder="Step" style="border: 0px;width: 100%; font-size: 20px;">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-2" style="padding: 0px;">
-                                            <div class="fieldRow row" id="UseStepRowButton" style="display: none; color: transparent;">
-
-                                            </div>
-                                            <div style="margin-right: auto; margin-left: auto; margin-top: 15px;" id="stepButtons">
-                                                <button class="btn btn-default btn-dark" title="Is Use Step" data-toggle="tooltip" id="isUseStep" style="display: none;">
-                                                    <span class="glyphicon glyphicon-lock"></span>
-                                                </button>
-                                                <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">
-                                                    <span class="glyphicon glyphicon-book"></span>
-                                                </button>
-                                                <button class="btn add-btn btnLightOrange" id="stepPlus">
-                                                    <span class="glyphicon glyphicon-cog"></span>
-                                                </button>
-                                                <button class="btn add-btn btnLightRed" id="deleteStep" disabled>
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="actionContainer"></div>
-                                <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
-                                    <button id="addActionBottom" class="btn btn-block btnLightBlue" disabled onclick="addActionFromBottomButton()">Add Action</button>
-                                </div>
+                        <div x-data="{ tab: 'steps' }" class="w-full">
+                            <!-- Tabs -->
+                            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                                <!-- Steps -->
+                                <button @click="tab = 'steps'"
+                                        :class="tab === 'steps' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="users" class="w-4 h-4"></i>Steps
+                                </button>
+                                <!-- Properties -->
+                                <button @click="tab = 'properties'"
+                                        :class="tab === 'properties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>Properties
+                                </button>
+                                <!-- Inherited Properties -->
+                                <button @click="tab = 'inhetitedproperties'"
+                                        :class="tab === 'inhetitedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>Inherited Properties
+                                </button>
                             </div>
-                        </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabProperties">
-                            <nav class="col-lg-3" id="nav-property" style="z-index:1;">
-                                <div id="list-wrapper-prop" style="top:107px;">
-                                    <div id="propListWrapper">
-                                        <ul class="list-group property-list side-item nav nav-pills" id="propList" style="max-height: 600px;overflow-y: auto"></ul>
-                                    </div>
-                                    <div id="propButton">
-                                        <button class="btn btn-warning btn-block marginTop25" id="addProperty">Add Property</button>
-                                    </div>
-                                </div>
-                            </nav>
-                            <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
-                                <div id="propertiesModal">
-                                    <div class="property-table">
-                                        <div class="" id="propPanelWrapper">
-                                            <nav class="nav nav-pills nav-stacked" id="propertiesPanel">
-                                                <div id="propTable" class="list-group">
+                            <!-- Steps -->
+                            <div x-show="tab === 'steps'" class="">
+                                <div id="tabSteps">
+                                    <nav class="col-lg-4 col-md-12" id="nav-execution">
+                                        <div id="list-wrapper" style="top:107px;">
+                                            <div id="stepsWrapper">
+                                                <!--<h4>Steps</h4>-->
+                                                <ul class="list-group step-list side-item nav nav-pills" id="steps" style="max-height: 600px;overflow-y: auto"></ul>
+                                            </div>
+                                            <div id="tcButton">
+                                                <!--<h4>Actions</h4>-->
+                                                <button class="btn btn-block btnLightTurquoise marginTop25 marginBottom20" id="addStep" disabled>Add Step</button>
+                                                <!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
+                                            </div>
+                                        </div>
+                                    </nav>
+                                    <div class="col-lg-8 col-md-12" id="contentWrapper">
+                                        <div id="stepHeader" style="margin-bottom: 15px; display:none;">
+                                            <div class="row step">
+                                                <div class="content col-lg-10">
+                                                    <div class="fieldRow row" id="UseStepRow" style="display: none;">
+                                                    </div>
+                                                    <div style="margin-top:15px;" class="input-group marginBottom20">
+                                                        <span class="input-group-addon" style="font-weight: 700;border-radius:4px;border:1px solid #ccc" id="stepId"></span>
+                                                        <input aria-describedby="stepId" class="description form-control crb-autocomplete-variable" id="stepDescription" placeholder="Step" style="border: 0px;width: 100%; font-size: 20px;">
+                                                    </div>
                                                 </div>
-                                            </nav>
+                                                <div class="col-lg-2" style="padding: 0px;">
+                                                    <div class="fieldRow row" id="UseStepRowButton" style="display: none; color: transparent;">
+
+                                                    </div>
+                                                    <div style="margin-right: auto; margin-left: auto; margin-top: 15px;" id="stepButtons">
+                                                        <button class="btn btn-default btn-dark" title="Is Use Step" data-toggle="tooltip" id="isUseStep" style="display: none;">
+                                                            <span class="glyphicon glyphicon-lock"></span>
+                                                        </button>
+                                                        <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">
+                                                            <span class="glyphicon glyphicon-book"></span>
+                                                        </button>
+                                                        <button class="btn add-btn btnLightOrange" id="stepPlus">
+                                                            <span class="glyphicon glyphicon-cog"></span>
+                                                        </button>
+                                                        <button class="btn add-btn btnLightRed" id="deleteStep" disabled>
+                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="actionContainer"></div>
+                                        <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
+                                            <button id="addActionBottom" class="btn btn-block btnLightBlue" disabled onclick="addActionFromBottomButton()">Add Action</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabInheritedProperties">
-                            <nav class="col-lg-3" id="nav-property" style="z-index:1;">
-                                <div id="list-wrapper-prop" style="top:107px;">
-                                    <div id="inheritPropListWrapper">
-                                        <!--<h4>Steps</h4>-->
-                                        <ul class="list-group property-list side-item nav nav-pills" id="inheritPropList" style="max-height: 600px;overflow-y: auto"></ul>
+                            <!--  Properties -->
+                            <div x-show="tab === 'properties'" class="">
+                                <div id="tabProperties">
+                                    <nav class="col-lg-3" id="nav-property" style="z-index:1;">
+                                        <div id="list-wrapper-prop" style="top:107px;">
+                                            <div id="propListWrapper">
+                                                <ul class="list-group property-list side-item nav nav-pills" id="propList" style="max-height: 600px;overflow-y: auto"></ul>
+                                            </div>
+                                            <div id="propButton">
+                                                <button class="btn btn-warning btn-block marginTop25" id="addProperty">Add Property</button>
+                                            </div>
+                                        </div>
+                                    </nav>
+                                    <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
+                                        <div id="propertiesModal">
+                                            <div class="property-table">
+                                                <div class="" id="propPanelWrapper">
+                                                    <nav class="nav nav-pills nav-stacked" id="propertiesPanel">
+                                                        <div id="propTable" class="list-group">
+                                                        </div>
+                                                    </nav>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </nav>
-                            <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
-                                <div id="propertiesModal">
-                                    <div class="" id="inheritedPropPanelWrapper">
-                                        <div class="panel-body collapse" id="inheritedPropertiesPanel">
-                                            <div id="inheritedPropPanel" class="list-group">
+                            </div><!-- Inherited Properties -->
+                            <div x-show="tab === 'inhetitedproperties'" class="">
+                                <div id="tabInheritedProperties">
+                                    <nav class="col-lg-3" id="nav-property" style="z-index:1;">
+                                        <div id="list-wrapper-prop" style="top:107px;">
+                                            <div id="inheritPropListWrapper">
+                                                <!--<h4>Steps</h4>-->
+                                                <ul class="list-group property-list side-item nav nav-pills" id="inheritPropList" style="max-height: 600px;overflow-y: auto"></ul>
+                                            </div>
+                                        </div>
+                                    </nav>
+                                    <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
+                                        <div id="propertiesModal">
+                                            <div class="" id="inheritedPropPanelWrapper">
+                                                <div class="panel-body collapse" id="inheritedPropertiesPanel">
+                                                    <div id="inheritedPropPanel" class="list-group">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
