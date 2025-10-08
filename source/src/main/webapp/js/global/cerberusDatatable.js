@@ -250,57 +250,86 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
         // Bouton ColVis
         var $colvisButton = $headerwrapper.find(".dt-buttons.btn-group a");
         $colvisButton
-            .addClass("flex items-center gap-2 px-3 py-2 w-full text-left hover:bg-slate-100 hover:dark:bg-slate-800")
+            .addClass("flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition")
             .attr("id", "showHideColumnsButton")
-            .css("display", "none")
             .html(`<i data-lucide="columns" class="w-4 h-4 align-middle"></i><span>${showHideButtonLabel}</span>`);
 
         // Control Panel
         var $controlPanel = $(`
-        <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col gap-2 mb-4">
-            
-            <!-- Ligne 1 : bouton wrapper externe -->
-            <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2"></div>
-            
-            <!-- Ligne 2 : search + refresh + config -->
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2 flex-grow">
-                    <input type="search" id="${tableConfigurations.divId}_globalSearch"
-                           class="flex-grow border rounded px-3 py-2 h-10 border-gray-300 dark:border-gray-600"
-                           placeholder="🔍 ${searchPlaceholder}"
-                           aria-label="Search DataTable">
-                    <button id="${tableConfigurations.divId}_refresh"
-                            type="button"
-                            class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10"
-                            title="Refresh">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    </button>
+            <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col gap-2 mb-4">
+        
+                <!-- Ligne 1 : bouton wrapper externe -->
+                <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2"></div>
+        
+                <!-- Ligne 2 : search + refresh + config -->
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 flex-grow">
+                        <input type="search" id="${tableConfigurations.divId}_globalSearch"
+                               class="flex-grow border rounded px-3 py-2 h-10 border-gray-300 dark:border-gray-600"
+                               placeholder="🔍 ${searchPlaceholder}"
+                               aria-label="Search DataTable">
+                        <button id="${tableConfigurations.divId}_refresh"
+                                type="button"
+                                class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10"
+                                title="Refresh">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div id="${tableConfigurations.divId}_customInfo"
+                             class="text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap"></div>
+                        <button id="${tableConfigurations.divId}_toggleConfig"
+                                type="button"
+                                class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10 flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4"></i>
+                            <span>Config</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <div id="${tableConfigurations.divId}_customInfo"
-                         class="text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap"></div>
-                    <button id="${tableConfigurations.divId}_toggleConfig"
-                            type="button"
-                            class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10 flex items-center gap-2">
-                        <i data-lucide="sliders" class="w-4 h-4"></i>
-                        <span>Config</span>
-                    </button>
+        
+                <!-- Ligne 3 : filtre avancé -->
+                <div id="${tableConfigurations.divId}_filterresult" class="p-2 flex w-full">
+                    <!-- Contenu filtre plus tard -->
+                </div>
+        
+                <!-- Ligne 4 : boutons config + colonnes + pagination -->
+                <div id="${tableConfigurations.divId}_configPanel" class="hidden flex flex-wrap gap-2 items-center p-2">
+        
+                    <!-- Boutons Save / Load / Reset -->
+                    <div id="${tableConfigurations.divId}_actionButtons" class="flex gap-2">
+                        <button id="${tableConfigurations.divId}_saveTableConfigurationButton"
+                                type="button"
+                                title="${saveTableConfigurationButtonTooltip}"
+                                class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <span>${saveTableConfigurationButtonLabel}</span>
+                        </button>
+        
+                        <button id="${tableConfigurations.divId}_restoreFilterButton"
+                                type="button"
+                                title="${restoreFilterButtonTooltip}"
+                                class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <i data-lucide="folder-open" class="w-4 h-4"></i>
+                            <span>${restoreFilterButtonLabel}</span>
+                        </button>
+        
+                        <button id="${tableConfigurations.divId}_resetFilterButton"
+                                type="button"
+                                title="${resetTableConfigurationButtonTooltip}"
+                                class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                            <span>${resetTableConfigurationButtonLabel}</span>
+                        </button>
+                    </div>
+        
+                    <!-- Conteneur colonnes -->
+                    <div id="${tableConfigurations.divId}_colvisContainer"></div>
+        
+                    <!-- Autres contrôles -->
+                    <div id="${tableConfigurations.divId}_extraControls" class="ml-auto flex gap-4 items-center"></div>
                 </div>
             </div>
-            
-            <!-- Ligne 3 : filtre avancé -->
-            <div id="${tableConfigurations.divId}_filterresult" class="p-2 flex w-full">
-                <!-- Contenu filtre plus tard -->
-            </div>
-            
-            <!-- Ligne 4 : boutons config + colonnes + pagination -->
-            <div id="${tableConfigurations.divId}_configPanel" class="hidden flex flex-wrap gap-2 items-center p-2">
-                <div id="${tableConfigurations.divId}_actionButtons" class="flex gap-2"></div>
-                <div id="${tableConfigurations.divId}_colvisContainer"></div>
-                <div id="${tableConfigurations.divId}_extraControls" class="ml-auto flex gap-4 items-center"></div>
-            </div>
-        </div>
-    `);
+        `);
 
         // Injecter le panneau
         $headerwrapper.append($controlPanel);
@@ -328,6 +357,20 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
         // Toggle panneau config
         $("#" + tableConfigurations.divId + "_toggleConfig").click(function () {
             $("#" + tableConfigurations.divId + "_configPanel").toggleClass("hidden");
+        });
+
+        $("#" + tableConfigurations.divId + "_saveTableConfigurationButton").on("click", function () {
+            updateUserPreferences(objectWaitingLayer);
+        });
+
+        $("#" + tableConfigurations.divId + "_restoreFilterButton").on("click", function () {
+            location.reload();
+        });
+
+        $("#" + tableConfigurations.divId + "_resetFilterButton").on("click", function () {
+            localStorage.removeItem('DataTables_' + tableConfigurations.divId + '_' + location.pathname);
+            updateUserPreferences(objectWaitingLayer);
+            location.reload();
         });
 
         // Mise à jour info

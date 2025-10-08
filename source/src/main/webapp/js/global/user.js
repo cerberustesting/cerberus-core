@@ -50,6 +50,7 @@ function readUserFromDatabase() {
 //            console.info("write user pref to session storage from Cerberus :");
 //            console.info(user);
             sessionStorage.setItem("user", JSON.stringify(user));
+            window.dispatchEvent(new CustomEvent('user-loaded', { detail: user }));
             loadUserPreferences(data);
             return user;
         }

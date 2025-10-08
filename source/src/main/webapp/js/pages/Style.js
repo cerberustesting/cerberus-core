@@ -200,7 +200,7 @@ function initPage() {
     var doc = new Doc();
 
     loadTagSaveButtons();
-    displayHeaderLabel(doc);
+    //displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
     loadCountryFilter();

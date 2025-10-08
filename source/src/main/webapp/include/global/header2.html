@@ -43,17 +43,17 @@
             <!-- Boutons Select All / None -->
             <div x-show="open" class="flex gap-2">
                 <button type="button" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300"
-                        @click="selectAll()">All
+                        id="header_workspaceOpen_selectAll" @click="selectAll()">All
                 </button>
                 <button type="button" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300"
-                        @click="selectNone()">None
+                        id="header_workspaceOpen_selectNone" @click="selectNone()">None
                 </button>
             </div>
         </div>
 
         <!-- Combobox Sidebar Open -->
         <div x-show="$store.sidebar.expanded" x-transition.opacity.duration.200ms class="relative">
-            <button type="button" @click="toggleOpen()"
+            <button id="header_workspaceOpen_showList" type="button" @click="toggleOpen()"
                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
                    bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all">
                 <div class="flex items-center gap-2">
@@ -70,20 +70,32 @@
             <!-- Dropdown Sidebar Open -->
             <div x-show="open" x-transition
                  class="mt-1 w-full rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-50">
+                <!-- Barre de recherche -->
+                <div class="p-2 border-b border-slate-600">
+                    <input type="text" id="header_workspaceOpen_search"
+                           x-model="search"
+                           placeholder="Rechercher..."
+                           class="w-full rounded-md bg-slate-700 text-slate-200 text-sm px-3 py-2
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+                </div>
                 <ul class="py-1 text-sm text-slate-300">
-                    <template x-for="workspace in workspaces" :key="workspace">
+                    <template x-for="workspace in filteredWorkspaces()" :key="workspace">
                         <li>
                             <button type="button"
+                                    :id="'header_workspaceOpen_item_' + workspace.replace(/\s+/g, '_').toLowerCase()"
                                     @click.stop="toggle(workspace)"
                                     class="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-700 transition-colors">
                                 <svg x-show="selected.includes(workspace)" xmlns="http://www.w3.org/2000/svg"
-                                     class="h-3 w-3 text-blue-500" fill="none" stroke="currentColor"
-                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 6 9 17l-5-5"></path>
+                                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span x-text="workspace"></span>
                             </button>
                         </li>
+                    </template>
+                    <template x-if="filteredWorkspaces().length === 0">
+                        <li class="px-3 py-2 text-slate-500 italic">Aucun résultat</li>
                     </template>
                 </ul>
             </div>

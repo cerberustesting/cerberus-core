@@ -32,6 +32,7 @@ function workspaceSelector() {
         open: false,
         selected: [],
         workspaces: [],
+        search: '',
         previousSelected: [],
 
         init() {
@@ -39,6 +40,13 @@ function workspaceSelector() {
             this.workspaces = user.system || [];
             this.selected = user.defaultSystems || [];
             this.previousSelected = [...this.selected];
+
+            window.addEventListener('user-loaded', (event) => {
+                const user = event.detail;
+                this.workspaces = user.system || [];
+                this.selected = user.defaultSystems || [];
+                this.previousSelected = [...this.selected];
+            });
         },
 
         toggleOpen() {
@@ -63,6 +71,13 @@ function workspaceSelector() {
             if (this.selected.length === this.workspaces.length) return 'All selected';
             if (this.selected.length === 1) return this.selected[0];
             return `${this.selected.length} selected`;
+        },
+
+        filteredWorkspaces() {
+            if (!this.search) return this.workspaces
+            return this.workspaces.filter(w =>
+                w.toLowerCase().includes(this.search.toLowerCase())
+            )
         },
 
         close() {
@@ -251,7 +266,7 @@ function ChangeWorkspace(selectedWorkspaces) {
         success: function () {
             user.defaultSystems = [...selectedWorkspaces];
             sessionStorage.setItem("user", JSON.stringify(user));
-
+            window.dispatchEvent(new CustomEvent('user-loaded', { detail: user }));
             location.reload(true);
         },
         error: function (xhr, status, error) {
