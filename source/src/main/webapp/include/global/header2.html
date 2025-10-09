@@ -38,7 +38,7 @@
         <div x-show="$store.sidebar.expanded"
              class="flex items-center justify-between mb-2"
              x-transition.opacity.duration.200ms>
-            <label class="text-xs text-slate-400">Workspace</label>
+            <label class="text-xs text-slate-400" x-text="$store.labels.getLabel('header','workspace')"></label>
 
             <!-- Boutons Select All / None -->
             <div x-show="open" class="flex gap-2">
@@ -618,7 +618,7 @@
                         @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'developer')"
                         @mouseleave="$store.sidebar.leaveMenu('developer')"
                         class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
-                    <i data-lucide="test-tube" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <i data-lucide="code" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
                     <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','dev')"></span>
                     <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
                        :class="$store.sidebar.activeMenu === 'developer' ? 'rotate-90' : ''"
@@ -671,7 +671,7 @@
                         @mouseenter="$store.sidebar.enterMenu($event.currentTarget.getBoundingClientRect(), 'help')"
                         @mouseleave="$store.sidebar.leaveMenu('help')"
                         class="flex items-center w-full gap-4 px-4 py-3 rounded-xl hover:bg-slate-700/50 group transition-all duration-200 relative">
-                    <i data-lucide="test-tube" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                    <i data-lucide="file-question-mark" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
                     <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','help')"></span>
                     <i data-lucide="chevron-right" x-show="$store.sidebar.expanded"
                        :class="$store.sidebar.activeMenu === 'help' ? 'rotate-90' : ''"
@@ -741,7 +741,7 @@
          x-data="userMenu()" @click.outside="close()">
 
         <!-- Avatar / bouton user -->
-        <div @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors"
+        <div id="header_user_button" @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors"
                  x-ref="userBtn">
                 <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
                     <span class="text-white font-semibold text-sm" x-text="initials"></span>
@@ -770,7 +770,7 @@
 
                     <!-- Logout -->
                     <li x-show="logoutHref" x-transition>
-                        <a :href="logoutHref"
+                        <a id="header_user_logout" :href="logoutHref"
                            class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
                             --> Logout
                         </a>
@@ -779,46 +779,29 @@
                     <!-- Theme Switch -->
                     <li class="px-4 py-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-300 text-sm">Thème</span>
+                            <span class="text-gray-300 text-sm" x-text="$store.labels.getLabel('header','theme')"></span>
                             <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
-                                <button
+                                <button id="header_user_themelight_button"
                                         @click.stop="applyTheme('light')"
-                                        :class="{
-                    'bg-slate-300 text-slate-800': $store.user.theme === 'light',
-                    'bg-slate-600 text-gray-300': $store.user.theme !== 'light'
-                }"
+                                        :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'light',
+                                                    'bg-slate-600 text-gray-300': $store.user.theme !== 'light'}"
                                         class="p-2 rounded-full transition-colors flex items-center justify-center"
-                                        aria-label="Light Theme"
-                                >
+                                        aria-label="Light Theme">
                                     <!-- Icône Soleil (Lucide) -->
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                         class="w-5 h-5"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="currentColor"
-                                         stroke-width="2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" />
                                     </svg>
                                 </button>
-                                <button
-                                        @click.stop="applyTheme('dark')"
-                                        :class="{
-                    'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
-                    'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'
-                }"
-                                        class="p-2 rounded-full transition-colors flex items-center justify-center"
-                                        aria-label="Dark Theme"
-                                >
+                                <button id="header_user_themedark_button" @click.stop="applyTheme('dark')"
+                                        :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
+                                                'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'}"
+                                        class="p-2 rounded-full transition-colors flex items-center justify-center" aria-label="Dark Theme">
                                     <!-- Icône Lune (Lucide) -->
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                         class="w-5 h-5"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="currentColor"
-                                         stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
                                     </svg>
                                 </button>
                             </div>
@@ -826,38 +809,43 @@
                     </li>
 
                     <!-- Language -->
-                    <li class="px-4 py-2 flex items-center justify-between">
-                        <span>Langue</span>
-                        <select x-model="$store.user.language" @change="changeLanguage($store.user.language)" class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
-                            <option value="fr">FR</option>
-                            <option value="en">EN</option>
-                        </select>
+                    <li class="px-4 py-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-300 text-sm" x-text="$store.labels.getLabel('header','lang')"></span>
+                            <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+                                <select x-model="$store.user.language" id="header_user_language" @change="changeLanguage($store.user.language)" class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
+                                    <option value="fr">FR</option>
+                                    <option value="en">EN</option>
+                                </select>
+                            </div>
+                        </div>
                     </li>
+
 
                     <hr class="border-slate-700 my-1">
 
                     <!-- History: Testcases, Executions, Campaigns -->
                     <div x-data="{ lastTests: [], lastExecutions: [], lastCampaigns: [] }" x-init="
-                lastTests = JSON.parse(localStorage.getItem('historyTestcases')||'[]').reverse().map(item=>({
-                    name: item.test + ' ' + item.testcase,
-                    description: item.description||'',
-                    href: 'TestCaseScript.jsp?test=' + encodeURIComponent(item.test) + '&testcase=' + encodeURIComponent(item.testcase)
-                }));
-                lastExecutions = JSON.parse(localStorage.getItem('historyExecutions')||'[]').reverse().map(item=>({
-                    id: item.id,
-                    status: item.controlStatus,
-                    description: (item.test + ' ' + item.testcase + ' | ' + item.country + ' ' + item.environment + ' ' + item.robot) + (item.description ? ' | '+item.description:''),
-                    href: 'TestCaseExecution.jsp?executionId=' + item.id
-                }));
-                lastCampaigns = JSON.parse(localStorage.getItem('historyCampaigns')||'[]').reverse().map(item=>({
-                    tag: item.tag,
-                    href: 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(item.tag)
-                }));
-            ">
+                        lastTests = JSON.parse(localStorage.getItem('historyTestcases')||'[]').reverse().map(item=>({
+                            name: item.test + ' ' + item.testcase,
+                            description: item.description||'',
+                            href: 'TestCaseScript.jsp?test=' + encodeURIComponent(item.test) + '&testcase=' + encodeURIComponent(item.testcase)
+                        }));
+                        lastExecutions = JSON.parse(localStorage.getItem('historyExecutions')||'[]').reverse().map(item=>({
+                            id: item.id,
+                            status: item.controlStatus,
+                            description: (item.test + ' ' + item.testcase + ' | ' + item.country + ' ' + item.environment + ' ' + item.robot) + (item.description ? ' | '+item.description:''),
+                            href: 'TestCaseExecution.jsp?executionId=' + item.id
+                        }));
+                        lastCampaigns = JSON.parse(localStorage.getItem('historyCampaigns')||'[]').reverse().map(item=>({
+                            tag: item.tag,
+                            href: 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(item.tag)
+                        }));
+                    ">
 
                         <!-- Last Testcases -->
                         <template x-if="lastTests.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400">Derniers cas de test</li>
+                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lasttestcases')"></li>
                         </template>
                         <template x-for="test in lastTests" :key="test.href">
                             <li>
@@ -870,7 +858,7 @@
 
                         <!-- Last Executions -->
                         <template x-if="lastExecutions.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400">Dernières exécutions</li>
+                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lasttestexecutions')"></li>
                         </template>
                         <template x-for="exec in lastExecutions" :key="exec.href">
                             <li>
@@ -883,7 +871,7 @@
 
                         <!-- Last Campaigns -->
                         <template x-if="lastCampaigns.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400">Dernières campagnes</li>
+                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lastcampaignexecutions')"></li>
                         </template>
                         <template x-for="camp in lastCampaigns" :key="camp.href">
                             <li>

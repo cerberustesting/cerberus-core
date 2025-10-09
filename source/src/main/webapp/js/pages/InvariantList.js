@@ -157,12 +157,12 @@ function aoColumnsFuncPublic(tableId) {
             "bSearchable": false,
             "className": "w-[30px] text-center", // largeur fixée côté table
             "title": doc.getDocLabel("page_invariant", "button_col"),
-            "mRender": function (data, type, obj) {
+            "render": function (data, type, obj, meta) {
                 var newValue = escapeHtml(obj["value"]);
-                var uid = "menu-" + obj["idName"]; // identifiant unique
+                var row = "row_" + meta.row;
 
                 return `
-            <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null }" class="inline-block">
+            <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null, row: '${row}' }" class="inline-block">
                 
                 <!-- Bouton "…" -->
                 <button @mouseenter="
@@ -175,6 +175,7 @@ function aoColumnsFuncPublic(tableId) {
                             };
                         "
                         @mouseleave="timer = setTimeout(() => open = false, 200)"
+                        :id="'invariant_action_' + row"
                         class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
                     <i data-lucide="ellipsis" class="w-4 h-4"></i>
                 </button>
@@ -186,22 +187,25 @@ function aoColumnsFuncPublic(tableId) {
                          @mouseenter="clearTimeout(timer); open=true"
                          @mouseleave="open=false"
                          x-init="$nextTick(() => { if (window.lucide) lucide.createIcons(); })"
-                         class="absolute z-50 w-44 bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
+                         class="absolute z-50 w-44 bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 dark:text-slate-50 text-slate-900 rounded-lg shadow-lg"
                          :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             :id="'invariant_action_edit_' + row"
                              onclick="openModalInvariant('${obj["idName"]}','${newValue}','EDIT')">
                             <i data-lucide="pencil" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_edit")}
                         </div>
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             :id="'invariant_action_duplicate_' + row"
                              onclick="openModalInvariant('${obj["idName"]}','${newValue}','DUPLICATE')">
                             <i data-lucide="copy" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_duplicate")}
                         </div>
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                             :id="'invariant_action_remove_' + row"
                              onclick="removeEntryClick('${obj["idName"]}','${obj["value"]}')">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_remove")}

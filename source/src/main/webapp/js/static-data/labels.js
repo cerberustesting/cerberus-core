@@ -20,6 +20,7 @@
 
 
 const headerLabel = {
+    "workspace": { "en": "Workspace", "fr": "Espace de travail" },
     // === Section Test ===
     "test": { "en": "Test", "fr": "Test" },
     "createtestcase": { "en": "Create TestCase", "fr": "Création de TestCase" },
@@ -84,6 +85,14 @@ const headerLabel = {
     "documentationd2": { "en": "Administrator Documentation", "fr": "Documentation Administrateur" },
     "documentationd3": { "en": "Usecase Documentation", "fr": "Documentation Cas d’Usage" },
     "interactivetuto": { "en": "Interactive Tutorial", "fr": "Tutoriel Interactif" },
+
+    // === Section User ===
+    "theme": {"en": "Theme", "fr":"Thème"},
+    "lang": {"en": "Language", "fr":"Langue"},
+    "lasttestcases": {"en":"Last seen Testcases","fr":"Derniers cas de test vus"},
+    "lasttestexecutions": {"en":"Last seen Test Execution","fr":"Dernières exécutions vues"},
+    "lastcampaignexecutions": {"en":"Last seen Campaigns","fr":"Dernières campagnes vues"}
+
 };
 
 const headerNewLabel = {
@@ -137,8 +146,8 @@ const headerNewLabel = {
 };
 
 const pageInvariantLabel = {
-    "title":{"en": "Invariant", "fr":"Invariants"},
-    "subtitle":{"en": "Manage the application’s constants and fixed elements.", "fr":"Gérer les constantes et éléments fixes de l’application."},
+    title:{en:"Invariant",fr:"Invariants"},
+    subtitle:{en: "Manage the application’s constants and fixed elements.",fr:"Gérer les constantes et éléments fixes de l’application."},
 }
 
 window.headerLabel = headerLabel;

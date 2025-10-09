@@ -61,7 +61,7 @@
 <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
     <div>
         <%@ include file="include/global/messagesArea.html" %>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 sm:grid-cols-2 gap-6">
             <div class="crb_card" id="sc1">
                     <span class="flex items-center font-medium text-lg mb-2">
                         <i class="fa fa-windows mr-2 text-blue-600"></i>
@@ -92,7 +92,7 @@
                 </a>
                 <p class="text-xs font-medium mt-0">configured services</p>
             </div>
-            <div class="col-span-2 crb_card" id="sc4">
+            <div class="md:col-span-2 crb_card" id="sc4">
                 <div id="hp_TestExecutionNumberParent">
                         <span class="flex items-center font-medium text-lg mb-2">
                         <i class="fa fa-youtube-play mr-2 text-blue-600"></i>
