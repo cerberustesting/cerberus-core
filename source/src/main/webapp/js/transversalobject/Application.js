@@ -130,12 +130,9 @@ function editApplicationClick(application) {
     clearResponseMessage($('#editApplicationModal'));
 
     // When editing the execution queue, we can modify, modify and run or cancel.
-    $('#editApplicationButton').attr('class', 'btn btn-primary');
-    $('#editApplicationButton').removeProp('hidden');
-    $('#duplicateApplicationButton').attr('class', '');
-    $('#duplicateApplicationButton').attr('hidden', 'hidden');
-    $('#addApplicationButton').attr('class', '');
-    $('#addApplicationButton').attr('hidden', 'hidden');
+    $('#editApplicationButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedApplicationModal(application, "EDIT");
 }
@@ -149,12 +146,9 @@ function duplicateApplicationClick(application) {
 
     clearResponseMessage($('#editApplicationModal'));
 
-    $('#editApplicationButton').attr('class', '');
-    $('#editApplicationButton').attr('hidden', 'hidden');
-    $('#duplicateApplicationButton').attr('class', 'btn btn-primary');
-    $('#duplicateApplicationButton').removeProp('hidden');
-    $('#addApplicationButton').attr('class', '');
-    $('#addApplicationButton').attr('hidden', 'hidden');
+    $('#duplicateApplicationButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedApplicationModal(application, "DUPLICATE");
 }
@@ -168,12 +162,9 @@ function addApplicationClick(application) {
 
     clearResponseMessage($('#editApplicationModal'));
 
-    $('#editApplicationButton').attr('class', '');
-    $('#editApplicationButton').attr('hidden', 'hidden');
-    $('#addApplicationButton').attr('class', 'btn btn-primary');
-    $('#addApplicationButton').removeProp('hidden');
-    $('#duplicateApplicationButton').attr('class', '');
-    $('#duplicateApplicationButton').attr('hidden', 'hidden');
+    $('#addApplicationButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedApplicationModal(application, "ADD");
 }

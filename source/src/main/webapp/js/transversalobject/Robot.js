@@ -176,15 +176,9 @@ function editRobotClick(robot) {
 
     clearResponseMessage($('#editRobotModal'));
 
-    // When editing the execution queue, we can modify, modify and run or cancel.
-    $('#editRobotButton').attr('class', 'btn btn-primary');
-    $('#editRobotButton').removeProp('hidden');
-
-    // We cannot duplicate.
-    $('#duplicateRobotButton').attr('class', '');
-    $('#duplicateRobotButton').attr('hidden', 'hidden');
-    $('#addRobotButton').attr('class', '');
-    $('#addRobotButton').attr('hidden', 'hidden');
+    $('#editRobotButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editRobotModalForm select[name="idname"]').off("change");
     $('#editRobotModalForm select[name="idname"]').change(function () {
@@ -206,12 +200,9 @@ function duplicateRobotClick(robot) {
 
     clearResponseMessage($('#editExecutionQueueModal'));
 
-    $('#editRobotButton').attr('class', '');
-    $('#editRobotButton').attr('hidden', 'hidden');
-    $('#duplicateRobotButton').attr('class', 'btn btn-primary');
-    $('#duplicateRobotButton').removeProp('hidden');
-    $('#addRobotButton').attr('class', '');
-    $('#addRobotButton').attr('hidden', 'hidden');
+    $('#duplicateRobotButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#editRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editRobotModalForm select[name="idname"]').off("change");
     $('#editRobotModalForm input[name="value"]').off("change");
@@ -228,12 +219,9 @@ function addRobotClick(robot) {
 
     clearResponseMessage($('#editExecutionQueueModal'));
 
-    $('#editRobotButton').attr('class', '');
-    $('#editRobotButton').attr('hidden', 'hidden');
-    $('#addRobotButton').attr('class', 'btn btn-primary');
-    $('#addRobotButton').removeProp('hidden');
-    $('#duplicateRobotButton').attr('class', '');
-    $('#duplicateRobotButton').attr('hidden', 'hidden');
+    $('#addRobotButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#editRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editRobotModalForm select[name="idname"]').off("change");
     $('#editRobotModalForm input[name="value"]').off("change");

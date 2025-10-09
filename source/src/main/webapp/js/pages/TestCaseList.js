@@ -906,13 +906,13 @@ function aoColumnsFunc(countries, tableId) {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
             "sWidth": "30px",
-            "mRender": function (data, type, obj) {
+            "render": function (data, type, obj, meta) {
                 var newTest = escapeHtml(obj["test"]);
                 var newTestCase = escapeHtml(obj["testcase"]);
-                var uid = "menu-" + obj["testcase"]; // identifiant unique
+                var row = "row_" + meta.row;
 
                 return `
-        <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null }" class="inline-block">
+        <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null, row: '${row}' }" class="inline-block">
             
             <!-- Bouton "…" -->
             <button @mouseenter="
@@ -925,6 +925,7 @@ function aoColumnsFunc(countries, tableId) {
                         };
                     "
                     @mouseleave="timer = setTimeout(() => open = false, 200)"
+                    :id="'testcase_action_' + row"
                     class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
                 <i data-lucide="ellipsis" class="w-4 h-4"></i>
             </button>
@@ -939,56 +940,54 @@ function aoColumnsFunc(countries, tableId) {
                      class="absolute z-50 w-60 bg-slate-50 dark:bg-slate-900 border dark:text-slate-50 text-slate-900 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
                      :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
 
-                    ${data.hasPermissionsUpdate ? `
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                         onclick="openModalTestCase('${newTest}','${newTestCase}','EDIT')">
-                        <i data-lucide="pencil" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_edit")}
-                    </div>` : `
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                         onclick="openModalTestCase('${newTest}','${newTestCase}','EDIT')">
-                        <i data-lucide="eye" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_view")}
-                    </div>`}
+                    <div class="px-3 py-2 flex items-center gap-2 
+                         ${data.hasPermissionsUpdate ? 'hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
+                         id="testcase_action_editheader_${row}"
+                         onclick="openModalTestCase('${newTest}','${newTestCase}','${data.hasPermissionsUpdate ? 'EDIT' : 'VIEW'}')">
+                        <i data-lucide="${data.hasPermissionsUpdate ? 'pencil' : 'eye'}" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", data.hasPermissionsUpdate ? "btn_edit" : "btn_view")}
+                    </div>
 
                     <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         id="testcase_action_duplicate_${row}"
                          onclick="openModalTestCase('${newTest}','${newTestCase}','DUPLICATE')">
                         <i data-lucide="copy" class="w-4 h-4"></i>
                         ${doc.getDocLabel("page_testcaselist", "btn_duplicate")}
                     </div>
 
-                    ${data.hasPermissionsUpdate ? `
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-                        <a href="./ExportTestCase?test=${encodeURIComponent(obj["test"])}&testcase=${encodeURIComponent(obj["testcase"])}">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                            ${doc.getDocLabel("page_testcaselist", "btn_export")}
-                        </a>
-                    </div>` : ''}
+                    <div class="px-3 py-2 flex items-center gap-2 
+                        ${data.hasPermissionsUpdate ? 'hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
+                        id="testcase_action_export_${row}"
+                        ${data.hasPermissionsUpdate ? `onclick="window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'"` : ''}>
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_export")}
+                    </div>
 
-                    ${data.hasPermissionsDelete ? `
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 text-red-600 dark:hover:bg-gray-800 cursor-pointer"
-                         onclick="deleteEntryClick('${newTest}','${newTestCase}')">
+                    <div class="px-3 py-2 flex items-center gap-2 
+                        ${data.hasPermissionsDelete ? 'hover:bg-gray-100 text-red-600 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
+                         id="testcase_action_delete_${row}"
+                         ${data.hasPermissionsDelete ? `onclick="deleteEntryClick('${newTest}','${newTestCase}')"` : ''}>
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                         ${doc.getDocLabel("page_testcaselist", "btn_delete")}
-                    </div>` : ''}
+                    </div>
 
                     <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                         :id="'testcase_action_runtest_' + row"
                          onclick="openModalExecutionSimple('${data.application}','${newTest}','${newTestCase}','${data.description}')">
                         <i data-lucide="play" class="w-4 h-4"></i>
                         ${doc.getDocLabel("page_testcaselist", "btn_runTest")}
                     </div>
 
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-                        <a href="./TestCaseScript.jsp?test=${encodeURIComponent(obj["test"])}&testcase=${encodeURIComponent(obj["testcase"])}">
-                            <i data-lucide="file-text" class="w-4 h-4"></i>
-                            ${doc.getDocLabel("page_testcaselist", "btn_editScript")}
-                        </a>
+                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                        :id="'testcase_action_editscript_' + row"
+                        onclick="window.location.href='./TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                        ${doc.getDocLabel("page_testcaselist", "btn_editScript")}
                     </div>
 
                 </div>
             </template>
-        </div>
-        `;
+        </div>`;
             }
         }
         ,

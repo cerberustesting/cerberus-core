@@ -78,11 +78,9 @@ function editApplicationObjectClick(applicationObject, value) {
 
     clearResponseMessage($('#editApplicationObjectModal'));
 
-    $('#editApplicationObjectButton').attr('class', 'btn btn-primary');
-    $('#editApplicationObjectButton').removeProp('hidden');
+    $('#editApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addApplicationObjectButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
-    $('#addApplicationObjectButton').attr('class', '');
-    $('#addApplicationObjectButton').attr('hidden', 'hidden');
 
     $('#editApplicationObjectModalForm select[name="idname"]').off("change");
     $('#editApplicationObjectModalForm input[name="value"]').off("change");
@@ -96,11 +94,8 @@ function addApplicationObjectClick(applicationObject, value) {
 
     clearResponseMessage($('#editApplicationObjectModal'));
 
-    $('#editApplicationObjectButton').attr('class', '');
-    $('#editApplicationObjectButton').attr('hidden', 'hidden');
-
-    $('#addApplicationObjectButton').attr('class', 'btn btn-primary');
-    $('#addApplicationObjectButton').removeProp('hidden');
+    $('#addApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editApplicationObjectButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editApplicationObjectModalForm select[name="idname"]').off("change");
     $('#editApplicationObjectModalForm input[name="value"]').off("change");

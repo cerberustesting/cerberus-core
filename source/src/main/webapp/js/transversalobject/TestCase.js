@@ -287,13 +287,9 @@ function editTestCaseClick(test, testCase) {
         confirmTestCaseModalHandler("EDIT");
     });
 
-    $('#editTestCaseButton').attr('class', 'btn btn-primary');
-    $('#editTestCaseButton').removeProp('hidden');
-    $('#duplicateTestCaseButton').attr('class', '');
-    $('#duplicateTestCaseButton').attr('hidden', 'hidden');
-    $('#addTestCaseButton').attr('class', '');
-    $('#addTestCaseButton').attr('hidden', 'hidden');
-
+    $('#editTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $("#originalTest").prop("value", test);
     $("#originalTestCase").prop("value", testCase);
@@ -342,12 +338,9 @@ function duplicateTestCaseClick(test, testCase) {
         confirmTestCaseModalHandler("DUPLICATE");
     });
 
-    $('#editTestCaseButton').attr('class', '');
-    $('#editTestCaseButton').attr('hidden', 'hidden');
-    $('#duplicateTestCaseButton').attr('class', 'btn btn-primary');
-    $('#duplicateTestCaseButton').removeProp('hidden');
-    $('#addTestCaseButton').attr('class', '');
-    $('#addTestCaseButton').attr('hidden', 'hidden');
+    $('#duplicateTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
 //    $('#editTestCaseModalForm select[name="test"]').off("change");
@@ -377,12 +370,9 @@ function addTestCaseClick(defaultTest) {
         confirmTestCaseModalHandler("ADD");
     });
 
-    $('#editTestCaseButton').attr('class', '');
-    $('#editTestCaseButton').attr('hidden', 'hidden');
-    $('#duplicateTestCaseButton').attr('class', '');
-    $('#duplicateTestCaseButton').attr('hidden', 'hidden');
-    $('#addTestCaseButton').attr('class', 'btn btn-primary');
-    $('#addTestCaseButton').removeProp('hidden');
+    $('#addTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
 //    $('#editTestCaseModalForm select[name="test"]').off("change");
 //    $('#editTestCaseModalForm select[name="test"]').change(function () {

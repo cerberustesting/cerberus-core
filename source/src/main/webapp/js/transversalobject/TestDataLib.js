@@ -290,12 +290,9 @@ function editDataLibClick(dataLibEntry) {
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
 
-    $('#editDataLibButton').attr('class', 'btn btn-primary');
-    $('#editDataLibButton').removeProp('hidden');
-    $('#duplicateDataLibButton').attr('class', '');
-    $('#duplicateDataLibButton').attr('hidden', 'hidden');
-    $('#addDataLibButton').attr('class', '');
-    $('#addDataLibButton').attr('hidden', 'hidden');
+    $('#editDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedDataLibModal(dataLibEntry, "editTestDataLibModal", "EDIT");
 }
@@ -307,12 +304,10 @@ function editDataLibClick(dataLibEntry) {
  */
 function duplicateDataLibClick(dataLibEntry) {
 
-    $('#editDataLibButton').attr('class', '');
-    $('#editDataLibButton').attr('hidden', 'hidden');
-    $('#duplicateDataLibButton').attr('class', 'btn btn-primary');
-    $('#duplicateDataLibButton').removeProp('hidden');
-    $('#addDataLibButton').attr('class', '');
-    $('#addDataLibButton').attr('hidden', 'hidden');
+    $('#duplicateDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition')
+        .removeAttr('hidden');
+    $('#editDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedDataLibModal(dataLibEntry, "editTestDataLibModal", "DUPLICATE");
 }
@@ -326,14 +321,10 @@ function addDataLibClick(dataLibEntry, dataLibName) {
 
     // Prepare all Events handler of the modal.
 
-    $('#editDataLibButton').attr('class', '');
-    $('#editDataLibButton').attr('hidden', 'hidden');
-
-    $('#addDataLibButton').attr('class', 'btn btn-primary');
-    $('#addDataLibButton').removeProp('hidden');
-
-    $('#duplicateDataLibButton').attr('class', '');
-    $('#duplicateDataLibButton').attr('hidden', 'hidden');
+    $('#addDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition')
+        .removeAttr('hidden');
+    $('#editDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedDataLibModal(dataLibEntry, "editTestDataLibModal", "ADD", dataLibName);
 }

@@ -311,10 +311,8 @@ function editEntryClick(param) {
     //Store the campaign name
     $("#campaignKey").val(param);
 
-    $('#addTestcampaignButton').attr('class', '');
-    $('#addTestcampaignButton').attr('hidden', 'hidden');
-    $('#editTestcampaignButton').attr('class', 'btn btn-primary');
-    $('#editTestcampaignButton').removeAttr('hidden');
+    $('#editTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addTestcampaignButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     // handle the click for specific action buttons
     $("#editTestcampaignButton").off("click");
@@ -605,10 +603,8 @@ function editEntryModalCloseHandler() {
 function addEntryClick() {
     clearResponseMessageMainPage();
 
-    $('#editTestcampaignButton').attr('class', '');
-    $('#editTestcampaignButton').attr('hidden', 'hidden');
-    $('#addTestcampaignButton').attr('class', 'btn btn-primary');
-    $('#addTestcampaignButton').removeAttr('hidden');
+    $('#addTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestcampaignButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     // handle the click for specific action buttons
     $("#editTestcampaignButton").off("click");

@@ -200,12 +200,9 @@ function editAppServiceClick(service, page) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#editSoapLibraryButton').attr('class', 'btn btn-primary');
-    $('#editSoapLibraryButton').removeProp('hidden');
-    $('#duplicateSoapLibraryButton').attr('class', '');
-    $('#duplicateSoapLibraryButton').attr('hidden', 'hidden');
-    $('#addSoapLibraryButton').attr('class', '');
-    $('#addSoapLibraryButton').attr('hidden', 'hidden');
+    $('#editSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "EDIT");
     srv_listennerForInputTypeFile('#editSoapLibraryModal')
@@ -231,12 +228,9 @@ function duplicateAppServiceClick(service) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#editSoapLibraryButton').attr('class', '');
-    $('#editSoapLibraryButton').attr('hidden', 'hidden');
-    $('#duplicateSoapLibraryButton').attr('class', 'btn btn-primary');
-    $('#duplicateSoapLibraryButton').removeProp('hidden');
-    $('#addSoapLibraryButton').attr('class', '');
-    $('#addSoapLibraryButton').attr('hidden', 'hidden');
+    $('#duplicateSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#editSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "DUPLICATE");
     srv_listennerForInputTypeFile('#editSoapLibraryModal')
@@ -256,12 +250,9 @@ function addAppServiceClick(service, page) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#editSoapLibraryButton').attr('class', '');
-    $('#editSoapLibraryButton').attr('hidden', 'hidden');
-    $('#duplicateSoapLibraryButton').attr('class', '');
-    $('#duplicateSoapLibraryButton').attr('hidden', 'hidden');
-    $('#addSoapLibraryButton').attr('class', 'btn btn-primary');
-    $('#addSoapLibraryButton').removeProp('hidden');
+    $('#addSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#editSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
     srv_listennerForInputTypeFile('#editSoapLibraryModal')

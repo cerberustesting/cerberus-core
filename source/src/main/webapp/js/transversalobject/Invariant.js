@@ -115,15 +115,9 @@ function editInvariantClick(invariant, value) {
 
     clearResponseMessage($('#editInvariantModal'));
 
-    // When editing the execution queue, we can modify, modify and run or cancel.
-    $('#editInvariantButton').attr('class', 'btn btn-primary');
-    $('#editInvariantButton').removeProp('hidden');
-
-    // We cannot duplicate.
-    $('#duplicateInvariantButton').attr('class', '');
-    $('#duplicateInvariantButton').attr('hidden', 'hidden');
-    $('#addInvariantButton').attr('class', '');
-    $('#addInvariantButton').attr('hidden', 'hidden');
+    $('#editInvariantButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editInvariantModalForm select[name="idname"]').off("change");
     $('#editInvariantModalForm select[name="idname"]').change(function () {
@@ -163,12 +157,9 @@ function duplicateInvariantClick(invariant, value) {
 
     clearResponseMessage($('#editExecutionQueueModal'));
 
-    $('#editInvariantButton').attr('class', '');
-    $('#editInvariantButton').attr('hidden', 'hidden');
-    $('#duplicateInvariantButton').attr('class', 'btn btn-primary');
-    $('#duplicateInvariantButton').removeProp('hidden');
-    $('#addInvariantButton').attr('class', '');
-    $('#addInvariantButton').attr('hidden', 'hidden');
+    $('#duplicateInvariantButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editInvariantModalForm select[name="idname"]').off("change");
     $('#editInvariantModalForm input[name="value"]').off("change");
@@ -186,12 +177,9 @@ function addInvariantClick(invariant, value) {
 
     clearResponseMessage($('#editExecutionQueueModal'));
 
-    $('#editInvariantButton').attr('class', '');
-    $('#editInvariantButton').attr('hidden', 'hidden');
-    $('#addInvariantButton').attr('class', 'btn btn-primary');
-    $('#addInvariantButton').removeProp('hidden');
-    $('#duplicateInvariantButton').attr('class', '');
-    $('#duplicateInvariantButton').attr('hidden', 'hidden');
+    $('#addInvariantButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateInvariantButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     $('#editInvariantModalForm select[name="idname"]').off("change");
     $('#editInvariantModalForm input[name="value"]').off("change");
