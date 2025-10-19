@@ -45,7 +45,7 @@ import java.util.concurrent.Executor;
         excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.REGEX,
-                        pattern = "org\\.cerberus\\.core\\.api\\..*"
+                        pattern = "org\\.cerberus\\.core\\.api\\.controllers\\..*"
                 ),
                 @ComponentScan.Filter(
                         type = FilterType.REGEX,

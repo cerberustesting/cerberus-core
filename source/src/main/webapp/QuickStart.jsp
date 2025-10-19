@@ -26,19 +26,20 @@
         <meta name="active-menu" content="test">
         <meta name="active-submenu" content="QuickStart.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/global/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions_new.html" %>
         <title id="pageTitle">Quick Start</title>
 
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
+        <jsp:include page="include/transversalobject/TestCaseSimpleCreationAI.html"/>
+        <jsp:include page="include/templates/dropdownApplication.html"/>
+        <jsp:include page="include/templates/dropdownTest.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>
 
-            <h1 class="page-title-line" id="title">Quick Start</h1>
-            <p class="page-subtitle-line">Choose your preferred method to create and manage test cases quickly</p>
+            <h1 class="page-title-line" id="title" x-text="$store.labels.getLabel('page_quickstart','title')">Quick Start</h1>
+            <p class="page-subtitle-line" x-text="$store.labels.getLabel('page_quickstart','subtitle')">Choose your preferred method to create and manage test cases quickly</p>
             <div class="w-full">
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,18 +51,24 @@
             <i data-lucide="zap" class="text-green-500 w-10 h-10"></i>
           </div>
           <div>
-                <h3 class="text-lg font-semibold mt-2 mb-0">1-Click Bootstrap</h3>
-                <p class="text-gray-400">Automatically generate test cases from your application</p>
+                <h3 class="text-lg font-semibold mt-2 mb-0" x-text="$store.labels.getLabel('page_quickstart','oneclickboostraptitle')">1-Click Bootstrap</h3>
+                <p class="text-gray-400" x-text="$store.labels.getLabel('page_quickstart','oneclickboostrapsubtitle')">Automatically generate test cases from your application</p>
           </div>
         </div>
         <div class="flex flex-wrap gap-2 mb-6">
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Auto-discovery</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Smart test generation</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Ready to run</span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','oneclickboostraptag1')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','oneclickboostraptag2')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','oneclickboostraptag3')"></span>
+          </span>
         </div>
         <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition"
         onclick="window.dispatchEvent(new CustomEvent('testcase-modal-open', { detail: { defaultTest: 'TEST001' } }))">
-          Get Started →
+          <span x-text="$store.labels.getLabel('page_quickstart','oneclickboostrapbutton')"></span>
         </button>
       </div>
 
@@ -72,41 +79,54 @@
             <i data-lucide="video" class="text-blue-500 w-10 h-10"></i>
           </div>
           <div>
-                <h3 class="text-lg font-semibold mt-2 mb-0">Recorder</h3>
-                <p class="text-gray-400">Record test cases using browser automation tools</p>
+                <h3 class="text-lg font-semibold mt-2 mb-0" x-text="$store.labels.getLabel('page_quickstart','recordertitle')">Recorder</h3>
+                <p class="text-gray-400" x-text="$store.labels.getLabel('page_quickstart','recordersubtitle')">Record test cases using browser automation tools</p>
           </div>
         </div>
         <div class="flex flex-wrap gap-2 mb-6">
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Katalon support</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Selenium IDE</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Easy import</span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','recordertag1')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','recordertag2')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','recordertag3')"></span>
+          </span>
         </div>
         <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition">
-          Get Started →
+            <span x-text="$store.labels.getLabel('page_quickstart','recorderbutton')"></span>
         </button>
       </div>
 
       <!-- Test Creation Copilot (disabled) -->
       <div class="crb_card">
-        <span class="absolute top-3 right-3 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">
-          Coming Soon
+        <span class="absolute top-3 right-3 bg-green-500 text-black text-xs font-bold px-2 py-1 rounded">
+          Early Access
         </span>
         <div class="flex items-center gap-3 mb-4">
         <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
             <i data-lucide="bot" class="text-purple-500 w-10 h-10"></i>
           </div>
           <div>
-                <h3 class="text-lg font-semibold mt-2 mb-0">Test Creation Copilot</h3>
-                <p class="text-gray-400">AI-assisted test case creation with natural language</p>
+                <h3 class="text-lg font-semibold mt-2 mb-0" x-text="$store.labels.getLabel('page_quickstart','copilottitle')">Test Creation Copilot</h3>
+                <p class="text-gray-400" x-text="$store.labels.getLabel('page_quickstart','copilotsubtitle')">AI-assisted test case creation with natural language</p>
           </div>
         </div>
         <div class="flex flex-wrap gap-2 mb-6">
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Natural language</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Smart suggestions</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Auto-completion</span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','copilottag1')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','copilottag2')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','copilottag3')"></span>
+          </span>
         </div>
-        <button class="w-full bg-gray-600 text-white py-2 rounded-lg font-medium" disabled>
-          Get Started →
+        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition"
+        onclick="window.dispatchEvent(new CustomEvent('create-test-ai-modal-open'))">
+          <span x-text="$store.labels.getLabel('page_quickstart','copilotbutton')"></span>
         </button>
       </div>
 
@@ -120,17 +140,23 @@
             <i data-lucide="library" class="text-orange-500 w-10 h-10"></i>
           </div>
           <div>
-                <h3 class="text-lg font-semibold mt-2 mb-0">Test Templates Library</h3>
-                <p class="text-gray-400">Browse and use pre-built test case templates</p>
+                <h3 class="text-lg font-semibold mt-2 mb-0" x-text="$store.labels.getLabel('page_quickstart','templatetitle')">Test Templates Library</h3>
+                <p class="text-gray-400" x-text="$store.labels.getLabel('page_quickstart','templatesubtitle')">Browse and use pre-built test case templates</p>
           </div>
         </div>
         <div class="flex flex-wrap gap-2 mb-6">
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Pre-built templates</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Industry standards</span>
-          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i> Quick setup</span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','templatetag1')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','templatetag2')"></span>
+          </span>
+          <span class="flex items-center bg-gray-100 dark:bg-gray-700 text-xs px-3 py-1 rounded-full gap-1"><i data-lucide="circle-check-big" class="w-3 h-3"></i>
+            <span x-text="$store.labels.getLabel('page_quickstart','templatetag3')"></span>
+          </span>
         </div>
         <button class="w-full bg-gray-600 text-white py-2 rounded-lg font-medium" disabled>
-          Get Started →
+          <span x-text="$store.labels.getLabel('page_quickstart','templatebutton')"></span>
         </button>
       </div>
 

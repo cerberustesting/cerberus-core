@@ -1,0 +1,102 @@
+<template id="tpl-dropdown-test">
+  <div class="relative w-full">
+
+    <!-- Bouton principal -->
+    <button type="button"
+            @click="open = !open"
+            class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+      <span x-text="selectedLabel()"></span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2"
+           fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+
+    <!-- Dropdown -->
+    <div x-show="open"
+         @click.away="open = false"
+         x-transition
+         class="absolute mt-1 w-full rounded-md border shadow-lg z-50
+                dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
+                bg-white border-slate-300 text-slate-900 max-h-64 overflow-hidden">
+
+      <!-- Barre de recherche -->
+      <div class="p-2 border-b dark:border-slate-700">
+        <input type="text" x-model="search" placeholder="Search..."
+               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600"
+               @keydown.escape.stop="open = false">
+      </div>
+
+      <!-- Liste filtrée -->
+      <div class="max-h-52 overflow-auto">
+        <template x-if="filteredItems().length > 0">
+          <template x-for="item in filteredItems()" :key="item">
+            <button type="button"
+                    @click="select(item)"
+                    class="w-full text-left px-3 py-2 text-sm
+                           hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+              <span x-text="item"></span>
+            </button>
+          </template>
+        </template>
+
+        <template x-if="filteredItems().length === 0">
+          <div class="px-3 py-2 text-sm text-gray-500 dark:text-slate-400 italic">
+            No matching results
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  function testDropdown(config = {}) {
+    return {
+      open: false,
+      items: [],
+      search: '',
+      selected: '',
+      model: config.model ?? '',
+
+      init() {
+        this.loadTests();
+        this.cloneDropdown();
+      },
+
+      loadTests() {
+        fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=100')
+                .then(resp => resp.json())
+                .then(data => {
+                  this.items = data.contentTable.map(obj => obj.test);
+                })
+                .catch(err => console.error("Failed to load tests:", err));
+      },
+
+      filteredItems() {
+        const query = this.search.toLowerCase();
+        return this.items.filter(i => i.toLowerCase().includes(query));
+      },
+
+      select(item) {
+        this.selected = item;
+        this.model = item;
+        if (config.model !== undefined) config.model = item;
+        this.open = false;
+        this.$dispatch('update-test', item);
+      },
+
+      selectedLabel() {
+        return this.selected || '-- Select Test --';
+      },
+
+      cloneDropdown() {
+        const tpl = document.querySelector('#tpl-dropdown-test');
+        if (!tpl) return;
+        this.$el.append(tpl.content.cloneNode(true));
+        Alpine.initTree(this.$el); // ré-initialise Alpine sur le contenu injecté
+      }
+    }
+  }
+</script>

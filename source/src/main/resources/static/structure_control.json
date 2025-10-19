@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cerberus Test Step Action Control",
+  "type": "object",
+  "properties": {
+    "testFolderId": { "type": "string", "description": "The test folder provided" },
+    "testcaseId": { "type": "string", "description": "The testcase ID provided" },
+    "stepId": { "type": "integer", "description": "The step ID Provided" },
+    "actionId": { "type": "integer", "description": "The step ID Provided" },
+    "controlId": { "type": "integer", "minimum":1, "description": "The control ID. Start at 1 and increment each step" },
+    "sort": { "type": "integer", "minimum": 1, "description": "Display order. Start at 1 and increment each step" },
+    "control": {"type": "string", "enum": ["verifyStringEqual","verifyStringDifferent","verifyStringGreater","verifyStringMinor","verifyStringContains","verifyStringNotContains","verifyNumericEquals","verifyNumericDifferent","verifyNumericGreater","verifyNumericGreaterOrEqual","verifyNumericMinor","verifyNumericMinorOrEqual","verifyElementPresent","verifyElementNotPresent","verifyElementVisible","verifyElementNotVisible","verifyElementChecked","verifyElementNotChecked","verifyElementEquals","verifyElementDifferent","verifyElementInElement","verifyElementClickable","verifyElementNotClickable","verifyElementTextEqual","verifyElementTextDifferent","verifyElementTextContains","verifyElementTextNotContains","verifyElementTextMatchRegex","verifyStringArrayContains","verifyNumericArrayContains","verifyElementTextArrayContains","verifyElementNumericArrayContains","verifyElementNumericEqual","verifyElementNumericDifferent","verifyElementNumericGreater","verifyElementNumericGreaterOrEqual","verifyElementNumericMinor","verifyElementNumericMinorOrEqual","verifyTextInPage","verifyTextNotInPage","verifyTitleEqual","verifyTitleDifferent","verifyTitleContains","verifyTitleNotContains","verifyTitleMatchRegex","verifyUrlEqual","verifyUrlDifferent","verifyUrlContains","verifyUrlNotContains","verifyUrlMatchRegex","verifyTextInDialog","verifyXmlTreeStructure","takeScreenshot","getPageSource","verifyJsonFormat"],"description": "The control type"},
+    "description": { "type": "string", "description": "Functional control description" },
+    "value1": { "type": "string", "description": "Optional, Depends of selected control. See controls documentation" },
+    "value2": { "type": "string", "description": "Optional, Depends of selected control. See controls documentation" },
+    "value3": { "type": "string", "description": "Optional, Depends of selected control. See controls documentation" },
+    "isFatal": { "type": "boolean", "default": false, "description": "Determine if the test execution must stop if control returns KO" },
+    "conditionOperator": { "type": "string", "enum": ["always", "never"], "description": "Condition to execute" }
+   }
+}

@@ -1,0 +1,434 @@
+[
+  {
+    "action": "click",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK", "FAT"],
+    "description": "Click on the element"
+  },
+  {
+    "action": "longPress",
+    "param1": "Element path",
+    "param2": "[opt] Duration (ms)",
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK", "FAT"],
+    "description": "Press and hold element for given duration"
+  },
+  {
+    "action": "mouseLeftButtonPress",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Press and keep left button on element"
+  },
+  {
+    "action": "mouseLeftButtonRelease",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Release left button on element"
+  },
+  {
+    "action": "doubleClick",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Double click on element"
+  },
+  {
+    "action": "rightClick",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Right click on element"
+  },
+  {
+    "action": "mouseOver",
+    "param1": "Element path",
+    "param2": "[Optional] Offset (ex : 50,100)",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Move mouse over element"
+  },
+  {
+    "action": "mouseMove",
+    "param1": "Relative coord. (ex : 50,100 ; 200,50)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Move mouse to relative coordinates"
+  },
+  {
+    "action": "openUrlWithBase",
+    "param1": "URI to call (ex : /index.html)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK"],
+    "description": "Open URL with base path"
+  },
+  {
+    "action": "openUrlLogin",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK"],
+    "description": "Open login URL"
+  },
+  {
+    "action": "openUrl",
+    "param1": "URL to call (ex : http://www.domain.com)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK"],
+    "description": "Open full URL"
+  },
+  {
+    "action": "focusToIframe",
+    "param1": "Element path of the target iFrame",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Switch focus to iframe"
+  },
+  {
+    "action": "focusDefaultIframe",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Switch focus to main context"
+  },
+  {
+    "action": "switchToWindow",
+    "param1": "Window title or url (incl. regexTitle and regexUrl)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Switch to another window/tab"
+  },
+  {
+    "action": "switchToContext",
+    "param1": "[opt] Context name",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["IPA", "APK"],
+    "description": "Switch to specific context"
+  },
+  {
+    "action": "manageDialog",
+    "param1": "ok or cancel",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Handle dialog popup"
+  },
+  {
+    "action": "manageDialogKeypress",
+    "param1": "keys to press",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Press keys in dialog"
+  },
+  {
+    "action": "refreshCurrentPage",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Refresh current page"
+  },
+  {
+    "action": "returnPreviousPage",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Return to previous page"
+  },
+  {
+    "action": "forwardNextPage",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Go forward to next page"
+  },
+  {
+    "action": "executeJS",
+    "param1": "JavaScript to execute",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Execute JavaScript command"
+  },
+  {
+    "action": "executeCommand",
+    "param1": "Appium Command",
+    "param2": "Arguments",
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK"],
+    "description": "Execute Appium command"
+  },
+  {
+    "action": "executeCerberusCommand",
+    "param1": "Command",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Execute Cerberus command"
+  },
+  {
+    "action": "openApp",
+    "param1": "Application name or path or package for Android",
+    "param2": "[Optional, required for Android] Activity",
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK", "FAT"],
+    "description": "Open an application"
+  },
+  {
+    "action": "closeApp",
+    "param1": "Application name or path",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "IPA", "APK", "FAT"],
+    "description": "Close an application"
+  },
+  {
+    "action": "dragAndDrop",
+    "param1": "Element path",
+    "param2": "Destination Element Path or offset",
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Drag and drop element"
+  },
+  {
+    "action": "select",
+    "param1": "Element path",
+    "param2": "Option value",
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Select option from dropdown"
+  },
+  {
+    "action": "keypress",
+    "param1": "[opt] Target element path",
+    "param2": "Key to Press",
+    "param3": "[opt] Modifier to press",
+    "applicationType": ["GUI"],
+    "description": "Press key on element"
+  },
+  {
+    "action": "type",
+    "param1": "Element path",
+    "param2": "Text to Type",
+    "param3": null,
+    "applicationType": ["GUI", "APK", "IPA", "FAT"],
+    "description": "Feed text into element"
+  },
+  {
+    "action": "hideKeyboard",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["APK", "IPA"],
+    "description": "Hide the keyboard"
+  },
+  {
+    "action": "clearField",
+    "param1": "Element path",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "APK", "IPA", "FAT"],
+    "description": "Clear content of element"
+  },
+  {
+    "action": "swipe",
+    "param1": "Action (UP DOWN LEFT RIGHT CUSTOM...)",
+    "param2": "Direction x;y;z;y",
+    "param3": null,
+    "applicationType": ["APK", "IPA"],
+    "description": "Swipe on screen"
+  },
+  {
+    "action": "wait",
+    "param1": "Duration(ms) or Element",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "BAT", "FAT", "NONE"],
+    "description": "Wait for time or element"
+  },
+  {
+    "action": "waitVanish",
+    "param1": "Element path",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Wait until element vanishes"
+  },
+  {
+    "action": "waitNetworkTrafficIdle",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "BAT", "FAT", "NONE"],
+    "description": "Wait until network traffic is idle"
+  },
+  {
+    "action": "callService",
+    "param1": "Service Name",
+    "param2": "Nb Evt (Kafka)",
+    "param3": "Evt Wait sec (Kafka)",
+    "applicationType": ["GUI", "APK", "IPA", "FAT", "SRV"],
+    "description": "Call service and wait events"
+  },
+  {
+    "action": "executeSqlUpdate",
+    "param1": "Database Name",
+    "param2": "Script",
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Execute SQL update script"
+  },
+  {
+    "action": "executeSqlStoredProcedure",
+    "param1": "Database Name",
+    "param2": "Stored Procedure",
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Execute SQL stored procedure"
+  },
+  {
+    "action": "calculateProperty",
+    "param1": "Property Name",
+    "param2": "[opt] Name of an other property",
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Calculate property value"
+  },
+  {
+    "action": "setNetworkTrafficContent",
+    "param1": "url to filter",
+    "param2": "Activate http response content (Y/N)",
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Switch context to network traffic content"
+  },
+  {
+    "action": "indexNetworkTraffic",
+    "param1": "[opt] Index name",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Index network traffic content"
+  },
+  {
+    "action": "setServiceCallContent",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Switch context to service call content"
+  },
+  {
+    "action": "setConsoleContent",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Switch context to console content"
+  },
+  {
+    "action": "setContent",
+    "param1": "Value to Set",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "Switch context to specific content"
+  },
+  {
+    "action": "scrollTo",
+    "param1": "Element path or Text to scroll to",
+    "param2": "Max scroll iteration [APK,IPA only]",
+    "param3": "offsets (h,v) [APK,IPA,GUI only]",
+    "applicationType": ["GUI", "IPA", "APK", "FAT"],
+    "description": "Scroll to element"
+  },
+  {
+    "action": "installApp",
+    "param1": "Application path (ex : /root/toto.apk)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["IPA", "APK"],
+    "description": "Install an application"
+  },
+  {
+    "action": "removeApp",
+    "param1": "Application package (ex : com.cerberus.appmobile)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["IPA", "APK"],
+    "description": "Uninstall an application"
+  },
+  {
+    "action": "cleanRobotFile",
+    "param1": "Path/Pattern to empty (ex : /home/seluser/Downloads/)",
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "FAT"],
+    "description": "Clean robot file folder"
+  },
+  {
+    "action": "uploadRobotFile",
+    "param1": "Filename to create",
+    "param2": "Content to upload (base64)",
+    "param3": "Option (EMPTYFOLDER)",
+    "applicationType": ["GUI", "APK", "IPA", "FAT", "SRV"],
+    "description": "Upload file to robot"
+  },
+  {
+    "action": "getRobotFile",
+    "param1": "Path/Pattern to retrieve",
+    "param2": "Nb of files",
+    "param3": "Sorting Option",
+    "applicationType": ["GUI", "APK", "IPA", "FAT", "SRV"],
+    "description": "Download file from robot"
+  },
+  {
+    "action": "lockDevice",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["APK", "IPA"],
+    "description": "Lock device"
+  },
+  {
+    "action": "unlockDevice",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["APK", "IPA"],
+    "description": "Unlock device"
+  },
+  {
+    "action": "rotateDevice",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["APK", "IPA"],
+    "description": "Rotate device"
+  },
+  {
+    "action": "doNothing",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI", "SRV", "IPA", "APK", "FAT"],
+    "description": "No action, used if needed to perform a control without associated action"
+  }
+]

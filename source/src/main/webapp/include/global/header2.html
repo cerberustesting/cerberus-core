@@ -69,7 +69,7 @@
 
             <!-- Dropdown Sidebar Open -->
             <div x-show="open" x-transition
-                 class="mt-1 w-full rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-50">
+                 class="mt-1 w-full max-h-[400px] overflow-auto rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-50">
                 <!-- Barre de recherche -->
                 <div class="p-2 border-b border-slate-600">
                     <input type="text" id="header_workspaceOpen_search"
@@ -124,7 +124,7 @@
             <template x-if="!$store.sidebar.expanded">
             <template x-teleport="body">
                 <div x-show="open" x-transition
-                     class="mt-1 w-80 rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-[9999] ml-20"
+                     class="mt-1 w-80 max-h-[400px] overflow-auto rounded-md border border-slate-600 bg-slate-800 shadow-lg absolute z-[9999] ml-20"
                      :style="{
                      top: $root.querySelector('.group').getBoundingClientRect().top + 'px'
                  }">
@@ -764,7 +764,8 @@
                  x-ref="dropdown"
                  class="fixed w-72 h-[400px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
                  :style="`left: ${$refs.userBtn.getBoundingClientRect().left}px; top: ${$refs.userBtn.getBoundingClientRect().top - $refs.dropdown.offsetHeight}px;`"
-                 @click.outside="if(!$refs.dropdown.contains($event.target)) userMenuOpen = false">
+                 @click.outside="userMenuOpen = false"
+                 @click.stop>
 
                 <ul class="py-2 text-sm space-y-1 px-2">
 

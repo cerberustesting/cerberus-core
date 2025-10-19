@@ -21,10 +21,7 @@ package org.cerberus.core.config.cerberus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.websocket.ChatWithAIWebSocket;
-import org.cerberus.core.websocket.QueueStatusWebSocket;
-import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
-import org.cerberus.core.websocket.TestCaseExecutionWebSocket;
+import org.cerberus.core.websocket.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -53,11 +50,15 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     private QueueStatusWebSocket queueStatusWebSocket;
     @Autowired
     private ExecutionMonitorWebSocket executionMonitorWebSocket;
+    @Autowired
+    private CreateTestWithAIWebSocket createTestWithAIWebSocket;
 
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(chatWithAIWebSocket, "/ws/chatai")
+                .setAllowedOrigins("*");
+        registry.addHandler(createTestWithAIWebSocket, "/ws/generateTestWithAI")
                 .setAllowedOrigins("*");
         registry.addHandler(queueStatusWebSocket, "/ws/queuestatus")
                 .setAllowedOrigins("*");

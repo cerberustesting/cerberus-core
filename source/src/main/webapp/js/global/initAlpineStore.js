@@ -111,6 +111,7 @@ document.addEventListener('alpine:init', () => {
             switch(objectName) {
                 case 'header': doc = window.headerLabel; break;
                 case 'page_invariant': doc = window.pageInvariantLabel; break;
+                case 'page_quickstart': doc = window.pageQuickStartLabel; break;
                 default: doc = {};
             }
 

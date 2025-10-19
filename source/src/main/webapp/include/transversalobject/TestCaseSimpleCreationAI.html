@@ -1,0 +1,359 @@
+<!-- Modal Create Test -->
+<div
+        x-data="createTestModal()"
+        @update-application.window="form.application = $event.detail"
+        @update-test.window="form.testFolder = $event.detail"
+        x-init="init()"
+        x-show="open"
+        @create-test-ai-modal-open.window="open = true;"
+        class="crb_modal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900 opacity-60" @click="open = false"></div>
+
+    <!-- Modal -->
+    <div class="crb_card w-full max-w-3xl mx-4"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.away="open = false">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center px-6 py-4 mb-8">
+            <div class="flex flex-col">
+                <h3 class="text-xl font-semibold" x-text="$store.labels.getLabel('page_quickstart','copilotmodaltitle')"></h3>
+                <p class="page-subtitle-line" x-text="$store.labels.getLabel('page_quickstart','copilotmodalsubtitle')"></p>
+            </div>
+            <button @click="open = false" class="hover:text-gray-700">&times;</button>
+        </div>
+
+
+        <!-- Body -->
+        <div class="px-6 pb-6 space-y-4">
+            <div :class="{ 'opacity-50 pointer-events-none': loading }">
+
+                <div class="flex space-x-4">
+                    <!-- Application -->
+                    <div class="w-1/2">
+                        <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodalapplication')">Application</label>
+                        <div x-data="applicationDropdown({ model: form.application })"
+                             x-ref="dropdownComponent"
+                             class="w-full"></div>
+                    </div>
+
+                    <!-- Test Folder -->
+                    <div class="w-1/2">
+                        <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodaltestfolder')">Test Folder</label>
+                        <div x-data="testDropdown({ model: form.test })"
+                             x-ref="dropdownTest"
+                             class="w-full"></div>
+                    </div>
+                </div>
+
+                <!-- Feature Description -->
+                <div class="mt-4 relative"
+                     x-data="{
+                        showSuggestions: false,
+                        suggestions: [],
+                        loadSuggestions() {
+                            this.suggestions = [
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion1'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion2'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion3'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion4'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion5'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion6'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion7'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion8'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion9'),
+                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion10')
+                            ];
+                        }
+                     }"
+                     x-init="loadSuggestions()">
+                    <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodalfeaturedescription')">Description du test</label>
+                    <input type="text"
+                           x-model="form.featureDescription"
+                           @focus="showSuggestions = true"
+                           @blur="setTimeout(() => showSuggestions = false, 200)"
+                           :placeholder="$store.labels.getLabel('page_quickstart','copilotmodalfeaturedescriptionplaceholder')"
+                           class="w-full border rounded px-2 py-2 dark:border-slate-600 border-slate-300">
+
+                    <!-- Suggestions -->
+                    <ul x-show="showSuggestions"
+                        class="absolute z-50 w-full bg-white border dark:bg-slate-800 dark:border-slate-600 rounded shadow mt-1">
+                        <template x-for="s in suggestions" :key="s">
+                            <li>
+                                <button type="button"
+                                        @click="form.featureDescription = s; showSuggestions = false"
+                                        class="block w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span x-text="s"></span>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex justify-end mt-4">
+                    <button @click="submitTest()"
+                            :disabled="loading"
+                            :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                            class="text-white px-4 py-2 rounded transition">
+                        <span x-show="!loading" x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneratebutton')">Créer</span>
+                        <span x-show="loading" class="flex items-center space-x-2">
+                            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            <span x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneration')">Génération...</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <template x-if="errorMessage">
+                    <div class="bg-red-100 text-red-800 p-2 rounded">
+                        <strong x-text="errorMessage"></strong>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Results -->
+            <div class="mt-4 border-t pt-4" x-show="loading || results.length > 0">
+                <h4 class="font-semibold mb-2" x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneratedresult')">Résultats générés :</h4>
+
+                <!-- Loader -->
+                <template x-if="loading && results.length === 0">
+                    <div class="flex items-center space-x-2 text-slate-500">
+                        <svg class="animate-spin h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                        <span x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneration')">Génération des scénarios en cours...</span>
+                    </div>
+                </template>
+
+                <!-- Results list -->
+                <template x-if="results.length > 0">
+                    <ul class="space-y-2 mt-2">
+                        <template x-for="res in results" :key="res.testcaseId">
+                            <li class="p-2 border dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 rounded flex items-center justify-between">
+                                <!-- Description -->
+                                <span class="text-sm" x-text="res.description"></span>
+
+                                <!-- Boutons d’action -->
+                                <div class="flex items-center space-x-2">
+                                    <!-- Loader -->
+                                    <template x-if="loadingThumbs[res.testcaseId]">
+                                        <div class="flex items-center space-x-2 text-slate-500">
+                                            <svg class="animate-spin h-4 w-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                 viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                            </svg>
+                                            <span>Sending...</span>
+                                        </div>
+                                    </template>
+
+                                    <!-- Icons -->
+                                    <template x-if="!loadingThumbs[res.testcaseId]">
+                                        <div class="flex items-center space-x-2">
+                                            <!-- Show Desc Button -->
+                                            <div class="relative group">
+                                                <button class="p-1 rounded hover:bg-slate-100" title="Voir les détails">
+                                                    <i data-lucide="eye" class="w-5 h-5 text-slate-500"></i>
+                                                </button>
+                                                <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block
+                            bg-slate-50 dark:bg-slate-900 border border-slate-300 text-slate-700 dark:text-slate-300
+                            text-xs p-2 rounded shadow w-64 z-20 transition-opacity duration-200">
+                                                    <p x-text="res.detailedDescription"></p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Top Thumb -->
+                                            <button class="p-1 rounded hover:bg-green-50"
+                                                    title="Approuver"
+                                                    @click="sendThumbsUp(res)">
+                                                <i data-lucide="thumbs-up" class="w-5 h-5 text-green-600"></i>
+                                            </button>
+
+                                            <!-- Bottom Thumb -->
+                                            <button class="p-1 rounded hover:bg-red-50"
+                                                    title="Refuser"
+                                                    @click="sendThumbsDown(res)">
+                                                <i data-lucide="thumbs-down" class="w-5 h-5 text-red-600"></i>
+                                            </button>
+
+                                            <!-- Bouton Redirection -->
+                                            <button x-show="res.redirectUrl"
+                                                    @click="window.location.href = res.redirectUrl"
+                                                    class="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                    title="Open Test Case">
+                                                Open
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createTestModal() {
+        return {
+            open: false,
+            loading: false,
+            form: {
+                application: '',
+                testFolder: '',
+                featureDescription: ''
+            },
+            results: [],
+            errorMessage: '',
+            loadingThumbs: {},
+            ws: null,
+
+            init() {},
+
+            submitTest() {
+                if (!this.form.application || !this.form.testFolder || !this.form.featureDescription) {
+                    this.errorMessage = "Application, Folder and Feature Description are mandatory !";
+                    return;
+                }
+
+                this.errorMessage = '';
+                this.results = [];
+                this.loading = true;
+                this.sessionID = "";
+
+                // Construction de l'URL WebSocket
+                const parser = document.createElement('a');
+                parser.href = window.location.href;
+                const protocol = parser.protocol === "https:" ? "wss:" : "ws:";
+                const path = parser.pathname.split("QuickStart")[0];
+                const wsUrl = protocol + parser.host + path + "api/ws/generateTestWithAI";
+
+                this.ws = new WebSocket(wsUrl);
+                const username = getUser().login;
+
+                this.ws.onopen = () => {
+                    console.log("WebSocket Open.");
+                    this.sessionID = crypto.randomUUID();
+                    const payload = {
+                        sender: username,
+                        sessionID: this.sessionID,
+                        application: this.form.application,
+                        testFolder: this.form.testFolder,
+                        subject: "test_proposal",
+                        content: this.form.featureDescription
+                    };
+                    this.ws.send(JSON.stringify(payload));
+                };
+
+                this.ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        if (data.type === "done") {
+                            console.debug("Generation OK.");
+                            this.loading = false;
+                            return;
+                        }
+
+                        if (data.type === "error" || data.type === "erreur") {
+                            console.error("WebSocket Error :", data.message || data.error);
+                            this.errorMessage = data.message || data.error;
+                            this.loading = false;
+                            return;
+                        }
+
+                        if (data.type === "testcaseCreated") {
+                            const test = data.data;
+                            this.results.push({
+                                testcaseId: test.testcaseId,
+                                description: test.description,
+                                detailedDescription: test.detailedDescription,
+                                loadingThumb: false,
+                                testcaseObject: test
+                            });
+                            setTimeout(() => lucide.createIcons(), 0);
+                        }
+
+                        if (data.type === "test_created_ack") {
+                            const testcaseId = data.tempId;
+                            const test = data.test;
+                            const testcase = data.testcase;
+                            this.loadingThumbs[testcaseId] = false;
+
+                            const result = this.results.find(r => r.testcaseId === testcaseId);
+                            if (result) {
+                                result.redirectUrl = `./TestCaseScript.jsp?test=${test}&testcase=${testcase}`;
+                            }
+                        }
+
+                    } catch (err) {
+                        console.error("Error parsing message :", err, event.data);
+                        this.errorMessage = "Format Error from server.";
+                        this.loading = false;
+                    }
+                };
+
+                this.ws.onerror = (err) => {
+                    console.error("Erreur WebSocket :", err);
+                    this.errorMessage = "Communication Error with server.";
+                    this.loading = false;
+                };
+
+                this.ws.onclose = () => {
+                    console.debug("WebSocket closed.");
+                    this.loading = false;
+                };
+            },
+
+            sendThumbsUp(res) {
+                if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+                    console.warn("WebSocket closed, can't create testcase");
+                    return;
+                }
+
+                this.loadingThumbs[res.testcaseId] = true;
+
+                const username = getUser().login;
+                const message = {
+                    sender: username,
+                    sessionID: this.sessionID,
+                    subject: "test_creation",
+                    application: this.form.application,
+                    testFolder: this.form.testFolder,
+                    tempId: res.testcaseId,
+                    testDetailedDescription: res.detailedDescription,
+                    testcaseObject: JSON.stringify(res.testcaseObject)
+                };
+
+                this.ws.send(JSON.stringify(message));
+                console.debug("Test case creation requested :", message);
+            },
+
+            sendThumbsDown(res) {
+                this.results = this.results.filter(r => r.testcaseId !== res.testcaseId);
+                console.debug("Deleted :", res.testcaseId);
+            }
+        }
+    }
+</script>

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cerberus Test Step Action",
+  "type": "object",
+  "properties": {
+    "testFolderId": { "type": "string", "description": "The test folder provided" },
+    "testcaseId": { "type": "string", "description": "The testcase ID provided" },
+    "stepId": { "type": "integer", "minimum": 1, "description": "The sted ID Provided" },
+    "actionId": { "type": "integer", "minimum": 1, "description": "Action ID. Start at 1 and increment each step" },
+    "sort": { "type": "integer", "minimum": 1, "description": "Display order. Start at 1 and increment each step" },
+    "action": {"type": "string", "enum": ["click","longPress","mouseLeftButtonPress","mouseLeftButtonRelease","doubleClick","rightClick","mouseOver","mouseMove","openUrlWithBase","openUrlLogin","openUrl","focusToIframe","focusDefaultIframe","switchToWindow","switchToContext","manageDialog","manageDialogKeypress","refreshCurrentPage","returnPreviousPage","forwardNextPage","executeJS","executeCommand","executeCerberusCommand","openApp","closeApp","dragAndDrop","select","keypress","type","hideKeyboard","clearField","swipe","wait","waitVanish","waitNetworkTrafficIdle","callService","executeSqlUpdate","executeSqlStoredProcedure","calculateProperty","setNetworkTrafficContent","indexNetworkTraffic","setServiceCallContent","setConsoleContent","setContent","scrollTo","installApp","removeApp","cleanRobotFile","uploadRobotFile","getRobotFile","lockDevice","unlockDevice","rotateDevice","doNothing"],"description": "The action type"},
+    "description": { "type": "string", "description": "Functional action description" },
+    "value1": { "type": "string", "description": "Optional, Depends of selected action. See actions documentation" },
+    "value2": { "type": "string", "description": "Optional, Depends of selected action. See actions documentation" },
+    "value3": { "type": "string", "description": "Optional, Depends of selected action. See actions documentation" },
+    "conditionOperator": { "type": "string", "enum": ["always", "never"], "description": "Condition to execute" }
+   }
+}

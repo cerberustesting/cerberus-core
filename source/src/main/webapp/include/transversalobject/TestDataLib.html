@@ -75,133 +75,153 @@
                     </ul>
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1">
-                            <!--SERVICE-->
-                            <div class="well well-sm" >
+                            <!-- SERVICE SECTION -->
+                            <div class="space-y-4">
 
-                                <!--FILE-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="csvConfigurationsPanelEdit">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSVEdit">
-                                                <label name="csvConfigurationsLbl">FILE Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                <!-- FILE Configurations -->
+                                <div x-data="{ open: false }" class="border rounded-lg  shadow">
+                                    <div class="flex justify-between items-center cursor-pointer px-4 py-2  hover:bg-gray-200"
+                                            @click="open = !open">
+                                        <label class="font-semibold">FILE Configurations</label>
+                                        <svg
+                                                :class="{'rotate-90': open}"
+                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+
+                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+
+                                        <!-- Row 1 -->
+                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                                            <div class="sm:col-span-3">
+                                                <label for="databaseCsv" class="block text-sm font-medium text-gray-700">Database URL</label>
+                                                <select id="databaseCsv" name="databaseCsv" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
                                             </div>
-                                            <div id="panelCSVEdit" class="panel-body collapse">
-                                                <div class="row">
-                                                    <div class="form-group  col-sm-3"> 
-                                                        <label name="lbl_databaseCsv" for="databaseCsv">Database URL</label> 
-                                                        <select class="form-control" id="databaseCsv" name="databaseCsv">
-                                                        </select> 
-                                                    </div>    
-                                                    <div class="form-group col-sm-9"> 
-                                                        <label name="lbl_csvUrl" for="csvUrl">File Url</label> 
-                                                        <div class="input-group">
-                                                            <input id="csvUrl" name="csvUrl" class="form-control">
-                                                            <span class="input-group-btn">
-                                                                <a id="buttonDownloadCsvFile" class="pull-right" href="#">
-                                                                    <button class="btn btn-default" type="button" id="downloadCSV">
-                                                                        <span class="glyphicon glyphicon-download-alt"></span>
-                                                                    </button>
-                                                                </a>                                                            
-                                                            </span>
-                                                        </div>                                        
-                                                    </div>
+
+                                            <div class="sm:col-span-9">
+                                                <label for="csvUrl" class="block text-sm font-medium text-gray-700">File Url</label>
+                                                <div class="flex mt-1">
+                                                    <input id="csvUrl" name="csvUrl" class="flex-1 border-gray-300 rounded-l-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                                    <a id="buttonDownloadCsvFile" href="#" class="inline-flex">
+                                                        <button id="downloadCSV" type="button" class="px-3 py-2 border border-gray-300 bg-gray-50 hover:bg-gray-100 rounded-r-md">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                                                            </svg>
+                                                        </button>
+                                                    </a>
                                                 </div>
+                                            </div>
+                                        </div>
 
-                                                <div class="row">
-                                                    <div class="form-group col-sm-3">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label">
-                                                                Generate Subdata list from First line of csv after saving<br>(only when checked and with file uploaded)
-                                                            </label>
-                                                            <input class="form-check-input form-control input-sm" id="subdataCheck" name="subdataCheck" type="checkbox" value="1">
-                                                        </div>
-                                                    </div>
+                                        <!-- Row 2 -->
+                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                                            <div class="sm:col-span-3">
+                                                <label class="block text-sm font-medium text-gray-700">
+                                                    <input type="checkbox" id="subdataCheck" name="subdataCheck" value="1" class="mr-2">
+                                                    Generate Subdata list from first line of CSV after saving
+                                                </label>
+                                            </div>
 
-                                                    <div class="form-group col-sm-9 ">
-                                                        <label name="lbl_csvFile" for="csvFile">Upload File</label> 
-                                                        <input type="file" class="form-control" id="inputFile" aria-describedby="fileHelp">
-                                                    </div>
-                                                </div>
-
-                                            </div> 
+                                            <div class="sm:col-span-9">
+                                                <label for="inputFile" class="block text-sm font-medium text-gray-700">Upload File</label>
+                                                <input type="file" id="inputFile" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!--SQL-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLEdit">
-                                                <label name="sqlConfigurationsLbl">SQL Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                            </div>
-                                            <div id="panelSQLEdit" class="panel-body collapse">
-                                                <div class="row form-group  col-sm-6 col-xs-12"> 
-                                                    <label name="lbl_database" for="database">Database</label> 
-                                                    <select class="form-control" id="database" name="database">
-                                                    </select> 
-                                                </div>    
-                                                <div class="row">
-                                                    <div class="col-xs-12" id="scriptDiv"> 
-                                                        <label name="lbl_script" for="script">Script</label>
-                                                        <button type="button" class="togglefullscreen btn btn-default btn-xs marginLeft5" for="scriptDiv"><span class="glyphicon glyphicon-fullscreen"></span></button>
-                                                        <div name="scriptContainer" id="scriptContainer" aria-describedby="basic-editon1">
-                                                            <pre style="min-height:150px" id="script" name="script"></pre>
-                                                        </div>  
-                                                    </div>                       
-                                                </div>
+                                <!-- SQL Configurations -->
+                                <div x-data="{ open: false }" class="border rounded-lg bg-white shadow">
+                                    <div
+                                            class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
+                                            @click="open = !open"
+                                    >
+                                        <label class="font-semibold">SQL Configurations</label>
+                                        <svg
+                                                :class="{'rotate-90': open}"
+                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
 
-                                            </div> 
+                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="database" class="block text-sm font-medium text-gray-700">Database</label>
+                                                <select id="database" name="database" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label for="script" class="block text-sm font-medium text-gray-700">Script</label>
+                                            <button type="button" class="ml-2 px-2 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M8 3H5a2 2 0 00-2 2v3m0 8v3a2 2 0 002 2h3m8-16h3a2 2 0 012 2v3m0 8v3a2 2 0 01-2 2h-3" />
+                                                </svg>
+                                            </button>
+                                            <div id="scriptContainer" class="mt-2">
+                                                <pre id="script" class="bg-gray-50 border border-gray-200 rounded p-2 min-h-[150px] overflow-auto"></pre>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!--SERVICE-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="soapConfigurationsPanelEdit">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSERVICEEdit">
-                                                <label name="serviceConfigurationsLbl">SERVICE Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                <!-- SERVICE Configurations -->
+                                <div x-data="{ open: false }" class="border rounded-lg bg-white shadow">
+                                    <div
+                                            class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
+                                            @click="open = !open"
+                                    >
+                                        <label class="font-semibold">SERVICE Configurations</label>
+                                        <svg
+                                                :class="{'rotate-90': open}"
+                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+
+                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                                            <div class="sm:col-span-4">
+                                                <label for="databaseUrl" class="block text-sm font-medium text-gray-700">Database URL</label>
+                                                <select id="databaseUrl" name="databaseUrl" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
                                             </div>
-                                            <div id="panelSERVICEEdit" class="panel-body collapse">
-                                                <div class="row">
-                                                    <div class="form-group  col-sm-4"> 
-                                                        <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
-                                                        <select class="form-control" id="databaseUrl" name="databaseUrl">
-                                                        </select> 
-                                                    </div>
-                                                    <div class="input-group col-sm-7"> 
-                                                        <label name="lbl_service" for="service">Service</label> 
-                                                        <select type="text" class="form-control input-sm" id="service" name="service" style="width:100%;">
-                                                        </select> 
-                                                    </div>
-                                                </div>    
-                                                <div class="row" style="display: none">
-                                                    <div class="form-group col-sm-8" >
-                                                        <label name="lbl_service_path" for="servicepath">Service Path</label>
-                                                        <input id="servicepaths" name="servicepaths"  class="form-control" maxlength="255"  />  
-                                                    </div>
-                                                    <div class="form-group col-sm-4">
-                                                        <label name="lbl_method" for="method">Method</label>
-                                                        <input id="methods" name="methods" class="form-control" maxlength="255"  />
-                                                    </div>
-                                                </div>
-                                                <div class="row"  style="display: none">
-                                                    <div class="col-xs-12">
-                                                        <label name="lbl_envelope" for="envelope">Envelope</label> 
-                                                        <div name="envelopeContainer" id="envelopeContainer" aria-describedby="basic-editon1">
-                                                            <pre style="min-height:150px" id="envelope" name="envelope"></pre>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> 
+
+                                            <div class="sm:col-span-7">
+                                                <label for="service" class="block text-sm font-medium text-gray-700">Service</label>
+                                                <select id="service" name="service" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hidden Rows -->
+                                        <div class="hidden grid grid-cols-1 sm:grid-cols-12 gap-4">
+                                            <div class="sm:col-span-8">
+                                                <label for="servicepaths" class="block text-sm font-medium text-gray-700">Service Path</label>
+                                                <input id="servicepaths" name="servicepaths" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                            </div>
+                                            <div class="sm:col-span-4">
+                                                <label for="methods" class="block text-sm font-medium text-gray-700">Method</label>
+                                                <input id="methods" name="methods" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                            </div>
+                                        </div>
+
+                                        <div class="hidden">
+                                            <label for="envelope" class="block text-sm font-medium text-gray-700">Envelope</label>
+                                            <div id="envelopeContainer" class="mt-1">
+                                                <pre id="envelope" class="bg-gray-50 border border-gray-200 rounded p-2 min-h-[150px] overflow-auto"></pre>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                             <!--group information -->

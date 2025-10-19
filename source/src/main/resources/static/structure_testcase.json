@@ -1,0 +1,17 @@
+{
+  "application": "String. The application name provided, by default, put Google",
+  "testFolderId": "String. The test folder provided, by default, put USER",
+  "testcaseId": "String. The generated testcase ID",
+  "active": true,
+  "activeQA": true,
+  "activeUAT": true,
+  "activePROD": true,
+  "description": "String. Describe the testcase in one sentence, using gerkin syntax when possible",
+  "detailedDescription": "String. Put the feature description requested on top, and describe each steps of the testcase in detail. Use number and carriage return",
+  "priority": 1,
+  "externalProvider": "Cerberus-AI",
+  "externalReference": "",
+  "type": "AUTOMATED",
+  "status": "AI_GENERATED",
+  "usrCreated": "Cerberus-AI"
+}

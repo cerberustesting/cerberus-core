@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cerberus Test Step",
+  "type": "object",
+  "properties": {
+    "testFolderId": { "type": "string", "description": "The test folder provided" },
+    "testcaseId": { "type": "string", "description": "Unique identifier of the testcase" },
+    "stepId": { "type": "integer", "minimum": 1, "description": "Step number. Start at 1 and increment each step" },
+    "sort": { "type": "integer", "minimum": 1, "description": "Display order. Start at 1 and increment each step" },
+    "loop": { "type": "string", "enum": ["onceIfConditionTrue"], "description": "Loop strategy" },
+    "usingLibraryStep": { "type": "integer", "description": "Does this step provide from the Step Library. 1 if true, 0 if false" },
+    "libraryStepTestFolderId": { "type": ["string", "null"], "description": "Name of library test (if applicable)" },
+    "libraryStepTestcaseId": { "type": ["string", "null"], "description": "Code of library testcase (if applicable)" },
+    "libraryStepStepId": { "type": ["integer", 0], "description": "Step ID in the library (if applicable)" },
+    "description": { "type": "string", "description": "Functional step description" },
+    "conditionOperator": { "type": "string", "enum": ["always", "never"], "description": "Condition to execute" },
+    "promptForActionDefinition": {"type": "string", "description": "You are an assistant specialized in generating automated test cases for Cerberus Testing. Generate a prompt that I can use to generate the list of action and control to implement that step"}
+  }
+}

@@ -22,6 +22,7 @@ package org.cerberus.core.apiprivate;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.service.ai.impl.AIService;
 import org.cerberus.core.service.ai.impl.AISessionManager;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONObject;
@@ -44,6 +45,8 @@ public class AIPrivateController {
 
     @Autowired
     AISessionManager aISessionManager;
+    @Autowired
+    AIService aIService;
 
     @Operation(hidden=true)
     @GetMapping("/prompts")
@@ -73,6 +76,26 @@ public class AIPrivateController {
 
         try {
             return jsonResponse.put("messages", aISessionManager.getAllMessagesFromPrompt(sessionID)).toString();
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return "error " + ex.getMessage();
+        }
+    }
+
+    @Operation(hidden=true)
+    @GetMapping("/generateTestCase")
+    public String generateTestCase(HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        String testFolderId = request.getParameter("testFolderId");
+        String featureDescription = request.getParameter("featureDescription");
+
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+            //return jsonResponse.put("messages", aIService.generateTestCase(testFolderId,featureDescription)).toString();
+            return "";
         } catch (Exception ex) {
             LOG.warn(ex, ex);
             return "error " + ex.getMessage();

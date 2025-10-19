@@ -194,6 +194,7 @@
             <description>jsp</description>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/TestDataLibList.jsp</url-pattern>
+            <url-pattern>/QuickStart.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

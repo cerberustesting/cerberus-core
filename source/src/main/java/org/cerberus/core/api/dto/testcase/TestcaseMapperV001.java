@@ -80,4 +80,15 @@ public interface TestcaseMapperV001 {
     @Mapping(target = "testCaseLabels", ignore = true)
     @Mapping(target = "refOrigineUrl", ignore = true)
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
+
+    @Mapping(source = "testFolderId", target = "test")
+    @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "activeQA", target = "isActiveQA")
+    @Mapping(source = "activeUAT", target = "isActiveUAT")
+    @Mapping(source = "activePROD", target = "isActivePROD")
+    @Mapping(source = "externalProvider", target = "origine")
+    @Mapping(source = "externalReference", target = "refOrigine")
+    TestCase fromAItoEntity(TestcaseDTOV001 testcaseDTO);
+
 }
