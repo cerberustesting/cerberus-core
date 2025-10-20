@@ -106,6 +106,17 @@ public interface IParameterService {
 
     /**
      * This method can be used in order to retrieve a parameter directly in
+     * double format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
+    double getParameterDoubleByKey(String key, String system, double defaultValue);
+
+    /**
+     * This method can be used in order to retrieve a parameter directly in
      * String format.
      *
      * @param key

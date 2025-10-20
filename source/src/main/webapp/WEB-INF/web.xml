@@ -488,6 +488,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/LogEvent.jsp</url-pattern>
+            <url-pattern>/Usage.jsp</url-pattern>
             <url-pattern>/ParameterList.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/EventHookList.jsp</url-pattern>

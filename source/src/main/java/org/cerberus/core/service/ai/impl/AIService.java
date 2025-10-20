@@ -22,12 +22,15 @@ package org.cerberus.core.service.ai.impl;
 import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.core.http.StreamResponse;
+import com.anthropic.helpers.MessageAccumulator;
 import com.anthropic.models.messages.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cerberus.core.crud.entity.LogAIUsage;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.UserPromptMessage;
+import org.cerberus.core.crud.service.impl.LogAIUsageService;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.crud.service.impl.TestCaseService;
 import org.cerberus.core.service.ai.IAIService;
@@ -38,10 +41,13 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 
@@ -61,6 +67,8 @@ public class AIService implements IAIService {
     TestCaseGenerationPromptAI testCaseGenerationPromptAI;
     @Autowired
     TestCaseService testCaseService;
+    @Autowired
+    LogAIUsageService logAIUsageService;
 
     @Override
     public void askClaude(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion) {
@@ -181,8 +189,11 @@ public class AIService implements IAIService {
         String prompt = testCaseCreationGeneratePromptAI.buildPromptForTestcase(testFolderId,featureDescription);
 
         String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
-        String defaultModel = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
+        String modelString = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
         Integer maxToken = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
+
+        double priceInputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_input_per_million", "", 3.0);
+        double priceOutputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_output_per_million", "", 12.0);
 
         AnthropicClient anthropicClient = AnthropicOkHttpClient.builder()
                 .apiKey(apikey)
@@ -203,10 +214,13 @@ public class AIService implements IAIService {
         StringBuilder unitResponse = new StringBuilder();
         StringBuilder buffer = new StringBuilder();
 
+        MessageAccumulator messageAccumulator = MessageAccumulator.create();
+
         try (StreamResponse<RawMessageStreamEvent> streamResponse =
                      anthropicClient.messages().createStreaming(createParams)) {
 
             streamResponse.stream()
+                    .peek(messageAccumulator::accumulate)
                     .flatMap(event -> event.contentBlockDelta().stream())
                     .flatMap(deltaEvent -> deltaEvent.delta().text().stream())
                     .forEach(textDelta -> {
@@ -249,6 +263,18 @@ public class AIService implements IAIService {
                         }
                     });
 
+            //Log AI Usage
+            long inTokens = messageAccumulator.message().usage().inputTokens();
+            long outTokens = messageAccumulator.message().usage().outputTokens();
+            double cost = 0.0;
+            if (priceInputPerMillion > 0 || priceOutputPerMillion > 0) {
+                cost = (inTokens / 1_000_000.0) * priceInputPerMillion
+                        + (outTokens / 1_000_000.0) * priceOutputPerMillion;
+            }
+            LogAIUsage logAI = LogAIUsage.builder().sessionId(session).model(modelString).prompt(prompt).inputTokens((int) inTokens).outputTokens((int) outTokens)
+                    .cost(cost).usrCreated(user).dateCreated(new Timestamp(System.currentTimeMillis())).build();
+            logAIUsageService.create(logAI);
+
             websocketSession.sendMessage(new TextMessage("{\"type\":\"done\",\"message\":\"Generation complete\"}"));
 
         } catch (Exception e) {
@@ -278,7 +304,7 @@ public class AIService implements IAIService {
         LOG.debug(promptNextTestCaseID);
 
         //Call To get next ID
-        String testcaseId = this.getNextTestcaseId(promptNextTestCaseID);
+        String testcaseId = this.getNextTestcaseId(promptNextTestCaseID, session, user);
         LOG.info("Next TestcaseID proposal : " + testcaseId);
 
         //Create Test
@@ -294,8 +320,11 @@ public class AIService implements IAIService {
         LOG.debug(prompt);
 
         String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
-        String defaultModel = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
+        String modelString = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
         Integer maxToken = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
+
+        double priceInputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_input_per_million", "", 3.0);
+        double priceOutputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_output_per_million", "", 12.0);
 
         AnthropicClient anthropicClient = AnthropicOkHttpClient.builder()
                 .apiKey(apikey)
@@ -316,11 +345,14 @@ public class AIService implements IAIService {
         StringBuilder unitResponse = new StringBuilder();
         StringBuilder buffer = new StringBuilder();
 
+        MessageAccumulator messageAccumulator = MessageAccumulator.create();
+
         try (StreamResponse<RawMessageStreamEvent> streamResponse =
                      anthropicClient.messages().createStreaming(createParams)) {
 
             TestCase finalTestCase = testCase;
             streamResponse.stream()
+                    .peek(messageAccumulator::accumulate)
                     .flatMap(event -> event.contentBlockDelta().stream())
                     .flatMap(deltaEvent -> deltaEvent.delta().text().stream())
                     .forEach(textDelta -> {
@@ -357,6 +389,20 @@ public class AIService implements IAIService {
                             }
                         }
                     });
+
+
+            //Log AI Usage
+            long inTokens = messageAccumulator.message().usage().inputTokens();
+            long outTokens = messageAccumulator.message().usage().outputTokens();
+            double cost = 0.0;
+            if (priceInputPerMillion > 0 || priceOutputPerMillion > 0) {
+                cost = (inTokens / 1_000_000.0) * priceInputPerMillion
+                        + (outTokens / 1_000_000.0) * priceOutputPerMillion;
+            }
+            LogAIUsage logAI = LogAIUsage.builder().sessionId(session).model(modelString).prompt(prompt).inputTokens((int) inTokens).outputTokens((int) outTokens)
+                    .cost(cost).usrCreated(user).dateCreated(new Timestamp(System.currentTimeMillis())).build();
+            logAIUsageService.create(logAI);
+
             websocketSession.sendMessage(new TextMessage("{\"type\":\"test_created_ack\",\"tempId\":\""+tempId+"\",\"test\":\""+finalTestCase.getTest()+"\",\"testcase\":\""+finalTestCase.getTestcase()+"\"}"));
 
         } catch (Exception e) {
@@ -373,10 +419,13 @@ public class AIService implements IAIService {
         return fullResponse.toString();
     }
 
-    public String getNextTestcaseId(String prompt){
+    public String getNextTestcaseId(String prompt, String sessionId, String user){
         String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
         String modelString = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
         Integer maxToken = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 256);
+
+        double priceInputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_input_per_million", "", 3.0);
+        double priceOutputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_output_per_million", "", 12.0);
 
         AnthropicClient anthropicClient = AnthropicOkHttpClient.builder()
                 .apiKey(apikey)
@@ -396,12 +445,23 @@ public class AIService implements IAIService {
         // SYNCHRONE (No streaming)
         Message response = anthropicClient.messages().create(params);
 
+        //Log AI Usage
+        long inTokens = response.usage().inputTokens();
+        long outTokens = response.usage().outputTokens();
+        double cost = 0.0;
+        if (priceInputPerMillion > 0 || priceOutputPerMillion > 0) {
+            cost = (inTokens / 1_000_000.0) * priceInputPerMillion
+                    + (outTokens / 1_000_000.0) * priceOutputPerMillion;
+        }
+        LogAIUsage logAI = LogAIUsage.builder().sessionId(sessionId).model(modelString).prompt(prompt).inputTokens((int) inTokens).outputTokens((int) outTokens)
+                .cost(cost).usrCreated(user).dateCreated(new Timestamp(System.currentTimeMillis())).build();
+        logAIUsageService.create(logAI);
+
         //Get content (text only)
         String result = response.content().stream()
                 .map(block ->
                         block.text()
                                 .map(tb -> {
-                                    // tb.getText() -> String
                                     String txt = tb.text();
                                     return txt == null ? "" : txt;
                                 })

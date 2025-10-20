@@ -223,6 +223,21 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
+    public double getParameterDoubleByKey(String key, String system, double defaultValue) {
+        Parameter myParameter;
+        double outputResult = defaultValue;
+        try {
+            myParameter = this.findParameterByKey(key, system);
+            outputResult = Double.parseDouble(myParameter.getValue());
+        } catch (CerberusException | NumberFormatException ex) {
+            LOG.error("Error when trying to retrieve parameter : '{}' for system : '{}'. Default value returned : '{}'. Trace : {}",
+                    key, system, defaultValue, ex.toString(), ex);
+        }
+        LOG.debug("Success loading parameter : '{}' for system : '{}'. Value returned : '{}'", key, system, outputResult);
+        return outputResult;
+    }
+
+    @Override
     public String getParameterStringByKey(String key, String system, String defaultValue) {
         Parameter myParameter;
         String outPutResult = defaultValue;

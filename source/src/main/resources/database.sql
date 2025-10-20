@@ -6759,3 +6759,24 @@ UPDATE robot set `ExtraParam` = REPLACE(`ExtraParam`, ' ', ' | ');
 
 -- 1925
 DELETE FROM `invariant` where idname ='LANGUAGE' and value in ('fa', 'ru');
+
+-- 1926
+CREATE TABLE `logaiusage` (
+    `ID` INT NOT NULL AUTO_INCREMENT,
+    `SessionID` varchar(100) DEFAULT NULL,
+    `Model` varchar(150) DEFAULT NULL,
+    `Prompt` TEXT DEFAULT NULL,
+    `InputTokens` INT DEFAULT 0,
+    `OutputTokens` INT DEFAULT 0,
+    `Cost` DECIMAL(12,6),
+    `UsrCreated` varchar(45) NOT NULL DEFAULT '',
+    `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `UsrModif` varchar(45) NOT NULL DEFAULT '',
+    `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',
+        PRIMARY KEY (`ID`))
+    ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- 1927
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_anthropic_price_input_per_million', '3.0', 'Cost for 1 million of input token'),
+    ('', 'cerberus_anthropic_price_output_per_million', '12.0', 'Cost for 1 million of ouptut token');
