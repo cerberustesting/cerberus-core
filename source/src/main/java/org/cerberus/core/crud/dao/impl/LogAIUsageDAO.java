@@ -201,8 +201,8 @@ public class LogAIUsageDAO implements ILogAIUsageDAO {
             searchSQL.append(" or `Prompt` like ?");
             searchSQL.append(" or `InputTokens` like ?");
             searchSQL.append(" or `OutputTokens` like ? ");
-            searchSQL.append(" or `Cost` like ? )");
-            searchSQL.append(" or `UsrCreated` like ? )");
+            searchSQL.append(" or `Cost` like ? ");
+            searchSQL.append(" or `UsrCreated` like ? ");
             searchSQL.append(" or `DateCreated` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {

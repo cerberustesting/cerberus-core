@@ -84,12 +84,16 @@
                     this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
                     this.updateDisplayMonth();
                     this.loadStats();
+                    this.loadChart();
+                    loadAIUsageTable();
                 },
 
                 nextMonth() {
                     this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
                     this.updateDisplayMonth();
                     this.loadStats();
+                    this.loadChart();
+                    loadAIUsageTable();
                 },
 
                 formatDate(date) {
@@ -161,25 +165,25 @@
                                 this.usageChart.update();
                             } else {
                                 this.usageChart = new Chart(ctx, {
-                                    type: 'line',
+                                    type: 'bar', // ✅ Bar chart
                                     data: {
                                         labels: labels,
                                         datasets: [
                                             {
                                                 label: 'Input Tokens',
                                                 data: inputTokens,
-                                                borderColor: 'rgba(54, 162, 235, 1)',
-                                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                                fill: true,
-                                                tension: 0.3
+                                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                                borderColor: 'rgba(54, 162, 235, 0.7)',
+                                                borderWidth: 1,
+                                                stack: 'tokens'
                                             },
                                             {
                                                 label: 'Output Tokens',
                                                 data: outputTokens,
-                                                borderColor: 'rgba(255, 99, 132, 1)',
-                                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                                fill: true,
-                                                tension: 0.3
+                                                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                                borderColor: 'rgba(255, 99, 132, 0.7)',
+                                                borderWidth: 1,
+                                                stack: 'tokens'
                                             }
                                         ]
                                     },
@@ -192,12 +196,12 @@
                                         interaction: { mode: 'nearest', axis: 'x', intersect: false },
                                         scales: {
                                             x: {
-                                                display: true,
+                                                stacked: true,
                                                 title: { display: true, text: 'Date' }
                                             },
                                             y: {
+                                                stacked: true,
                                                 beginAtZero: true,
-                                                display: true,
                                                 title: { display: true, text: 'Tokens' },
                                                 ticks: {
                                                     callback: value => value.toLocaleString()
@@ -233,7 +237,7 @@
                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                     <i data-lucide="users" class="w-4 h-4"></i>AI Usage
                 </button>
-                <button @click="tab = 'log';"
+                <button @click="tab = 'log';loadLogViewerTable();"
                         :class="tab === 'log' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                     <i data-lucide="lock" class="w-4 h-4"></i>Logs
@@ -248,7 +252,7 @@
                     <!-- Users -->
                     <div>
                         <label class="block text-sm font-medium mb-1">Users</label>
-                        <select x-model="filters.user" @change="loadStats()" class="w-full border rounded p-2 h-10">
+                        <select x-model="filters.user" @change="loadStats();loadChart();loadAIUsageTable(filters.user)" class="w-full border rounded p-2 h-10">
                             <option value="ALL">ALL</option>
                             <template x-for="user in users" :key="user">
                                 <option :value="user" x-text="user"></option>

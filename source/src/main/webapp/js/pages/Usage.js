@@ -29,14 +29,36 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
+    loadAIUsageTable();
+}
 
-    //configure and create the dataTable for Log
-   var configurationsLogViewer = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFuncLogViewer(), [1, 'desc']);
-   var tableLogViewer = createDataTableWithPermissions(configurationsLogViewer, renderOptionsForLogViewer, "#logViewer");
+function loadLogViewerTable() {
+    if ($.fn.dataTable.isDataTable('#logViewerTable')) {
+        $('#logViewerTable').DataTable();
+    } else {
+        //configure and create the dataTable for Log
+        var configurationsLogViewer = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFuncLogViewer(), [1, 'desc']);
+        createDataTableWithPermissions(configurationsLogViewer, renderOptionsForLogViewer, "#logViewer");
+    }
+}
 
-    var configurationsAIUsage = new TableConfigurationsServerSide("aiUsageTable", "api/usage/aiCallList", "contentTable", aoColumnsFuncAIUsage(), [1, 'desc']);
-    var tableAIUsage = createDataTableWithPermissions(configurationsAIUsage, renderOptionsForAIUsage, "#aiUsage");
+function loadAIUsageTable(filter) {
+    let table;
 
+    if ($.fn.dataTable.isDataTable('#aiUsageTable')) {
+        table = $('#aiUsageTable').DataTable();
+    } else {
+        // configure and create the dataTable for AI Usage
+        const config = new TableConfigurationsServerSide("aiUsageTable","api/usage/aiCallList","contentTable",aoColumnsFuncAIUsage(),[1, 'desc']);
+        table = createDataTableWithPermissions(config, renderOptionsForAIUsage, "#aiUsage");
+    }
+
+    // Filter
+    if (filter && filter !== "ALL") {
+        table.search(filter).draw();
+    } else {
+        table.search("").draw(); // reset search
+    }
 }
 
 function renderOptionsForLogViewer() {
