@@ -367,7 +367,8 @@ public class VariableService implements IVariableService {
             if (!(execution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(execution.getLastServiceCalled().getResponseHTTPCode()));
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", execution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
-                if (execution.getLastServiceCalled().getEnd().getTime() > execution.getLastServiceCalled().getStart().getTime()) {
+                if ((!(execution.getLastServiceCalled().getEnd() == null)) && (!(execution.getLastServiceCalled().getStart() == null)) && 
+                        (execution.getLastServiceCalled().getEnd().getTime() > execution.getLastServiceCalled().getStart().getTime())) {
                     stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSETIME%",
                             String.valueOf(execution.getLastServiceCalled().getEnd().getTime() - execution.getLastServiceCalled().getStart().getTime()));
                 } else {
