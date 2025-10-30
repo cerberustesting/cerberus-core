@@ -1,0 +1,239 @@
+<!-- SINGLE-SELECT DROPDOWN TEMPLATE -->
+<template id="single-select-dropdown-template">
+    <div class="relative w-full">
+
+        <!-- Main button -->
+        <div @click.stop="toggle()"
+             :id="id + '-mainbutton'"
+             class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2
+                cursor-pointer select-none
+                dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                bg-white border-slate-300 text-slate-900 hover:bg-slate-100">
+            <span x-text="selectedLabel()" class="truncate"></span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-4 w-4 ml-2 transition-transform duration-200"
+                 :class="open ? 'rotate-90' : 'rotate-0'"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+        </div>
+
+        <!-- Dropdown list -->
+        <template x-teleport="body">
+            <div x-show="open"
+                 @click.outside="open = false"
+                 x-transition
+                 class="absolute rounded-md border shadow-lg z-50
+                  dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
+                  bg-white border-slate-300 text-slate-900"
+                 :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }">
+
+                <div class="bg-white dark:bg-slate-800 max-h-64 overflow-hidden rounded">
+
+                    <!-- Search -->
+                    <div class="p-2 border-b dark:border-slate-700">
+                        <input x-model="search" type="text" placeholder="Search..."
+                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
+                    </div>
+
+                    <!-- Items -->
+                    <div class="max-h-52 overflow-auto">
+                        <template x-for="item in filteredItems()" :key="getItemValue(item)">
+                            <button type="button"
+                                    @click.stop="selectItem(item)"
+                                    class="w-full flex gap-2 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                <svg x-show="isSelected(item)" xmlns="http://www.w3.org/2000/svg"
+                                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span x-text="getItemLabel(item)"></span>
+                            </button>
+                        </template>
+
+                        <template x-if="filteredItems().length === 0">
+                            <div class="px-3 py-2 text-sm text-gray-500">
+                                No results
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
+<script>
+    /**
+     * Creates a reusable single-select dropdown component for Alpine.js.
+     *
+     * @param {Object} config - Configuration object for the dropdown.
+     * @param {string} config.id - Unique identifier for the dropdown, used for button ID and positioning. Default: 'singleselect'.
+     * @param {string} config.eventSelected - Optional custom event name to dispatch when an item is selected.
+     * @param {string} config.labelField - The object field to display as label in the dropdown. Default: 'name'.
+     * @param {string} config.valueField - The object field to use as the value. Default: 'id'.
+     * @param {string} config.placeholder - Placeholder text when no item is selected. Default: '-- Select --'.
+     * @param {function(): Promise<Array>} config.loader - Async function to load dropdown items. Must return an array of objects.
+     * @param {any} config.preselected - Value of the item to preselect when the component initializes.
+     *
+     * @returns {Object} Alpine.js component object with reactive properties and methods.
+     */
+    function singleSelectDropdown(config = {}) {
+        return {
+            id: config.id || 'singleselect',
+            eventSelected: config.eventSelected,      // Name of the event to dispatch on selection
+            selectedValue: null,                      // Value bound to `x-modelable` for two-way binding
+            labelField: config.labelField || 'name', // Field name for item labels
+            valueField: config.valueField || 'id',   // Field name for item values
+            placeholder: config.placeholder || '-- Select --',
+            loader: config.loader || (() => []),     // Async loader function for items
+            preselected: config.preselected || null, // Optional preselected value
+            open: false,                              // Dropdown open/closed state
+            items: [],                                // Array of dropdown items
+            selected: null,                           // Currently selected item object
+            search: '',                               // Search/filter string
+            top: 0, left: 0, width: 0,               // Positioning and width of dropdown list
+
+            /**
+             * Initialize the dropdown:
+             * - Clones the template into the component element
+             * - Loads items via loader
+             * - Applies preselected value if provided
+             * - Sets initial dropdown position
+             * - Listens for `refresh-items` events to reload items
+             */
+            async init() {
+                const tpl = document.getElementById('single-select-dropdown-template').content.cloneNode(true);
+                this.$el.appendChild(tpl);
+
+                this.items = await this.loader();
+
+                if (this.preselected) {
+                    this.setSelected(this.preselected);
+                }
+
+                this.updatePosition();
+
+                // Listen for external requests to refresh the dropdown items
+                this.$el.addEventListener(this.id+'-refresh-items', async e => {
+                    this.items = await this.loader(e.detail);
+                    if (e.detail) {
+                        this.setSelected(e.detail);
+                    } else if (!this.items.some(i => i[this.valueField] === this.selected?.[this.valueField])) {
+                        this.selected = null;
+                    }
+                });
+
+                //Watch change of selectedValue
+                this.$watch('selectedValue', value => {
+                    if (this.getItemValue(this.selected) !== value) {
+                        this.setSelected(value);
+                    }
+                });
+            },
+
+            /**
+             * Get the value of an item, whether object or primitive
+             */
+            getItemValue(item) {
+                if (item === null || item === undefined) return null;
+                return typeof item === 'object' ? item[this.valueField] : item;
+            },
+
+            /**
+             * Get the label of an item, whether object or primitive
+             */
+            getItemLabel(item) {
+                if (item === null || item === undefined) return '';
+                return typeof item === 'object' ? item[this.labelField] : item;
+            },
+
+            /**
+             * Programmatically select an item based on its value.
+             *
+             * @param {any} value - The value of the item to select.
+             */
+            setSelected(value) {
+                const match = this.items.find(i => this.getItemValue(i) === value);
+                if (match !== undefined) this.selected = match;
+                this.selectedValue = this.getItemValue(this.selected);
+                this.$nextTick(() => {}); // Trigger Alpine re-render
+            },
+
+            /**
+             * Toggle the dropdown open/closed.
+             */
+            toggle() {
+                this.open = !this.open;
+                this.updatePosition();
+            },
+
+            /**
+             * Update the dropdown position relative to the main button.
+             */
+            updatePosition() {
+                const btn = document.getElementById(this.id + '-mainbutton');
+                if (!btn) return;
+                const rect = btn.getBoundingClientRect();
+                this.top = rect.bottom + window.scrollY + 5;
+                this.left = rect.left + window.scrollX;
+                this.width = rect.width;
+            },
+
+            /**
+             * Filter items based on the search string.
+             *
+             * @returns {Array} Array of filtered items.
+             */
+            filteredItems() {
+                return this.search
+                    ? this.items.filter(i => this.getItemLabel(i).toLowerCase().includes(this.search.toLowerCase()))
+                    : this.items;
+            },
+
+            /**
+             * Check if a specific item is currently selected.
+             *
+             * @param {Object} item - The item to check.
+             * @returns {boolean} True if the item is selected.
+             */
+            isSelected(item) {
+                return this.getItemValue(item) === this.getItemValue(this.selected);
+            },
+
+            /**
+             * Handle item selection:
+             * - Update `selected` object
+             * - Update `selectedValue` for x-modelable
+             * - Dispatch 'input' event for Alpine two-way binding
+             * - Optionally dispatch custom event
+             * - Close the dropdown
+             *
+             * @param {Object} item - The item to select.
+             */
+            selectItem(item) {
+                this.selected = item;
+                this.selectedValue = this.getItemValue(item);
+
+                this.$dispatch('input', this.selectedValue);
+
+                if (this.eventSelected) {
+                    console.debug("selected:", item, "; trigger event:", this.eventSelected);
+                    window.dispatchEvent(new CustomEvent(this.eventSelected, {
+                        detail: this.selectedValue
+                    }));
+                }
+
+                this.open = false;
+            },
+
+            /**
+             * Get the display label of the selected item or placeholder if none selected.
+             *
+             * @returns {string} Label to display in main button.
+             */
+            selectedLabel() {
+                return this.selected ? this.getItemLabel(this.selected) : this.placeholder;
+            }
+        };
+    }
+</script>

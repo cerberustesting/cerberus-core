@@ -1,150 +1,432 @@
-<!--Edit invariant page-->
-<div data-backdrop="static" class="modal fade center" id="editInvariantModal" role="dialog"
-     aria-labelledby="editInvariantModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editInvariantModalLabel" name="editInvariantField">Edit Invariant</h4>
+<div id="editInvariantModal"
+     x-data="invariantModal()"
+     x-cloak
+     x-show="open ?? false"
+        @keydown.escape.window="open = false"
+        @create-invariant-modal-open.window="open = true"
+        @close-invariant-modal.window="open = false"
+        class="crb_modal">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900 opacity-60" z-40 @click="open = false"></div>
+    <!-- Modal -->
+    <div class="crb_card w-full max-w-3xl mx-4 z-50 relative"
+         @click.stop
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center px-6 py-4 mb-8">
+            <div class="flex flex-col">
+                <h3 class="text-xl font-semibold" x-text="$store.labels.getLabel('pageInvariant','editinvarianttitle')"></h3>
+                <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageInvariant','editinvariantsubtitle')"></p>
             </div>
-            <div class="modal-body">
+            <button @click="open = false" class="hover:text-gray-700">&times;</button>
+        </div>
+
+        <!-- BODY -->
+        <div class="p-4">
+            <div>
                 <!--edit form-->
                 <form id="editInvariantModalForm" name="editInvariantModalForm" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </div>
+                        <div class="flex space-x-4 mb-8">
+                            <!-- Invariant Type -->
+                            <div class="w-1/2">
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('pageInvariant','idnamefield')">Invariant Type</label>
+                                <div x-data="singleSelectDropdown({
+                                            id: 'invariantSelect',
+                                            loader: async () => {
+                                                try {
+                                                    const r = await $.ajax({url: 'FindInvariantByID',data: { idName: 'INVARIANTPUBLIC' },async: true});
+                                                    return r.map(i => i.value);
+                                                } catch (e) {
+                                                    console.error('Failed to load invariants', e);
+                                                    return [];
+                                                }
+                                            },
+                                            preselected: form.idName
+                                        })"
+                                     x-modelable="selectedValue"
+                                     x-model="form.idName"
+                                     @change="if (mode === 'EDIT') displayWarningOnChangeInvariantKey()">
+                                </div>
+                            </div>
+                            <div  class="w-1/2">
+                                <div>
+                                    <label for="value" name="ValueField">Value</label>
+                                    <input type="text" x-model="form.value" class="crb_input flex h-10 items-center justify-between w-full px-3 py-2 text-sm gap-2"
+                                    name="value" id="value" aria-describedby="basic-addon1"
+                                    @keydown="validateKey($event)"
+                                    @change="if (mode === 'EDIT') displayWarningOnChangeInvariantKey()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full">
+                            <!-- Tabs -->
+                            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                                <!-- Definition -->
+                                <button type="button" @click.stop="tab = 'definition';"
+                                        id="InvDefinition"
+                                        :class="tab === 'definition' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="users" class="w-4 h-4"></i>Definition
+                                </button>
+                                <!-- Advanced -->
+                                <button type="button" @click.stop="tab = 'advanced';"
+                                        id="InvAdvanced"
+                                        :class="tab === 'advanced' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>Advanced
                                 </button>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="idname" name="idnameField">Id Name</label>
-                                <select class="form-control" name="idname" id="idname" aria-describedby="basic-addon1"></select>
-                                <input type="text" class="form-control input-sm" name="originalIdName" id="originalIdName" style="display:none;"/>
-                                <input type="text" class="form-control input-sm" name="originalValue" id="originalValue" style="display:none;"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="value" name="ValueField">Value</label>
-                                <input type="text" class="form-control" name="value" id="value"
-                                       aria-describedby="basic-addon1" readonly onkeydown="return inv_keyispressed(event);" >
-                            </div>
-                        </div>
-                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabInvDefinition" id="InvDefinition" name="tabDefinition">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabInvAdvanced" id="InvAdvanced" name="tabAdvanced">Advanced</a></li>
-                            <!--                            <li><a data-toggle="tab" href="#tabInvDescription" id="InvDescription" name="tabDescription">Description</a></li>-->
-                        </ul>
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabInvDefinition">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <textarea class="form-control" name="description" id="description"
-                                                  aria-describedby="basic-addon1"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-md-10">
-                                        <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
-                                        <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
-                                                  aria-describedby="basic-addon1"></textarea>
-                                    </div>
-                                    <div class="form-group col-md-2 col-xs-6">
-                                        <label for="sort" name="sortField">Sort</label>
-                                        <input type="number" class="form-control" name="sort" id="sort" aria-describedby="basic-addon1">
+                            <!-- Definition -->
+                            <div x-show="tab === 'definition'" class="">
+                                <div>
+                                    <div id="tabInvDefinition">
+                                        <div class="row">
+                                            <div class="form-group col-xs-12">
+                                                <label for="description" name="descriptionField">Description</label>
+                                                <textarea class="form-control" name="description" id="description"
+                                                          x-model="form.description" aria-describedby="basic-addon1"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-10">
+                                                <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
+                                                <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
+                                                          x-model="form.veryShortDesc" aria-describedby="basic-addon1"></textarea>
+                                            </div>
+                                            <div class="form-group col-md-2 col-xs-6">
+                                                <label for="sort" name="sortField">Sort</label>
+                                                <input type="number" x-model="form.sort" class="form-control" name="sort" id="sort" aria-describedby="basic-addon1">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabInvAdvanced">
-                                <div class='row'>
-                                    <div class='col-md-6 col-xs-12'>
-                                        <button id="AddInvButton" type="button" class="btn btn-default marginBottom20">
-                                            <span class="glyphicon glyphicon-plus-sign"></span> Add Attributes</button>
-                                    </div>
+                            <div x-show="tab === 'advanced'" class="">
+                                <div class="center marginTop25" id="tabInvAdvanced">
+                                    <template x-for="(attr, index) in form.attributes" :key="index">
+                                        <div class="row mt-2">
+                                            <div class="form-group col-xs-12">
+                                                <label :for="'gp'+(index+1)" x-text="'Attribute ' + (index+1)"></label>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       :id="'gp'+(index+1)"
+                                                       :name="'gp'+(index+1)"
+                                                       x-model="form.attributes[index]"
+                                                       @input="
+                                                               // 1. Mettre à jour _allAttributes à cet index
+                                                               _allAttributes[index] = form.attributes[index];
+
+                                                               // 2. Ajouter une ligne vide si on est sur le dernier et qu'on est < 9
+                                                               if(index === form.attributes.length-1 && form.attributes[index] !== '' && form.attributes.length < 9) {
+                                                                   form.attributes.push('');
+                                                               }
+                                                           ">
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp1">
-                                        <label for="gp1" name="gp1Field">Attribute 1</label>
-                                        <input type="text" class="form-control" name="gp1" id="gp1"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp2" style="display: none">
-                                        <label for="gp2" name="gp2Field">Attribute 2</label>
-                                        <input type="text" class="form-control" name="gp2" id="gp2"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp3" style="display: none">
-                                        <label for="gp3" name="gp3Field">Attribute 3</label>
-                                        <input type="text" class="form-control" name="gp3" id="gp3"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp4" style="display: none">
-                                        <label for="gp4" name="gp4Field">Attribute 4</label>
-                                        <input type="text" class="form-control" name="gp4" id="gp4"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp5" style="display: none">
-                                        <label for="gp5" name="gp5Field">Attribute 5</label>
-                                        <input type="text" class="form-control" name="gp5" id="gp5"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp6" style="display: none">
-                                        <label for="gp6" name="gp6Field">Attribute 6</label>
-                                        <input type="text" class="form-control" name="gp6" id="gp6"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp7" style="display: none">
-                                        <label for="gp7" name="gp7Field">Attribute 7</label>
-                                        <input type="text" class="form-control" name="gp7" id="gp7"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp8" style="display: none">
-                                        <label for="gp8" name="gp8Field">Attribute 8</label>
-                                        <input type="text" class="form-control" name="gp8" id="gp8"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12" id="Grpgp9" style="display: none">
-                                        <label for="gp9" name="gp9Field">Attribute 9</label>
-                                        <input type="text" class="form-control" name="gp9" id="gp9"
-                                               aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabInvDescription">
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 hover:border-gray-400" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editInvariantButton" name="buttonEdit">Save</button>
-                <button type="button" id="addInvariantButton" name="buttonAdd">Add</button>
-                <button type="button" id="duplicateInvariantButton" name="buttonDuplicate">Duplicate</button>
-            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end space-x-2 p-4 border-t border-gray-300 dark:border-gray-600">
+            <!-- BOUTON CLOSE -->
+            <button type="button" @click="open = false" name="buttonClose"
+                    class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                    x-text="$store.labels.getLabel('common','buttonclose')">
+            </button>
+            <!-- BOUTON SAVE -->
+            <button id="editInvariantButton" name="buttonEdit"
+                    class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                    @click="confirmInvariantModalHandler()"
+                    x-text="buttonLabel">
+            </button>
         </div>
     </div>
 </div>
+<script>
+    function invariantModal() {
+        return {
+            open: false,
+            tab: 'definition', //default tab to show
+            mode: 'EDIT', // EDIT | ADD | DUPLICATE
+            buttonLabel: 'Save', // Label of the Save Button
+            loading: false,
+            form: {
+                idName: '',
+                value: '',
+                description: '',
+                veryShortDesc: '',
+                sort: '',
+                attributes: [''] // until 9
+            },
+            _allAttributes: ['', '', '', '', '', '', '', '', ''],
+            original: {
+                idName: '',
+                value: ''
+            },
+
+            getButtonLabel() {
+                if (this.mode === 'ADD') return Alpine.store('labels').getLabel('common','buttonadd');
+                if (this.mode === 'DUPLICATE') return Alpine.store('labels').getLabel('common','buttonduplicate');
+                return Alpine.store('labels').getLabel('common','buttonsave');
+            },
+
+            async openModalInvariant(invariant = '', value = '', mode = 'EDIT', tab = 'definition') {
+                console.log("opened in mode : ", mode);
+                this.tab = tab || 'definition';
+                this.mode = mode;
+                this.loading = true;
+                this.buttonLabel = this.getButtonLabel;
+
+                // Réinitialisation des attributs
+                this.form.attributes = [''];
+
+                if (mode === 'EDIT' || mode === 'DUPLICATE') {
+                    // Récupération depuis le serveur
+                    const formData = new URLSearchParams();
+                    formData.append('idName', invariant);
+                    formData.append('value', value);
+
+                    try {
+                        const response = await fetch('ReadInvariant', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: formData.toString()
+                        });
+
+                        const data = await response.json();
+
+                        if (data.messageType === 'OK') {
+                            console.log("Read Invariant :", data.contentTable);
+                            this.feedInvariantModalData(data.contentTable, mode, data.contentTable.hasPermissionsUpdate);
+
+                        } else {
+                            alert("Unexpected error loading invariant");
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert("Unexpected error loading invariant");
+                    }
+                } else {
+                    // ADD mode, valeurs vides
+                    const inv = {
+                        idName: invariant,
+                        value: '',
+                        description: '',
+                        veryShortDesc: '',
+                        sort: '',
+                        gp1: invariant === 'ROBOTHOST' ? '10' : '',
+                        gp2: '', gp3: '', gp4: '', gp5: '', gp6: '', gp7: '', gp8: '', gp9: ''
+                    };
+                    this.feedInvariantModalData(inv, mode, true);
+                   // Alpine.nextTick(setDropdownAndValue);
+                }
+
+                this.open = true;
+                this.loading = false;
+            },
+
+            feedInvariantModalData(inv, mode, hasPermissionsUpdate) {
+                const isEditable = ((hasPermissionsUpdate && mode === 'EDIT') || mode === 'DUPLICATE' || mode === 'ADD');
+
+                // Remplissage
+                this.form.idName = inv.idName;
+                this.form.value = inv.value;
+                this.form.description = inv.description || '';
+                this.form.veryShortDesc = inv.veryShortDesc || '';
+                this.form.sort = inv.sort || '';
+                this.original.idName = inv.idName;
+                this.original.value = inv.value;
+
+                // Tableau complet pour l'envoi
+                this._allAttributes = [
+                    inv.gp1 || '',
+                    inv.gp2 || '',
+                    inv.gp3 || '',
+                    inv.gp4 || '',
+                    inv.gp5 || '',
+                    inv.gp6 || '',
+                    inv.gp7 || '',
+                    inv.gp8 || '',
+                    inv.gp9 || ''
+                ];
+
+                // Pour l'affichage : uniquement remplis + 1 vide
+                const filledAttrs = this._allAttributes.filter(a => a && a.trim() !== '');
+                filledAttrs.push(''); // 1 ligne vide pour ajout
+                this.form.attributes = filledAttrs;
+
+                // Readonly selon permissions
+                this.isEditable = isEditable;
+
+            },
+
+            displayWarningOnChangeInvariantKey() {
+                if (this.form.idName !== this.original.idName || this.form.value !== this.original.value) {
+                    notifyInline("WARNING: You are about to rename that invariant. For some invariant, it may have unexpected result. Do it with care.", 'info', "#DialogMessagesArea", true);
+                }
+            },
+
+            addAttribute() {
+                if (this.form.attributes.length < 9) {
+                    this.form.attributes.push('');
+                } else {
+                    alert("You cannot add more than 9 attributes");
+                }
+            },
+
+            validateKey(e) {
+                // On valide seulement pour ces IDNAME
+                if (['COUNTRY', 'ENVIRONMENT', 'SYSTEM'].includes(this.idname)) {
+                    // Autorise lettres, chiffres, underscore et tirets uniquement
+                    const forbidden = /[^a-zA-Z0-9_-]/;
+
+                    if (forbidden.test(e.key)) {
+                        // Message d'erreur (tu peux garder ton showMessage)
+                        showMessage(
+                            new Message("WARNING",
+                                'Character '+e.key+' is not allowed for '+this.idname+'. Use letters, numbers or "-_".'),
+                            $('#editInvariantModal'),
+                            false,
+                            1000
+                        );
+                        e.preventDefault();
+                    }
+                }
+            },
+
+            async confirmInvariantModalHandler() {
+                // Validation
+                if (!this.form.value.trim()) {
+                    alert("Please specify an invariant value!");
+                    return;
+                }
+
+                const myServlet = (this.mode === 'EDIT') ? 'UpdateInvariant' : 'CreateInvariant';
+                this.loading = true;
+
+                // Construction du payload x-www-form-urlencoded
+                const payload = new URLSearchParams();
+                payload.append("originalIdName", this.original.idName);
+                payload.append("originalValue", this.original.value);
+                payload.append("idName", this.form.idName);
+                payload.append("value", this.form.value);
+                payload.append("sort", this.form.sort);
+                payload.append("description", this.form.description);
+                payload.append("veryShortDesc", this.form.veryShortDesc);
+
+                // gp1 → gp9
+                for (let i = 0; i < 9; i++) {
+                    payload.append('gp'+(i+1), this._allAttributes[i] || '');
+                }
+
+                try {
+                    const response = await fetch(myServlet, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: payload.toString()
+                    });
+
+                    const data = await response.json();
+                    this.loading = false;
+
+                    console.log(data);
+
+                    if (data.messageType === 'OK') {
+                        let notificationMessage = Alpine.store('labels').getLabel('pageInvariant', 'notifsuccessmodification') || 'Success!';
+
+                        switch(this.mode) {
+                            case 'EDIT':
+                                notificationMessage = Alpine.store('labels').getLabel('pageInvariant','notifsuccessmodification') || notificationMessage;
+                                break;
+                            case 'ADD':
+                                notificationMessage = Alpine.store('labels').getLabel('pageInvariant','notifsuccesscreation') || notificationMessage;
+                                break;
+                            case 'DUPLICATE':
+                                notificationMessage = Alpine.store('labels').getLabel('pageInvariant','notifsuccessduplication') || notificationMessage;
+                                break;
+                        }
+
+                        notifyInPage('success', notificationMessage);
+                        this.open = false;
+
+                        const table = $('#invariantsTable').DataTable();
+                        table.ajax.reload(null, false);
+
+                    } else {
+                        notifyInPage('error', data.message || 'Error');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    this.loading = false;
+                    notifyInPage('error', 'Unexpected error saving invariant');
+                }
+            }
+        }
+    }
+
+    document.addEventListener('alpine:init', () => {
+        window.openModalInvariant = function(invariant, value, mode, tab) {
+            const modal = document.querySelector('#editInvariantModal');
+            if (!modal) {
+                console.error('Modal #editInvariantModal not found');
+                return;
+            }
+
+            // On récupère le composant Alpine lié à la modale
+            const component = Alpine.$data(modal);
+            if (!component || typeof component.openModalInvariant !== 'function') {
+                console.error('openModalInvariant is not available in Alpine component');
+                return;
+            }
+
+            // On appelle la méthode Alpine du composant
+            component.openModalInvariant(invariant, value, mode, tab);
+        };
+    });
+
+    function getReadableLocales() {
+        // Liste brute (tu peux garder la tienne ici)
+        const locales = ['aa','ab','ae','af','af-NA','af-ZA','agq-CM','ak','ak-GH','am','am-ET','an','ar','ar-AE','ar-BH','ar-DJ','ar-DZ','ar-EG','ar-EH','ar-ER','ar-IL','ar-IQ','ar-JO','ar-KM','ar-KW','ar-LB','ar-LY','ar-MA','ar-MR','ar-OM','ar-PS','ar-QA','ar-SA','ar-SD','ar-SO','ar-SS','ar-SY','ar-TD','ar-TN','ar-YE','ar-001','arn-CL','as','as-IN','asa-TZ','ast-ES','av','ay','az','az-AZ','ba','ba-RU','bas-CM','be','be-BY','bem-ZM','bez-TZ','bg','bg-BG','bi','bm','bm-ML','bn','bn-BD','bn-IN','bo','bo-CN','bo-IN','br','br-FR','brx-IN','bs','bs-BA','byn-ER','ca','ca-AD','ca-ES','ca-FR','ca-IT','ccp-BD','ccp-IN','ce','ce-RU','ceb-PH','cgg-UG','ch','chr-US','ckb-IQ','ckb-IR','co','co-FR','cr','cs','cs-CZ','cu','cv','cv-RU','cy','cy-GB','da','da-DK','da-GL','dav-KE','de','de-AT','de-BE','de-CH','de-DE','de-IT','de-LI','de-LU','dje-NE','dsb-DE','dua-CM','dv','dv-MV','dyo-SN','dz','dz-BT','ebu-KE','ee','ee-GH','ee-TG','el','el-CY','el-GR','en','en-AD','en-AE','en-AG','en-AI','en-AL','en-AR','en-AS','en-AT','en-AU','en-BA','en-BB','en-BD','en-BE','en-BG','en-BI','en-BM','en-BR','en-BS','en-BW','en-BZ','en-CA','en-CC','en-CH','en-CK','en-CL','en-CM','en-CN','en-CO','en-CX','en-CY','en-CZ','en-DE','en-DG','en-DK','en-DM','en-EE','en-ER','en-ES','en-FI','en-FJ','en-FK','en-FM','en-FR','en-GB','en-GD','en-GG','en-GH','en-GI','en-GM','en-GR','en-GU','en-GY','en-HK','en-HR','en-HU','en-ID','en-IE','en-IL','en-IM','en-IN','en-IO','en-IS','en-IT','en-JE','en-JM','en-JP','en-KE','en-KI','en-KN','en-KR','en-KY','en-LC','en-LR','en-LS','en-LT','en-LU','en-LV','en-ME','en-MG','en-MH','en-MM','en-MO','en-MP','en-MS','en-MT','en-MU','en-MV','en-MW','en-MX','en-MY','en-NA','en-NF','en-NG','en-NL','en-NO','en-NR','en-NU','en-NZ','en-PG','en-PH','en-PK','en-PL','en-PN','en-PR','en-PT','en-PW','en-RO','en-RS','en-RU','en-RW','en-SA','en-SB','en-SC','en-SD','en-SE','en-SG','en-SH','en-SI','en-SK','en-SL','en-SS','en-SX','en-SZ','en-TC','en-TH','en-TK','en-TO','en-TR','en-TT','en-TV','en-TW','en-TZ','en-UA','en-UG','en-UM','en-US','en-VC','en-VG','en-VI','en-VU','en-WS','en-ZA','en-ZM','en-ZW','en-001','en-150','eo','eo-001','es','es-AG','es-AI','es-AR','es-AW','es-BB','es-BL','es-BM','es-BO','es-BQ','es-BR','es-BS','es-BZ','es-CA','es-CL','es-CO','es-CR','es-CU','es-CW','es-DM','es-DO','es-EA','es-EC','es-ES','es-FK','es-GD','es-GF','es-GL','es-GP','es-GQ','es-GT','es-GY','es-HN','es-HT','es-IC','es-KN','es-KY','es-LC','es-MF','es-MQ','es-MS','es-MX','es-NI','es-PA','es-PE','es-PH','es-PM','es-PR','es-PY','es-SR','es-SV','es-SX','es-TC','es-TT','es-US','es-UY','es-VC','es-VE','es-VG','es-VI','es-419','et','et-EE','eu','eu-ES','ewo-CM','fa','fa-AF','fa-IR','ff','ff-BF','ff-CM','ff-GH','ff-GM','ff-GN','ff-GW','ff-LR','ff-MR','ff-NE','ff-NG','ff-SL','ff-SN','fi','fi-FI','fil-PH','fj','fo','fo-DK','fo-FO','fr','fr-BE','fr-BF','fr-BI','fr-BJ','fr-BL','fr-CA','fr-CD','fr-CF','fr-CG','fr-CH','fr-CI','fr-CM','fr-DJ','fr-DZ','fr-FR','fr-GA','fr-GF','fr-GN','fr-GP','fr-GQ','fr-HT','fr-KM','fr-LU','fr-MA','fr-MC','fr-MF','fr-MG','fr-ML','fr-MQ','fr-MR','fr-MU','fr-NC','fr-NE','fr-PF','fr-PM','fr-RE','fr-RW','fr-SC','fr-SN','fr-SY','fr-TD','fr-TG','fr-TN','fr-VU','fr-WF','fr-YT','fur-IT','fy','fy-NL','ga','ga-IE','gaa-GH','gd','gd-GB','gez-ER','gez-ET','gl','gl-ES','gn','gn-PY','gsw-CH','gsw-FR','gsw-LI','gu','gu-IN','guz-KE','gv','gv-IM','ha','ha-GH','ha-NE','ha-NG','haw-US','he','he-IL','hi','hi-IN','ho','hr','hr-BA','hr-HR','hsb-DE','ht','hu','hu-HU','hy','hy-AM','hz','ia','ia-001','id','id-ID','ie','ig','ig-NG','ii','ii-CN','ik','io','io-001','is','is-IS','it','it-CH','it-IT','it-SM','it-VA','iu','iu-CA','ja','ja-JP','jbo-001','jgo-CM','jmc-TZ','jv','jv-ID','ka','ka-GE','kab-DZ','kaj-NG','kam-KE','kcg-NG','kde-TZ','kea-CV','kg','khq-ML','ki','ki-KE','kj','kk','kk-KZ','kkj-CM','kl','kl-GL','kln-KE','km','km-KH','kn','kn-IN','ko','ko-KP','ko-KR','kok-IN','kpe-GN','kpe-LR','kr','ks','ks-IN','ksb-TZ','ksf-CM','ksh-DE','ku','ku-TR','kv','kw','kw-GB','ky','ky-KG','la','lag-TZ','lb','lb-LU','lg','lg-UG','li','lkt-US','ln','ln-AO','ln-CD','ln-CF','ln-CG','lo','lo-LA','lrc-IQ','lrc-IR','lt','lt-LT','lu','lu-CD','luo-KE','luy-KE','lv','lv-LV','mas-KE','mas-TZ','mer-KE','mfe-MU','mg','mg-MG','mgh-MZ','mgo-CM','mh','mi','mi-NZ','mk','mk-MK','ml','ml-IN','mn','mn-MN','mni-IN','moh-CA','mr','mr-IN','ms','ms-BN','ms-MY','ms-SG','mt','mt-MT','mua-CM','my','my-MM','myv-RU','mzn-IR','na','naq-NA','nb','nb-NO','nb-SJ','nd','nd-ZW','nds-DE','nds-NL','ne','ne-IN','ne-NP','ng','nl','nl-AW','nl-BE','nl-BQ','nl-CW','nl-NL','nl-SR','nl-SX','nmg-CM','nn','nn-NO','nnh-CM','no','nqo-GN','nr','nr-ZA','nso-ZA','nus-SS','nv','ny','ny-MW','nyn-UG','oc','oc-FR','oj','om','om-ET','om-KE','or','or-IN','os','os-GE','os-RU','pa','pa-IN','pa-PK','pi','pl','pl-PL','ps','ps-AF','ps-PK','pt','pt-AO','pt-BR','pt-CH','pt-CV','pt-FR','pt-GQ','pt-GW','pt-LU','pt-MO','pt-MZ','pt-PT','pt-ST','pt-TL','qu','qu-BO','qu-EC','qu-PE','rm','rm-CH','rn','rn-BI','ro','ro-MD','ro-RO','rof-TZ','ru','ru-BY','ru-KG','ru-KZ','ru-MD','ru-RU','ru-UA','rw','rw-RW','rwk-TZ','sa','sa-IN','sah-RU','saq-KE','sat-IN','sbp-TZ','sc','sc-IT','scn-IT','sd','sd-PK','se','se-FI','se-NO','se-SE','seh-MZ','ses-ML','sg','sg-CF','shi-MA','si','si-LK','sk','sk-SK','sl','sl-SI','sm','smn-FI','sn','sn-ZW','so','so-DJ','so-ET','so-KE','so-SO','sq','sq-AL','sq-MK','sq-XK','sr','sr-BA','sr-ME','sr-RS','sr-XK','ss','ss-SZ','ss-ZA','st','st-LS','st-ZA','su','sv','sv-AX','sv-FI','sv-SE','sw','sw-CD','sw-KE','sw-TZ','sw-UG','syr-IQ','syr-SY','ta','ta-IN','ta-LK','ta-MY','ta-SG','te','te-IN','teo-KE','teo-UG','tg','tg-TJ','th','th-TH','ti','ti-ER','ti-ET','tig-ER','tk','tk-TM','tl','tn','tn-BW','tn-ZA','to','to-TO','tr','tr-CY','tr-TR','trv-TW','ts','ts-ZA','tt','tt-RU','tw','twq-NE','ty','tzm-MA','ug','ug-CN','uk','uk-UA','ur','ur-IN','ur-PK','uz','uz-AF','uz-UZ','vai-LR','ve','ve-ZA','vi','vi-VN','vo','vun-TZ','wa','wa-BE','wae-CH','wal-ET','wo','wo-SN','xh','xh-ZA','xog-UG','yav-CM','yi','yi-001','yo','yo-BJ','yo-NG','yue-CN','yue-HK','za','zgh-MA','zh','zh-CN','zh-HK','zh-MO','zh-SG','zh-TW','zu','zu-ZA'];
+
+        // Déduplication + transformation lisible
+        return [...new Set(locales)].map(locale => {
+            try {
+                // Utilise Intl.DisplayNames si dispo (browser support OK)
+                const languageNames = new Intl.DisplayNames([locale], { type: 'language' });
+                const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
+
+                const [langCode, regionCode] = locale.split('-');
+                const language = languageNames.of(langCode) || langCode;
+                const region = regionNames.of(regionCode) || regionCode;
+
+                return {
+                    code: locale,
+                    label: locale +' — '+ capitalize(language) + ' ('+capitalize(region)+')'
+                };
+            } catch (e) {
+                // fallback si Intl n'est pas supporté
+                return { code: locale, label: locale };
+            }
+        });
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+</script>

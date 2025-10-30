@@ -89,7 +89,6 @@
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
-<jsp:include page="include/templates/dropdown.html"/>
 <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
   <%@ include file="include/global/messagesArea.html"%>
 
@@ -110,8 +109,6 @@
   <div id="FiltersPanel" class="crb_card" x-show="filtersOpen" x-transition>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-    <div class="w-80" x-init="mountDropdown($el, { items: ['WS1','WS2'], label: 'Workspaces' })"></div>
 
       <!-- SYSTEM MULTISELECT -->
       <div class="mb-4 relative" x-data="multiSelect('systemSelect', [])" x-init="loadSystems()">

@@ -1,0 +1,180 @@
+<!-- TEMPLATE CACHE - hidden -->
+<template id="workspace-dropdown-template">
+  <div class="relative w-full">
+    <!-- Main trigger, styled as a button but implemented as a div for flexibility -->
+    <div @click.stop="toggle()"
+         :id="id + '-mainbutton'"
+         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2
+                transition-all cursor-pointer select-none
+                dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                bg-white border-slate-300 text-slate-900 hover:bg-slate-100">
+
+      <!-- Display selected label -->
+      <span x-text="selectedLabel()" class="truncate"></span>
+
+      <!-- Quick actions: All / None buttons -->
+      <div class="flex gap-1 items-center" @click.stop>
+        <button @click="selectAll()" x-show="open" type="button"
+                class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
+          All
+        </button>
+        <button @click="clearAll()" x-show="open" type="button"
+                class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
+          None
+        </button>
+      </div>
+    </div>
+
+    <!-- Dropdown menu, teleported to body to avoid overflow issues -->
+    <template x-teleport="body">
+      <div x-show="open"
+           @click.outside="open = false"
+           x-transition
+           class="absolute rounded-md border shadow-lg z-50
+                  dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
+                  bg-white border-slate-300 text-slate-900"
+           :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }">
+
+        <!-- Dropdown content -->
+        <div class="bg-white dark:bg-slate-800 max-h-64 overflow-hidden rounded-md dark:border-slate-600">
+
+          <!-- Search input -->
+          <div class="p-2 border-b dark:border-slate-700">
+            <input type="text" x-model="search" placeholder="Search..."
+                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
+          </div>
+
+          <!-- List of items -->
+          <div class="max-h-52 overflow-auto">
+            <template x-for="workspace in filteredItems()" :key="workspace">
+              <button type="button" @click.stop="toggleItem(workspace)"
+                      class="w-full text-left gap-2 px-3 py-2 flex hover:bg-slate-100 dark:hover:bg-slate-700">
+                <!-- Selected indicator -->
+                <svg x-show="selected.includes(workspace)" xmlns="http://www.w3.org/2000/svg"
+                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span x-text="workspace"></span>
+              </button>
+            </template>
+
+            <!-- Empty state -->
+            <template x-if="filteredItems().length === 0">
+              <div class="px-3 py-2 text-sm text-gray-500 dark:text-slate-400 italic">
+                No matching results
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script>
+  /**
+   * Workspace Dropdown component
+   * Config options:
+   *   - id: unique id for this dropdown (required if multiple dropdowns on the same page)
+   *   - model: initial selected items (array)
+   */
+  function workspaceDropdown(config = {}) {
+    return {
+      id: config.id || 'workspace',   // Unique ID for multiple dropdowns
+      open: false,                    // Dropdown open state
+      items: [],                       // Available workspace items
+      selected: config.model ?? [],    // Selected items
+      search: '',                      // Search query
+      top: 0, left: 0, width: 0,      // Positioning and width for the teleported dropdown
+
+      /**
+       * Initialize the component
+       */
+      init() {
+        // Clone the template into the component element
+        const tpl = document.getElementById('workspace-dropdown-template').content.cloneNode(true);
+        this.$el.appendChild(tpl);
+
+        // Load user system data from session storage
+        const userRaw = sessionStorage.getItem('user');
+        if (userRaw) {
+          const user = JSON.parse(userRaw);
+          this.items = Array.isArray(user.system) ? user.system : [];
+        }
+
+        // Update dropdown position
+        this.updatePosition();
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (this.open && !this.$el.contains(e.target)) {
+            this.open = false;
+          }
+        });
+
+        // Update position on scroll or resize
+        window.addEventListener('scroll', () => { if (this.open) this.updatePosition(); }, true);
+        window.addEventListener('resize', () => { if (this.open) this.updatePosition(); });
+      },
+
+      /**
+       * Toggle dropdown open/close
+       */
+      toggle() {
+        this.open = !this.open;
+        this.updatePosition();
+      },
+
+      /**
+       * Calculate dropdown position based on main button
+       */
+      updatePosition() {
+        const btn = document.getElementById(this.id + '-mainbutton');
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        this.top = rect.bottom + window.scrollY + 5; // dropdown appears 5px below
+        this.left = rect.left + window.scrollX;
+        this.width = Math.max(rect.width, 320);
+      },
+
+      /**
+       * Return the label to display on main trigger
+       */
+      selectedLabel() {
+        if (!this.selected.length) return '-- Select Workspaces --';
+        return this.selected.length === 1 ? this.selected[0] : `${this.selected.length} selected`;
+      },
+
+      /**
+       * Filter items based on search query
+       */
+      filteredItems() {
+        return this.search
+                ? this.items.filter(i => i.toLowerCase().includes(this.search.toLowerCase()))
+                : this.items;
+      },
+
+      /**
+       * Toggle selection of an item
+       */
+      toggleItem(item) {
+        if (this.selected.includes(item)) {
+          this.selected = this.selected.filter(i => i !== item);
+        } else {
+          this.selected.push(item);
+        }
+      },
+
+      /**
+       * Select all items
+       */
+      selectAll() { this.selected = [...this.items]; },
+
+      /**
+       * Clear all selections
+       */
+      clearAll() { this.selected = []; }
+    }
+  }
+</script>

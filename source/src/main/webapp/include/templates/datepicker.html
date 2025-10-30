@@ -1,0 +1,342 @@
+<template id="tpl-datetimepicker">
+    <div class="relative w-full">
+
+        <!-- Bouton principal -->
+        <button type="button"
+                @click="toggle()"
+                class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+            <span x-text="formattedValue" class="pointer-events-none"></span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 pointer-events-none"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+
+
+        <!-- Picker -->
+        <div x-ref="pickerContent"
+             class="absolute mt-1 w-full rounded-md border shadow-lg z-50
+                dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
+                bg-white border-slate-300 text-slate-900 max-h-[500px] overflow-hidden p-2">
+
+            <!-- Tabs en haut -->
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                <button type="button" @click="goToTab('years')" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200" :class="activeTab==='years' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'">Année</button>
+                <button type="button" @click="goToTab('months')" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200" :class="activeTab==='months' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'">Mois</button>
+                <button type="button" @click="goToTab('days')" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200" :class="activeTab==='days' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'">Jour</button>
+                <button type="button" @click="goToTab('hours')" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200" :class="activeTab==='hours' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'">Heure</button>
+            </div>
+
+            <!-- Header avec navigation < > -->
+            <div class="flex items-center justify-between mb-2">
+                <button @click="previous()" class="p-2 hover:bg-gray-100 rounded-lg">&lt;</button>
+                <div class="font-bold" x-text="headerText"></div>
+                <button @click="next()" class="p-2 hover:bg-gray-100 rounded-lg">&gt;</button>
+            </div>
+
+            <!-- Contenu principal selon tab -->
+            <div class="mb-2">
+                <!-- Années -->
+                <template x-if="activeTab === 'years'">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 w-full max-w-[500px]">
+                        <template x-for="year in years" :key="year">
+                            <button type="button"
+                                    @click.stop="selectedYear = year; goToTab('months')"
+                                    :class="{'bg-blue-500 text-white': year === selectedYear, 'hover:bg-gray-100': year !== selectedYear}"
+                                    class="flex aspect-square items-center justify-center rounded-lg text-sm transition"
+                                    x-text="year">
+                            </button>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Mois -->
+                <template x-if="activeTab==='months'">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 w-full max-w-[500px]">
+                        <template x-for="(month, index) in monthNames" :key="index">
+                            <button type="button"
+                                    @click.stop="selectedMonth = index; goToTab('days')"
+                                    :class="{'bg-blue-500 text-white': index===selectedMonth, 'hover:bg-gray-100': index!==selectedMonth}"
+                                    class="aspect-square flex items-center justify-center rounded-lg text-sm transition"
+                                    x-text="month"></button>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Jours -->
+                <template x-if="activeTab==='days'">
+                    <div>
+                        <!-- Weekdays header -->
+                        <div class="grid grid-cols-7 gap-1 mb-2">
+                            <template x-for="d in weekDays">
+                                <div class="text-center text-xs font-medium text-gray-500 py-2" x-text="d"></div>
+                            </template>
+                        </div>
+
+                        <!-- Calendar days -->
+                        <div class="grid grid-cols-7 gap-1">
+                            <template x-for="day in calendarDays" :key="day.day+'-'+day.isCurrentMonth">
+                                <button type="button"
+                                        @click="selectDate(day)"
+                                        x-text="day.day"
+                                        :class="{
+                            'text-gray-400': !day.isCurrentMonth,
+                            'bg-blue-500 text-white': day.isSelected,
+                            'bg-blue-100 text-blue-600': day.isToday && !day.isSelected,
+                            'hover:bg-gray-100': day.isCurrentMonth && !day.isSelected
+                        }"
+                                        class="aspect-square rounded-lg text-sm flex items-center justify-center transition"></button>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Heures -->
+                <template x-if="activeTab==='hours'">
+                    <div class="flex gap-2">
+                        <select x-model="selectedHour" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10">
+                            <template x-for="h in hours" :key="h">
+                                <option :value="h" x-text="h"></option>
+                            </template>
+                        </select>
+                        <select x-model="selectedMinute" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10">
+                            <template x-for="m in minutes" :key="m">
+                                <option :value="m" x-text="m"></option>
+                            </template>
+                        </select>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    function dateTimePicker(config = {}) {
+        return {
+            open: false,
+            model: config.model,
+            modelField: config.modelField,
+            value: new Date(),
+            pickerEl: null,
+            buttonEl: null,
+            onChange: config.onChange || null,
+            boundOutsideClick: null,
+
+            init() {
+                this.clonePicker();
+                this.boundOutsideClick = (e) => {
+                    if (!this.pickerEl.contains(e.target) && e.target !== this.buttonEl) {
+                        this.open = false;
+                        this.pickerEl.style.display = 'none';
+                        document.removeEventListener('click', this.boundOutsideClick);
+                    }
+                };
+            },
+
+            toggle() {
+                if (!this.pickerEl) return;
+                this.open = !this.open;
+
+                if (this.open) {
+                    this.updatePosition();
+                    this.pickerEl.style.display = 'block';
+                    document.addEventListener('click', this.boundOutsideClick);
+                } else {
+                    document.removeEventListener('click', this.boundOutsideClick);
+                    this.pickerEl.style.display = 'none';
+                }
+            },
+
+            updateFromClone(newValue, close) {
+                this.value = newValue;
+
+                if (this.model && this.modelField) {
+                    this.model[this.modelField] = newValue.toISOString();
+                }
+
+                // fermer
+                if(close) {
+                    this.open = false;
+                    if (this.pickerEl) this.pickerEl.style.display = 'none';
+                }
+
+                // callback externe
+                if (this.onChange) {
+                    this.onChange(newValue.toISOString());
+                }
+            },
+
+            clonePicker() {
+                const tpl = document.querySelector('#tpl-datetimepicker');
+                if (!tpl) return;
+
+                // Injecter seulement le bouton inline
+                const clone = tpl.content.cloneNode(true);
+                clone.querySelector('[x-ref="pickerContent"]')?.remove();
+                this.$el.appendChild(clone);
+                Alpine.initTree(this.$el);
+
+                this.buttonEl = this.$el.querySelector('button');
+
+                // Créer le picker cloné dans le body
+                this.$nextTick(() => {
+                    const pickerContent = tpl.content.querySelector('[x-ref="pickerContent"]');
+                    if (!pickerContent) return;
+
+                    // Wrapper pour le picker cloné
+                    this.pickerEl = document.createElement('div');
+                    this.pickerEl.style.position = 'absolute';
+                    this.pickerEl.style.display = 'none';
+                    this.pickerEl.style.zIndex = 9999;
+                    document.body.appendChild(this.pickerEl);
+
+                    const pickerClone = pickerContent.cloneNode(true);
+                    pickerClone.setAttribute('x-data', `dateTimePickerClone_${config.id}()`);
+                    this.pickerEl.appendChild(pickerClone);
+
+                    // x-data spécifique au picker cloné
+                    Alpine.data(`dateTimePickerClone_${config.id}`, () => ({
+                        parent: this,
+
+                        // Valeurs initiales
+                        value: new Date(),
+                        selectedYear: (new Date()).getFullYear(),
+                        startYear: (new Date()).getFullYear() - 10,
+                        endYear: (new Date()).getFullYear() + 10,
+                        selectedMonth: (new Date()).getMonth(),
+                        selectedDate: (new Date()).getDate(),
+                        selectedHour: (new Date()).getHours().toString().padStart(2,'0'),
+                        selectedMinute: (new Date()).getMinutes().toString().padStart(2,'0'),
+
+                        activeTab: 'days', // onglet par défaut
+                        monthNames: ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'],
+
+                        // Liste des années (-10/+10)
+                        get years() {
+                            const arr = [];
+                            for(let y=this.startYear; y<=this.endYear; y++) arr.push(y);
+                            return arr;
+                        },
+
+                        get weekDays() {
+                            return ['L','M','M','J','V','S','D'];
+                        },
+
+                        get calendarDays() {
+                            const first = new Date(this.selectedYear, this.selectedMonth, 1);
+                            const last = new Date(this.selectedYear, this.selectedMonth + 1, 0);
+                            const prevLast = new Date(this.selectedYear, this.selectedMonth, 0);
+                            const start = first.getDay() || 7; // si dimanche (0), on met 7
+
+                            const days = [];
+                            const today = new Date();
+
+                            // jours du mois précédent
+                            for (let i = start - 2; i >= 0; i--) {
+                                days.push({
+                                    day: prevLast.getDate() - i,
+                                    isCurrentMonth: false,
+                                    isToday: false,
+                                    isSelected: false
+                                });
+                            }
+
+                            // jours du mois courant
+                            for (let i = 1; i <= last.getDate(); i++) {
+                                days.push({
+                                    day: i,
+                                    isCurrentMonth: true,
+                                    isToday:
+                                        i === today.getDate() &&
+                                        this.selectedMonth === today.getMonth() &&
+                                        this.selectedYear === today.getFullYear(),
+                                    isSelected: i === this.selectedDate
+                                });
+                            }
+
+                            return days;
+                        },
+
+
+                        get hours() { return Array.from({length:24}, (_,i)=>i.toString().padStart(2,'0')); },
+                        get minutes() { return Array.from({length:60}, (_,i)=>i.toString().padStart(2,'0')); },
+
+                        // Texte du header selon tab
+                        get headerText() {
+                            switch(this.activeTab){
+                                case 'years': return `${this.startYear} - ${this.endYear}`;
+                                case 'months': return this.selectedYear;
+                                case 'days': return `${this.monthNames[this.selectedMonth]} ${this.selectedYear}`;
+                                case 'hours': return 'Heure';
+                            }
+                        },
+
+                        // Changer d'onglet
+                        goToTab(tab){
+                            this.activeTab = tab;
+                            this.updateValue(false);
+                        },
+
+                        // Navigation < >
+                        previous(){
+                            if(this.activeTab==='years') {
+                                    this.startYear -= 20;
+                                    this.endYear -= 20;
+                            }
+                            if(this.activeTab==='months'){ this.selectedYear--; }
+                            if(this.activeTab==='days'){ this.selectedMonth--; if(this.selectedMonth<0){this.selectedMonth=11; this.selectedYear--;}}
+                        },
+
+                        next(){
+                            if(this.activeTab==='years') {
+                                this.startYear += 20;
+                                this.endYear += 20;
+                            }
+                            if(this.activeTab==='months'){ this.selectedYear++; }
+                            if(this.activeTab==='days'){ this.selectedMonth++; if(this.selectedMonth>11){this.selectedMonth=0; this.selectedYear++;}}
+                        },
+
+                        // Sélection d’un jour
+                        selectDate(day){
+                            this.selectedDate = day.day;
+                            this.updateValue(false);
+                        },
+
+                        // Mise à jour du bouton et propagation au parent
+                        updateValue(close){
+                            const newValue = new Date(this.selectedYear, this.selectedMonth, this.selectedDate, +this.selectedHour, +this.selectedMinute);
+                            this.value = newValue;
+                            if(this.parent && typeof this.parent.updateFromClone==='function'){
+                                this.parent.updateFromClone(newValue, close);
+                            }
+                        },
+
+                        // Affichage formaté sur le bouton
+                        get formattedValue(){
+                            const pad = n=>n.toString().padStart(2,'0');
+                            return `${pad(this.value.getDate())}/${pad(this.value.getMonth()+1)}/${this.value.getFullYear()} ${pad(this.value.getHours())}:${pad(this.value.getMinutes())}`;
+                        }
+                    }));
+
+
+                    Alpine.initTree(this.pickerEl);
+                });
+            },
+
+            updatePosition() {
+                if (!this.buttonEl || !this.pickerEl) return;
+                const rect = this.buttonEl.getBoundingClientRect();
+                this.pickerEl.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                this.pickerEl.style.left = `${rect.left + window.scrollX}px`;
+                this.pickerEl.style.minWidth = `${Math.max(rect.width, 320)}px`;
+            },
+
+            get formattedValue() {
+                const pad = n => n.toString().padStart(2,'0');
+                return `${pad(this.value.getDate())}/${pad(this.value.getMonth()+1)}/${this.value.getFullYear()} ${pad(this.value.getHours())}:${pad(this.value.getMinutes())}`;
+            }
+        }
+    }
+</script>

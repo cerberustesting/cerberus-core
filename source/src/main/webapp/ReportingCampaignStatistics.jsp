@@ -41,90 +41,144 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
+            <jsp:include page="include/templates/datepicker.html"/>
+             <jsp:include page="include/templates/selectMultipleDropdown.html"/>
+             <jsp:include page="include/templates/selectDropdown.html"/>
             <h1 class="page-title-line" id="title">Campaign Statistics </h1>
-            <div class="panel panel-default">
-                <div class="panel-body" id="filters">
-                    <div class="row" id="envCountryFilters" style="display: none;">
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="environmentSelect" id="labelEnvironmentSelect">Environnement</label>
-                                <select id="environmentSelect" class="form-control" multiple="multiple">
-                                </select>
+            <div class="crb_card">
+                <div id="filters" x-data="reportingCampaignStatiticsForm()" x-ref="filters" @load-stats.window="loadStatistics()">
+                    <div class="hidden" id="envCountryFilters">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="environmentSelect" class="block mb-2 text-sm font-medium text-gray-700">Environnement</label>
+                                <select id="environmentSelect" multiple class="w-full border border-gray-300 rounded-md p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"></select>
                             </div>
-                        </div>
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="countrySelect" id="labelCountrySelect">Pays</label>
-                                <select id="countrySelect" class="form-control" multiple="multiple">
-                                </select>
+                            <div>
+                                <label for="countrySelect" class="block mb-2 text-sm font-medium text-gray-700">Pays</label>
+                                <select id="countrySelect" multiple class="w-full border border-gray-300 rounded-md p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"></select>
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="systemAppGroup1Filters">
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="systemSelect" id="labelSystemSelect">Système</label>
-                                <select id="systemSelect" class="form-control" multiple="multiple">
-                                </select>
+                    <div class="mb-6" id="systemAppGroup1Filters">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Workspace -->
+                            <div>
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('reportingCampaignStatistics','filterworkspace')">Workspace</label>
+                                <div x-data="multiSelectDropdown({
+                                            id:'workspaceSelect',
+                                            model: form,
+                                            modelField: 'system',
+                                            labelField:'name',
+                                            valueField:'id',
+                                            loader: () => {
+                                                const userRaw = sessionStorage.getItem('user');
+                                                if (!userRaw) return [];
+                                                const user = JSON.parse(userRaw);
+                                                return Array.isArray(user.system) ? user.system.map(s => ({ name: s, id: s })) : [];
+                                            },
+                                            returnType:'value',
+                                            preselected:[]
+                                        })"
+                                     x-ref="workspaceDropdownComponent"
+                                     class="w-full">
+                                </div>
                             </div>
-                        </div>
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="applicationSelect" id="labelApplicationSelect">Application</label>
-                                <select id="applicationSelect" class="form-control" multiple="multiple">
-                                </select>
+
+                            <!-- Application -->
+                            <div>
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('reportingCampaignStatistics','filterapplication')">Application</label>
+                                <div x-data="multiSelectDropdown({
+                                    id:'applicationSelect',
+                                    model: form,
+                                    modelField: 'application',
+                                    labelField:'application',
+                                    valueField:'application',
+                                    loader: async (workspaces = []) => {
+                                        if (!workspaces.length) return [];
+                                        const systemsQ = workspaces.map(s => '&system=' + encodeURIComponent(s)).join('');
+                                        const resp = await fetch('ReadApplication?' + systemsQ);
+                                        const data = await resp.json();
+                                        return data.contentTable || [];
+                                      },
+                                    returnType:'value',
+                                    preselected:[]
+                                })"
+                                x-ref="applicationDropdownComponent"
+                                x-bind:class="selectedWorkspaces.length === 0 ? 'opacity-50 pointer-events-none' : ''"
+                                class="w-full opacity-50 pointer-events-none"
+                                @refresh-items.window="async e => {
+                                    $data.items = await $data.loader(e.detail);
+                                    // active le dropdown si items présents
+                                    if(e.detail.length > 0) {
+                                        $el.classList.remove('opacity-50', 'pointer-events-none');
+                                    } else {
+                                        $el.classList.add('opacity-50', 'pointer-events-none');
+                                    }
+                                }">
+                                </div>
                             </div>
-                        </div>
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="group1Select" id="labelGroup1Select">Group 1</label>
-                                <select id="group1Select" class="form-control" multiple="multiple">
-                                </select>
+                            <!-- Group 1 -->
+                            <div>
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('reportingCampaignStatistics','filtergroup1')">Application</label>
+                                <div x-data="singleSelectDropdown({
+                                  id:'workspaceUniqueSelect',
+                                  model: form,
+                                  modelField: 'group1',
+                                  labelField:'name',
+                                  valueField:'id',
+                                  loader:() => []
+                                })"
+                                class="w-full opacity-50 pointer-events-none">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="fromPicker" id="labelFromPicker">From</label>
-                                <div class='input-group date' id='fromPicker'>
-                                    <input type='text' class="form-control" />
-                                    <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                                </div>
-                            </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- From picker -->
+                        <div>
+                            <label class="block mb-2 text-sm font-medium">From2</label>
+                            <div x-data="dateTimePicker({
+                                id:'fromPicker',
+                                model: form,
+                                modelField: 'from',
+                                onChange: val => console.log('From:', val)
+                                })"
+                                class="w-full"></div>
                         </div>
-                        <div class='col-md-4'>
-                            <div class="form-group">
-                                <label for="toPicker" id="labelToPicker">To</label>
-                                <div class='input-group date' id='toPicker'>
-                                    <input type='text' class="form-control" />
-                                    <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                                </div>
-                            </div>
+
+
+                        <!-- To picker -->
+                        <div>
+                            <label class="block mb-2 text-sm font-medium">To</label>
+                            <div x-data="dateTimePicker({
+                                id:'toPicker',
+                                model: form,
+                                modelField: 'to',
+                                onChange: val => console.log('To:', val)
+                                })" class="relative mb-4"></div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="input-group-btn ">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadButton" style="border-radius: 4px;">Load</button>
-                            </div>
-                            <div class="input-group-btn " style="display: none;">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton" style="border-radius: 4px;">Load</button>
-                            </div>
+
+                        <div class="mt-6">
+                            <button
+                              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md h-10"
+                              @click.prevent="$dispatch('load-stats')">
+                              Load
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default" style="position: relative;">
+            <div class="crb_card">
                 <div id="loading" style="display: none; text-align: center; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1000;">
                     <img src="images/loading.gif" alt="Loading...">
                 </div>
-                <div class="panel-body" id="tagStatisticList">
+                <div id="tagStatisticList">
                     <table id="tagStatisticTable" class="table table-hover display" name="tagStatisticTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
+            </div>
+            <div class="crb_card">
                 <div class="panel-body" id="tagStatisticDetailList"  style="display: none;">
                     <table id="tagStatisticDetailTable" class="table table-hover display" name="tagStatisticDetailTable"></table>
                     <div class="marginBottom20"></div>

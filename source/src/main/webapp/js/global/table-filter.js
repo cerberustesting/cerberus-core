@@ -80,47 +80,6 @@ function filterOnColumn(tableId, column, value) {
 }
 
 /**
- * Function that generate Array that will be send do table to define filter
- * @param {type} tableId > Id of the datatable
- * @param {type} searchColums > Array of columns
- * @returns {undefined}
- */
-//function generateFiltersOnMultipleColumns(tableId, searchColumns) {
-//    var filterConfiguration = Array();
-//    /**
-//     * Loop on searchColumns and get Parameter values >> Build an array of object
-//     */
-//    var searchArray = new Array;
-//    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
-//        var param = GetURLParameters(searchColumns[searchColumn]);
-//        var searchObject = {
-//            param: searchColumns[searchColumn],
-//            values: param};
-//        searchArray.push(searchObject);
-//    }
-//    /**
-//     * Apply the filter to the table
-//     */
-//    var oTable = $('#' + tableId).dataTable();
-//    //resetFilters(oTable);
-//    var oSettings = oTable.fnSettings();
-//    for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
-//        for (sCol = 0; sCol < searchArray.length; sCol++) {
-//            if (oSettings.aoColumns[iCol].data === searchArray[sCol].param
-//                    && searchArray[sCol].values.length !== 0) {
-//                var filter = {
-//                    name: "sSearch_" + iCol,
-//                    value: searchArray[sCol].values.join(", ")};
-//                filterConfiguration.push(filter);
-//            }
-//        }
-//
-//    }
-//
-//    return (filterConfiguration);
-//}
-
-/**
  * Function that apply filters on given datatable's columns
  *
  * Values can either be contained into the given columns, or retrieved from the current URL.
@@ -214,7 +173,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     }
 
     //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='pull-right col-xs-12 filterTable marginBottom10 border-gray-200 dark:border-gray-800'><div class='col-xs-11 row' id='activatedFilters'></div><div class='col-xs-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
+    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='marginBottom10 border-gray-200 dark:border-gray-800'><div id='activatedFilters'></div></div>";
     $("#filterAlertDiv").remove();
     if ($("#" + tableId + "_filterresult").length > 0) {
         $(showFilteredColumnsAlertMessage).appendTo($("#" + tableId + "_filterresult")).hide();
@@ -237,15 +196,31 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
     //Start building the Alert Message for filtered column information
     //TODO : Replace with data from doc table
-    var filteredInformation = new Array();
-    filteredInformation.push("<div class=\"col-xs-2 \" style=\"margin-bottom:0px; padding:15px\">Filters : </div>");
-    if (table.search() !== "") {
-        filteredInformation.push("<div class=\"col-xs-2  label labelBlue marginTop5\" style=\"margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px\">");
-        filteredInformation.push("<span id='clearFilterButtonGlobal' onclick='" + fctClearIndividualFilter + "(\"" + tableId + "\", null, true)'  data-toggle='tooltip' title='Clear global filter' class='glyphicon glyphicon-remove-sign pull-right'  style='cursor:pointer;'></span>");
-        filteredInformation.push("<div data-toggle='tooltip' data-html='true' title=" + table.search() + " style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
-        filteredInformation.push("[" + table.search() + "]</div></div>");
-        filteredInformation.push(" ");
-    }
+    var filteredInformation = [];
+
+    // Conteneur principal des filtres (global + colonne)
+        filteredInformation.push(`
+    <div class="flex flex-col gap-2 mt-2 w-full">
+        <!-- Ligne label + clear -->
+        <div class="flex items-center gap-2">
+            <span class="font-semibold">Filters :</span>
+            <span id="clearFilterButtonGlobal"
+                    class="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs">
+                (Clear Filters)
+            </span>
+        </div>
+        
+        <!-- Ligne des filtres individuels (inline-flex pour rester sur la même ligne si possible) -->
+        <div id="filtersContainer" class="flex flex-wrap gap-2">
+            <!-- Search global -->
+            ${table.search() !== "" ? `
+            <div class="inline-flex items-center bg-slate-100 dark:bg-slate-700 rounded-full px-3 h-8">
+                <span class="truncate" title="${table.search()}">[ ${table.search()} ]</span>
+            </div>` : ""}
+        </div>
+    </div>
+    `);
+
     //Get the column name in the right order TODO check if it's correct
     var orderedColumns = [];
     $.each(oSettings.aoColumns, function (i, columns) {
@@ -301,17 +276,29 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             allcolumnSearchValues[value] = columnSearchValues
         }
 
-        //Get the column names (for title display)
+        // Get the column names (for title display)
         var title = value;
-        //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
+
+        // Tooltips
         var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
         var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
-        var display = '<input placeholder="Search..." autocomplete="off" id="inputsearch_' + index + '" class="form-control input-sm" name="searchField" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '" />';
+
+        // Base input field
+        var display = `
+        <input placeholder="Search..." 
+       autocomplete="off" 
+       id="inputsearch_${index}" 
+       name="searchField"
+       class="!text-slate-600 dark:!text-slate-300 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+       data-tooltip-target="tooltip_inputsearch_${index}" 
+       title="${emptyFilter}" />`;
+
         var valueFiltered = [];
 
         if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
-            //Build the Alert Message for filtered column information
-            var filteredColumnInformation = new Array();
+
+            // Build the Alert Message for filtered column information
+            var filteredColumnInformation = [];
             var filteredTooltip = '<div>';
 
             $(columnSearchValues).each(function (i) {
@@ -322,20 +309,37 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             });
             filteredColumnInformation.pop();
             filteredTooltip += '</div>';
-            filteredInformation.push("<div class=\"col-xs-2 label labelBlue marginTop5\" style=\"margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px\">");
-            filteredInformation.push("<span id='clearFilterButton" + index + "' onclick='" + fctClearIndividualFilter + "(\"" + tableId + "\", \"" + index + "\", false)' data-toggle='tooltip' title='Clear filter " + title + "' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;margin-top:8px'></span>");
-            filteredInformation.push("<div style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
-            if (oSettings.aoColumns[index].like) {
-                filteredInformation.push("<strong>" + title + "</strong> LIKE <br>");
-            } else {
-                filteredInformation.push("<strong>" + title + "</strong> IN <br>");
-            }
-            filteredInformation.push("<div data-toggle=\"tooltip\" data-html=\"true\" title=\"" + filteredTooltip + "\" id=\"alertFilteredValues" + index + "\">[ ");
-            filteredInformation.push(filteredColumnInformation);
-            filteredInformation.push(" ]</div></div></div>");
-            filteredInformation.push(" ");
-            display = "<input placeholder='Search...' autocomplete='off' id='inputsearch_" + index + "' class='form-control input-sm' name='searchField' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "' />";
-        }
+
+            filteredInformation.push(`
+                <div class="mb-1 h-8 rounded-full bg-slate-100 dark:bg-slate-700 inline-flex items-center px-3">
+                    <span id="clearFilterButton${index}" 
+                          onclick='${fctClearIndividualFilter}("${tableId}", "${index}", false)'
+                          data-tooltip-target="tooltip_clearFilter${index}" 
+                          title="Clear filter ${title}" 
+                          class="ml-auto cursor-pointer text-blue-600 dark:text-blue-200 hover:text-blue-800">
+                          ✕
+                    </span>
+                    <div class="truncate whitespace-nowrap overflow-hidden ml-2 inline-flex items-center space-x-1">
+                        ${oSettings.aoColumns[index].like ? `<strong>${title}</strong><span> LIKE </span>` : `<strong>${title}</strong><span> IN </span>`}
+                        <span data-tooltip-target="tooltip_filteredValues${index}" 
+                             data-html="true" 
+                             title="${filteredTooltip}" 
+                             id="alertFilteredValues${index}">
+                            [ ${filteredColumnInformation} ]
+                        </span>
+                    </div>
+                </div>
+                `);
+
+            display = `
+                <input placeholder="Search..." 
+                       autocomplete="off" 
+                       id="inputsearch_${index}" 
+                       name="searchField"
+                       class="!text-slate-600 dark:!text-slate-300 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                       data-tooltip-target="tooltip_inputsearch_${index}" 
+                       title="${valueFiltered.length} ${selectedFilter} : ${filteredTooltip}" />`;
+                        }
 
         //init column filter only if column visible
         if (oSettings.aoColumns[index].bVisible) {
@@ -468,10 +472,13 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             filteredStringToDisplay += filteredInformation[l];
         }
 
-        $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
-        $("#" + tableId + "_wrapper #clearFilterButton").off("click").click(function () {
+        // Après avoir injecté filteredInformation dans le DOM
+        $("#" + tableId + "_wrapper #activatedFilters").html(filteredInformation.join(""));
+
+// Fix lien Clear Filters
+        $("#" + tableId + "_wrapper #clearFilterButtonGlobal").off("click").click(function () {
             if (clientSide) {
-                columnSearchValuesForClientSide = [];//reset the search value when the user click on the clear all buton
+                columnSearchValuesForClientSide = [];//reset client-side search
             }
             resetFilters($("#" + tableId).dataTable(), undefined, true);
         });

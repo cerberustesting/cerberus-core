@@ -48,30 +48,10 @@ function openModalInvariant(invariant, value, mode, tab) {
         // DUPLICATE
         duplicateInvariantClick(invariant, value);
     }
+    window.dispatchEvent(new Event('create-invariant-modal-open'));
 }
 
 function initModalInvariant() {
-
-    var doc = new Doc();
-    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-    $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
-
-    $("[name='descriptionField']").html(doc.getDocLabel("page_invariant", "description"));
-    $("[name='idnameField']").html(doc.getDocLabel("page_invariant", "idname"));
-    $("[name='ValueField']").html(doc.getDocLabel("page_invariant", "value"));
-    $("[name='sortField']").html(doc.getDocLabel("page_invariant", "sort"));
-    $("[name='veryShortDescField']").html(doc.getDocLabel("page_invariant", "veryShortDesc"));
-    $("[name='gp1Field']").html(doc.getDocLabel("page_invariant", "gp1"));
-    $("[name='gp2Field']").html(doc.getDocLabel("page_invariant", "gp2"));
-    $("[name='gp3Field']").html(doc.getDocLabel("page_invariant", "gp3"));
-    $("[name='gp4Field']").html(doc.getDocLabel("page_invariant", "gp4"));
-    $("[name='gp5Field']").html(doc.getDocLabel("page_invariant", "gp5"));
-    $("[name='gp6Field']").html(doc.getDocLabel("page_invariant", "gp6"));
-    $("[name='gp7Field']").html(doc.getDocLabel("page_invariant", "gp7"));
-    $("[name='gp8Field']").html(doc.getDocLabel("page_invariant", "gp8"));
-    $("[name='gp9Field']").html(doc.getDocLabel("page_invariant", "gp9"));
 
     $("#editInvariantButton").off("click");
     $("#editInvariantButton").click(function () {
@@ -260,7 +240,7 @@ function confirmInvariantModalHandler(mode) {
                 var oTable = $("#invariantsTable").dataTable();
                 oTable.fnDraw(false);
                 $('#editInvariantModal').data("Saved", true);
-                $('#editInvariantModal').modal('hide');
+                window.dispatchEvent(new Event('close-invariant-modal'));
                 showMessage(data);
                 // Clean local Storage
                 cleanCacheInvariant(inv1);
@@ -310,7 +290,6 @@ function feedInvariantModal(invariant, value, modalId, mode) {
 
                     feedInvariantModalData(inv, modalId, mode, hasPermissions);
 
-                    formEdit.modal('show');
                 } else {
                     showUnexpectedError();
                 }
@@ -342,7 +321,6 @@ function feedInvariantModal(invariant, value, modalId, mode) {
         var hasPermissions = true;
         feedInvariantModalData(inv, modalId, mode, hasPermissions);
 
-        formEdit.modal('show');
 
     }
 

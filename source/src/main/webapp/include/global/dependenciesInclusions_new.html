@@ -1,23 +1,29 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+<!--Use during the migration. At the end of the migration :
+    * Remove Bootstrap dependencies
+    * Remove select2 dependencies
+    * Remove tether dependencies
+    * VK beautify to put only on AppService Page
+-->
 
 <!--Favicon-->
 <link rel="icon" type="image/png" href="images/favicon.ico.png">
-<!--Static content-->
+
+<!--STATIC CONTENT-->
+<!--Custom Cerberus js for i18n Labels-->
 <script type="text/javascript" src="js/static-data/labels.js"></script>
 
-<!--Favico JS-->
+<!--FAVICO JS-->
+<!--Management of Favicon of execution page-->
 <script src="dependencies/favico.js-0.3.10/favico-0.3.10.min.js"></script>
 
-<!--Font Awesome-->
-<link rel="stylesheet" type="text/css" href="dependencies/FontAwesome-4.5.0/css/font-awesome.min.css">
-<!--Font Inter-->
+<!--FONT-->
+<!--Font Inter from Google-->
 <link rel="stylesheet" type="text/css" href="fonts/inter/inter.css">
 
-<!--Flag 16-->
-<link rel="stylesheet" type="text/css" href="dependencies/Flags16/css/flags16.css"/>
-
-<!--Lucide-->
+<!--Lucide icon-->
+<!--SVG Generation-->
 <script src="dependencies/Lucide-0.544.0/lucide.min.js"></script>
 
 <!--JQuery tools-->
@@ -33,12 +39,12 @@
 <script src="dependencies/Alpine-3.15.0/collapse.min.js" defer></script>
 <script src="dependencies/Alpine-3.15.0/morph.min.js" defer></script>
 
-<!-- Init Alpine -->
+<!-- Custom Cerberus Init Alpine -->
 <script type="text/javascript" src="js/global/initAlpineStore.js"></script>
 
-<!-- Toastr -->
-<link href="dependencies/Toastr-2.1.3/toastr.min.css" rel="stylesheet"/>
-<script src="dependencies/Toastr-2.1.3/toastr.min.js"></script>
+<!-- Sweet Alerts 2 -->
+<!-- Used for alerts and notifications -->
+<script src="dependencies/Sweetalert2-11.26.3/sweetalert2.min.js"></script>
 
 <!--Datatable 1.10.12-->
 <script src="dependencies/DataTables-1.10.12/js/jquery.dataTables.min.custom.js"></script>
@@ -60,10 +66,6 @@
 <!--Datatable Fixed Header 3.1.2-->
 <script src="dependencies/FixedHeader-3.1.2/js/dataTables.fixedHeader.min.js"></script>
 
-<!--Select2 4.0.13-->
-<script src="dependencies/Select2-4.0.13/js/select2.full.min.js"></script>
-<link rel="stylesheet" type="text/css" href="dependencies/Select2-4.0.13/css/select2.min.css">
-
 <!--Linkify 2.1.4-->
 <script src="dependencies/Linkify-2.1.4/linkify.min.js"></script>
 <script src="dependencies/Linkify-2.1.4/linkify-string.min.js"></script>
@@ -75,18 +77,10 @@
 <!--Ace-->
 <!--<script src="dependencies/Ace-1.38.0/ace.js"></script>-->
 <script src="dependencies/Ace-1.2.6/ace.js"></script>
-
 <!--JS Beautify-->
 <script src="dependencies/Js-Beautify-1.6.12/beautify.js"></script>
 <script src="dependencies/Js-Beautify-1.6.12/beautify-html.js"></script>
 
-<!--JS metisMenu-->
-<script src="dependencies/MetisMenu-2.7.0/metisMenu.min.js"></script>
-
-<!--vkbeautify-->
-<script src="dependencies/vkbeautify-0.99.00.beta/vkbeautify.0.99.00.beta.js"></script>
-
-<script src="dependencies/Tether-1.4.0/tether.min.js"></script>
 
 <!--Custom styles inclusions-->
 <link rel="stylesheet" type="text/css" href="css/global/default.css">
@@ -104,4 +98,5 @@
 <script type='text/javascript' src='js/global/messageInfoAndSplashPage.js'></script>
 <script type="text/javascript" src="js/global/header2.js"></script>
 <script type="text/javascript" src="js/global/interactiveTutorial.js"></script>
+<script type="text/javascript" src="js/global/notification.js"></script>
 
