@@ -105,6 +105,7 @@ public class TestCaseGenerationPromptAI {
         TestcaseStepActionDTOV001 dto = objectMapper.readValue(aiJson, TestcaseStepActionDTOV001.class);
         dto.setTestFolderId(testcaseStep.getTest());
         dto.setTestcaseId(testcaseStep.getTestcase());
+        dto.setStepId(testcaseStep.getStepId());
 
         TestCaseStepAction entity = testcaseStepActionMapper.toEntity(dto);
 
@@ -113,11 +114,13 @@ public class TestCaseGenerationPromptAI {
         return entity;
     }
 
-    public TestCaseStepActionControl createTestCaseStepActionControlFromAiResponse(String aiJson, TestCaseStep testcaseStepAction) throws IOException {
+    public TestCaseStepActionControl createTestCaseStepActionControlFromAiResponse(String aiJson, TestCaseStepAction testcaseStepAction) throws IOException {
 
         TestcaseStepActionControlDTOV001 dto = objectMapper.readValue(aiJson, TestcaseStepActionControlDTOV001.class);
         dto.setTestFolderId(testcaseStepAction.getTest());
         dto.setTestcaseId(testcaseStepAction.getTestcase());
+        dto.setStepId(testcaseStepAction.getStepId());
+        dto.setActionId(testcaseStepAction.getActionId());
 
         TestCaseStepActionControl entity = testcaseStepActionControlMapper.toEntity(dto);
 

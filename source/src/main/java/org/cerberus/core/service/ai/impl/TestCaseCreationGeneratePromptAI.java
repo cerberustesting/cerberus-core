@@ -22,6 +22,7 @@ package org.cerberus.core.service.ai.impl;
 import com.anthropic.models.beta.messages.MessageCreateParams;
 import com.anthropic.models.messages.Message;
 import org.apache.logging.log4j.core.util.JsonUtils;
+import org.cerberus.core.crud.entity.TestCaseStep;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -96,7 +97,7 @@ public class TestCaseCreationGeneratePromptAI {
         return prompt;
     }
 
-    public String buildPromptForActionsAndControls(String identifiedSteps){
+    public String buildPromptForActionsAndControls(TestCaseStep testCaseStep, String testCaseDescription, String promptForActionDefinition){
 
         String availableActions = readJsonFromResources("static/actions.json");
         String availableControls = readJsonFromResources("static/controls.json");
@@ -106,6 +107,9 @@ public class TestCaseCreationGeneratePromptAI {
         String prompt = new StringBuilder()
                 .append("You are an expert assistant specialized in generating automated test cases for Cerberus Testing.\n\n")
                 .append("Based on the following feature description and functional step description, generate a JSON array of functional actions and controls.\n")
+                .append("The testcase you are implementing has this detailed description :\n").append(testCaseDescription).append("\n\n")
+                .append("The step you are implementing has this detailed description :\n").append(testCaseStep.getDescription()).append("\n\n")
+                .append("What you try to achieve :\n").append(promptForActionDefinition).append("\n\n")
                 .append("**Documentation Actions :**\n").append(availableActions).append("\n\n")
                 .append("Chaque action disponible dans Cerberus est décrite par un objet contenant les champs suivants : action (le type d'action à réaliser, par exemple click), param1, param2, param3 (paramètres à utiliser dans les actions), applicationType (types d'application où l'action est applicable, ex. GUI, IPA, APK, FAT), et description (explication concise de ce que fait l'action, par exemple « Click on the element »).").append("\n\n")
                 .append("**Documentation Controls  :**\n").append(availableControls).append("\n\n")
