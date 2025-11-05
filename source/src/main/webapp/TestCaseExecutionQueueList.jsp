@@ -33,7 +33,6 @@
         <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Executions in Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>

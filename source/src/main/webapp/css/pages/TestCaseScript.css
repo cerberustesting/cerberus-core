@@ -133,7 +133,7 @@
 .action {
     font-size: 12px;
     background-color: #fff;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--crb-grey-light-color);
     border-left: 4px solid rgb(44,123,229);
     border-radius: 4px;
     margin-top: 4px;
@@ -142,7 +142,7 @@
 .property {
     padding: 5px;
     font-size: 12px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--crb-grey-light-color);
     border-left: 6px solid #f0ad4e;
     border-radius: 3px 3px 0 0;
     color: var(--crb-black-color);
@@ -163,15 +163,19 @@
     background-color: #f8f8f8;
     padding: 0px;
     margin-left: -4px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--crb-grey-light-color);
     border-left: 4px solid rgb(0,210,122);
     border-radius: 4px;
+}
+
+#stepsWrapper::-webkit-scrollbar {
+    display: none;
 }
 
 .step {
     font-size: 13px;
     padding: 0px;
-    border: 0px solid #e5e5e5;
+    border: 0px solid var(--crb-grey-light-color);
     background-color: transparent;
 }
 
@@ -179,7 +183,7 @@
     border-left: 4px solid rgb(39,188,253);
     border-radius: 4px;
     margin-top: 4px;
-    background-color: var(--crb-white-color);
+    background-color: var(--crb-new-bg);
     color: var(--crb-black-color);
 }
 
@@ -325,17 +329,17 @@
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 .step-action {
-    background-color: var(--crb-white-color);
+    background-color: var(--crb-new-bg);
 }
 
 .step-action:hover {
-    background-color: var(--crb-grey-light-color);
+    background-color: var(--crb-grey-superlight-color);
 }
 .step-action:hover input{
-    background-color: var(--crb-grey-light-color);
+    background-color: var(--crb-grey-superlight-color);
 }
 .step-action:hover select{
-    background-color: var(--crb-grey-light-color);
+    background-color: var(--crb-grey-superlight-color);
 }
 
 .step-action input::-webkit-input-placeholder {
@@ -444,14 +448,14 @@
 
 .list-group-item-calm.active {
     color:var(--crb-black-color);
-    background-color:var(--crb-grey-superlight-color);
+    background-color:var(--crb-new-bg);
     border: 2px solid rgb(39,188,253);
     border-left: 4px solid rgb(39,188,253);
 }
 
 .list-group-item-calm.active:hover {
     border-color:#46b8da;
-    background-color:var(--crb-grey-light-color);
+    background-color:var(--crb-new-bg);
     color:var(--crb-black-color);
 }
 

@@ -2,9 +2,6 @@
      x-data="invariantModal()"
      x-cloak
      x-show="open ?? false"
-        @keydown.escape.window="open = false"
-        @create-invariant-modal-open.window="open = true"
-        @close-invariant-modal.window="open = false"
         class="crb_modal">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-slate-900 opacity-60" z-40 @click="open = false"></div>
@@ -122,11 +119,8 @@
                                                        :id="'gp'+(index+1)"
                                                        :name="'gp'+(index+1)"
                                                        x-model="form.attributes[index]"
-                                                       @input="
-                                                               // 1. Mettre à jour _allAttributes à cet index
-                                                               _allAttributes[index] = form.attributes[index];
+                                                       @input="_allAttributes[index] = form.attributes[index];
 
-                                                               // 2. Ajouter une ligne vide si on est sur le dernier et qu'on est < 9
                                                                if(index === form.attributes.length-1 && form.attributes[index] !== '' && form.attributes.length < 9) {
                                                                    form.attributes.push('');
                                                                }
