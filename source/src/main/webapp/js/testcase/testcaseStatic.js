@@ -622,7 +622,7 @@ var newPropertyPlaceholder = {
                 }
             ]
         },
-        "retry": {
+        "retryNb": {
             "label": {
                 "en": "Number of retry (until non-empty result)",
                 "fr": "Number of retry (until non-empty result)"
@@ -630,7 +630,7 @@ var newPropertyPlaceholder = {
             "class": "col-sm-3",
             "picto": "images/property-retry.png"
         },
-        "period": {
+        "retryPeriod": {
             "label": {
                 "en": "Retry period (ms)",
                 "fr": "Retry period (ms)"
