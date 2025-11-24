@@ -6780,3 +6780,7 @@ CREATE TABLE `logaiusage` (
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_anthropic_price_input_per_million', '3.0', 'Cost for 1 million of input token'),
     ('', 'cerberus_anthropic_price_output_per_million', '12.0', 'Cost for 1 million of ouptut token');
+
+-- 1928
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_groovy_classes_whitelist', '', 'Extra classes in addition to the default whitelist for Groovy scripting. Each class must be separated by a comma. Not available on SaaS instance.');

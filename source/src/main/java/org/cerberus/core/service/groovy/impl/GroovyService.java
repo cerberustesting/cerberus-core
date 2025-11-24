@@ -21,15 +21,23 @@ package org.cerberus.core.service.groovy.impl;
 
 import groovy.lang.GroovyShell;
 import java.util.Collections;
-import java.util.concurrent.Callable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.cerberus.Property;
+import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.service.groovy.IGroovyService;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.kohsuke.groovy.sandbox.SandboxTransformer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,6 +52,11 @@ public class GroovyService implements IGroovyService {
      * Groovy specific compilation customizer in order to avoid code injection
      */
     private static final CompilerConfiguration GROOVY_COMPILER_CONFIGURATION = new CompilerConfiguration().addCompilationCustomizers(new SandboxTransformer());
+
+    @Autowired
+    private ParameterService parameterService;
+
+    private static final Logger LOG = LogManager.getLogger(GroovyService.class);
 
     /**
      * Each Groovy execution is ran inside a dedicated {@link Thread},
@@ -68,7 +81,7 @@ public class GroovyService implements IGroovyService {
         try {
             Future<String> expression = executorService.submit(() -> {
                 RestrictiveGroovyInterceptor interceptor = new RestrictiveGroovyInterceptor(
-                        Collections.<Class<?>>emptySet(),
+                        Property.isSaaS() ? Collections.emptySet() : getAdditionalClasses(),
                         Collections.<Class<?>>emptySet(),
                         Collections.<RestrictiveGroovyInterceptor.AllowedPrefix>emptyList()
                 );
@@ -89,6 +102,24 @@ public class GroovyService implements IGroovyService {
         } catch (Exception e) {
             throw new IGroovyServiceException(e);
         }
+    }
+
+    private Set<Class<?>> getAdditionalClasses() {
+        Set<Class<?>> additionalClasses = new HashSet<>();
+        String[] extraClasses = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_groovy_classes_whitelist, "", "")
+                .split(",");
+
+        for (String extraClass : extraClasses) {
+            try {
+                additionalClasses.add(
+                        Class.forName(extraClass.trim())
+                );
+            } catch (ClassNotFoundException exception) {
+                LOG.warn(String.format("Extra class '%s' to add in the Groovy whitelist was not found.", extraClass));
+            }
+        }
+
+        return additionalClasses;
     }
 
 }

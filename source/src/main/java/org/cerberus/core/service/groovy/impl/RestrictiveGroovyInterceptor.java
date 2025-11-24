@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.cerberus.core.config.cerberus.Property;
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.runtime.ScriptBytecodeAdapter;
@@ -95,6 +96,9 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
      */
     private static final List<AllowedPrefix> allowedPackages = new ArrayList<>();
 
+    //Disallowed packages
+    private static final List<DisallowedPrefix> disallowedPackages = new ArrayList<>();
+
     static {
         // standard classes
         allowedClasses.add(String.class);
@@ -146,6 +150,16 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
         disallowedClosureWriteProperties.add("delegate");
         disallowedClosureWriteProperties.add("resolveStrategy");
         disallowedClosureWriteProperties.add("directive");
+
+        //Explicit disallowed packages in case user put them in additionalClassesWhitelist
+        if (!Property.isSaaS()) {
+            disallowedPackages.add(new DisallowedPrefix("java.io"));
+            disallowedPackages.add(new DisallowedPrefix("java.nio.file"));
+            disallowedPackages.add(new DisallowedPrefix("java.net"));
+            disallowedPackages.add(new DisallowedPrefix("java.lang.System"));
+            disallowedPackages.add(new DisallowedPrefix("java.lang.reflect"));
+        }
+
     }
 
     /**
@@ -180,7 +194,6 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
          */
         public boolean checkAllowed(Class<?> clazz) {
             String className = clazz.getName();
-
             if (className.startsWith(prefix)) {
                 return allowChildren || !className.substring(prefix.length()).contains(".");
             } else {
@@ -189,9 +202,43 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
         }
     }
 
+    /**
+     * DisallowedPrefix saves information to disallow the use of all classes with a
+     * given prefix.
+     */
+    public static class DisallowedPrefix {
+
+        private final String prefix;
+
+        /**
+         * Default constructor which accepts a package name.
+         *
+         * @param prefix the package prefix (final '.' is added if not present)
+         */
+        public DisallowedPrefix(String prefix) {
+            if (!prefix.endsWith(".")) {
+                prefix += '.';
+            }
+            this.prefix = prefix;
+        }
+
+        /**
+         * Checks whether the given class is allowed to be used because of this
+         * disallowed package.
+         *
+         * @param clazz the class to test
+         * @return true, if the class is forbidden, false otherwise
+         */
+        public boolean checkDisallowed(Class<?> clazz) {
+            String className = clazz.getName();
+            return className.startsWith(prefix);
+        }
+    }
+
     private final Set<Class<?>> instanceAllowedClasses = new HashSet<>(allowedClasses);
     private final Set<Class<?>> instanceAllAllowedClasses = new HashSet<>(allAllowedClasses);
     private final List<AllowedPrefix> instanceAllowedPackages = new ArrayList<>(allowedPackages);
+    private final List<DisallowedPrefix> instanceDisallowedPackage = new ArrayList<>(disallowedPackages);
 
     /**
      * Constructor using additional allowed classes.
@@ -452,6 +499,13 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
         // state changes.
         // .contains does not need to be synchronized, worst case would be that
         // an element is added several times then, which doesn't matter.
+
+        //Extra classes whitelist only
+        if (!Property.isSaaS()) {
+            for (DisallowedPrefix disallowedPackage : instanceDisallowedPackage) {
+                if (disallowedPackage.checkDisallowed(clazz)) return false;
+            }
+        }
 
         if (instanceAllowedClasses.contains(clazz)) {
             return true;

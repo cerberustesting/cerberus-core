@@ -403,7 +403,8 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_executeCerberusCommand_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_user.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_creditlimit_secondexeperday.equalsIgnoreCase(parameter.getParam())
-                    || Parameter.VALUE_cerberus_creditlimit_nbexeperday.equalsIgnoreCase(parameter.getParam())) {
+                    || Parameter.VALUE_cerberus_creditlimit_nbexeperday.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_groovy_classes_whitelist.equalsIgnoreCase(parameter.getParam())) {
 
                 return false;
 
