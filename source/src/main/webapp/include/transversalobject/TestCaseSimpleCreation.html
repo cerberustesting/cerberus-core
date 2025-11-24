@@ -3,6 +3,7 @@
         x-data="testCaseModal()"
         x-init="init()"
         x-show="open"
+        x-cloak
         @testcase-modal-open.window="open = true; setDefaultTest($event.detail.defaultTest);"
         class="crb_modal">
 

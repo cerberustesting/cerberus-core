@@ -137,4 +137,8 @@
         --crb-shadow-left-color: rgba(255, 255, 255, 0.06);
         --crb-shadow-bottom-color: rgba(255, 255, 255, 0.17);
     }
+
+    [x-cloak] {
+        display: none !important;
+    }
 }

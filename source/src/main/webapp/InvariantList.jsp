@@ -29,17 +29,15 @@
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>Invariant</title>
     <script type="text/javascript" src="js/pages/InvariantList.js"></script>
-    <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-        <%@ include file="include/global/messagesArea.html"%>
-        <%@ include file="include/utils/modal-confirmation.html"%>
         <%@ include file="include/transversalobject/Invariant.html"%>
+        <jsp:include page="include/templates/selectDropdown.html"/>
 
-        <h1 class="page-title-line" x-text="$store.labels.getLabel('page_invariant','title')">Invariant</h1>
-        <p class="page-subtitle-line" x-text="$store.labels.getLabel('page_invariant','subtitle')">Manage the application’s constants and fixed elements.</p>
+        <h1 class="page-title-line" x-text="$store.labels.getLabel('pageInvariant','title')">Invariant</h1>
+        <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageInvariant','subtitle')">Manage the application’s constants and fixed elements.</p>
 
         <div x-data="{ tab: 'public' }" class="w-full">
             <!-- Tabs -->

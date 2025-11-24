@@ -27,9 +27,7 @@ import com.anthropic.models.messages.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cerberus.core.crud.entity.LogAIUsage;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.UserPromptMessage;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.service.impl.LogAIUsageService;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.crud.service.impl.TestCaseService;
@@ -69,6 +67,8 @@ public class AIService implements IAIService {
     TestCaseService testCaseService;
     @Autowired
     LogAIUsageService logAIUsageService;
+
+    private TestCaseStepAction lastAction;
 
     @Override
     public void askClaude(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion) {
@@ -377,7 +377,8 @@ public class AIService implements IAIService {
 
                                     JsonNode json = mapper.readTree(cleanedJson);
                                     if (json.isObject()) {
-                                        testCaseGenerationPromptAI.createTestCaseStepFromAiResponse(json.toString(), finalTestCase);
+                                        TestCaseStep testCaseStep = testCaseGenerationPromptAI.createTestCaseStepFromAiResponse(json.toString(), finalTestCase);
+                                        this.createTestCaseStepActionAndControlAndGenerateContent(user, websocketSession, session, testCaseStep,finalTestCase.getDetailedDescription(), json.get("promptForActionDefinition").toString());
                                         //todo websocket
                                         unitResponse.setLength(0);
                                     }
@@ -473,6 +474,133 @@ public class AIService implements IAIService {
         LOG.debug("Response AI = " + result);
 
         return result;
+    }
+
+
+    public String createTestCaseStepActionAndControlAndGenerateContent(String user, WebSocketSession websocketSession, String session, TestCaseStep testCaseStep, String testCaseDescription,  String promptForActionDefinition) throws JsonProcessingException {
+
+        //Build prompt
+        String prompt = testCaseCreationGeneratePromptAI.buildPromptForActionsAndControls(testCaseStep, testCaseDescription, promptForActionDefinition);
+        LOG.debug(prompt);
+
+        String apikey = parameterService.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
+        String modelString = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
+        Integer maxToken = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
+
+        double priceInputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_input_per_million", "", 3.0);
+        double priceOutputPerMillion = parameterService.getParameterDoubleByKey("cerberus_anthropic_price_output_per_million", "", 12.0);
+
+        AnthropicClient anthropicClient = AnthropicOkHttpClient.builder()
+                .apiKey(apikey)
+                .build();
+
+        List<MessageParam> messageParamList = new ArrayList<MessageParam>();
+        messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(prompt).build());
+
+
+        MessageCreateParams createParams = MessageCreateParams.builder()
+                .model(Model.CLAUDE_SONNET_4_5_20250929)
+                .maxTokens(maxToken)
+                .messages(messageParamList)
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder fullResponse = new StringBuilder();
+        StringBuilder unitResponse = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
+
+        MessageAccumulator messageAccumulator = MessageAccumulator.create();
+
+        try (StreamResponse<RawMessageStreamEvent> streamResponse =
+                     anthropicClient.messages().createStreaming(createParams)) {
+
+            streamResponse.stream()
+                    .peek(messageAccumulator::accumulate)
+                    .flatMap(event -> event.contentBlockDelta().stream())
+                    .flatMap(deltaEvent -> deltaEvent.delta().text().stream())
+                    .forEach(textDelta -> {
+                        buffer.append(textDelta.text());
+                        fullResponse.append(textDelta.text());
+
+                        // Split par lignes pour ne pas perdre des JSON complets
+                        String[] lines = buffer.toString().split("\\r?\\n");
+                        buffer.setLength(0); // vide buffer pour stocker ligne incomplète
+
+                        for (String line : lines) {
+
+                            unitResponse.append(line);
+
+                            long openCount = unitResponse.chars().filter(ch -> ch == '{').count();
+                            long closeCount = unitResponse.chars().filter(ch -> ch == '}').count();
+
+                            if (openCount > 0 && openCount == closeCount) {
+                                try {
+                                    String cleanedJson = sanitizeJson(unitResponse.toString());
+                                    LOG.debug("Step : " + cleanedJson);
+
+                                    JsonNode json = mapper.readTree(cleanedJson);
+                                    if (json.isObject()) {
+                                        JsonNode actionNode = json.get("action");
+                                        JsonNode controlNode = json.get("control");
+
+                                        if (actionNode != null && !actionNode.isNull()) {
+                                            // C’est une action
+                                            LOG.debug("Detected ACTION: " + actionNode.asText());
+                                            lastAction = testCaseGenerationPromptAI.createTestCaseStepActionFromAiResponse(
+                                                    json.toString(),
+                                                    testCaseStep
+                                            );
+                                        } else if (controlNode != null && !controlNode.isNull()) {
+                                            // C’est un contrôle — nécessite la dernière action
+                                            if (lastAction == null) {
+                                                LOG.warn("Received CONTROL without a previous ACTION, skipping...");
+                                            } else {
+                                                LOG.debug("Detected CONTROL: " + controlNode.asText());
+                                                testCaseGenerationPromptAI.createTestCaseStepActionControlFromAiResponse(json.toString(),lastAction);
+                                            }
+                                        } else {
+                                            LOG.warn("Unrecognized JSON type (no 'action' or 'control' field): " + json);
+                                        }
+
+                                        // Nettoyage du buffer
+                                        unitResponse.setLength(0);
+                                    }
+                                } catch (Exception e) {
+                                    LOG.error("Error processing AI step response", e);
+                                }
+                            } else {
+
+                            }
+                        }
+                    });
+
+
+            //Log AI Usage
+            long inTokens = messageAccumulator.message().usage().inputTokens();
+            long outTokens = messageAccumulator.message().usage().outputTokens();
+            double cost = 0.0;
+            if (priceInputPerMillion > 0 || priceOutputPerMillion > 0) {
+                cost = (inTokens / 1_000_000.0) * priceInputPerMillion
+                        + (outTokens / 1_000_000.0) * priceOutputPerMillion;
+            }
+            LogAIUsage logAI = LogAIUsage.builder().sessionId(session).model(modelString).prompt(prompt).inputTokens((int) inTokens).outputTokens((int) outTokens)
+                    .cost(cost).usrCreated(user).dateCreated(new Timestamp(System.currentTimeMillis())).build();
+            logAIUsageService.create(logAI);
+
+            //websocketSession.sendMessage(new TextMessage("{\"type\":\"test_created_ack\",\"tempId\":\""+tempId+"\",\"test\":\""+finalTestCase.getTest()+"\",\"testcase\":\""+finalTestCase.getTestcase()+"\"}"));
+
+        } catch (Exception e) {
+            LOG.error("Error streaming AI response: ", e);
+            try {
+                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
+            } catch (IOException ignored) {}
+
+            try {
+                websocketSession.close(CloseStatus.SERVER_ERROR);
+            } catch (IOException ignored) {}
+        }
+
+        return fullResponse.toString();
     }
 
 

@@ -64,45 +64,45 @@
         <div class="grid grid-cols-1 md:grid-cols-5 sm:grid-cols-2 gap-6">
             <div class="crb_card" id="sc1">
                     <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-windows mr-2 text-blue-600"></i>
+                        <i class="fa fa-windows mr-2 text-blue-600 dark:text-blue-500"></i>
                         <span> Applications</span>
                     </span>
                 <a href="./ApplicationList.jsp">
-                    <p id="hp_ApplicationNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                    <p id="hp_ApplicationNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
                 </a>
                 <p class="text-xs font-medium mt-0">configured applications</p>
             </div>
             <div class="crb_card" id="sc2">
                     <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-list mr-2 text-blue-600"></i>
+                        <i class="fa fa-list mr-2 text-blue-600 dark:text-blue-500"></i>
                         <span> Test Cases</span>
                     </span>
                 <a href="./TestCaseList.jsp">
-                    <p id="hp_TestcaseNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                    <p id="hp_TestcaseNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
                 </a>
                 <p class="text-xs font-medium mt-0">created testcases</p>
             </div>
             <div class="crb_card" id="sc3">
                     <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-plug mr-2 text-blue-600"></i>
+                        <i class="fa fa-plug mr-2 text-blue-600 dark:text-blue-500"></i>
                         <span> Services</span>
                     </span>
                 <a href="./AppServiceList.jsp">
-                    <p id="hp_ServiceNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                    <p id="hp_ServiceNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
                 </a>
                 <p class="text-xs font-medium mt-0">configured services</p>
             </div>
             <div class="md:col-span-2 crb_card" id="sc4">
                 <div id="hp_TestExecutionNumberParent">
                         <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-youtube-play mr-2 text-blue-600"></i>
+                        <i class="fa fa-youtube-play mr-2 text-blue-600 dark:text-blue-500"></i>
                         <span> Test Execution</span>
                     </span>
                 </div>
                 <div class="grid grid-cols-2">
                     <div>
                         <a href="./RunTests.jsp">
-                            <p id="hp_TestExecutionNumber" class="text-3xl font-bold text-blue-600 mt-0">–</p>
+                            <p id="hp_TestExecutionNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
                         </a>
                         <p class="text-xs font-medium mt-0">launched tests</p>
                     </div>

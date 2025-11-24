@@ -2,7 +2,8 @@
   "name": "cerberus",
   "version": "1.0.0",
   "scripts": {
-    "build:css": "tailwindcss -i ./css/app.css -o ../global/crb_style.css --minify"
+    "build:css": "tailwindcss -i ./css/app.css -o ../global/crb_style.css --minify",
+    "dev:css": "tailwindcss -i ./css/app.css -o ../global/crb_style.css"
   },
   "devDependencies": {
     "tailwindcss": "^4.1.12",

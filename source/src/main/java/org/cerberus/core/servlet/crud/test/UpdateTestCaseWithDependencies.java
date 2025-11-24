@@ -356,10 +356,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             int stepId = tcsaJson.isNull("stepId") ? -1 : tcsaJson.getInt("stepId");
             int actionId = tcsaJson.isNull("actionId") ? -1 : tcsaJson.getInt("actionId");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
-            String conditionOperator = tcsaJson.getString("conditionOperator");
-            String conditionValue1 = tcsaJson.getString("conditionValue1");
-            String conditionValue2 = tcsaJson.getString("conditionValue2");
-            String conditionValue3 = tcsaJson.getString("conditionValue3");
+            String conditionOperator = tcsaJson.isNull("conditionOperator") ? null : tcsaJson.getString("conditionOperator");
+            String conditionValue1 = tcsaJson.isNull("conditionValue1") ? null : tcsaJson.getString("conditionValue1");
+            String conditionValue2 = tcsaJson.isNull("conditionValue2") ? null : tcsaJson.getString("conditionValue2");
+            String conditionValue3 = tcsaJson.isNull("conditionValue3") ? null : tcsaJson.getString("conditionValue3");
             JSONArray condOptionsArray = tcsaJson.getJSONArray("conditionOptions");
             String action = tcsaJson.getString("action");
             String value1 = tcsaJson.getString("object");
@@ -369,8 +369,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             boolean isFatal = tcsaJson.getBoolean("isFatal");
             boolean doScreenshotBefore = tcsaJson.getBoolean("doScreenshotBefore");
             boolean doScreenshotAfter = tcsaJson.getBoolean("doScreenshotAfter");
-            int waitBefore = tcsaJson.getInt("waitBefore");
-            int waitAfter = tcsaJson.getInt("waitAfter");
+            int waitBefore = tcsaJson.get("waitBefore").equals("") ? 0 : tcsaJson.getInt("waitBefore");
+            int waitAfter = tcsaJson.get("waitAfter").equals("") ? 0 : tcsaJson.getInt("waitAfter");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
             JSONArray controlArray = tcsaJson.getJSONArray("controls");
@@ -412,8 +412,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             boolean isFatal = controlJson.getBoolean("isFatal");
             boolean doScreenshotBefore = controlJson.getBoolean("doScreenshotBefore");
             boolean doScreenshotAfter = controlJson.getBoolean("doScreenshotAfter");
-            int waitBefore = controlJson.getInt("waitBefore");
-            int waitAfter = controlJson.getInt("waitAfter");
+            int waitBefore = controlJson.get("waitBefore").equals("") ? 0 : controlJson.getInt("waitBefore");
+            int waitAfter = controlJson.get("waitAfter").equals("") ? 0 : controlJson.getInt("waitAfter");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {

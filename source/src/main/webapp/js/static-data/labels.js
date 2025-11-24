@@ -145,9 +145,39 @@ const headerNewLabel = {
     "about": { "en": "About", "fr": "À Propos" }
 };
 
+const commonLabel = {
+    "all":{"en": "All", "fr":"Tous"},
+    "none":{"en": "None", "fr":"Aucun"},
+    "search":{"en": "Search", "fr":"Recherche"},
+    "buttonclose":{"en": "Close", "fr":"Fermer"},
+    "buttonadd":{"en": "Add", "fr":"Ajouter"},
+    "buttonduplicate":{"en": "Duplicate", "fr":"Dupliquer"},
+    "buttonsave":{"en": "Save", "fr":"Sauvegarder"}
+}
+
 const pageInvariantLabel = {
-    title:{en:"Invariant",fr:"Invariants"},
-    subtitle:{en: "Manage the application’s constants and fixed elements.",fr:"Gérer les constantes et éléments fixes de l’application."},
+    title: { en: "Invariant", fr: "Invariants" },
+    subtitle: { en: "Manage the application’s constants and fixed elements.", fr: "Gérer les constantes et éléments fixes de l’application." },
+    notifsuccesscreation: { en: "Invariant successfully created!", fr: "Invariant créé avec succès !" },
+    notifsuccessmodification: { en: "Invariant successfully modified!", fr: "Invariant modifié avec succès !" },
+    notifsuccessduplication: { en: "Invariant successfully duplicated!", fr: "Invariant dupliqué avec succès !" },
+    editinvarianttitle: { en: "Invariant", fr: "Invariants" },
+    editinvariantsubtitle: { en: "Add / Modify Invariant", fr: "Ajouter / Modifier un invariant" },
+    descriptionfield: { en: "Description", fr: "Description" },
+    idnamefield: { en: "Invariant Type", fr: "Type d'invariant" },
+    valuefield: { en: "Value", fr: "Valeur" },
+    sortfield: { en: "Sort", fr: "Ordre" },
+    veryshortdescfield: { en: "Very Short Description", fr: "Description très courte" },
+    gp1field: { en: "Attribute", fr: "Attribut" },
+    gp2field: { en: "Attribute 2", fr: "Attribut 2" },
+    gp3field: { en: "Attribute 3", fr: "Attribut 3" },
+    gp4field: { en: "Attribute 4", fr: "Attribut 4" },
+    gp5field: { en: "Attribute 5", fr: "Attribut 5" },
+    gp6field: { en: "Attribute 6", fr: "Attribut 6" },
+    gp7field: { en: "Attribute 7", fr: "Attribut 7" },
+    gp8field: { en: "Attribute 8", fr: "Attribut 8" },
+    gp9field: { en: "Attribute 9", fr: "Attribut 9" },
+    message_remove: { en: "Are you sure?", fr: "Êtes-vous sûr ?" }
 }
 
 const pageQuickStartLabel = {
@@ -213,6 +243,16 @@ const pageQuickStartLabel = {
     templatebutton:{en:"Get Started →",fr:"Commencer"},
 }
 
+const reportingCampaignStatisticsLabel ={
+    title:{en:"Campaign Statistics",fr:""},
+    subtitle:{en:"",fr:""},
+    filterworkspace:{en:"Workspace",fr:"Espace de travail"},
+    filterapplication:{en:"Application",fr:"Application"},
+    filtergroup1:{en:"Group 1",fr:"Groupe 1"}
+}
+
+window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
 window.pageInvariantLabel = pageInvariantLabel;
 window.pageQuickStartLabel = pageQuickStartLabel;
+window.reportingCampaignStatisticsLabel = reportingCampaignStatisticsLabel;

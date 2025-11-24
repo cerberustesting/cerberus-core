@@ -133,6 +133,33 @@ public class TestcaseController {
         );
     }
 
+    @GetMapping(path = "/application/{application}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all testcases by application",
+            description = "Get all testcases by application",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Found the testcases", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
+            }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<List<TestcaseDTOV001>> findTestcasesByAplication(
+            @PathVariable("application") String application,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
+            Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases/application", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases/application called with URL: %s", request.getRequestURL()), request, login);
+
+        return ResponseWrapper.wrap(
+                this.testCaseService.findTestCaseByApplication(application)
+                        .stream()
+                        .map(this.testcaseMapper::toDTO)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get a testcase filtered by its FolderId and testCaseId",

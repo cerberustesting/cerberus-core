@@ -1051,7 +1051,7 @@ function saveConfigPanel() {
 
     localStorage.setItem("cerberus_homepage_lasttagexecutionconfig", JSON.stringify(localConfig));
 
-    toastr.success("Configuration locale mise à jour.");
+    notifyInPage("success","Configuration locale mise à jour.");
 
     $("#tagConfigPanel").addClass("hidden");
     loadLastTagResultList();

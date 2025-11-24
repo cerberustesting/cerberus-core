@@ -761,11 +761,30 @@
         <template x-teleport="body">
             <div x-show="userMenuOpen"
                  x-transition.opacity.duration.200ms
-                 x-ref="dropdown"
+                 x-ref="navUserDropdown"
                  class="fixed w-72 h-[400px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
-                 :style="`left: ${$refs.userBtn.getBoundingClientRect().left}px; top: ${$refs.userBtn.getBoundingClientRect().top - $refs.dropdown.offsetHeight}px;`"
+                 style="left:0; top:0;"
                  @click.outside="userMenuOpen = false"
-                 @click.stop>
+                 @click.stop
+                 x-init="
+                        $watch('userMenuOpen', value => {
+                            if (value) {
+                                // On attend que le dropdown soit rendu et visible
+                                requestAnimationFrame(() => {
+                                    const btn = document.getElementById('header_user_button').getBoundingClientRect();
+                                    const dropdown = $refs.navUserDropdown;
+                                    if (!dropdown) return;
+
+                                    const h = dropdown.offsetHeight;
+                                    let top = btn.top - h - 1;
+                                    if (top < 0) top = btn.bottom + 1;
+
+                                    dropdown.style.left = btn.left + 'px';
+                                    dropdown.style.top = top + 'px';
+                                });
+                            }
+                        });
+                     ">
 
                 <ul class="py-2 text-sm space-y-1 px-2">
 

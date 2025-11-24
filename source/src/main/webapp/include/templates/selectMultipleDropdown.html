@@ -1,0 +1,218 @@
+<!-- MULTI-SELECT DROPDOWN TEMPLATE -->
+<template id="multi-select-dropdown-template">
+  <div class="relative w-full">
+
+    <!-- Main button that toggles dropdown visibility -->
+    <div @click.stop="toggle()"
+         :id="id + '-mainbutton'"
+         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2
+                transition-all cursor-pointer select-none
+                dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                bg-white border-slate-300 text-slate-900 hover:bg-slate-100">
+
+      <!-- Label showing current selection -->
+      <span x-text="selectedLabel()" class="truncate"></span>
+
+      <!-- Buttons for quick selection actions -->
+      <div class="flex gap-1 items-center" @click.stop>
+        <!-- Select all items -->
+        <button @click="selectAll()" x-show="open" type="button"
+                class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
+          <span x-text="$store.labels.getLabel('common','all')">All</span>
+        </button>
+
+        <!-- Clear all selections -->
+        <button @click="clearAll()" x-show="open" type="button"
+                class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
+          <span x-text="$store.labels.getLabel('common','none')">None</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Dropdown content, teleported to <body> to avoid overflow clipping -->
+    <template x-teleport="body">
+      <div x-show="open"
+           @click.outside="open = false"
+           x-transition
+           class="absolute rounded-md border shadow-lg z-50
+                  dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
+                  bg-white border-slate-300 text-slate-900"
+           :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }">
+
+        <div class="bg-white dark:bg-slate-800 max-h-64 overflow-hidden rounded-md dark:border-slate-600">
+
+          <!-- Search bar -->
+          <div class="p-2 border-b dark:border-slate-700">
+            <input type="text" x-model="search" :placeholder="$store.labels.getLabel('common','search')"
+                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
+          </div>
+
+          <!-- Selectable list of items -->
+          <div class="max-h-52 overflow-auto">
+            <template x-for="item in filteredItems()" :key="item[valueField]">
+              <button type="button" @click.stop="toggleItem(item)"
+                      class="w-full text-left gap-2 px-3 py-2 flex hover:bg-slate-100 dark:hover:bg-slate-700">
+                <!-- Checkmark icon when selected -->
+                <svg x-show="isSelected(item)" xmlns="http://www.w3.org/2000/svg"
+                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span x-text="item[labelField]"></span>
+              </button>
+            </template>
+
+            <!-- Empty state -->
+            <template x-if="filteredItems().length === 0">
+              <div class="px-3 py-2 text-sm text-gray-500 dark:text-slate-400 italic">
+                <span x-text="$store.labels.getLabel('common','noResults')">No matching results</span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script>
+function multiSelectDropdown(config = {}) {
+    return {
+        // Component configuration
+        id: config.id || 'multiselect',
+        model: config.model,
+        modelField: config.modelField,
+        labelField: config.labelField || 'name',     // Field used as display label
+        valueField: config.valueField || 'id',       // Field used as value
+        placeholder: config.placeholder || '-- Select items --',
+        loader: config.loader || (async () => []),   // Async loader for items
+        returnType: config.returnType || 'object',   // Output format on change
+        preselected: config.preselected || [],       // Initial selected items
+
+        // Internal state variables
+        open: false,
+        items: [],
+        selected: [],
+        search: '',
+        top: 0, left: 0, width: 0,
+
+        async init() {
+          // Clone and attach template into component root element
+          const tpl = document.getElementById('multi-select-dropdown-template').content.cloneNode(true);
+          this.$el.appendChild(tpl);
+
+          // Load dropdown items using the provided loader function
+          this.items = this.loader();
+
+          // Set preselected values (if any)
+          if (this.preselected.length) {
+            this.selected = this.items.filter(i => this.preselected.includes(i[this.valueField]));
+          }
+
+          // Set correct dropdown positioning
+          this.updatePosition();
+
+          // Close dropdown when clicking outside of it
+          document.addEventListener('click', e => {
+            if (this.open && !this.$el.contains(e.target)) this.open = false;
+          });
+
+          // Listen to external refresh event for dynamic updates
+          this.$el.addEventListener('refresh-items', async e => {
+            this.items = await this.loader(e.detail);
+
+            // Ensure removed items are also removed from selection
+            this.selected = this.selected.filter(s =>
+                    this.items.some(i => i[this.valueField] === s[this.valueField])
+            );
+          });
+
+          // Keep dropdown aligned during scroll/resize
+          window.addEventListener('scroll', () => { if(this.open) this.updatePosition(); }, true);
+          window.addEventListener('resize', () => { if(this.open) this.updatePosition(); });
+        },
+
+        // Toggle dropdown open/close
+        toggle() { this.open = !this.open; this.updatePosition(); },
+
+        // Calculate dropdown position relative to button
+        updatePosition() {
+          const btn = document.getElementById(this.id + '-mainbutton');
+          if(!btn) return;
+          const rect = btn.getBoundingClientRect();
+          this.top = rect.bottom + window.scrollY + 5;
+          this.left = rect.left + window.scrollX;
+          this.width = Math.max(rect.width, 320);
+        },
+
+        // Filter items by search text
+        filteredItems() {
+          return this.search
+                  ? this.items.filter(i =>
+                          i[this.labelField].toLowerCase().includes(this.search.toLowerCase())
+                  )
+                  : this.items;
+        },
+
+        // Check if an item is selected
+        isSelected(item) {
+          return this.selected.some(s => s[this.valueField] === item[this.valueField]);
+        },
+
+        // Toggle selection for an item
+        toggleItem(item) {
+          if (this.isSelected(item)) {
+            this.selected = this.selected.filter(s => s[this.valueField] !== item[this.valueField]);
+          } else {
+            this.selected.push(item);
+          }
+          this.emitChange();
+        },
+
+        // Select all loaded items
+        selectAll() {
+          this.selected = [...this.items];
+          this.emitChange();
+        },
+
+        // Clear selection
+        clearAll() {
+          this.selected = [];
+          this.emitChange();
+        },
+
+        // Display label based on selection
+        selectedLabel() {
+          if (!this.selected.length) return this.placeholder;
+          return this.selected.length === 1
+                  ? this.selected[0][this.labelField]
+                  : `${this.selected.length} selected`;
+        },
+
+        // Emit custom global event with selected values
+        emitChange() {
+          let payload;
+          switch(this.returnType) {
+            case 'value':
+              payload = this.selected.map(i => i[this.valueField]);
+              break;
+            case 'both':
+              payload = this.selected.map(i => ({ label: i[this.labelField], value: i[this.valueField] }));
+              break;
+            default:
+              payload = [...this.selected];
+          }
+
+          if (this.model && this.modelField) {
+            this.model[this.modelField] = payload;
+          }
+
+          window.dispatchEvent(new CustomEvent(this.id + '-change', {
+            detail: payload,
+            bubbles: true,
+            composed: true // allows event to cross DOM boundaries
+          }));
+        }
+    }
+}
+</script>

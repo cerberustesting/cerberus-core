@@ -213,8 +213,8 @@ public abstract class AppiumService implements IAppiumService {
                 foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
 
                 Rectangle rect = element.getRect();
-                int elementX = rect.getX() + (hOffset != null ? hOffset : rect.getWidth() / 2);
-                int elementY = rect.getY() + (vOffset != null ? vOffset : rect.getHeight() / 2);
+                int elementX = rect.getX() + (rect.getWidth() / 2) + ((hOffset != null && hOffset != 0) ? hOffset : 0);
+                int elementY = rect.getY() + (rect.getHeight() / 2) + ((vOffset != null && vOffset != 0) ? vOffset : 0);
 
                 Sequence tapSequence = new Sequence(finger, 0);
                 tapSequence.addAction(finger.createPointerMove(

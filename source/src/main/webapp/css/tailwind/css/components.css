@@ -30,6 +30,40 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ===========================
+        Card
+=========================== */
+    .crb_datatable_header {
+        background: var(--crb-new-bg);
+        border: 1px solid var(--crb-grey-light-color);
+        backdrop-filter: blur(20px);
+
+        @apply rounded-2xl p-6 mb-10;
+
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+
+/* ===========================
+            FORMS ELEMENTS
+=========================== */
+    .crb_input {
+        /*Background*/
+        @apply dark:bg-slate-800 dark:hover:bg-slate-700 bg-white hover:bg-slate-100;
+        /*Text*/
+        @apply dark:text-slate-300   text-slate-900;
+        /*Border*/
+        @apply rounded-md border dark:border-slate-600 border-slate-300;
+    }
+
+
+    .crb_tab_selected{
+        @apply bg-slate-50 font-semibold dark:bg-slate-900;
+    }
+
+    .crb_tab_not_selected{
+        @apply bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white;
+    }
 
 /* ===========================
     Datatable
@@ -122,4 +156,32 @@
 
 .select-brp input:checked + span svg {
     @apply block;
+}
+
+
+/* ===========================
+    SWEETALERT
+=========================== */
+.swal2-styled.swal2-confirm {
+    @apply bg-blue-600 dark:bg-blue-500 !text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none;
+}
+
+.swal2-styled.swal2-cancel {
+    @apply bg-slate-200 dark:bg-slate-700 text-gray-700 dark:text-slate-200 text-sm font-medium px-4 py-2 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none ml-2;
+}
+
+.swal2-popup {
+    @apply text-sm;
+}
+
+.swal2-actions{
+    @apply gap-2
+}
+
+.swal2-title {
+    @apply text-base font-semibold;
+}
+
+.swal2-html-container {
+    @apply text-sm text-gray-600 dark:text-slate-300;
 }

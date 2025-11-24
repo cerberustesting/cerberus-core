@@ -1,10 +1,8 @@
 <!-- Modal Create Test -->
 <div
         x-data="createTestModal()"
-        @update-application.window="form.application = $event.detail"
-        @update-test.window="form.testFolder = $event.detail"
-        x-init="init()"
         x-show="open"
+        x-cloak
         @create-test-ai-modal-open.window="open = true;"
         class="crb_modal">
 
@@ -24,8 +22,8 @@
         <!-- Header -->
         <div class="flex justify-between items-center px-6 py-4 mb-8">
             <div class="flex flex-col">
-                <h3 class="text-xl font-semibold" x-text="$store.labels.getLabel('page_quickstart','copilotmodaltitle')"></h3>
-                <p class="page-subtitle-line" x-text="$store.labels.getLabel('page_quickstart','copilotmodalsubtitle')"></p>
+                <h3 class="text-xl font-semibold" x-text="$store.labels.getLabel('pageQuickStart','copilotmodaltitle')"></h3>
+                <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalsubtitle')"></p>
             </div>
             <button @click="open = false" class="hover:text-gray-700">&times;</button>
         </div>
@@ -38,18 +36,46 @@
                 <div class="flex space-x-4">
                     <!-- Application -->
                     <div class="w-1/2">
-                        <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodalapplication')">Application</label>
-                        <div x-data="applicationDropdown({ model: form.application })"
-                             x-ref="dropdownComponent"
-                             class="w-full"></div>
+                        <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalapplication')">Application</label>
+                        <div x-data="singleSelectDropdown({
+                            id: 'workspaceUniqueSelect',
+                                loader: async () => {
+                                    try {
+                                        const r = await fetch('ReadApplication');
+                                        const d = await r.json();
+                                        console.log(d);
+                                        return d.contentTable.map(a => a.application);
+                                    } catch (e) {
+                                        console.error('Failed to load applications :', e);
+                                        return [];
+                                    }
+                                }
+                            })"
+                             x-modelable="selectedValue"
+                             x-model="form.application">
+                        </div>
                     </div>
 
                     <!-- Test Folder -->
                     <div class="w-1/2">
-                        <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodaltestfolder')">Test Folder</label>
-                        <div x-data="testDropdown({ model: form.test })"
-                             x-ref="dropdownTest"
-                             class="w-full"></div>
+                        <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('pageQuickStart','copilotmodaltestfolder')">Test Folder</label>
+                        <div x-data="singleSelectDropdown({
+                            id: 'testUniqueSelect',
+                            loader: async () => {
+                                try {
+                                    const r = await fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=100');
+                                    const d = await r.json();
+                                    console.log(d);
+                                    return d.contentTable.map(t => t.test);
+                                } catch (e) {
+                                    console.error('Failed to load tests', e);
+                                            return [];
+                                }
+                            }
+                        })"
+                        x-modelable="selectedValue"
+                        x-model="form.testFolder">
+                        </div>
                     </div>
                 </div>
 
@@ -60,26 +86,26 @@
                         suggestions: [],
                         loadSuggestions() {
                             this.suggestions = [
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion1'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion2'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion3'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion4'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion5'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion6'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion7'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion8'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion9'),
-                                $store.labels.getLabel('page_quickstart','copilotmodalgenerationsuggestion10')
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion1'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion2'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion3'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion4'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion5'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion6'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion7'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion8'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion9'),
+                                $store.labels.getLabel('pageQuickStart','copilotmodalgenerationsuggestion10')
                             ];
                         }
                      }"
                      x-init="loadSuggestions()">
-                    <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('page_quickstart','copilotmodalfeaturedescription')">Description du test</label>
+                    <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalfeaturedescription')">Description du test</label>
                     <input type="text"
                            x-model="form.featureDescription"
                            @focus="showSuggestions = true"
                            @blur="setTimeout(() => showSuggestions = false, 200)"
-                           :placeholder="$store.labels.getLabel('page_quickstart','copilotmodalfeaturedescriptionplaceholder')"
+                           :placeholder="$store.labels.getLabel('pageQuickStart','copilotmodalfeaturedescriptionplaceholder')"
                            class="w-full border rounded px-2 py-2 dark:border-slate-600 border-slate-300">
 
                     <!-- Suggestions -->
@@ -103,14 +129,14 @@
                             :disabled="loading"
                             :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
                             class="text-white px-4 py-2 rounded transition">
-                        <span x-show="!loading" x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneratebutton')">Créer</span>
+                        <span x-show="!loading" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalgeneratebutton')">Créer</span>
                         <span x-show="loading" class="flex items-center space-x-2">
                             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor"
                                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                             </svg>
-                            <span x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneration')">Génération...</span>
+                            <span x-text="$store.labels.getLabel('pageQuickStart','copilotmodalgeneration')">Génération...</span>
                         </span>
                     </button>
                 </div>
@@ -125,7 +151,7 @@
 
             <!-- Results -->
             <div class="mt-4 border-t pt-4" x-show="loading || results.length > 0">
-                <h4 class="font-semibold mb-2" x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneratedresult')">Résultats générés :</h4>
+                <h4 class="font-semibold mb-2" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalgeneratedresult')">Résultats générés :</h4>
 
                 <!-- Loader -->
                 <template x-if="loading && results.length === 0">
@@ -137,7 +163,7 @@
                             <path class="opacity-75" fill="currentColor"
                                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                         </svg>
-                        <span x-text="$store.labels.getLabel('page_quickstart','copilotmodalgeneration')">Génération des scénarios en cours...</span>
+                        <span x-text="$store.labels.getLabel('pageQuickStart','copilotmodalgeneration')">Génération des scénarios en cours...</span>
                     </div>
                 </template>
 
@@ -213,7 +239,6 @@
         </div>
     </div>
 </div>
-
 <script>
     function createTestModal() {
         return {
@@ -229,9 +254,8 @@
             loadingThumbs: {},
             ws: null,
 
-            init() {},
-
             submitTest() {
+                console.log('application:', this.form.application ,',testFolder:', this.form.testFolder, ',featureDescription:',this.form.featureDescription)
                 if (!this.form.application || !this.form.testFolder || !this.form.featureDescription) {
                     this.errorMessage = "Application, Folder and Feature Description are mandatory !";
                     return;

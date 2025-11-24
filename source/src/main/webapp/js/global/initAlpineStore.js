@@ -108,12 +108,8 @@ document.addEventListener('alpine:init', () => {
         // Fonction de traduction
         getLabel(objectName, key) {
             let doc;
-            switch(objectName) {
-                case 'header': doc = window.headerLabel; break;
-                case 'page_invariant': doc = window.pageInvariantLabel; break;
-                case 'page_quickstart': doc = window.pageQuickStartLabel; break;
-                default: doc = {};
-            }
+
+            doc = window[objectName+"Label"];
 
             if (doc[key]) {
                 return doc[key][this.language] || doc[key].en || key;
@@ -145,13 +141,6 @@ document.addEventListener('alpine:init', () => {
     }));
 
 });
-
-function mountDropdown(el, props) {
-    const tpl = document.getElementById("dropdown-template");
-    const clone = tpl.content.cloneNode(true);
-    el.appendChild(clone);
-    el.setAttribute("x-data", `dropdown(${JSON.stringify(props)})`);
-};
 
 document.addEventListener('alpine:initialized', () => {
     lucide.createIcons();

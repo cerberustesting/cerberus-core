@@ -87,7 +87,7 @@ function renderOptionsForApplication(data) {
     if ($("#createInvariantButton").length === 0) {
         var contentToAdd = `
             <button id='createInvariantButton' type='button'
-                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded mr-2 h-10 w-auto'>
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
                 <i class='glyphicon glyphicon-plus-sign'></i>
                 <span>` + doc.getDocLabel("page_invariant", "button_create") + `</span>
             </button>
@@ -119,33 +119,62 @@ function renderOptionsForApplication2(data) {
     }
 }
 
-function removeEntryClick(param, value) {
-    var doc = new Doc();
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_invariant", "message_remove"), doc.getDocLabel("page_invariant", "message_remove"), param, value, "", "");
+async function deleteInvariant(param, value) {
+    try {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you really want to delete invariant "${param}" with value "${value}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            background: 'var(--crb-new-bg)',
+            color: 'var(--crb-black-color)',
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+            preConfirm: async () => {
+                try {
+                    const payload = new URLSearchParams({ idName: param, value: value });
+                    const response = await fetch('DeleteInvariant', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: payload.toString()
+                    });
+                    const data = await response.json();
+                    if (data.messageType !== 'OK') {
+                        Swal.showValidationMessage(data.message || 'Deletion failed');
+                    }
+                    return data;
+                } catch (err) {
+                    Swal.showValidationMessage(`Request failed: ${err}`);
+                }
+            }
+        });
+
+        if (result.isConfirmed && result.value) {
+            const data = result.value;
+            const messageType = getAlertType(data.messageType);
+
+            if (messageType === 'success') {
+                // Redraw DataTable
+                const oTable = $("#invariantsTable").dataTable();
+                oTable.fnDraw(false);
+                cleanCacheInvariant(param);
+
+                if (oTable.fnGetData().length === 1) oTable.fnPageChange('previous');
+            }
+
+            notifyInPage("success", 'Invariant deleted');
+        }
+    } catch (e) {
+        console.error(e);
+        notifyInline('Unexpected error deleting invariant', 'error', '#DialogMessagesArea', true);
+    }
 }
 
-function deleteEntryHandlerClick() {
-    var param = $('#confirmationModal #hiddenField1').prop("value");
-    var value = $('#confirmationModal #hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteInvariant", {idName: param, value: value}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#invariantsTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-            cleanCacheInvariant(param);
 
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
+function removeEntryClick(param, value) {
+    deleteInvariant(param, value);
 }
 
 function aoColumnsFuncPublic(tableId) {
