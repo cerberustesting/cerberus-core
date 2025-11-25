@@ -46,7 +46,7 @@ Properties can be called in action or control values field or in another propert
 
 | Retry Period | Defines the period in millisecond between every retry.
 
-| Cache Expire | Defines the amount of time in second during which the property can be kept in cache. 0 value disable the cache mecanisme.
+| Cache Expire | Defines the amount of time in second during which the property can be kept in cache. 0 value disable the cache mechanism.
 
 | Rank | If 1 the property is considered as a primary property and will always be displayed on execution detail. From 2 to higher value, the property will be considered as secondary and will be hidden by default from execution report.
 
@@ -88,7 +88,18 @@ Properties can be called in action or control values field or in another propert
 
 | getFromCommand |  | 
 
-| getFromGroovy | Execute the specified Groovy script and get the last defined variable. Test your scripts easily using the  https://groovyconsole.appspot.com[online console] | `'%property.date%'.replace('\','-').substring(0,10)`
+| getFromGroovy
+a| Execute the specified Groovy script and get the last defined variable. Test your scripts easily using the  https://groovyconsole.appspot.com[online console]
+
+By default, there is an internal whitelist for the authorized classes in the Groovy scripts: String, Byte, Short, Integer, Long, Float, Double, BigInteger, BigDecimal, Math, Date,
+LinkedHashMap, ArrayList, Range, GStringImpl, HashMap, HashSet, Collections, ScriptBytecodeAdapter, Timestamp.
+
+If you want to add more classes, you can set the parameter _cerberus_groovy_classes_whitelist_ with the classes you want to add in addition to the default whitelist. You need to put the full
+package: i.e, for the class SimpleDateFormat, you need to put java.text.SimpleDateFormat. Please note that for security reason, this parameter is not active on the SaaS instance.
+
+Some packages and classes stay forbidden for security reasons: java.io, java.nio.file, java.net, java.lang.System, java.lang.reflect.
+
+| `'%property.date%'.replace('\','-').substring(0,10)`
 
 |===
 
