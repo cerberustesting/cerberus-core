@@ -24,12 +24,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.dto.ai.LogAIUsageStatsDTOV001;
-import org.cerberus.core.crud.entity.LogAIUsage;
-import org.cerberus.core.crud.entity.LogAIUsageStats;
-import org.cerberus.core.crud.service.impl.LogAIUsageService;
+import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.crud.service.impl.UserPromptService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.service.ai.impl.AIService;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.datatable.DataTableInformation;
@@ -47,9 +46,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -63,9 +60,7 @@ public class UsagePrivateController {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    LogAIUsageService logAIUsageService;
-    @Autowired
-    AIService aIService;
+    UserPromptService userPromptService;
 
     @Operation(hidden=true)
     @PostMapping("/aiCallList")
@@ -79,24 +74,24 @@ public class UsagePrivateController {
         try {
 
             AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-            AnswerList<LogAIUsage> logAIUsageList = new AnswerList<>();
+            AnswerList<UserPrompt> userPromptList = new AnswerList<>();
 
-            DataTableInformation dti = new DataTableInformation(request, "id,sessionId,model,prompt,inputTokens,outputTokens,cost,usrCreated,dateCreated");
+            DataTableInformation dti = new DataTableInformation(request, "id,login,sessionId,role,message,tokens,cost,usrCreated,dateCreated");
 
-            logAIUsageList = logAIUsageService.readByCriteria(dti.getStartPosition(), dti.getLength(), dti.getColumnName(), dti.getSort(), dti.getSearchParameter(), dti.getIndividualSearch());
+            userPromptList = userPromptService.readByCriteria(dti.getStartPosition(), dti.getLength(), dti.getColumnName(), dti.getSort(), dti.getSearchParameter(), dti.getIndividualSearch());
 
             JSONArray jsonArray = new JSONArray();
-            if (logAIUsageList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (LogAIUsage logAIUsage : logAIUsageList.getDataList()) {
+            if (userPromptList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                for (UserPrompt userPrompt : userPromptList.getDataList()) {
                     Gson gson = new Gson();
-                    jsonArray.put(new JSONObject(gson.toJson(logAIUsage)).put("hasPermissions", userHasPermissions));
+                    jsonArray.put(new JSONObject(gson.toJson(userPrompt)).put("hasPermissions", userHasPermissions));
                 }
             }
 
             object.put("contentTable", jsonArray);
             object.put("hasPermissions", userHasPermissions);
-            object.put("iTotalRecords", logAIUsageList.getTotalRows());
-            object.put("iTotalDisplayRecords", logAIUsageList.getTotalRows());
+            object.put("iTotalRecords", userPromptList.getTotalRows());
+            object.put("iTotalDisplayRecords", userPromptList.getTotalRows());
 
         } catch (JSONException ex) {
             LOG.warn(ex);
@@ -122,8 +117,8 @@ public class UsagePrivateController {
         Timestamp startTs = Timestamp.valueOf(startDate);
         Timestamp endTs = Timestamp.valueOf(endDate);
 
-        AnswerItem<LogAIUsageStats> statsItem = logAIUsageService.readSumByPeriod(startTs, endTs, user);
-        LogAIUsageStats stats = statsItem.getItem();
+        AnswerItem<UserPromptStats> statsItem = userPromptService.readSumByPeriod(startTs, endTs, user);
+        UserPromptStats stats = statsItem.getItem();
 
         return LogAIUsageStatsDTOV001.builder()
                 .totalInputTokens(stats.getTotalInputTokens())
@@ -147,7 +142,7 @@ public class UsagePrivateController {
 
         JSONObject object = new JSONObject();
         try {
-            AnswerList testCaseList = logAIUsageService.readDistinctValuesByCriteria(null, null, columnName);
+            AnswerList testCaseList = userPromptService.readDistinctValuesByCriteria(null, null, columnName);
             object.put("distinctValues", testCaseList.getDataList());
 
         } catch (JSONException ex) {
@@ -158,7 +153,7 @@ public class UsagePrivateController {
 
     @Operation(hidden=true)
     @GetMapping("/usageByDay")
-    public ResponseEntity<List<LogAIUsageStats>> getUsageByDay(
+    public ResponseEntity<List<UserPromptStats>> getUsageByDay(
             @RequestParam(required = false, defaultValue = "ALL") String user,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
@@ -169,7 +164,7 @@ public class UsagePrivateController {
             Timestamp startTs = Timestamp.valueOf(start);
             Timestamp endTs = Timestamp.valueOf(end);
 
-            List<LogAIUsageStats> statsList = logAIUsageService.getUsageByDay(startTs, endTs, user).getDataList();
+            List<UserPromptStats> statsList = userPromptService.getUsageByDay(startTs, endTs, user).getDataList();
             return ResponseEntity.ok(statsList);
         } catch (Exception e) {
             LOG.error("Error fetching usage summary", e);

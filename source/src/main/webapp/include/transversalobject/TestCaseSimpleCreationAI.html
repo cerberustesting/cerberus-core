@@ -10,14 +10,14 @@
     <div class="absolute inset-0 bg-slate-900 opacity-60" @click="open = false"></div>
 
     <!-- Modal -->
-    <div class="crb_card w-full max-w-3xl mx-4"
+    <div class="crb_card w-full max-w-3xl mx-4 transform-gpu"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         @click.away="open = false">
+         @click.away="if (!$event.target.closest('.single-select-dropdown')) open = false">
 
         <!-- Header -->
         <div class="flex justify-between items-center px-6 py-4 mb-8">
@@ -264,24 +264,23 @@
                 this.errorMessage = '';
                 this.results = [];
                 this.loading = true;
-                this.sessionID = "";
 
                 // Construction de l'URL WebSocket
                 const parser = document.createElement('a');
                 parser.href = window.location.href;
                 const protocol = parser.protocol === "https:" ? "wss:" : "ws:";
                 const path = parser.pathname.split("QuickStart")[0];
-                const wsUrl = protocol + parser.host + path + "api/ws/generateTestWithAI";
+                const wsUrl = protocol + parser.host + path + "api/ws/AIWebSocket";
 
                 this.ws = new WebSocket(wsUrl);
                 const username = getUser().login;
 
                 this.ws.onopen = () => {
                     console.log("WebSocket Open.");
-                    this.sessionID = crypto.randomUUID();
+                    var sessionID = crypto.randomUUID();
                     const payload = {
                         sender: username,
-                        sessionID: this.sessionID,
+                        sessionID: sessionID,
                         application: this.form.application,
                         testFolder: this.form.testFolder,
                         subject: "test_proposal",
@@ -359,9 +358,10 @@
                 this.loadingThumbs[res.testcaseId] = true;
 
                 const username = getUser().login;
+                var sessionID = crypto.randomUUID();
                 const message = {
                     sender: username,
-                    sessionID: this.sessionID,
+                    sessionID: sessionID,
                     subject: "test_creation",
                     application: this.form.application,
                     testFolder: this.form.testFolder,

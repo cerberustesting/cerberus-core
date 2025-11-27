@@ -20,22 +20,37 @@
 package org.cerberus.core.crud.dao;
 
 import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public interface IUserPromptDAO {
 
-    boolean insertUserPrompt(UserPrompt userPrompt);
+    Answer create(UserPrompt userPrompt);
 
-    UserPrompt findUserPromptById(int id);
+    AnswerItem<UserPrompt> readByKey(Integer id);
 
-    UserPrompt findUserPromptByUserSessionID(String login, String sessionID);
+    AnswerList<UserPrompt> readByUser(String login);
 
-    boolean deleteUserPrompt(int id);
+    AnswerItem<UserPrompt> readByUserSessionID(String login, String sessionID);
 
-    boolean updateUserPrompt(UserPrompt userPrompt);
+    AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    List<UserPrompt> findAllUserPrompts();
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
-    List<UserPrompt> findUserPromptsByLogin(String login);
+    boolean delete(Integer id);
+
+    boolean update(UserPrompt userPrompt);
+
+    boolean incrementUsage(String user, String aiSessionID, Integer inputTokens, Integer outputTokens, Double cost);
+
+    AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user);
+
+    AnswerList<UserPromptStats> readUsageByDay(Timestamp startDate, Timestamp endDate, String user);
+
 }

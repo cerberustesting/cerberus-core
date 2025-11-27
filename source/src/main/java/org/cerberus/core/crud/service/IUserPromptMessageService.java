@@ -17,9 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.crud.entity;
+package org.cerberus.core.crud.service;
 
-import lombok.*;
+import org.cerberus.core.crud.entity.UserPromptMessage;
+import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 
 import java.sql.Timestamp;
 
@@ -27,27 +30,11 @@ import java.sql.Timestamp;
  *
  * @author bcivel
  */
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
-@Builder
-public class LogAIUsage {
+public interface IUserPromptMessageService {
 
-    private Integer id;
-    private String sessionId;
-    private String model;
-    private String prompt;
-    private int inputTokens;
-    private int outputTokens;
-    private double cost;
-    @EqualsAndHashCode.Exclude
-    private String usrCreated;
-    @EqualsAndHashCode.Exclude
-    private Timestamp dateCreated;
-    @EqualsAndHashCode.Exclude
-    private String usrModif;
-    @EqualsAndHashCode.Exclude
-    private Timestamp dateModif;
+    AnswerItem<UserPromptMessage> readByKey(Integer id);
 
+    AnswerList<UserPromptMessage> readBySessionId(String sessionId);
+
+    Answer create(UserPromptMessage userPromptMessage);
 }

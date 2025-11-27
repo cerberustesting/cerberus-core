@@ -674,6 +674,14 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
+            <!-- Resource with no filtering for prompts -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>prompts/**</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
         </resources>
 
         <pluginManagement>

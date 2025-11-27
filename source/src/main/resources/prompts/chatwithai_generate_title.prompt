@@ -1,0 +1,9 @@
+Generate a short title (maximum 5 words) for the following request:
+{{newMessage}}
+
+OUTPUT FORMAT:
+- Respond with ONLY the title.
+- Absolutely NO emojis, NO icons, NO special unicode symbols.
+- Use ONLY basic ASCII characters (letters, numbers, spaces).
+- If you include ANY disallowed character, you FAIL the task.
+- Output must contain BETWEEN 1 AND 5 WORDS.

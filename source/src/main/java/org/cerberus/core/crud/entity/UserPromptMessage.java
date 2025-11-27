@@ -35,6 +35,8 @@ public class UserPromptMessage {
     private String sessionID;
     private String role;
     private String message;
+    private int tokens;
+    private double cost;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -46,6 +48,8 @@ public class UserPromptMessage {
         jo.put("sessionID", sessionID);
         jo.put("role", role);
         jo.put("message", message);
+        jo.put("tokens", tokens);
+        jo.put("cost", cost);
         jo.put("usrCreated", usrCreated);
         jo.put("dateCreated", dateCreated);
         jo.put("usrModif", usrModif);

@@ -19,9 +19,10 @@
  */
 package org.cerberus.core.service.ai.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionDTOV001;
@@ -42,11 +43,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class TestCaseGenerationPromptAI {
+public class ObjectFromAiResponse {
 
     @Autowired
     private ITestCaseService testCaseService;
@@ -66,10 +65,11 @@ public class TestCaseGenerationPromptAI {
     private TestcaseStepActionControlMapperV001 testcaseStepActionControlMapper;
 
     private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private static final Logger LOG = LogManager.getLogger(ObjectFromAiResponse.class);
     /**
      * Create TestCase from IA
      */
-    public TestCase createTestCaseFromAiResponse(String aiJson, String testcaseId, String username) throws IOException {
+    public TestCase createTestCase(String aiJson, String testcaseId, String username) throws IOException {
 
         TestcaseDTOV001 dto = objectMapper.readValue(aiJson, TestcaseDTOV001.class);
 
@@ -87,7 +87,7 @@ public class TestCaseGenerationPromptAI {
     }
 
 
-    public TestCaseStep createTestCaseStepFromAiResponse(String aiJson, TestCase testcase) throws IOException {
+    public TestCaseStep createTestCaseStep(String aiJson, TestCase testcase) throws IOException {
 
         TestcaseStepDTOV001 dto = objectMapper.readValue(aiJson, TestcaseStepDTOV001.class);
         dto.setTestFolderId(testcase.getTest());
@@ -100,7 +100,7 @@ public class TestCaseGenerationPromptAI {
         return entity;
     }
 
-    public TestCaseStepAction createTestCaseStepActionFromAiResponse(String aiJson, TestCaseStep testcaseStep) throws IOException {
+    public TestCaseStepAction createTestCaseStepAction(String aiJson, TestCaseStep testcaseStep) throws IOException {
 
         TestcaseStepActionDTOV001 dto = objectMapper.readValue(aiJson, TestcaseStepActionDTOV001.class);
         dto.setTestFolderId(testcaseStep.getTest());
@@ -114,7 +114,7 @@ public class TestCaseGenerationPromptAI {
         return entity;
     }
 
-    public TestCaseStepActionControl createTestCaseStepActionControlFromAiResponse(String aiJson, TestCaseStepAction testcaseStepAction) throws IOException {
+    public TestCaseStepActionControl createTestCaseStepActionControl(String aiJson, TestCaseStepAction testcaseStepAction) throws IOException {
 
         TestcaseStepActionControlDTOV001 dto = objectMapper.readValue(aiJson, TestcaseStepActionControlDTOV001.class);
         dto.setTestFolderId(testcaseStepAction.getTest());

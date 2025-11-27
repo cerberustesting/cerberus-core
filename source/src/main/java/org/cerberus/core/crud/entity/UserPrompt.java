@@ -36,7 +36,12 @@ public class UserPrompt {
     private String sessionID;
     private String iaModel;
     private Integer iaMaxTokens;
+    private String type;
     private String title;
+    private Integer totalCalls;
+    private Integer totalInputTokens;
+    private Integer totalOutputTokens;
+    private double totalCost;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -50,7 +55,12 @@ public class UserPrompt {
         jo.put("sessionID", sessionID);
         jo.put("iaModel", iaModel);
         jo.put("iaMaxTokens", iaMaxTokens);
+        jo.put("type", type);
         jo.put("title", title);
+        jo.put("totalCalls", totalCalls);
+        jo.put("totalInputTokens", totalInputTokens);
+        jo.put("totalOutputTokens", totalOutputTokens);
+        jo.put("totalCost", totalCost);
         jo.put("usrCreated", usrCreated);
         jo.put("dateCreated", dateCreated);
         jo.put("usrModif", usrModif);

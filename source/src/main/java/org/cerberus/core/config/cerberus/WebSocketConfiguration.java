@@ -45,20 +45,16 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Autowired
     private TestCaseExecutionWebSocket testCaseExecutionWebSocket;
     @Autowired
-    private ChatWithAIWebSocket chatWithAIWebSocket;
-    @Autowired
     private QueueStatusWebSocket queueStatusWebSocket;
     @Autowired
     private ExecutionMonitorWebSocket executionMonitorWebSocket;
     @Autowired
-    private CreateTestWithAIWebSocket createTestWithAIWebSocket;
+    private AIWebSocket aIWebSocket;
 
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatWithAIWebSocket, "/ws/chatai")
-                .setAllowedOrigins("*");
-        registry.addHandler(createTestWithAIWebSocket, "/ws/generateTestWithAI")
+        registry.addHandler(aIWebSocket, "/ws/AIWebSocket")
                 .setAllowedOrigins("*");
         registry.addHandler(queueStatusWebSocket, "/ws/queuestatus")
                 .setAllowedOrigins("*");

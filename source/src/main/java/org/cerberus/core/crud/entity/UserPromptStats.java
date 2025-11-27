@@ -28,19 +28,19 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LogAIUsageStats {
+public class UserPromptStats {
     private Integer totalInputTokens;
     private Integer totalOutputTokens;
     private double totalCost;
     private String date;
 
-    public LogAIUsageStats(int totalInput, int totalOutput, double totalCost) {
+    public UserPromptStats(int totalInput, int totalOutput, double totalCost) {
         this.totalInputTokens = totalInput;
         this.totalOutputTokens = totalOutput;
         this.totalCost = totalCost;
     }
 
-    public LogAIUsageStats(int totalInput, int totalOutput, double totalCost, String date) {
+    public UserPromptStats(int totalInput, int totalOutput, double totalCost, String date) {
         this.totalInputTokens = totalInput;
         this.totalOutputTokens = totalOutput;
         this.totalCost = totalCost;

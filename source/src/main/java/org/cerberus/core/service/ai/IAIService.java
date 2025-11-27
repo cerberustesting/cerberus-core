@@ -28,7 +28,7 @@ public interface IAIService {
     /**
      * @param newQuestion
      */
-    void askClaude(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion);
+    void chatWithAI(String user, WebSocketSession websocketSession, String sessionID,  String newQuestion);
 
 }
 

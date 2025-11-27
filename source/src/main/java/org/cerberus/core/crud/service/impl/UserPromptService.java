@@ -21,22 +21,17 @@ package org.cerberus.core.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.dao.ILogAIUsageDAO;
-import org.cerberus.core.crud.entity.LogAIUsage;
-import org.cerberus.core.crud.entity.LogAIUsageStats;
-import org.cerberus.core.crud.entity.LogEvent;
-import org.cerberus.core.crud.service.ILogAIUsageService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.crud.dao.IUserPromptDAO;
+import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.crud.service.IUserPromptService;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,41 +40,47 @@ import java.util.Map;
  * @author bcivel
  */
 @Service
-public class LogAIUsageService implements ILogAIUsageService {
+public class UserPromptService implements IUserPromptService {
 
-    private static final Logger LOG = LogManager.getLogger(LogAIUsageService.class);
+    private static final Logger LOG = LogManager.getLogger(UserPromptService.class);
 
     @Autowired
-    private ILogAIUsageDAO logAIUsageDAO;
+    private IUserPromptDAO userPromptDAO;
 
     @Override
-    public AnswerItem<LogAIUsage> readByKey(Integer ID) {
-        return logAIUsageDAO.readByKey(ID);
+    public AnswerItem<UserPrompt> readByKey(Integer id) {
+        return userPromptDAO.readByKey(id);
     }
 
     @Override
-    public AnswerList<LogAIUsage> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        return logAIUsageDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
+    public AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        return userPromptDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public Answer create(LogAIUsage logAIUsage) {
-        return logAIUsageDAO.create(logAIUsage);
+    public Answer create(UserPrompt userPrompt) {
+        return userPromptDAO.create(userPrompt);
     }
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return logAIUsageDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        return userPromptDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 
     @Override
-    public AnswerItem<LogAIUsageStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user) {
+    public AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user) {
         LOG.debug("Fetching AI usage statistics from {} to {}, for user {}", startDate, endDate, user);
-        return logAIUsageDAO.readSumByPeriod(startDate, endDate, user);
+        return userPromptDAO.readSumByPeriod(startDate, endDate, user);
     }
 
     @Override
-    public AnswerList<LogAIUsageStats> getUsageByDay(Timestamp startDate, Timestamp endDate, String user) {
-        return logAIUsageDAO.readUsageByDay(startDate, endDate, user);
+    public AnswerList<UserPromptStats> getUsageByDay(Timestamp startDate, Timestamp endDate, String user) {
+        return userPromptDAO.readUsageByDay(startDate, endDate, user);
     }
+
+    @Override
+    public boolean incrementUsage(String user, String aiSessionId, Integer inputTokens, Integer outputTokens, Double cost){
+        return userPromptDAO.incrementUsage(user, aiSessionId, inputTokens, outputTokens, cost);
+    }
+
 }

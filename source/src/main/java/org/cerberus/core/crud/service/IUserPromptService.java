@@ -19,14 +19,12 @@
  */
 package org.cerberus.core.crud.service;
 
-import org.cerberus.core.crud.entity.LogAIUsage;
-import org.cerberus.core.crud.entity.LogAIUsageStats;
-import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptStats;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -35,17 +33,18 @@ import java.util.Map;
  *
  * @author bcivel
  */
-public interface ILogAIUsageService {
+public interface IUserPromptService {
 
-    AnswerItem<LogAIUsage> readByKey(Integer id);
+    AnswerItem<UserPrompt> readByKey(Integer id);
 
-    AnswerList<LogAIUsage> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    Answer create(LogAIUsage logAIUsage);
+    Answer create(UserPrompt userPrompt);
 
     AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
-    AnswerItem<LogAIUsageStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user);
+    AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user);
 
-    AnswerList<LogAIUsageStats> getUsageByDay(Timestamp startDate, Timestamp endDate, String user);
+    AnswerList<UserPromptStats> getUsageByDay(Timestamp startDate, Timestamp endDate, String user);
+    boolean incrementUsage(String user, String aiSessionId, Integer inputTokens, Integer outputTokens, Double cost);
 }

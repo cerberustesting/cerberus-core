@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.service.ai.impl.AIService;
 import org.cerberus.core.service.ai.impl.MessageAI;
+import org.cerberus.core.service.ai.impl.MessageTestCreationAI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -36,38 +37,51 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class ChatWithAIWebSocket extends TextWebSocketHandler {
+public class AIWebSocket extends TextWebSocketHandler {
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
-    private static final Logger LOG = LogManager.getLogger(ChatWithAIWebSocket.class);
+    private static final Logger LOG = LogManager.getLogger(AIWebSocket.class);
 
     @Autowired
-    AIService aiService;
+    private AIService aiService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
-        LOG.debug("afterConnectionEstablished");
+        LOG.debug("WebSocket connected: " + session.getId());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
+        LOG.debug("WebSocket closed: " + session.getId());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        LOG.debug("Received" + message.toString());
+        LOG.debug("Received message: " + message.getPayload());
         try {
-            MessageAI incoming = objectMapper.readValue(message.getPayload(), MessageAI.class);
-            MessageAI broadcast = new MessageAI(incoming.getSender(), incoming.getSessionID(), incoming.getContent());
-            String payload = objectMapper.writeValueAsString(broadcast);
-            StringBuilder context = new StringBuilder();
-            context.append( incoming.getContent());
+            MessageTestCreationAI incoming = objectMapper.readValue(message.getPayload(), MessageTestCreationAI.class);
 
-            aiService.askClaude(incoming.getSender(), session, incoming.getSessionID(), context.toString());
+            if(incoming.getSubject().equals("test_proposal")) {
+                aiService.generateTestCaseProposal(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent(), incoming.getApplication(), incoming.getTestFolder());
+            } else if (incoming.getSubject().equals("test_creation")) {
+                aiService.createTestCaseAndGenerateContent(incoming.getSender(), session, incoming.getSessionID(), incoming.getTestFolder(), incoming.getTestcaseObject(), incoming.getTestDetailedDescription(), incoming.getTempId());
+            } else if (incoming.getSubject().equals("chat_with_ai")){
+                aiService.chatWithAI(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent());
+            } else if (incoming.getSubject().equals("execution_debug_assistant")){
+                aiService.executionDebugWithAI(incoming.getSender(), session, incoming.getSessionID(), Integer.valueOf(incoming.getContent()));
+            }
+
         } catch (Exception ex){
-            LOG.debug("Exception" + ex.toString());
+            LOG.error("Exception handling WebSocket message", ex);
+            // Envoie un message d'erreur au client
+            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
+                    new MessageAI("system", "error", "Unexpected error: " + ex.getMessage())
+            )));
         }
     }
+
 }
+

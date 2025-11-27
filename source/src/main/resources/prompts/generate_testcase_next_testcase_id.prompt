@@ -1,0 +1,5 @@
+Propose me the next testcaseID regarding the already existing ones.
+**Existing Testcase ID :**
+{{existingTestcaseId}}
+TestcaseID generated must not exceed 10 caracters.
+Respond ONLY the testcase id, no additional text, no explanation, no icon, no special characters, ONLY the testcase id.

@@ -20,22 +20,20 @@
 package org.cerberus.core.crud.dao;
 
 import org.cerberus.core.crud.entity.UserPromptMessage;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 
 public interface IUserPromptMessageDAO {
 
-    boolean insertUserPromptMessage(UserPromptMessage msg);
+    Answer create(UserPromptMessage userPromptMessage);
 
-    UserPromptMessage findById(int id);
+    AnswerItem<UserPromptMessage> readByKey(Integer id);
 
-    boolean updateUserPromptMessage(UserPromptMessage msg);
+    AnswerList<UserPromptMessage> readBySessionID(String sessionID);
 
-    boolean deleteUserPromptMessage(int id);
+    boolean delete(Integer id);
 
-    List<UserPromptMessage> findBySessionID(String sessionID);
+    boolean update(UserPromptMessage userPromptMessage);
 
-    UserPromptMessage loadFromResultSet(ResultSet rs) throws SQLException;
 }

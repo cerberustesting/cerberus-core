@@ -203,46 +203,70 @@ function aoColumnsFuncAIUsage() {
             "title": "ID"
         },
         {
-            "data": "sessionId",
-            "sName": "sessionId",
+            "data": "login",
+            "sName": "login",
+            "sWidth": "90px",
+            "title": "User"
+        },
+        {
+            "data": "sessionID",
+            "sName": "sessionID",
             "sWidth": "90px",
             "title": "Session ID"
         },
         {
-            "data": "model",
-            "sName": "model",
+            "data": "iaModel",
+            "sName": "iaModel",
             "sWidth": "90px",
             "title": "Model"
         },
         {
-            "data": "prompt",
+            "data": "iaMaxTokens",
+            "sName": "iaMaxTokens",
+            "sWidth": "80px",
+            "title": "Max Tokens"
+        },
+        {
+            "data": "type",
+            "sName": "type",
+            "sWidth": "80px",
+            "title": "Type"
+        },
+        {
+            "data": "title",
             "like": true,
-            "sName": "prompt",
+            "sName": "title",
             "sWidth": "250px",
-            "title": "Prompt",
+            "title": "Title",
             "mRender": function(data, type, obj) {
                 return data ? data.substring(0, 80) + "..." : "";
             }
         },
         {
-            "data": "inputTokens",
-            "sName": "inputTokens",
+            "data": "totalCalls",
+            "sName": "totalCalls",
             "sWidth": "80px",
-            "title": "Input Tokens"
+            "title": "Total Calls"
         },
         {
-            "data": "outputTokens",
-            "sName": "outputTokens",
+            "data": "totalInputTokens",
+            "sName": "totalInputTokens",
             "sWidth": "80px",
-            "title": "Output Tokens"
+            "title": "Total Input Tokens"
         },
         {
-            "data": "cost",
-            "sName": "cost",
+            "data": "totalOutputTokens",
+            "sName": "totalOutputTokens",
+            "sWidth": "80px",
+            "title": "Total Output Tokens"
+        },
+        {
+            "data": "totalCost",
+            "sName": "totalCost",
             "sWidth": "60px",
             "title": "Cost ($)",
             "mRender": function(data) {
-                return data ? data.toFixed(4) : "0.0000";
+                return data ? data.toFixed(2) : "0.00";
             }
         },
         {

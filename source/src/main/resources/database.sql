@@ -6784,3 +6784,16 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 -- 1928
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_groovy_classes_whitelist', '', 'Extra classes in addition to the default whitelist for Groovy scripting. Each class must be separated by a comma. Not available on SaaS instance.');
+
+-- 1929
+ALTER TABLE `userpromptmessage`
+    ADD COLUMN `tokens` INT NULL DEFAULT 0 AFTER `message`,
+    ADD COLUMN `cost` DECIMAL(12,6) AFTER `token`;
+
+-- 1930
+ALTER TABLE `userprompt`
+    ADD COLUMN `type` VARCHAR(255) NULL DEFAULT NULL AFTER `iaMaxTokens`,
+    ADD COLUMN `totalCalls` INT DEFAULT 0 AFTER `type`,
+    ADD COLUMN `totalInputTokens` INT DEFAULT 0 AFTER `totalCalls`,
+    ADD COLUMN `totalOutputTokens` INT DEFAULT 0 AFTER `totalInputTokens`,
+    ADD COLUMN `totalCost` DECIMAL(12,6) AFTER `totalOutputTokens`;

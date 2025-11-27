@@ -31,6 +31,7 @@
     <head>
         <meta name="active-menu" content="test">
         <meta name="active-submenu" content="Test.jsp">
+        <meta name="page" content="Test Folder">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Test.js"></script>
@@ -55,6 +56,7 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
+            <jsp:include page="include/global/aiBottomBar.html"/>
         </main>
     </body>
 </html>

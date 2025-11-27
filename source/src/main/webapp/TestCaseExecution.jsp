@@ -25,6 +25,7 @@
     <head>
         <meta name="active-menu" content="reporting">
         <meta name="active-submenu" content="TestCaseExecution.jsp">
+        <meta name="page" content="Test Case Execution">
         <<meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>
@@ -57,11 +58,10 @@
 
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line">Execution Detail</h1>
-            <div class="panel no-border" id="testCaseConfig">
-                <div style="">
-                    <div id="divPanelDefault" class="panel no-border" style="z-index:10; top: 0">
-                        <div class="panel-heading" id="executionHeader"
-                             style="z-index:2; top: 0;border-radius: 10px;margin-bottom: 0px;border: 1px solid #eee;">
+            <div id="testCaseConfig">
+                <div>
+                    <div id="divPanelDefault">
+                        <div class="crb_card sticky top-0 z-50" id="executionHeader">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="input-group">
@@ -214,6 +214,14 @@
                                             </div>
                                             <div class="btn-group">
                                                 <a>
+                                                    <button class="btn btn-default pull-left" id="selfHealing"
+                                                            style="margin-left: 5px; margin-right: 5px;display:none">
+                                                        <span class="glyphicon glyphicon-search"></span> Open Debug Assistant
+                                                    </button>
+                                                </a>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a>
                                                     <button class="btn btn-default pull-left" id="lastExecutionoT"
                                                             style="margin-left: 5px; margin-right: 5px;">
                                                         <span class="glyphicon glyphicon-stats"></span> Reporting over Time
@@ -235,26 +243,65 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        <div id="NavtabsScriptEdit" style="height:40px; padding-top:20px">
-                            <ul id="tabsScriptEdit" class="nav nav-tabs" style="" data-tabs="tabs">
-                                <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
-                                <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties" name="tabProperties">Properties</a></li>
-                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Bugs</a></li>
-                                <li><a data-toggle="tab" href="#tabEnv" class="tabSteps" id="editTabEnv" name="tabEnv">Environment</a></li>
-                                <li><a data-toggle="tab" href="#tabRobot" class="tabSteps" id="editTabRobot" name="tabRobot">Robot</a></li>
-                                <li><a data-toggle="tab" href="#tabDep" class="tabSteps" id="editTabDep" name="tabDep">Dependencies</a></li>
-                                <li><a data-toggle="tab" href="#tabNetwork" class="tabSteps" id="editTabNetwork" name="tabNetwork" style="display: none;">Network</a></li>
-                                <li><a data-toggle="tab" href="#tabTraca" class="tabSteps" id="editTabTraca" name="tabTraca">Traceability</a>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
-                <div class="panel-body" id="testCaseDetails">
+                <div x-data="{ tab: 'tabSteps' }" class="w-full" id="testCaseDetails">
+                <!-- Tabs -->
+                            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                                <!-- Steps -->
+                                <button @click="tab = 'tabSteps'"
+                                        :class="tab === 'tabSteps' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="list-tree" class="w-4 h-4"></i>Steps
+                                </button>
+                                <!-- Properties -->
+                                <button @click="tab = 'tabProperties'"
+                                        :class="tab === 'tabProperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="database" class="w-4 h-4"></i>Properties
+                                </button>
+                                <!-- Detail -->
+                                <button @click="tab = 'tabDetail'"
+                                        :class="tab === 'tabDetail' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="bug" class="w-4 h-4"></i>Bug
+                                </button>
+                                <!-- Environment -->
+                                <button @click="tab = 'tabEnv'"
+                                        :class="tab === 'tabEnv' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="earth" class="w-4 h-4"></i>Environment
+                                </button>
+                                <!-- Robot -->
+                                <button @click="tab = 'tabRobot'"
+                                        :class="tab === 'tabRobot' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="bot" class="w-4 h-4"></i>Robot
+                                </button>
+                                <!-- Robot -->
+                                <button @click="tab = 'tabDep'"
+                                        :class="tab === 'tabDep' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="link" class="w-4 h-4"></i>Dependencies
+                                </button>
+                                <!-- Network -->
+                                <button @click="tab = 'tabNetwork'"
+                                        :class="tab === 'tabNetwork' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="network" class="w-4 h-4"></i>Network
+                                </button>
+                                <!-- Network -->
+                                <button @click="tab = 'tabTraca'"
+                                        :class="tab === 'tabTraca' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    <i data-lucide="user" class="w-4 h-4"></i>Traceability
+                                </button>
+                            </div>
                     <div class="tab-content">
 
-                        <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
-                            <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
+                        <!-- Steps -->
+                    <div x-show="tab === 'tabSteps'" class="w-full">
+                        <div id="tabSteps" class="flex flex-wrap">
                                 <nav class="col-lg-4 col-md-12 marginBottom20" id="nav-execution" style="z-index:1;">
                                     <div id="list-wrapper" style="top:107px;">
                                         <div id="steps">
@@ -364,8 +411,8 @@
                             </div>
                         </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabProperties">
-                            <div id="propertiesModal">
+                        <div x-show="tab === 'tabProperties'" class="w-full">
+                            <div id="tabProperties">
                                 <div class="property-table">
                                     <div class="" id="propPanelWrapper">
                                         <div class="panel-body collapse in" id="propertiesPanel">
@@ -395,8 +442,8 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="center marginTop25 tab-pane fade" id="tabDetail">
+                        <div x-show="tab === 'tabDetail'" class="w-full">
+                        <div id="tabDetail">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -564,8 +611,11 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabRobot">
+                        <!-- Robot -->
+                        <div x-show="tab === 'tabRobot'" class="w-full">
+                        <div id="tabRobot">
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -660,8 +710,11 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabEnv">
+                         <!-- Environment -->
+                        <div x-show="tab === 'tabEnv'" class="w-full">
+                        <div id="tabEnv">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -730,8 +783,11 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabDep">
+                <!-- Dependencies -->
+                        <div x-show="tab === 'tabDep'" class="w-full">
+                        <div id="tabDep">
                             <div id="listPanelDep">
                                 <div class="row">
                                     <div class="col-sm-12">
@@ -743,8 +799,11 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabNetwork">
+                        <!-- Network -->
+                        <div x-show="tab === 'tabNetwork'" class="w-full">
+                        <div id="tabNetwork">
 
                             <div class="panel" id="filterContainer">
                                 <div class="panel-body" id="FilterIndex">
@@ -832,8 +891,11 @@
                             </div>
 
                         </div>
+                        </div>
 
-                        <div class="center marginTop25 tab-pane fade" id="tabTraca">
+                        <!-- Traceability -->
+                        <div x-show="tab === 'tabTraca'" class="w-full">
+                        <div id="tabTraca">
                             <div id="listPanelTraca">
                                 <div class="row">
                                     <div class="form-group col-sm-6">
@@ -866,15 +928,16 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
                     </div>
 
                 </div>
             </div>
-
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>
             </footer>
+            <jsp:include page="include/global/aiBottomBar.html"/>
         </main>
     </div>
 </body>

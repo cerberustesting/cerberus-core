@@ -27,8 +27,6 @@
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <script type="text/javascript" src="js/pages/Prompt.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <title id="pageTitle">Prompt</title>
     <style>
         body, html {

@@ -1,8 +1,4 @@
-<div id="editInvariantModal"
-     x-data="invariantModal()"
-     x-cloak
-     x-show="open ?? false"
-        class="crb_modal">
+<div id="editInvariantModal" x-data="invariantModal()" x-cloak x-show="open ?? false" class="crb_modal">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-slate-900 opacity-60" z-40 @click="open = false"></div>
     <!-- Modal -->
@@ -69,15 +65,13 @@
                             <!-- Tabs -->
                             <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
                                 <!-- Definition -->
-                                <button type="button" @click.stop="tab = 'definition';"
-                                        id="InvDefinition"
+                                <button type="button" @click.stop="tab = 'definition';" id="InvDefinition"
                                         :class="tab === 'definition' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="users" class="w-4 h-4"></i>Definition
                                 </button>
                                 <!-- Advanced -->
-                                <button type="button" @click.stop="tab = 'advanced';"
-                                        id="InvAdvanced"
+                                <button type="button" @click.stop="tab = 'advanced';" id="InvAdvanced"
                                         :class="tab === 'advanced' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Advanced
@@ -276,29 +270,14 @@
                 }
             },
 
-            addAttribute() {
-                if (this.form.attributes.length < 9) {
-                    this.form.attributes.push('');
-                } else {
-                    alert("You cannot add more than 9 attributes");
-                }
-            },
-
             validateKey(e) {
-                // On valide seulement pour ces IDNAME
-                if (['COUNTRY', 'ENVIRONMENT', 'SYSTEM'].includes(this.idname)) {
+                // For country, environment, System, check valid characters
+                if (['COUNTRY', 'ENVIRONMENT', 'SYSTEM'].includes(this.form.idName)) {
                     // Autorise lettres, chiffres, underscore et tirets uniquement
                     const forbidden = /[^a-zA-Z0-9_-]/;
 
                     if (forbidden.test(e.key)) {
-                        // Message d'erreur (tu peux garder ton showMessage)
-                        showMessage(
-                            new Message("WARNING",
-                                'Character '+e.key+' is not allowed for '+this.idname+'. Use letters, numbers or "-_".'),
-                            $('#editInvariantModal'),
-                            false,
-                            1000
-                        );
+                        notifyInline("WARNING: Character '"+e.key+"' is not allowed for "+this.form.idName+". Use only letters, numbers , '-' and '_'.", 'warning', "#DialogMessagesArea", true);
                         e.preventDefault();
                     }
                 }

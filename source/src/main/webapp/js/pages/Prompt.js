@@ -44,7 +44,7 @@ function initPage() {
         protocol = "wss:";
     }
     var path = parser.pathname.split("Prompt")[0];
-    var new_uri = protocol + parser.host + path + "api/ws/chatai";
+    var new_uri = protocol + parser.host + path + "api/ws/AIWebSocket";
     console.info("Open Socket to : " + new_uri);
     var socket = new WebSocket(new_uri);
 
@@ -92,11 +92,24 @@ function initPage() {
     // Handle open connection
     socket.onopen = function () {
         console.log("Connected to WebSocket!");
+
+        //To improve
+        const language = getUser().language === "en" ? "English" : "French";
+
+        var sessionID = crypto.randomUUID();
         const msg = {
             sender: getUser().login,
-            sessionID: "",
-            content: "Hello, I'm " + username + ". Could you give me some example of things that I can ask you related to Cerberus-Testing?"
+            sessionID: sessionID,
+            subject: "chat_with_ai",
+            content:
+                "Hello, I'm " + username + ". I'm working in a software development context, in a job related to Quality Assurance (automation, tester)." +
+                "The context of the question is related to Cerberus-Testing, a low-code testing framework. " +
+                "Could you give me some examples of things that I can ask you related to Cerberus-Testing? " +
+                "Please, answer in " + language + "language." +
+                "Be concise, and answer in HTML format, including any formatting like bold, lists, icons, and code inside proper HTML tags. The maximum font-size cannot exceed 18px."
         };
+
+        $('#userInput').attr( 'data-sessionID', sessionID );
         socket.send(JSON.stringify(msg));
     };
 
@@ -117,6 +130,7 @@ function initPage() {
         const msg = {
             sender: getUser().login,
             sessionID: $('#userInput').attr( 'data-sessionID')==undefined?"":$('#userInput').attr( 'data-sessionID'),
+            subject: "chat_with_ai",
             content: text
         };
         socket.send(JSON.stringify(msg));

@@ -19,98 +19,151 @@
  */
 package org.cerberus.core.service.ai.impl;
 
-
+import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageParam;
-import com.anthropic.models.messages.Model;
 import org.cerberus.core.crud.dao.IUserPromptDAO;
 import org.cerberus.core.crud.dao.IUserPromptMessageDAO;
 import org.cerberus.core.crud.entity.UserPrompt;
 import org.cerberus.core.crud.entity.UserPromptMessage;
-import org.cerberus.core.crud.service.IParameterService;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AISessionManager {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AISessionManager.class);
+    private static final Logger LOG = LogManager.getLogger(AISessionManager.class);
 
     @Autowired
     IUserPromptDAO iUserPromptDAO;
     @Autowired
     IUserPromptMessageDAO iUserPromptMessageDAO;
     @Autowired
-    IParameterService parameterService;
-
-    private HashMap<String, HashMap<String, List<MessageParam>>> listOfSessionsByUser;
+    AIConfig aiConfig;
 
 
+    public UserPrompt initSession(String login, String session, String type) {
 
-    public void addMessage(String login, String session, String role, String message) {
+        UserPrompt userPrompt = iUserPromptDAO.readByUserSessionID(login, session).getItem();
+        LOG.debug("UserPrompt: " + userPrompt);
 
-        UserPrompt up = iUserPromptDAO.findUserPromptByUserSessionID(login, session);
-        StringBuilder messageWithInitialContext = new StringBuilder();
-
-        if (up == null){
-            String iaModel = parameterService.getParameterStringByKey("cerberus_anthropic_defaultmodel", "", "claude-3-5-sonnet-latest");
-            Integer iaMaxTokens = parameterService.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
-            String title = "";
-
-            UserPrompt upToInsert = UserPrompt.builder()
-                    .login(login).sessionID(session).iaModel(iaModel).iaMaxTokens(iaMaxTokens).title(title).usrCreated(login)
+        if (userPrompt == null){
+            userPrompt = UserPrompt.builder()
+                    .login(login).sessionID(session).iaModel(aiConfig.modelName()).iaMaxTokens(aiConfig.maxTokens()).title("")
+                    .totalCalls(0).totalInputTokens(0).totalOutputTokens(0).totalCost(0.0).type(type).usrCreated(login)
                     .build();
 
-            iUserPromptDAO.insertUserPrompt(upToInsert);
-
-            messageWithInitialContext.append("I'm working in a Software development context, in a job related to Quality assurance (automation, tester).");
-            messageWithInitialContext.append("The context of the question is related to Cerberus-testing, a low code testing framework.");
-            messageWithInitialContext.append("Respond in HTML format, including any formatting like bold, lists, icon, and code inside proper HTML tags.The maximum font-size cannot exceed 18px. ");
+            iUserPromptDAO.create(userPrompt);
         }
+        return userPrompt;
+    }
 
-        messageWithInitialContext.append(message);
+    /**
+     *
+     * @param login
+     * @param aiSessionID
+     * @param prompt
+     * @param response
+     * @param message
+     * @return
+     */
+    public void saveMessage(String login, String aiSessionID, String prompt, String response, Message message, String type) {
 
+        long in = message.usage().inputTokens();
+        long out = message.usage().outputTokens();
+        double costIn = (in / 1_000_000.0) * aiConfig.priceInput();
+        double costOut = (out / 1_000_000.0) * aiConfig.priceOutput();
 
+        LOG.info("Init Session - login : "+login+" - session : "+aiSessionID);
+        initSession(login, aiSessionID, type);
+
+        /*
+        Insert Message
+         */
         UserPromptMessage upmToInsert = UserPromptMessage.builder()
-                .sessionID(session).role(role).message(messageWithInitialContext.toString()).usrCreated(login)
+                .sessionID(aiSessionID).role(MessageParam.Role.USER.toString()).message(prompt).tokens((int) in).cost(costIn).usrCreated(login)
                 .build();
-        iUserPromptMessageDAO.insertUserPromptMessage(upmToInsert);
+        iUserPromptMessageDAO.create(upmToInsert);
+
+        /*
+        Insert Response
+         */
+        upmToInsert = UserPromptMessage.builder()
+                .sessionID(aiSessionID).role(MessageParam.Role.ASSISTANT.toString()).message(response).tokens((int) out).cost(costOut).usrCreated(login)
+                .build();
+        iUserPromptMessageDAO.create(upmToInsert);
+
+        /*
+        Increment Usage
+         */
+        iUserPromptDAO.incrementUsage(login, aiSessionID, (int) in, (int) out, costIn + costOut);
 
     }
 
-    public List<UserPromptMessage> getAllMessages(String user, String session){
-        List<UserPromptMessage> upm = iUserPromptMessageDAO.findBySessionID(session);
+    public List<UserPromptMessage> getAllMessages(String aiSession) {
+        List<UserPromptMessage> upm = iUserPromptMessageDAO.readBySessionID(aiSession).getDataList();
         return upm;
     }
 
-    public JSONArray getAllPromptByUser(String user){
-        List<UserPrompt> upList = iUserPromptDAO.findUserPromptsByLogin(user);
+    public List<MessageParam> getMessageParamListOfSession(String sessionID) {
+
+        List<MessageParam> messageParamList = new ArrayList<>();
+        List<UserPromptMessage> messageListFromSession = getAllMessages(sessionID);
+
+        for (UserPromptMessage messageFromSession : messageListFromSession) {
+            MessageParam.Role role = MessageParam.Role.USER;
+            switch (messageFromSession.getRole()) {
+                case "user":
+                    role = MessageParam.Role.USER;
+                    break;
+                case "assistant":
+                    role = MessageParam.Role.ASSISTANT;
+                    break;
+            }
+            messageParamList.add(MessageParam.builder().role(role).content(messageFromSession.getMessage()).build());
+        }
+        return messageParamList;
+
+    }
+
+    public JSONArray getAllPromptByUser(String user) {
+
+        List<UserPrompt> upList = Optional.ofNullable(iUserPromptDAO.readByUser(user).getDataList())
+                .orElse(Collections.emptyList());
+
         JSONArray result = new JSONArray();
-        for (UserPrompt up : upList){
+
+        for (UserPrompt up : upList) {
             result.put(up.toJSON());
         }
         return result;
     }
 
-    public JSONArray getAllMessagesFromPrompt(String sessionID){
-        List<UserPromptMessage> upmList = iUserPromptMessageDAO.findBySessionID(sessionID);
+    public JSONArray getAllMessagesFromPrompt(String sessionID) {
+        List<UserPromptMessage> upmList = iUserPromptMessageDAO.readBySessionID(sessionID).getDataList();
         JSONArray result = new JSONArray();
-        for (UserPromptMessage upm : upmList){
+        for (UserPromptMessage upm : upmList) {
             result.put(upm.toJSON());
         }
         return result;
     }
 
-    public void updateTitle(String user, String session, String title){
-        UserPrompt up = iUserPromptDAO.findUserPromptByUserSessionID(user, session);
+    public void updateTitle(String user, String session, String title) {
+        LOG.info("updateTitle - User:" + user + " session:" + session + " title:" + title);
+        UserPrompt up = iUserPromptDAO.readByUserSessionID(user, session).getItem();
+        LOG.info(iUserPromptDAO.readByUserSessionID(user, session).getResultMessage().getDescription());
         up.setTitle(title);
         up.setUsrModif(user);
         up.setDateModif(new Timestamp(System.currentTimeMillis()));
-        iUserPromptDAO.updateUserPrompt(up);
+        iUserPromptDAO.update(up);
     }
 
 }
