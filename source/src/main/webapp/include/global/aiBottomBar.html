@@ -32,7 +32,7 @@
         </div>
 
         <!-- Conversation Display -->
-        <div id="aiConversation" class="flex-1 overflow-y-auto dark:bg-slate-800 bg-slate-200 p-3 rounded-lg text-sm space-y-2">
+        <div id="aiConversation" class="flex flex-col flex-1 overflow-y-auto dark:bg-slate-800 bg-slate-200 p-3 rounded-lg text-sm space-y-2">
         </div>
 
         <!-- Input -->
@@ -62,6 +62,36 @@
     /** aiAssistant avec streaming Markdown + final sanitize **/
     function aiAssistant(options = {}) {
 
+
+        function makeQuestionsClickable(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            console.debug(html);
+            // Cherche tous les <li> et <p> qui contiennent une question
+            const candidates = doc.querySelectorAll("li, p, strong, em");
+
+            candidates.forEach(el => {
+                const text = el.textContent.trim();
+
+                const cleanText = text.replace(/^"+|"+$/g, "").trim();
+                console.debug(cleanText);
+                // Détecte les vraies questions (terminent par ?)
+                if (cleanText.endsWith("?")) {
+                    const btn = document.createElement("button");
+                    btn.className =
+                        "question-suggest bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded-xl hover:bg-blue-500 transition my-1 block text-left mt-2";
+                    btn.dataset.question = cleanText;
+                    btn.textContent = cleanText;
+
+                    el.textContent = "";
+                    el.appendChild(btn);
+                }
+            });
+
+            return doc.body.innerHTML;
+        }
+
         return {
             open: false,
             ws: null,
@@ -78,6 +108,18 @@
                     const { subject, content } = e.detail;
                     this.openWithSubject(subject, content);
                 });
+
+                document.addEventListener("click", (e) => {
+                    const btn = e.target.closest(".question-suggest");
+                    if (!btn) return;
+
+                    const question = btn.dataset.question;
+
+                    const input = this.$refs.aiInput;
+                    input.value = question;
+
+                    this.sendUserMessage();
+                });
             },
 
             connectWebSocket() {
@@ -90,7 +132,7 @@
 
                 // Build WebSocket URL
                 const wsUrl = `${protocol}${host}${context}/api/ws/AIWebSocket`;
-                console.info("WebSocket URL:", wsUrl);
+                console.debug("WebSocket URL:", wsUrl);
 
                 // Connect to WebSocket endpoint
                 this.ws = new WebSocket(wsUrl);
@@ -210,36 +252,49 @@
                 const conv = document.getElementById("aiConversation");
                 if (!conv) return;
 
-                // create new bubble if needed
+                // Création d'une nouvelle bulle si nécessaire
                 if (isNew || !this.aiCurrentBubble || this.isCurrentFinalized) {
                     const bubble = document.createElement("div");
-                    bubble.className = "ai-msg dark:bg-slate-700 bg-slate-300 dark:text-white text-slate-900 p-3 rounded-lg max-w-m";
+                    bubble.className =
+                        "ai-msg dark:bg-slate-700 bg-slate-300 dark:text-white text-slate-900 " +
+                        "self-start p-3 rounded-lg max-w-[75%] transition-transform duration-300 ease-out";
                     bubble.setAttribute('data-streaming', 'true');
+
+                    // loader uniquement pour l'attente du début de la réponse
+                    bubble.innerHTML = `
+            <div class="loader flex space-x-1 mb-1">
+                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.1s]"></div>
+                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce"></div>
+            </div>
+            <div class="ai-content"></div>
+        `;
+
                     conv.appendChild(bubble);
                     this.aiCurrentBubble = bubble;
                     this.aiBuffer = "";
                     this.isCurrentFinalized = false;
                 }
 
-                // append chunk to buffer (keep raw markdown)
-                this.aiBuffer += chunk;
+                // Dès qu'on reçoit un premier chunk, supprimer le loader
+                if (chunk.trim() !== "") {
+                    const loader = this.aiCurrentBubble.querySelector(".loader");
+                    if (loader) loader.remove();
 
-                // During streaming: render a safe preview
-                //  - escape any raw HTML first to prevent execution during streaming
-                //  - then parse markdown to HTML for visual richness
-                try {
-                    const previewSource = escapeHtmlForPreview(this.aiBuffer);
-                    const previewHtml = marked.parse(previewSource);
-                    // show preview (no DOMPurify here, because we escaped raw HTML)
-                    this.aiCurrentBubble.innerHTML = previewHtml;
-                } catch (e) {
-                    // fallback: render as text to avoid DOM errors
-                    this.aiCurrentBubble.textContent = this.aiBuffer;
+                    const contentDiv = this.aiCurrentBubble.querySelector(".ai-content");
+                    try {
+                        const previewSource = escapeHtmlForPreview(this.aiBuffer + chunk);
+                        contentDiv.innerHTML = marked.parse(previewSource);
+                    } catch (e) {
+                        contentDiv.textContent = this.aiBuffer + chunk;
+                    }
                 }
+
+                // ajouter chunk au buffer
+                this.aiBuffer += chunk;
 
                 conv.scrollTop = conv.scrollHeight;
 
-                // if this chunk signals end of message -> finalize
                 if (isFinal) {
                     this.finalizeCurrentAI();
                 }
@@ -248,8 +303,6 @@
             finalizeCurrentAI() {
                 if (!this.aiCurrentBubble) return;
 
-                // parse original buffer (allow markdown to include HTML if present),
-                // then sanitize the resulting HTML with DOMPurify
                 try {
                     const finalHtml = marked.parse(this.aiBuffer);
                     const clean = DOMPurify.sanitize(finalHtml, {
@@ -260,6 +313,9 @@
                         ALLOWED_ATTR: ['class','style']
                     });
                     this.aiCurrentBubble.innerHTML = clean;
+
+                    this.aiCurrentBubble.innerHTML = makeQuestionsClickable(this.aiCurrentBubble.innerHTML);
+
                 } catch (e) {
                     // fallback to escaped text
                     this.aiCurrentBubble.textContent = this.aiBuffer;
@@ -274,9 +330,11 @@
                 const conv = document.getElementById("aiConversation");
                 if (!conv) return;
 
-                const bubble =
-                    '<div class="' + (who === "ai" ? 'bg-slate-700 text-white' : 'bg-blue-600 text-white ml-auto') +
-                    ' p-3 rounded-lg max-w-m">' + DOMPurify.sanitize(text) + '</div>';
+                const bubble = `<div class="${
+                    who === "ai" ? 'ai-msg dark:bg-slate-700 bg-slate-300 dark:text-white text-slate-900 self-start'
+                        : 'user-msg bg-blue-600 text-white self-end'
+                } p-3 rounded-lg max-w-[75%] transition-transform duration-300 ease-out">${DOMPurify.sanitize(text)}
+                </div>`;
 
                 conv.insertAdjacentHTML("beforeend", bubble);
                 conv.scrollTop = conv.scrollHeight;

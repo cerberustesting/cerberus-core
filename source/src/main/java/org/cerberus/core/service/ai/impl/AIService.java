@@ -93,6 +93,7 @@ public class AIService implements IAIService {
                     ObjectMapper mapper = new ObjectMapper();
                     Map<String, String> message = new HashMap<>();
                     message.put("type", "chat");
+                    message.put("done", "false");
                     message.put("data", text);
                     websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
                 } catch (Exception e) {
@@ -100,6 +101,12 @@ public class AIService implements IAIService {
                     streamingErrors.add(e.getMessage());
                 }
             });
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> message = new HashMap<>();
+            message.put("type", "end");
+            message.put("done", "true");
+            message.put("data", "");
+            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
 
             /**
              * store message and answer
