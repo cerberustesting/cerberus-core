@@ -214,14 +214,6 @@
                                             </div>
                                             <div class="btn-group">
                                                 <a>
-                                                    <button class="btn btn-default pull-left" id="selfHealing"
-                                                            style="margin-left: 5px; margin-right: 5px;display:none">
-                                                        <span class="glyphicon glyphicon-search"></span> Open Debug Assistant
-                                                    </button>
-                                                </a>
-                                            </div>
-                                            <div class="btn-group">
-                                                <a>
                                                     <button class="btn btn-default pull-left" id="lastExecutionoT"
                                                             style="margin-left: 5px; margin-right: 5px;">
                                                         <span class="glyphicon glyphicon-stats"></span> Reporting over Time

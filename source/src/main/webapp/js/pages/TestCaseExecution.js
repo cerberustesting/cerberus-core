@@ -101,13 +101,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
             );
         }
-
-        document.getElementById("selfHealing").addEventListener("click", () => {
-            console.log("selfHealing clicked");
-            document.dispatchEvent(new CustomEvent('open-debug-assistant', {
-                detail: { subject: 'execution_debug_assistant', content: executionId }
-            }));
-        });
     });
 });
 
@@ -3772,6 +3765,20 @@ function getScriptInformationOfStep() {
         stepArr.push(stepJson);
     }
     return stepArr;
+}
+
+function getAIHeaderButtons() {
+    var executionId = GetURLParameter("executionId");
+    return [
+        {
+            label: "Debug Execution "+executionId,
+            onClick: () => {
+                document.dispatchEvent(new CustomEvent('open-debug-assistant', {
+                    detail: { subject: 'execution_debug_assistant', content: executionId }
+                }));
+            }
+        }
+    ];
 }
 
 

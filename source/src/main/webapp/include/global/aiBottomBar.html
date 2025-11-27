@@ -6,7 +6,7 @@
     <!-- Toggle Button (when closed) -->
     <button x-show="!open"
       @click="openAssistant()"
-      class="absolute right-4 bottom-4 dark:bg-slate-800 bg-slate-200 text-slate-800 dark:text-white px-4 py-2
+      class="absolute right-4 bottom-4 dark:bg-slate-800 bg-slate-200 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white px-4 py-2
       rounded-full shadow-lg flex items-center gap-2 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
         <i data-lucide="bot" class="w-4 h-4"></i>AI Assistant
     </button>
@@ -22,10 +22,15 @@
         class="dark:bg-slate-900 bg-slate-100 text-slate-900 dark:text-white h-96 w-full shadow-2xl rounded-t-xl p-4 flex flex-col">
         <!-- Header -->
         <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-                <i data-lucide="bot" class="w-5 h-5"></i>
-                <span class="font-semibold">AI Copilot Assistant</span>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="bot" class="w-5 h-5"></i>
+                    <span class="font-semibold">AI Copilot Assistant</span>
+                </div>
+                <!-- Dynamic button -->
+                <div class="header-buttons flex gap-2"></div>
             </div>
+
             <button @click="close()" class="hover:text-slate-700 dark:hover:text-slate-300">
                 <i data-lucide="chevron-down" class="w-5 h-5"></i>
             </button>
@@ -104,11 +109,17 @@
             init() {
                 this.connectWebSocket();
 
+                /*
+                Listener for sollicitation from outside
+                 */
                 document.addEventListener('open-debug-assistant', (e) => {
                     const { subject, content } = e.detail;
                     this.openWithSubject(subject, content);
                 });
 
+                /*
+                Listener for click inside response from AI
+                 */
                 document.addEventListener("click", (e) => {
                     const btn = e.target.closest(".question-suggest");
                     if (!btn) return;
@@ -120,6 +131,14 @@
 
                     this.sendUserMessage();
                 });
+
+                /*
+                Get HeaderButtons spécifics
+                 */
+                if (typeof window.getAIHeaderButtons === "function") {
+                    const buttons = getAIHeaderButtons();
+                    this.setHeaderButtons(buttons);
+                }
             },
 
             connectWebSocket() {
@@ -262,13 +281,13 @@
 
                     // loader uniquement pour l'attente du début de la réponse
                     bubble.innerHTML = `
-            <div class="loader flex space-x-1 mb-1">
-                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
-                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.1s]"></div>
-                <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce"></div>
-            </div>
-            <div class="ai-content"></div>
-        `;
+                        <div class="loader flex space-x-1 mb-1">
+                            <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+                            <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.1s]"></div>
+                            <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce"></div>
+                        </div>
+                        <div class="ai-content"></div>
+                    `;
 
                     conv.appendChild(bubble);
                     this.aiCurrentBubble = bubble;
@@ -358,6 +377,23 @@
 
                 // prepare bubble for streaming response
                 this.appendAI("", true, false);
+            },
+
+            setHeaderButtons(buttons = []) {
+                // buttons = [{ label: "Btn1", onClick: () => {} }, ...]
+                const header = document.querySelector("#aiConversation")?.closest(".shadow-2xl")?.querySelector(".header-buttons");
+                if (!header) return;
+
+                // vider les anciens boutons
+                header.innerHTML = "";
+
+                buttons.forEach(btn => {
+                    const b = document.createElement("button");
+                    b.className = "px-3 py-1 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-bold";
+                    b.textContent = btn.label;
+                    if (btn.onClick) b.addEventListener("click", btn.onClick);
+                    header.appendChild(b);
+                });
             }
         };
     }
