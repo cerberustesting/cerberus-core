@@ -6788,7 +6788,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 -- 1929
 ALTER TABLE `userpromptmessage`
     ADD COLUMN `tokens` INT NULL DEFAULT 0 AFTER `message`,
-    ADD COLUMN `cost` DECIMAL(12,6) AFTER `token`;
+    ADD COLUMN `cost` DECIMAL(12,6) AFTER `tokens`;
 
 -- 1930
 ALTER TABLE `userprompt`
