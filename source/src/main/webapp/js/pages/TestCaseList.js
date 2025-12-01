@@ -222,7 +222,8 @@ function renderOptionsForTestCaseList(data) {
         if (data["hasPermissionsCreate"]) {
             $("#createTestCaseButton").off("click").on("click", function () {
                 var firstRowTest = $("#testCaseTable td.sorting_1")[0] !== undefined ? testAutomaticModal : GetURLParameter("test", undefined);
-                openModalTestCase(firstRowTest, undefined, "ADD");
+                //openModalTestCase(firstRowTest, undefined, "ADD");
+                window.dispatchEvent(new CustomEvent('testcase-modal-open', { detail: { defaultTest: firstRowTest } }));
             });
         }
 

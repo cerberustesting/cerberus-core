@@ -48,6 +48,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
+            <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
             <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
             <%@ include file="include/transversalobject/Application.html"%>
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>

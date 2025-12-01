@@ -69,6 +69,7 @@
                                 <!-- Bouton dropdown -->
                                 <button type="button"
                                         @click="open = !open"
+                                        id="editTestCaseSimpleCreationApplication"
                                         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
                 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
                 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
@@ -87,6 +88,7 @@
                                     <template x-for="item in applicationDropdown.items" :key="item">
                                         <div>
                                             <button type="button"
+                                                    :id="`editTestCaseSimpleCreationApplication_${item}`"
                                                     @click="applicationDropdown.select(item); form.application = item; nextStepIfValid('application'); open=false"
                                                     class="w-full flex items-center gap-2 px-3 py-2 dark:hover:bg-slate-700 hover:bg-slate-100 transition-colors">
                                                 <span x-text="item"></span>
@@ -174,7 +176,7 @@
                 <!-- Step 2: Description -->
                 <div x-show="step === 1" class="border rounded p-4 space-y-2">
                     <div class="font-semibold">Describe shortly your TestCase</div>
-                    <input type="text" x-model="form.description" @keyup.enter="nextStepIfValid('description')" placeholder="As a user..." class="w-full border rounded px-2 py-1">
+                    <input type="text" id="editTestCaseSimpleCreationDescription" x-model="form.description" @keyup.enter="nextStepIfValid('description')" placeholder="As a user..." class="w-full border rounded px-2 py-1">
                 </div>
 
                 <!-- Step 3: Folder -->
@@ -183,7 +185,7 @@
                     <div class="flex gap-2 flex-wrap">
                         <div class="flex-3 min-w-[150px]">
                             <label>Test</label>
-                            <select x-model="form.testFolderId" @change="nextStepIfValid('testFolderId'); fetchNextTestCaseId()" class="w-full border rounded px-2 py-1">
+                            <select x-model="form.testFolderId" id="editTestCaseSimpleCreationTestFolderId" @change="nextStepIfValid('testFolderId'); fetchNextTestCaseId()" class="w-full border rounded px-2 py-1">
                                 <option value="">-- Select Test Folder --</option>
                                 <template x-for="t in tests" :key="t"><option :value="t" x-text="t"></option></template>
                             </select>
