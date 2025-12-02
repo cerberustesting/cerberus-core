@@ -391,23 +391,6 @@ $.when($.getScript("js/global/global.js")
                 $("a[name='" + tabactive + "']").click();
             }
 
-            $("a[name='tabProperties']").on("shown.bs.tab", function (e) {
-                e.target; // newly activated tab
-                e.relatedTarget; // previous active tab
-                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabProperties"));
-
-            })
-            $("a[name='tabSteps']").on("shown.bs.tab", function (e) {
-                e.target; // newly activated tab
-                e.relatedTarget; // previous active tab
-                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabSteps"));
-            })
-            $("a[name='tabInheritedProperties']").on("shown.bs.tab", function (e) {
-                e.target; // newly activated tab
-                e.relatedTarget; // previous active tab
-                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabInheritedProperties"));
-            })
-
         }
         // close all Navbar menu
         //closeEveryNavbarMenu();
@@ -671,7 +654,7 @@ function saveScript(queueid = 0, tag = "") {
                 var stepHtml = $("#steps li.active");
                 var stepData = stepHtml.data("item");
 
-                var tabActive = $("#tabsScriptEdit li.active a").attr("name");
+                const tabActive = GetURLParameter('tabactive') || 'steps';
 
                 var parser = document.createElement('a');
                 parser.href = window.location.href;
@@ -1959,4 +1942,34 @@ function tec_keyispressed(e) {
         return false;
     }
     return true;
+}
+
+function testCaseScript() {
+    return {
+        tab: 'steps',
+
+        init() {
+            const fromURL = GetURLParameter("tabactive");
+
+            if (fromURL) {
+                this.setTab(fromURL);
+            }
+
+            this.updateHistory(this.tab);
+        },
+
+        setTab(name) {
+            this.tab = name;
+            this.updateHistory(name);
+        },
+
+        getActiveTab() {
+            return this.tab;
+        },
+
+        updateHistory(tabName) {
+            const url = "./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", tabName);
+            InsertURLInHistory(url);
+        }
+    }
 }
