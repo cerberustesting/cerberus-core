@@ -144,25 +144,48 @@ public class Label {
         return (this.isColorDark(this.getColor()) ? "white" : "black");
     }
 
-    public boolean isColorDark(String hexaCodeColor) {
+    public boolean isColorDark(String colorCode) {
 
         try {
-            // remove hash character from string
-            String rawFontColor = hexaCodeColor.substring(1, hexaCodeColor.length());
+            int red = 0;
+            int green = 0;
+            int blue = 0;
 
-            // convert hex string to int
-            int rgb = Integer.parseInt(rawFontColor, 16);
+            // Check if color is in RGBA format: rgba(r,g,b,a)
+            if (colorCode != null && colorCode.toLowerCase().startsWith("rgba")) {
+                // Extract RGBA values using regex
+                String rgbaValues = colorCode.substring(colorCode.indexOf('(') + 1, colorCode.indexOf(')'));
+                String[] values = rgbaValues.split(",");
+                if (values.length >= 3) {
+                    red = Integer.parseInt(values[0].trim());
+                    green = Integer.parseInt(values[1].trim());
+                    blue = Integer.parseInt(values[2].trim());
+                    // values[3] is the alpha channel, which we don't need for brightness calculation
+                }
+            } else {
+                // Handle hexadecimal color format: #RRGGBB or RRGGBB
+                String rawFontColor = colorCode;
+                if (rawFontColor.startsWith("#")) {
+                    rawFontColor = rawFontColor.substring(1);
+                }
 
-            Color c = new Color(rgb);
+                // convert hex string to int
+                int rgb = Integer.parseInt(rawFontColor, 16);
 
-            float[] hsb = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+                Color c = new Color(rgb);
+                red = c.getRed();
+                green = c.getGreen();
+                blue = c.getBlue();
+            }
 
+            // Calculate brightness using RGB values
+            float[] hsb = Color.RGBtoHSB(red, green, blue, null);
             float brightness = hsb[2];
 
-            LOG.debug("is the Color Dark ? " + hexaCodeColor + " : " + (brightness < 0.5));
+            LOG.debug("is the Color Dark ? " + colorCode + " : " + (brightness < 0.5));
             return (brightness < 0.5);
         } catch (Exception e) {
-            LOG.warn("Could not guess is color " + hexaCodeColor + "is Dark.", e);
+            LOG.warn("Could not guess if color " + colorCode + " is Dark.", e);
         }
         return true;
     }
