@@ -123,19 +123,19 @@
                             <!-- Tabs -->
                             <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
                                 <!-- Steps -->
-                                <button @click="tab = 'steps'"
+                                <button @click="tab = 'steps'" id="editTabSteps"
                                         :class="tab === 'steps' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="users" class="w-4 h-4"></i>Steps
                                 </button>
                                 <!-- Properties -->
-                                <button @click="tab = 'properties'"
+                                <button @click="tab = 'properties'" id="editTabProperties"
                                         :class="tab === 'properties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Properties
                                 </button>
                                 <!-- Inherited Properties -->
-                                <button @click="tab = 'inhetitedproperties'"
+                                <button @click="tab = 'inhetitedproperties'" id="editTabInheritedProperties"
                                         :class="tab === 'inhetitedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Inherited Properties

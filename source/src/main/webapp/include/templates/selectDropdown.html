@@ -33,6 +33,7 @@
                     <!-- Search -->
                     <div class="p-2 border-b dark:border-slate-700">
                         <input x-model="search" type="text" placeholder="Search..."
+                               :id="id + '-search'"
                                class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
                     </div>
 
@@ -41,6 +42,7 @@
                         <template x-for="item in filteredItems()" :key="getItemValue(item)">
                             <button type="button"
                                     @click.stop="selectItem(item)"
+                                    :id="id + '-' + item"
                                     class="w-full flex gap-2 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">
                                 <svg x-show="isSelected(item)" xmlns="http://www.w3.org/2000/svg"
                                      class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
