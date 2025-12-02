@@ -220,21 +220,21 @@ function aoColumnsFuncPublic(tableId) {
                          :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="invariant_action_edit_${row}"
+                             :id="'invariant_action_edit_'+row"
                              onclick="openModalInvariant('${obj["idName"]}','${newValue}','EDIT')">
                             <i data-lucide="pencil" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_edit")}
                         </div>
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="invariant_action_duplicate_${row}"
+                             :id="'invariant_action_duplicate_'+row"
                              onclick="openModalInvariant('${obj["idName"]}','${newValue}','DUPLICATE')">
                             <i data-lucide="copy" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_duplicate")}
                         </div>
 
                         <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="invariant_action_remove_${row}"
+                             :id="'invariant_action_remove_'+row"
                              onclick="removeEntryClick('${obj["idName"]}','${obj["value"]}')">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                             ${doc.getDocLabel("page_invariant", "button_remove")}
