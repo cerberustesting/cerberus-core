@@ -28,6 +28,7 @@ import java.util.Map;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.crud.entity.stats.TestCaseExecutionStats;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -316,4 +317,12 @@ public interface ITestCaseExecutionDAO {
      */
     public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException;
 
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<TestCaseExecutionStats> readStats(String fromDate, String toDate, List<String> systems);
 }

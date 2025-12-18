@@ -35,43 +35,22 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({
-        "totalInputTokens",
-        "totalOutputTokens",
-        "totalCost",
-        "totalUsers",
-        "totalSessions",
-        "startDate",
-        "endDate"
-})
-@Schema(name = "LogAIUsageStats")
-public class LogAIUsageStatsDTOV001 {
+@Schema(name = "LogAIUsageMonthlyStats")
+public class LogAIUsageMonthlyStatsDTOV001 {
 
     @JsonView(View.Public.GET.class)
-    @Schema(description = "Total number of input tokens consumed in the period", example = "12450")
-    private Integer totalInputTokens;
+    @Schema(description = "Global KPIs for the last 30 days")
+    private LogAIUsageStatsDTOV001 currentPeriod;
 
     @JsonView(View.Public.GET.class)
-    @Schema(description = "Total number of output tokens generated in the period", example = "30120")
-    private Integer totalOutputTokens;
+    @Schema(description = "Global KPIs for the previous 30 days")
+    private LogAIUsageStatsDTOV001 previousPeriod;
 
     @JsonView(View.Public.GET.class)
-    @Schema(description = "Total cost in USD based on AI usage during the period", example = "1.87")
-    private double totalCost;
+    @Schema(description = "User KPIs for the last 30 days")
+    private LogAIUsageStatsDTOV001 userCurrentPeriod;
 
     @JsonView(View.Public.GET.class)
-    @Schema(description = "Total cost in USD based on AI usage during the period", example = "1")
-    private Integer totalUsers;
-
-    @JsonView(View.Public.GET.class)
-    @Schema(description = "Total cost in USD based on AI usage during the period", example = "1")
-    private Integer totalSessions;
-
-    @JsonView(View.Public.GET.class)
-    @Schema(description = "Start date of the aggregation period", example = "2025-01-01 00:00:00")
-    private String startDate;
-
-    @JsonView(View.Public.GET.class)
-    @Schema(description = "End date of the aggregation period", example = "2025-01-31 23:59:59")
-    private String endDate;
+    @Schema(description = "User KPIs for the previous 30 days")
+    private LogAIUsageStatsDTOV001 userPreviousPeriod;
 }

@@ -20,7 +20,7 @@
 package org.cerberus.core.crud.dao;
 
 import org.cerberus.core.crud.entity.UserPrompt;
-import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.crud.entity.stats.UserPromptStats;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -53,4 +53,5 @@ public interface IUserPromptDAO {
 
     AnswerList<UserPromptStats> readUsageByDay(Timestamp startDate, Timestamp endDate, String user);
 
+    AnswerItem<UserPromptStats> readStats(String fromDate, String toDate, String user);
 }

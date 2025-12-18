@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestCaseDAO;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
+import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.factory.IFactoryTestCase;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.database.DatabaseSpring;
@@ -51,6 +52,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Used to manage TestCase table
@@ -1935,6 +1937,87 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(postString);
         }
         return query.toString();
+    }
+
+    @Override
+    public AnswerItem<TestCaseStats> readStats(String fromDate, String toDate, List<String> systems) {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        AnswerItem<TestCaseStats> answer = new AnswerItem<>();
+
+        boolean filterSystems = (systems != null && !systems.isEmpty());
+        boolean hasPeriod = (fromDate != null && toDate != null);
+
+        TestCaseStats stats = new TestCaseStats();
+        stats.setFromDate(fromDate);
+        stats.setToDate(toDate);
+
+        try (Connection connection = databaseSpring.connect()) {
+
+            StringBuilder sql = new StringBuilder(
+                    "SELECT " +
+                            "COUNT(*) AS totalCount, " +
+                            "COUNT(*) AS totalCreated, " +
+                            "SUM(CASE WHEN tc.Status = 'WORKING' THEN 1 ELSE 0 END) AS workingCount " +
+                            "FROM testcase tc " +
+                            "JOIN application app ON app.application = tc.application "
+            );
+
+            List<String> whereClauses = new ArrayList<>();
+
+            if (filterSystems) {
+                whereClauses.add(
+                        "app.`system` IN (" +
+                                systems.stream().map(s -> "?").collect(Collectors.joining(",")) +
+                                ")"
+                );
+            }
+
+            if (hasPeriod) {
+                whereClauses.add("tc.DateCreated BETWEEN ? AND ?");
+            }
+
+            if (!whereClauses.isEmpty()) {
+                sql.append(" WHERE ").append(String.join(" AND ", whereClauses));
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+                int idx = 1;
+
+                if (filterSystems) {
+                    for (String sys : systems) {
+                        ps.setString(idx++, sys);
+                    }
+                }
+
+                if (hasPeriod) {
+                    ps.setDate(idx++, java.sql.Date.valueOf(fromDate));
+                    ps.setDate(idx++, java.sql.Date.valueOf(toDate));
+                }
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        stats.setTotalCount(rs.getInt("totalCount"));
+                        stats.setTotalCreated(rs.getInt("totalCreated"));
+                        stats.setWorkingCount(rs.getInt("workingCount"));
+                    }
+                }
+            }
+
+            answer.setItem(stats);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("ITEM", "TestCaseStats")
+                    .resolveDescription("OPERATION", "SELECT");
+
+        } catch (SQLException e) {
+            LOG.error("Error reading testcase stats: {}", e.toString(), e);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
     }
 
 }

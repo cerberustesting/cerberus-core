@@ -102,6 +102,39 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
     updateHeaderStats();
 
+    $(document).on('mouseenter', '.execution-dot', function (e) {
+
+        const content = $(this).data('tooltip');
+        if (!content) return;
+
+        const $tooltip = $(`
+        <div class="execution-tooltip fixed z-[9999]
+                    bg-gray-900/50 text-white border text-xs
+                    p-3 rounded-lg shadow-lg w-64">
+            ${content}
+        </div>
+    `);
+
+        $('body').append($tooltip);
+
+        const rect = this.getBoundingClientRect();
+
+        $tooltip.css({
+            top: rect.top - $tooltip.outerHeight() - 8,
+            left: rect.left + rect.width / 2 - $tooltip.outerWidth() / 2
+        });
+
+        $(this).data('activeTooltip', $tooltip);
+    });
+
+    $(document).on('mouseleave', '.execution-dot', function () {
+        const $tooltip = $(this).data('activeTooltip');
+        if ($tooltip) {
+            $tooltip.remove();
+            $(this).removeData('activeTooltip');
+        }
+    });
+
 });
 
 
@@ -662,7 +695,7 @@ function loadLastTagResultList() {
     futureCampaignRunTimeDurationToTrigger = [];
     clearTimeout(idTimeout);
 
-    showLoader($("#LastTagExecPanel"));
+    //showLoader($("#LastTagExecPanel"));
 
     var reportArea = $("#tagExecStatus");
     reportArea.empty();
@@ -693,145 +726,259 @@ function hideLoaderTag() {
     }
 }
 
+/**
+ * Empty TagList and draw new TagList
+ * @param tagList1
+ * @param reportArea
+ */
 function refreshTagList(tagList1, reportArea) {
-
-    const tagScheduled = readNextTagScheduled();
     reportArea.empty();
+    const nextRuns = readNextTagScheduled();
+    renderCampaignGrid(reportArea, tagList1, nextRuns);
+    updateNextFireTime();
+}
 
-    // ===== Init loader =====
-    nbTagLoaded = 0;
-    nbTagLoadedTarget = 0;
-
-
-    const savedConfig = JSON.parse(localStorage.getItem("cerberus_homepage_lasttagexecutionconfig") || "{}");
-    const displayNextCampaign = savedConfig.displayNextCampaign !== false; // default true
-
-    // Compter tous les tags pour le loader
-    tagList1.campaigns.forEach(c => {
-        nbTagLoadedTarget += (tagList1.tagLists[c] || []).length;
+/**
+ * Create grid and iterate on tag List to create cards
+ * @param container
+ * @param tagList1
+ * @param nextRuns
+ */
+function renderCampaignGrid(container, tagList1, nextRuns) {
+    const grid = $(`<div class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>`);
+    tagList1.campaigns.forEach(name => {
+        const tags = tagList1.tagLists[name] || [];
+        const nextRun = nextRuns.find(n =>
+            tags.some(t => t.campaign === n.tag)
+        );
+        grid.append(renderCampaignCard(name,tags,nextRun ? `${nextRun.nextRunLabel}` : null));
     });
+    container.append(grid);
+}
 
-    // ===== 1) Next runs =====
-    if (tagScheduled && tagScheduled.length > 0 && displayNextCampaign) {
-        const topRow = $(`
-            <div id="upcomingExecutions" class="mb-4">
-                <div class="font-semibold mb-2">Next runs</div>
-                <div id="upcomingExecutionsContainer" class="flex gap-2 overflow-x-auto py-1 no-scrollbar border-b border-gray-200"></div>
-            </div>
-        `);
-        reportArea.append(topRow);
-        const container = topRow.find('#upcomingExecutionsContainer');
+/**
+ *
+ * @param campaignName
+ * @param tagExecutions
+ * @param nextRun
+ * @returns {*|jQuery|HTMLElement}
+ */
+function renderCampaignCard(campaignName, tagExecutions, nextRun) {
+    const stats = computeCampaignStats(tagExecutions);
+    return $(`<div class="crb_card_tag">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="tag" class="w-4 h-4 text-sky-500 transition-colors flex-shrink-0"></i>
+                        <span class="text-sm font-semibold truncate">
+                            ${campaignName === "noCampaign"
+                            ? "--- No campaign defined ---"
+                            : campaignName}
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        ${nextRun ? renderNextRunBadge(nextRun) : ""}
+                        ${renderSuccessBadge(stats.successRate)}
+                    </div>
+                </div>
+                <!-- Content row -->
+                <div class="flex items-center gap-4">
+                    <!-- Trend graph -->
+                    <div class="w-24 flex-shrink-0">${renderTrendGraph(stats.history)}
+                    </div>
+                    <!-- Progress -->
+                    <div class="flex-1">
+                        <div class="flex justify-between text-xs mb-1 text-gray-500">
+                            <span>${stats.executions} executions</span>
+                            <span>${stats.successRate}%</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded">
+                            <div class="h-2 rounded bg-green-500"
+                                 style="width:${stats.successRate}%"></div>
+                        </div>
+                    </div>
+                    <!-- Status dots -->
+                    <div class="flex gap-1 flex-shrink-0">
+                        ${renderExecutionDots(stats.lastResults, tagExecutions)}
+                    </div>
+                </div>
+            </div>`);
+}
 
-        tagScheduled.forEach(scheduledHTML => {
-            const pill = $(`<div class="px-3 py-1 text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50 text-xs font-light rounded-full flex-shrink-0">${scheduledHTML}</div>`);
-            container.append(pill);
-        });
-    }
+/**
+ * Render next run Label
+ * @param label
+ * @returns {string}
+ */
+function renderNextRunBadge(label) {
+    return `<span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700
+                     dark:bg-blue-900/40 dark:text-blue-400 whitespace-nowrap">▶ ${label}</span>`;
+}
 
-    // ===== 2) Lignes par campagne =====
-    tagList1.campaigns.forEach((campaignName, i) => {
-        const tagList = tagList1.tagLists[campaignName] || [];
-        const headerText = (campaignName === "noCampaign") ? "---- no campaign defined ----" : campaignName;
+function computeCampaignStats(tags) {
+    const executions = tags.length;
 
-        const row = $(`
-            <div class="flex items-center gap-4 py-2 border-b border-gray-200">
-                <div class="w-48 font-semibold truncate">${headerText}</div>
-            </div>
-        `);
+    const ok = tags.filter(t => t.ciResult === "OK").length;
+    const ko = executions - ok;
 
-        const tagContainer = $(`<div class="flex gap-2 overflow-x-auto py-1 no-scrollbar flex-1"></div>`);
-        row.append(tagContainer);
-        reportArea.append(row);
+    return {
+        executions,
+        successRate: executions ? Math.round(ok * 100 / executions) : 0,
+        lastResults: tags.slice(-5).map(t => t.ciResult),
+        history: tags.map(t => t.ciScore || 0)
+    };
+}
 
-        tagList.slice().reverse().forEach((obj, index) => {
-            const rawTagName = obj.tag;
-            const status = obj.ciResult || "NA";
-            const encodedTag = encodeURIComponent(rawTagName);
-            const tagId = `tagExecStatusRow_${i}_${index}`;
-            const cssClass = getStatusColor(status);
+/**
+ * Render Each Execution cards with associated Tooltip
+ * @param results
+ * @param obj
+ * @returns {*}
+ */
+function renderExecutionDots(results, obj = []) {
+
+    return results
+        .slice(0, 5)
+        .map((status, i) => ({
+            status,
+            exec: obj[i] || {}
+        }))
+        .reverse()
+        .map(({ status, exec }) => {
 
             const tooltipContent = `
-    <div class="space-y-2">
-        <div><strong>Tag :</strong> ${rawTagName}</div>
-        <div><strong>Status :</strong> ${status}</div>
-        <div><strong>Env :</strong> ${obj.reqEnvironmentList?.replace(/[\[\]"]/g, '') || '-'}</div>
-        <div><strong>Country :</strong> ${obj.reqCountryList?.replace(/[\[\]"]/g, '') || '-'}</div>
-        <div><strong>Créé le :</strong> ${obj.DateCreated}</div>
+                <div class="space-y-2 text-xs">
+                    <div><strong>Tag :</strong> ${exec.tag || '-'}</div>
+                    <div><strong>Status :</strong> ${status}</div>
+                    <div><strong>Env :</strong> ${exec.reqEnvironmentList?.replace(/[\[\]"]/g, '') || '-'}</div>
+                    <div><strong>Country :</strong> ${exec.reqCountryList?.replace(/[\[\]"]/g, '') || '-'}</div>
+                    <div><strong>Créé le :</strong> ${exec.DateCreated || '-'}</div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span>CI Score</span>
+                            <span>${exec.ciScore || 0} / ${exec.ciScoreMax || 100}</span>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded h-1.5">
+                            <div class="bg-blue-500 h-1.5 rounded"
+                                 style="width:${exec.ciScoreMax ? (100 * exec.ciScore / exec.ciScoreMax) : 0}%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 pt-2 text-center">
+                        <div class="px-2 py-1 rounded bg-green-500/80 text-white">OK: ${exec.nbOK || 0}</div>
+                        <div class="px-2 py-1 rounded bg-red-500/80 text-white">KO: ${exec.nbKO || 0}</div>
+                        <div class="px-2 py-1 rounded bg-orange-500/80 text-white">FA: ${exec.nbFA || 0}</div>
+                        <div class="px-2 py-1 rounded bg-blue-500/80 text-white">PE: ${exec.nbPE || 0}</div>
+                        <div class="px-2 py-1 rounded bg-gray-500/80 text-white">NA: ${exec.nbNA || 0}</div>
+                        <div class="px-2 py-1 rounded bg-purple-500/80 text-white">WE: ${exec.nbWE || 0}</div>
+                    </div>
+                </div>
+            `;
 
-        <!-- Score -->
-        <div>
-            <div class="flex justify-between text-xs mb-1">
-                <span>CI Score</span>
-                <span>${obj.ciScore || 0} / ${obj.ciScoreMax || 100}</span>
-            </div>
-            <div class="w-full bg-gray-700 rounded h-2">
-                <div class="bg-blue-500 h-2 rounded" style="width: ${100*obj.ciScore/obj.ciScoreMax || 0}%;"></div>
-            </div>
-        </div>
+            const encodedTag = encodeURIComponent(exec.tag || "");
+            return `
+                <span class="execution-dot w-8 h-8 flex items-center justify-center rounded-xl cursor-pointer
+                    ${exec.nbPE > 0
+                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+                : status === "OK"
+                    ? "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
+                    : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"}"
+                    data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}"
+                    onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}'">
+                    ${exec.nbPE > 0 ? "⧗" : status === "OK" ? "✓" : "✕"}
+                </span>
+            `;
+        })
+        .join("");
+}
 
-        <!-- Stats badges -->
-        <div class="grid grid-cols-3 gap-1 pt-2 text-center text-xs">
-            <div class="px-2 py-1 rounded bg-green-500/80 text-white">OK: ${obj.nbOK}</div>
-            <div class="px-2 py-1 rounded bg-red-500/80 text-white">KO: ${obj.nbKO}</div>
-            <div class="px-2 py-1 rounded bg-orange-500/80 text-white">FA: ${obj.nbFA}</div>
-            <div class="px-2 py-1 rounded bg-blue-500/80 text-white">PE: ${obj.nbPE}</div>
-            <div class="px-2 py-1 rounded bg-gray-500/80 text-white">NA: ${obj.nbNA}</div>
-            <div class="px-2 py-1 rounded bg-purple-500/80 text-white">WE: ${obj.nbWE}</div>
-        </div>
-    </div>
-`;
+/**
+ * Render SuccessBadge
+ * @param rate
+ * @returns {string}
+ */
+function renderSuccessBadge(rate) {
 
-            const tagDiv = $(`
-    <div id="${tagId}"
-         class="tagDetail relative cursor-pointer px-3 py-1 rounded-full text-xs font-light flex-shrink-0 ${cssClass}"
-         data-tag="${encodedTag}"
-         data-tooltip-content='${tooltipContent}'
-         <div onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}';"
-    >
-        ${rawTagName}
-    </div>
-`);
+    if (rate >= 90) {
+        return `
+            <span class="px-2 py-0.5 rounded-full text-xs
+                         bg-green-100 text-green-700
+                         dark:bg-green-900/40 dark:text-green-400">
+                ↑ ${rate}%
+            </span>
+        `;
+    }
 
-            tagContainer.append(tagDiv);
+    if (rate >= 75) {
+        return `
+            <span class="px-2 py-0.5 rounded-full text-xs
+                         bg-yellow-100 text-yellow-700
+                         dark:bg-yellow-900/40 dark:text-yellow-400">
+                ↑ ${rate}%
+            </span>
+        `;
+    }
 
-// Tooltip indépendant
-            tagDiv.on('mouseenter', function() {
-                const el = this;
-                if (el._tooltipEl) document.body.removeChild(el._tooltipEl);
+    if (rate >= 60) {
+        return `
+            <span class="px-2 py-0.5 rounded-full text-xs
+                         bg-orange-100 text-orange-700
+                         dark:bg-orange-900/40 dark:text-orange-400">
+                ↗ ${rate}%
+            </span>
+        `;
+    }
 
-                const tooltip = document.createElement('div');
-                tooltip.className = 'absolute z-50 rounded-lg bg-gray-800 text-white text-xs p-3 shadow-lg max-w-xs';
-                tooltip.innerHTML = el.dataset.tooltipContent;
-                document.body.appendChild(tooltip);
+    return `
+        <span class="px-2 py-0.5 rounded-full text-xs
+                     bg-red-100 text-red-700
+                     dark:bg-red-900/40 dark:text-red-400">
+            ↘ ${rate}%
+        </span>
+    `;
+}
 
-                const rect = el.getBoundingClientRect();
-                tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 8) + 'px';
-                tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2 + window.scrollX) + 'px';
+/**
+ * Draw Trend Graph
+ * @param values
+ * @returns {string}
+ */
+function renderTrendGraph(values = []) {
 
-                el._tooltipEl = tooltip;
-            });
+    if (!values.length) {
+        return `<div class="h-6 flex items-center text-xs text-gray-400">No data</div>`;
+    }
 
-            tagDiv.on('mouseleave', function() {
-                const el = this;
-                if (el._tooltipEl) {
-                    document.body.removeChild(el._tooltipEl);
-                    el._tooltipEl = null;
-                }
-            });
+    const max = Math.max(...values, 1);
+    const min = Math.min(...values, 0);
+    const range = max - min || 1;
 
+    const points = values.map((v, i) => {
+        const x = (i / (values.length - 1 || 1)) * 100;
+        const y = 100 - ((v - min) / range * 100);
+        return `${x},${y}`;
+    }).join(" ");
 
-            // Incrémenter nbTagLoaded
-            nbTagLoaded++;
-            hideLoaderTag();
-        });
+    return `
+        <svg viewBox="0 0 100 100"
+             class="w-full h-6"
+             preserveAspectRatio="none">
+             
+            <polyline
+                points="${points}"
+                fill="none"
+                stroke="rgb(37, 99, 235)"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
 
-        // Scroll initial à droite
-        Alpine.nextTick(() => {
-            tagContainer.scrollLeft(tagContainer[0].scrollWidth);
-        });
-    });
-
-    updateNextFireTime();
+            ${values.map((v, i) => {
+                const x = (i / (values.length - 1 || 1)) * 100;
+                const y = 100 - ((v - min) / range * 100);
+                return `<circle cx="${x}" cy="${y}" r="2.5" fill="rgb(37, 99, 235)" />`;
+            }).join("")}
+        </svg>
+    `;
 }
 
 function readLastTagExec(searchString, reportArea) {
@@ -842,7 +989,7 @@ function readLastTagExec(searchString, reportArea) {
     // Charger config depuis localStorage
     const savedConfig = JSON.parse(localStorage.getItem("cerberus_homepage_lasttagexecutionconfig") || "{}");
 
-// Valeurs par défaut et validation
+    // Valeurs par défaut et validation
     const maxCampaign = (savedConfig.maxCampaign >= 0 && savedConfig.maxCampaign <= 20) ? savedConfig.maxCampaign : 5;
     const maxPerCampaign = (savedConfig.maxPerCampaign >= 0 && savedConfig.maxPerCampaign <= 20) ? savedConfig.maxPerCampaign : 5;
 
@@ -909,36 +1056,56 @@ function readLastTagExec(searchString, reportArea) {
 }
 
 function readNextTagScheduled() {
-    let tagList = [];
 
-    var nbExe = getParameter("cerberus_homepage_nbdisplayedscheduledtag", getUser().defaultSystem, true);
-    var paramExe = nbExe.value;
+    const result = [];
 
-    if (!((paramExe >= 0) && (paramExe <= 20))) {
-        paramExe = 5;
+    let nbExe = getParameter(
+        "cerberus_homepage_nbdisplayedscheduledtag",
+        getUser().defaultSystem,
+        true
+    );
+
+    let limit = nbExe?.value;
+    if (!(limit >= 0 && limit <= 50)) {
+        limit = 5;
     }
-    nbTagLoadedTargetScheduled = paramExe;
 
-    var myUrl = "api/campaigns/scheduled";
+    nbTagLoadedTargetScheduled = limit;
 
     $.ajax({
         type: "GET",
-        url: myUrl,
+        url: "api/campaigns/scheduled",
         async: false,
-        dataType: 'json',
+        dataType: "json",
         success: function (data) {
-            if (data.schedulerTriggers.length < nbTagLoadedTargetScheduled) {
-                nbTagLoadedTargetScheduled = data.schedulerTriggers.length;
-            }
-            for (var s = 0; s < nbTagLoadedTargetScheduled; s++) {
-                let item = data.schedulerTriggers[s];
-                tagList.splice(0, 0, "<b>" + item.triggerName + "</b><span class='hidden-xs'> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + "</span> <b id='futurTag" + s + "'>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
+
+            const triggers = data.schedulerTriggers || [];
+            const max = Math.min(limit, triggers.length);
+
+            for (let i = 0; i < max; i++) {
+                const t = triggers[i];
+
+                result.push({
+                    tag: t.triggerName,
+                    nextRunLabel:
+                        "will trigger in " +
+                        getHumanReadableDuration(
+                            Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
+                        ),
+                    nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
+                    durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
+                    user: t.triggerUserCreated
+                });
+
                 futureCampaignRunTime.push(new Date());
-                futureCampaignRunTimeDurationToTrigger.push(item.triggerNextFiretimeDurationToTriggerInMs);
+                futureCampaignRunTimeDurationToTrigger.push(
+                    t.triggerNextFiretimeDurationToTriggerInMs
+                );
             }
         }
     });
-    return tagList;
+
+    return result;
 }
 
 function updateNextFireTime() {
@@ -1147,5 +1314,209 @@ function getStatusColor(status) {
         case "PE": return "bg-purple-500";
         default: return "text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50";
     }
+}
+
+/**
+ * map API result with expected data for the card
+ */
+function mapCampaigns(api) {
+    const global = api.global || {};
+    const globalPrev = api.globalPreviousMonth || {};
+
+    const system = api.system || {};
+    const systemPrev = api.systemPreviousMonth || {};
+
+    return {
+        workspaces: {
+            value: system.totalCampaigns || 0,
+            tab: "Selected",
+            label: "Campaigns (Workspaces)",
+            currentValue: system.totalCampaigns || 0,
+            previousValue: systemPrev.totalCampaigns || 0,
+            diff: (system.totalCampaigns || 0) - (systemPrev.totalCampaigns || 0),
+            diffPositive: true
+        },
+        launched: {
+            value: system.totalCampaignsLaunched || 0,
+            tab: "Execution",
+            label: "Campaigns launched",
+            currentValue: system.totalCampaignsLaunched || 0,
+            previousValue: systemPrev.totalCampaignsLaunched || 0,
+            diff: (system.totalCampaignsLaunched || 0) - (systemPrev.totalCampaignsLaunched || 0),
+            diffPositive: true
+        },
+        total: {
+            value: global.totalCampaigns || 0,
+            tab: "Total",
+            label: "Campagnes (Total)",
+            currentValue: global.totalCampaigns || 0,
+            previousValue: globalPrev.totalCampaigns || 0,
+            diff: (global.totalCampaigns || 0) - (globalPrev.totalCampaigns || 0),
+            diffPositive: true
+        }
+    };
+}
+
+/**
+ * map API result with expected data for the card
+ */
+function mapTestCases(api) {
+    const global = api.global || {};
+    const globalPrev = api.globalPreviousMonth || {};
+
+    const system = api.system || {};
+    const systemPrev = api.systemPreviousMonth || {};
+
+    return {
+        selected: {
+            value: system.totalCount || 0,
+            tab: "Selected",
+            label: "Testcases (Workspaces)",
+            currentValue: system.totalCount || 0,
+            previousValue: (system.totalCount || 0) - (systemPrev.totalCount || 0),
+            diff: (system.totalCount || 0) - (systemPrev.totalCount || 0),
+            diffPositive: true
+        },
+        working: {
+            value: system.workingCount || 0,
+            tab: "Working",
+            label: "Testcases (Working)"
+        },
+        total: {
+            value: global.totalCount || 0,
+            tab: "Total",
+            label: "Testcases (Total)",
+            currentValue: global.totalCount || 0,
+            previousValue: (global.totalCount || 0) - (globalPrev.totalCount || 0),
+            diff: (global.totalCount || 0) - (globalPrev.totalCount || 0),
+            diffPositive: true
+        }
+    };
+}
+
+
+function mapExecutions(api) {
+    const global = api.globalLastMonth || {};
+    const globalPrev = api.globalPreviousMonth || {};
+
+    const system = api.systemLastMonth || {};
+    const systemPrev = api.systemPreviousMonth || {};
+
+    return {
+        selected: {
+            value: system.totalExecutions || 0,
+            tab: "Selected",
+            label: "Executions last month (Workspaces)",
+            currentValue: system.totalExecutions || 0,
+            previousValue: (system.totalExecutions || 0) - (systemPrev.totalExecutions || 0),
+            diff: (system.totalExecutions || 0) - (systemPrev.totalExecutions || 0),
+            diffPositive: true
+        },
+
+        total: {
+            value: global.totalExecutions || 0,
+            tab: "Total",
+            label: "Executions last month (Total)",
+            currentValue: global.totalExecutions || 0,
+            previousValue: (global.totalExecutions || 0) - (globalPrev.totalExecutions || 0),
+            diff: (global.totalExecutions || 0) - (globalPrev.totalExecutions || 0),
+            diffPositive: true
+        }
+    };
+}
+
+function mapAIUsage(api) {
+    const current = api.currentPeriod || {};
+    const previous = api.previousPeriod || {};
+    const currentUser = api.userCurrentPeriod || {};
+    const previousUser = api.previousPreviousPeriod || {};
+
+    return {
+        totalRequests: {
+            value: current.totalSessions || 0,
+            tab: "Requests",
+            label: "requêtes IA (total)",
+            currentValue: current.totalSessions || 0,
+            previousValue: (current.totalSessions || 0) - (previous.totalSessions || 0),
+            diff: (current.totalSessions || 0) - (previous.totalSessions || 0),
+            diffPositive: true // hausse = bon
+        },
+        totalTokens: {
+            value: formatTokens((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)),
+            tab: "Tokens",
+            label: "tokens consommés",
+            currentValue: (current.totalInputTokens || 0) + (current.totalOutputTokens || 0),
+            previousValue: ((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)) -
+                ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
+            diff: ((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)) -
+                ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
+            diffPositive: true
+        },
+        totalCost: {
+            value: formatEuro(current.totalCost || 0),
+            tab: "Cost",
+            label: "coût total (global)",
+            currentValue: current.totalCost || 0,
+            previousValue: (current.totalCost || 0) - (previous.totalCost || 0),
+            diff: (current.totalCost || 0) - (previous.totalCost || 0),
+            diffPositive: false
+        },
+        userCost: {
+            value: formatEuro(currentUser.totalCost || 0),
+            tab: "User",
+            label: "coût utilisateur",
+            currentValue: currentUser.totalCost || 0,
+            previousValue: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
+            diff: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
+            diffPositive: false
+        }
+    };
+}
+
+function mapApplication(api) {
+    const store = Alpine.store('labels');
+    console.log(store);
+    const global = api.global || {};
+    const globalPrev = api.globalPreviousMonth || {};
+
+    const system = api.system || {};
+    const systemPrev = api.systemPreviousMonth || {};
+
+    return {
+        workspaces: {
+            value: system.totalApplications || 0,
+            tab: store.getLabel('homepage','applicationtabselected'),
+            label: store.getLabel('homepage','applicationtabselectedlabel'),
+            currentValue: system.totalApplications || 0,
+            previousValue: (system.totalApplications || 0) - (systemPrev.totalApplications || 0),
+            diff: (system.totalApplications || 0) - (systemPrev.totalApplications || 0),
+            diffPositive: true
+        },
+        byTypeSystem: {
+            tab: "Per Type",
+            label: "Applications par Type",
+            value: (() => {
+                const map = api.system?.totalApplicationsByType;
+                if (!map || typeof map !== "object" || Object.keys(map).length === 0) {
+                    return "Aucun type";
+                }
+                return Object.entries(map)
+                    .filter(([type, count]) => type && count != null)
+                    .map(([type, count]) => type+':'+count)
+                    .join(", ");
+            })()
+        },
+        total: {
+            value: global.totalApplications || 0,
+            tab: "Total",
+            label: "Applications (Total)",
+            currentValue: global.totalApplications || 0,
+            previousValue: (global.totalApplications || 0) - (globalPrev.totalApplications || 0),
+            diff: (global.totalApplications || 0) - (globalPrev.totalApplications || 0),
+            diffPositive: true
+        },
+
+
+    };
 }
 

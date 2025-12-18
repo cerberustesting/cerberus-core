@@ -40,6 +40,7 @@ import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.core.crud.entity.TestCaseStepExecution;
+import org.cerberus.core.crud.entity.stats.TestCaseExecutionStats;
 import org.cerberus.core.crud.factory.IFactoryTagSystem;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITagSystemService;
@@ -399,6 +400,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecutionQueueDepService.loadDependenciesOnTestCaseExecution(testCaseExecutions);
 
         return testCaseExecutions;
+    }
+
+    @Override
+    public AnswerItem<TestCaseExecutionStats> readTestCaseExecutionStats(String fromDate, String toDate, List<String> systems){
+        return testCaseExecutionDao.readStats(fromDate, toDate, systems);
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) {

@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionDTOV001;
 import org.cerberus.core.api.dto.views.View;
 
 /**

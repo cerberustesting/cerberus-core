@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.core.api.dto.campaignexecution;
+package org.cerberus.core.api.dto.testcaseexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionRobotDTOV001;
 import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
 import org.cerberus.core.api.dto.views.View;

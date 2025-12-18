@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationDAO;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -576,6 +578,90 @@ public class ApplicationDAO implements IApplicationDAO {
 
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
+        return answer;
+    }
+
+    @Override
+    public AnswerItem<ApplicationStats> readStats(String fromDate, String toDate, List<String> systems) {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        AnswerItem<ApplicationStats> answer = new AnswerItem<>();
+
+        boolean filterSystems = (systems != null && !systems.isEmpty());
+        boolean hasPeriod = (fromDate != null && toDate != null);
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT type, COUNT(*) AS totalByType " +
+                        "FROM " + OBJECT_NAME + " "
+        );
+
+        // WHERE
+        List<String> whereClauses = new ArrayList<>();
+
+        if (filterSystems) {
+            whereClauses.add("`system` IN (" +
+                    systems.stream().map(s -> "?").collect(Collectors.joining(",")) +
+                    ")");
+        }
+
+        if (hasPeriod) {
+            whereClauses.add("DateCreated BETWEEN ? AND ?");
+        }
+
+        if (!whereClauses.isEmpty()) {
+            sql.append("WHERE ").append(String.join(" AND ", whereClauses)).append(" ");
+        }
+
+        sql.append("GROUP BY type");
+
+        int totalApplications = 0;
+        Map<String, Integer> totalAppsByType = new HashMap<>();
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+            int idx = 1;
+
+            // system filters
+            if (filterSystems) {
+                for (String sys : systems) {
+                    ps.setString(idx++, sys);
+                }
+            }
+
+            // period
+            if (hasPeriod) {
+                ps.setDate(idx++, java.sql.Date.valueOf(fromDate));
+                ps.setDate(idx++, java.sql.Date.valueOf(toDate));
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String type = rs.getString("type");
+                    int count = rs.getInt("totalByType");
+                    totalAppsByType.put(type, count);
+                    totalApplications += count;
+                }
+            }
+
+            ApplicationStats stats = new ApplicationStats();
+            stats.setTotalApplications(totalApplications);
+            stats.setTotalApplicationsByType(totalAppsByType);
+            stats.setFromDate(fromDate);
+            stats.setToDate(toDate);
+
+            answer.setItem(stats);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "SELECT");
+
+        } catch (SQLException e) {
+            LOG.error("Error reading application stats: {}", e.toString(), e);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
+        }
+
+        answer.setResultMessage(msg);
         return answer;
     }
 

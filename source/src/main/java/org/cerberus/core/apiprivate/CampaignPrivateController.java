@@ -20,9 +20,8 @@
 package org.cerberus.core.apiprivate;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.cerberus.core.util.datatable.DataTableInformation;
-import com.google.gson.Gson;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,22 +31,17 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.LogEvent;
-import org.cerberus.core.crud.entity.Test;
+import org.cerberus.core.api.dto.campaign.CampaignMonthlyStatsDTOV001;
+import org.cerberus.core.api.dto.campaign.CampaignStatsDTOV001;
+import org.cerberus.core.crud.entity.stats.CampaignStats;
 import org.cerberus.core.crud.factory.IFactoryLogEvent;
 import org.cerberus.core.crud.factory.IFactoryTest;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestService;
+import org.cerberus.core.crud.service.impl.CampaignService;
 import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
-import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.scheduler.SchedulerInit;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.servlet.information.ReadCerberusDetailInformation;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.answer.Answer;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,12 +50,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -76,17 +65,7 @@ public class CampaignPrivateController {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     @Autowired
-    TestCaseExecutionService testCaseExecutionService;
-    @Autowired
-    ITestService testService;
-    @Autowired
-    IFactoryTest factoryTest;
-    @Autowired
-    ILogEventService logEventService;
-    @Autowired
-    IFactoryLogEvent factoryLogEvent;
-    @Autowired
-    IParameterService parameterService;
+    CampaignService campaignService;
     @Autowired
     SchedulerInit scInit;
 
@@ -178,5 +157,67 @@ public class CampaignPrivateController {
 
             return 1;
         }
+    }
+
+    @Operation(hidden = true)
+    @GetMapping("/monthlyStats")
+    public CampaignMonthlyStatsDTOV001 getMonthlyStats(
+            @RequestParam(name = "system", required = false) List<String> systems) {
+
+        LocalDate today = LocalDate.now();
+
+        // Périodes
+        LocalDate thisStartDate = today.minusDays(30);
+        LocalDate thisEndDate   = today;
+
+        // --- Get Global Stats : All dates, All systems --- and build DTO
+        CampaignStats statsGlobal = campaignService.readCampaignStats(null, null, null).getItem();
+        CampaignStatsDTOV001 statsGlobalDto = CampaignStatsDTOV001.builder()
+                .totalCampaigns(statsGlobal.getTotalCampaignsExisting())
+                .totalCampaignsLaunched(statsGlobal.getTotalCampaignsLaunched())
+                .fromDate(statsGlobal.getFromDate())
+                .toDate(statsGlobal.getToDate())
+                .build();
+
+        // --- Get last month Stats : Last 30 days, All systems --- and build DTO
+        CampaignStats statsGlobalPreviousMonth = campaignService
+                .readCampaignStats(thisStartDate.toString(), thisEndDate.toString(), null)
+                .getItem();
+        CampaignStatsDTOV001 statsGlobalPreviousMonthDto = CampaignStatsDTOV001.builder()
+                .totalCampaigns(statsGlobalPreviousMonth.getTotalCampaignsExisting())
+                .totalCampaignsLaunched(statsGlobalPreviousMonth.getTotalCampaignsLaunched())
+                .fromDate(statsGlobalPreviousMonth.getFromDate())
+                .toDate(statsGlobalPreviousMonth.getToDate())
+                .build();
+
+        // --- Get Selected System Stats : All dates, selected systems --- and build DTO
+        CampaignStats statsSystems = campaignService
+                .readCampaignStats(null, null, systems)
+                .getItem();
+        CampaignStatsDTOV001 statsSystemsDto = CampaignStatsDTOV001.builder()
+                .totalCampaigns(statsSystems.getTotalCampaignsExisting())
+                .totalCampaignsLaunched(statsSystems.getTotalCampaignsLaunched())
+                .fromDate(statsSystems.getFromDate())
+                .toDate(statsSystems.getToDate())
+                .build();
+
+        // --- Get Selected System Stats : Last 30 days, selected systems --- and build DTO
+        CampaignStats statsSystemsPreviousMonth = campaignService
+                .readCampaignStats(thisStartDate.toString(), thisEndDate.toString(), systems)
+                .getItem();
+        CampaignStatsDTOV001 statsSystemsPreviousMonthDto = CampaignStatsDTOV001.builder()
+                .totalCampaigns(statsSystemsPreviousMonth.getTotalCampaignsExisting())
+                .totalCampaignsLaunched(statsSystemsPreviousMonth.getTotalCampaignsLaunched())
+                .fromDate(statsSystemsPreviousMonth.getFromDate())
+                .toDate(statsSystemsPreviousMonth.getToDate())
+                .build();
+
+        // --- Build DTO final ---
+        return CampaignMonthlyStatsDTOV001.builder()
+                .global(statsGlobalDto)
+                .globalPreviousMonth(statsGlobalPreviousMonthDto)
+                .system(statsSystemsDto)
+                .systemPreviousMonth(statsSystemsPreviousMonthDto)
+                .build();
     }
 }

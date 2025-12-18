@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,6 +44,8 @@ import org.cerberus.core.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.crud.entity.stats.TestCaseExecutionStats;
+import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.core.crud.utils.RequestDbUtils;
 import org.cerberus.core.database.DatabaseSpring;
@@ -1403,6 +1407,79 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         result.setTestCaseIsMuted(testCaseIsMuted);
 
         return result;
+    }
+
+    @Override
+    public AnswerItem<TestCaseExecutionStats> readStats(String fromDate, String toDate, List<String> systems) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        AnswerItem<TestCaseExecutionStats> answer = new AnswerItem<>();
+
+        boolean filterSystems = (systems != null && !systems.isEmpty());
+        boolean hasPeriod = (fromDate != null && toDate != null);
+
+        TestCaseExecutionStats stats = new TestCaseExecutionStats();
+        stats.setFromDate(fromDate);
+        stats.setToDate(toDate);
+
+        try (Connection connection = databaseSpring.connect()) {
+
+            // Construction SQL dynamique
+            StringBuilder sql = new StringBuilder(
+                    "SELECT " +
+                            "COUNT(*) AS totalCount " +
+                            "FROM testcaseexecution"
+            );
+
+            List<String> whereClauses = new ArrayList<>();
+
+            if (filterSystems) {
+                whereClauses.add("`system` IN (" +
+                        systems.stream().map(s -> "?").collect(Collectors.joining(",")) +
+                        ")");
+            }
+
+            if (hasPeriod) {
+                whereClauses.add("`start` BETWEEN ? AND ?");
+            }
+
+            if (!whereClauses.isEmpty()) {
+                sql.append(" WHERE ").append(String.join(" AND ", whereClauses));
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+                int idx = 1;
+                // system filters
+                if (filterSystems) {
+                    for (String sys : systems) {
+                        ps.setString(idx++, sys);
+                    }
+                }
+                if (hasPeriod) {
+                    ps.setDate(idx++, java.sql.Date.valueOf(fromDate));
+                    ps.setDate(idx++, java.sql.Date.valueOf(toDate));
+                }
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        stats.setTotalTestCaseExecutions(rs.getInt("totalCount"));
+                    }
+                }
+            }
+
+            answer.setItem(stats);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("ITEM", "TestCaseStats")
+                    .resolveDescription("OPERATION", "SELECT");
+
+        } catch (SQLException e) {
+            LOG.error("Error reading testcase stats: {}", e.toString(), e);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
     }
 
     private TestCaseExecution loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException {

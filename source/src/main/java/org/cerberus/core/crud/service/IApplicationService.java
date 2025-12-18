@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -169,4 +170,13 @@ public interface IApplicationService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<ApplicationStats> readApplicationStats(String fromDate, String toDate, List<String> systems);
 }

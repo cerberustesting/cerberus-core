@@ -28,19 +28,8 @@ import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.FailedInsertOperationException;
 import org.cerberus.core.api.exceptions.InvalidRequestException;
 import org.cerberus.core.crud.dao.ITestCaseDAO;
-import org.cerberus.core.crud.entity.CampaignLabel;
-import org.cerberus.core.crud.entity.CampaignParameter;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Invariant;
-import org.cerberus.core.crud.entity.Label;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseCountry;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseDep;
-import org.cerberus.core.crud.entity.TestCaseLabel;
-import org.cerberus.core.crud.entity.TestCaseStep;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
+import org.cerberus.core.crud.entity.*;
+import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.factory.IFactoryTest;
 import org.cerberus.core.crud.factory.IFactoryTestCase;
 import org.cerberus.core.crud.service.ICampaignLabelService;
@@ -83,8 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.cerberus.core.crud.entity.Parameter;
-import org.cerberus.core.crud.entity.TestCaseHisto;
+
 import org.cerberus.core.crud.service.ITestCaseHistoService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1017,6 +1005,11 @@ public class TestCaseService implements ITestCaseService {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public AnswerItem<TestCaseStats> readTestCaseStats(String fromDate, String toDate, List<String> systems){
+        return testCaseDao.readStats(fromDate, toDate, systems);
     }
 
     private void fillTestcaseCountriesFromInvariantsCountry(TestCase testcase) {

@@ -661,23 +661,46 @@ function loadLibraryStep(search, system) {
 
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
-                        $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                        var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
-                        $("#lib").append(listGr);
+                        $("#lib").append(`
+                            <details class="my-1">
+                                <summary class="cursor-pointer flex justify-between items-center py-2">
+                                    <span>${step.test}</span>
+                                    <span class="transition-transform"> ▶ </span>
+                                </summary>
+                                <div class="pl-4 list-group" data-test="${step.test}">
+                                </div>
+                            </details>
+                        `);
 
-                        test[step.test] = {content: listGr, testCase: {}};
+                        var listGr = $(`[data-test='${step.test}']`);
+
+                        test[step.test] = {content: listGr,testCase: {}};
                     }
-                    if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
-                        var listGrp = test[step.test].content;
-                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                            .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                        var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
-                        listGrp.append(listCaseGr);
 
-                        test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
+
+                    if (!test[step.test].testCase.hasOwnProperty(step.testCase)) {
+
+                        var listGr = test[step.test].content;
+
+                        listGr.append(`
+                            <details class="border-l ml-4 my-1">
+                                <summary class="cursor-pointer flex justify-between items-center py-1">
+                                    <span>${step.testCase} - ${step.tcdesc}</span>
+                                    <span class="transition-transform open:rotate-90"> ▶ </span>
+                                </summary>
+                        
+                                <div class="pl-4 list-group"
+                                     data-test="${step.test}"
+                                     data-testCase="${step.testCase}">
+                                </div>
+                            </details>
+                        `);
+
+                        var listCaseGr = $(`[data-test='${step.test}'][data-testCase='${step.testCase}']`);
+
+                        test[step.test].testCase[step.testCase] = {content: listCaseGr,step: {}};
                     }
                     var listCaseGrp = test[step.test].testCase[step.testCase].content;
                     var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);

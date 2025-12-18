@@ -20,6 +20,7 @@
 
 package org.cerberus.core.api.dto.campaignexecution;
 
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionMapperV001;
 import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.Tag;
 import org.mapstruct.Mapper;

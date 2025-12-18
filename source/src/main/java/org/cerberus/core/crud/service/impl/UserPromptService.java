@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IUserPromptDAO;
 import org.cerberus.core.crud.entity.UserPrompt;
-import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.crud.entity.stats.UserPromptStats;
 import org.cerberus.core.crud.service.IUserPromptService;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -81,6 +81,11 @@ public class UserPromptService implements IUserPromptService {
     @Override
     public boolean incrementUsage(String user, String aiSessionId, Integer inputTokens, Integer outputTokens, Double cost){
         return userPromptDAO.incrementUsage(user, aiSessionId, inputTokens, outputTokens, cost);
+    }
+
+    @Override
+    public AnswerItem<UserPromptStats> getUserPromptStats(String fromDate, String toDate, String user) {
+        return userPromptDAO.readStats(fromDate, toDate, user);
     }
 
 }

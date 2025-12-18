@@ -27,6 +27,8 @@ import java.util.Map;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
+import org.cerberus.core.crud.entity.stats.TestCaseExecutionStats;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -349,4 +351,15 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException
      */
     public JSONArray getLastByCriteria(String test, String testCase, String tag, Integer numberOfExecution) throws CerberusException;
+
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<TestCaseExecutionStats> readTestCaseExecutionStats(String fromDate, String toDate, List<String> systems);
+
 }

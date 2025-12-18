@@ -19,12 +19,16 @@
  */
 package org.cerberus.core.apiprivate;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.ApplicationMonthlyStatsDTOV001;
+import org.cerberus.core.api.dto.application.ApplicationStatsDTOV001;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONObject;
@@ -68,6 +72,71 @@ public class ApplicationPrivateController {
             LOG.warn(ex, ex);
             return "error " + ex.getMessage();
         }
+    }
+
+
+    @Operation(hidden = true)
+    @GetMapping("/monthlyStats")
+    public ApplicationMonthlyStatsDTOV001 getMonthlyStats(
+            @RequestParam(name = "system", required = false) List<String> systems) {
+
+        LocalDate today = LocalDate.now();
+
+        // Périodes
+        LocalDate thisStartDate = today.minusDays(30);
+        LocalDate thisEndDate   = today;
+
+        // --- Get Global Stats : All dates, All systems --- and build DTO
+        ApplicationStats statsGlobal = applicationService
+                .readApplicationStats(null, null, null)
+                .getItem();
+        ApplicationStatsDTOV001 statsGlobalDto = ApplicationStatsDTOV001.builder()
+                .totalApplications(statsGlobal.getTotalApplications())
+                .totalApplicationsByType(statsGlobal.getTotalApplicationsByType())
+                .fromDate(statsGlobal.getFromDate())
+                .toDate(statsGlobal.getToDate())
+                .build();
+
+        // --- Get last month Stats : Last 30 days, All systems --- and build DTO
+        ApplicationStats statsGlobalPreviousMonth = applicationService
+                .readApplicationStats(thisStartDate.toString(), thisEndDate.toString(), null)
+                .getItem();
+        ApplicationStatsDTOV001 statsGlobalPreviousMonthDto = ApplicationStatsDTOV001.builder()
+                .totalApplications(statsGlobalPreviousMonth.getTotalApplications())
+                .totalApplicationsByType(statsGlobalPreviousMonth.getTotalApplicationsByType())
+                .fromDate(statsGlobalPreviousMonth.getFromDate())
+                .toDate(statsGlobalPreviousMonth.getToDate())
+                .build();
+
+        // --- Get Selected System Stats : All dates, selected systems --- and build DTO
+        ApplicationStats statsSystems = applicationService
+                .readApplicationStats(null, null, systems)
+                .getItem();
+        ApplicationStatsDTOV001 statsSystemsDto = ApplicationStatsDTOV001.builder()
+                .totalApplications(statsSystems.getTotalApplications())
+                .totalApplicationsByType(statsSystems.getTotalApplicationsByType())
+                .fromDate(statsSystems.getFromDate())
+                .toDate(statsSystems.getToDate())
+                .build();
+
+        // --- Get Selected System Stats : Last 30 days, selected systems --- and build DTO
+        ApplicationStats statsSystemsPreviousMonth = applicationService
+                .readApplicationStats(thisStartDate.toString(), thisEndDate.toString(), systems)
+                .getItem();
+        ApplicationStatsDTOV001 statsSystemsPreviousMonthDto = ApplicationStatsDTOV001.builder()
+                .totalApplications(statsSystemsPreviousMonth.getTotalApplications())
+                .totalApplicationsByType(statsSystemsPreviousMonth.getTotalApplicationsByType())
+                .fromDate(statsSystemsPreviousMonth.getFromDate())
+                .toDate(statsSystemsPreviousMonth.getToDate())
+                .build();
+
+       // --- Build DTO final ---
+        return ApplicationMonthlyStatsDTOV001.builder()
+                .global(statsGlobalDto)
+                .globalPreviousMonth(statsGlobalPreviousMonthDto)
+                .system(statsSystemsDto)
+                .systemPreviousMonth(statsSystemsPreviousMonthDto)
+                .build();
     }
 
 }

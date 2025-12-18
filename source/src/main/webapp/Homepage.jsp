@@ -42,6 +42,7 @@
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
+<jsp:include page="include/templates/card-with-tabs.html"/>
 <%@ include file="include/utils/modal-confirmation.html" %>
 
 <%
@@ -61,95 +62,69 @@
 <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
     <div>
         <%@ include file="include/global/messagesArea.html" %>
-        <div class="grid grid-cols-1 md:grid-cols-5 sm:grid-cols-2 gap-6">
-            <div class="crb_card" id="sc1">
-                    <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-windows mr-2 text-blue-600 dark:text-blue-500"></i>
-                        <span> Applications</span>
-                    </span>
-                <a href="./ApplicationList.jsp">
-                    <p id="hp_ApplicationNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
-                </a>
-                <p class="text-xs font-medium mt-0">configured applications</p>
-            </div>
-            <div class="crb_card" id="sc2">
-                    <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-list mr-2 text-blue-600 dark:text-blue-500"></i>
-                        <span> Test Cases</span>
-                    </span>
-                <a href="./TestCaseList.jsp">
-                    <p id="hp_TestcaseNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
-                </a>
-                <p class="text-xs font-medium mt-0">created testcases</p>
-            </div>
-            <div class="crb_card" id="sc3">
-                    <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-plug mr-2 text-blue-600 dark:text-blue-500"></i>
-                        <span> Services</span>
-                    </span>
-                <a href="./AppServiceList.jsp">
-                    <p id="hp_ServiceNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
-                </a>
-                <p class="text-xs font-medium mt-0">configured services</p>
-            </div>
-            <div class="md:col-span-2 crb_card" id="sc4">
-                <div id="hp_TestExecutionNumberParent">
-                        <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-youtube-play mr-2 text-blue-600 dark:text-blue-500"></i>
-                        <span> Test Execution</span>
-                    </span>
-                </div>
-                <div class="grid grid-cols-2">
-                    <div>
-                        <a href="./RunTests.jsp">
-                            <p id="hp_TestExecutionNumber" class="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-0">–</p>
-                        </a>
-                        <p class="text-xs font-medium mt-0">launched tests</p>
-                    </div>
-                    <div id="exeRunningPanel" style="margin-top: 5px; padding-top: 10px; color: var(--crb-black-color); display: none">
-                        <div class="row " style="height: 30px;">
-                            <div class="col-xs-3 status marginBottom10" style="">
-                                <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>
-                            </div>
-                            <div class="col-xs-8 text-right " style="">
-                                <div class="total" style="" id="exeRunningPanelCnt">27
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="height: 20px;" id="queueStats">
-                            <div class='progress' style='height:12px;margin-left: 10px;margin-right: 10px'>
-                                <div id='progress-barUsed' class='progress-bar statusPE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
-                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                                <div id='progress-barIdle' class='progress-bar statusWE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
-                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                                <div id='progress-barQueue' class='progress-bar statusQU' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true'
-                                     data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
-                            </div>
-                        </div>
-                        <div class="row" style="height: 20px;" id="exeRunningList">
-                        </div>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <!-- Application (via API) -->
+                <card-with-tabs
+                    title="Application"
+                    icon="layout-grid"
+                    color="blue"
+                    :tabs-api="'./api/applications/monthlyStats?' + getUser().defaultSystemsQuery"
+                    tabs-map-fn="mapApplication">
+                </card-with-tabs>
 
-                </div>
+                <!-- Test Cases -->
+                <card-with-tabs
+                    title="Test Cases"
+                    icon="file-text"
+                    color="green"
+                    :tabs-api="'./api/testcases/monthlyStats?' + getUser().defaultSystemsQuery"
+                    tabs-map-fn="mapTestCases">
+                </card-with-tabs>
+
+                <!-- Services -->
+                <card-with-tabs
+                    title="Campaign"
+                    icon="globe"
+                    color="purple"
+                    :tabs-api="'./api/campaigns/monthlyStats?' + getUser().defaultSystemsQuery"
+                    tabs-map-fn="mapCampaigns">
+                </card-with-tabs>
+
+                <!-- Executions -->
+                <card-with-tabs
+                    title="Executions"
+                    icon="play"
+                    color="orange"
+                    :tabs-api="'./api/executions/monthlyStats?' + getUser().defaultSystemsQuery"
+                    tabs-map-fn="mapExecutions">
+                </card-with-tabs>
+
+                <!-- Usage IA -->
+                <card-with-tabs
+                    title="Usage IA"
+                    icon="sparkles"
+                    color="pink"
+                    tabs-api="./api/usage/monthlyStats?user=cerberus-bci"
+                    tabs-map-fn="mapAIUsage">
+                </card-with-tabs>
             </div>
-        </div>
         <div class="row">
-            <div class="col-lg-12" id="LastTagExecPanel">
-                <div class="crb_card">
-                    <div class="flex justify-between items-center" data-target="#tagExecStatus">
-                    <span class="flex items-center font-medium text-lg">
-                        <i class="fa fa-tag fa-fw mr-2 text-blue-600"></i>
-                        <span>Last tag executions</span>
-                    </span>
-                        <!-- Bouton configuration -->
-                        <div class="btn-group">
-                            <button id="configTags"
-                                    class="btn btn-default btn-xs"
-                                    onclick="stopPropagation(event); toggleConfigPanel();">
-                                <i class="fa fa-cog"></i> <span>Config</span>
-                            </button>
-                        </div>
-
+            <div class="col-lg-12 mb-8" id="LastTagExecPanel">
+                <div>
+                    <div class="flex items-center gap-3" data-target="#tagExecStatus">
+                        <span class="flex items-center font-medium text-lg">
+                            <i data-lucide="tags" class="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"></i>
+                            <span>Last campaign executions</span>
+                        </span>
+                        <!-- Icône configuration -->
+                        <button
+                            id="configTags"
+                            type="button"
+                            class="text-gray-500 hover:text-blue-600 transition"
+                            onclick="stopPropagation(event); toggleConfigPanel();"
+                            aria-label="Configuration">
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                        </button>
                     </div>
 
                     <!-- Zone configuration (hidden par défaut) -->
@@ -211,23 +186,29 @@
                     </div>
 
                     <div id="tagExecStatus" class="mt-4"></div>
+                    <div id="lastTagExecutions" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- campaign cards -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-
-        <!-- Zone d'affichage -->
-        <div id="tagExecStatus"></div>
-    </div>
-    </div>
-    </div>
     <div class="row">
-        <div class="col-lg-6" id="LastTagExecPanel">
+        <div class="col-lg-12 mb-4">
+            <div class="flex items-center gap-3">
+                 <span class="flex items-center font-medium text-lg">
+                      <i data-lucide="history" class="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"></i>
+                      <span>History</span>
+                 </span>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-8" id="LastTagExecPanel">
             <div id="panelHistory" class="crb_card p-4" style="display: block;">
                 <div class="flex justify-between items-center mb-4">
             <span class="flex items-center font-medium text-lg">
                 <i class="fa fa-bar-chart fa-fw mr-2 text-blue-600"></i>
-                <span>Execution History</span>
+                <span>Execution per Status</span>
             </span>
 
                     <!-- Bouton config avec Alpine -->
@@ -267,7 +248,7 @@
                 <div class="flex justify-between items-center mb-4" data-target="#histoChart2">
         <span class="flex items-center font-medium text-lg">
             <i class="fa fa-bar-chart fa-fw mr-2 text-blue-600"></i>
-            <span>Testcase History Status</span>
+            <span>Testcase per Status</span>
         </span>
 
                     <!-- Bouton config Alpine -->
@@ -304,14 +285,18 @@
         </div>
 
     </div>
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="flex items-center gap-3">
+                 <span class="flex items-center font-medium text-lg">
+                            <i data-lucide="history" class="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"></i>
+                            <span>Test Case Status by Application</span>
+                 </span>
 
-    <div id="homeTableDiv" class="crb_card">
-        <div class="" data-target="#applicationPanel">
-                <span class="flex items-center font-medium text-lg mb-2">
-                        <i class="fa fa-retweet fa-fw mr-2 text-blue-600"></i>
-                        <span> Test Case Status by Application</span>
-                </span>
+            </div>
         </div>
+    </div>
+    <div id="homeTableDiv" class="crb_card">
         <div class="" id="applicationPanel">
             <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
             <div class="marginBottom20"></div>

@@ -20,7 +20,7 @@
 package org.cerberus.core.crud.service;
 
 import org.cerberus.core.crud.entity.UserPrompt;
-import org.cerberus.core.crud.entity.UserPromptStats;
+import org.cerberus.core.crud.entity.stats.UserPromptStats;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -46,5 +46,8 @@ public interface IUserPromptService {
     AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user);
 
     AnswerList<UserPromptStats> getUsageByDay(Timestamp startDate, Timestamp endDate, String user);
+
     boolean incrementUsage(String user, String aiSessionId, Integer inputTokens, Integer outputTokens, Double cost);
+
+    AnswerItem<UserPromptStats>  getUserPromptStats(String fromDate, String toDate, String user);
 }

@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.Campaign;
+import org.cerberus.core.crud.entity.stats.CampaignStats;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -91,4 +92,13 @@ public interface ICampaignDAO {
      * @return {@link AnswerItem}
      */
     Answer delete(Campaign object);
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<CampaignStats> readStats(String fromDate, String toDate, List<String> systems);
 }

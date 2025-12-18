@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IUserPromptDAO;
 import org.cerberus.core.crud.entity.*;
+import org.cerberus.core.crud.entity.stats.UserPromptStats;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -660,7 +661,8 @@ public class UserPromptDAO implements IUserPromptDAO {
                             rs.getInt("totalInput"),
                             rs.getInt("totalOutput"),
                             rs.getDouble("totalCost"),
-                            day // date utilisée pour Chart.js
+                            day,
+                            day
                     ));
                 }
                 answer.setDataList(list);
@@ -677,6 +679,71 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         answer.setResultMessage(msg);
         return answer;
+    }
+
+
+    @Override
+    public AnswerItem<UserPromptStats> readStats(String fromDate, String toDate, String user) {
+        AnswerItem<UserPromptStats> ans = new AnswerItem<>();
+        MessageEvent msg;
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                        "  COALESCE(SUM(up.totalInputTokens), 0) AS totalInputTokens, " +
+                        "  COALESCE(SUM(up.totalOutputTokens), 0) AS totalOutputTokens, " +
+                        "  COUNT(DISTINCT up.login) AS totalUsers, " +
+                        "  COUNT(DISTINCT up.sessionID) AS totalSessions, " +
+                        "  COALESCE(SUM(upm.cost), 0) AS totalCost " +
+                        "FROM userprompt up " +
+                        "LEFT JOIN userpromptmessage upm ON up.sessionID = upm.sessionID " +
+                        "WHERE up.DateCreated > ? AND up.DateCreated <= ?"
+        );
+
+        boolean hasUserFilter = (user != null && !user.trim().isEmpty());
+        if (hasUserFilter) {
+            sql.append(" AND up.login = ?");
+        }
+        LOG.debug("SQL: {}", sql);
+
+        UserPromptStats stats = null;
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+            ps.setString(1, fromDate);
+            ps.setString(2, toDate);
+
+            if (hasUserFilter) {
+                ps.setString(3, user);
+            }
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                stats = UserPromptStats.builder()
+                        .totalInputTokens(rs.getInt("totalInputTokens"))
+                        .totalOutputTokens(rs.getInt("totalOutputTokens"))
+                        .totalUsers(rs.getInt("totalUsers"))
+                        .totalSessions(rs.getInt("totalSessions"))
+                        .totalCost(rs.getDouble("totalCost"))
+                        .fromDate(fromDate)
+                        .toDate(toDate)
+                        .build();
+
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Stats").replace("%OPERATION%", "SELECT"));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+            }
+
+        } catch (SQLException e) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
+        }
+
+        ans.setItem(stats);
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     private UserPrompt loadFromResultSet(ResultSet rs) throws SQLException {

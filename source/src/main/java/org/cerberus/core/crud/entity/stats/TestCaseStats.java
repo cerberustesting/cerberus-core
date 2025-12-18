@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.crud.entity;
+package org.cerberus.core.crud.entity.stats;
 
 import lombok.*;
 
@@ -28,22 +28,12 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPromptStats {
-    private Integer totalInputTokens;
-    private Integer totalOutputTokens;
-    private double totalCost;
-    private String date;
+public class TestCaseStats {
 
-    public UserPromptStats(int totalInput, int totalOutput, double totalCost) {
-        this.totalInputTokens = totalInput;
-        this.totalOutputTokens = totalOutput;
-        this.totalCost = totalCost;
-    }
+    private int totalCount;
+    private int totalCreated;
+    private int workingCount;
+    private String fromDate;
+    private String toDate;
 
-    public UserPromptStats(int totalInput, int totalOutput, double totalCost, String date) {
-        this.totalInputTokens = totalInput;
-        this.totalOutputTokens = totalOutput;
-        this.totalCost = totalCost;
-        this.date = date;
-    }
 }

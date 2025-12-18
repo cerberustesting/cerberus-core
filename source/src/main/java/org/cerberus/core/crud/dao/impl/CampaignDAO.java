@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ICampaignDAO;
 import org.cerberus.core.crud.entity.Campaign;
+import org.cerberus.core.crud.entity.stats.CampaignStats;
 import org.cerberus.core.crud.factory.IFactoryCampaign;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -46,6 +47,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author memiks
@@ -433,4 +435,89 @@ public class CampaignDAO implements ICampaignDAO {
                 desc, longDesc, group1, group2, group3,
                 usrCreated, dateCreated, usrModif, dateModif);
     }
+
+    @Override
+    public AnswerItem<CampaignStats> readStats(String fromDate, String toDate, List<String> systems) {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        AnswerItem<CampaignStats> answer = new AnswerItem<>();
+
+        boolean hasPeriod = (fromDate != null && toDate != null);
+        boolean filterSystems = (systems != null && !systems.isEmpty());
+
+        CampaignStats stats = new CampaignStats();
+        stats.setFromDate(fromDate);
+        stats.setToDate(toDate);
+
+        try (Connection connection = databaseSpring.connect()) {
+
+            StringBuilder sql = new StringBuilder(
+                    "SELECT " +
+                            "COUNT(DISTINCT c.Campaign) AS totalExisting, " +
+                            "COUNT(DISTINCT CASE WHEN t.Campaign IS NOT NULL THEN c.Campaign END) AS totalLaunched, " +
+                            "COUNT(DISTINCT CASE WHEN t.CIResult = 'OK' THEN c.Campaign END) AS totalOK, " +
+                            "COUNT(DISTINCT CASE WHEN t.CIResult <> 'OK' THEN c.Campaign END) AS totalKO " +
+                            "FROM campaign c " +
+                            "LEFT JOIN tag t ON t.Campaign = c.Campaign "
+            );
+
+            List<String> whereClauses = new ArrayList<>();
+
+            if (hasPeriod) {
+                whereClauses.add("t.DateStartExe BETWEEN ? AND ?");
+            }
+
+            if (filterSystems) {
+                whereClauses.add("(" +
+                        systems.stream()
+                                .map(s -> "t.SystemList LIKE ?")
+                                .collect(Collectors.joining(" OR ")) +
+                        ")"
+                );
+            }
+
+            if (!whereClauses.isEmpty()) {
+                sql.append("WHERE ").append(String.join(" AND ", whereClauses));
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
+                int idx = 1;
+
+                if (hasPeriod) {
+                    ps.setTimestamp(idx++, Timestamp.valueOf(fromDate + " 00:00:00"));
+                    ps.setTimestamp(idx++, Timestamp.valueOf(toDate + " 23:59:59"));
+                }
+
+                if (filterSystems) {
+                    for (String sys : systems) {
+                        ps.setString(idx++, "%" + sys + "%");
+                    }
+                }
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        stats.setTotalCampaignsExisting(rs.getInt("totalExisting"));
+                        stats.setTotalCampaignsLaunched(rs.getInt("totalLaunched"));
+                        stats.setTotalCampaignsOK(rs.getInt("totalOK"));
+                        stats.setTotalCampaignsKO(rs.getInt("totalKO"));
+                    }
+                }
+            }
+
+            answer.setItem(stats);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("ITEM", "CampaignStats")
+                    .resolveDescription("OPERATION", "SELECT");
+
+        } catch (SQLException e) {
+            LOG.error("Error reading campaign stats: {}", e.toString(), e);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
 }

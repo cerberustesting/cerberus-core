@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -112,6 +113,15 @@ public interface IApplicationDAO {
      * @see FactoryApplication
      */
     Application loadFromResultSet(ResultSet rs) throws SQLException;
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<ApplicationStats> readStats(String fromDate, String toDate, List<String> systems);
 
     /**
      *

@@ -20,6 +20,7 @@
 package org.cerberus.core.crud.dao;
 
 import org.cerberus.core.crud.entity.TestCase;
+import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.factory.impl.FactoryTestCase;
 import org.cerberus.core.dto.TestListDTO;
 import org.cerberus.core.exception.CerberusException;
@@ -302,5 +303,14 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service);
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param user
+     * @return
+     */
+    public AnswerItem<TestCaseStats> readStats(String fromDate, String toDate, List<String> systems);
 
 }

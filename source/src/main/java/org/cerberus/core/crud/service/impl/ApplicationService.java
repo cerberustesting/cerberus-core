@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationDAO;
 import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -160,4 +161,8 @@ public class ApplicationService implements IApplicationService {
         return applicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 
+    @Override
+    public AnswerItem<ApplicationStats> readApplicationStats(String fromDate, String toDate, List<String> systems){
+        return applicationDAO.readStats(fromDate, toDate, systems);
+    }
 }

@@ -20,13 +20,20 @@
 package org.cerberus.core.apiprivate;
 
 import com.google.gson.Gson;
-import java.util.ArrayList;
+
+import java.time.LocalDate;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.ApplicationMonthlyStatsDTOV001;
+import org.cerberus.core.api.dto.application.ApplicationStatsDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseMonthlyStatsDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseStatsDTOV001;
+import org.cerberus.core.crud.entity.stats.ApplicationStats;
+import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.entity.TestGenericObject;
 import org.cerberus.core.crud.service.impl.TestCaseService;
 import org.cerberus.core.crud.service.impl.TestGenericObjectService;
@@ -141,6 +148,72 @@ public class TestCasePrivateController {
             LOG.warn(ex);
         }
         return jsonResponse.toString();
+    }
+
+    /**
+     * Endpoint pour récupérer les statistiques d'usage AI sur une période
+     *@return DTO avec totalInputTokens, totalOutputTokens, totalCost
+     */
+    @Operation(hidden=true)
+    @GetMapping("/monthlyStats")
+    public TestcaseMonthlyStatsDTOV001 getMonthlyStats(
+            @RequestParam(name = "user", required = false) String user,
+            @RequestParam(name = "system", required = false) List<String> systems) {
+
+        LocalDate today = LocalDate.now();
+
+        // Last 30 days
+        LocalDate thisStartDate = today.minusDays(30);
+        LocalDate thisEndDate   = today;
+
+        // --- Get Global Stats : All dates, All systems --- and build DTO
+        TestCaseStats statsGlobal = testCaseService
+                .readTestCaseStats(null, null, null)
+                .getItem();
+        TestcaseStatsDTOV001 statsGlobalDto = TestcaseStatsDTOV001.builder()
+                .totalCount(statsGlobal.getTotalCount())
+                .createdLast30Days(statsGlobal.getTotalCreated())
+                .workingCount(statsGlobal.getWorkingCount())
+                .build();
+
+        // --- Get last month Stats : Last 30 days, All systems --- and build DTO
+        TestCaseStats statsGlobalPreviousMonth = testCaseService
+                .readTestCaseStats(thisStartDate.toString(), thisEndDate.toString(), null)
+                .getItem();
+        TestcaseStatsDTOV001 statsGlobalPreviousMonthDto = TestcaseStatsDTOV001.builder()
+                .totalCount(statsGlobalPreviousMonth.getTotalCount())
+                .createdLast30Days(statsGlobalPreviousMonth.getTotalCreated())
+                .workingCount(statsGlobalPreviousMonth.getWorkingCount())
+                .build();
+
+        // --- Get Selected System Stats : All dates, selected systems --- and build DTO
+        TestCaseStats statsSystems = testCaseService
+                .readTestCaseStats(null, null, systems)
+                .getItem();
+        TestcaseStatsDTOV001 statsSystemsDto = TestcaseStatsDTOV001.builder()
+                .totalCount(statsSystems.getTotalCount())
+                .createdLast30Days(statsSystems.getTotalCreated())
+                .workingCount(statsSystems.getWorkingCount())
+                .build();
+
+        // --- Get Selected System Stats : Last 30 days, selected systems --- and build DTO
+        TestCaseStats statsSystemsPreviousMonth = testCaseService
+                .readTestCaseStats(thisStartDate.toString(), thisEndDate.toString(), systems)
+                .getItem();
+        TestcaseStatsDTOV001 statsSystemsPreviousMonthDto = TestcaseStatsDTOV001.builder()
+                .totalCount(statsSystemsPreviousMonth.getTotalCount())
+                .createdLast30Days(statsSystemsPreviousMonth.getTotalCreated())
+                .workingCount(statsSystemsPreviousMonth.getWorkingCount())
+                .build();
+
+        // --- Build DTO final ---
+        return TestcaseMonthlyStatsDTOV001.builder()
+                .global(statsGlobalDto)
+                .globalPreviousMonth(statsGlobalPreviousMonthDto)
+                .system(statsSystemsDto)
+                .systemPreviousMonth(statsSystemsPreviousMonthDto)
+                .build();
+
     }
 
 }

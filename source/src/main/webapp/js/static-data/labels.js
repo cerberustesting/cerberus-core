@@ -155,6 +155,17 @@ const commonLabel = {
     "buttonsave":{"en": "Save", "fr":"Sauvegarder"}
 }
 
+const homepageLabel = {
+    applicationtitle: {en: "Application", fr: "Application"},
+    applicationtabselected: {en: "Selected", fr: "Selectionnées"},
+    applicationtabselectedlabel: {en: "Applications (Workspaces)", fr: "Applications (Espaces de travail)"},
+    applicationtabtype: {en: "Per Type", fr: "Par Type"},
+    applicationtabtypelabel: {en: "Application per type", fr: "Applications par type"},
+    applicationtabtotal: {en: "Total", fr: "Total"},
+    applicationtabtotallabel: {en: "Total Application", fr: "Applications totales"}
+
+}
+
 const pageInvariantLabel = {
     title: { en: "Invariant", fr: "Invariants" },
     subtitle: { en: "Manage the application’s constants and fixed elements.", fr: "Gérer les constantes et éléments fixes de l’application." },
@@ -253,6 +264,7 @@ const reportingCampaignStatisticsLabel ={
 
 window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
+window.homepageLabel = homepageLabel;
 window.pageInvariantLabel = pageInvariantLabel;
 window.pageQuickStartLabel = pageQuickStartLabel;
 window.reportingCampaignStatisticsLabel = reportingCampaignStatisticsLabel;

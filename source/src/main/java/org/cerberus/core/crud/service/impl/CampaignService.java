@@ -27,6 +27,7 @@ import org.cerberus.core.crud.dao.ICampaignDAO;
 import org.cerberus.core.crud.dao.ICampaignParameterDAO;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.CampaignParameter;
+import org.cerberus.core.crud.entity.stats.CampaignStats;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.ICampaignService;
 import org.cerberus.core.crud.service.IEventHookService;
@@ -136,6 +137,11 @@ public class CampaignService implements ICampaignService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public AnswerItem<CampaignStats> readCampaignStats(String fromDate, String toDate, List<String> systems){
+        return campaignDAO.readStats(fromDate, toDate, systems);
     }
 
 }

@@ -265,6 +265,10 @@ function ChangeWorkspace(selectedWorkspaces) {
         async: false,
         success: function () {
             user.defaultSystems = [...selectedWorkspaces];
+            user.defaultSystemsQuery = selectedWorkspaces.reduce(
+                (acc, s) => acc + '&system=' + encodeURIComponent(s),
+                ''
+            );
             sessionStorage.setItem("user", JSON.stringify(user));
             window.dispatchEvent(new CustomEvent('user-loaded', { detail: user }));
             location.reload(true);

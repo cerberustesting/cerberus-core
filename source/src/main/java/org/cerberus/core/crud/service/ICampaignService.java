@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.CampaignParameter;
+import org.cerberus.core.crud.entity.stats.CampaignStats;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -114,5 +115,14 @@ public interface ICampaignService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    /**
+     *
+     * @param fromDate
+     * @param toDate
+     * @param systems
+     * @return
+     */
+    AnswerItem<CampaignStats> readCampaignStats(String fromDate, String toDate, List<String> systems);
 
 }

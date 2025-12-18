@@ -1,0 +1,134 @@
+<template id="card-template">
+    <div class="crb_card" x-data="cardComponent($el)">
+
+        <!-- Header -->
+        <div class="flex items-center space-x-3 mb-2">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center"
+                 :class="'bg-' + color + '-500'">
+                <i :data-lucide="icon" class="w-4 h-4 text-white transition-colors"></i>
+            </div>
+            <span class="text-sm font-semibold" x-text="title"></span>
+        </div>
+
+        <!-- Onglets -->
+        <div class="flex space-x-3 text-xs mb-4 overflow-x-auto no-scrollbar whitespace-nowrap pr-2 border-t border-gray-200 dark:border-gray-800">
+            <template x-for="(data, key) in tabs" :key="key">
+                <button
+                        @click="tab = key"
+                        class="inline-block px-2 py-1 font-thin"
+                        :class="tab === key ? ('text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl') : 'text-gray-400!'"
+                >
+                    <span x-text="data.tab"></span>
+                </button>
+            </template>
+        </div>
+
+        <!-- Valeur -->
+        <div class="flex items-center justify-between text-2xl font-bold">
+            <span x-text="tabs[tab]?.value ?? ''"></span>
+            <template x-if="tabs[tab]?.diff !== undefined">
+                <span class="flex items-center space-x-1 text-sm font-semibold"
+                      :class="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).color">
+                    <i :data-lucide="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).icon" class="w-4 h-4"></i>
+                    <span x-text="computeDiffPercent(tabs[tab].currentValue, tabs[tab].previousValue)"></span>
+                </span>
+            </template>
+        </div>
+        <div class="text-gray-500 text-sm mt-1 truncate" x-text="tabs[tab]?.label || ''"></div>
+
+    </div>
+</template>
+<script>
+    function cardComponent(el) {
+        const root = el.closest('card-with-tabs');
+        const inlineTabs = root.getAttribute('tabs') || '{}';
+        const apiUrl = root.getAttribute('tabs-api');
+        const mapFnName = root.getAttribute('tabs-map-fn');
+
+        return {
+            title: root.getAttribute('title') || '',
+            icon: root.getAttribute('icon') || '',
+            color: root.getAttribute('color') || 'blue',
+            tabs: {},
+            tab: '',
+
+            async init() {
+                if (apiUrl) {
+                    try {
+                        const resp = apiUrl.startsWith('./') ? await fetch(apiUrl) : await mockFetch(apiUrl);
+
+                        let apiData = await resp.json();
+
+                        if (mapFnName && window[mapFnName]) {
+                            this.tabs = window[mapFnName](apiData);
+                        } else {
+                            this.tabs = apiData;
+                        }
+                    } catch (e) {
+                        console.error("Erreur API :", apiUrl, e);
+                        this.tabs = {};
+                    }
+                } else {
+                    try {
+                        this.tabs = JSON.parse(inlineTabs);
+                    } catch (e) {
+                        console.error("Erreur JSON inline", e);
+                        this.tabs = {};
+                    }
+                }
+
+                const keys = Object.keys(this.tabs);
+                this.tab = keys.length ? keys[0] : '';
+                for (let key in this.tabs) {
+                    if (this.tabs[key]?.diff !== undefined) {
+                        const { icon, color } = getDiffIconAndColor(this.tabs[key].diff);
+                        this.tabs[key].diffIcon = icon;
+                        this.tabs[key].diffColor = color;
+                    }
+                }
+
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        lucide.createIcons()
+                    }
+                });
+            }
+        };
+    }
+
+    function getDiffIconAndColor(diff, diffPositive = true) {
+        if (diff > 0) return diffPositive ? { icon: 'trending-up', color: 'text-green-500' }
+            : { icon: 'trending-up', color: 'text-red-500' };
+        if (diff < 0) return diffPositive ? { icon: 'trending-down', color: 'text-red-500' }
+            : { icon: 'trending-down', color: 'text-green-500' };
+        return { icon: 'minus', color: 'text-orange-500' };
+    }
+
+    function computeDiffPercent(currentValue, previousValue) {
+        if (previousValue === 0) return "—"; // éviter division par zéro
+        return ((currentValue - previousValue) / previousValue * 100).toFixed(1) + "%";
+    }
+
+    function formatTokens(value) {
+        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
+        if (value >= 1_000)     return (value / 1_000).toFixed(1) + "K";
+        return value.toString();
+    }
+
+    function formatEuro(amount) {
+        return new Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    // Injection du template dans chaque <card-with-tabs>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('card-with-tabs').forEach(card => {
+            const tpl = document.querySelector('#card-template').content.cloneNode(true);
+            card.appendChild(tpl);
+        });
+    });
+</script>
