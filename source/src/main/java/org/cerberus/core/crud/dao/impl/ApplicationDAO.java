@@ -63,7 +63,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     private final DatabaseSpring databaseSpring;
     private static final Logger LOG = LogManager.getLogger(ApplicationDAO.class);
-    private static final String OBJECT_NAME = "Application";
+    private static final String OBJECT_NAME = "application";
     private static final String SQL_DUPLICATED_CODE = "23000";
     private static final int MAX_ROW_SELECTED = 100000;
 
