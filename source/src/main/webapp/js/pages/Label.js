@@ -200,7 +200,7 @@ function renderOptionsForLabel(data) {
             $("#labelsTable_wrapper div#labelsTable_length").before("<div id='labelsTable_buttonWrapper'>" + contentToAdd + "</div>");
         }
 
-        $('#labelList #createLabelButton').off("click").click(addEntryClick);
+        $('#createLabelButton').off("click").click(addEntryClick);
     }
 }
 
