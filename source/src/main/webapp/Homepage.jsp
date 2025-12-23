@@ -62,7 +62,7 @@
 <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
     <div>
         <%@ include file="include/global/messagesArea.html" %>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 <!-- Application (via API) -->
                 <card-with-tabs
                     title="Application"
@@ -187,7 +187,7 @@
 
                     <div id="tagExecStatus" class="mt-4"></div>
                     <div id="lastTagExecutions" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                             <!-- campaign cards -->
                         </div>
                     </div>

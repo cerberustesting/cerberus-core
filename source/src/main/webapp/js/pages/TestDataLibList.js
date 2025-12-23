@@ -425,7 +425,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                 } else if (obj.type === "FILE") {
                     return '<i class="fa fa-file" style="font-size:20px"></i> ' + obj.type;
                 } else if (obj.type === "INTERNAL") {
-                    return '<img src="images/Logo-cerberus_250.png" height="20"></img> ' + obj.type;
+                    return '<img src="images/Logo-cerberus_250.png" width="20px" height="20px"></img> ' + obj.type;
                 } else  {
                     return '<i class="fa fa-cloud-upload" style="font-size:20px"></i> ' + obj.type;
                 }

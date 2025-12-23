@@ -22,9 +22,6 @@ var initMode = "";
 
 $(function () {
     $('[data-toggle="popover"]').popover()
-    $('#editTestDataLibModal #types').change(function () {
-        collapseOrExpandTypes();
-    });
 
     $('#editTestDataLibModal #service').change(function () {
         changeAppServiceFromHere();
@@ -32,28 +29,7 @@ $(function () {
 
 })
 
-function collapseOrExpandTypes() {
 
-    var typesVal = $('#editTestDataLibModal #types').val();
-    if (typesVal === "SQL") {
-        $("#panelSQLEdit").collapse("show");
-        $("#panelSERVICEEdit").collapse("hide");
-        $("#panelCSVEdit").collapse("hide");
-    } else if (typesVal === "SERVICE") {
-        $("#panelSQLEdit").collapse("hide");
-        $("#panelSERVICEEdit").collapse("show");
-        $("#panelCSVEdit").collapse("hide");
-    } else if (typesVal === "FILE") {
-        $("#panelSQLEdit").collapse("hide");
-        $("#panelSERVICEEdit").collapse("hide");
-        $("#panelCSVEdit").collapse("show");
-    } else {
-        $("#panelSQLEdit").collapse("hide");
-        $("#panelSERVICEEdit").collapse("hide");
-        $("#panelCSVEdit").collapse("hide");
-    }
-
-}
 function changeAppServiceFromHere() {
 
     var doc = new Doc();
@@ -611,7 +587,6 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $("#buttonDownloadCsvFile").attr("href", "./api/testdatalibs/" + encodeURI(obj.testDataLibID) + "/csv/");
 
         $('#editTestDataLibModal #types').prop("value", obj.type);
-        collapseOrExpandTypes();
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);

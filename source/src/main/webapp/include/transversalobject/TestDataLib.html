@@ -45,7 +45,7 @@
                             <label name="lbl_type" for="type">Type</label>
                             <div>
                                 <select class="form-control" id="types" name="types">
-                                </select>  
+                                </select>
                             </div>
                         </div> 
                     </div>    
@@ -73,18 +73,34 @@
                         <li><a data-toggle="tab" href="#tabsedit-2" id="tab2Text" name="tab2Text">Sub data</a></li>
                         <li><a data-toggle="tab" href="#tabsedit-3" id="tab3Text" name="tab3Text">Traceability</a></li>
                     </ul>
-                    <div class="tab-content">   
-                        <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1">
+                    <div class="tab-content">
+                        <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1"
+                             x-data="{type: '', openFile: false, openSql: false, openService: false,
+                                        syncOpenStates() {
+                                            this.openFile = this.type === 'FILE';
+                                            this.openSql = this.type === 'SQL';
+                                            this.openService = this.type === 'SERVICE';
+                                        }
+                                    }"
+                             x-init="const select = document.getElementById('types');
+                                    if (select) {
+                                        type = select.value;
+                                        syncOpenStates();
+                                        select.addEventListener('change', e => {
+                                            type = e.target.value;
+                                            syncOpenStates();
+                                        });
+                                    }">
                             <!-- SERVICE SECTION -->
                             <div class="space-y-4">
 
                                 <!-- FILE Configurations -->
-                                <div x-data="{ open: false }" class="border rounded-lg  shadow">
+                                <div x-transition x-cloak class="border rounded-lg shadow">
                                     <div class="flex justify-between items-center cursor-pointer px-4 py-2  hover:bg-gray-200"
-                                            @click="open = !open">
+                                            @click="openFile = !openFile">
                                         <label class="font-semibold">FILE Configurations</label>
                                         <svg
-                                                :class="{'rotate-90': open}"
+                                                :class="{'rotate-90': openFile}"
                                                 class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,7 +108,7 @@
                                         </svg>
                                     </div>
 
-                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+                                    <div x-show="openFile" x-transition class="p-4 border-t space-y-4">
 
                                         <!-- Row 1 -->
                                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
@@ -135,14 +151,14 @@
                                 </div>
 
                                 <!-- SQL Configurations -->
-                                <div x-data="{ open: false }" class="border rounded-lg bg-white shadow">
+                                <div x-transition x-cloak class="border rounded-lg bg-white shadow">
                                     <div
                                             class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
-                                            @click="open = !open"
+                                            @click="openSql = !openSql"
                                     >
                                         <label class="font-semibold">SQL Configurations</label>
                                         <svg
-                                                :class="{'rotate-90': open}"
+                                                :class="{'rotate-90': openSql}"
                                                 class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -150,7 +166,7 @@
                                         </svg>
                                     </div>
 
-                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+                                    <div x-show="openSql" x-transition class="p-4 border-t space-y-4">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="database" class="block text-sm font-medium text-gray-700">Database</label>
@@ -174,14 +190,14 @@
                                 </div>
 
                                 <!-- SERVICE Configurations -->
-                                <div x-data="{ open: false }" class="border rounded-lg bg-white shadow">
-                                    <div
+                                <div x-transition x-cloak class="border rounded-lg bg-white shadow">
+                                <div
                                             class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
-                                            @click="open = !open"
+                                            @click="openService = !openService"
                                     >
                                         <label class="font-semibold">SERVICE Configurations</label>
                                         <svg
-                                                :class="{'rotate-90': open}"
+                                                :class="{'rotate-90': openService}"
                                                 class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -189,7 +205,7 @@
                                         </svg>
                                     </div>
 
-                                    <div x-show="open" x-transition class="p-4 border-t space-y-4">
+                                    <div x-show="openService" x-transition class="p-4 border-t space-y-4">
                                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
                                             <div class="sm:col-span-4">
                                                 <label for="databaseUrl" class="block text-sm font-medium text-gray-700">Database URL</label>

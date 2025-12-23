@@ -109,7 +109,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         const $tooltip = $(`
         <div class="execution-tooltip fixed z-[9999]
-                    bg-gray-900/50 text-white border text-xs
+                    bg-gray-800 text-white border text-xs
                     p-3 rounded-lg shadow-lg w-64">
             ${content}
         </div>
@@ -736,6 +736,7 @@ function refreshTagList(tagList1, reportArea) {
     const nextRuns = readNextTagScheduled();
     renderCampaignGrid(reportArea, tagList1, nextRuns);
     updateNextFireTime();
+    if (window.lucide) lucide.createIcons();
 }
 
 /**
@@ -784,21 +785,32 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun) {
                 <!-- Content row -->
                 <div class="flex items-center gap-4">
                     <!-- Trend graph -->
-                    <div class="w-24 flex-shrink-0">${renderTrendGraph(stats.history)}
+                    <div class="w-24 top-0 flex-shrink-0">${renderTrendGraph(stats.responseTime, stats.status)}
                     </div>
                     <!-- Progress -->
-                    <div class="flex-1">
-                        <div class="flex justify-between text-xs mb-1 text-gray-500">
-                            <span>${stats.executions} executions</span>
-                            <span>${stats.successRate}%</span>
-                        </div>
+                    <div class="flex-1 mt-5">
+                        <!-- Progress bar -->
                         <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded">
-                            <div class="h-2 rounded bg-green-500"
-                                 style="width:${stats.successRate}%"></div>
+                            <div class="h-2 rounded bg-green-500" style="width:${stats.successRate}%"></div>
+                        </div>
+                    
+                        <!-- Texte en dessous -->
+                        <div class="flex justify-between text-xs mt-1 text-gray-500">
+                            <span>${stats.executions} exec.</span>
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1 text-green-500">
+                                    <i data-lucide="circle-check" class="w-3 h-3"></i>
+                                    <span>${stats.ok}</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-red-500">
+                                    <i data-lucide="circle-x" class="w-3 h-3"></i>
+                                    <span>${stats.ko}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Status dots -->
-                    <div class="flex gap-1 flex-shrink-0">
+                    <div class="flex gap-1 flex-shrink-0 top-0">
                         ${renderExecutionDots(stats.lastResults, tagExecutions)}
                     </div>
                 </div>
@@ -825,8 +837,23 @@ function computeCampaignStats(tags) {
         executions,
         successRate: executions ? Math.round(ok * 100 / executions) : 0,
         lastResults: tags.slice(-5).map(t => t.ciResult),
-        history: tags.map(t => t.ciScore || 0)
+        history: tags.map(t => t.ciScore || 0),
+        responseTime: tags.map(t =>
+            getResponseTime(t.DateStartExe, t.DateEndQueue)
+        ),
+        status: tags.map(t => t.ciResult),
+        ok,
+        ko
     };
+}
+
+function getResponseTime(startStr, endStr) {
+    if (!startStr || !endStr) return null;
+
+    const start = new Date(startStr.replace(" ", "T"));
+    const end = new Date(endStr.replace(" ", "T"));
+
+    return Math.round((end - start) / 1000); // en secondes
 }
 
 /**
@@ -938,48 +965,88 @@ function renderSuccessBadge(rate) {
     `;
 }
 
-/**
- * Draw Trend Graph
- * @param values
- * @returns {string}
- */
-function renderTrendGraph(values = []) {
-
-    if (!values.length) {
+function renderTrendGraph(responseTime = [], status = []) {
+    if (!responseTime.length) {
         return `<div class="h-6 flex items-center text-xs text-gray-400">No data</div>`;
     }
 
-    const max = Math.max(...values, 1);
-    const min = Math.min(...values, 0);
+    const HEIGHT = 24;
+    const padding = 3;
+
+    const max = Math.max(...responseTime);
+    const min = Math.min(...responseTime);
     const range = max - min || 1;
 
-    const points = values.map((v, i) => {
-        const x = (i / (values.length - 1 || 1)) * 100;
-        const y = 100 - ((v - min) / range * 100);
-        return `${x},${y}`;
-    }).join(" ");
+    const getX = i => (i / (responseTime.length - 1 || 1)) * 100;
+    const getY = v => padding + (1 - (v - min) / range) * (HEIGHT - padding * 2);
+
+    // Création des points
+    const points = responseTime.map((v, i) => ({
+        x: getX(i),
+        y: getY(v),
+        value: v,
+        status: status[i]
+    }));
+
+    // Inverser l'ordre pour affichage de droite à gauche
+    const pointsReversed = points.slice().reverse().map((p, i) => ({
+        ...p,
+        x: getX(i) // recalcule x pour l'affichage inversé
+    }));
+
+    const linePoints = pointsReversed.map(p => `${p.x},${p.y}`).join(" ");
+    const fillPoints = `0,${HEIGHT} ${linePoints} 100,${HEIGHT}`;
 
     return `
-        <svg viewBox="0 0 100 100"
-             class="w-full h-6"
-             preserveAspectRatio="none">
-             
-            <polyline
-                points="${points}"
-                fill="none"
-                stroke="rgb(37, 99, 235)"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-
-            ${values.map((v, i) => {
-                const x = (i / (values.length - 1 || 1)) * 100;
-                const y = 100 - ((v - min) / range * 100);
-                return `<circle cx="${x}" cy="${y}" r="2.5" fill="rgb(37, 99, 235)" />`;
-            }).join("")}
-        </svg>
-    `;
+        <div class="relative w-full h-6">
+            <svg viewBox="0 0 100 ${HEIGHT}" class="w-full h-6" preserveAspectRatio="xMidYMid meet">
+       
+                <!-- Fill -->
+                <polygon points="${fillPoints}" fill="#cbd5f5" opacity="0.35"/>
+        
+                <!-- Line -->
+                <polyline points="${linePoints}" fill="none" stroke="#94a3b8" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+        
+                <!-- Points -->
+                ${pointsReversed.map(p => `
+                    <circle cx="${p.x}" cy="${p.y}" r="2.8"
+                            fill="${p.status === "OK" ? "#22c55e" : "#ef4444"}"
+                            stroke="white" stroke-width="0.8"/>
+                `).join("")}
+        
+                <!-- Hover zones -->
+                ${pointsReversed.map(p => `
+                    <rect x="${p.x - 4}" y="0" width="8" height="${HEIGHT}" fill="transparent"
+                          data-value="${p.value}" data-status="${p.status}"
+                          onmousemove="
+                                const tooltip = this.closest('.relative').querySelector('#tooltip');
+                                tooltip.style.display = 'block';
+                                tooltip.innerHTML = this.dataset.value + ' sec. (' + this.dataset.status + ')';
+                                const rect = this.getBoundingClientRect();
+                                const parentRect = this.closest('.relative').getBoundingClientRect();
+                                tooltip.style.left = (rect.x - parentRect.x + rect.width/2) + 'px';
+                                tooltip.style.top = (rect.y - parentRect.y - 28) + 'px';
+                            "
+                          onmouseleave="
+                                const tooltip = this.closest('.relative').querySelector('#tooltip');
+                                tooltip.style.display = 'none';
+                            "
+                    ></rect>
+                `).join("")}
+        
+            </svg>
+        
+            <!-- Tooltip HTML flottant -->
+            <div id="tooltip"
+                 class="absolute bg-gray-800 text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap z-50" style="display:none">
+            </div>
+        </div>
+        `;
 }
+
+
+
 
 function readLastTagExec(searchString, reportArea) {
     var tagListResult = {};
