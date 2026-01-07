@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="test">
+        <meta name="active-menu" content="automate">
         <meta name="active-submenu" content="QuickStart.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions_new.html" %>
@@ -34,6 +34,7 @@
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
         <jsp:include page="include/transversalobject/TestCaseSimpleCreationAI.html"/>
+        <jsp:include page="include/transversalobject/TestCaseSimpleCreationImport.html"/>
         <jsp:include page="include/templates/selectDropdown.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 
@@ -93,7 +94,8 @@
             <span x-text="$store.labels.getLabel('pageQuickStart','recordertag3')"></span>
           </span>
         </div>
-        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition">
+        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-medium transition"
+        onclick="window.dispatchEvent(new CustomEvent('open-import-recording'))">
             <span x-text="$store.labels.getLabel('pageQuickStart','recorderbutton')"></span>
         </button>
       </div>

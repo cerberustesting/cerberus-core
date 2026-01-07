@@ -1,0 +1,227 @@
+<!-- MASS UPDATE MODAL -->
+<div
+        x-data="massUpdateModal()"
+        x-show="open"
+        x-cloak
+        @mass-update-open.window="openModal()"
+        class="crb_modal">
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-slate-900 opacity-60" @click="close()"></div>
+
+  <!-- Modal -->
+  <div class="crb_card w-full max-w-4xl mx-4 transform-gpu"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 scale-95"
+       x-transition:enter-end="opacity-100 scale-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 scale-100"
+       x-transition:leave-end="opacity-0 scale-95"
+       @click.away="close()">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center px-6 py-4">
+      <h3 class="text-xl font-semibold">
+        Mass update test cases
+      </h3>
+      <button @click="close()">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 space-y-4">
+      <form id="massActionTestCaseModalFormUpdate" class="space-y-4">
+
+        <template x-for="field in fields" :key="field.id">
+          <div class="flex flex-col gap-2">
+
+            <!-- Label au-dessus -->
+            <label class="block text-sm font-medium" x-text="field.label"></label>
+
+            <!-- Checkbox + input alignés horizontalement -->
+            <div class="flex items-center gap-3">
+
+              <!-- Checkbox -->
+              <input
+                      type="checkbox"
+                      x-model="field.enabled"
+                      class="appearance-none w-5 h-5 border border-sky-500 rounded checked:bg-sky-500 checked:sky-blue-500 bg-transparent cursor-pointer"
+              >
+
+              <!-- Input / Select -->
+              <div class="flex-1">
+                <!-- SELECT -->
+                <template x-if="field.type === 'select'">
+                  <select
+                          :name="field.input"
+                          x-model="field.value"
+                          :disabled="!field.enabled"
+                          class="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 px-2"
+                  >
+                    <option value="">-- Select --</option>
+                    <template x-for="opt in field.options" :key="opt.value">
+                      <option :value="opt.value" x-text="opt.label"></option>
+                    </template>
+                  </select>
+                </template>
+
+                <!-- TEXT -->
+                <template x-if="field.type === 'text'">
+                  <input
+                          type="text"
+                          :name="field.input"
+                          x-model="field.value"
+                          :disabled="!field.enabled"
+                          class="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 px-2"
+                  >
+                </template>
+              </div>
+
+            </div>
+          </div>
+        </template>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end gap-2 px-6 py-4 border-t">
+      <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" @click="close()">Cancel</button>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" @click="submit()">Update</button>
+    </div>
+
+  </div>
+</div>
+<script>
+  function massUpdateModal() {
+    return {
+      open: false,
+      loading: false,
+
+      fields: [
+        { id: 'status', label: 'Status', type: 'select', input: 'massStatus', enabled: false, value: '', options: [] },
+        { id: 'application', label: 'Application', type: 'select', input: 'massApplication', enabled: false, value: '', options: [] },
+        { id: 'priority', label: 'Priority', type: 'select', input: 'massPriority', enabled: false, value: '', options: [] },
+        { id: 'executor', label: 'Executor', type: 'text', input: 'massExecutor', enabled: false, value: '' }
+      ],
+
+      /* ---------------- lifecycle ---------------- */
+
+      openModal() {
+        this.open = true;
+        this.$nextTick(() => this.loadData());
+      },
+
+      close() {
+        this.open = false;
+        this.reset();
+      },
+
+      reset() {
+        this.fields.forEach(f => {
+          f.enabled = false;
+          f.value = '';
+        });
+        this.loading = false;
+      },
+
+      /* ---------------- data loading ---------------- */
+
+      loadData() {
+        // STATUS
+        loadInvariantList("TCSTATUS").then(list => {
+          this.getField('status').options = list.map(e => ({
+            value: e.value,
+            label: e.description ? `${e.value} - ${e.description}` : e.value
+          }));
+        });
+
+        // PRIORITY
+        loadInvariantList("PRIORITY").then(list => {
+          this.getField('priority').options = list.map(e => ({
+            value: e.value,
+            label: e.description ? `${e.value} - ${e.description}` : e.value
+          }));
+        });
+
+        // APPLICATION
+        fetch("ReadApplication")
+                .then(r => r.json())
+                .then(data => {
+                  this.getField('application').options =
+                          data.contentTable.map(app => ({
+                            value: app.application,
+                            label: app.application
+                          }));
+                });
+      },
+
+      getField(id) {
+        return this.fields.find(f => f.id === id);
+      },
+
+      /* ---------------- submit ---------------- */
+
+      submit() {
+        if (this.loading) return;
+
+        clearResponseMessage($('#massActionTestCaseModal'));
+
+        const params = new URLSearchParams();
+
+        this.fields
+                .filter(f => f.enabled && f.value)
+                .forEach(f => params.append(f.input, f.value));
+
+        const formListParams = $('#massActionForm')
+                .serialize()
+                .replace(/=on/g, '')
+                .replace(/test-/g, 'test=')
+                .replace(/testcase-/g, '&testcase=');
+
+        this.loading = true;
+        showLoaderInModal('#massActionTestCaseModal');
+
+        $.post("UpdateTestCaseMass", params.toString() + "&" + formListParams, "json")
+                .done(data => {
+                  if (["success", "warning"].includes(getAlertType(data.messageType))) {
+                    $('#testCaseTable').DataTable().draw();
+                    $("#selectAll").prop("checked", false);
+                    showMessage(data);
+                    this.close();
+                  } else {
+                    showMessage(data, $('#massActionTestCaseModal'));
+                  }
+                })
+                .fail(() => handleErrorAjaxAfterTimeout())
+                .always(() => {
+                  hideLoaderInModal('#massActionTestCaseModal');
+                  this.loading = false;
+                });
+      }
+    }
+  }
+
+  function loadInvariantList(idName, forceReload = false) {
+    const cacheKey = "INVARIANT_" + idName;
+
+    if (forceReload) {
+      sessionStorage.removeItem(cacheKey);
+    }
+
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      return Promise.resolve(JSON.parse(cached));
+    }
+
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: "FindInvariantByID",
+        data: { idName },
+        success: data => {
+          sessionStorage.setItem(cacheKey, JSON.stringify(data));
+          resolve(data);
+        },
+        error: reject
+      });
+    });
+  }
+</script>

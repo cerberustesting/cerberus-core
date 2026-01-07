@@ -29,7 +29,7 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="test">
+        <meta name="active-menu" content="maintain">
         <meta name="active-submenu" content="TestCaseList.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
@@ -51,10 +51,11 @@
             <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
             <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
             <%@ include file="include/transversalobject/Application.html"%>
-            <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
-            <%@ include file="include/pages/testcaselist/importTestCase.html"%>
-            <%@ include file="include/pages/testcaselist/importTestCaseFromSIDE.html"%>
             <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
+            <jsp:include page="include/transversalobject/TestCaseListMassActionUpdate.html"/>
+            <jsp:include page="include/transversalobject/TestCaseListMassActionLabel.html"/>
+            <jsp:include page="include/transversalobject/TestCaseSimpleCreationImport.html"/>
+            <jsp:include page="include/templates/selectDropdown.html"/>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

@@ -29,7 +29,7 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="reporting">
+        <meta name="active-menu" content="monitor">
         <meta name="active-submenu" content="ReportingMonitor.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>

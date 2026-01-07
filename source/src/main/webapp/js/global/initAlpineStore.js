@@ -26,9 +26,9 @@ document.addEventListener('alpine:init', () => {
         activeMenu: null,
         activeSubmenu: null,
         hoverTimeout: null,
-        hoverMenu: {test:false, data:false, run:false, reporting:false, application:false, integration: false, admin: false, developer: false, help: false},
-        hoverSubMenu: {test:false, data:false, run:false, reporting:false, application:false, integration: false, admin: false, developer: false, help: false},
-        showSubMenu: {test:false, data:false, run:false, reporting:false, application:false, integration: false, admin: false, developer: false, help: false},
+        hoverMenu: {automate:false, maintain:false, execute:false, monitor:false, insights:false, settings: false, admin: false, developer: false, help: false},
+        hoverSubMenu: {automate:false, maintain:false, execute:false, monitor:false, insights:false, settings: false, admin: false, developer: false, help: false},
+        showSubMenu: {automate:false, maintain:false, execute:false, monitor:false, insights:false, settings: false, admin: false, developer: false, help: false},
         hoverPos: null,
 
         toggleSidebar() {

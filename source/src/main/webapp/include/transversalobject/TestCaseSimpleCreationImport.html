@@ -1,0 +1,243 @@
+<!-- Modal Import Recording -->
+<div
+    x-data="importRecordingModal()"
+    x-show="open"
+    x-cloak
+    @open-import-recording.window="open = true"
+    class="crb_modal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900 opacity-60" @click="close()"></div>
+
+    <!-- Modal -->
+    <div class="crb_card w-full max-w-3xl mx-4 transform-gpu"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.away="close()">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center px-6 py-4 mb-6">
+            <div class="flex flex-col">
+                <h3 class="text-xl font-semibold">
+                    Import Recording
+                </h3>
+                <p class="page-subtitle-line">
+                    Import test cases from Selenium IDE or Katalon Recorder
+                </p>
+            </div>
+            <button @click="close()" class="hover:text-gray-700">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 pb-6 space-y-6">
+
+            <!-- Tabs (optional documentation) -->
+            <div class="w-full" x-data>
+                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm h-10">
+                    <!-- Selenium -->
+                    <button
+                            @click="activeTab = 'selenium'"
+                            :class="activeTab === 'selenium' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+
+                        <img src="./images/tools-selenium-ide.svg"
+                                alt="Selenium IDE"
+                                class="w-4 h-4 object-contain"/>Selenium IDE
+                    </button>
+
+                    <!-- Katalon -->
+                    <button
+                            @click="activeTab = 'katalon'"
+                            :class="activeTab === 'katalon' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+
+                        <img
+                                src="./images/tools-katalon.svg"
+                                alt="Katalon Recorder"
+                                class="w-4 h-4 object-contain"/>Katalon
+                    </button>
+                </div>
+
+                <!-- Selenium Doc -->
+                <div x-show="activeTab === 'selenium'" x-transition class="mt-4">
+                    <div class="rounded-lg p-4 text-sm">
+                        <p class="font-semibold mb-2">How to export from Selenium IDE</p>
+                        <ol class="list-decimal list-inside space-y-1 text-gray-500">
+                            <li>Install Selenium IDE extension</li>
+                            <li>Open or record your scenario</li>
+                            <li>Use <strong>File → Save project</strong></li>
+                            <li>Upload the generated <code>.side</code> file</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Katalon Doc -->
+                <div x-show="activeTab === 'katalon'" x-transition class="mt-4">
+                    <div class="rounded p-4 text-sm">
+                        <p class="font-semibold mb-2">How to export from Katalon Recorder</p>
+                        <ol class="list-decimal list-inside space-y-1 text-gray-500">
+                            <li>Open Katalon Recorder extension</li>
+                            <li>Select your test suite</li>
+                            <li>Click <strong>Export</strong></li>
+                            <li>Select a framework. Choose <strong>JSON (Puppeteer) → Export</strong></li>
+                            <li>Upload the exported .JSON file</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application + Test Folder (same line) -->
+            <div class="flex space-x-4">
+                <!-- Application -->
+                <div class="w-1/2">
+                    <label class="font-semibold block mb-1">
+                        Application
+                    </label>
+                    <div
+                            x-data="singleSelectDropdown({
+                            id: 'importApplicationSelect',
+                            loader: async () => {
+                                const r = await fetch('ReadApplication');
+                                const d = await r.json();
+                                return d.contentTable.map(a => a.application);
+                            }
+                        })"
+                            x-modelable="selectedValue"
+                            x-model="form.application">
+                    </div>
+                </div>
+
+                <!-- Test Folder -->
+                <div class="w-1/2">
+                    <label class="font-semibold block mb-1">
+                        Test Folder
+                    </label>
+                    <div
+                            x-data="singleSelectDropdown({
+                            id: 'importTestFolderSelect',
+                            loader: async () => {
+                                const r = await fetch('ReadTest?iDisplayLength=100');
+                                const d = await r.json();
+                                return d.contentTable.map(t => t.test);
+                            }
+                        })"
+                            x-modelable="selectedValue"
+                            x-model="form.testFolder">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload -->
+            <div>
+                <label class="font-semibold block mb-1">
+                    Recording file
+                </label>
+                <input
+                        type="file"
+                        accept=".side,.json"
+                        @change="handleFile"
+                        class="w-full border rounded px-3 py-2"/>
+            </div>
+
+            <!-- Error -->
+            <template x-if="errorMessage">
+                <div class="bg-red-100 text-red-700 p-2 rounded text-sm">
+                    <strong x-text="errorMessage"></strong>
+                </div>
+            </template>
+
+            <!-- Actions -->
+            <div class="flex justify-end pt-4">
+                <button
+                        @click="submit()"
+                        :disabled="loading"
+                        class="px-4 py-2 rounded text-white transition"
+                        :class="loading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'">
+                    <span x-show="!loading">Import</span>
+                    <span x-show="loading">Importing...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function importRecordingModal() {
+        return {
+            open: false,
+            activeTab: null, // selenium | katalon | null
+
+            form: {
+                application: null,
+                testFolder: null
+            },
+
+            file: null,
+            loading: false,
+            errorMessage: '',
+
+            close() {
+                this.open = false;
+                this.activeTab = null;
+                this.form.application = null;
+                this.form.testFolder = null;
+                this.file = null;
+                this.loading = false;
+                this.errorMessage = '';
+            },
+
+            handleFile(e) {
+                this.file = e.target.files[0] || null;
+            },
+
+            async submit() {
+                if (!this.form.application || !this.form.testFolder || !this.file) {
+                    this.errorMessage = 'Please select application, test folder and file.';
+                    return;
+                }
+
+                this.loading = true;
+                this.errorMessage = '';
+
+                const fd = new FormData();
+                fd.append('application', this.form.application);
+                fd.append('test', this.form.testFolder);
+                fd.append('file', this.file);
+
+                try {
+                    const r = await fetch('ImportTestCaseFromSIDE', {
+                        method: 'POST',
+                        body: fd
+                    });
+
+                    const data = JSON.parse(await r.text());
+
+                    if (data.messageType === 'OK') {
+                        const testFolder = data.testFolder;
+                        const testCase = data.testCase;
+
+                        if (testFolder && testCase) {
+                            const url = `TestCaseScript.jsp?test=${encodeURIComponent(testFolder)}&testcase=${encodeURIComponent(testCase)}`;
+                            window.location.href = url;
+                            return;
+                        }
+                        this.close();
+                    } else {
+                        this.errorMessage = data.message || 'Import failed.';
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                    this.errorMessage = 'Unexpected server error.';
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+</script>

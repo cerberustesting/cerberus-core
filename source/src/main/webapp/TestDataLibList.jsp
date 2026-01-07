@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="data">
+        <meta name="active-menu" content="maintain">
         <meta name="active-submenu" content="TestDataLibList.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>

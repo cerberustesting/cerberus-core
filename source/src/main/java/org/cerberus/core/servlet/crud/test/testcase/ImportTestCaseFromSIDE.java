@@ -299,6 +299,8 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
 //
 //                            newTC.appendSteps(newStep);
                             testcaseService.createTestcaseWithDependencies(newTC);
+                            jsonResponse.put("testFolder", targetFolder);
+                            jsonResponse.put("testCase", targetTestcase);
 
                         }
 

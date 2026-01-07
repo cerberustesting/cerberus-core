@@ -1,0 +1,73 @@
+<div
+        x-data="massLabelModal()"
+        x-show="open"
+        x-cloak
+        @mass-label-open.window="openModal()"
+        class="crb_modal">
+
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-slate-900 opacity-60" @click="close()"></div>
+
+  <!-- Modal -->
+  <div class="crb_card w-full max-w-4xl mx-4 transform-gpu"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 scale-95"
+       x-transition:enter-end="opacity-100 scale-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 scale-100"
+       x-transition:leave-end="opacity-0 scale-95"
+       @click.away="close()">
+
+    <div class="px-6 py-4 flex justify-between">
+      <h3 class="text-xl font-semibold">Label management</h3>
+      <button @click="close()">&times;</button>
+    </div>
+
+    <div class="p-6 grid grid-cols-3 gap-4 max-h-[400px] overflow-auto">
+      <div>
+        <h4 class="font-semibold mb-2">Stickers</h4>
+        <div id="selectLabelAddS"></div>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Requirements</h4>
+        <div id="selectLabelAddR"></div>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-2">Batteries</h4>
+        <div id="selectLabelAddB"></div>
+      </div>
+    </div>
+
+    <div class="flex justify-between px-6 py-4">
+      <button class="btn-danger" @click="remove()">Remove</button>
+      <button class="btn-primary" @click="add()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function massLabelModal() {
+    return {
+      open: false,
+
+      openModal() {
+        this.open = true;
+        this.$nextTick(() => {
+          loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
+        });
+      },
+
+      close() { this.open = false; },
+
+      add() {
+        massActionModalSaveHandler_addLabel();
+        this.close();
+      },
+
+      remove() {
+        massActionModalSaveHandler_removeLabel();
+        this.close();
+      }
+    }
+  }
+</script>

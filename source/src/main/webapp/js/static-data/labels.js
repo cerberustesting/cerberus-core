@@ -21,49 +21,53 @@
 
 const headerLabel = {
     "workspace": { "en": "Workspace", "fr": "Espace de travail" },
-    // === Section Test ===
-    "test": { "en": "Test", "fr": "Test" },
-    "createtestcase": { "en": "Create TestCase", "fr": "Création de TestCase" },
-    "testcaselist": { "en": "TestCase List", "fr": "Liste de TestCases" },
-    "edittestcase": { "en": "Edit TestCase Script", "fr": "Script de Test" },
-    "label": { "en": "Label", "fr": "Labels" },
-    "impactanalysis": { "en": "Impact Analysis", "fr": "Analyse d'Impact" },
-    "testfolder": { "en": "Test Folder", "fr": "Dossiers de Test" },
+    "soon": {"en": "Available Soon", "fr": "Disponible prochainement"},
 
-    // === Section Data ===
-    "data": { "en": "Data", "fr": "Données" },
+    // === Section Automate ===
+    "automate": { "en": "Automate", "fr": "Automate" },
+    "quickstart": { "en": "Quick Start", "fr": "Démarrage Rapide" },
+    "import": { "en": "Import", "fr": "Import" },
+    "testdesigner": { "en": "Test Designer", "fr": "Test Designer" },
+
+    // === Section Maintain ===
+    "maintain": { "en": "Maintain", "fr": "Maintenance" },
+    "testcases": { "en": "TestCases", "fr": "Cas de Test" },
     "datalibrary": { "en": "Data Library", "fr": "Librairie de Données" },
-
-    // === Section Run ===
-    "run": { "en": "Run", "fr": "Exécution" },
-    "runtestcase": { "en": "Run Test Case", "fr": "Exécuter un Cas de Test" },
-    "robot": { "en": "Robot", "fr": "Robots" },
-    "campaign": { "en": "Campaign", "fr": "Campagnes" },
-    "executioninqueue": { "en": "Executions in queue", "fr": "Exécutions en Attente" },
-
-    // === Section Reporting ===
-    "reportingexecution": { "en": "Execution Report", "fr": "Rapports d’Exécution" },
-    "reportingexecutionlist": { "en": "Execution List", "fr": "Liste des Exécutions" },
-    "reportingmonitor": { "en": "Execution Monitor", "fr": "Moniteur d’Exécution" },
-    "reportingexecutionovertime": { "en": "Execution History", "fr": "Historique des Exécutions" },
-    "reportingexecutionbytag": { "en": "Campaign Execution Report", "fr": "Rapport de Campagne" },
-    "reportingcampaignovertime": { "en": "Campaign History", "fr": "Historique des Campagnes" },
-    "reportingcampaignstatistics": { "en": "Campaign Statistics", "fr": "Statistiques des Campagnes" },
-
-    // === Section Application ===
-    "application": { "en": "Application", "fr": "Application" },
-    "applicationlist": { "en": "Application", "fr": "Applications" },
     "applicationobjects": { "en": "Application Object", "fr": "Objets Applicatifs" },
     "appservice": { "en": "Service Library", "fr": "Bibliothèque de Services" },
-    "deploytype": { "en": "Deployment Type", "fr": "Types de Déploiement" },
+    "label": { "en": "Label & Tag", "fr": "Labels & Tags" },
+    "impactanalysis": { "en": "Impact Analysis", "fr": "Analyse d'Impact" },
 
-    // === Section Integration ===
-    "integration": { "en": "Integration", "fr": "Intégration" },
-    "integrationstatus": { "en": "Integration Status", "fr": "Statut des Intégrations" },
+    // === Section Execute ===
+    "execute": { "en": "Execute", "fr": "Exécution" },
+    "runtestcase": { "en": "Run Test Case", "fr": "Exécuter un Cas de Test" },
+    "scheduledrun": { "en": "Scheduled Runs", "fr": "Exécutions Planifiées" },
+    "robot": { "en": "Robot Management", "fr": "Robots" },
+    "campaign": { "en": "Campaign Management", "fr": "Campagnes" },
+    "executioninqueue": { "en": "Executions Queue", "fr": "Exécutions en Attente" },
+
+    // === Section Monitor ===
+    "monitor": { "en": "Monitor", "fr": "Supervision" },
+    "monitorautomate": { "en": "Monitor Automate", "fr": "Supervision Automate" },
+    "monitorrealtime": { "en": "Real-Time Monitor", "fr": "Supervision Temps-Réel" },
+    "monitorweb": { "en": "Web Monitor", "fr": "Supervision Web" },
+    "monitormobile": { "en": "Mobile Monitor", "fr": "Supervision Mobile" },
+    "monitorapi": { "en": "API Monitor", "fr": "Supervision API" },
+
+    // === Section Insights ===
+    "insights": { "en": "Insights", "fr": "Analyses" },
+    "automatescore": { "en": "Automate Score", "fr": "Automate Score" },
+    "missingroleas": { "en": "Please contact @in-value to enable that feature", "fr": "Contactez @in-value pour activer cette feature" },
+    "executionhistory": { "en": "Execution History", "fr": "Historique d'Exécutions" },
+    "executiontrends": { "en": "Execution Trends", "fr": "Statistiques des Exécutions" },
+    "campaignreport": { "en": "Campaign Report", "fr": "Rapport de Campagne" },
+    "campaignhistory": { "en": "Campaign History", "fr": "Historique des Campagnes" },
+    "campaigntrends": { "en": "Campaign Trends", "fr": "Statistiques des Campagnes" },
+
+    // === Section Settings ===
+    "settings": { "en": "Settings", "fr": "Configuration" },
+    "applicationlist": { "en": "Application", "fr": "Applications" },
     "environments": { "en": "Environment", "fr": "Environnements" },
-    "buildrevision": { "en": "Versioning Definition", "fr": "Définition des Versions" },
-    "buildcontent": { "en": "Build Content", "fr": "Contenu du Build" },
-    "batchinvariant": { "en": "Environment Events", "fr": "Événements Environnement" },
 
     // === Section Administration ===
     "admin": { "en": "Administration", "fr": "Administration" },

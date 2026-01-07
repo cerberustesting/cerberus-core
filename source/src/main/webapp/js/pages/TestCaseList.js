@@ -31,19 +31,9 @@ function initPage() {
     displayPageLabel();
     var table = loadTable();
 
-    // MASS ACTION
-    $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
-    $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
-    $("#massActionTestCaseButtonUpdate").click(massActionModalSaveHandler_update);
-    $("#massActionTestCaseButtonDelete").click(massActionModalSaveHandler_delete);
-
-    // MASS ACTION
-    $('#massActionTestCaseModal').on('hidden.bs.modal', massActionModalCloseHandler);
-    $('[data-toggle="tooltip"]').tooltip();
 
     initModalTestCase();
     $('#editTestCaseModal').data("initLabel", true);
-    initMassActionModal();
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -63,44 +53,6 @@ function initPage() {
 
 }
 
-function initMassActionModal() {
-    $("#massActionTestCaseModal #massStatus").prop("disabled", true);
-    $("#statusCheckbox").prop("checked", false);
-    $("#statusCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #massStatus").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #massStatus").prop("disabled", true);
-        }
-    });
-    $("#massActionTestCaseModal #massApplication").prop("disabled", true);
-    $("#applicationCheckbox").prop("checked", false);
-    $("#applicationCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #massApplication").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #massApplication").prop("disabled", true);
-        }
-    });
-    $("#massActionTestCaseModal #massPriority").prop("disabled", true);
-    $("#priorityCheckbox").prop("checked", false);
-    $("#priorityCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #massPriority").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #massPriority").prop("disabled", true);
-        }
-    });
-    $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
-    $("#executorCheckbox").prop("checked", false);
-    $("#executorCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #massExecutor").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #massExecutor").prop("disabled", true);
-        }
-    });
-}
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -170,37 +122,57 @@ function renderOptionsForTestCaseList(data) {
         // Bouton Create
         contentToAdd += `
             <button id='createTestCaseButton' type='button'
-                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded h-10 w-auto'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
                 ${disabledCreate}>
                 <span class='glyphicon glyphicon-plus-sign'></span>
                 <span>${doc.getDocLabel("page_testcaselist", "btn_create")}</span>
             </button>
         `;
 
-        // Bouton Export
-        contentToAdd += `
-            <button id='exportTestCaseButton' type='button'
-                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
-                <span class='glyphicon glyphicon-export'></span>
-                <span>${doc.getDocLabel("page_testcaselist", "btn_export")}</span>
-            </button>
-        `;
-
         // Bouton Import
         contentToAdd += `
             <button id='importTestCaseButton' type='button'
-                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
+                class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'>
                 <span class='glyphicon glyphicon-import'></span>
                 <span>${doc.getDocLabel("page_testcaselist", "btn_import")}</span>
             </button>
         `;
 
-        // Bouton Mass Action
+        // Bouton Export
         contentToAdd += `
-            <button id='createBrpMassButton' type='button'
-                class='flex items-center gap-2 px-3 py-2 rounded border border-gray-300 dark:border-gray-600 h-10'>
-                <span class='glyphicon glyphicon-th-list'></span>
-                <span>${doc.getDocLabel("page_global", "button_massAction")}</span>
+                        <button id='exportTestCaseButton' type='button'
+                            class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10' style="display:none;">
+                            <span class='glyphicon glyphicon-export'></span>
+                            <span>${doc.getDocLabel("page_testcaselist", "btn_export")}</span>
+                        </button>`;
+
+        // Bouton Mass Update
+                contentToAdd += `
+            <button id='massUpdateTestCaseButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
+                style="display:none;">
+                <span class='glyphicon glyphicon-edit'></span>
+                <span>Update</span>
+            </button>
+        `;
+
+        // Bouton Mass Label
+                contentToAdd += `
+            <button id='massLabelTestCaseButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
+                style="display:none;">
+                <span class='glyphicon glyphicon-tags'></span>
+                <span>Label</span>
+            </button>
+        `;
+
+        // Bouton Mass Delete
+                contentToAdd += `
+            <button id='massDeleteTestCaseButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-red-400 h-10'
+                style="display:none;">
+                <span class='glyphicon glyphicon-trash'></span>
+                <span>Delete</span>
             </button>
         `;
 
@@ -227,9 +199,31 @@ function renderOptionsForTestCaseList(data) {
             });
         }
 
+        $("#testCaseTable").on("change", "input[type=checkbox]", function() {
+            const anyChecked = $("#testCaseTable input[type=checkbox]:checked").length > 0;
+            $("#exportTestCaseButton, #createBrpMassButton").toggle(anyChecked);
+            $("#exportTestCaseButton, #massUpdateTestCaseButton").toggle(anyChecked);
+            $("#exportTestCaseButton, #massLabelTestCaseButton").toggle(anyChecked);
+            $("#exportTestCaseButton, #massDeleteTestCaseButton").toggle(anyChecked);
+        });
+        $("#massUpdateTestCaseButton").off("click").on("click", function () {
+            window.dispatchEvent(new CustomEvent('mass-update-open'));
+        });
+
+        $("#massLabelTestCaseButton").off("click").on("click", function () {
+            window.dispatchEvent(new CustomEvent('mass-label-open'));
+        });
+
+        $("#massDeleteTestCaseButton").off("click").on("click", function () {
+            deleteMassTestCases();
+        });
+
+        $("#importTestCaseButton").off("click").on("click", function () {
+            window.dispatchEvent(new CustomEvent('open-import-recording'));
+        });
+
+
         $("#exportTestCaseButton").off("click").on("click", exportTestCasesMenuClick);
-        $("#importTestCaseButton").off("click").on("click", importTestCasesMenuClick);
-        $("#createBrpMassButton").off("click").on("click", massActionClick);
     }
 }
 
@@ -392,137 +386,152 @@ function exportTestCasesMenuClick() {
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
     if (formList.serialize().indexOf("test-") === -1) {
-        var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_exportActionError"));
-        showMessage(localMessage, null);
+        notifyInPage("error", doc.getDocLabel("page_global", "message_exportActionError"));
     } else {
-        $("input[data-line=select]:checked").each(function (index, file) {
-            var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
-            var test = t.split("test=")[1].split("&testcase=")[0];
-            var testcase = t.split("test=")[1].split("&testcase=")[1];
+        $("input[data-line=select]:checked").each(function () {
 
-            var url = "./ExportTestCase?" + $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
-            let iframe = document.createElement('iframe');
-            iframe.style.visibility = 'collapse';
-            document.body.append(iframe);
+            const $checkbox = $(this);
+            const params = $(this).prop("name")
+                .replace(/test-/g, 'test=')
+                .replace(/testcase-/g, '&testcase=');
 
-            iframe.contentDocument.write(
-                    "<form action='" + url + "' method='GET'><input name='test' value='" + test + "'/><input name='testcase' value='" + testcase + "'/></form>"
-                    );
-            iframe.contentDocument.forms[0].submit();
+            const url = "./ExportTestCase?" + params;
 
-            setTimeout(() => iframe.remove(), 2000);
+            const link = document.createElement("a");
+            link.href = url;
+            link.style.display = "none";
+            link.download = ""; // important
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            $checkbox.prop("checked", false);
         });
-        var data = '{"messageType":"OK","message":"Export OK"}';
-        showMessage(JSON.parse(data));
-        $('#testCaseTable').DataTable().draw();
+        notifyInPage("success", "Export OK")
+        //$('#testCaseTable').DataTable().draw();
         $("#selectAll").prop("checked", false);
     }
 
 }
 
+/**
+ * Delete Mass TestCases
+ * @returns {Promise<void>}
+ */
+async function deleteMassTestCases() {
 
-function massActionModalSaveHandler_delete() {
-    clearResponseMessage($('#massActionTestCaseModal'));
+    try {
+        const doc = new Doc();
 
-    var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_testcase", "message_delete_all");
-    messageComplete += "</br></br>";
+        let messageHtml = doc.getDocLabel("page_testcase", "message_delete_all") + "<br><br>";
+        let count = 0;
 
-    $("input[data-line=select]:checked").each(function (index, file) {
-        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
-        var test = t.split("test=")[1].split("&testcase=")[0];
-        var testcase = t.split("test=")[1].split("&testcase=")[1];
-        messageComplete += (index + 1) + ': ' + test + " - " + testcase;
-        messageComplete += "</br>";
-    });
-    showModalConfirmation(deleteMassTestCase, undefined, "Delete", messageComplete);
+        $("input[data-line=select]:checked").each(function (index, file) {
+            const t = $(file).prop("name")
+                .replace(/test-/g, 'test=')
+                .replace(/testcase-/g, '&testcase=');
 
-}
+            const test = t.split("test=")[1].split("&testcase=")[0];
+            const testcase = t.split("test=")[1].split("&testcase=")[1];
 
-function deleteMassTestCase() {
-    var returnMessage = '{"messageType":"OK","message":"Delete OK"}';
+            messageHtml += `${index + 1} : ${test} - ${testcase}<br>`;
+            count++;
+        });
 
-    //Loop on TestCase Selected to delete them
-    $("input[data-line=select]:checked").each(function (index, file) {
-        var t = $(file).prop("name").replace(/test-/g, 'test=').replace(/testcase-/g, '&testCase=');
-        var url = "DeleteTestCase?" + t;
+        if (count === 0) {
+            notifyInPage("warning", doc.getDocLabel("page_global", "message_noselection"));
+            return;
+        }
 
-        $.ajax({
-            url: url,
-            async: true,
-            method: "GET",
-            success: function (data) {
-                data = JSON.parse(data);
-                if (getAlertType(data.messageType) !== "success") {
-                    returnMessage = data;
+        const result = await Swal.fire({
+            title: 'This action cannot be reverted',
+            html: messageHtml,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: doc.getDocLabel("page_global", "btn_delete"),
+            cancelButtonText: doc.getDocLabel("page_global", "buttonClose"),
+            confirmButtonColor: '#dc2626',
+            background: 'var(--crb-new-bg)',
+            color: 'var(--crb-black-color)',
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+
+            preConfirm: async () => {
+                const response = await deleteAllSelectedTestCase();
+                if (response.messageType !== 'success') {
+                    Swal.showValidationMessage(response.message);
                 }
-            },
-            error: function () {
-                returnMessage = '{"messageType":"KO","message":"Delete KO"}';
+                return response;
             }
         });
 
-    });
-    showMessage(JSON.parse(returnMessage));
+        if (result.isConfirmed && result.value?.messageType === 'success') {
 
-    $('#testCaseTable').DataTable().draw();
-    $("#selectAll").prop("checked", false);
-    $('#confirmationModal').modal('hide');
-    $('#massActionTestCaseModal').modal('hide');
+            const table = $('#testCaseTable').DataTable();
+            table.draw(false);
 
-}
-
-function massActionModalCloseHandler() {
-    // reset form values
-    $('#massActionTestCaseModal #massActionTestCaseModalFormUpdate')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#massActionTestCaseModal'));
-}
-
-function massActionClick() {
-    var doc = new Doc();
-    clearResponseMessageMainPage();
-
-    // When creating a new item, Define here the default value.
-    var formList = $('#massActionForm');
-    if (formList.serialize().indexOf("test-") === -1) {
-        var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
-        showMessage(localMessage, null);
-    } else {
-        // Title of the label list.
-        $("[name='labelMassField']").html("Labels from system : " + getUser().defaultSystem);
-
-        // Labels
-        loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
-
-        // Load Status.
-        $("[name='massStatus']").empty();
-        displayInvariantList("massStatus", "TCSTATUS", false);
-
-        // Load Applications.
-        $("[name='massApplication']").empty();
-        var jqxhr = $.getJSON("ReadApplication");
-        $.when(jqxhr).then(function (data) {
-            var applicationList = $("[name='massApplication']");
-
-            for (var index = 0; index < data.contentTable.length; index++) {
-                if (data.contentTable[index].system === getUser().defaultSystem) {
-                    applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application).val(data.contentTable[index].application));
-                } else {
-                    applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
-                }
+            if (table.data().length === 0) {
+                table.page('previous').draw(false);
             }
-        });
 
-        // Load Status.
-        $("[name='massPriority']").empty();
-        displayInvariantList("massPriority", "PRIORITY", false);
+            notifyInPage("success","TestCases successfully deleted");
+        }
 
-        $('#massActionTestCaseModal').modal('show');
+    } catch (e) {
+        console.error(e);
+        notifyInPage('error', `Unexpected error deleting test cases`);
     }
 }
+
+/**
+ * Delete All Testcases selected
+ * @returns {Promise<{messageType: string, message: string}|{messageType: string, message: string}|{messageType: string, message: string}>}
+ */
+async function deleteAllSelectedTestCase() {
+
+    const $checked = $("input[data-line=select]:checked");
+
+    if ($checked.length === 0) {
+        return {
+            messageType: 'error',
+            message: 'No test case selected'
+        };
+    }
+
+    const deletions = [];
+    let hasError = false;
+    let errorMessage = '';
+
+    $checked.each(function () {
+
+        const t = $(this).prop("name")
+            .replace(/test-/g, 'test=')
+            .replace(/testcase-/g, '&testCase=');
+
+        const url = "DeleteTestCase?" + t;
+
+        deletions.push(
+            fetch(url, { method: "GET" })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (getAlertType(data.messageType) !== "success") {
+                        hasError = true;
+                        errorMessage = data.message || 'Delete failed';
+                    }
+                })
+                .catch(() => {
+                    hasError = true;
+                    errorMessage = 'Delete failed';
+                })
+        );
+    });
+
+    await Promise.all(deletions);
+
+    return hasError ? { messageType: 'error', message: errorMessage } : { messageType: 'success', message: 'Delete OK' };
+}
+
 
 function importTestCasesMenuClick() {
     $("#importTestCaseButton").off("click");
@@ -856,6 +865,12 @@ function filterOnLabel(element) {
     $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
 }
 
+function filterOnField(element) {
+    var newTest = $(element).get(0).textContent.trim();
+    var colIndex = $(element).parent().get(0).cellIndex;
+    $("#testCaseTable").dataTable().fnFilter(newTest, colIndex);
+}
+
 function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
 
@@ -999,12 +1014,31 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "120px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj, full) {
-                if (full.row == 0) {
+
+                if (!data) {
+                    return '';
+                }
+
+                // Exemple : mémorisation sur la première ligne
+                if (full.row === 0) {
                     testAutomaticModal = oObj.test;
                 }
-                return oObj.test;
-            }
 
+                return `
+                    <button
+                        type="button"
+                        onclick="filterOnField(this)"
+                        class="inline-flex items-center px-3 py-1
+                            border border-slate-300 dark:border-slate-600 rounded-xl
+                            text-sm font-medium text-slate-700 dark:text-slate-200
+                            hover:border-blue-500 hover:text-blue-600
+                            transition cursor-pointer bg-transparent"
+                        title="Open test ${oObj.test}"
+                    >
+                        ${oObj.test}
+                    </button>
+                `;
+            }
         },
         {
             "data": "testcase",
@@ -1033,7 +1067,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function (data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                    labelValue += '<div class="mt-2" style="float:left"><span class="px-3 py-1 rounded-xl text-xs font-medium" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -1049,7 +1083,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "STICKER") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div class="mt-2" style="float:left"><span class="px-3 py-1 rounded-xl text-xs font-medium" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;
@@ -1067,7 +1101,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "REQUIREMENT") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div class="mt-2" style="float:left"><span class="px-3 py-1 rounded-xl text-xs font-medium" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;
@@ -1085,7 +1119,7 @@ function aoColumnsFunc(countries, tableId) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
                     if (e.type === "BATTERY") {
-                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
+                        labelValue += '<div class="mt-2" style="float:left"><span class="px-3 py-1 rounded-xl text-xs font-medium" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + ';color:' + e.fontColor + '" data-toggle="tooltip" title="' + e.description + '">' + e.label + '</span></div> ';
                     }
                 });
                 return labelValue;
@@ -1096,7 +1130,28 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.status",
             "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj, full) {
+
+                if (!data) {
+                    return '';
+                }
+
+                return `
+                    <button
+                        type="button"
+                        onclick="filterOnField(this)"
+                        class="inline-flex items-center px-3 py-1
+                            border border-slate-300 dark:border-slate-600 rounded-xl
+                            text-sm font-medium text-slate-700 dark:text-slate-200
+                            hover:border-blue-500 hover:text-blue-600
+                            transition cursor-pointer bg-transparent"
+                        title="Open test ${oObj.status}"
+                    >
+                        ${oObj.status}
+                    </button>
+                `;
+            }
         },
         {
             "data": "isActive",
