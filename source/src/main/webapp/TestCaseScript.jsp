@@ -45,7 +45,7 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <main class="crb_main" x-init="$store.sidebar.hidden = true">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>

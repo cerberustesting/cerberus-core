@@ -30,6 +30,7 @@ document.addEventListener('alpine:init', () => {
         hoverSubMenu: {automate:false, maintain:false, execute:false, monitor:false, insights:false, settings: false, admin: false, developer: false, help: false},
         showSubMenu: {automate:false, maintain:false, execute:false, monitor:false, insights:false, settings: false, admin: false, developer: false, help: false},
         hoverPos: null,
+        hidden: false,
 
         toggleSidebar() {
             this.expanded = !this.expanded;
@@ -81,18 +82,22 @@ document.addEventListener('alpine:init', () => {
 
 
         handleEnter() {
-            this.hover = true
-            if (!this.expanded) {
-                this.hoverTimeout = setTimeout(() => {
-                    if (this.hover) this.showLogo = false
-                }, 1000) // délai 1s
+            if (!this.hidden) {
+                this.hover = true
+                if (!this.expanded) {
+                    this.hoverTimeout = setTimeout(() => {
+                        if (this.hover) this.showLogo = false
+                    }, 1000) // délai 1s
+                }
             }
         },
 
         handleLeave() {
-            this.hover = false
-            this.showLogo = true
-            if (this.hoverTimeout) clearTimeout(this.hoverTimeout)
+            if (!this.hidden) {
+                this.hover = false
+                this.showLogo = true
+                if (this.hoverTimeout) clearTimeout(this.hoverTimeout)
+            }
         }
     });
 

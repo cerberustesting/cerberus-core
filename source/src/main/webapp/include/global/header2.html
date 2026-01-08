@@ -2,7 +2,8 @@
 <aside class="crb_sidebar"
        :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
        @mouseenter="$store.sidebar.handleEnter()"
-       @mouseleave="$store.sidebar.handleLeave()">
+       @mouseleave="$store.sidebar.handleLeave()"
+       x-show="!$store.sidebar.hidden">
 
     <!-- Logo & Header -->
     <div class="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -257,7 +258,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.maintain"
                          :style="$store.sidebar.showSubMenu.maintain ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('maintain')"
                          @mouseleave="$store.sidebar.leaveSubMenu('maintain')"
                          x-ref="maintainMenuTeleport"
@@ -341,7 +342,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.execute"
                          :style="$store.sidebar.showSubMenu.execute ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('execute')"
                          @mouseleave="$store.sidebar.leaveSubMenu('execute')"
                          x-ref="executeMenuTeleport"
@@ -413,7 +414,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.monitor"
                          :style="$store.sidebar.showSubMenu.monitor ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('monitor')"
                          @mouseleave="$store.sidebar.leaveSubMenu('monitor')"
                          x-ref="monitorMenuTeleport"
@@ -491,7 +492,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.insights"
                          :style="$store.sidebar.showSubMenu.insights ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('insights')"
                          @mouseleave="$store.sidebar.leaveSubMenu('insights')"
                          x-ref="insightsMenuTeleport"
@@ -586,7 +587,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.settings"
                          :style="$store.sidebar.showSubMenu.settings ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('settings')"
                          @mouseleave="$store.sidebar.leaveSubMenu('settings')"
                          x-ref="settingsMenuTeleport"
@@ -644,7 +645,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.admin"
                          :style="$store.sidebar.showSubMenu.admin ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('admin')"
                          @mouseleave="$store.sidebar.leaveSubMenu('admin')"
                          x-ref="adminMenuTeleport"
@@ -718,7 +719,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.developer"
                          :style="$store.sidebar.showSubMenu.developer ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('developer')"
                          @mouseleave="$store.sidebar.leaveSubMenu('developer')"
                          x-ref="devMenuTeleport"
@@ -771,7 +772,7 @@
                     <div x-cloak x-transition.opacity.duration.300ms
                          x-show="!$store.sidebar.expanded && $store.sidebar.showSubMenu.help"
                          :style="$store.sidebar.showSubMenu.help ? 'position: fixed; top:' + $store.sidebar.hoverPos.top + 'px; left:5rem;' : 'display:none'"
-                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem]"
+                         class="crb_submenu bg-slate-800 rounded-lg shadow-lg p-2 space-y-1 min-w-[12rem] border border-slate-600"
                          @mouseenter="$store.sidebar.enterSubMenu('help')"
                          @mouseleave="$store.sidebar.leaveSubMenu('help')"
                          x-ref="helpMenuTeleport"
