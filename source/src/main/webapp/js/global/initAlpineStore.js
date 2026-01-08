@@ -96,6 +96,18 @@ document.addEventListener('alpine:init', () => {
         }
     });
 
+    Alpine.store('branding', window.__CERBERUS_BRANDING__ || {
+        appName: 'Cerberus',
+        showAppName: true,
+        logo: {
+            expanded: 'images/Logo-cerberus_menu.png',
+            collapsed: 'images/Logo-cerberus_menu.png'
+        },
+        size: {
+            expanded: { width: 40, height: 40 },
+            collapsed: { width: 40, height: 40 }
+        }
+    });
 
     Alpine.store('user', {
         data: JSON.parse(sessionStorage.getItem('user')) || {},
