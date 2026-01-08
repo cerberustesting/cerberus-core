@@ -28,7 +28,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 
         var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
-        var table = createDataTableWithPermissions(config, renderOptionsForTest, "#testList", undefined, true);
+        var table = createDataTableWithPermissionsNew(config, renderOptionsForTest, "#testList", undefined, true);
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
@@ -68,10 +68,25 @@ function renderOptionsForTest(data) {
 
     if (data["hasPermissions"]) {
         if ($("#createTestButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_test", "btn_create") + "</button></div>";
+            var contentToAdd = "";
+            // Bouton Create
+            contentToAdd += `
+            <button id='createTestButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
+                <span class='glyphicon glyphicon-plus-sign'></span>
+                <span>${doc.getDocLabel("page_test", "btn_create")}</span>
+            </button>
+            `;
 
-            $("#testTable_wrapper div#testTable_length").before(contentToAdd);
+            var $wrapper = $("#testTable_buttonWrapper");
+            if ($wrapper.length) {
+                // Ajoute le bouton au **début** du wrapper
+                $wrapper.append(contentToAdd);
+            } else {
+                // fallback si le wrapper n’existe pas encore
+                console.warn("Wrapper #testTable_buttonWrapper introuvable, insertion avant length");
+                $("#testTable_wrapper div#testTable_length").before("<div id='testTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            }
             $('#testList #createTestButton').click(addEntryClick);
         }
     }

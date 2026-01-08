@@ -129,6 +129,16 @@ function renderOptionsForTestCaseList(data) {
             </button>
         `;
 
+        // Bouton TestFolder
+        contentToAdd += `
+            <button id='testFolderButton' type='button'
+                class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
+                onclick="window.location.href='Test.jsp'">
+                <span class='glyphicon glyphicon-folder-close'></span>
+                <span>Manage Test Folder</span>
+            </button>
+        `;
+
         // Bouton Import
         contentToAdd += `
             <button id='importTestCaseButton' type='button'

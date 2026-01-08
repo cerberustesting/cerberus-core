@@ -145,7 +145,7 @@
 
                 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
                 const host = window.location.host;
-                const pageName = document.querySelector('meta[name="active-submenu"]')?.content;
+                const pageName = document.querySelector('meta[name="active-page"]')?.content;
                 const fullPath = window.location.pathname;
                 const context = pageName ? fullPath.replace("/" + pageName, "") : "";
 

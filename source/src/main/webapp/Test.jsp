@@ -29,8 +29,9 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="test">
-        <meta name="active-submenu" content="Test.jsp">
+        <meta name="active-menu" content="maintain">
+        <meta name="active-submenu" content="TestCaseList.jsp">
+        <meta name="active-page" content="Test.jsp">
         <meta name="page" content="Test Folder">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
@@ -45,8 +46,16 @@
             <%@ include file="include/pages/test/editTest.html" %>
             <%@ include file="include/pages/test/addTest.html" %>
 
+            <div class="mb-4">
+                <button id='backToTestCaseListButton' type='button'
+                    class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
+                    onclick="window.location.href='TestCaseList.jsp'">
+                    <span class='glyphicon glyphicon-arrow-left'></span>
+                    <span>Back to TestCase List</span>
+                </button>
+            </div>
             <h1 class="page-title-line" id="title">Test</h1>
-            <div class="crb_card">
+            <div class="">
                 <div id="testList">
                     <table id="testTable" class="table table-hover display" name="testTable">
                     </table>
