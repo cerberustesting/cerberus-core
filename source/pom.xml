@@ -859,6 +859,7 @@
                     <excludes>
                         <exclude>src/main/webapp/dependencies/**</exclude>
                         <exclude>src/main/webapp/css/tailwind/**</exclude>
+                        <exclude>src/main/webapp/include/**</exclude>
                         <exclude>localdata/**</exclude>
                         <exclude>nb-configuration.xml</exclude>
                     </excludes>
