@@ -46,15 +46,23 @@
             <%@ include file="include/pages/test/editTest.html" %>
             <%@ include file="include/pages/test/addTest.html" %>
 
-            <div class="mb-4">
-                <button id='backToTestCaseListButton' type='button'
-                    class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
-                    onclick="window.location.href='TestCaseList.jsp'">
-                    <span class='glyphicon glyphicon-arrow-left'></span>
-                    <span>Back to TestCase List</span>
+            <div class="flex gap-3">
+                <button id="backToTestCaseListButton" type="button"
+                    onclick="window.location.href='TestCaseList.jsp'"
+                    class="inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
+                           hover:bg-gray-200 dark:hover:bg-gray-700
+                           focus-visible:outline-none focus-visible:ring-2
+                           focus-visible:ring-sky-500 focus-visible:ring-offset-2">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M19 12H5"></path>
+                    </svg>
                 </button>
+
+                <h1 id="title" class="page-title-line">Test Folder</h1>
             </div>
-            <h1 class="page-title-line" id="title">Test</h1>
             <div class="">
                 <div id="testList">
                     <table id="testTable" class="table table-hover display" name="testTable">

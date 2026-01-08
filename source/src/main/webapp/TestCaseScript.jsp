@@ -23,8 +23,9 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="test">
-        <meta name="active-submenu" content="TestCaseScript.jsp">
+        <meta name="active-menu" content="maintain">
+        <meta name="active-submenu" content="TestCaseList.jsp">
+        <meta name="active-page" content="TestCaseScript.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Case</title>
@@ -61,7 +62,25 @@
             <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
             <%@ include file="include/utils/modal-generic.html"%>
 
-            <h1 class="page-title-line">Test Case Script</h1>
+            <div class="flex gap-3">
+                <button id="backToTestCaseListButton" type="button"
+                    onclick="window.location.href='TestCaseList.jsp'"
+                    class="inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
+                           hover:bg-gray-200 dark:hover:bg-gray-700
+                           focus-visible:outline-none focus-visible:ring-2
+                           focus-visible:ring-sky-500 focus-visible:ring-offset-2">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                        <path d="m12 19-7-7 7-7"></path>
+                        <path d="M19 12H5"></path>
+                    </svg>
+                </button>
+
+                <h1 class="page-title-line">Test Case Script</h1>
+            </div>
+
             <div>
                 <div>
                     <div id="divPanelDefault">
@@ -253,6 +272,7 @@
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>
             </footer>
+            <jsp:include page="include/global/aiBottomBar.html"/>
         </main>
     </body>
 </html>
