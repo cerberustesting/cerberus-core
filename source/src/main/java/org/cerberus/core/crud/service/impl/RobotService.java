@@ -118,11 +118,16 @@ public class RobotService implements IRobotService {
     @Override
     public AnswerList<Robot> readByCriteria(boolean withCapabilities, boolean withExecutors, int startPosition, int length, String columnName, String sort,
             String searchParameter, Map<String, List<String>> individualSearch) {
+        AnswerList<Robot> resultRobotList;
+        resultRobotList = robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
         if (withCapabilities) {
-            return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch));
-        } else {
-            return robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+            resultRobotList = fillCapabilities(resultRobotList);
         }
+        if (withExecutors) {
+            resultRobotList = fillExecutors(resultRobotList);
+        }
+
+        return resultRobotList;
     }
 
     @Override
@@ -241,6 +246,20 @@ public class RobotService implements IRobotService {
             robotItem.setExecutors(robotExecutorService.convert(robotExecutorService.readByRobot(robotItem.getRobot())));
         }
         return robotItem;
+    }
+
+    private AnswerList<Robot> fillExecutors(AnswerList<Robot> robotList) {
+        try {
+            List<Robot> robots = convert(robotList);
+            if (robots != null) {
+                for (Robot robot : robots) {
+                    robot.setExecutors(robotExecutorService.convert(robotExecutorService.readByRobot(robot.getRobot())));
+                }
+            }
+        } catch (CerberusException e) {
+            LOGGER.warn("Unable to fill robot executors due to " + e.getMessage());
+        }
+        return robotList;
     }
 
     private AnswerItem<Robot> fillCapabilities(AnswerItem<Robot> robotItem) {

@@ -1,6 +1,6 @@
 <!-- AI Assistant Bottom Bar -->
 <div x-data="aiAssistant()"
-     :style="`right:0;left: ${$store.sidebar.expanded ? '18rem' : '5rem'}`"
+     :style="`right:0;left: ${$store.sidebar.hidden ? '0' : $store.sidebar.expanded ? '18rem' : '5rem'}`"
      class="fixed bottom-0 z-50 transition-all duration-300">
 
     <!-- Toggle Button (when closed) -->

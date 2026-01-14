@@ -37,14 +37,31 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("robotsTable", "./api/robots/read", "contentTable", aoColumnsFunc("robotsTable"), [2, 'asc']);
 
-    createDataTableWithPermissions(configurations, renderOptionsForRobot, "#robotList", undefined, true);
+    var table = createDataTableWithPermissionsNew(configurations, renderOptionsForRobot, "#robotList", undefined, true);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
         'container': 'body'}
     );
+
+    $('#robotsTable tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass('shown');
+        } else {
+            row.child(formatExecutors(row.data())).show();
+            tr.addClass('shown');
+        }
+
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
 }
 
 function displayPageLabel() {
@@ -63,10 +80,26 @@ function renderOptionsForRobot(data) {
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createRobotButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
+            var contentToAdd = "";
 
-            $("#robotsTable_wrapper #robotsTable_length").before(contentToAdd);
+            // Bouton Create
+            contentToAdd += `
+            <button id='createRobotButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
+                <span class='glyphicon glyphicon-plus-sign'></span>
+                <span>${doc.getDocLabel("page_robot", "button_create")}</span>
+            </button>
+            `;
+
+            var $wrapper = $("#robotsTable_buttonWrapper");
+            if ($wrapper.length) {
+                // Ajoute le bouton au **début** du wrapper
+                $wrapper.append(contentToAdd);
+            } else {
+                // fallback si le wrapper n’existe pas encore
+                console.warn("Wrapper #robotsTable_buttonWrapper introuvable, insertion avant length");
+                $("#robotsTable_wrapper div#testTable_length").before("<div id='robotsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            }
             $("#robotList #createRobotButton").off("click");
             $("#robotList #createRobotButton").click(function () {
                 openModalRobot(undefined, "ADD");
@@ -121,68 +154,201 @@ function aoColumnsFunc(tableId) {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": null,
+        {
+            "className": "details-control",
+            "orderable": false,
+            "data": null,
+            "defaultContent": `<i data-lucide="chevron-right" class="executor-chevron"></i>`,
+            "width": "30px",
+            "bSortable": false,
+            "bSearchable": false
+        },
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
-            "sWidth": "90px",
+            "sWidth": "120px",
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editEntry = '<button id="editEntry" onclick="openModalRobot(\'' + obj["robot"] + '\',\'EDIT\');"\n\
-                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="openModalRobot(\'' + obj["robot"] + '\',\'EDIT\');"\n\
-                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var duplicateEntry = '<button id="editEntry" onclick="openModalRobot(\'' + obj["robot"] + '\',\'DUPLICATE\');"\n\
-                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="editEntry" title="' + doc.getDocLabel("page_robot", "button_duplicate") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
-                                    class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-trash"></span></button>';
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editEntry + duplicateEntry + deleteEntry + '</div>';
+
+                const hasPermissions = $("#" + tableId).attr("hasPermissions") === "true";
+
+                const baseBtnClass = "inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors " +
+                "hover:bg-teal-500 hover:text-white focus:ring-2 focus:ring-teal-500 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, extraClass = "" }) {
+                    return `
+                        <button
+                            id="${id}" name="${name}"
+                            type="button" class="${baseBtnClass} ${extraClass}"
+                            title="${title}" onclick="${onClick}">
+                            ${icon}
+                        </button>
+                    `;
                 }
-                return '<div class="center btn-group width150">' + viewEntry + '</div>';
+
+                const icons = {
+                    edit: `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil">
+                            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
+                            <path d="m15 5 4 4"></path>
+                        </svg>
+                    `,
+                    view: `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye">
+                            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    `,
+                    duplicate: `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy">
+                            <rect width="14" height="14" x="8" y="8" rx="2"></rect>
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                        </svg>
+                    `,
+                    delete: `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                        </svg>
+                    `
+                };
+
+                let buttons = [];
+
+                if (hasPermissions) {
+                    buttons.push(
+                        actionButton({
+                            id: `editEntry${obj.robotID}`,
+                            name: "editEntry",
+                            title: doc.getDocLabel("page_robot", "button_edit"),
+                            onClick: `openModalRobot('${obj.robot}','EDIT')`,
+                            icon: icons.edit
+                        }),
+                        actionButton({
+                            id: `duplicateEntry${obj.robotID}`,
+                            name: "duplicateEntry",
+                            title: doc.getDocLabel("page_robot", "button_duplicate"),
+                            onClick: `openModalRobot('${obj.robot}','DUPLICATE')`,
+                            icon: icons.duplicate
+                        }),
+                        actionButton({
+                            id: `deleteEntry${obj.robotID}`,
+                            name: "deleteEntry",
+                            title: doc.getDocLabel("page_robot", "button_delete"),
+                            onClick: `deleteEntryClick('${obj.robotID}','${obj.robot}')`,
+                            icon: icons.delete,
+                            extraClass: "text-destructive hover:text-destructive"
+                        })
+                    );
+                } else {
+                    buttons.push(
+                        actionButton({
+                            id: `viewEntry${obj.robotID}`,
+                            name: "viewEntry",
+                            title: doc.getDocLabel("page_robot", "button_view"),
+                            onClick: `openModalRobot('${obj.robot}','EDIT')`,
+                            icon: icons.view
+                        })
+                    );
+                }
+
+                return `<div class="flex items-center gap-1 justify-center">${buttons.join("")}</div>`;
             }
         },
-        {"data": "robot",
-            "sName": "robot",
-            "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "robot")},
+        {
+            "data": "robot",
+            "sWidth": "200px",
+            "className": "font-mono",
+            "title": "Robot",
+            "mRender": function (data, type, obj) {
+                return data;
+            }
+        },
         {"data": "type",
             "sName": "type",
             "visible": false,
             "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "type")},
+            "title": "type"
+        },
         {"data": "platform",
             "sName": "platform",
-            "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "platform"),
+            "sWidth": "70px",
+            "title": "platform",
+            "className": "text-center",
             "mRender": function (data, type, obj) {
-                return $("<div></div>")
-                        .append($("<img style='height:30px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.platform).attr('src', './images/platform-' + obj.platform + '.png'))
-                        .append($("<span></span>").text(" " + obj.platform))
-                        .html();
+                return `
+            <div class="flex flex-col items-center justify-center gap-1">
+                <img src="./images/platform-${obj.platform}.png"
+                    class="h-5" alt="${obj.platform}"/>
+                <span class="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    ${obj.platform}
+                </span>
+            </div>
+        `;
             }
         },
-        {"data": "browser",
+        {
+            "data": "browser",
             "sName": "browser",
-            "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "browser"),
+            "sWidth": "70px",
+            "title": "browser",
+            "className": "text-center",
             "mRender": function (data, type, obj) {
-                if (obj.browser !== "") {
-                    return $("<div></div>")
-                            .append($("<img style='height:30px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.browser).attr('src', './images/browser-' + obj.browser + '.png'))
-                            .append($("<span></span>").text(" " + obj.browser))
-                            .html();
-                } else {
+                if (!obj.browser) {
                     return "";
                 }
+
+                return `
+                    <div class="flex flex-col items-center justify-center gap-1">
+                        <img
+                            src="./images/browser-${obj.browser}.png"
+                            class="h-5"
+                            alt="${obj.browser}"
+                        />
+                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            ${obj.browser}
+                        </span>
+                    </div>
+                `;
+            }
+        },
+        {
+            "data": null,
+            "title": "Executors",
+            "orderable": false,
+            "mRender": function (data, type, obj) {
+
+                var total = obj.executors?.length || 0;
+                var running = obj.executors?.filter(e => e.isActive).length || 0;
+                var percent = total > 0 ? Math.round((running / total) * 100) : 0;
+
+                var statusClass = running > 0 ? "active" : "idle";
+
+                return `
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+                <div class="status-indicator ${statusClass}"></div>
+                <span class="font-mono text-sm">
+                    <span class="text-success font-semibold">${running}</span>
+                    <span class="text-gray-500"> / ${total}</span>
+                </span>
+            </div>
+
+            <div class="w-16 h-1.5 bg-gray-300 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-teal-500 to-green-500
+                            rounded-full transition-all duration-500"
+                     style="width: ${percent}%;">
+                </div>
+            </div>
+        </div>`;
             }
         },
         {"data": "version",
@@ -190,10 +356,35 @@ function aoColumnsFunc(tableId) {
             "visible": false,
             "sWidth": "50px",
             "title": doc.getDocOnline("robot", "version")},
-        {"data": "isActive",
+        {
+            "data": "isActive",
             "sName": "isActive",
-            "sWidth": "30px",
-            "title": doc.getDocOnline("robot", "active")},
+            "sWidth": "50px",
+            "title": "Active",
+            "orderable": true,
+            "mRender": function (data, type) {
+
+                if (type !== 'display') {
+                    return data;
+                }
+
+                if (data === true) {
+                    return `
+                        <span class="inline-flex items-center rounded-full border px-2.5 py-0.5
+                                     text-xs font-semibold transition-colors
+                                     border-transparent bg-teal-500 text-teal-900
+                                     hover:bg-teal-500/80">Active
+                        </span>`;
+                }
+                return `
+                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5
+                                 text-xs font-semibold transition-colors
+                                 border-transparent bg-slate-500 text-slate-900
+                                 hover:bg-slate-500/80">
+                        Inactive
+                    </span>`;
+            }
+        },
         {"data": "userAgent",
             "sName": "userAgent",
             "visible": false,
@@ -216,8 +407,71 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("robot", "lbexemethod")},
         {"data": "description",
             "sName": "description",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("robot", "description")}
+            "sWidth": "280px",
+            "title": "Description"}
     ];
     return aoColumns;
 }
+
+function formatExecutors(robot) {
+
+    if (!robot.executors || robot.executors.length === 0) {
+        return `<div class="p-4 text-sm text-gray-500">No executor</div>`;
+    }
+
+    let html = `
+        <div class="p-4 pl-12">
+            <h4 class="text-sm font-medium mb-3 text-gray-500">
+                Executors (${robot.executors.length})
+            </h4>
+            <div class="grid gap-2">
+    `;
+
+    robot.executors.forEach(function (exe) {
+
+        const isActive = exe.isActive === true;
+        const status = isActive ? "running" : "stopped";
+
+        html += `
+            <div class="flex items-center justify-between p-3 rounded-lg
+                        bg-card/50 border border-border/50">
+
+                <div class="flex items-center gap-4">
+
+                    <!-- Status dot -->
+                    <div class="w-2.5 h-2.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-muted"}"></div>
+
+                    <!-- Host -->
+                    <span class="font-mono text-sm">${exe.host}:${exe.port}</span>
+
+                    <!-- Status badge -->
+                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize
+                        ${isActive ? "bg-teal-500 text-teal-900" : "border"}">
+                        ${status}
+                    </span>
+                </div>
+
+                <!-- VNC button -->
+                <button class="vnc-button inline-flex items-center gap-1.5 text-sm
+                           ${isActive ? "" : "opacity-50 cursor-not-allowed"}" type="button" style="display:none"
+                    ${isActive ? `onclick="openVNC('${exe.host}','${exe.port}')"` : "disabled"}>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="lucide lucide-monitor w-3.5 h-3.5">
+                        <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+                        <line x1="8" x2="16" y1="21" y2="21"></line>
+                        <line x1="12" x2="12" y1="17" y2="21"></line>
+                    </svg>VNC
+                </button>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+

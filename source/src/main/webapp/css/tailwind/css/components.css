@@ -10,11 +10,23 @@
         @apply rounded-2xl p-6 mb-10;
     }
 
+    .crb_card:hover {
+        background: var(--crb-new-bg);
+
+        @apply rounded-2xl p-6 mb-10 border border-sky-500/30;
+    }
+
     .crb_card_tag {
         background: var(--crb-new-bg);
         border: 1px solid var(--crb-new-border);
 
         @apply rounded-2xl p-6;
+    }
+
+    .crb_card_tag {
+        background: var(--crb-new-bg);
+
+        @apply rounded-2xl p-6 border border-sky-500/30;
     }
 
 

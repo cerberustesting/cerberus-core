@@ -153,7 +153,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                         //sets the permissions in the table
                         tabCheckPermissions.attr("hasPermissions", hasPermissions);
                     }
-                    returnMessageHandler(json);
+                    //returnMessageHandler(json);
                     fnCallback(json);
                     if (Boolean(userCallbackFunction)) {
                         userCallbackFunction(json);

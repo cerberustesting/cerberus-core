@@ -30,6 +30,38 @@
     <script type="text/javascript" src="js/pages/RobotList.js"></script>
     <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
     <title id="pageTitle">Robot</title>
+    <style>
+        td.details-control {
+            cursor: pointer;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .executor-chevron {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        tr.shown .executor-chevron {
+            transform: rotate(90deg);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 9999px;
+            background-color: var(--color-blue-500);
+        }
+
+        .status-indicator.active {
+            background-color: var(--color-green-500);
+        }
+
+        .status-indicator.idle {
+            background-color: var(--color-blue-100);
+        }
+    </style>
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
@@ -39,7 +71,7 @@
         <%@ include file="include/transversalobject/Robot.html"%>
 
         <h1 class="page-title-line" id="title">Robot</h1>
-        <div class="crb_card">
+        <div class="">
             <div id="robotList">
                 <table id="robotsTable" class="table table-hover display" name="robotsTable">
                 </table>

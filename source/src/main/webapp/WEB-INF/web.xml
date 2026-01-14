@@ -619,6 +619,7 @@
             <url-pattern>/GetExecutionsInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
+            <url-pattern>/api/robots/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

@@ -32,12 +32,13 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html class="crb_html">
+<html class="crb_html dark">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type='text/javascript' src='js/pages/Login.js'></script>
         <script type='text/javascript' src='js/global/global.js'></script>
+        <script src="dependencies/Tsparticles-2.12.0/tsparticles.min.js"></script>
         <title>Login</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -74,6 +75,8 @@
 
 
         <div class="w-full min-h-screen flex items-center justify-center crb_main">
+            <div id="tsparticles" class="absolute inset-0 z-0 pointer-events-none"></div>
+            <div class="relative z-10 flex items-center justify-center w-full">
             <div class="crb_card w-1/2 p-6">
 
                 <!-- Messages Area -->
@@ -86,8 +89,8 @@
 
                     <!-- Logo -->
                     <div class="md:w-1/2 flex justify-center items-center">
-                        <img src="images/Logo-cerberus_login.png" class="logo-login" :class="$store.user.theme === 'light' ? 'block' : 'hidden'" alt="Cerberus Logo">
-                        <img src="images/Logo-cerberus_menu.png" class="logo-login" :class="$store.user.theme === 'dark' ? 'block' : 'hidden'" alt="Cerberus Logo">
+                        <!--<img src="images/Logo-cerberus_login.png" class="logo-login" :class="$store.user.theme === 'light' ? 'block' : 'hidden'" alt="Cerberus Logo">-->
+                        <img src="images/Logo-cerberus_menu.png" class="logo-login" alt="Cerberus Logo">
                     </div>
 
                     <!-- Form Section -->
@@ -167,9 +170,57 @@
                 </div>
 
             </div>
+            </div>
         </div>
 
     </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            tsParticles.load("tsparticles", {
+                fullScreen: {
+                    enable: false
+                },
+                background: {
+                    color: {
+                        value: "transparent"
+                    }
+                },
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            area: 900
+                        }
+                    },
+                    color: {
+                        value: "#3b82f6"
+                    },
+                    links: {
+                        enable: true,
+                        distance: 140,
+                        color: "#3b82f6",
+                        opacity: 0.35,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 0.4,
+                        outModes: {
+                            default: "bounce"
+                        }
+                    },
+                    size: {
+                        value: 2
+                    },
+                    opacity: {
+                        value: 0.8
+                    }
+                },
+                detectRetina: true
+            });
+        });
+    </script>
 </html>
 <%
     } catch (Exception ex) {

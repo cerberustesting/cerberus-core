@@ -199,27 +199,25 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     var filteredInformation = [];
 
     // Conteneur principal des filtres (global + colonne)
-        filteredInformation.push(`
-    <div class="flex flex-col gap-2 mt-2 w-full">
-        <!-- Ligne label + clear -->
-        <div class="flex items-center gap-2">
-            <span class="font-semibold">Filters :</span>
+    filteredInformation.push(`
+        <div class="flex flex-wrap items-center gap-2 mt-2 w-full">
+            <!-- Label Filtered by -->
+            <span class="font-semibold text-gray-600 dark:text-gray-300">Filtered by:</span>
+        
+            <!-- Filtres individuels -->
+            ${table.search() !== "" ? `
+            <span class="inline-flex items-center px-3 h-8 border border-gray-200 dark:border-gray-700 rounded-full text-sm truncate" title="${table.search()}">
+                [ ${table.search()} ]
+            </span>` : ""}
+            %WRAPPER%
+        
+            <!-- Clear Filter à la fin -->
             <span id="clearFilterButtonGlobal"
-                    class="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs">
-                (Clear Filters)
+                  class="ml-auto font-semibold text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 text-xs">
+                Clear Filters
             </span>
         </div>
-        
-        <!-- Ligne des filtres individuels (inline-flex pour rester sur la même ligne si possible) -->
-        <div id="filtersContainer" class="flex flex-wrap gap-2">
-            <!-- Search global -->
-            ${table.search() !== "" ? `
-            <div class="inline-flex items-center bg-slate-100 dark:bg-slate-700 rounded-full px-3 h-8">
-                <span class="truncate" title="${table.search()}">[ ${table.search()} ]</span>
-            </div>` : ""}
-        </div>
-    </div>
-    `);
+        `);
 
     //Get the column name in the right order TODO check if it's correct
     var orderedColumns = [];
@@ -255,7 +253,9 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
     var allcolumnSearchValues = new Object();
 
+
     //Iterate on all columns
+    var filteredInformationWrapper = [];
     $.each(orderedColumns, function (index, value) {
         var columnSearchValues;
         var json_obj = JSON.stringify(table.ajax.params());
@@ -310,24 +310,26 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             filteredColumnInformation.pop();
             filteredTooltip += '</div>';
 
-            filteredInformation.push(`
-                <div class="mb-1 h-8 rounded-full bg-slate-100 dark:bg-slate-700 inline-flex items-center px-3">
+            filteredInformationWrapper.push(`
+                <div class="h-8 inline-flex items-center px-3 border border-gray-200 dark:border-gray-700 rounded-full">
+                    <div class="truncate whitespace-nowrap overflow-hidden inline-flex items-center space-x-1">
+                        ${oSettings.aoColumns[index].like
+                                ? `<strong>${title}</strong><span> LIKE </span>`
+                                : `<strong>${title}</strong><span> IN </span>`}
+                        <span data-tooltip-target="tooltip_filteredValues${index}" 
+                              data-html="true" 
+                              title="${filteredTooltip}" 
+                              id="alertFilteredValues${index}">
+                            [ ${filteredColumnInformation} ]
+                        </span>
+                    </div>
                     <span id="clearFilterButton${index}" 
                           onclick='${fctClearIndividualFilter}("${tableId}", "${index}", false)'
                           data-tooltip-target="tooltip_clearFilter${index}" 
                           title="Clear filter ${title}" 
-                          class="ml-auto cursor-pointer text-blue-600 dark:text-blue-200 hover:text-blue-800">
+                          class="ml-2 cursor-pointer text-blue-600 dark:text-blue-200 hover:text-blue-800">
                           ✕
                     </span>
-                    <div class="truncate whitespace-nowrap overflow-hidden ml-2 inline-flex items-center space-x-1">
-                        ${oSettings.aoColumns[index].like ? `<strong>${title}</strong><span> LIKE </span>` : `<strong>${title}</strong><span> IN </span>`}
-                        <span data-tooltip-target="tooltip_filteredValues${index}" 
-                             data-html="true" 
-                             title="${filteredTooltip}" 
-                             id="alertFilteredValues${index}">
-                            [ ${filteredColumnInformation} ]
-                        </span>
-                    </div>
                 </div>
                 `);
 
@@ -459,13 +461,14 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             }
             columnVisibleIndex++;
         }
-    }); // end of loop on columns
-
+    });// end of loop on columns
+    var filteredWrapperHtml = filteredInformationWrapper.join('');
+    filteredInformation[0] = filteredInformation[0].replace('%WRAPPER%', filteredWrapperHtml);
 
     //Display the filtered alert message only if search is activated in at least 1 column
     //filteredInformation.pop();
     var focusOnNextSearchInputBool = false;
-    if (filteredInformation.length > 1) {
+    if (table.search() !== "" || filteredInformationWrapper.length > 0) {
 
         var filteredStringToDisplay = "";
         for (var l = 0; l < filteredInformation.length; l++) {
