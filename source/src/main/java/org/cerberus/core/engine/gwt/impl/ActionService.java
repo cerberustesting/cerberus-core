@@ -1254,7 +1254,7 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
+                    return androidAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                         return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -1265,10 +1265,12 @@ public class ActionService implements IActionService {
                         return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, false);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                    return androidAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                    return iosAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");

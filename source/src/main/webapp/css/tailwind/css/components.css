@@ -23,7 +23,7 @@
         @apply rounded-2xl p-6;
     }
 
-    .crb_card_tag {
+    .crb_card_tag:hover {
         background: var(--crb-new-bg);
 
         @apply rounded-2xl p-6 border border-sky-500/30;

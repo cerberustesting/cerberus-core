@@ -68,6 +68,16 @@ public interface IAppiumService {
     MessageEvent click(Session session, Identifier identifier, Integer hOffset, Integer vOffset);
 
     /**
+     *
+     * @param session
+     * @param identifier
+     * @param hOffset
+     * @param vOffset
+     * @return
+     */
+    MessageEvent doubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset);
+
+    /**
      * @param session
      * @param keyName
      * @return

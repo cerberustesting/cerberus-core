@@ -199,15 +199,13 @@ public abstract class AppiumService implements IAppiumService {
                 foundElementMsg.resolveDescription("NUMBER", "1");
                 foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
 
-                Sequence tapSequence = new Sequence(finger, 0);
-                tapSequence.addAction(finger.createPointerMove(
-                        Duration.ofMillis(0), PointerInput.Origin.viewport(), offset.getX(), offset.getY()));
-                tapSequence.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-                tapSequence.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-                appiumDriver.perform(List.of(tapSequence));
+                tap(appiumDriver, offset.getX(), offset.getY());
+
             } else {
+
                 WebElement element = getElement(session, identifier, false, false);
                 Integer numberOfElement = this.getNumberOfElements(session, identifier);
+
                 foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
                 foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
                 foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
@@ -216,12 +214,7 @@ public abstract class AppiumService implements IAppiumService {
                 int elementX = rect.getX() + (rect.getWidth() / 2) + ((hOffset != null && hOffset != 0) ? hOffset : 0);
                 int elementY = rect.getY() + (rect.getHeight() / 2) + ((vOffset != null && vOffset != 0) ? vOffset : 0);
 
-                Sequence tapSequence = new Sequence(finger, 0);
-                tapSequence.addAction(finger.createPointerMove(
-                        Duration.ofMillis(0), PointerInput.Origin.viewport(), elementX, elementY));
-                tapSequence.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-                tapSequence.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-                appiumDriver.perform(List.of(tapSequence));
+                tap(appiumDriver, elementX, elementY);
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
         } catch (NoSuchElementException e) {
@@ -234,6 +227,72 @@ public abstract class AppiumService implements IAppiumService {
             return parseWebDriverException(e);
         }
 
+    }
+
+    @Override
+    public MessageEvent doubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset){
+
+        try {
+            MessageEvent foundElementMsg;
+            AppiumDriver appiumDriver = session.getAppiumDriver();
+
+            final PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                Point offset = new Point(coordinates.getX(), coordinates.getY());
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", "1");
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+
+                tap(appiumDriver, offset.getX(), offset.getY());
+                Thread.sleep(150);
+                tap(appiumDriver, offset.getX(), offset.getY());
+
+
+            } else {
+
+                WebElement element = getElement(session, identifier, false, false);
+                Integer numberOfElement = this.getNumberOfElements(session, identifier);
+
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+
+                Rectangle rect = element.getRect();
+                int elementX = rect.getX() + (rect.getWidth() / 2) + ((hOffset != null && hOffset != 0) ? hOffset : 0);
+                int elementY = rect.getY() + (rect.getHeight() / 2) + ((vOffset != null && vOffset != 0) ? vOffset : 0);
+
+                tap(appiumDriver, elementX, elementY);
+                Thread.sleep(150);
+                tap(appiumDriver, elementX, elementY);
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void tap(AppiumDriver driver, int x, int y) {
+
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence tap = new Sequence(finger, 1);
+
+        tap.addAction(finger.createPointerMove(Duration.ZERO,PointerInput.Origin.viewport(),x,y));
+        tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        tap.addAction(new Pause(finger, Duration.ofMillis(80)));
+        tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        driver.perform(List.of(tap));
     }
 
     /**
