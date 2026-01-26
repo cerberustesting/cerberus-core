@@ -19,10 +19,12 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cerberus.core.api.dto.robot.RobotExecutorDTOV001;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -201,4 +203,17 @@ public interface IRobotExecutorService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String robot, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param robot
+     * @param executor
+     * @param newRobotExecutorFromSource
+     * @param principal
+     * @param login
+     * @return
+     * @throws CerberusException
+     */
+    RobotExecutor updateRobotExecutorPATCH(String robot, String executor, RobotExecutorDTOV001 newRobotExecutorFromSource, Principal principal, String login) throws CerberusException;
+
 }
