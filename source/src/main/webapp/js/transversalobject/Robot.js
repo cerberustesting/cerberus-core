@@ -688,7 +688,7 @@ function appendExecutorRow(tableBody, executor) {
 
     var active = $("<div class='form-group col-sm-6'></div>").append("<label for='active'>" + doc.getDocOnline("robotexecutor", "active") + "</label>").append(selectActive);
     var rank = $("<div class='form-group col-sm-4'></div>").append("<label for='rank'>" + doc.getDocOnline("robotexecutor", "rank") + "</label>").append(rankInput);
-    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary expand-btn' type='button' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
     var host = $("<div class='form-group col-sm-4'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "host") + "</label>").append(hostInput);
     var port = $("<div class='form-group col-sm-2'></div>").append("<label for='port'>" + doc.getDocOnline("robotexecutor", "Port") + "</label>").append(portInput);
     var hostUser = $("<div class='form-group col-sm-3'></div>").append("<label for='hostUser'>" + doc.getDocOnline("robotexecutor", "hostUser") + "</label>").append(hostUserInput);
@@ -709,8 +709,15 @@ function appendExecutorRow(tableBody, executor) {
     var drow4 = $("<div class='row alert alert-warning'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
     var drow5 = $("<div class='row alert alert-warning'></div>").append(epType).append(eehost).append(eeport).append(ephost).append(epport);
     var drow6 = $("<div class='row alert alert-warning'></div>").append(executorExtensionPortGroup);
-    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5).append(drow6);
+    var panelExtra = $("<div class='hidden' id='col" + nbRow + "'></div>").append(drow4).append(drow5).append(drow6);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
+
+    expandName.find('.expand-btn').on('click', function() {
+        var target = $("#col" + nbRow); // récupère le panel
+        target.toggleClass('hidden'); // ajoute/enlève la classe hidden
+        // changer l'icône pour refléter l'état
+        $(this).find('span.glyphicon').toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+    });
 
 
 

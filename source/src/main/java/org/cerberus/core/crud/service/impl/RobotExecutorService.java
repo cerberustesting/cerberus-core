@@ -19,12 +19,15 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.robot.RobotExecutorDTOV001;
+import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.crud.dao.IRobotExecutorDAO;
 import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotExecutor;
@@ -287,5 +290,47 @@ public class RobotExecutorService implements IRobotExecutorService {
     public AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return robotExecutorDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
     }
+
+    @Override
+    public RobotExecutor updateRobotExecutorPATCH(String robot, String executor, RobotExecutorDTOV001 newRobotExecutorFromSource, Principal principal, String login) throws CerberusException {
+
+        AnswerItem<RobotExecutor> re = this.readByKey(robot, executor);
+        if (re.getItem() == null) {
+            LOG.debug("RobotExecutor not exist.");
+            throw new EntityNotFoundException(RobotExecutor.class, "robot executor", robot + '|' + executor);
+        }
+
+        LOG.debug("RobotExecutor exist.");
+        RobotExecutor robotExecutor = re.getItem();
+
+        robotExecutor.setUsrModif(login != null ? login : "");
+
+        robotExecutor.setRobot(robot);
+        robotExecutor.setExecutor(executor);
+
+        robotExecutor.setIsActive(newRobotExecutorFromSource.getIsActive() == null ? re.getItem().isActive() : newRobotExecutorFromSource.getIsActive());
+        robotExecutor.setRank(newRobotExecutorFromSource.getRank() == null ? re.getItem().getRank() : newRobotExecutorFromSource.getRank());
+        robotExecutor.setHost(newRobotExecutorFromSource.getHost() == null ? re.getItem().getHost() : newRobotExecutorFromSource.getHost());
+        robotExecutor.setPort(newRobotExecutorFromSource.getPort() == null ? re.getItem().getPort() : newRobotExecutorFromSource.getPort());
+        robotExecutor.setHostUser(newRobotExecutorFromSource.getHostUser() == null ? re.getItem().getHostUser() : newRobotExecutorFromSource.getHostUser());
+        robotExecutor.setHostPassword(newRobotExecutorFromSource.getHostPassword() == null ? re.getItem().getHostPassword() : newRobotExecutorFromSource.getHostPassword());
+        robotExecutor.setExecutorExtensionProxyPort(newRobotExecutorFromSource.getExecutorExtensionProxyPort() == null ? re.getItem().getExecutorExtensionProxyPort() : newRobotExecutorFromSource.getExecutorExtensionProxyPort());
+        robotExecutor.setDeviceUuid(newRobotExecutorFromSource.getDeviceUdid() == null ? re.getItem().getDeviceUuid() : newRobotExecutorFromSource.getDeviceUdid());
+        robotExecutor.setDeviceName(newRobotExecutorFromSource.getDeviceName() == null ? re.getItem().getDeviceName() : newRobotExecutorFromSource.getDeviceName());
+        robotExecutor.setDevicePort(newRobotExecutorFromSource.getDevicePort() == null ? re.getItem().getDevicePort() : newRobotExecutorFromSource.getDevicePort());
+        robotExecutor.setIsDeviceLockUnlock(newRobotExecutorFromSource.getIsDeviceLockUnlock() == null ? re.getItem().isDeviceLockUnlock() : newRobotExecutorFromSource.getIsDeviceLockUnlock());
+        robotExecutor.setDescription(newRobotExecutorFromSource.getDescription() == null ? re.getItem().getDescription() : newRobotExecutorFromSource.getDescription());
+        robotExecutor.setExecutorProxyType(newRobotExecutorFromSource.getExecutorProxyType() == null ? re.getItem().getExecutorProxyType() : newRobotExecutorFromSource.getExecutorProxyType());
+        robotExecutor.setExecutorProxyServiceHost(newRobotExecutorFromSource.getExecutorProxyServiceHost() == null ? re.getItem().getExecutorProxyServiceHost() : newRobotExecutorFromSource.getExecutorProxyServiceHost());
+        robotExecutor.setExecutorProxyServicePort(newRobotExecutorFromSource.getExecutorProxyServicePort() == null ? re.getItem().getExecutorProxyServicePort() : newRobotExecutorFromSource.getExecutorProxyServicePort());
+        robotExecutor.setExecutorBrowserProxyHost(newRobotExecutorFromSource.getExecutorBrowserProxyHost() == null ? re.getItem().getExecutorBrowserProxyHost() : newRobotExecutorFromSource.getExecutorBrowserProxyHost());
+        robotExecutor.setExecutorBrowserProxyPort(newRobotExecutorFromSource.getExecutorBrowserProxyPort() == null ? re.getItem().getExecutorBrowserProxyPort() : newRobotExecutorFromSource.getExecutorBrowserProxyPort());
+        robotExecutor.setExecutorExtensionPort(newRobotExecutorFromSource.getExecutorExtensionPort() == null ? re.getItem().getExecutorExtensionPort() : newRobotExecutorFromSource.getExecutorExtensionPort());
+
+        this.update(robot, executor, robotExecutor);
+
+        return this.readByKey(robot, executor).getItem();
+    }
+
 
 }
