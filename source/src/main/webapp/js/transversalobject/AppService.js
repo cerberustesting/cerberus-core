@@ -981,7 +981,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "black");
+        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "block");
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
