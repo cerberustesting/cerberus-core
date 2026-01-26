@@ -257,9 +257,11 @@ public class RobotServerService implements IRobotServerService {
              * Starting Cerberus Robot Proxy if it has been activated at
              * robot level.
              */
-            if (execution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())) {
+            if (execution.getRobotExecutorObj() != null && (
+                    RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType()) ||
+                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
                 LOG.debug("Start Remote Cerberus Proxy");
-                executorService.startRemoteProxy(execution);
+                executorService.startRemoteProxy(execution, execution.getRobotExecutorObj().getExecutorProxyType());
                 LOG.debug("Started Remote Cerberus Robot Proxy on port: {}", execution.getRemoteProxyPort());
             }
 
@@ -616,9 +618,11 @@ public class RobotServerService implements IRobotServerService {
              * Starting Cerberus Executor Proxy if it has been activated at
              * robot level.
              */
-            if (execution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())) {
+            if (execution.getRobotExecutorObj() != null &&
+                    (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType()) ||
+                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
                 LOG.debug("Start Remote Proxy");
-                executorService.startRemoteProxy(execution);
+                executorService.startRemoteProxy(execution, execution.getRobotExecutorObj().getExecutorProxyType());
                 LOG.debug("Started Remote Proxy on port: {}", execution.getRemoteProxyPort());
             }
 

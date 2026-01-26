@@ -35,7 +35,7 @@ public interface IRobotProxyService {
      *
      * @param tce
      */
-    void startRemoteProxy(TestCaseExecution tce);
+    void startRemoteProxy(TestCaseExecution tce, String proxyType);
 
     /**
      *

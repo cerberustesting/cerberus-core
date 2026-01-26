@@ -67,6 +67,7 @@ public class RobotExecutor {
     public static final String PROXY_TYPE_NONE = "NONE"; // No Proxy. Browser will connect directly on Internet
     public static final String PROXY_TYPE_MANUAL = "MANUAL"; // A Manual proxy is configured on executorBrowserProxyHost and executorBrowserProxyPort
     public static final String PROXY_TYPE_NETWORKTRAFFIC = "NETWORKTRAFFIC"; // Proxy will be configured to Cerberus robot proxy component --> Network traffic features will be activated.
+    public static final String PROXY_TYPE_MITMPROXY = "MITMPROXY";
 
     public Integer getExecutorExtensionProxyPort() {
         return executorExtensionProxyPort;

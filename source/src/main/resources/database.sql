@@ -6804,3 +6804,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1932
 ALTER TABLE appservice ADD ServiceRequestExtra1 MEDIUMTEXT NULL AFTER `ServiceRequest`;
+
+-- 1933
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+    VALUES ('PROXYTYPE', 'MITMPROXY', 400, 'Mitm Proxy with Network Traffic analysis and control.');

@@ -63,12 +63,15 @@ public class RobotProxyService implements IRobotProxyService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RobotProxyService.class);
 
     @Override
-    public void startRemoteProxy(TestCaseExecution tce) {
+    public void startRemoteProxy(TestCaseExecution tce, String proxyType) {
 
         String url = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort()
                 + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
         if (tce.getRobotExecutorObj().getExecutorBrowserProxyPort() != 0) {
             url += "&port=" + tce.getRobotExecutorObj().getExecutorBrowserProxyPort();
+        }
+        if (RobotExecutor.PROXY_TYPE_MITMPROXY.equals(proxyType)) {
+            url += "&proxyType=mitmproxy";
         }
 
         if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tce.getRobotProvider())) {

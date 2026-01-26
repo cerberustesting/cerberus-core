@@ -106,7 +106,7 @@ public class RobotExecutorDTOV001 {
     private String hostPassword;
 
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
-    @Schema(description = "Executor proxy type",example = "NONE",allowableValues = {"NONE", "MANUAL", "NETWORKTRAFFIC"})
+    @Schema(description = "Executor proxy type",example = "NONE",allowableValues = {"NONE", "MANUAL", "NETWORKTRAFFIC", "MITMPROXY"})
     private String executorProxyType;
 
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
