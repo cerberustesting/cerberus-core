@@ -469,11 +469,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("INSERT INTO appservice (`Service`, `Collection`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, ")
+                .append("INSERT INTO appservice (`Service`, `Collection`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, `ServiceRequestExtra1`, ")
                 .append("   `isAvroEnable`, `SchemaRegistryUrl`,  `isAvroEnableKey`, `AvroSchemaKey`,  `isAvroEnableValue`, `AvroSchemaValue`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
                 .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `SimulationParameters`, ")
                 .append("   `AuthType`, `AuthUser`, `AuthPassword`, `AuthAddTo`, `UsrCreated`) ")
-                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
@@ -494,6 +494,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getOperation());
             preStat.setString(i++, object.getBodyType());
             preStat.setString(i++, object.getServiceRequest());
+            preStat.setString(i++, object.getServiceRequestExtra1());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
             preStat.setBoolean(i++, object.isAvroEnableKey());
@@ -542,7 +543,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer update(String service, AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("UPDATE appservice srv SET `Service` = ?, `Collection` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ")
+                .append("UPDATE appservice srv SET `Service` = ?, `Collection` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ServiceRequestExtra1 = ?, ")
                 .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `isAvroEnableKey` = ?, `AvroSchemaKey` = ?, `isAvroEnableValue` = ?, `AvroSchemaValue` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
                 .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, SimulationParameters = ?, ")
                 .append("`Description` = ?, `Type` = ?, Method = ?, AuthType = ?, AuthUser = ?, AuthPassword = ?, AuthAddTo = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
@@ -568,6 +569,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getOperation());
             preStat.setString(i++, object.getBodyType());
             preStat.setString(i++, object.getServiceRequest());
+            preStat.setString(i++, object.getServiceRequestExtra1());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
             preStat.setBoolean(i++, object.isAvroEnableKey());
@@ -682,6 +684,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
         String bodyType = ParameterParserUtil.parseStringParam(rs.getString("srv.BodyType"), "");
         String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
+        String serviceRequestExtra1 = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequestExtra1"), "");
         String attachementURL = ParameterParserUtil.parseStringParam(rs.getString("srv.AttachementURL"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
         String type = ParameterParserUtil.parseStringParam(rs.getString("srv.Type"), "");
@@ -719,6 +722,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         result.setAuthUser(authUser);
         result.setAuthPassword(authPassword);
         result.setAuthAddTo(authAddTo);
+        result.setServiceRequestExtra1(serviceRequestExtra1);
         return result;
     }
 

@@ -34,6 +34,7 @@ public interface IMongodbService {
      *
      * @param servicePath
      * @param queryString
+     * @param requestExtra1String
      * @param method
      * @param operation Contains Database.Collection
      * @param timeOutMs
@@ -41,6 +42,6 @@ public interface IMongodbService {
      * @param tcexecution
      * @return
      */
-    AnswerItem<AppService> callMONGODB(String servicePath, String queryString, String method, String operation, int timeOutMs, String system, TestCaseExecution tcexecution);
+    AnswerItem<AppService> callMONGODB(String servicePath, String queryString, String requestExtra1String, String method, String operation, int timeOutMs, String system, TestCaseExecution tcexecution);
 
 }

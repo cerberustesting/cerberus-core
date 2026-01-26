@@ -117,6 +117,7 @@ public class ServiceService implements IServiceService {
     public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePathParam, String manualOperation, TestCaseExecution execution, int timeoutMs) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;
+        String decodedRequestExtra1;
         String decodedServicePath = null;
         String decodedOperation;
         String decodedAttachement;
@@ -190,6 +191,7 @@ public class ServiceService implements IServiceService {
                 }
 
                 execution.addSecret(StringUtil.getPasswordFromAnyUrl(servicePath));
+                appService.addSecret(StringUtil.getPasswordFromAnyUrl(servicePath));
 
                 // Autocomplete of service path is disable for KAFKA and MONGODB service (this is because there could be a list of host).
                 if (!appService.getType().equals(AppService.TYPE_KAFKA) && !appService.getType().equals(AppService.TYPE_MONGODB)) {
@@ -279,6 +281,7 @@ public class ServiceService implements IServiceService {
                 // appService object and target servicePath is now clean. We can start to decode.
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
+                decodedRequestExtra1 = appService.getServiceRequestExtra1();
                 LOG.debug("AppService with correct path is now OK : " + servicePath);
 
                 try {
@@ -305,6 +308,19 @@ public class ServiceService implements IServiceService {
                                 .resolveDescription("SERVICENAME", service)
                                 .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Service Request").getDescription());
                         LOG.debug("Service Call interupted due to decode 'Service Request'.");
+                        result.setResultMessage(message);
+                        return result;
+                    }
+
+                    // Decode Request
+                    answerDecode = variableService.decodeStringCompletly(decodedRequestExtra1, execution, null, false);
+                    decodedRequestExtra1 = answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                .resolveDescription("SERVICENAME", service)
+                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", "Service Request Extra").getDescription());
+                        LOG.debug("Service Call interupted due to decode 'Service Request Extra'.");
                         result.setResultMessage(message);
                         return result;
                     }
@@ -496,12 +512,14 @@ public class ServiceService implements IServiceService {
                         switch (appService.getMethod()) {
 
                             case AppService.METHOD_MONGODBFIND:
+                            case AppService.METHOD_MONGODBUPDATEONE:
                                 /**
                                  * Call MONGODB and store it into the execution.
                                  */
-                                result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, appService.getMethod(),
+                                result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, decodedRequestExtra1, appService.getMethod(),
                                         appService.getOperation(), timeoutMs, system, execution);
                                 message = result.getResultMessage();
+                                message.resolveDescription("SERVICENAME", service);
                                 break;
 
                             default:
@@ -751,6 +769,7 @@ public class ServiceService implements IServiceService {
             result.setResultMessage(message);
             result.setItem(appService);
             return result;
+
         } catch (Exception ex) {
             LOG.error("Exception when performing CallService Action. " + ex.toString(), ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)

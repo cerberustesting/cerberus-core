@@ -8,3 +8,5 @@ target/
 /src/main/webapp/css/tailwind/node_modules
 localdata
 nb-configuration.xml
+package-lock.json
+crb_style.css

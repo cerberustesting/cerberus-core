@@ -128,7 +128,7 @@ public class CreateAppService extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
         String originalService = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("originalService"), null, charset);
-        
+
         String collection = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("collection"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), "", charset);
         String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), "", charset);
@@ -141,6 +141,7 @@ public class CreateAppService extends HttpServlet {
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isFollowRedir"), true, charset);
         String bodyType = ParameterParserUtil.parseStringParamAndDecode(fileData.get("bodyType"), "", charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
+        String serviceRequestExtra1 = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequestExtra1"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         boolean isAvroEnable = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isAvroEnable"), true, charset);
         String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
@@ -190,6 +191,7 @@ public class CreateAppService extends HttpServlet {
             LOG.debug(request.getUserPrincipal().getName());
             AppService appService = appServiceFactory.create(service, type, method, application, collection, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue, description, servicePath,
                     isFollowRedir, attachementurl, operation, isAvroEnable, schemaRegistryUrl, isAvroEnableKey, avroSchemaKey, isAvroEnableValue, avroSchemaValue, parentContentService, request.getUserPrincipal().getName(), null, null, null, fileName);
+            appService.setServiceRequestExtra1(serviceRequestExtra1);
             // Feed the Simulation parameters in case they exist.
             if (fileData.get("callInfo") != null) {
                 JSONObject objCall = new JSONObject(fileData.get("callInfo"));
@@ -199,11 +201,23 @@ public class CreateAppService extends HttpServlet {
             appService.setAuthUser(authUser);
             appService.setAuthPassword(authPass);
             appService.setAuthAddTo(authAddTo);
+            AppService appServiceTmp = appServiceService.findAppServiceByKey(originalService);
+
+            // Get password secret data from original service
             if (StringUtil.SECRET_STRING.equals(authPass)) {
-                AppService appServiceTmp = appServiceService.findAppServiceByKey(originalService);
                 authPass = appServiceTmp.getAuthPassword();
                 appService.setAuthPassword(authPass);
             }
+
+            // Get Mongodb URL password secret data from original service
+            if (AppService.TYPE_MONGODB.equals(appService.getType())) {
+                if (servicePath.contains(StringUtil.SECRET_STRING)) {
+                    appService.setServicePath(servicePath.replace(StringUtil.SECRET_STRING, StringUtil.getPasswordFromAnyUrl(appServiceTmp.getServicePath())));
+                } else {
+                    appService.setServicePath(servicePath);
+                }
+            }
+
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 

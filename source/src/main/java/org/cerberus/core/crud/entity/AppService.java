@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,6 +62,7 @@ public class AppService {
     private String attachementURL; // Attachement in cas of SOAP call with attachement.
     private String bodyType; // Body type used : none/raw/form-data/form-urlencoded
     private String serviceRequest; // Content of the request.
+    private String serviceRequestExtra1; // Content of an Extra request (used for ex for Mongodb updateone method).
     private String kafkaTopic;
     private String kafkaKey;
     private String kafkaFilterPath;
@@ -134,6 +136,8 @@ public class AppService {
     private Timestamp start;
     @EqualsAndHashCode.Exclude
     private Timestamp end;
+    @EqualsAndHashCode.Exclude
+    private HashMap<String, String> secrets;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -151,6 +155,7 @@ public class AppService {
     public static final String METHOD_KAFKAPRODUCE = "PRODUCE";
     public static final String METHOD_KAFKASEARCH = "SEARCH";
     public static final String METHOD_MONGODBFIND = "FIND";
+    public static final String METHOD_MONGODBUPDATEONE = "UPDATEONE";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
@@ -168,9 +173,8 @@ public class AppService {
     public static final String AUTHTYPE_BASICAUTH = "Basic Auth";
     public static final String AUTHADDTO_QUERYSTRING = "Query String";
     public static final String AUTHADDTO_HEADERS = "Header";
-    
+
     public static final String SERVICENAME_SIMULATIONCALL = "$TMP";
-    
 
     public void addResponseHeaderList(AppServiceHeader object) {
         this.responseHeaderList.add(object);
@@ -182,6 +186,18 @@ public class AppService {
 
     public void addContentList(List<AppServiceContent> object) {
         this.contentList.addAll(object);
+    }
+
+    public void addSecret(String secret) {
+        if (secret != null && (!"".equals(secret))) {
+            this.secrets.put(secret, "");
+        }
+    }
+
+    public void addSecrets(List<String> secrets) {
+        secrets.forEach(secret -> {
+            this.secrets.put(secret, "");
+        });
     }
 
     public JSONObject toJSONOnExecution() {
@@ -208,7 +224,8 @@ public class AppService {
             if (!(this.getTimeoutms() == 0)) {
                 jsonMyRequest.put("HTTP-TimeOutMs", this.getTimeoutms());
             }
-            jsonMyRequest.put("CalledURL", this.getServicePath());
+            jsonMyRequest.put("CalledURL", StringUtil.secureFromSecrets(this.getServicePath(), this.getSecrets()));
+
             if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("HTTP-Method", this.getMethod());
             }
@@ -250,7 +267,7 @@ public class AppService {
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", this.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
-            
+
             // Timings
             jsonTimings.put("start", this.getStart());
             if ((this.getStart() != null) && (this.getEnd() != null) && (this.getEnd().getTime() > this.getStart().getTime())) {
@@ -258,7 +275,7 @@ public class AppService {
                 jsonTimings.put("durationMs", (this.getEnd().getTime() - this.getStart().getTime()));
             }
             jsonMyResponse.put("timings", jsonTimings);
-            
+
             if (!StringUtil.isEmptyOrNull(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
@@ -299,7 +316,7 @@ public class AppService {
             if (!(this.getTimeoutms() == 0)) {
                 jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
             }
-            jsonMyRequest.put("ConnectionString", this.getServicePath());
+            jsonMyRequest.put("ConnectionString", StringUtil.secureFromSecrets(this.getServicePath(), this.getSecrets()));
             jsonMyRequest.put("DatabaseCollection", this.getOperation());
             if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("Method", this.getMethod());
@@ -326,8 +343,17 @@ public class AppService {
                 }
             }
             jsonMyResponse.put("ResponseContentType", this.getResponseHTTPBodyContentType());
+            // Timings
+            JSONObject jsonTimings = new JSONObject();
+            jsonTimings.put("start", this.getStart());
+            if ((this.getStart() != null) && (this.getEnd() != null) && (this.getEnd().getTime() > this.getStart().getTime())) {
+                jsonTimings.put("end", this.getEnd());
+                jsonTimings.put("durationMs", (this.getEnd().getTime() - this.getStart().getTime()));
+            }
+            jsonMyResponse.put("timings", jsonTimings);
+
             jsonMain.put("Response", jsonMyResponse);
-            
+
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(RecorderService.class);
             LOG.warn(ex);
@@ -344,7 +370,7 @@ public class AppService {
             if (!(this.getTimeoutms() == 0)) {
                 jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
             }
-            jsonMyRequest.put("Servers", this.getServicePath());
+            jsonMyRequest.put("Servers", StringUtil.secureFromSecrets(this.getServicePath(), this.getSecrets()));
             if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("KAFKA-Method", this.getMethod());
             }
@@ -366,17 +392,17 @@ public class AppService {
                     if (header.getKey().contains("passw")) {
                         jsonHeaders.put(header.getKey(), StringUtil.SECRET_STRING);
                     } else {
-                        jsonHeaders.put(header.getKey(), header.getValue());
+                        jsonHeaders.put(header.getKey(), StringUtil.secureFromSecrets(header.getValue(), this.getSecrets()));
                     }
                 }
                 jsonMyRequest.put("KAFKA-Header", jsonHeaders);
             }
             if (!StringUtil.isEmptyOrNull(this.getServiceRequest())) {
                 try {
-                    JSONObject reqBody = new JSONObject(this.getServiceRequest());
+                    JSONObject reqBody = new JSONObject(StringUtil.secureFromSecrets(this.getServiceRequest(), this.getSecrets()));
                     jsonMyRequest.put("KAFKA-Value", reqBody);
                 } catch (JSONException e) {
-                    jsonMyRequest.put("KAFKA-Value", this.getServiceRequest());
+                    jsonMyRequest.put("KAFKA-Value", StringUtil.secureFromSecrets(this.getServiceRequest(), this.getSecrets()));
                 }
             }
             if (!StringUtil.isEmptyOrNull(this.getKafkaKey())) {
@@ -439,7 +465,7 @@ public class AppService {
             if (!(this.getTimeoutms() == 0)) {
                 jsonMyRequest.put("FTP-TimeOutMs", this.getTimeoutms());
             }
-            jsonMyRequest.put("CalledURL", this.getServicePath());
+            jsonMyRequest.put("CalledURL", StringUtil.secureFromSecrets(this.getServicePath(), this.getSecrets()));
             if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("FTP-Method", this.getMethod());
             }

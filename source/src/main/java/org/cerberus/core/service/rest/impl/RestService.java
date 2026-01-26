@@ -406,7 +406,7 @@ public class RestService implements IRestService {
                         for (AppServiceHeader contentHeader : headerList) {
                             httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
                         }
-                    }
+                        }
                     serviceREST.setHeaderList(headerList);
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).

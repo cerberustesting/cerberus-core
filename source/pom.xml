@@ -81,7 +81,7 @@
         <!-- MongoDB -->
         <mongodb-driver-sync.version>4.9.1</mongodb-driver-sync.version>
         <!-- Lombok -->
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <!-- Mappers -->
         <mapstruct.version>1.4.2.Final</mapstruct.version>

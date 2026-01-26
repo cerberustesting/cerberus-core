@@ -387,6 +387,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
     //Add envelope, not in the form
     var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
     var editorRequest = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
+    var editorRequestExtra1 = ace.edit($("#editSoapLibraryModal #srvRequestExtra1")[0]);
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
 
@@ -417,6 +418,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
     formData.append("headerList", JSON.stringify(table_header));
     formData.append("kafkaKey", encodeURIComponent(editorKey.getSession().getDocument().getValue()));
     formData.append("srvRequest", encodeURIComponent(editorRequest.getSession().getDocument().getValue()));
+    formData.append("srvRequestExtra1", encodeURIComponent(editorRequestExtra1.getSession().getDocument().getValue()));
     formData.append("avrSchemaKey", encodeURIComponent(editorSchemaKey.getSession().getDocument().getValue()));
     formData.append("avrSchemaValue", encodeURIComponent(editorSchemaValue.getSession().getDocument().getValue()));
 
@@ -685,6 +687,26 @@ function performCall(service) {
                         // Show Response Tab
                         $('.nav-tabs a[href="#tabsSimul-1"]').tab('show');
 
+                    } else if (CallContent.call.Response.hasOwnProperty('ResponseArray')) {
+                        $('#editSoapLibraryModal  #srvResponse').text(JSON.stringify(CallContent.call.Response["ResponseArray"], null, '\t'));
+                        //Highlight envelop on modal loading
+                        var editorResponse = ace.edit($('#editSoapLibraryModal  #srvResponse')[0]);
+                        editorResponse.setTheme("ace/theme/chrome");
+                        editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                        editorResponse.setOptions({
+                            maxLines: 50
+                        });
+                        document.getElementById('srvResponse').style.fontSize = '14px';
+                        editorResponse.setReadOnly(true);
+                        $($("#editSoapLibraryModal #srvResponse").get(0)).keyup(function () {
+                            if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
+                                editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                            }
+                        });
+
+                        // Show Response Tab
+                        $('.nav-tabs a[href="#tabsSimul-1"]').tab('show');
+
                     } else {
 
                         // Show Parameters and Message Tab
@@ -828,6 +850,8 @@ function refreshDisplayOnTypeChange() {
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
         $("#editSoapLibraryModal #tabRequestDetail").hide();
+        $("#editSoapLibraryModal #srvRequestDiv").show();
+        $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
 
     } else if (newValueType === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
@@ -839,6 +863,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -859,6 +884,7 @@ function refreshDisplayOnTypeChange() {
         $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
+        $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
         if (newValueMethod == "GET") {
             $("#editSoapLibraryModal #srvRequestDiv").hide();
         } else {
@@ -870,6 +896,8 @@ function refreshDisplayOnTypeChange() {
 
     } else if (newValueType === "KAFKA") {
         $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Kafka Value");
+        $("#editSoapLibraryModal #srvRequestDiv").show();
+        $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
 
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
@@ -880,6 +908,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
@@ -934,6 +963,14 @@ function refreshDisplayOnTypeChange() {
 
     } else if (newValueType === "MONGODB") {
         $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("MongoDB Query");
+        $("#editSoapLibraryModal #srvRequestExtra1").parent().parent().find("label").html("MongoDB Update Query");
+        if (newValueMethod === "FIND") {
+            $("#editSoapLibraryModal #srvRequestDiv").show();
+            $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
+        } else {
+            $("#editSoapLibraryModal #srvRequestDiv").show();
+            $("#editSoapLibraryModal #srvRequestExtra1Div").show();
+        }
 
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
@@ -944,6 +981,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "black");
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -970,6 +1008,8 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
 
     } else { // REST
+        $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
+        $("#editSoapLibraryModal #srvRequestDiv").show();
         $("#editSoapLibraryModal #tabAuthor").show();
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
@@ -980,6 +1020,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
         $('#editSoapLibraryModal #bodyType').parent().show();
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
@@ -1036,7 +1077,7 @@ function updateMethod_and_refreshDisplayOnTypeChange() {
         }
 
     } else if (lType === "MONGODB") {
-        if (lMethod !== "FIND") {
+        if ((lMethod !== "FIND") && (lMethod !== "UPDATEONE")) {
             $('#editSoapLibraryModal #method').prop("value", "FIND");
         }
 
@@ -1119,6 +1160,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.description = "";
         serviceObj1.collection = "";
         serviceObj1.serviceRequest = "";
+        serviceObj1.serviceRequestExtra1 = "";
         serviceObj1.contentList = "";
         serviceObj1.headerList = "";
         serviceObj1.fileName = "Drag and drop Files";
@@ -1172,6 +1214,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
 
     //Destroy the previous Ace object.
     ace.edit($("#editSoapLibraryModal #srvRequest")[0]).destroy();
+    ace.edit($("#editSoapLibraryModal #srvRequestExtra1")[0]).destroy();
     ace.edit($("#editSoapLibraryModal #kfkKey")[0]).destroy();
     ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]).destroy();
     ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]).destroy();
@@ -1213,6 +1256,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#isFollowRedir").prop("checked", true);
         formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
+        formEdit.find("#srvRequestExtra1").text("");
         formEdit.find("#kfkKey").text("");
         formEdit.find("#avrSchemaKey").text("");
         formEdit.find("#avrSchemaValue").text("");
@@ -1255,6 +1299,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#parentContentService").val(service.parentContentService);
         formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
+        formEdit.find("#srvRequestExtra1").text(service.serviceRequestExtra1);
         formEdit.find("#kfkKey").text(service.kafkaKey);
         formEdit.find("#avrSchemaKey").text(service.avroSchemaKey);
         formEdit.find("#avrSchemaValue").text(service.avroSchemaValue);
@@ -1313,6 +1358,14 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     });
     document.getElementById('srvRequest').style.fontSize = '14px';
 
+    var editor = ace.edit($("#editSoapLibraryModal #srvRequestExtra1")[0]);
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editor.setOptions({
+        maxLines: 50
+    });
+    document.getElementById('srvRequestExtra1').style.fontSize = '14px';
+
     var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
     editorKey.setTheme("ace/theme/chrome");
     editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
@@ -1320,7 +1373,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         maxLines: 50
     });
     document.getElementById('kfkKey').style.fontSize = '14px';
-    
+
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     editorSchemaKey.setTheme("ace/theme/chrome");
     editorSchemaKey.getSession().setMode(defineAceMode(editorSchemaKey.getSession().getDocument().getValue()));
@@ -1328,7 +1381,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         maxLines: 50
     });
     document.getElementById('avrSchemaKey').style.fontSize = '14px';
-    
+
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
     editorSchemaValue.setTheme("ace/theme/chrome");
     editorSchemaValue.getSession().setMode(defineAceMode(editorSchemaValue.getSession().getDocument().getValue()));
@@ -1340,6 +1393,11 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     //On ADD, try to autodetect Ace mode until it is defined
 
     $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
+        if (editor.getSession().getMode().$id === "ace/mode/text") {
+            editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+        }
+    });
+    $($("#editSoapLibraryModal #srvRequestExtra1").get(0)).keyup(function () {
         if (editor.getSession().getMode().$id === "ace/mode/text") {
             editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
         }
@@ -1383,6 +1441,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#collection").prop("readonly", true);
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
+        formEdit.find("#srvRequestExtra1").prop("readonly", "readonly");
         formEdit.find("#kfkKey").prop("readonly", "readonly");
         formEdit.find("#avrSchemaKey").prop("readonly", "readonly");
         formEdit.find("#avrSchemaValue").prop("readonly", "readonly");
@@ -1408,6 +1467,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#collection").prop("readonly", false);
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
+        formEdit.find("#srvRequestExtra1").removeProp("readonly");
         formEdit.find("#kfkKey").removeProp("readonly");
         formEdit.find("#avrSchemaKey").removeProp("readonly");
         formEdit.find("#avrSchemaValue").removeProp("readonly");

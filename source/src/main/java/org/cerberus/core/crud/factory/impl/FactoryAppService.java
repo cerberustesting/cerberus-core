@@ -21,6 +21,7 @@ package org.cerberus.core.crud.factory.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceContent;
@@ -81,6 +82,7 @@ public class FactoryAppService implements IFactoryAppService {
         s.setParentContentService(parentContentService);
         s.setRecordTraceFile(true);
         s.setFollowRedir(isFollowRedir);
+        s.setSecrets(new HashMap<>());
         return s;
     }
 }

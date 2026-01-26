@@ -6797,3 +6797,10 @@ ALTER TABLE `userprompt`
     ADD COLUMN `totalInputTokens` INT DEFAULT 0 AFTER `totalCalls`,
     ADD COLUMN `totalOutputTokens` INT DEFAULT 0 AFTER `totalInputTokens`,
     ADD COLUMN `totalCost` DECIMAL(12,6) AFTER `totalOutputTokens`;
+
+-- 1931
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES ('SRVMETHOD', 'UPDATEONE', 850 , 'Update a MongoDB Document');
+
+-- 1932
+ALTER TABLE appservice ADD ServiceRequestExtra1 MEDIUMTEXT NULL AFTER `ServiceRequest`;
