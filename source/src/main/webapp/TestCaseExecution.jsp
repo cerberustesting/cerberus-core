@@ -408,7 +408,7 @@
                             <div id="tabProperties">
                                 <div class="property-table">
                                     <div class="" id="propPanelWrapper">
-                                        <div class="panel-body collapse in" id="propertiesPanel">
+                                        <div class="panel-body in" id="propertiesPanel">
                                             <div id="propTable" class="list-group">
                                             </div>
                                             <div class="row" id="secondaryPropTableHeader" class="list-group"
@@ -816,12 +816,11 @@
                             </div>
 
                             <div class="panel panel-default" id="NS1Panel">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS1">
+                                <div class="panel-heading card" data-target="#NS1">
                                     <span class="fa fa-pie-chart fa-fw"></span>
                                     <label id="ns1Label">Global Statistics</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="NS1">
+                                <div class="panel-body in" id="NS1">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <canvas id="myChart1"></canvas>
@@ -834,12 +833,11 @@
                             </div>
 
                             <div class="panel panel-default" id="NS2Panel">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS2">
+                                <div class="panel-heading card" data-target="#NS2">
                                     <span class="fa fa-pie-chart fa-fw"></span>
                                     <label id="ns2Label">Statistics Per Third Party</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="NS2">
+                                <div class="panel-body in" id="NS2">
 
                                     <div class="row">
                                         <div class="col-sm-1" id="radioSort">
@@ -872,12 +870,11 @@
                             </div>
 
                             <div class="panel panel-default" id="NS3Panel">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#NS3">
+                                <div class="panel-heading card" data-target="#NS3">
                                     <span class="fa fa-pie-chart fa-fw"></span>
                                     <label id="ns3Label">Requests List</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="NS3">
+                                <div class="panel-body in" id="NS3">
                                     <table id="requestTable" class="table table-hover display"
                                            name="requestTable"></table>
                                 </div>
