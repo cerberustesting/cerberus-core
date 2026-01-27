@@ -31,6 +31,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusEventException;
@@ -96,9 +97,8 @@ public class RobotProxyService implements IRobotProxyService {
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
 
-            //TODO
-            tce.addExecutionLog("","Proxy started on port "+json.getInt("port"));
-            tce.addExecutionLog("", "Proxy Response");
+            tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Proxy started on port :"+json.getInt("port"));
+            tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Proxy config : "+json.toString());
 
             LOG.debug("Cerberus Robot Proxy started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");
 
@@ -119,15 +119,19 @@ public class RobotProxyService implements IRobotProxyService {
              */
             try {
                 // Ask the Proxy to stop.
-                if (tce.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())) {
+                if (tce.getRobotExecutorObj() != null &&
+                        (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())||
+                        RobotExecutor.PROXY_TYPE_MITMPROXY.equals(tce.getRobotExecutorObj().getExecutorProxyType()))) {
 
                     String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
 
+                    tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Shutting down of Cerberus Robot Proxy calling : "+ urlStop);
                     LOG.debug("Shutting down of Cerberus Robot Proxy calling : '{}'", urlStop);
 
                     InputStream is = new URL(urlStop).openStream();
                     is.close();
 
+                    tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Cerberus Robot Proxy shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
                     LOG.debug("Cerberus Robot Proxy shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
 
                 }
@@ -197,7 +201,7 @@ public class RobotProxyService implements IRobotProxyService {
     }
 
     @Override
-    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system, Integer indexFrom) {
+    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, TestCaseExecution tce, Integer indexFrom) {
 
         JSONObject har = new JSONObject();
         try {
@@ -205,7 +209,9 @@ public class RobotProxyService implements IRobotProxyService {
             // Generate URL to Cerberus executor with parameter to reduce the answer size by removing response content.
             String url = getExecutorURL("", withContent, exHost, exPort, exUuid);
 
+            tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Getting Network Traffic content from URL : " + url);
             LOG.debug("Getting Network Traffic content from URL : " + url);
+
             AnswerItem<AppService> result = new AnswerItem<>();
             result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
 

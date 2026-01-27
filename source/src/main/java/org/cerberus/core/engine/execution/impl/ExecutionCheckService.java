@@ -367,7 +367,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private boolean checkExecutorProxy(TestCaseExecution tce) {
 
         //if executor proxy active, check cerberus-executor is available
-        if (tce.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())) {
+        if (tce.getRobotExecutorObj() != null &&
+                (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())||
+                RobotExecutor.PROXY_TYPE_MITMPROXY.equals(tce.getRobotExecutorObj().getExecutorProxyType()))) {
 
             //If ExecutorProxyServiceHost is null or empty, use the Robot Host
             if (tce.getRobotExecutorObj().getExecutorProxyServiceHost() == null || tce.getRobotExecutorObj().getExecutorProxyServiceHost().isEmpty()) {

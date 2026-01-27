@@ -1953,7 +1953,8 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
+            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())&&
+                !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -1969,7 +1970,7 @@ public class ActionService implements IActionService {
 
             // We now get the har data.
             boolean doWithResponse = ParameterParserUtil.parseBooleanParam(withResponseContent, false);
-            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
+            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID(), exe, indexFrom);
 
             har = harService.enrichWithStats(har, exe.getCountryEnvApplicationParam().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
@@ -2007,7 +2008,9 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
+            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())&&
+                    !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()))
+                    || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;

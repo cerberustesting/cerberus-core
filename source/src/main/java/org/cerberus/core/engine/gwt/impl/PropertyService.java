@@ -1126,7 +1126,8 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, boolean forceCalculation) {
-        if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyType())) {
+        if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyType())||
+           RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyType())) {
             String jsonPath = testCaseExecutionData.getValue2();
             if (StringUtil.isEmptyOrNull(jsonPath)) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);
@@ -1145,7 +1146,7 @@ public class PropertyService implements IPropertyService {
                 }
 
                 JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorProxyServiceHost(), execution.getRobotExecutorObj().getExecutorProxyServicePort(),
-                        execution.getRemoteProxyUUID(), execution.getSystem(), indexFrom);
+                        execution.getRemoteProxyUUID(), execution, indexFrom);
 
                 harRes = harService.enrichWithStats(harRes, execution.getCountryEnvApplicationParam().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());
 

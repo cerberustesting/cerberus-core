@@ -1654,7 +1654,9 @@ public class RobotServerService implements IRobotServerService {
 
     private Proxy getProxyFromExecutor(RobotExecutor executor, Integer remoteProxyPort) {
 
-        if (executor != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())) {
+        if (executor != null &&
+                (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())||
+                RobotExecutor.PROXY_TYPE_MITMPROXY.equals(executor.getExecutorProxyType()))) {
             Proxy proxy = new Proxy();
             proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
             proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
@@ -1778,14 +1780,15 @@ public class RobotServerService implements IRobotServerService {
             try {
                 // Get Har File when Cerberus Robot Proxy is activated.
                 // If proxy started and parameter verbose >= 1 activated
-                if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())
+                if ((RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())||
+                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(tce.getRobotExecutorObj().getExecutorProxyType()))
                         && tce.getVerbose() >= 1 && (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false))) {
 
                     // Before collecting the stats, we wait the network idles for few minutes
                     executorService.waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), tce.getRemoteProxyUUID(), tce.getSystem());
 
                     // We now get the har data.
-                    JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), tce.getRemoteProxyUUID(), tce.getSystem(), 0);
+                    JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), tce.getRemoteProxyUUID(), tce, 0);
 
                     // and enrich it with stat entry.
                     har = harService.enrichWithStats(har, tce.getCountryEnvApplicationParam().getDomain(), tce.getSystem(), tce.getNetworkTrafficIndexList());

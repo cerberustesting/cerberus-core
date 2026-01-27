@@ -66,7 +66,7 @@ public interface IRobotProxyService {
      * @return
      * @throws CerberusException
      */
-    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, String system, Integer indexFrom) throws CerberusException;
+    public JSONObject getHar(String urlFilter, boolean withContent, String exHost, Integer exPort, String exUuid, TestCaseExecution tce, Integer indexFrom) throws CerberusException;
 
     /**
      *
