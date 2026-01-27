@@ -4,7 +4,8 @@
 
 *Improvements / New features*
 [square]
-* none
+* GetFormJS property is now available for all application type.
+* Integration with the new proxy dependency of cerberus-robot-proxy (MITMPROXY).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

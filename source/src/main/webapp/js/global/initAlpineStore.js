@@ -50,7 +50,7 @@ document.addEventListener('alpine:init', () => {
                     this.hoverPos = {top: rect.top + window.scrollY, left: rect.right + window.scrollX};
                     this.showSubMenu[menu] = true;
                 }
-            }, 300);
+            }, 50);
         },
 
         leaveMenu(menu){
@@ -59,7 +59,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && !this.hoverMenu[menu] && !this.hoverSubMenu[menu]) {
                         this.showSubMenu[menu] = false;
                     }
-                }, 300);
+                }, 50);
         },
 
         enterSubMenu(menu){
@@ -68,7 +68,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && (this.hoverMenu[menu] || this.hoverSubMenu[menu])) {
                         this.showSubMenu[menu] = true;
                     }
-                }, 300);
+                }, 50);
         },
 
         leaveSubMenu(menu){
@@ -77,7 +77,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && !this.hoverMenu[menu] && !this.hoverSubMenu[menu]) {
                         this.showSubMenu[menu] = false;
                     }
-                }, 300);
+                }, 50);
         },
 
 

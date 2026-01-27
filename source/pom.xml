@@ -53,6 +53,8 @@
         <groovy.version>3.0.11</groovy.version>
         <!--        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>-->
         <groovy-sandbox.version>1.19</groovy-sandbox.version>
+        <!-- Rhino Version -->
+        <mozilla-rhino.version>1.8.1</mozilla-rhino.version>
         <!-- Appium/Selenium scope Version -->
         <!--        <appium.version>7.2.0</appium.version>-->
         <appium.version>8.6.0</appium.version>
@@ -284,6 +286,13 @@
             <groupId>org.kohsuke</groupId>
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
+        </dependency>
+
+        <!-- Rhino -->
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${mozilla-rhino.version}</version>
         </dependency>
 
         <!-- Appium/Selenium scope -->

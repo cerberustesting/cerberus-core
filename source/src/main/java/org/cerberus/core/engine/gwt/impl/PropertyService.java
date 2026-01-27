@@ -72,6 +72,7 @@ import org.cerberus.core.service.datalib.IDataLibService;
 import org.cerberus.core.service.groovy.IGroovyService;
 import org.cerberus.core.service.har.IHarService;
 import org.cerberus.core.service.json.IJsonService;
+import org.cerberus.core.service.rhino.IRhinoService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
@@ -149,6 +150,8 @@ public class PropertyService implements IPropertyService {
     private IRobotProxyService executorService;
     @Autowired
     private IHarService harService;
+    @Autowired
+    private IRhinoService rhinoService;
 
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution execution,
@@ -1421,10 +1424,20 @@ public class PropertyService implements IPropertyService {
                 }
 
             } else {
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
-                res.setDescription(res.getDescription().replace("%APPTYPE%", execution.getAppTypeEngine()));
-                res.setDescription(res.getDescription().replace("%PROPTYPE%", executionData.getType()));
-                executionData.setPropertyResultMessage(res);
+                AnswerItem<String> resultJS = this.rhinoService.eval(execution, script);
+                if (resultJS.isCodeEquals(100)) {
+                    valueFromJS = resultJS.getItem();
+                    executionData.setValue(valueFromJS);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_JS);
+                    res.setDescription(res.getDescription().replace("%SCRIPT%", script));
+                    res.resolveDescription("VALUE", valueFromJS);
+                    executionData.setPropertyResultMessage(res);
+                } else {
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
+                    msg.setDescription(msg.getDescription().replace("%EXCEPTION%", resultJS.getMessageDescription()));
+                    executionData.setPropertyResultMessage(msg);
+                }
+
             }
         }
         return executionData;
