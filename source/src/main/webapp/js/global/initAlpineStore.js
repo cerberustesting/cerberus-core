@@ -50,7 +50,7 @@ document.addEventListener('alpine:init', () => {
                     this.hoverPos = {top: rect.top + window.scrollY, left: rect.right + window.scrollX};
                     this.showSubMenu[menu] = true;
                 }
-            }, 50);
+            }, 100);
         },
 
         leaveMenu(menu){
@@ -59,7 +59,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && !this.hoverMenu[menu] && !this.hoverSubMenu[menu]) {
                         this.showSubMenu[menu] = false;
                     }
-                }, 50);
+                }, 100);
         },
 
         enterSubMenu(menu){
@@ -68,7 +68,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && (this.hoverMenu[menu] || this.hoverSubMenu[menu])) {
                         this.showSubMenu[menu] = true;
                     }
-                }, 50);
+                }, 100);
         },
 
         leaveSubMenu(menu){
@@ -77,27 +77,7 @@ document.addEventListener('alpine:init', () => {
                     if (!this.expanded && !this.hoverMenu[menu] && !this.hoverSubMenu[menu]) {
                         this.showSubMenu[menu] = false;
                     }
-                }, 50);
-        },
-
-
-        handleEnter() {
-            if (!this.hidden) {
-                this.hover = true
-                if (!this.expanded) {
-                    this.hoverTimeout = setTimeout(() => {
-                        if (this.hover) this.showLogo = false
-                    }, 1000) // délai 1s
-                }
-            }
-        },
-
-        handleLeave() {
-            if (!this.hidden) {
-                this.hover = false
-                this.showLogo = true
-                if (this.hoverTimeout) clearTimeout(this.hoverTimeout)
-            }
+                }, 100);
         }
     });
 
@@ -110,7 +90,7 @@ document.addEventListener('alpine:init', () => {
         },
         size: {
             expanded: { width: 40, height: 40 },
-            collapsed: { width: 40, height: 40 }
+            collapsed: { width: 32, height: 32 }
         }
     });
 

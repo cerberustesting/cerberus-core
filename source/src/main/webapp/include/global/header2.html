@@ -1,43 +1,57 @@
 <!-- Sidebar -->
-<aside id="crb_sidebar" class="crb_sidebar"
+<aside id="crb_sidebar"
+       class="crb_sidebar transition-all duration-300 ease-in-out overflow-hidden"
        :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
        @mouseenter="$store.sidebar.handleEnter()"
        @mouseleave="$store.sidebar.handleLeave()"
        x-show="!$store.sidebar.hidden">
 
     <!-- Logo & Header -->
-    <div class="flex items-center justify-between p-6 border-b border-slate-700/50">
-        <!-- Logo -->
-        <div class="flex items-center space-x-3 cursor-pointer"
-             @click="window.location.href='./'"
-             x-show="$store.sidebar.expanded || $store.sidebar.showLogo"
-             x-transition.opacity.scale.duration.200ms>
+    <div :class="$store.sidebar.expanded
+        ? 'flex flex-row items-center justify-between p-6'
+        : 'flex flex-col items-center p-6 gap-2'"
+        class="border-b border-slate-700/50 transition-all duration-300">
 
+        <!-- Left: Logo + App name -->
+        <div class="flex items-center gap-3 cursor-pointer"
+             @click="window.location.href='./'">
+
+            <!-- Logo -->
             <img alt="Logo"
                  :src="$store.sidebar.expanded
-                    ? $store.branding.logo.expanded
-                    : $store.branding.logo.collapsed"
-                 :width="$store.sidebar.expanded
+                ? $store.branding.logo.expanded
+                : $store.branding.logo.collapsed"
+                 :style="`
+                width: ${$store.sidebar.expanded
                     ? $store.branding.size.expanded.width
-                    : $store.branding.size.collapsed.width"
-                 :height="$store.sidebar.expanded
+                    : $store.branding.size.collapsed.width}px;
+                height: ${$store.sidebar.expanded
                     ? $store.branding.size.expanded.height
-                    : $store.branding.size.collapsed.height"
-                 class="transition-all duration-200"/>
+                    : $store.branding.size.collapsed.height}px;
+             `"
+                 class="transition-all duration-300 object-contain"/>
+
+            <!-- App name (only expanded) -->
             <span x-show="$store.sidebar.expanded && $store.branding.showAppName"
                   x-transition.opacity.duration.200ms
-                  class="font-bold text-xl tracking-tight"
+                  class="font-bold text-xl tracking-tight whitespace-nowrap"
                   x-text="$store.branding.appName">
-            </span>
+        </span>
         </div>
 
         <!-- Burger menu -->
-        <button class="p-2 h-8 rounded-lg hover:bg-slate-700/50 transition-colors duration-200"
-                @click="$store.sidebar.toggleSidebar()"
-                x-show="$store.sidebar.expanded || (!$store.sidebar.expanded && $store.sidebar.hover && !$store.sidebar.showLogo)"
-                x-transition.opacity.scale.duration.200ms>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        <button @click="$store.sidebar.toggleSidebar()"
+                x-transition.opacity.scale.duration.200ms
+                class="p-2 h-8 rounded-lg hover:bg-slate-700/50 transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 :class="$store.sidebar.expanded ? 'h-5 w-5' : 'h-4 w-4'"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
         </button>
     </div>
