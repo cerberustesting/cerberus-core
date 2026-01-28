@@ -746,7 +746,7 @@ function refreshTagList(tagList1, reportArea) {
  * @param nextRuns
  */
 function renderCampaignGrid(container, tagList1, nextRuns) {
-    const grid = $(`<div class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>`);
+    const grid = $(`<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-6"></div>`);
     tagList1.campaigns.forEach(name => {
         const tags = tagList1.tagLists[name] || [];
         const nextRun = nextRuns.find(n =>
@@ -767,28 +767,36 @@ function renderCampaignGrid(container, tagList1, nextRuns) {
 function renderCampaignCard(campaignName, tagExecutions, nextRun) {
     const stats = computeCampaignStats(tagExecutions);
     return $(`<div class="crb_card_tag">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="tag" class="w-4 h-4 text-sky-500 transition-colors flex-shrink-0"></i>
-                        <span class="text-sm font-semibold truncate">
-                            ${campaignName === "noCampaign"
-                            ? "--- No campaign defined ---"
-                            : campaignName}
-                        </span>
+                <div class="flex justify-between items-start mb-8 gap-4">
+                    <div class="flex flex-col gap-1 min-w-0 min-h-[1.5rem]">
+                        <!-- Ligne 1 : campagne -->
+                        <div class="flex items-center gap-2 min-w-0">
+                            <i data-lucide="tag"
+                               class="w-4 h-4 text-sky-500 flex-shrink-0"></i>
+                
+                            <span class="text-sm font-semibold truncate">
+                                ${campaignName === "noCampaign" ? "--- No campaign defined ---" : campaignName}
+                            </span>
+                        </div>
+                        <!-- Ligne 2 : next run -->
+                        ${nextRun ? `<div class="pl-6 text-xs text-gray-500 truncate"> ${renderNextRunBadge(nextRun)}</div>` : ""}
                     </div>
-                    
-                    <div class="flex items-center gap-2">
-                        ${nextRun ? renderNextRunBadge(nextRun) : ""}
+                
+                    <!-- Droite : badge succès -->
+                    <div class="flex-shrink-0">
                         ${renderSuccessBadge(stats.successRate)}
                     </div>
                 </div>
                 <!-- Content row -->
-                <div class="flex items-center gap-4">
+                <div class="flex flex-col md:flex-row md:items-center gap-4 overflow-x-auto no-scrollbar">
                     <!-- Trend graph -->
-                    <div class="w-24 top-0 flex-shrink-0">${renderTrendGraph(stats.responseTime, stats.status)}
+                    <div class="w-full md:w-24 flex-shrink-0">
+                        <div class="relative w-full h-6">
+                            ${renderTrendGraph(stats.responseTime, stats.status)}
+                        </div>
                     </div>
                     <!-- Progress -->
-                    <div class="flex-1 mt-5">
+                    <div class="flex-1 mt-2 md:mt-0">
                         <!-- Progress bar -->
                         <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded">
                             <div class="h-2 rounded bg-green-500" style="width:${stats.successRate}%"></div>
@@ -810,7 +818,7 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun) {
                         </div>
                     </div>
                     <!-- Status dots -->
-                    <div class="flex gap-1 flex-shrink-0 top-0">
+                    <div class="flex flex-wrap gap-1 justify-start md:justify-end md:flex-nowrap md:flex-shrink-0">
                         ${renderExecutionDots(stats.lastResults, tagExecutions)}
                     </div>
                 </div>
@@ -904,7 +912,7 @@ function renderExecutionDots(results, obj = []) {
 
             const encodedTag = encodeURIComponent(exec.tag || "");
             return `
-                <span class="execution-dot w-8 h-8 flex items-center justify-center rounded-xl cursor-pointer
+                <span class="execution-dot w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-xl cursor-pointer
                     ${exec.nbPE > 0
                 ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
                 : status === "OK"
