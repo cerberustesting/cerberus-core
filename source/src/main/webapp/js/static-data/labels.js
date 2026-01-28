@@ -90,6 +90,13 @@ const headerLabel = {
     "documentationd3": { "en": "Usecase Documentation", "fr": "Documentation Cas d’Usage" },
     "interactivetuto": { "en": "Interactive Tutorial", "fr": "Tutoriel Interactif" },
 
+    // === Section History ===
+    "history": {"en": "History", "fr":"Historique"},
+    "lastseen": {"en": "Last seen", "fr":"Elements récents"},
+    "lastseentestcases": {"en": "TestCases", "fr":"Cas de Test"},
+    "lastseenexecutions": {"en": "Executions", "fr":"Executions"},
+    "lastseencampaigns": {"en": "Campaigns", "fr":"Campagnes"},
+
     // === Section User ===
     "theme": {"en": "Theme", "fr":"Thème"},
     "lang": {"en": "Language", "fr":"Langue"},

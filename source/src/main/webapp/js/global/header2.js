@@ -210,6 +210,64 @@ function userMenu() {
     }
 }
 
+function quickHistoryMenu() {
+    return {
+        openMenu: false,
+        testcases: [],
+        executions: [],
+        campaigns: [],
+
+        init() {
+            this.testcases = JSON.parse(localStorage.getItem('historyTestcases') || '[]')
+                .slice(-6)
+                .reverse()
+                .map(t => ({
+                    name: `${t.test} ${t.testcase}`,
+                    desc: t.description || '',
+                    href: `TestCaseScript.jsp?test=${encodeURIComponent(t.test)}&testcase=${encodeURIComponent(t.testcase)}`
+                }));
+
+            this.executions = JSON.parse(localStorage.getItem('historyExecutions') || '[]')
+                .slice(-6)
+                .reverse()
+                .map(e => ({
+                    id: e.id,
+                    status: e.controlStatus,
+                    name: `${e.test} ${e.testcase}`,
+                    env: `${e.country} ${e.environment} ${e.robot}`,
+                    href: `TestCaseExecution.jsp?executionId=${e.id}`
+                }));
+
+            this.campaigns = JSON.parse(localStorage.getItem('historyCampaigns') || '[]')
+                .slice(-6)
+                .reverse()
+                .map(c => ({
+                    tag: c.tag,
+                    href: `ReportingExecutionByTag.jsp?Tag=${encodeURIComponent(c.tag)}`
+                }));
+        },
+
+        open() {
+            this.openMenu = true;
+            this.$nextTick(() => this.position());
+        },
+
+        close() {
+            this.openMenu = false;
+        },
+
+        position() {
+            const sidebar = document.getElementById('crb_sidebar').getBoundingClientRect();
+            const dropdown = this.$refs.dropdown;
+            const offset = 12;
+
+            dropdown.style.left = `${sidebar.right}px`;
+            dropdown.style.bottom = `${window.innerHeight - sidebar.bottom}px`;
+        }
+    }
+}
+
+
 /*function refreshHistoryMenu() {
 
     var lastExecutions= [];

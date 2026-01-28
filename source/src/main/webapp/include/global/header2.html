@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="crb_sidebar"
+<aside id="crb_sidebar" class="crb_sidebar"
        :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
        @mouseenter="$store.sidebar.handleEnter()"
        @mouseleave="$store.sidebar.handleLeave()"
@@ -816,6 +816,105 @@
         </div>
 
     </nav>
+    <!-- Quick History Shortcut -->
+    <div class="border-t border-slate-700 hover:bg-slate-700/50  sticky bottom-[4.5rem] z-50 px-4"
+         x-data="quickHistoryMenu()"
+         @mouseenter="open()"
+         @mouseleave="close()">
+
+        <!-- Bouton raccourci -->
+        <div id="quick_history_button"
+             class="flex items-center w-full gap-4 px-4 py-3 rounded-xl group transition-all duration-200 relative">
+            <!-- Icône horloge -->
+            <i data-lucide="clock" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+            <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','history')"></span>
+        </div>
+
+        <!-- Popin téléportée -->
+        <template x-teleport="body">
+            <div
+                    x-bind="$data"
+                    x-show="openMenu"
+                    x-transition.opacity.duration.150ms
+                    x-ref="dropdown"
+                    class="fixed w-[900px] max-h-[420px]
+                   rounded-xl border border-slate-600
+                   bg-slate-800 text-white shadow-xl
+                   overflow-hidden z-50"
+                    @mouseenter="open()"
+                    @mouseleave="close()"
+            >
+
+                <!-- Header -->
+                <div class="px-5 py-3 border-b border-slate-700 font-semibold text-slate-300">
+                    <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseen')"></span>
+                </div>
+
+                <!-- 3 colonnes -->
+                <div class="grid grid-cols-3 divide-x divide-slate-700 max-h-[360px] overflow-auto">
+
+                    <!-- Testcases -->
+                    <div class="p-4 space-y-2">
+                        <div class="text-xs font-semibold text-slate-400">
+                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseentestcases')"></span>
+                        </div>
+
+                        <template x-for="tc in testcases" :key="tc.href">
+                            <a :href="tc.href"
+                               class="block px-2 py-1 !text-slate-300 rounded hover:bg-slate-700">
+                                <div class="text-sm" x-text="tc.name"></div>
+                                <div class="text-xs text-slate-400"
+                                     x-show="tc.desc"
+                                     x-text="tc.desc"></div>
+                            </a>
+                        </template>
+                    </div>
+
+                    <!-- Executions -->
+                    <div class="p-4 space-y-2">
+                        <div class="text-xs font-semibold text-slate-400">
+                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseenexecutions')"></span>
+                        </div>
+
+                        <template x-for="exec in executions" :key="exec.href">
+                            <a :href="exec.href"
+                               class="flex !text-slate-300 items-start gap-2 px-2 py-1 rounded hover:bg-slate-700">
+                            <span class="text-xs font-mono text-slate-400 w-10"
+                                  x-text="exec.id"></span>
+
+                                <div class="flex-1">
+                                    <div class="text-sm" x-text="exec.name"></div>
+                                    <div class="text-xs text-slate-400"
+                                         x-text="exec.env"></div>
+                                </div>
+
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded"
+                                      :class="exec.status === 'OK'
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-red-500/20 text-red-400'"
+                                      x-text="exec.status"></span>
+                            </a>
+                        </template>
+                    </div>
+
+                    <!-- Campaigns -->
+                    <div class="p-4 space-y-2">
+                        <div class="text-xs font-semibold text-slate-400">
+                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseencampaigns')"></span>
+                        </div>
+
+                        <template x-for="camp in campaigns" :key="camp.href">
+                            <a :href="camp.href"
+                               class="block !text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
+                               x-text="camp.tag"></a>
+                        </template>
+                    </div>
+
+                </div>
+            </div>
+        </template>
+    </div>
+
     <!-- User Menu -->
     <div class="mt-auto sticky bottom-0 z-50 bg-slate-800/90 border-t border-slate-700"
          x-data="userMenu()" @click.outside="close()">
@@ -842,7 +941,7 @@
             <div x-show="userMenuOpen"
                  x-transition.opacity.duration.200ms
                  x-ref="navUserDropdown"
-                 class="fixed w-72 h-[400px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
+                 class="fixed w-72 h-[250px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
                  style="left:0; top:0;"
                  @click.outside="userMenuOpen = false"
                  @click.stop
@@ -920,66 +1019,6 @@
                             </div>
                         </div>
                     </li>
-
-
-                    <hr class="border-slate-700 my-1">
-
-                    <!-- History: Testcases, Executions, Campaigns -->
-                    <div x-data="{ lastTests: [], lastExecutions: [], lastCampaigns: [] }" x-init="
-                        lastTests = JSON.parse(localStorage.getItem('historyTestcases')||'[]').reverse().map(item=>({
-                            name: item.test + ' ' + item.testcase,
-                            description: item.description||'',
-                            href: 'TestCaseScript.jsp?test=' + encodeURIComponent(item.test) + '&testcase=' + encodeURIComponent(item.testcase)
-                        }));
-                        lastExecutions = JSON.parse(localStorage.getItem('historyExecutions')||'[]').reverse().map(item=>({
-                            id: item.id,
-                            status: item.controlStatus,
-                            description: (item.test + ' ' + item.testcase + ' | ' + item.country + ' ' + item.environment + ' ' + item.robot) + (item.description ? ' | '+item.description:''),
-                            href: 'TestCaseExecution.jsp?executionId=' + item.id
-                        }));
-                        lastCampaigns = JSON.parse(localStorage.getItem('historyCampaigns')||'[]').reverse().map(item=>({
-                            tag: item.tag,
-                            href: 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(item.tag)
-                        }));
-                    ">
-
-                        <!-- Last Testcases -->
-                        <template x-if="lastTests.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lasttestcases')"></li>
-                        </template>
-                        <template x-for="test in lastTests" :key="test.href">
-                            <li>
-                                <a :href="test.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
-                                    <span x-text="test.name"></span>
-                                    <div x-show="test.description" class="text-xs text-slate-400" x-text="test.description"></div>
-                                </a>
-                            </li>
-                        </template>
-
-                        <!-- Last Executions -->
-                        <template x-if="lastExecutions.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lasttestexecutions')"></li>
-                        </template>
-                        <template x-for="exec in lastExecutions" :key="exec.href">
-                            <li>
-                                <a :href="exec.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors">
-                                    <span x-text="exec.id"></span>
-                                    <div class="text-xs text-slate-400" x-text="exec.description"></div>
-                                </a>
-                            </li>
-                        </template>
-
-                        <!-- Last Campaigns -->
-                        <template x-if="lastCampaigns.length>0">
-                            <li class="px-4 py-2 font-semibold text-slate-400 bg-slate-800" x-text="$store.labels.getLabel('header','lastcampaignexecutions')"></li>
-                        </template>
-                        <template x-for="camp in lastCampaigns" :key="camp.href">
-                            <li>
-                                <a :href="camp.href" class="block px-4 py-1 hover:bg-slate-700 rounded transition-colors" x-text="camp.tag"></a>
-                            </li>
-                        </template>
-
-                    </div>
                 </ul>
             </div>
         </template>
