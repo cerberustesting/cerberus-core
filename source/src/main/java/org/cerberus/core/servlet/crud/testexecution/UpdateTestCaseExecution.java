@@ -124,6 +124,13 @@ public class UpdateTestCaseExecution extends HttpServlet {
         executionToUpdate.setExecutor(executor);
         executionToUpdate.setUsrModif(user);
         testCaseExecutionService.updateTCExecution(executionToUpdate);
+        
+        // Update Tags table with end of queue data using the tag from TestCaseExecution
+        String tag = executionToUpdate.getTag();
+        if (tag != null && !tag.isEmpty()) {
+            org.cerberus.core.crud.service.ITagService tagService = appContext.getBean(org.cerberus.core.crud.service.ITagService.class);
+            tagService.updateEndOfQueueData(tag);
+        }
     }
 
     /**
