@@ -104,6 +104,108 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
+function harViewer() {
+    return {
+        har: null,
+        loaded: false,
+        loading: false,
+
+        filter: '',
+        statusFilter: 'all',
+        sortBy: 'time',
+        selected: null,
+
+        init() {
+            // Watch le store pour charger automatiquement le HAR
+            this.$watch('$store.har.enrichedHarFile', (file) => {
+                if (file) {
+                    this.loadFromApi(file);
+                }
+            });
+        },
+
+        load(har) {
+            this.har = har;
+            this.har.log.entries.forEach((e, i) => e._id = i);
+            this.loaded = true;
+        },
+
+        loadFromApi(file) {
+            if (this.loaded || this.loading || !file?.fileName) return;
+
+            this.loading = true;
+
+            const url =
+                `./ReadTestCaseExecutionMedia` +
+                `?filename=${encodeURIComponent(file.fileName)}` +
+                `&filetype=${file.fileType || 'JSON'}` +
+                `&filedesc=${encodeURIComponent(file.fileDesc || '')}` +
+                `&auto=true&autoContentType=N`;
+
+            fetch(url)
+                .then(r => r.text())
+                .then(txt => this.load(JSON.parse(txt)))
+                .finally(() => this.loading = false);
+        },
+
+        select(entry) {
+            console.log(entry);
+            this.selected = entry; },
+
+        statusClass(status) {
+            if (status >= 500) return 'dark:bg-red-900 dark:text-red-300 bg-red-300 text-red-900';
+            if (status >= 400) return 'dark:bg-orange-900 dark:text-orange-300 bg-orange-300 text-orange-900';
+            return 'dark:bg-green-900 dark:text-green-300 bg-green-300 text-green-900';
+        },
+
+        get filteredEntries() {
+            if (!this.har) return [];
+
+            let entries = this.har.log.entries;
+
+            if (this.filter) {
+                entries = entries.filter(e =>
+                    e.request.url.toLowerCase().includes(this.filter.toLowerCase())
+                );
+            }
+
+            if (this.statusFilter !== 'all') {
+                entries = entries.filter(e => {
+                    const s = e.response.status;
+                    return this.statusFilter === '2xx' ? s < 300 :
+                        this.statusFilter === '4xx' ? s >= 400 && s < 500 :
+                            s >= 500;
+                });
+            }
+
+            // SORT IN-PLACE instead of creating a new array
+            return entries.sort((a, b) => {
+                if (this.sortBy === 'time') return b.time - a.time;
+                if (this.sortBy === 'status') return b.response.status - a.response.status;
+                return b.response.content.size - a.response.content.size;
+            });
+        }
+    }
+}
+
+function highlightJson(json) {
+    if (!json) return '';
+    return JSON.stringify(json, null, 2)
+    .replace(/(&)/g, '&amp;')
+    .replace(/(<)/g, '&lt;')
+    .replace(/(".*?")(?=\s*:)/g, '<span class="json-key">$1</span>')
+    .replace(/:\s*(".*?")/g, ': <span class="json-string">$1</span>')
+    .replace(/:\s*(\d+|\btrue\b|\bfalse\b|\bnull\b)/g,
+    ': <span class="json-value">$1</span>');
+}
+
+//Store enrichHarFile link to load it into table
+document.addEventListener('alpine:init', () => {
+    Alpine.store('har', {
+        enrichedHarFile: null
+    });
+});
+
 // Add the testCase to the page title (<head>)
 function updatePageTitle(testcase, doc) {
     if (typeof testcase !== 'undefined') {
@@ -244,6 +346,16 @@ function loadExecutionInformation(executionId, steps, sockets) {
                 }
 
             }
+
+            const enrichedHarFile = tce.fileList?.find(f =>
+                f.fileName?.endsWith("enriched_har.json")
+            );
+
+            if (enrichedHarFile) {
+                Alpine.store('har').enrichedHarFile = enrichedHarFile; // le composant harViewer va charger automatiquement
+            }
+
+
             $("#seeProperties").click(function () {
                 $("#propertiesModal").modal('show');
             });
@@ -1139,10 +1251,11 @@ function update_thirdParty_Chart() {
 
     // Display unknown hosts in warning mode.
     $("#detailUnknownList").empty();
-    let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
+    let entryUnknown =$('<li class="">');
+        //let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
     $("#detailUnknownList").append(entryUnknown);
     for (var key in unknownDomain) {
-        let entryUnknown = $('<li class="list-group-item list-group-item-danger">').text(unknownDomain[key]);
+        let entryUnknown = $('<li class="">').text(unknownDomain[key]);
         $("#detailUnknownList").append(entryUnknown);
     }
 
@@ -1296,6 +1409,10 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         title: {
             display: true,
             text: titletext
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
         }
     };
 

@@ -55,6 +55,7 @@
         <%@ include file="include/transversalobject/Robot.html" %>
         <%@ include file="include/transversalobject/Application.html" %>
         <%@ include file="include/transversalobject/Invariant.html" %>
+        <jsp:include page="include/templates/selectDropdown.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 
             <%@ include file="include/global/messagesArea.html" %>
@@ -279,8 +280,8 @@
                                 </button>
                                 <!-- Network -->
                                 <button @click="tab = 'tabNetwork'"
-                                        :class="tab === 'tabNetwork' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                    :class="tab === 'tabNetwork' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                    class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="network" class="w-4 h-4"></i>Network
                                 </button>
                                 <!-- Network -->
@@ -798,8 +799,8 @@
                         <div x-show="tab === 'tabNetwork'" class="w-full">
                         <div id="tabNetwork">
 
-                            <div class="panel" id="filterContainer">
-                                <div class="panel-body" id="FilterIndex">
+                            <div class="crb_card" id="filterContainer">
+                                <div class="" id="FilterIndex">
                                     <label for="selectIndex">Index :</label>
                                     <div class="row" id="indexFilter">
                                         <div class="input-group">
@@ -815,61 +816,81 @@
                                 </div>
                             </div>
 
-                            <div class="panel panel-default" id="NS1Panel">
-                                <div class="panel-heading card" data-target="#NS1">
-                                    <span class="fa fa-pie-chart fa-fw"></span>
-                                    <label id="ns1Label">Global Statistics</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="NS1">
+
+                                <!-- CARD 1 -->
+                                <div class="crb_card p-4 flex flex-col">
+                                    <div class="flex-1 flex items-center justify-center">
+                                        <canvas id="myChart1"></canvas>
+                                    </div>
+
+                                    <!-- ghost footer -->
+                                    <div class="h-[42px] invisible"></div>
                                 </div>
-                                <div class="panel-body in" id="NS1">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <canvas id="myChart1"></canvas>
+
+                                <!-- CARD 2 -->
+                                <div class="crb_card p-4 flex flex-col">
+                                    <div class="flex-1 flex items-center justify-center">
+                                        <canvas id="myChart2"></canvas>
+                                    </div>
+
+                                    <!-- ghost footer -->
+                                    <div class="h-[42px] invisible"></div>
+                                </div>
+
+                                <!-- CARD 3 (référence) -->
+                                <div class="crb_card p-4 flex flex-col">
+                                    <div class="flex-1">
+                                        <div class="flex gap-2 mb-2">
+                                            <button id="sortSize" class="btn btn-default">by Size</button>
+                                            <button id="sortRequest" class="btn btn-default">by Request</button>
+                                            <button id="sortTime" class="btn btn-default">by Max Time</button>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <canvas id="myChart2"></canvas>
-                                        </div>
+                                        <canvas id="myChart3"></canvas>
                                     </div>
                                 </div>
+
                             </div>
 
-                            <div class="panel panel-default" id="NS2Panel">
-                                <div class="panel-heading card" data-target="#NS2">
-                                    <span class="fa fa-pie-chart fa-fw"></span>
-                                    <label id="ns2Label">Statistics Per Third Party</label>
-                                </div>
-                                <div class="panel-body in" id="NS2">
 
-                                    <div class="row">
-                                        <div class="col-sm-1" id="radioSort">
-                                            <label id="ns2Label"><span class="glyphicon glyphicon-sort"></span> Sort Third Party</label>
-                                            <button class="btn btn-default pull-left" id="sortSize"
-                                                    style="margin-left: 5px; margin-right: 5px;">by Size
-                                            </button>
-                                            <button class="btn btn-default pull-left" id="sortRequest"
-                                                    style="margin-left: 5px; margin-right: 5px;">by Request
-                                            </button>
-                                            <button class="btn btn-default pull-left" id="sortTime"
-                                                    style="margin-left: 5px; margin-right: 5px;">by Max Time
-                                            </button>
-                                        </div>
-                                        <div class="col-sm-11">
-                                            <canvas id="myChart3"></canvas>
-                                        </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6" id="NS2Panel">
+
+                                <!-- LEFT : Unknown list (1/3) -->
+                                <div class="crb_card p-4 flex flex-col md:col-span-1 h-[420px]">
+
+                                    <!-- Header -->
+                                    <div class="flex items-center gap-2 font-medium text-lg mb-3 shrink-0">
+                                        <i data-lucide="help-circle" class="w-4 h-4 text-blue-600"></i>
+                                        <span>Unknown Requests</span>
                                     </div>
 
-                                    <div class="row" id="detailUnknown">
-                                        <ul class="list-group marginTop25" id="detailUnknownList">
-                                        </ul>
+                                    <!-- Scrollable content -->
+                                    <div class="flex-1 overflow-y-auto pr-1">
+                                        <ul id="detailUnknownList" class="space-y-1 text-sm"></ul>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <canvas id="myChart4"></canvas>
-                                        </div>
-                                    </div>
+
                                 </div>
+
+                                <div class="crb_card p-4 flex flex-col md:col-span-2 h-[420px]">
+
+                                    <!-- Header -->
+                                    <div class="flex items-center gap-2 font-medium text-lg mb-3 shrink-0">
+                                        <svg class="w-4 h-4 text-blue-600" ...></svg>
+                                        <span>Unknown Requests Distribution</span>
+                                    </div>
+
+                                    <!-- Chart container -->
+                                    <div class="flex-1 relative overflow-hidden">
+                                        <canvas id="myChart4" class="w-full h-full"></canvas>
+                                    </div>
+
+                                </div>
+
                             </div>
 
-                            <div class="panel panel-default" id="NS3Panel">
+
+                            <div class="panel panel-default hidden" id="NS3Panel">
                                 <div class="panel-heading card" data-target="#NS3">
                                     <span class="fa fa-pie-chart fa-fw"></span>
                                     <label id="ns3Label">Requests List</label>
@@ -880,7 +901,95 @@
                                 </div>
                             </div>
 
-                        </div>
+                            <div x-show="tab === 'tabNetwork'" x-data="harViewer()" x-ref="harViewer" class="mt-4">
+                                <template x-if="loading">
+                                    <div class="text-slate-400 italic">
+                                        Loading network HAR…
+                                    </div>
+                                </template>
+
+                                <template x-if="!har && !loading">
+                                    <div class="text-slate-400 italic">
+                                        No network data available
+                                    </div>
+                                </template>
+
+                                <div x-show="har" class="flex w-full mt-4 gap-6">
+
+                                    <!-- LEFT : LIST -->
+                                    <div class="crb_card w-2/3 flex flex-col">
+
+                                        <!-- Filters -->
+                                        <div class="p-3 flex gap-2 items-center">
+                                            <input x-model="filter"
+                                                   placeholder="Filter URL..."
+                                                   class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                                                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                                                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"/>
+
+                                            <select x-model="statusFilter" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                                                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                                                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <option value="all">All</option>
+                                                <option value="2xx">2xx</option>
+                                                <option value="4xx">4xx</option>
+                                                <option value="5xx">5xx</option>
+                                            </select>
+
+                                            <select x-model="sortBy" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+                                                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                                                   bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <option value="time">Time</option>
+                                                <option value="status">Status</option>
+                                                <option value="size">Size</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Table -->
+                                        <div class="flex-1 overflow-auto">
+                                            <table class="w-full text-xs">
+                                                <thead class="sticky top-0">
+                                                    <tr>
+                                                        <th class="px-2 py-2 text-left">Method</th>
+                                                        <th class="px-2 py-2 text-left">URL</th>
+                                                        <th class="px-2 py-2">Status</th>
+                                                        <th class="px-2 py-2">Time</th>
+                                                        <th class="px-2 py-2">Size</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template x-for="entry in filteredEntries" :key="entry._id">
+                                                        <tr @click="select(entry)"
+                                                            :class="selected === entry ? 'bg-sky-100/40 dark:bg-sky-900/40' : 'dark:hover:bg-slate-800 hover:bg-slate-200'"
+                                                            class="h-8 cursor-pointer border-b dark:border-slate-800 border-slate-200">
+                                                            <td x-text="entry.request.method" class="px-2 py-1"></td>
+                                                            <td x-text="entry.request.url" class="px-2 py-1 truncate max-w-[400px]"></td>
+                                                            <td class="px-2 py-1 text-center">
+                                                                <span x-text="entry.response.status" :class="statusClass(entry.response.status)" class="px-2 py-1 rounded-lg text-[10px]"></span>
+                                                            </td>
+                                                            <td x-text="entry.time + ' ms'" class="px-2 py-1 text-center"></td>
+                                                            <td x-text="entry.response.content.size + ' B'" class="px-2 py-1 text-center"></td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- RIGHT : DETAILS -->
+                                    <div class="crb_card w-1/3 p-4 overflow-auto crb-pre">
+
+                                        <h2 class="text-sm font-bold mb-2">Request</h2>
+                                        <pre x-html="highlightJson(selected.request)"
+                                            class="json-view text-xs bg-slate-800 p-2 rounded mb-4 overflow-auto"></pre>
+
+                                        <h2 class="text-sm font-bold mb-2">Response</h2>
+                                        <pre x-html="highlightJson(selected.response)"
+                                            class="json-view text-xs bg-slate-800 p-2 rounded overflow-auto"></pre>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Traceability -->

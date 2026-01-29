@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html class="crb_html">
     <head>
-        <meta name="active-menu" content="application">
+        <meta name="active-menu" content="settings">
         <meta name="active-submenu" content="ApplicationList.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>

@@ -605,7 +605,7 @@ function refreshMonitorTable(dataFromWs) {
     let maxAvailableHPixel = document.getElementById("progressMonitor").offsetWidth - wOffsetH;
     let maxNbColumns = maxAvailableHPixel / 120;
 
-    let maxAvailableVPixel = document.getElementById("page-layout").offsetHeight - wOffsetV;
+    let maxAvailableVPixel = document.getElementsByTagName("main").offsetHeight - wOffsetV;
     let boxHeigth = wBoxHeigth;
 
     let maxNblines = maxAvailableVPixel / boxHeigth;

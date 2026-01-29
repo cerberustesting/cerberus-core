@@ -14,3 +14,14 @@
     @apply bg-slate-700/50 ;
     text-decoration: none;
 }
+
+
+/* ===========================
+    PRE
+=========================== */
+.crb-pre pre {
+    all: unset;               /* reset Bootstrap */
+    display: block;
+    white-space: pre;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

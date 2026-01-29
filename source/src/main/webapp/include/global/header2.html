@@ -2,8 +2,6 @@
 <aside id="crb_sidebar"
        class="crb_sidebar transition-all duration-300 ease-in-out overflow-hidden"
        :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
-       @mouseenter="$store.sidebar.handleEnter()"
-       @mouseleave="$store.sidebar.handleLeave()"
        x-show="!$store.sidebar.hidden">
 
     <!-- Logo & Header -->

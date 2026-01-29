@@ -1,0 +1,9 @@
+.json-view {
+    white-space: pre;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    @apply bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200;
+}
+
+.json-key    { @apply text-sky-700 dark:text-sky-300; }
+.json-string { @apply text-green-700 dark:text-green-300; }
+.json-value  { @apply text-amber-700 dark:text-amber-300; }

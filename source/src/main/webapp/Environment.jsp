@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
-        <meta name="active-menu" content="integration">
+        <meta name="active-menu" content="settings">
         <meta name="active-submenu" content="Environment.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
