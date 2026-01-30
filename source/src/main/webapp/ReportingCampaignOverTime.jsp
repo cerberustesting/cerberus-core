@@ -194,7 +194,7 @@
 
                 <div class="col-lg-3" id="KPIPanel">
                     <div class="panel panel-default">
-                        <div class="panel-body collapse in" id="availabiltyChart">
+                        <div class="panel-body" id="availabiltyChart">
                             <div class="row">
                                 <div class="col-xs-8 paddingRight0" id="ChartAvailabilty1" >
                                     <canvas id="canvasAvailability1"></canvas>
@@ -224,57 +224,57 @@
             <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
 
-                    <div id="panelTagDStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
+                    <div id="panelTagDStat" class="panel panel-default">
+                        <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTagDStat">Campaign Duration</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart1">
+                        <div class="panel-body" id="perfChart1">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagDStat" style="height: 400px">
+                                <div class="col-xs-12" id="ChartTagDStat">
                                     <canvas id="canvasTagDStat"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="panelTagEStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart3">
+                    <div id="panelTagEStat" class="panel panel-default">
+                        <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTagEStat">Campaign TestCase coverage & total execution number</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart3">
+                        <div class="panel-body" id="perfChart3">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagEStat" style="height: 400px">
+                                <div class="col-xs-12" id="ChartTagEStat">
                                     <canvas id="canvasTagEStat"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="panelTagSStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart2">
+                    <div id="panelTagSStat" class="panel panel-default">
+                        <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTagSStat">Campaign CI Score & Threshold</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart2">
+                        <div class="panel-body" id="perfChart2">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagSStat" style="height: 400px">
+                                <div class="col-xs-12" id="ChartTagSStat">
                                     <canvas id="canvasTagSStat"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="panelTagStatBar" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart4">
+                    <div id="panelTagStatBar" class="panel panel-default">
+                        <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblTagStatBar">Campaign Execution per status</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="perfChart4">
+                        <div class="panel-body" id="perfChart4">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagBar" style="height: 400px">
+                                <div class="col-xs-12" id="ChartTagBar">
                                     <canvas id="canvasTagBar"></canvas>
                                 </div>
                             </div>
