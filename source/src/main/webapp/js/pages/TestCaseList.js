@@ -157,7 +157,7 @@ function renderOptionsForTestCaseList(data) {
                         </button>`;
 
         // Bouton Mass Update
-                contentToAdd += `
+        contentToAdd += `
             <button id='massUpdateTestCaseButton' type='button'
                 class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
                 style="display:none;">
@@ -167,7 +167,7 @@ function renderOptionsForTestCaseList(data) {
         `;
 
         // Bouton Mass Label
-                contentToAdd += `
+        contentToAdd += `
             <button id='massLabelTestCaseButton' type='button'
                 class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
                 style="display:none;">
@@ -177,7 +177,7 @@ function renderOptionsForTestCaseList(data) {
         `;
 
         // Bouton Mass Delete
-                contentToAdd += `
+        contentToAdd += `
             <button id='massDeleteTestCaseButton' type='button'
                 class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-red-400 h-10'
                 style="display:none;">
@@ -205,16 +205,12 @@ function renderOptionsForTestCaseList(data) {
             $("#createTestCaseButton").off("click").on("click", function () {
                 var firstRowTest = $("#testCaseTable td.sorting_1")[0] !== undefined ? testAutomaticModal : GetURLParameter("test", undefined);
                 //openModalTestCase(firstRowTest, undefined, "ADD");
-                window.dispatchEvent(new CustomEvent('testcase-modal-open', { detail: { defaultTest: firstRowTest } }));
+                window.dispatchEvent(new CustomEvent('testcase-modal-open', {detail: {defaultTest: firstRowTest}}));
             });
         }
 
-        $("#testCaseTable").on("change", "input[type=checkbox]", function() {
-            const anyChecked = $("#testCaseTable input[type=checkbox]:checked").length > 0;
-            $("#exportTestCaseButton, #createBrpMassButton").toggle(anyChecked);
-            $("#exportTestCaseButton, #massUpdateTestCaseButton").toggle(anyChecked);
-            $("#exportTestCaseButton, #massLabelTestCaseButton").toggle(anyChecked);
-            $("#exportTestCaseButton, #massDeleteTestCaseButton").toggle(anyChecked);
+        $("#testCaseTable").on("change", "input[type=checkbox]", function () {
+            toggleDisplayMassButtons();
         });
         $("#massUpdateTestCaseButton").off("click").on("click", function () {
             window.dispatchEvent(new CustomEvent('mass-update-open'));
@@ -289,6 +285,16 @@ function selectAll() {
         $("[data-line='select']").prop("checked", true);
     else
         $("[data-line='select']").prop("checked", false);
+    toggleDisplayMassButtons();
+}
+
+function toggleDisplayMassButtons() {
+    const anyChecked = $("#testCaseTable input[type=checkbox]:checked").length > 0;
+    $("#exportTestCaseButton, #createBrpMassButton").toggle(anyChecked);
+    $("#exportTestCaseButton, #massUpdateTestCaseButton").toggle(anyChecked);
+    $("#exportTestCaseButton, #massLabelTestCaseButton").toggle(anyChecked);
+    $("#exportTestCaseButton, #massDeleteTestCaseButton").toggle(anyChecked);
+
 }
 
 function massActionModalSaveHandler_addLabel() {
@@ -402,8 +408,8 @@ function exportTestCasesMenuClick() {
 
             const $checkbox = $(this);
             const params = $(this).prop("name")
-                .replace(/test-/g, 'test=')
-                .replace(/testcase-/g, '&testcase=');
+                    .replace(/test-/g, 'test=')
+                    .replace(/testcase-/g, '&testcase=');
 
             const url = "./ExportTestCase?" + params;
 
@@ -439,8 +445,8 @@ async function deleteMassTestCases() {
 
         $("input[data-line=select]:checked").each(function (index, file) {
             const t = $(file).prop("name")
-                .replace(/test-/g, 'test=')
-                .replace(/testcase-/g, '&testcase=');
+                    .replace(/test-/g, 'test=')
+                    .replace(/testcase-/g, '&testcase=');
 
             const test = t.split("test=")[1].split("&testcase=")[0];
             const testcase = t.split("test=")[1].split("&testcase=")[1];
@@ -485,7 +491,7 @@ async function deleteMassTestCases() {
                 table.page('previous').draw(false);
             }
 
-            notifyInPage("success","TestCases successfully deleted");
+            notifyInPage("success", "TestCases successfully deleted");
         }
 
     } catch (e) {
@@ -516,13 +522,13 @@ async function deleteAllSelectedTestCase() {
     $checked.each(function () {
 
         const t = $(this).prop("name")
-            .replace(/test-/g, 'test=')
-            .replace(/testcase-/g, '&testCase=');
+                .replace(/test-/g, 'test=')
+                .replace(/testcase-/g, '&testCase=');
 
         const url = "DeleteTestCase?" + t;
 
         deletions.push(
-            fetch(url, { method: "GET" })
+                fetch(url, {method: "GET"})
                 .then(resp => resp.json())
                 .then(data => {
                     if (getAlertType(data.messageType) !== "success") {
@@ -534,12 +540,12 @@ async function deleteAllSelectedTestCase() {
                     hasError = true;
                     errorMessage = 'Delete failed';
                 })
-        );
+                );
     });
 
     await Promise.all(deletions);
 
-    return hasError ? { messageType: 'error', message: errorMessage } : { messageType: 'success', message: 'Delete OK' };
+    return hasError ? {messageType: 'error', message: errorMessage} : {messageType: 'success', message: 'Delete OK'};
 }
 
 
