@@ -42,7 +42,7 @@
 
                             <!-- Checkbox -->
                             <input
-                                :id="field.id"
+                                :id="field.idChk"
                                 type="checkbox"
                                 x-model="field.enabled"
                                 class="appearance-none w-5 h-5 border border-sky-500 rounded checked:bg-sky-500 checked:sky-blue-500 bg-transparent cursor-pointer"
@@ -87,8 +87,8 @@
 
         <!-- Footer -->
         <div class="flex justify-end gap-2 px-6 py-4 border-t">
-            <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" @click="close()">Cancel</button>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" @click="submit()">Update</button>
+            <button id="massActionCancel" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" @click="close()">Cancel</button>
+            <button id="massActionUpdate" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" @click="submit()">Update</button>
         </div>
 
     </div>
@@ -100,10 +100,10 @@
             loading: false,
 
             fields: [
-                {id: 'status', label: 'Status', type: 'select', input: 'massStatus', enabled: false, value: '', options: []},
-                {id: 'application', label: 'Application', type: 'select', input: 'massApplication', enabled: false, value: '', options: []},
-                {id: 'priority', label: 'Priority', type: 'select', input: 'massPriority', enabled: false, value: '', options: []},
-                {id: 'executor', label: 'Executor', type: 'text', input: 'massExecutor', enabled: false, value: ''}
+                {id: 'status', idChk: 'statusCheck', label: 'Status', type: 'select', input: 'massStatus', enabled: false, value: '', options: []},
+                {id: 'application', idChk: 'applicationCheck', label: 'Application', type: 'select', input: 'massApplication', enabled: false, value: '', options: []},
+                {id: 'priority', idChk: 'priorityCheck', label: 'Priority', type: 'select', input: 'massPriority', enabled: false, value: '', options: []},
+                {id: 'executor', idChk: 'executorCheck', label: 'Executor', type: 'text', input: 'massExecutor', enabled: false, value: ''}
             ],
 
             /* ---------------- lifecycle ---------------- */
