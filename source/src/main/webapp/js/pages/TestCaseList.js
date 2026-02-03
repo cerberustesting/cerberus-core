@@ -51,6 +51,10 @@ function initPage() {
         }
     });
 
+    $('#testCaseTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+    });
+
 }
 
 
@@ -932,94 +936,107 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
-            "data": null,
-            "bSortable": false,
-            "bSearchable": false,
-            "title": doc.getDocOnline("page_global", "columnAction"),
-            "sDefaultContent": "",
-            "sWidth": "30px",
+            data: null,
+            bSortable: false,
+            bSearchable: false,
+            title: doc.getDocOnline("page_global", "columnAction"),
+            sWidth: "150px",
             "render": function (data, type, obj, meta) {
-                var newTest = escapeHtml(obj["test"]);
-                var newTestCase = escapeHtml(obj["testcase"]);
                 var row = "row_" + meta.row;
 
-                return `
-        <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null, row: '${row}' }" class="inline-block">
-            
-            <!-- Bouton "…" -->
-            <button @mouseenter="
-                        clearTimeout(timer);
-                        open = true;
-                        const rect = $el.getBoundingClientRect();
-                        pos = { 
-                            top: rect.top + window.scrollY, 
-                            left: rect.right + window.scrollX 
-                        };
-                    "
-                    @mouseleave="timer = setTimeout(() => open = false, 200)"
-                    :id="'testcase_action_' + row"
-                    class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-                <i data-lucide="ellipsis" class="w-4 h-4"></i>
-            </button>
+                const hasUpdate = data.hasPermissionsUpdate;
+                const hasDelete = data.hasPermissionsDelete;
 
-            <!-- Tooltip via teleport -->
-            <template x-teleport="body">
-                <div x-show="open"
-                     x-transition
-                     @mouseenter="clearTimeout(timer); open=true"
-                     @mouseleave="open=false"
-                     x-init="$nextTick(() => { if (window.lucide) lucide.createIcons(); })"
-                     class="absolute z-50 w-60 bg-slate-50 dark:bg-slate-900 border dark:text-slate-50 text-slate-900 border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
-                     :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
+                // Boutons en mode fantôme par défaut, visibles au hover de la ligne
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-400 hover:bg-blue-500 hover:!text-white focus:ring-2 focus:ring-blue-600 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                    <div class="px-3 py-2 flex items-center gap-2 
-                         ${data.hasPermissionsUpdate ? 'hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
-                         id="testcase_action_editheader_${row}"
-                         onclick="openModalTestCase('${newTest}','${newTestCase}','${data.hasPermissionsUpdate ? 'EDIT' : 'VIEW'}')">
-                        <i data-lucide="${data.hasPermissionsUpdate ? 'pencil' : 'eye'}" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", data.hasPermissionsUpdate ? "btn_edit" : "btn_view")}
-                    </div>
+                function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `
+                <button
+                    id="${id}" name="${name}"
+                    type="button" 
+                    class="${baseBtnClass} ${extraClass} ${disabledClass}" 
+                    title="${title}" 
+                    ${disabled ? "disabled" : `onclick="${onClick}"`}>
+                    ${icon}
+                </button>
+            `;
+                }
 
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                         id="testcase_action_duplicate_${row}"
-                         onclick="openModalTestCase('${newTest}','${newTestCase}','DUPLICATE')">
-                        <i data-lucide="copy" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_duplicate")}
-                    </div>
+                const icons = {
+                    edit: `<i data-lucide="${hasUpdate ? 'pencil' : 'eye'}" class="w-4 h-4"></i>`,
+                    duplicate: `<i data-lucide="copy" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    run: `<i data-lucide="play" class="w-4 h-4"></i>`,
+                    script: `<i data-lucide="file-text" class="w-4 h-4"></i>`,
+                    export: `<i data-lucide="download" class="w-4 h-4"></i>`
+                };
 
-                    <div class="px-3 py-2 flex items-center gap-2 
-                        ${data.hasPermissionsUpdate ? 'hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
-                        id="testcase_action_export_${row}"
-                        ${data.hasPermissionsUpdate ? `onclick="window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'"` : ''}>
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_export")}
-                    </div>
+                let buttons = [];
 
-                    <div class="px-3 py-2 flex items-center gap-2 
-                        ${data.hasPermissionsDelete ? 'hover:bg-gray-100 text-red-600 dark:hover:bg-gray-800 cursor-pointer' : 'opacity-50 cursor-not-allowed'}"
-                         id="testcase_action_delete_${row}"
-                         ${data.hasPermissionsDelete ? `onclick="deleteEntryClick('${newTest}','${newTestCase}')"` : ''}>
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_delete")}
-                    </div>
+                // Edit / View
+                buttons.push(actionButton({
+                    id:`testcase_action_editheader_${row}`,
+                    name: "editTestcase",
+                    title: hasUpdate ? doc.getDocLabel("page_testcaselist", "btn_edit")
+                        : doc.getDocLabel("page_testcaselist", "btn_view"),
+                    onClick: `openModalTestCase('${obj.test}','${obj.testcase}','${hasUpdate ? 'EDIT' : 'VIEW'}')`,
+                    icon: icons.edit,
+                    disabled: !hasUpdate
+                }));
 
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                         :id="'testcase_action_runtest_' + row"
-                         onclick="openModalExecutionSimple('${data.application}','${newTest}','${newTestCase}','${data.description}')">
-                        <i data-lucide="play" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_runTest")}
-                    </div>
+                // Duplicate
+                buttons.push(actionButton({
+                    id: `testcase_action_duplicate_${row}`,
+                    name: "duplicateTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_duplicate"),
+                    onClick: `openModalTestCase('${obj.test}','${obj.testcase}','DUPLICATE')`,
+                    icon: icons.duplicate
+                }));
 
-                    <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                        :id="'testcase_action_editscript_' + row"
-                        onclick="window.location.href='./TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'">
-                        <i data-lucide="file-text" class="w-4 h-4"></i>
-                        ${doc.getDocLabel("page_testcaselist", "btn_editScript")}
-                    </div>
+                // Export
+                buttons.push(actionButton({
+                    id: `testcase_action_export_${row}`,
+                    name: "exportTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_export"),
+                    onClick: `window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
+                    icon: icons.export,
+                    disabled: !hasUpdate
+                }));
 
-                </div>
-            </template>
-        </div>`;
+                // Delete
+                buttons.push(actionButton({
+                    id: `testcase_action_delete_${row}`,
+                    name: "deleteTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_delete"),
+                    onClick: `deleteEntryClick('${obj.test}','${obj.testcase}')`,
+                    icon: icons.delete,
+                    extraClass: "hover:bg-red-500 hover:text-white",
+                    disabled: !hasDelete
+                }));
+
+                // Run
+                buttons.push(actionButton({
+                    id: `testcase_action_runtest_${row}`,
+                    name: "runTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_runTest"),
+                    onClick: `openModalExecutionSimple('${data.application}','${obj.test}','${obj.testcase}','${data.description}')`,
+                    icon: icons.run
+                }));
+
+                // Edit Script
+                buttons.push(actionButton({
+                    id: `testcase_action_editscript_${row}`,
+                    name: "editScriptTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
+                    onClick: `window.location.href='./TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
+                    icon: icons.script
+                }));
+
+                return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;
             }
         }
         ,
