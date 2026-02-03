@@ -37,14 +37,14 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingCampaignOverTime.js"></script>
-        <title id="pageTitle">Campaign History</title>
+        <title id="pageTitle">Campaign Trends</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
 
-            <h1 class="page-title-line" id="title">Campaign History</h1>
+            <h1 class="page-title-line" id="title">Campaign Trends</h1>
 
             <div class="row" >
                 

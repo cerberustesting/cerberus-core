@@ -62,7 +62,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/pages/runtests/TestCaseNotValid.html"%>
             <%@ include file="include/transversalobject/Robot.html"%>
-            <h1 class="page-title-line">Run Test</h1>
+            <h1 class="page-title-line">Run Test Case</h1>
             <div class="row">
                 <div class="col-lg-12">
 

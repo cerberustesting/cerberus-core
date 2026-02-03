@@ -40,7 +40,7 @@
             <%@ include file="include/pages/label/addLabel.html"%> 
             <%@ include file="include/pages/label/editLabel.html"%> 
 
-            <h1 class="page-title-line" id="title">Label</h1>
+            <h1 class="page-title-line" id="title">Label & Tag</h1>
 
             <div x-data="{ tab: 'list' }" class="w-full">
                   <!-- Onglets -->

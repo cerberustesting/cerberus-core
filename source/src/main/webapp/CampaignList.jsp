@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="CampaignList.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Test Campaign</title>
+        <title id="pageTitle">Campaign Management</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/CampaignList.js"></script>
         <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
@@ -41,7 +41,7 @@
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
             <%@ include file="include/transversalobject/Campaign.html"%>
 
-            <h1 class="page-title-line" id="title">Test Campaigns</h1>
+            <h1 class="page-title-line" id="title">Campaign Management</h1>
             <div class="crb_card">
                 <div id="testcampaignList">
                     <table id="testcampaignsTable" class="table table-hover display" name="testcampaignsTable"></table>

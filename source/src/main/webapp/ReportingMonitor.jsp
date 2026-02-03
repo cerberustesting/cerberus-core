@@ -35,14 +35,14 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" type="text/css" href="css/pages/ReportingMonitor.css">
         <script type="text/javascript" src="js/pages/ReportingMonitor.js"></script>
-        <title id="pageTitle">Monitor</title>
+        <title id="pageTitle">Real-Time Monitor</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
 
-            <h1 class="page-title-line" id="title">Monitor</h1>
+            <h1 class="page-title-line" id="title">Real-Time Monitor</h1>
 
             <div class="row" >
 

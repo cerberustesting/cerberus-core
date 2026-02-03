@@ -43,7 +43,7 @@
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <title id="pageTitle">Campaign Reporting</title>
+        <title id="pageTitle">Campaign Report</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -55,7 +55,7 @@
             <%@ include file="include/transversalobject/Application.html" %>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html" %>
 
-            <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
+            <h1 class="page-title-line" id="title">Campaign Report</h1>
             <div class="row">
 
                 <div class="col-lg-6" id="FiltersPanel">

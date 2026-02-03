@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="TestDataLibList.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Test Data Library</title>        
+        <title id="pageTitle">Data Library</title>        
         <script type="text/javascript" src="js/pages/TestDataLibList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
@@ -43,7 +43,7 @@
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
             <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
             <%@ include file="include/transversalobject/AppService.html"%>      
-            <h1 class="page-title-line" id="title">Test Data Library</h1>
+            <h1 class="page-title-line" id="title">Data Library</h1>
             <div class="crb_card">
                 <div id="testDataLibList">
                     <table id="listOfTestDataLib" class="table table-hover display" name="listOfTestDataLib"></table>

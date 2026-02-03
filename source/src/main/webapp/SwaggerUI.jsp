@@ -37,7 +37,7 @@
             .swagger-ui .models { display: none !important; }
         </style>
 
-        <title id="pageTitle">Swagger UI</title>
+        <title id="pageTitle">Swagger API</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -47,7 +47,7 @@
             <%@ include file="include/pages/test/editTest.html" %>
             <%@ include file="include/pages/test/addTest.html" %>
 
-            <h1 class="page-title-line" id="title">Swagger UI</h1>
+            <h1 class="page-title-line" id="title">Swagger API</h1>
             <div class="crb_card">
                 <div id="testList">
                     <div id="swagger-ui"></div>

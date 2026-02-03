@@ -1634,7 +1634,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_applicationObject','title','','en','Application Object','This page can be used to manage the application objects.','_application_object')");
         b.append(",('page_applicationObject','title','','fa','شی برنامه','از این صفحه می توان برای مدیریت اشیاء برنامه استفاده کرد.','_application_object')");
         b.append(",('page_applicationObject','title','','ru','Объект приложения','Эта страница может быть использована для управления объектами приложения','_application_object')");
-        b.append(",('page_applicationObject','title','','fr','Objet d\\'application','Cette page permet de gérer et créer des objets d\\'application.','_objet_d_application')");
+        b.append(",('page_applicationObject','title','','fr','Objet Applicatifs','Cette page permet de gérer et créer des objets d\\'application.','_objet_d_application')");
         b.append(",('page_applicationObject','UsrCreated','','en','Creator','',NULL)");
         b.append(",('page_applicationObject','UsrCreated','','fa','ایجاد کننده','',NULL)");
         b.append(",('page_applicationObject','UsrCreated','','fr','Createur','',NULL)");
@@ -2766,8 +2766,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_label','table_label','','en','Label List','',NULL)");
         b.append(",('page_label','table_label','','fr','Liste de Labels','',NULL)");
         b.append(",('page_label','table_label','','fa','فهرست برچسب ها','',NULL)");
-        b.append(",('page_label','title','','en','Label','This page can be used in order to manage the labels.','_label')");
-        b.append(",('page_label','title','','fr','Label','Cette page permet de gérer et créer des labels.','_label')");
+        b.append(",('page_label','title','','en','Label & Tag','This page can be used in order to manage the labels.','_label')");
+        b.append(",('page_label','title','','fr','Label & Tag','Cette page permet de gérer et créer des labels.','_label')");
         b.append(",('page_label','title','','fa','برچسب','از این صفحه می توان برای مدیریت برچسب ها استفاده کرد.','_label')");
         b.append(",('page_logviewer','button_view','','en','Log entry detail','',NULL)");
         b.append(",('page_logviewer','button_view','','fr','Detail du log','',NULL)");
@@ -2877,10 +2877,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportbytag','summary_table','','en','Summary Table','Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.',NULL)");
         b.append(",('page_reportbytag','summary_table','','fa','جدول جمع بندی','خلاصه مقادیر کل و درصدها برای هر کد نتیجه (OK، KO، FA، NA، NE، PE، CA). جدول بر اساس برنامه، کشور و محیط مرتب شده است.',NULL)");
         b.append(",('page_reportbytag','summary_table','','fr','Résumé de la table',NULL,NULL)");
-        b.append(",('page_reportbytag','title','','en','Campaign Execution Reporting','This page generate a report of all the execution for a chosen tag',NULL)");
+        b.append(",('page_reportbytag','title','','en','Campaign Report','This page generate a report of all the execution for a chosen tag',NULL)");
         b.append(",('page_reportbytag','title','','fa','گزارش اجرا کمپین','این صفحه گزارشی از تمام اجراها برای یک تگ انتخابی ایجاد می کند',NULL)");
         b.append(",('page_reportbytag','title','','fr','Rapport d\\'execution de Campagne','Cette page génère un rapport de toutes les executions pour un tag choisi',NULL)");
-        b.append(",('page_reportovertime','title','','en','Execution History','This page provide some execution stats over time.',NULL)");
+        b.append(",('page_reportovertime','title','','en','Execution Trends','This page provide some execution stats & trends over time.',NULL)");
         b.append(",('page_reportovertime','title','','fa','گزارش اجرا در طول زمان','این صفحه برخی از آمارهای اجرا را در طول زمان ارائه می دهد.',NULL)");
         b.append(",('page_reportovertime','title','','fr','Rapport d\\'execution dans le temps','Cette page génère des rapports d\\'evolution de compteurs d\\'execution sur la durée',NULL)");
         b.append(",('page_reportovertime','lblPerfRequests','','en','Performance Graph - Requests','',NULL)");
@@ -2898,7 +2898,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportovertime','lblTestStatBar','','en','Executions per day and status','',NULL)");
         b.append(",('page_reportovertime','lblTestStatBar','','fa','اجرا به ازای روز و وضعیت','',NULL)");
         b.append(",('page_reportovertime','lblTestStatBar','','fr','Nombre d\\'Execution par jour et status','',NULL)");
-        b.append(",('page_campaignreportovertime','title','','en','Campaign History','This page provide some execution stats over time.',NULL)");
+        b.append(",('page_campaignreportovertime','title','','en','Campaign Trends','This page provide some execution stats and trends over time.',NULL)");
         b.append(",('page_campaignreportovertime','title','','fa','گزارش اجرای کمپین در طول زمان','این صفحه برخی از آمارهای اجرا را در طول زمان ارائه می دهد.',NULL)");
         b.append(",('page_campaignreportovertime','title','','fr','Rapport d\\'execution des campagnes dans le temps','Cette page génère des rapports d\\'evolution de compteurs d\\'execution sur la durée',NULL)");
         b.append(",('page_campaignstatistics','title','','en','Campaign Statistics','This page provide some statistics at a campaign level to follow up.',NULL)");
@@ -2961,7 +2961,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_robot','table_robotlist','','en','Robot List',NULL,NULL)");
         b.append(",('page_robot','table_robotlist','','fa','فهرست ربات',NULL,NULL)");
         b.append(",('page_robot','table_robotlist','','fr','Liste des Robots',NULL,NULL)");
-        b.append(",('page_robot','title','','en','Robot','This page can be used in order to manage the robots.','_robot')");
+        b.append(",('page_robot','title','','en','Robot Management','This page can be used in order to manage the robots.','_robot')");
         b.append(",('page_robot','title','','fa','ربات','از این صفحه می توان برای مدیریت ربات ها استفاده کرد.','_robot')");
         b.append(",('page_robot','title','','fr','Robot','Cette page permet de gérer et créer des Robots.','_robot')");
         b.append(",('page_runtest','addtoqueue','','en','Add to queue','',NULL)");
@@ -3166,7 +3166,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','title','','en','Run Test Case','',NULL)");
         b.append(",('page_runtest','title','','fa','اجرای مورد آزمون','',NULL)");
         b.append(",('page_runtest','title','','fr','Executer un Cas de Test','',NULL)");
-        b.append(",('page_runtest','valid','','en','Executions in queue','',NULL)");
+        b.append(",('page_runtest','valid','','en','Executions Queue','',NULL)");
         b.append(",('page_runtest','valid','','fa','اجراهای منتظر در صف','',NULL)");
         b.append(",('page_runtest','valid','','fr','Executions dans la liste','',NULL)");
         b.append(",('page_runtest','verbose','','en','Verbose','',NULL)");
@@ -3404,7 +3404,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','add_btn','','en','Add','',NULL)");
         b.append(",('page_testcampaign','add_btn','','fa','افزودن','',NULL)");
         b.append(",('page_testcampaign','add_btn','','fr','Ajouter','',NULL)");
-        b.append(",('page_testcampaign','allTestcampaigns','','en','Test Campaigns','',NULL)");
+        b.append(",('page_testcampaign','allTestcampaigns','','en','Campaign Management','',NULL)");
         b.append(",('page_testcampaign','allTestcampaigns','','fa','کمپین های آزمون','',NULL)");
         b.append(",('page_testcampaign','allTestcampaigns','','fr','Campagnes de Test','',NULL)");
         b.append(",('page_testcampaign','battery_tab','','en','Battery','',NULL)");
@@ -3467,7 +3467,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','save_btn','','en','Save','',NULL)");
         b.append(",('page_testcampaign','save_btn','','fa','ذخیره','',NULL)");
         b.append(",('page_testcampaign','save_btn','','fr','Sauvegarder','',NULL)");
-        b.append(",('page_testcampaign','table_testcampaign','','en','Test Campaigns',NULL,NULL)");
+        b.append(",('page_testcampaign','table_testcampaign','','en','Campaigns Management',NULL,NULL)");
         b.append(",('page_testcampaign','table_testcampaign','','fa','کمپین های آزمون',NULL,NULL)");
         b.append(",('page_testcampaign','table_testcampaign','','fr','Campagnes de Test',NULL,NULL)");
         b.append(",('page_testcampaign','testbattery_col','','en','Test Battery','',NULL)");
@@ -3582,7 +3582,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecution','table_executionlist','','en','Executions List',NULL,NULL)");
         b.append(",('page_testcaseexecution','table_executionlist','','fa','فهرست اجرا',NULL,NULL)");
         b.append(",('page_testcaseexecution','table_executionlist','','fr','Liste des executions',NULL,NULL)");
-        b.append(",('page_testcaseexecution','title','','en','Test Case Execution','',NULL)");
+        b.append(",('page_testcaseexecution','title','','en','Execution History','',NULL)");
         b.append(",('page_testcaseexecution','title','','fa','اجرا مورد آزمون','',NULL)");
         b.append(",('page_testcaseexecution','title','','fr','Execution des Cas de Test','',NULL)");
         b.append(",('page_testcaseexecutionmodal','testToExecuteLabel','','en','Testcase to launch :','',NULL)");
@@ -3597,10 +3597,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionmodal','customizeExecutionSettings','','en','Customize execution settings','',NULL)");
         b.append(",('page_testcaseexecutionmodal','customizeExecutionSettings','','fa','تنظیمات اجرای سفارشی','',NULL)");
         b.append(",('page_testcaseexecutionmodal','customizeExecutionSettings','','fr','Définir les paramètres d\\'execution','',NULL)");
-        b.append(",('page_testcaseexecutionqueue','title','','en','Executions in Queue','',NULL)");
+        b.append(",('page_testcaseexecutionqueue','title','','en','Executions Queue','',NULL)");
         b.append(",('page_testcaseexecutionqueue','title','','fa','اجراهای در صف','',NULL)");
         b.append(",('page_testcaseexecutionqueue','title','','fr','File d\\'exécutions','',NULL)");
-        b.append(",('page_testcaseexecutionqueue','allExecution','','en','Executions in queue','',NULL)");
+        b.append(",('page_testcaseexecutionqueue','allExecution','','en','Executions Queue','',NULL)");
         b.append(",('page_testcaseexecutionqueue','allExecution','','fa','اجراهای در صف','',NULL)");
         b.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d\\'exécutions','',NULL)");
         b.append(",('page_testcaseexecutionqueue','browserVersion_col','','en','Browser version','',NULL)");
@@ -3730,10 +3730,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','robothost','','en','Robot Host','',NULL)");
         b.append(",('page_testcaseexecutionqueue','robothost','','fa','میزبان ربات','',NULL)");
         b.append(",('page_testcaseexecutionqueue','robothost','','fr','Robot Host','',NULL)");
-        b.append(",('page_testcaselist','title','','en','Test Cases','',NULL)");
+        b.append(",('page_testcaselist','title','','en','Test Case','',NULL)");
         b.append(",('page_testcaselist','title','','fa','موارد آزمون','',NULL)");
         b.append(",('page_testcaselist','title','','ru','Тестовый случай','',NULL)");
-        b.append(",('page_testcaselist','title','','fr','Cas de Tests','',NULL)");
+        b.append(",('page_testcaselist','title','','fr','Cas de Test','',NULL)");
         b.append(",('page_testcaselist','activationCriteria','','en','Activation Criteria','',NULL)");
         b.append(",('page_testcaselist','activationCriteria','','fa','معیارهای فعالسازی','',NULL)");
         b.append(",('page_testcaselist','activationCriteria','','ru','Условия активации','',NULL)");
@@ -4089,11 +4089,11 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testdatalib','m_tab2_text','','fr','SubData','',NULL)");
         b.append(",('page_testdatalib','m_tab3_text','','en','Traceability','',NULL)");
         b.append(",('page_testdatalib','m_tab3_text','','fr','Traçabilité','',NULL)");
-        b.append(",('page_testdatalib','page_title','','en','Test Data Library','',NULL)");
+        b.append(",('page_testdatalib','page_title','','en','Data Library','',NULL)");
         b.append(",('page_testdatalib','page_title','','fr','Librairie de données de tests',NULL,NULL)");
         b.append(",('page_testdatalib','table_testdatalib','','en','Test Data List',NULL,NULL)");
         b.append(",('page_testdatalib','table_testdatalib','','fr','Liste de Données',NULL,NULL)");
-        b.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>INTERNAL</b>, <b>FILE</b>, <b>SQL</b> and <b>SERVICE</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>','_data_library')");
+        b.append(",('page_testdatalib','title','','en','Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>INTERNAL</b>, <b>FILE</b>, <b>SQL</b> and <b>SERVICE</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>','_data_library')");
         b.append(",('page_testdatalib','title','','fr','Librairie de données',NULL,'_librairie_de_données')");
         b.append(",('page_testdatalib','title_csv_configurations','','en','File configurations','',NULL)");
         b.append(",('page_testdatalib','title_csv_configurations','','fr','Configuration Fichier','',NULL)");
@@ -4144,7 +4144,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','adduser_field','','fr','Ajouter un utilisateur','',NULL)");
         b.append(",('page_user','add_btn','','en','Add','',NULL)");
         b.append(",('page_user','add_btn','','fr','Ajouter','',NULL)");
-        b.append(",('page_user','allUsers','','en','Users','',NULL)");
+        b.append(",('page_user','allUsers','','en','User Management','',NULL)");
         b.append(",('page_user','allUsers','','fr','Utilisateurs','',NULL)");
         b.append(",('page_user','button_col','','en','Actions','',NULL)");
         b.append(",('page_user','button_col','','fr','Actions','',NULL)");
@@ -4259,8 +4259,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de campagne',NULL)");
         b.append(",('homepage','testCaseStatusByApp','','en','Test Case Status by Application','Workflow status of the test case by Application',NULL)");
         b.append(",('homepage','testCaseStatusByApp','','fr','Statut des Cas de Test par Application','Status de l\\'avancement des cas de tests par Application',NULL)");
-        b.append(",('homepage','title','','en','Welcome to Cerberus application','',NULL)");
-        b.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','',NULL)");
+        b.append(",('homepage','title','','en','Welcome to Cerberus','',NULL)");
+        b.append(",('homepage','title','','fr','Bienvenue dans Cerberus','',NULL)");
         b.append(",('modal_upload','btn_cancel','','en','Cancel','',NULL)");
         b.append(",('modal_upload','btn_cancel','','fr','Annuler','',NULL)");
         b.append(",('modal_upload','btn_choose','','en','Choose File','',NULL)");

@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="EventHookList.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Event Hook</title>
+        <title id="pageTitle">Event Hooks</title>
         <script type="text/javascript" src="js/pages/EventHookList.js"></script>
         <script type="text/javascript" src="js/transversalobject/EventHook.js"></script>
     </head>
@@ -38,7 +38,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/EventHook.html"%>
 
-            <h1 class="page-title-line" id="title">EventHooks</h1>
+            <h1 class="page-title-line" id="title">Event Hooks</h1>
 
             <div class="crb_card">
                 <div id="eventHookList">

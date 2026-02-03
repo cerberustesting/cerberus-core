@@ -36,7 +36,7 @@
         <%@ include file="include/transversalobject/Invariant.html"%>
         <jsp:include page="include/templates/selectDropdown.html"/>
 
-        <h1 class="page-title-line" x-text="$store.labels.getLabel('pageInvariant','title')">Invariant</h1>
+        <h1 class="page-title-line" x-text="$store.labels.getLabel('pageInvariant','title')">Invariants</h1>
         <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageInvariant','subtitle')">Manage the application’s constants and fixed elements.</p>
 
         <div x-data="{ tab: 'public' }" class="w-full">

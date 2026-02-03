@@ -38,7 +38,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             
-            <h1 class="page-title-line" id="title">TestCase Execution</h1>
+            <h1 class="page-title-line" id="title">Execution History</h1>
             <div class="crb_card">
                 <div id="testCaseExecution">
                     <table id="testCaseExecutionTable" class="table table-hover display" name="testCaseExecutionTable"></table>

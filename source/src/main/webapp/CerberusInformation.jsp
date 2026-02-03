@@ -28,7 +28,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/CerberusInformation.js"></script>
-        <title id="pageTitle">Cerberus Information</title>
+        <title id="pageTitle">Cerberus Monitoring</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -36,7 +36,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
 
-            <h1 class="page-title-line" id="title">Cerberus Information</h1>
+            <h1 class="page-title-line" id="title">Cerberus Monitoring</h1>
 
 
             <div class="row">

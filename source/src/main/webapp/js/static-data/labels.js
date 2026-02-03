@@ -31,7 +31,7 @@ const headerLabel = {
 
     // === Section Maintain ===
     "maintain": { "en": "Maintain", "fr": "Maintenance" },
-    "testcases": { "en": "TestCases", "fr": "Cas de Test" },
+    "testcases": { "en": "Test Case", "fr": "Cas de Test" },
     "datalibrary": { "en": "Data Library", "fr": "Librairie de Données" },
     "applicationobjects": { "en": "Application Object", "fr": "Objets Applicatifs" },
     "appservice": { "en": "Service Library", "fr": "Bibliothèque de Services" },
@@ -61,8 +61,8 @@ const headerLabel = {
     "executionhistory": { "en": "Execution History", "fr": "Historique d'Exécutions" },
     "executiontrends": { "en": "Execution Trends", "fr": "Statistiques des Exécutions" },
     "campaignreport": { "en": "Campaign Report", "fr": "Rapport de Campagne" },
-    "campaignhistory": { "en": "Campaign History", "fr": "Historique des Campagnes" },
-    "campaigntrends": { "en": "Campaign Trends", "fr": "Statistiques des Campagnes" },
+    "campaignhistory": { "en": "Campaign Trends", "fr": "Historique des Campagnes" },
+    "campaigntrends": { "en": "Campaign Statistics", "fr": "Statistiques des Campagnes" },
 
     // === Section Settings ===
     "settings": { "en": "Settings", "fr": "Configuration" },
@@ -178,7 +178,7 @@ const homepageLabel = {
 }
 
 const pageInvariantLabel = {
-    title: { en: "Invariant", fr: "Invariants" },
+    title: { en: "Invariants", fr: "Invariants" },
     subtitle: { en: "Manage the application’s constants and fixed elements.", fr: "Gérer les constantes et éléments fixes de l’application." },
     notifsuccesscreation: { en: "Invariant successfully created!", fr: "Invariant créé avec succès !" },
     notifsuccessmodification: { en: "Invariant successfully modified!", fr: "Invariant modifié avec succès !" },

@@ -70,7 +70,7 @@
         <%@ include file="include/utils/modal-confirmation.html"%>
         <%@ include file="include/transversalobject/Robot.html"%>
 
-        <h1 class="page-title-line" id="title">Robot</h1>
+        <h1 class="page-title-line" id="title">Robot Management</h1>
         <div class="">
             <div id="robotList">
                 <table id="robotsTable" class="table table-hover display" name="robotsTable">

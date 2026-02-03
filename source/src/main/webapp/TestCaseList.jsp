@@ -39,39 +39,39 @@
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <title id="pageTitle">Test Case List</title>
+        <title id="pageTitle">Test Case</title>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-        <div>
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/TestCase.html"%>
-            <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
-            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
-            <%@ include file="include/transversalobject/Application.html"%>
-            <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
-            <jsp:include page="include/transversalobject/TestCaseListMassActionUpdate.html"/>
-            <jsp:include page="include/transversalobject/TestCaseListMassActionLabel.html"/>
-            <jsp:include page="include/transversalobject/TestCaseSimpleCreationImport.html"/>
-            <jsp:include page="include/templates/selectDropdown.html"/>
+            <div>
+                <%@ include file="include/global/messagesArea.html"%>
+                <%@ include file="include/utils/modal-confirmation.html"%>
+                <%@ include file="include/transversalobject/TestCase.html"%>
+                <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
+                <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
+                <%@ include file="include/transversalobject/Application.html"%>
+                <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
+                <jsp:include page="include/transversalobject/TestCaseListMassActionUpdate.html"/>
+                <jsp:include page="include/transversalobject/TestCaseListMassActionLabel.html"/>
+                <jsp:include page="include/transversalobject/TestCaseSimpleCreationImport.html"/>
+                <jsp:include page="include/templates/selectDropdown.html"/>
 
-            <h1 class="page-title-line" id="title">Test Case List</h1>
+                <h1 class="page-title-line" id="title">Test Case</h1>
 
-            <div class="">
-                <form id="massActionForm" name="massActionForm"  title="" role="form">
-                    <div id="testCaseList">
-                        <table id="testCaseTable" class="table table-hover display" name="testCaseTable"></table>
-                        <div class="marginBottom20"></div>
-                    </div>
-                </form>
+                <div class="">
+                    <form id="massActionForm" name="massActionForm"  title="" role="form">
+                        <div id="testCaseList">
+                            <table id="testCaseTable" class="table table-hover display" name="testCaseTable"></table>
+                            <div class="marginBottom20"></div>
+                        </div>
+                    </form>
+                </div>
+
+                <footer class="footer">
+                    <div class="container-fluid" id="footer"></div>
+                </footer>
             </div>
-
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
-        </div>
         </main>
     </body>
 </html>

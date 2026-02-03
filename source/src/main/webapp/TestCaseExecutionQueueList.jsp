@@ -34,7 +34,7 @@
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <title id="pageTitle">Executions in Queue</title>
+        <title id="pageTitle">Executions Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -48,7 +48,7 @@
             <%@ include file="include/transversalobject/Invariant.html"%>
             <%@ include file="include/transversalobject/Application.html"%>
 
-            <h1 class="page-title-line" id="title">Executions in Queue</h1>
+            <h1 class="page-title-line" id="title">Executions Queue</h1>
 
             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                 <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>

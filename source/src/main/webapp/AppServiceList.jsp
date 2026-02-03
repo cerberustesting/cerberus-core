@@ -42,7 +42,7 @@
             <%@ include file="include/transversalobject/AppService.html" %>
             <%@ include file="include/transversalobject/Application.html" %>
 
-            <h1 class="page-title-line" id="title">Application Service</h1>
+            <h1 class="page-title-line" id="title">Service Library</h1>
 
             <div class="crb_card">
                 <div id="soapLibraryList">

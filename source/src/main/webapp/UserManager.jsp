@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="UserManager.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">User Manager</title>
+        <title id="pageTitle">User Management</title>
         <script type="text/javascript" src="js/pages/UserManager.js"></script>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -39,7 +39,7 @@
             <%@ include file="include/pages/usermanager/addUser.html"%>
             <%@ include file="include/pages/usermanager/changePassword.html"%>
 
-            <h1 class="page-title-line" id="title">User Manager</h1>
+            <h1 class="page-title-line" id="title">User Management</h1>
 
             <div class="crb_card">
                 <div id="userList">
