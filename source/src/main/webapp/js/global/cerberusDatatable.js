@@ -257,7 +257,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         // Control Panel
         var $controlPanel = $(`
-            <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col gap-2 mb-4">
+            <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col gap-2">
         
                 <!-- Ligne 1 : bouton wrapper external -->
                 <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2"></div>
@@ -292,8 +292,21 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                 <div id="${tableConfigurations.divId}_filterresult" class="flex w-full">
                     <!-- Contenu filtre plus tard -->
                 </div>
+                
+                <!-- Ligne 4 : pagination / length TOUJOURS visible -->
+                <div id="${tableConfigurations.divId}_extraControls"
+                     class="flex items-center justify-between w-full">
+                
+                    <div id="${tableConfigurations.divId}_lengthContainer"
+                         class="flex items-center gap-2"></div>
+                
+                    <div id="${tableConfigurations.divId}_paginateContainer"
+                         class="flex items-center gap-1"></div>
+                </div>
+
+
         
-                <!-- Ligne de configuration améliorée -->
+                <!-- Ligne de config toggle -->
                 <div id="${tableConfigurations.divId}_configPanel" class="hidden flex flex-wrap items-center gap-4 p-2 border-t border-gray-200 dark:border-gray-700">
 
                 <!-- Actions sur la configuration (Save / Load / Reset) -->
@@ -328,13 +341,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                     <label class="text-sm text-gray-600 dark:text-gray-400">Columns :</label>
                     <!-- Le dropdown des colonnes sera injecté ici -->
                 </div>
-
-                <!-- Autres contrôles (pagination / nombre de résultats) -->
-                <div id="${tableConfigurations.divId}_extraControls" class="ml-auto flex gap-4 items-center">
-                    <label class="text-sm text-gray-600 dark:text-gray-400">Show :</label>
-                    <!-- Combo du nombre de résultats -->
-                    <!-- Pagination sera injectée ici -->
-                </div>
+           
             </div>
         `);
 
@@ -347,8 +354,13 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         // Après init ou draw, déplacer length & pagination dans la 4ème ligne
         $("#" + tableConfigurations.divId).on('init.dt draw.dt', function () {
-            $("#" + tableConfigurations.divId + "_length").appendTo($controlPanel.find(`#${tableConfigurations.divId}_extraControls`)).show();
-            $("#" + tableConfigurations.divId + "_paginate").appendTo($controlPanel.find(`#${tableConfigurations.divId}_extraControls`)).show();
+            $("#" + tableConfigurations.divId + "_length")
+                .appendTo($("#" + tableConfigurations.divId + "_lengthContainer"))
+                .show();
+
+            $("#" + tableConfigurations.divId + "_paginate")
+                .appendTo($("#" + tableConfigurations.divId + "_paginateContainer"))
+                .show();
         });
 
         // Branche la recherche globale
@@ -404,10 +416,95 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
 // Lucide après redraw
     $("#" + tableConfigurations.divId).on('draw.dt', function () {
-        if (window.lucide) lucide.createIcons();
+
+
+        const $lengthSelect = $("#" + tableConfigurations.divId + "_length select");
+
+        $lengthSelect.removeClass();
+        $lengthSelect.addClass(
+            "h-8 w-20 rounded-md border !border-gray-300 dark:!border-gray-600 " +
+            "!bg-white dark:!bg-gray-800 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        );
+
+
+        const $length = $("#" + tableConfigurations.divId + "_length");
+        const $label = $length.find("label");
+        const $select = $label.find("select");
+
+// Nettoyage texte existant
+        $label.contents().filter(function () {
+            return this.nodeType === 3; // TEXT_NODE
+        }).remove();
+
+// Préfixe
+        if (!$label.find(".dt-prefix").length) {
+            $label.prepend(
+                '<span class="dt-prefix text-sm !text-slate-600 dark:!text-slate-300 mr-1">Show </span>'
+            );
+        }
+
+// Suffixe
+        if (!$label.find(".dt-suffix").length) {
+            $select.after(
+                '<span class="dt-suffix text-sm !text-slate-600 dark:!text-slate-300 ml-1"> entries</span>'
+            );
+        }
+
+        $select.addClass("h-10 text-sm text-gray-500");
+
+        const $paginate = $("#" + tableConfigurations.divId + "_paginate");
+
+        $paginate.removeClass().addClass("flex items-center gap-1");
+        $paginate.find("ul").removeClass().addClass("flex items-center gap-1");
+        $paginate.find("li").removeClass("fg-button ui-button ui-state-default");
+
+        $paginate.find("a").each(function () {
+
+            const $btn = $(this);
+            const $li = $btn.parent();
+
+            // reset classes
+            $btn.removeClass();
+
+            // base style
+            $btn.addClass(
+                "inline-flex items-center justify-center " +
+                "h-8 px-3 rounded-md text-sm font-medium " +
+                "transition-colors !text-slate-600 dark:!text-slate-300 " +
+                "hover:!bg-gray-100 dark:hover:!bg-gray-800"
+            );
+
+            // active
+            if ($li.hasClass("active")) {
+                $btn.removeClass("hover:!bg-gray-100 dark:hover:!bg-gray-800");
+                $btn.addClass("!bg-blue-600 !text-white hover:!bg-blue-700");
+            }
+
+            // disabled
+            if ($li.hasClass("disabled")) {
+                $btn.addClass("opacity-40 pointer-events-none");
+            }
+
+        });
+
+        $("#" + tableConfigurations.divId + "_first a")
+            .html('<i data-lucide="chevrons-left" class="w-4 h-4"></i>');
+
+        $("#" + tableConfigurations.divId + "_previous a")
+            .html('<i data-lucide="chevron-left" class="w-4 h-4"></i>');
+
+        $("#" + tableConfigurations.divId + "_next a")
+            .html('<i data-lucide="chevron-right" class="w-4 h-4"></i>');
+
+        $("#" + tableConfigurations.divId + "_last a")
+            .html('<i data-lucide="chevrons-right" class="w-4 h-4"></i>');
+
+
     });
 
+    $("#" + tableConfigurations.divId + "_filterresult br").remove();
 
+    if (window.lucide) lucide.createIcons();
     return oTable;
 }
 

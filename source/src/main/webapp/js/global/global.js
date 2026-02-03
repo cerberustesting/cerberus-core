@@ -1550,7 +1550,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activateP
     this.searchText = "";
     this.searchMenu = "";
     this.tableWidth = "1500px";
-    this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
+    this.bJQueryUI = false; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
 
     //Enable or disable automatic column width calculation. This can be disabled as an optimisation (it takes some time to calculate the widths) if the tables widths are passed in using aoColumns.
     this.autoWidth = false;
@@ -1596,7 +1596,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.searchMenu = "";
     this.tableWidth = "1500px";
     this.displayLength = 10;
-    this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
+    this.bJQueryUI = false; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
     this.bPaginate = true;
     this.sPaginationType = "full_numbers";
     //Enable or disable automatic column width calculation. This can be disabled as an optimisation (it takes some time to calculate the widths) if the tables widths are passed in using aoColumns.

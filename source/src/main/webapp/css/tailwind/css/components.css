@@ -41,7 +41,7 @@
         border: 1px solid var(--crb-grey-light-color);
         backdrop-filter: blur(20px);
 
-        @apply rounded-2xl p-6 mb-10;
+        @apply rounded-2xl pl-6 pr-6 mb-10;
 
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
