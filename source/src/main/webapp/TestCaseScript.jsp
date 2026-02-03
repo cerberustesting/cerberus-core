@@ -155,7 +155,7 @@
                                 </button>
                                 <!-- Inherited Properties -->
                                 <button @click="setTab('inheritedproperties')" id="editTabInheritedProperties"
-                                        :class="tab === 'inhetitedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                        :class="tab === 'inheritedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Inherited Properties
                                 </button>
@@ -242,7 +242,7 @@
                                     </div>
                                 </div>
                             </div><!-- Inherited Properties -->
-                            <div x-show="tab === 'inhetitedproperties'" class="">
+                            <div x-show="tab === 'inheritedproperties'" class="">
                                 <div id="tabInheritedProperties">
                                     <nav class="col-lg-3" id="nav-property" style="z-index:1;">
                                         <div id="list-wrapper-prop" style="top:107px;">
@@ -255,7 +255,7 @@
                                     <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
                                         <div id="propertiesModal">
                                             <div class="" id="inheritedPropPanelWrapper">
-                                                <div class="panel-body collapse" id="inheritedPropertiesPanel">
+                                                <div class="panel-body" id="inheritedPropertiesPanel">
                                                     <div id="inheritedPropPanel" class="list-group">
                                                     </div>
                                                 </div>
