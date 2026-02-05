@@ -40,6 +40,13 @@ function initPage() {
         }
     });
     displayPublicTable();
+
+    $('#invariantsTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+    });
+    $('#invariantsPrivateTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+    });
 }
 
 function displayPrivateTable() {
@@ -88,7 +95,7 @@ function renderOptionsForApplication(data) {
         var contentToAdd = `
             <button id='createInvariantButton' type='button'
                 class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
-                <i class='glyphicon glyphicon-plus-sign'></i>
+                <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>` + doc.getDocLabel("page_invariant", "button_create") + `</span>
             </button>
         `;
@@ -99,6 +106,7 @@ function renderOptionsForApplication(data) {
         if ($wrapper.length) {
             // Ajoute le bouton au **début** du wrapper
             $wrapper.prepend(contentToAdd);
+            if (window.lucide) lucide.createIcons();
         } else {
             // fallback si le wrapper n’existe pas encore
             console.warn("Wrapper #invariantsTable_buttonWrapper introuvable, insertion avant length");
@@ -184,65 +192,59 @@ function aoColumnsFuncPublic(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
-            "className": "w-[30px] text-center", // largeur fixée côté table
             "title": doc.getDocLabel("page_invariant", "button_col"),
+            sWidth: "100px",
             "render": function (data, type, obj, meta) {
-                var newValue = escapeHtml(obj["value"]);
                 var row = "row_" + meta.row;
+                var newValue = escapeHtml(obj["value"]);
 
-                return `
-            <div x-data="{ open: false, pos: {top: 0, left: 0}, timer: null, row: '${row}' }" class="inline-block">
-                
-                <!-- Bouton "…" -->
-                <button @mouseenter="
-                            clearTimeout(timer);
-                            open = true;
-                            const rect = $el.getBoundingClientRect();
-                            pos = { 
-                                top: rect.top + window.scrollY, 
-                                left: rect.right + window.scrollX 
-                            };
-                        "
-                        @mouseleave="timer = setTimeout(() => open = false, 200)"
-                        :id="'invariant_action_' + row"
-                        class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-                    <i data-lucide="ellipsis" class="w-4 h-4"></i>
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, title, onClick, icon, extraClass = "" }) {
+                    return `
+                <button
+                    id="${id}"
+                    type="button"
+                    class="${baseBtnClass} ${extraClass}"
+                    title="${title}"
+                    onclick="${onClick}">
+                    ${icon}
                 </button>
+            `;
+                }
 
-                <!-- Tooltip via teleport -->
-                <template x-teleport="body">
-                    <div x-show="open"
-                         x-transition
-                         @mouseenter="clearTimeout(timer); open=true"
-                         @mouseleave="open=false"
-                         x-init="$nextTick(() => { if (window.lucide) lucide.createIcons(); })"
-                         class="absolute z-50 w-44 bg-slate-50 dark:bg-slate-900 border border-gray-200 dark:border-gray-700 dark:text-slate-50 text-slate-900 rounded-lg shadow-lg"
-                         :style="'top:'+(pos.top)+'px; left:'+(pos.left - $el.offsetWidth)+'px;'">
+                const icons = {
+                    edit: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    duplicate: `<i data-lucide="copy" class="w-4 h-4"></i>`,
+                    remove: `<i data-lucide="trash-2" class="w-4 h-4"></i>`
+                };
 
-                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="'invariant_action_edit_'+row"
-                             onclick="openModalInvariant('${obj["idName"]}','${newValue}','EDIT')">
-                            <i data-lucide="pencil" class="w-4 h-4"></i>
-                            ${doc.getDocLabel("page_invariant", "button_edit")}
-                        </div>
+                let buttons = [];
+                buttons.push(actionButton({
+                    id: `invariant_action_edit_${row}`,
+                    title: doc.getDocLabel("page_invariant", "button_edit"),
+                    onClick: `openModalInvariant('${obj["idName"]}','${newValue}','EDIT')`,
+                    icon: icons.edit
+                }));
 
-                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="'invariant_action_duplicate_'+row"
-                             onclick="openModalInvariant('${obj["idName"]}','${newValue}','DUPLICATE')">
-                            <i data-lucide="copy" class="w-4 h-4"></i>
-                            ${doc.getDocLabel("page_invariant", "button_duplicate")}
-                        </div>
+                buttons.push(actionButton({
+                    id: `invariant_action_duplicate_${row}`,
+                    title: doc.getDocLabel("page_invariant", "button_duplicate"),
+                    onClick: `openModalInvariant('${obj["idName"]}','${newValue}','DUPLICATE')`,
+                    icon: icons.duplicate
+                }));
 
-                        <div class="px-3 py-2 flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                             :id="'invariant_action_remove_'+row"
-                             onclick="removeEntryClick('${obj["idName"]}','${obj["value"]}')">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            ${doc.getDocLabel("page_invariant", "button_remove")}
-                        </div>
-                    </div>
-                </template>
-            </div>
-        `;
+                buttons.push(actionButton({
+                    id: `invariant_action_remove_${row}`,
+                    title: doc.getDocLabel("page_invariant", "button_remove"),
+                    onClick: `removeEntryClick('${obj["idName"]}','${obj["value"]}')`,
+                    icon: icons.remove,
+                    extraClass: "group-hover:!text-red-500"
+                }));
+
+                return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;
             }
         },
         {

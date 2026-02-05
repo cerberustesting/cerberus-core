@@ -223,18 +223,16 @@
                         <span class="text-white"  x-text="$store.labels.getLabel('header','quickstart')"></span>
                     </a>
 
-                    <a href="#" id="menuImportTestcase" @click.prevent class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg cursor-not-allowed text-slate-500 opacity-70"
-                       :title="$store.labels.getLabel('header','soon')">
-                        <i data-lucide="library" class="w-4 h-4 text-slate-500"></i>
-                        <span class="text-slate-400" x-text="$store.labels.getLabel('header','import')"></span>
-                        <i data-lucide="clock" class="w-3 h-3 text-amber-400 opacity-80"></i>
+                    <a href="#" id="menuImportTestcase" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       @click.prevent="window.dispatchEvent(new CustomEvent('open-import-recording'))">
+                        <i data-lucide="upload" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white" x-text="$store.labels.getLabel('header','import')"></span>
                     </a>
 
-                    <a href="#" id="menuTestDesigner" @click.prevent class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg cursor-not-allowed text-slate-500 opacity-70"
-                       :title="$store.labels.getLabel('header','soon')">
-                        <i data-lucide="library" class="w-4 h-4 text-slate-500"></i>
-                        <span class="text-slate-400" x-text="$store.labels.getLabel('header','testdesigner')"></span>
-                        <i data-lucide="clock" class="w-3 h-3 text-amber-400 opacity-80"></i>
+                    <a href="#" id="menuTestDesigner" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       @click.prevent="window.dispatchEvent(new CustomEvent('testcase-modal-open', { detail: { defaultTest: 'TEST001' } }))">
+                        <i data-lucide="edit-3" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white" x-text="$store.labels.getLabel('header','testdesigner')"></span>
                     </a>
 
                 </template>

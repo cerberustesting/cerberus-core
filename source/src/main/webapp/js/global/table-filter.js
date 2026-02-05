@@ -289,7 +289,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
        autocomplete="off" 
        id="inputsearch_${index}" 
        name="searchField"
-       class="!text-slate-600 dark:!text-slate-300 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+       class="w-full !text-slate-600 dark:!text-slate-300 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
        data-tooltip-target="tooltip_inputsearch_${index}" 
        title="${emptyFilter}" />`;
 

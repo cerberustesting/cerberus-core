@@ -128,7 +128,7 @@ function renderOptionsForTestCaseList(data) {
             <button id='createTestCaseButton' type='button'
                 class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
                 ${disabledCreate}>
-                <span class='glyphicon glyphicon-plus-sign'></span>
+                <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>${doc.getDocLabel("page_testcaselist", "btn_create")}</span>
             </button>
         `;
@@ -138,7 +138,7 @@ function renderOptionsForTestCaseList(data) {
             <button id='testFolderButton' type='button'
                 class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'
                 onclick="window.location.href='Test.jsp'">
-                <span class='glyphicon glyphicon-folder-close'></span>
+                <i data-lucide="folder" class="w-4 h-4"></i>
                 <span>Manage Test Folder</span>
             </button>
         `;
@@ -147,7 +147,7 @@ function renderOptionsForTestCaseList(data) {
         contentToAdd += `
             <button id='importTestCaseButton' type='button'
                 class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'>
-                <span class='glyphicon glyphicon-import'></span>
+                <i data-lucide="upload" class="w-4 h-4"></i>
                 <span>${doc.getDocLabel("page_testcaselist", "btn_import")}</span>
             </button>
         `;
@@ -198,6 +198,7 @@ function renderOptionsForTestCaseList(data) {
         if ($wrapper.length) {
             // Ajoute le bouton au **début** du wrapper
             $wrapper.append(contentToAdd);
+            if (window.lucide) lucide.createIcons();
         } else {
             // fallback si le wrapper n’existe pas encore
             console.warn("Wrapper #testCaseTable_buttonWrapper introuvable, insertion avant length");
@@ -949,7 +950,7 @@ function aoColumnsFunc(countries, tableId) {
 
                 // Boutons en mode fantôme par défaut, visibles au hover de la ligne
                 const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
-                    "text-slate-400 hover:bg-blue-500 hover:!text-white focus:ring-2 focus:ring-blue-600 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
                     "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
                 function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false }) {
@@ -998,14 +999,14 @@ function aoColumnsFunc(countries, tableId) {
                 }));
 
                 // Export
-                buttons.push(actionButton({
-                    id: `testcase_action_export_${row}`,
-                    name: "exportTestcase",
-                    title: doc.getDocLabel("page_testcaselist", "btn_export"),
-                    onClick: `window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
-                    icon: icons.export,
-                    disabled: !hasUpdate
-                }));
+                //buttons.push(actionButton({
+                //    id: `testcase_action_export_${row}`,
+                //    name: "exportTestcase",
+                //    title: doc.getDocLabel("page_testcaselist", "btn_export"),
+                //    onClick: `window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
+                //    icon: icons.export,
+                //    disabled: !hasUpdate
+                //}));
 
                 // Delete
                 buttons.push(actionButton({
@@ -1014,7 +1015,7 @@ function aoColumnsFunc(countries, tableId) {
                     title: doc.getDocLabel("page_testcaselist", "btn_delete"),
                     onClick: `deleteEntryClick('${obj.test}','${obj.testcase}')`,
                     icon: icons.delete,
-                    extraClass: "hover:bg-red-500 hover:text-white",
+                    extraClass: "group-hover:!text-red-500",
                     disabled: !hasDelete
                 }));
 
@@ -1024,6 +1025,7 @@ function aoColumnsFunc(countries, tableId) {
                     name: "runTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_runTest"),
                     onClick: `openModalExecutionSimple('${data.application}','${obj.test}','${obj.testcase}','${data.description}')`,
+                    extraClass: "group-hover:!text-green-500",
                     icon: icons.run
                 }));
 
@@ -1033,6 +1035,7 @@ function aoColumnsFunc(countries, tableId) {
                     name: "editScriptTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
                     onClick: `window.location.href='./TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
+                    extraClass: "group-hover:!text-blue-500",
                     icon: icons.script
                 }));
 

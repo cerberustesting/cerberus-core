@@ -127,6 +127,7 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
+        <jsp:include page="include/global/modalInclusions.jsp"/>
         <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
         <%@ include file="include/utils/modal-confirmation.html" %>
 

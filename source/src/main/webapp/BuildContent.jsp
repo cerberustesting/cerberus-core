@@ -32,6 +32,7 @@
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
+<jsp:include page="include/global/modalInclusions.jsp"/>
 
 <div class="min-h-screen flex flex-col">
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">

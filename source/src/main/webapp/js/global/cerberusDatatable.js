@@ -257,17 +257,17 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         // Control Panel
         var $controlPanel = $(`
-            <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col gap-2">
+            <div id="${tableConfigurations.divId}_controlPanel" class="flex flex-col">
         
                 <!-- Ligne 1 : bouton wrapper external -->
-                <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2"></div>
+                <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2 mb-2 min-h-[40px]"></div>
         
                 <!-- Ligne 2 : search + refresh + config -->
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center justify-between mb-2 min-h-[40px]">
                     <div class="flex items-center gap-2 flex-grow">
                         <input type="search" id="${tableConfigurations.divId}_globalSearch"
                                class="flex-grow border rounded-md px-3 py-2 h-10 border-gray-300 dark:border-gray-600"
-                               placeholder="🔍 ${searchPlaceholder}"
+                               placeholder="${searchPlaceholder}"
                                aria-label="Search DataTable">
                         <button id="${tableConfigurations.divId}_refresh"
                                 type="button"
@@ -295,61 +295,26 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                 
                 <!-- Ligne 4 : pagination / length TOUJOURS visible -->
                 <div id="${tableConfigurations.divId}_extraControls"
-                     class="flex items-center justify-between w-full">
+                     class="flex items-center justify-between w-full min-h-[40px]">
                 
                     <div id="${tableConfigurations.divId}_lengthContainer"
                          class="flex items-center gap-2"></div>
                 
                     <div id="${tableConfigurations.divId}_paginateContainer"
                          class="flex items-center gap-1"></div>
-                </div>
-
-
-        
-                <!-- Ligne de config toggle -->
-                <div id="${tableConfigurations.divId}_configPanel" class="hidden flex flex-wrap items-center gap-4 p-2 border-t border-gray-200 dark:border-gray-700">
-
-                <!-- Actions sur la configuration (Save / Load / Reset) -->
-                <div id="${tableConfigurations.divId}_actionButtons" class="flex gap-2 items-center">
-                    <button id="${tableConfigurations.divId}_saveTableConfigurationButton"
-                            type="button"
-                            title="${saveTableConfigurationButtonTooltip}"
-                            class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span>${saveTableConfigurationButtonLabel}</span>
-                    </button>
-            
-                    <button id="${tableConfigurations.divId}_restoreFilterButton"
-                            type="button"
-                            title="${restoreFilterButtonTooltip}"
-                            class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                        <i data-lucide="folder-open" class="w-4 h-4"></i>
-                        <span>${restoreFilterButtonLabel}</span>
-                    </button>
-            
-                    <button id="${tableConfigurations.divId}_resetFilterButton"
-                            type="button"
-                            title="${resetTableConfigurationButtonTooltip}"
-                            class="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
-                        <i data-lucide="x-circle" class="w-4 h-4"></i>
-                        <span>${resetTableConfigurationButtonLabel}</span>
-                    </button>
-                </div>
-
-                <!-- Sélection des colonnes visibles -->
-                <div id="${tableConfigurations.divId}_colvisContainer" class="flex items-center gap-2 ml-4">
-                    <label class="text-sm text-gray-600 dark:text-gray-400">Columns :</label>
-                    <!-- Le dropdown des colonnes sera injecté ici -->
-                </div>
-           
-            </div>
+                </div>          
         `);
 
-        // Injecter le panneau
+        // Injecter le panneau de config
         $headerwrapper.append($controlPanel);
 
-        // Déplacer le bouton ColVis
-        $colvisButton.appendTo($controlPanel.find(`#${tableConfigurations.divId}_colvisContainer`));
+        $headerwrapper.on("click",
+            "#" + tableConfigurations.divId + "_toggleConfig",
+            function () {
+                buildColumnsConfig(oTable);
+                window.dispatchEvent(new CustomEvent('open-table-config'));
+            }
+        );
 
 
         // Après init ou draw, déplacer length & pagination dans la 4ème ligne
@@ -373,22 +338,26 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
             $("#" + tableConfigurations.divId).dataTable().fnDraw(false);
         });
 
-        // Toggle panneau config
-        $("#" + tableConfigurations.divId + "_toggleConfig").click(function () {
-            $("#" + tableConfigurations.divId + "_configPanel").toggleClass("hidden");
-        });
 
-        $("#" + tableConfigurations.divId + "_saveTableConfigurationButton").on("click", function () {
+        //Event configuration Saved
+        $("#myTable_saveTableConfigurationButton").on("click", function () {
             updateUserPreferences(objectWaitingLayer);
+            notifyInPage("success", "Configuration saved");
+            window.dispatchEvent(new CustomEvent('close-table-config'));
         });
 
-        $("#" + tableConfigurations.divId + "_restoreFilterButton").on("click", function () {
+        //Event configuration Restored
+        $("#myTable_restoreFilterButton").on("click", function () {
+            notifyInPage("success", "Configuration restored");
             location.reload();
         });
 
-        $("#" + tableConfigurations.divId + "_resetFilterButton").on("click", function () {
+
+        //Event configuration Reset
+        $("#myTable_resetFilterButton").on("click", function () {
             localStorage.removeItem('DataTables_' + tableConfigurations.divId + '_' + location.pathname);
             updateUserPreferences(objectWaitingLayer);
+            notifyInPage("success", "Configuration reset");
             location.reload();
         });
 
@@ -396,6 +365,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
         $("#" + tableConfigurations.divId).on('draw.dt', function () {
             $("#" + tableConfigurations.divId + "_customInfo").html($("#" + tableConfigurations.divId + "_info").text());
             if (window.lucide) lucide.createIcons();
+            $(".dt-buttons").hide();
         }).trigger("draw.dt");
     }
 
@@ -428,7 +398,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
 
         const $length = $("#" + tableConfigurations.divId + "_length");
-        const $label = $length.find("label");
+        const $label = $length.find("label").addClass("!mb-0");
         const $select = $label.find("select");
 
 // Nettoyage texte existant
@@ -454,8 +424,8 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         const $paginate = $("#" + tableConfigurations.divId + "_paginate");
 
-        $paginate.removeClass().addClass("flex items-center gap-1");
-        $paginate.find("ul").removeClass().addClass("flex items-center gap-1");
+        $paginate.removeClass().addClass("flex items-center");
+        $paginate.find("ul").removeClass().addClass("flex items-center !mb-0");
         $paginate.find("li").removeClass("fg-button ui-button ui-state-default");
 
         $paginate.find("a").each(function () {
@@ -469,7 +439,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
             // base style
             $btn.addClass(
                 "inline-flex items-center justify-center " +
-                "h-8 px-3 rounded-md text-sm font-medium " +
+                "h-10 aspect-square rounded-md text-sm font-medium " +
                 "transition-colors !text-slate-600 dark:!text-slate-300 " +
                 "hover:!bg-gray-100 dark:hover:!bg-gray-800"
             );
@@ -498,14 +468,57 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         $("#" + tableConfigurations.divId + "_last a")
             .html('<i data-lucide="chevrons-right" class="w-4 h-4"></i>');
-
-
+        if (window.lucide) lucide.createIcons();
     });
 
     $("#" + tableConfigurations.divId + "_filterresult br").remove();
 
     if (window.lucide) lucide.createIcons();
     return oTable;
+}
+
+function buildColumnsConfig(table) {
+    const container = document.getElementById('columnsList');
+    container.innerHTML = '';
+
+    table.columns().every(function (index) {
+        const col = this;
+        const title = $(col.header()).text();
+        const visible = col.visible();
+
+        const row = document.createElement('div');
+        row.className = "flex items-center min-h-[32px]";
+
+        row.innerHTML = `
+  <div class="flex items-center gap-4 cursor-pointer py-1 min-h-[32px] col-row">
+    <input type="checkbox"
+           ${visible ? 'checked' : ''}
+           class="col-toggle h-4 w-4 shrink-0 !mt-0 !mb-0"
+           data-index="${index}">
+    <span class="font-medium text-sm leading-none">${title}</span>
+  </div>
+`;
+
+        container.appendChild(row);
+    });
+
+    // binding toggle
+    document.querySelectorAll('.col-toggle').forEach(cb => {
+        cb.addEventListener('change', e => {
+            const i = e.target.dataset.index;
+            table.column(i).visible(e.target.checked);
+        });
+    });
+}
+
+function openConfig() {
+    document.getElementById('tableConfigOverlay').classList.remove('hidden');
+    document.getElementById('tableConfigDrawer').classList.remove('translate-x-full');
+}
+
+function closeConfig() {
+    document.getElementById('tableConfigOverlay').classList.add('hidden');
+    document.getElementById('tableConfigDrawer').classList.add('translate-x-full');
 }
 
 /**

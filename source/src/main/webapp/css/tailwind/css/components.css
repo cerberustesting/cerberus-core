@@ -29,6 +29,19 @@
         @apply rounded-2xl p-6 border border-sky-500/30;
     }
 
+    .crb_tableconfig {
+        background: var(--crb-new-bg);
+        border: 1px solid var(--crb-new-border);
+
+        @apply p-6 mb-10;
+    }
+
+    .crb_tableconfig:hover {
+        background: var(--crb-new-bg);
+
+        @apply p-6 mb-10 border border-sky-500/30;
+    }
+
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -41,7 +54,7 @@
         border: 1px solid var(--crb-grey-light-color);
         backdrop-filter: blur(20px);
 
-        @apply rounded-2xl pl-6 pr-6 mb-10;
+        @apply rounded-2xl p-4 mb-10;
 
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -115,7 +128,7 @@
     }
 
     .table-hover>tbody>tr:hover{
-        background-color: var(--crb-grey-light-color) !important;
+        @apply !bg-slate-100 dark:!bg-slate-900;
         color: var(--crb-dark-color);
     }
 

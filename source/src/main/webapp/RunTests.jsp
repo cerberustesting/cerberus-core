@@ -40,6 +40,7 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
+        <jsp:include page="include/global/modalInclusions.jsp"/>
         <%@ include file="include/utils/modal-confirmation.html"%>
 
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">

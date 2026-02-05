@@ -33,6 +33,7 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
+        <jsp:include page="include/global/modalInclusions.jsp"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'ml-72' : 'ml-20'">
         <div>
             <%@ include file="include/global/messagesArea.html"%>
