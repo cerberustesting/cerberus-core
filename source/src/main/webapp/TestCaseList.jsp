@@ -37,7 +37,6 @@
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Test Case</title>
     </head>
@@ -50,7 +49,7 @@
                 <%@ include file="include/utils/modal-confirmation.html"%>
                 <%@ include file="include/transversalobject/TestCase.html"%>
                 <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
-                <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
+                <jsp:include page="include/transversalobject/TestCaseSimpleExecution.html"/>
                 <%@ include file="include/transversalobject/Application.html"%>
                 <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
                 <jsp:include page="include/transversalobject/TestCaseListMassActionUpdate.html"/>

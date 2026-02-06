@@ -1024,7 +1024,16 @@ function aoColumnsFunc(countries, tableId) {
                     id: `testcase_action_runtest_${row}`,
                     name: "runTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_runTest"),
-                    onClick: `openModalExecutionSimple('${data.application}','${obj.test}','${obj.testcase}','${data.description}')`,
+                    onClick: `
+                        window.dispatchEvent(new CustomEvent('open-execution', {
+                            detail: {
+                                application: '${data.application}',
+                                test: '${obj.test}',
+                                testcase: '${obj.testcase}',
+                                description: '${data.description}'
+                            }
+                        }))
+                    `,
                     extraClass: "group-hover:!text-green-500",
                     icon: icons.run
                 }));

@@ -328,7 +328,14 @@ $.when($.getScript("js/global/global.js")
             $("#seeTest").parent().attr("href", "./TestCaseList.jsp?test=" + encodeURI(test));
             //$("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
             $("#runTestCase").on('click', function () {
-                openModalExecutionSimple(application, test, testcase, description);
+                window.dispatchEvent(new CustomEvent('open-execution', {
+                    detail: {
+                        application: application,
+                        test: test,
+                        testcase: testcase,
+                        description: description
+                    }
+                }))
             });
 
             $.ajax({

@@ -1,147 +1,606 @@
-<!--Edit test page-->
-<div data-backdrop="static" class="modal fade center" id="testCaseSimpleExecutionModal" role="dialog" aria-labelledby="executeTestCaseModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom center modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="executeTestCaseModalLabel" name="executeTestCaseField">Run Test Case</h4>
+<div x-data="executionModal()"
+     x-show="open"
+     x-cloak
+     @open-execution.window="openModal($event.detail)"
+     class="crb_modal z-[9999]">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/80" @click="close()"></div>
+
+    <!-- Card -->
+    <div class="crb_card w-full max-w-6xl mx-4 transform-gpu rounded-2xl"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.away="open = false">
+
+        <!-- HEADER -->
+        <div class="flex justify-between items-center px-8 py-6">
+            <div>
+                <h3 class="text-2xl font-semibold">Run Test Case</h3>
             </div>
-            <div class="modal-body" style="">
-                <div class="container-fluid center">
-                    <!-- messages area-->
-                    <div id="DialogMessagesArea">
-                        <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                            <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+            <button @click="close()" class="text-2xl text-slate-500 hover:text-black">✕</button>
+        </div>
+
+        <!-- BODY -->
+        <div class="p-8 space-y-8">
+
+            <!-- TEST INFO -->
+            <div>
+                <div class="text-sm text-slate-500 flex items-center gap-2">
+                    <i data-lucide="play" class="w-4 h-4"></i>
+                    <span>Testcase to launch</span>
+                </div>
+                <div class="text-lg font-medium">
+                    <span x-text="test"></span> /
+                    <span x-text="testcase"></span> :
+                    <span class="font-thin" x-text="description"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-8">
+
+                <!-- ENVIRONMENTS -->
+                <div class="space-y-4 pr-4 border-r border-slate-200 dark:border-slate-700">
+
+                    <!-- TITLE -->
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
+                            <i data-lucide="earth" class="text-green-500 w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-semibold text-lg">Choose environment</h4>
+                    </div>
+
+                    <!-- FILTER -->
+                    <input type="text"
+                           x-model="envFilter"
+                           placeholder="Filter environments..."
+                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+
+                    <!-- LIST -->
+                    <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
+
+                        <!-- fade top -->
+                        <div class="pointer-events-none sticky top-0 h-6 bg-gradient-to-b dark:from-slate-800 from-slate-50 to-transparent"></div>
+
+                        <template x-for="env in filteredEnvs()" :key="env.uiId">
+                            <button @click="toggleEnv(env)" class="w-full rounded-xl p-4 transition border text-left group"
+                                    :class="isEnvSelected(env) ? 'bg-blue-50/80 dark:bg-blue-950 border-blue-400 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
+
+                                <div class="flex items-center justify-between gap-3">
+
+                                    <!-- LEFT -->
+                                    <div class="min-w-0 flex-1">
+
+                                        <!-- URL -->
+                                        <div class="text-sm font-medium truncate group-hover:text-blue-500"
+                                             :title="env.ip"
+                                             x-text="env.ip">
+                                        </div>
+
+                                        <!-- HOST / INFO -->
+                                        <div class="text-xs text-slate-400 truncate"
+                                             x-text="env.application">
+                                        </div>
+
+                                    </div>
+
+                                    <!-- RIGHT BADGES -->
+                                    <div class="flex gap-2 shrink-0">
+
+                                        <span class="px-2 py-1 text-[10px] font-semibold rounded
+                                                     bg-blue-100 text-blue-700
+                                                     dark:bg-blue-900 dark:text-blue-300"
+                                              x-text="env.country">
+                                        </span>
+
+                                        <span class="px-2 py-1 text-[10px] font-semibold rounded
+                                                     bg-green-100 text-green-700
+                                                     dark:bg-green-900 dark:text-green-300"
+                                              x-text="env.environment">
+                                        </span>
+
+                                    </div>
+                                </div>
                             </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- ROBOTS -->
+                <div class="space-y-4 px-4 border-r border-slate-200 dark:border-slate-700">
+
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
+                            <i data-lucide="bot" class="text-blue-500 w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-semibold text-lg">Choose robot</h4>
+                    </div>
+
+                    <input type="text"
+                           x-model="robotFilter"
+                           placeholder="Filter robots..."
+                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+
+                    <!-- LIST -->
+                    <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
+
+                        <!-- fade top -->
+                        <div class="pointer-events-none sticky top-0 h-6 bg-gradient-to-b dark:from-slate-800 from-slate-50 to-transparent"></div>
+
+                        <template x-for="robot in filteredRobots()" :key="robot.robot">
+                            <button
+                                    @click="toggleRobot(robot.robot)"
+                                    class="w-full flex items-center justify-between rounded-xl p-3 transition border"
+                                    :class="selectedRobots.includes(robot.robot) ? 'bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-600 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
+
+                                <!-- LEFT -->
+                                <div class="flex items-center gap-3">
+
+                                    <!-- ICONES -->
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <img :src="'images/platform-' + robot.platform + '.png'"
+                                             class="w-6 h-6 object-contain opacity-80"
+                                             :title="robot.platform">
+
+                                        <img :src="'images/browser-' + robot.browser + '.png'"
+                                             class="w-6 h-6 object-contain opacity-80"
+                                             :title="robot.browser">
+                                    </div>
+
+                                    <!-- TEXT -->
+                                    <div>
+                                        <div class="font-medium leading-tight"
+                                             x-text="robot.robot"></div>
+
+                                        <!-- STATUS + EXECUTORS -->
+                                        <div class="text-xs flex items-center gap-2">
+
+                                            <!-- STATUS -->
+                                            <span
+                                                    class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                                                    :class="robot.active ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'"
+                                                    x-text="robot.active ? 'ACTIVE' : 'INACTIVE'">
+                                            </span>
+
+                                            <!-- EXECUTORS -->
+                                            <span class="text-slate-400 dark:text-slate-500"
+                                                  x-text="robot.activeExecutorsCount + ' executor(s)'">
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- SETTINGS -->
+                <div class="space-y-4 pl-4">
+
+                    <!-- Header -->
+                    <div class="flex items-center gap-2">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
+                            <i data-lucide="sliders" class="text-orange-500 w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-semibold text-foreground">Customize execution settings</h4>
+                        <i data-lucide="save"
+                           @click="saveSettings()"
+                           class="ml-auto w-5 h-5 text-gray-400 cursor-pointer hover:text-green-500"></i>
+                    </div>
+
+                    <div class="space-y-3">
+
+                        <!-- Tag -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="tag" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <input x-model="settings.tag"
+                                   type="text"
+                                   placeholder="Define execution tag"
+                                   title="Tag"
+                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                        </div>
+
+                        <!-- Verbose -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="list" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <div class="flex-1 flex rounded-lg bg-muted/50 p-1">
+                                <button @click="settings.verbose=0"
+                                        :class="settings.verbose===0 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Minimum">Minimum</button>
+                                <button @click="settings.verbose=1"
+                                        :class="settings.verbose===1 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Standard">Standard</button>
+                                <button @click="settings.verbose=2"
+                                        :class="settings.verbose===2 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Maximum">Maximum</button>
+                            </div>
+                        </div>
+
+                        <!-- Timeout -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="clock" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <input x-model="settings.timeout"
+                                   type="number"
+                                   placeholder="Override timeout (ms)"
+                                   title="Timeout"
+                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                        </div>
+
+                        <!-- Retries -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="repeat" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <div class="flex rounded-lg bg-muted/50 p-1">
+                                <template x-for="i in 4" :key="i">
+                                    <button @click="settings.retries=i-1"
+                                            :class="settings.retries===i-1 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                            class="w-10 h-9 text-sm font-medium rounded-md transition-all duration-200" :title="i-1">
+                                        <span x-text="i-1"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="arrow-up" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <input x-model="settings.priority"
+                                   type="number"
+                                   placeholder="Override priority (default 1000)"
+                                   title="Priority"
+                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                        </div>
+
+                        <!-- Manual / Auto Execution -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="zap" class="w-4 h-4 text-muted-foreground"></i>
+                            </div>
+                            <div class="flex bg-muted/50 rounded-lg p-1">
+                                <button @click="settings.manual='Y'"
+                                        :class="settings.manual=='Y' ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Manual">Manual</button>
+                                <button @click="settings.manual='N'"
+                                        :class="settings.manual=='N' ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Auto">Auto</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!--edit form-->
-                <form id="executeTestCaseModalForm" name="executeTestCaseModalForm"  role="form">
-                    <div class="container-fluid center">
-                        <div class="row marginBottom20 whiteCard">
-                            <div class="col-xs-12" id="EditScriptPanel">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading bold" id="testToExecuteLabel">
-                                        Testcase to launch :
-                                    </div>
-                                </div>
-                                <div class="panel-heading marginBottom20" id="testCaseToExecute">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row whiteCard">
-                            <div class="col-xs-12 col-md-4">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading bold" id="chooseEnvLabel">
-                                            Choose your Environment
-                                    </div>
-                                </div>
-                                <div><input type="text" placeholder="Filter"  class="form-control input-sm" id="filterEnvironment"/></div>
-                                <div class="list-group marginTop10" id="environmentList" name="environmentList" style="max-height:300px;overflow-y: scroll;">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-4">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading bold" id="chooseRobotLabel">
-                                        Choose your Robot<span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
-                                                               style="font-size:15px;">
-                                    </div>
-                                </div>
-                                <div><input type="text" placeholder="Filter"  class="form-control input-sm" id="filterRobot"/></div>
-                                <div class="list-group marginTop10" id="robotList" name="robotList" style="max-height:300px;overflow-y: scroll;">
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-4">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading bold" id="customizeExecutionSettings">
-                                        Customize execution settings
-                                        <span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
-                                              style="font-size:15px;"></span>
-                                    </div>
-                                </div>
-                                <div class="form-horizontal" id="executionSettings">
-                                    <div class="list-group marginTop10">
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-tag pull-left marginTop10' data-toggle="tooltip" data-original-title="Tag"></span>
-                                            <div class="col-sm-11">
-                                                <input type="text" placeholder="Define your own execution tag"  class="form-control input-sm" id="tag" name="Tag" maxlength="255"/>
-                                            </div>
-                                        </button>
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-list pull-left marginTop10' data-toggle="tooltip" data-original-title="Logs level"></span>
-                                            <div class="col-sm-11">
-                                                <div class="btn-group btn-group-toggle" id="verbose" data-toggle="buttons">
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="verbose" id="verbose1" data-verbose="0" autocomplete="off"> Minimum
-                                                    </label>
-                                                    <label class="btn btn-default active">
-                                                        <input type="radio" name="verbose" id="verbose2" data-verbose="1" autocomplete="off"> Standard
-                                                    </label>
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="verbose" id="verbose3" data-verbose="2" autocomplete="off"> Maximum
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </button>
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-time pull-left marginTop10' data-toggle="tooltip" data-original-title="Override Timeout"></span>
-                                            <div class="col-sm-11">
-                                                    <input type="text" placeholder="Override timeout (in ms)" class="form-control input-sm" id="timeout" name="timeout"/>
-                                            </div>
-                                        </button>
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-repeat pull-left marginTop10' data-toggle="tooltip" data-original-title="Repeat on Failure"></span>
-                                            <div class="col-sm-11">
-                                                <div class="btn-group btn-group-toggle" id="retries" data-toggle="buttons">
-                                                    <label class="btn btn-default active">
-                                                        <input type="radio" name="retries" id="retries0" data-retries="0" autocomplete="off"> 0
-                                                    </label>
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="retries" id="retries1" data-retries="1" autocomplete="off" > 1
-                                                    </label>
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="retries" id="retries2" data-retries="2" autocomplete="off"> 2
-                                                    </label>
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="retries" id="retries3" data-retries="3" autocomplete="off"> 3
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </button>
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-arrow-up pull-left marginTop10' data-toggle="tooltip" data-original-title="Priority (0 lowest, 1000 default)"></span>
-                                            <div class="col-sm-11">
-                                                <input type="text" placeholder="Override priority (default 1000, 1 highest priority)"  class="form-control input-sm" id="priority" name="priority"/>
-                                            </div>
-                                        </button>
-                                        <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-hand-left pull-left marginTop10' data-toggle="tooltip" data-original-title="Manual execution"></span>
-                                            <div class="col-sm-11">
-                                                <div class="btn-group btn-group-toggle" id="manual" data-toggle="buttons">
-                                                    <label class="btn btn-default">
-                                                        <input type="radio" name="options" id="man1" data-manual="Y" autocomplete="off"> Manual
-                                                    </label>
-                                                    <label class="btn btn-default active">
-                                                        <input type="radio" name="options" id="man2" data-manual="N" autocomplete="off"> Auto
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <footer class='marginTop25'>Need more configuration, open it on <a id="linkToRunPageWithInformation">Run Page</a></footer>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Cancel</button>
-                <button type="button" id="executeTestCaseButton" class="btn btn-primary">Run</button>
+
+            <!-- ERROR -->
+            <template x-if="error">
+                <div class="bg-red-100 text-red-700 p-3 rounded-xl text-sm" x-text="error"></div>
+            </template>
+
+            <!-- FOOTER -->
+            <div class="flex justify-end gap-4 pt-6">
+                <button @click="close()"
+                        class="px-6 py-2 rounded-xl text-slate-700 bg-slate-200 hover:bg-slate-300">
+                    Close
+                </button>
+
+                <button @click="submit()"
+                        class="px-6 py-2 rounded-xl bg-blue-600 !text-white hover:bg-blue-700 shadow">
+                    ▶ Run
+                </button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function executionModal() {
+        return {
+            /* ---------------- STATE ---------------- */
+            open: false,
+
+            application: null,
+            test: null,
+            testcase: null,
+            description: '',
+
+            envs: [],
+            robots: [],
+
+            selectedEnvs: [],
+            selectedRobots: [],
+
+            envFilter: '',
+            robotFilter: '',
+
+            error: '',
+            loading: false,
+
+            settings: {
+                tag: '',
+                verbose: 1,
+                retries: 0,
+                priority: 1000,
+                timeout: '',
+                manual: 'N'
+            },
+
+            /* ---------------- OPEN / CLOSE ---------------- */
+            async openModal(data) {
+                this.reset();
+
+                this.open = true;
+                this.application = data.application;
+                this.test = data.test;
+                this.testcase = data.testcase;
+                this.description = data.description || '';
+
+                await Promise.all([
+                    this.loadEnvs(),
+                    this.loadRobots()
+                ]);
+            },
+
+            close() {
+                this.open = false;
+            },
+
+            reset() {
+                this.error = '';
+                this.loading = false;
+
+                this.selectedEnvs = [];
+                this.selectedRobots = [];
+
+                this.envFilter = '';
+                this.robotFilter = '';
+
+                this.settings = this.loadSettings();
+            },
+
+            /* ---------------- SETTINGS STORAGE ---------------- */
+
+            saveSettings() {
+                localStorage.setItem(
+                    'executionSettings',
+                    JSON.stringify(this.settings)
+                );
+                notifyInPage("success", "Settings successfully saved")
+            },
+
+            loadSettings() {
+                try {
+                    const raw = localStorage.getItem('executionSettings');
+                    if (!raw) throw 'empty';
+
+                    const parsed = JSON.parse(raw);
+
+                    // fallback sécurité
+                    return {
+                        tag: parsed.tag ?? '',
+                        verbose: parsed.verbose ?? 1,
+                        retries: parsed.retries ?? 0,
+                        priority: parsed.priority ?? 1000,
+                        timeout: parsed.timeout ?? '',
+                        manual: parsed.manual ?? 'N'
+                    };
+
+                } catch (e) {
+                    return {
+                        tag: '',
+                        verbose: 1,
+                        retries: 0,
+                        priority: 1000,
+                        timeout: '',
+                        manual: 'N'
+                    };
+                }
+            },
+
+            /* ---------------- LOAD DATA ---------------- */
+
+            async loadEnvs() {
+                try {
+                    const r = await fetch(
+                        'ReadCountryEnvironmentParameters?system=&application='+encodeURIComponent(this.application)
+                    );
+
+                    const text = await r.text();
+                    const json = JSON.parse(text);
+
+                    this.envs = (json.contentTable || []).map((e, index) => ({
+                        ...e,
+                        uiId: e.country + '|' + e.environment + '|' + e.application + '|' + index
+                    }));
+
+                    // auto select if only one (legacy behaviour)
+                    if (this.envs.length === 1) {
+                        this.selectedEnvs = [this.envs[0]];
+                    }
+
+                } catch (e) {
+                    console.error("Env load error", e);
+                    this.envs = [];
+                    this.error = 'Unable to load environments';
+                }
+            },
+
+            async loadRobots() {
+                try {
+                    const r = await fetch('./api/robots/read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    if (!r.ok) {
+                        throw new Error('HTTP ' + r.status);
+                    }
+
+                    const json = await r.json();
+                    console.log(json);
+
+                    const rawRobots = json.contentTable || [];
+
+                    // mapping UI
+                    this.robots = rawRobots.map(r => {
+                        const activeExecutors = (r.executors || []).filter(e => e.isActive);
+
+                        return {
+                            ...r,
+                            active: r.isActive,
+                            activeExecutorsCount: activeExecutors.length
+                        };
+                    });
+
+                    // auto select if only one
+                    if (this.robots.length === 1) {
+                        this.selectedRobots = [this.robots[0].robot];
+                    }
+
+                } catch (e) {
+                    console.error("Robot load error", e);
+                    this.robots = [];
+                    this.error = 'Unable to load robots';
+                }
+            },
+
+            /* ---------------- FILTERS ---------------- */
+
+            filteredEnvs() {
+                const f = this.envFilter.toLowerCase();
+
+                return this.envs.filter(e =>
+                    (e.ip + e.country + e.environment)
+                        .toLowerCase()
+                        .includes(f)
+                );
+            },
+
+            filteredRobots() {
+                const f = this.robotFilter.toLowerCase();
+
+                return this.robots.filter(r =>
+                    (r.robot + r.platform + r.browser + r.version)
+                        .toLowerCase()
+                        .includes(f)
+                );
+            },
+
+            /* ---------------- TOGGLES ---------------- */
+
+            toggleEnv(env) {
+                const i = this.selectedEnvs.findIndex(e => e.uiId === env.uiId);
+                if (i >= 0) {
+                    this.selectedEnvs.splice(i, 1);
+                } else {
+                    this.selectedEnvs.push(env);
+                }
+            },
+
+            isEnvSelected(env) {
+                return this.selectedEnvs.some(e => e.uiId === env.uiId);
+            },
+
+            toggleRobot(robotName) {
+                const i = this.selectedRobots.indexOf(robotName);
+
+                if (i >= 0) {
+                    this.selectedRobots.splice(i, 1);
+                } else {
+                    this.selectedRobots.push(robotName);
+                }
+            },
+
+            /* ---------------- UI HELPERS ---------------- */
+
+            btn(active) {
+                return active
+                    ? 'crb_btn_selected'
+                    : 'crb_btn';
+            },
+
+            /* ---------------- SUBMIT ---------------- */
+
+            async submit() {
+
+                if (this.selectedEnvs.length === 0) {
+                    this.error = 'Select at least one environment';
+                    return;
+                }
+
+                this.loading = true;
+                this.error = '';
+
+                try {
+                    const params = new URLSearchParams();
+
+                    params.append('e', '1');
+                    params.append('test', this.test);
+                    params.append('testcase', this.testcase);
+                    params.append('tag', this.settings.tag || '');
+                    params.append('verbose', this.settings.verbose);
+                    params.append('timeout', this.settings.timeout || '');
+                    params.append('manualexecution', this.settings.manual);
+                    params.append('retries', this.settings.retries);
+                    params.append('priority', this.settings.priority);
+                    params.append('outputformat', 'json');
+
+                    // robots
+                    this.selectedRobots.forEach(r =>
+                        params.append('robot', r)
+                    );
+
+                    // envs
+                    this.selectedEnvs.forEach(e => {
+                        params.append('country', e.country);
+                        params.append('environment', e.environment);
+                    });
+
+                    const r = await fetch('AddToExecutionQueuePrivate', {
+                        method: 'POST',
+                        body: params
+                    });
+
+                    const text = await r.text();
+                    const data = JSON.parse(text);
+
+                    if (data.messageType === 'OK' && data.nbExe === 1) {
+                        window.location.href =
+                            'TestCaseExecution.jsp?executionQueueId=' +
+                            data.queueList[0].queueId;
+                        return;
+                    }
+
+                    if (data.messageType === 'OK' && data.nbExe > 1) {
+                        window.location.href =
+                            'ReportingExecutionByTag.jsp?Tag=' +
+                            encodeURIComponent(data.tag);
+                        return;
+                    }
+
+                    this.error = data.message || 'Execution failed';
+
+                } catch (e) {
+                    console.error("Submit error", e);
+                    this.error = 'Unexpected server error';
+                } finally {
+                    this.loading = false;
+                }
+            }
+        };
+    }
+</script>
+
+

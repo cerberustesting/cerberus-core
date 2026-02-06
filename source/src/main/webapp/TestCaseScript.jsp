@@ -40,7 +40,6 @@
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body x-data x-cloak class="crb_body">
@@ -60,7 +59,7 @@
             <%@ include file="include/transversalobject/Application.html"%>
             <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
-            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
+            <jsp:include page="include/transversalobject/TestCaseSimpleExecution.html"/>
             <%@ include file="include/utils/modal-generic.html"%>
 
             <div class="flex gap-3">

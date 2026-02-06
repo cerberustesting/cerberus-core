@@ -37,7 +37,6 @@
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/File.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
@@ -52,7 +51,7 @@
         <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
         <%@ include file="include/transversalobject/TestCase.html" %>
         <%@ include file="include/transversalobject/File.html" %>
-        <%@ include file="include/transversalobject/TestCaseSimpleExecution.html" %>
+        <jsp:include page="include/transversalobject/TestCaseSimpleExecution.html"/>
         <%@ include file="include/transversalobject/Robot.html" %>
         <%@ include file="include/transversalobject/Application.html" %>
         <%@ include file="include/transversalobject/Invariant.html" %>

@@ -565,7 +565,14 @@ function updatePage(data, steps) {
 
         $("#runTestCase").attr("disabled", false);
         $("#runTestCase").on('click', function () {
-            openModalExecutionSimple(data.application, data.test, data.testcase, data.description, data.country, data.environment, data.robot);
+            window.dispatchEvent(new CustomEvent('open-execution', {
+                detail: {
+                    application: data.application,
+                    test: data.test,
+                    testcase: data.testcase,
+                    description: data.description
+                }
+            }))
         });
         //$("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#rerunTestCase").attr("disabled", false);
