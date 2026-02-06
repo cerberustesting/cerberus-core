@@ -26,7 +26,10 @@
         </div>
 
         <!-- BODY -->
-        <div class="p-8 space-y-8">
+        <div class="p-8">
+
+            <!-- NOTIFY ANCHOR -->
+            <div id="modalNotify"></div>
 
             <!-- TEST INFO -->
             <div>
@@ -187,9 +190,10 @@
                             <i data-lucide="sliders" class="text-orange-500 w-6 h-6"></i>
                         </div>
                         <h4 class="font-semibold text-foreground">Customize execution settings</h4>
-                        <i data-lucide="save"
-                           @click="saveSettings()"
-                           class="ml-auto w-5 h-5 text-gray-400 cursor-pointer hover:text-green-500"></i>
+                        <button @click="saveSettings()"
+                                class="ml-auto text-gray-400 hover:text-green-500 cursor-pointer">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                        </button>
                     </div>
 
                     <div class="space-y-3">
@@ -290,7 +294,7 @@
             <!-- FOOTER -->
             <div class="flex justify-end gap-4 pt-6">
                 <button @click="close()"
-                        class="px-6 py-2 rounded-xl text-slate-700 bg-slate-200 hover:bg-slate-300">
+                        class="px-6 py-2 rounded-xl !text-slate-700 bg-slate-200 hover:bg-slate-300">
                     Close
                 </button>
 
@@ -374,7 +378,11 @@
                     'executionSettings',
                     JSON.stringify(this.settings)
                 );
-                notifyInPage("success", "Settings successfully saved")
+                notifyInModal(
+                    "success",
+                    "Settings successfully saved",
+                    "#modalNotify"
+                );
             },
 
             loadSettings() {

@@ -38,6 +38,7 @@
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <title id="pageTitle">Test Case</title>
     </head>
     <body x-data x-cloak class="crb_body">

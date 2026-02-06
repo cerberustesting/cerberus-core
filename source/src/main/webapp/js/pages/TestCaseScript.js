@@ -360,7 +360,14 @@ $.when($.getScript("js/global/global.js")
                         $("#rerunFromQueueandSee").attr("data-original-title", "Last Execution was <span class='status" + data.contentTable.controlStatus + "'>" + data.contentTable.controlStatus + "</span> in <b>" + data.contentTable.env + "</b> in <b>" + data.contentTable.country + "</b><br> on " + new Date(data.contentTable.end).toLocaleString());
                         $("#runTestCase").unbind('click');
                         $("#runTestCase").on('click', function () {
-                            openModalExecutionSimple(application, test, testcase, description, data.contentTable.country, data.contentTable.env, data.contentTable.robot);
+                            window.dispatchEvent(new CustomEvent('open-execution', {
+                                detail: {
+                                    application: application,
+                                    test: test,
+                                    testcase: testcase,
+                                    description: description
+                                }
+                            }))
                         });
 
                         if (data.contentTable.queueId > 0) {

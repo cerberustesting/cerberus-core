@@ -40,6 +40,7 @@
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body x-data x-cloak class="crb_body">

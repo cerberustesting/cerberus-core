@@ -39,6 +39,7 @@
         <script type="text/javascript" src="js/transversalobject/File.js"></script>
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <script type="text/javascript" src="js/transversalobject/Application.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
 

@@ -41,3 +41,17 @@ function notifyInline(message, type = 'info', targetQuerySelector, confirm) {
     });
 }
 
+function notifyInModal(type, message, targetQuerySelector) {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 2500,
+        target: document.querySelector(targetQuerySelector),
+        backdrop: false,
+        background: 'var(--crb-new-bg)',
+        color: 'var(--crb-black-color)'
+    });
+}
