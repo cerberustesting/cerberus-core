@@ -43,7 +43,7 @@
             <%@ include file="include/transversalobject/Campaign.html"%>
 
             <h1 class="page-title-line" id="title">Campaign Management</h1>
-            <div class="crb_card">
+            <div class="">
                 <div id="testcampaignList">
                     <table id="testcampaignsTable" class="table table-hover display" name="testcampaignsTable"></table>
                     <div class="marginBottom20"></div>

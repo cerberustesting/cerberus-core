@@ -72,7 +72,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForCampaign, "#testcampaignList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForCampaign, "#testcampaignList", undefined, true);
 }
 
 function displayPageLabel() {
@@ -115,9 +115,26 @@ function renderOptionsForCampaign(data) {
     var doc = new Doc();
     if (data["hasPermissions"]) {
         if ($("#createTestcampaignButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestcampaignButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcampaign", "button_create") + "</button></div>";
-            $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before(contentToAdd);
+            var contentToAdd = "";
+            // Bouton Create
+            contentToAdd += `
+            <button id='createTestcampaignButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>${doc.getDocLabel("page_testcampaign", "button_create")}</span>
+            </button>
+            `;
+
+            var $wrapper = $("#testcampaignsTable_buttonWrapper");
+            if ($wrapper.length) {
+                // Ajoute le bouton au **début** du wrapper
+                $wrapper.append(contentToAdd);
+                if (window.lucide) lucide.createIcons();
+            } else {
+                // fallback si le wrapper n’existe pas encore
+                console.warn("Wrapper #testcampaignsTable_buttonWrapper introuvable, insertion avant length");
+                $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before("<div id='testcampaignsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            }
             $('#testcampaignList #createTestcampaignButton').click(addEntryClick);
         }
     }

@@ -38,7 +38,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication", "contentTable", aoColumnsFunc("applicationsTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
 }
 
 function displayPageLabel() {
@@ -96,11 +96,28 @@ function renderOptionsForApplication(data) {
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createApplicationButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
+            var contentToAdd = `
+            <button id='createApplicationButton' type='button'
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_application", "button_create") + `</span>
+            </button>
+        `;
 
-            $("#applicationsTable_wrapper div#applicationsTable_length").before(contentToAdd);
-            $('#applicationList #createApplicationButton').click(function () {
+            // Cherche ton _buttonWrapper
+            var $wrapper = $("#applicationsTable_buttonWrapper");
+
+            if ($wrapper.length) {
+                // Ajoute le bouton au **début** du wrapper
+                $wrapper.prepend(contentToAdd);
+                if (window.lucide) lucide.createIcons();
+            } else {
+                // fallback si le wrapper n’existe pas encore
+                console.warn("Wrapper #applicationsTableTable_buttonWrapper introuvable, insertion avant length");
+                $("#applicationsTable_wrapper div#applicationsTable_length").before("<div id='applicationsTable_buttonWrapper'>" + contentToAdd + "</div>");
+            }
+
+            $("#createApplicationButton").off("click").on("click", function () {
                 openModalApplication(undefined, "ADD", "ApplicationList");
             });
         }

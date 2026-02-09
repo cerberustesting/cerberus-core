@@ -41,7 +41,7 @@
             <%@ include file="include/transversalobject/Application.html"%>
 
             <h1 class="page-title-line" id="title">Application</h1>
-            <div class="glass-effect rounded-2xl p-6 hover-lift glow-on-hover animate-fade-in-up">
+            <div class="">
                 <div id="applicationList">
                     <table id="applicationsTable" class="table table-hover display" name="applicationsTable"></table>
                     <div class="marginBottom20"></div>
