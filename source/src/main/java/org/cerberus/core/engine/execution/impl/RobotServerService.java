@@ -429,8 +429,7 @@ public class RobotServerService implements IRobotServerService {
              * get the Real UserAgent from the browser.
              */
             if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    && !caps.getPlatformName().equals(Platform.ANDROID) && !caps.getPlatformName().equals(Platform.IOS)
-                    && !caps.getPlatformName().equals(Platform.MAC)) {
+                    && !caps.getPlatformName().equals(Platform.ANDROID) && !caps.getPlatformName().equals(Platform.IOS)) {
                 // Maximize is not supported on Opera.
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
@@ -688,7 +687,6 @@ public class RobotServerService implements IRobotServerService {
                         appiumDriver = new IOSDriver(url, finalCapabilities);
                     }
                     driver = appiumDriver == null ? new RemoteWebDriver(executor, finalCapabilities) : appiumDriver;
-
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
                     break;
@@ -776,8 +774,7 @@ public class RobotServerService implements IRobotServerService {
              * get the Real UserAgent from the browser.
              */
             if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    && !finalCapabilities.getPlatformName().equals(Platform.ANDROID) && !finalCapabilities.getPlatformName().equals(Platform.IOS)
-                    && !finalCapabilities.getPlatformName().equals(Platform.MAC)) {
+                    && !finalCapabilities.getPlatformName().equals(Platform.ANDROID) && !finalCapabilities.getPlatformName().equals(Platform.IOS)) {
                 // Maximize is not supported on Opera.
                 if (!finalCapabilities.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
