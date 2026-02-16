@@ -987,7 +987,8 @@ public class RobotServerService implements IRobotServerService {
             if (!StringUtil.isEmptyOrNull(tCExecution.getMyHost())
                     && (isNotAlreadyDefined(caps, "app"))) {
                 caps.setCapability("app", tCExecution.getMyHost());
-            } else if (isNotAlreadyDefined(caps, "app")) {
+            } else if (!StringUtil.isEmptyOrNull(tCExecution.getCountryEnvApplicationParam().getIp())
+                    && (isNotAlreadyDefined(caps, "app"))) {
                 caps.setCapability("app", tCExecution.getCountryEnvApplicationParam().getIp());
             }
 
