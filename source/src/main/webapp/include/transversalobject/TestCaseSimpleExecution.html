@@ -444,7 +444,7 @@
 
             async loadRobots() {
                 try {
-                    const r = await fetch('./api/robots/read', {
+                    const r = await fetch('./api/robots/read?iDisplayStart=0&iDisplayLength=100', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

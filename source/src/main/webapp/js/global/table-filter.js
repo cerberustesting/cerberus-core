@@ -517,6 +517,24 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //When clicking on the edit filter links
     $("#" + tableId + "_wrapper .editable").click(function () {
 
+        setTimeout(() => {
+            const $popover = $('.popover.editable-popup').last();
+            const $btn = $(this);
+
+            if (!$popover.length) return;
+
+            const rect = $btn[0].getBoundingClientRect();
+
+            $('body').append($popover);
+
+            $popover.css({
+                position: 'fixed',
+                top: rect.bottom + 5 + 'px',
+                left: rect.left + 'px',
+                zIndex: 9999
+            });
+        }, 50);
+
         var currentValue = $(this).next().find(".popover-title").text() != "" ? $(this).next().find(".popover-title").text() : "undefined"
         //Clear custom fields to avoid duplication
         $("#" + tableId + "_wrapper [data-type='custom']").remove();
