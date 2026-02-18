@@ -86,11 +86,11 @@
                                                     title="select all countries"></button>
                                             <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked btn-default"
                                                     title="unselect all countries"></button>
-                                            <button class="btn btn-default pull-right marginTop10" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1">
-                                                <span class="glyphicon glyphicon-chevron-down"></span>
-                                            </button>
+<!--                                            <button class="btn btn-default pull-right marginTop10" type="button" data-toggle="" data-target="" aria-expanded="true" aria-controls="col1">
+                                                <span class="glyphicon glyphicon-chevron-down"></span> toto
+                                            </button>-->
 
-                                            <div class="form-group collapse in" id="countryFilter">
+                                            <div class="form-group" id="countryFilter">
                                             </div>
                                         </div>
                                     </div>
@@ -171,7 +171,7 @@
                                         </a>
                                         <a id="buttonSeeStatsCampaign" class="pull-left marginTop10">
                                             <button type="button" class="btn btn-default marginRight10">
-                                                <span class="glyphicon glyphicon-stats"></span> Campaign History
+                                                <span class="glyphicon glyphicon-stats"></span> Campaign Trends
                                             </button>
                                         </a>
                                         <a id="buttonRunCampaign" class="pull-left marginTop10">

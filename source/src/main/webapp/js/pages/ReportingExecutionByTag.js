@@ -296,11 +296,11 @@ function loadCountryFilter() {
                 sessionStorage.setItem("countryFilter", JSON.stringify(obj));
             });
             // If more than 20 countries, we hide the country list by default.
-            if (len > 20) {
-                $('#countryFilter').collapse('hide');
-            } else {
-                $('#countryFilter').collapse('show');
-            }
+//            if (len > 20) {
+//                $('#countryFilter').collapse('hide');
+//            } else {
+//                $('#countryFilter').collapse('show');
+//            }
 
         },
         error: showUnexpectedError

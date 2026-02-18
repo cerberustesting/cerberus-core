@@ -409,7 +409,7 @@ function formatExecutors(robot) {
     robot.executors.forEach(function (exe) {
 
         const isActive = exe.isActive === true;
-        const status = isActive ? "running" : "stopped";
+        const status = isActive ? "active" : "inactive";
 
         html += `
             <div class="flex items-center justify-between p-3 rounded-lg

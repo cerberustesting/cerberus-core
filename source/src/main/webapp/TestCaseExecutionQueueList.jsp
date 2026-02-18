@@ -206,12 +206,12 @@
                         <div class="col-lg-12">
 
                             <div id="panelQueueStat" class="panel panel-default" style="display: none">
-                                <div class="panel-heading card" data-toggle="collapse" data-target="#perfChart1">
+                                <div class="panel-heading card" data-toggle="" data-target="#perfChart1">
                                     <span class="fa fa-bar-chart fa-fw"></span>
                                     <label id="lblQueueStat">Queue Execution Status</label>
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
-                                <div class="panel-body collapse in" id="perfChart1">
+                                <div class="panel-body" id="perfChart1">
                                     <div class="row">
                                         <div class="col-xs-12" id="ChartQueueStat" style="height: 400px">
                                             <canvas id="canvasQueueStat"></canvas>
