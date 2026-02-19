@@ -1,0 +1,615 @@
+<div x-data="aoModal()"
+     x-show="open"
+     x-cloak
+     @open-ao.window="openModal($event.detail)"
+     class="crb_modal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/80" @click="close()"></div>
+
+    <!-- Card -->
+    <div id="aoModalCard" class="crb_card w-full max-w-6xl mx-auto transform-gpu rounded-2xl h-[80vh] flex flex-col"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.away="open = false">
+
+        <!-- HEADER -->
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div>
+                <h3 class="text-2xl font-semibold">Application Object Generator</h3>
+                <p class="text-sm text-slate-500">Analyse écran & HTML</p>
+            </div>
+            <button @click="close()" class="!text-xl text-slate-500 hover:text-black">✕</button>
+        </div>
+
+        <!-- BODY : deux colonnes moitié/moitié -->
+        <div class="flex flex-1 overflow-hidden">
+
+            <!-- NOTIFY ANCHOR -->
+            <div id="modalNotify"></div>
+
+            <!-- LEFT : Chat -->
+            <div class="w-1/2 flex flex-col border-r border-slate-200 dark:border-slate-700">
+
+                <div class="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-10 h-10 flex items-center justify-center">
+                        <i data-lucide="message-circle" class="text-green-500 w-5 h-5"></i>
+                    </div>
+                    <h4 class="font-semibold">AI Chat</h4>
+                </div>
+
+                <!-- MESSAGES -->
+                <div id="aoConversation" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-900">
+                    <template x-for="(m, i) in messages" :key="i">
+                        <div class="text-sm" :class="m.role==='user' ? 'text-right' : 'text-left'">
+                            <div class="inline-block px-3 py-2 rounded-xl"
+                                 :class="m.role==='user'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-200 dark:bg-slate-700'">
+                                <span x-html="formatAI(m.text)"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- INPUT -->
+                <div class="flex gap-2 p-4 border-t border-slate-200 dark:border-slate-700">
+                    <input type="text"
+                           x-model="chatInput"
+                           @keydown.enter="sendChat()"
+                           placeholder="Ask AI…"
+                           class="flex-1 bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                    <button @click="sendChat()"
+                            class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700">
+                        Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT : Form + Proposals -->
+            <div class="w-1/2 flex flex-col overflow-hidden p-4 space-y-4">
+
+                <!-- FORM compact en haut -->
+                <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 space-y-3 flex-shrink-0">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','application')">Application</label>
+                            <div x-data="singleSelectDropdown({
+                            id: 'aoApplicationSelect',
+                                loader: async () => {
+                                    try {
+                                        const r = await fetch('ReadApplication');
+                                        const d = await r.json();
+                                        console.log(d);
+                                        return d.contentTable.map(a => a.application);
+                                    } catch (e) {
+                                        console.error('Failed to load applications :', e);
+                                        return [];
+                                    }
+                                }
+                            })"
+                                 x-modelable="selectedValue"
+                                 x-model="application">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','webpage')"></label>
+                            <input type="text"
+                                   x-model="page"
+                                   placeholder="Page / Screen name"
+                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
+                        </div>
+                        <div>
+                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','screenshot')"></label>
+                            <input type="file"
+                                   accept="image/*"
+                                   @change="handleScreenshot($event)"
+                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
+                        </div>
+                        <div>
+                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','html')"></label>
+                            <input type="file"
+                                   accept=".html"
+                                   @change="handleHtmlFile($event)"
+                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-2">
+                        <input type="text"
+                               x-model="newTarget"
+                               @keydown.enter="addTarget()"
+                               placeholder="Add target…"
+                               class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
+                        <button @click="addTarget()"
+                                class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+</button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="(t, i) in targets" :key="i">
+                            <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                                <span x-text="t"></span>
+                                <button @click="removeTarget(i)">✕</button>
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+
+                <!-- GENERATION / PROPOSALS en bas, scrollable -->
+                <div class="flex-1 bg-slate-50 dark:bg-slate-900 rounded-xl p-4 overflow-y-auto flex flex-col">
+
+                    <h4 class="font-semibold mb-3">AI Proposals</h4>
+
+                    <div class="flex-1 overflow-y-auto space-y-3">
+                        <template x-for="(p, i) in proposals" :key="i">
+                            <div class="bg-white dark:bg-slate-800 rounded-xl p-3 space-y-2 shadow-sm">
+
+                                <div class="text-sm font-medium" x-text="p.object"></div>
+                                <div class="text-xs font-mono break-all text-slate-500" x-text="p.value"></div>
+
+                                <!-- Image croppée -->
+                                <template x-if="p.screenshotFilename">
+                                    <img :src="getScreenshotUrl(p.screenshotFilename)"
+                                         class="rounded-lg border border-slate-200 max-h-32 object-contain"/>
+                                </template>
+
+                                <div class="flex gap-2 pt-1">
+                                    <button @click="acceptProposal(i)"
+                                            class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Accept</button>
+                                    <button @click="rejectProposal(i)"
+                                            class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Reject</button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="proposals.length===0">
+                            <div class="text-sm text-slate-400">No proposals yet</div>
+                        </template>
+                    </div>
+
+                    <template x-if="error">
+                        <div class="bg-red-100 text-red-700 p-3 rounded-xl text-sm mt-3" x-text="error"></div>
+                    </template>
+
+                    <!-- FOOTER -->
+                    <div class="flex justify-end mt-3 gap-3">
+                        <button @click="close()" class="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300">
+                            Close
+                        </button>
+                        <button @click="submit()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow">
+                            ▶ Generate AO
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function aoModal() {
+        return {
+            open: false,
+
+            application: 'Games',
+            page: '',
+            html: '',
+            htmlFile: null,
+            htmlName: '',
+            screenshotBase64: '',
+            screenshotSize: 0,
+            screenshotName: '',
+            screenshotFile: null,
+
+            newTarget: '',
+            targets: [],
+            messages: [],
+            chatInput: '',
+            proposals: [],
+
+            error: '',
+
+            // IA
+            ws: null,
+            connected: false,
+            sessionID: null,
+            aiBuffer: '',
+
+            /* =========================
+               MODAL
+            ========================= */
+
+            openModal(data = {}) {
+                this.open = true;
+                this.page = data.page || '';
+                this.html = data.html || '';
+                this.application = data.application || '';
+
+                this.messages = [];
+                this.proposals = [];
+                this.targets = [];
+                this.error = '';
+
+                this.sessionID = crypto.randomUUID();
+
+                this.connectWebSocket();
+
+                // démarrage IA
+                setTimeout(() => {
+                    this.sendAI("ao_init", `
+                    You are an expert in UI automation.
+                    Guide the user step by step to create Application Objects.
+                    Explain what information is required.
+                    Ask for screenshot, HTML and targets.
+                    Anwser very succintly.
+                `);
+                }, 400);
+            },
+
+            close() {
+                this.open = false;
+            },
+
+            /* =========================
+               WEBSOCKET
+            ========================= */
+
+            connectWebSocket() {
+                if (this.ws && this.ws.readyState === 1) return;
+
+                const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+                const host = window.location.host;
+                const pageName = document.querySelector('meta[name="active-page"]')?.content;
+                const fullPath = window.location.pathname;
+                const context = pageName ? fullPath.replace("/" + pageName, "") : "";
+
+                // Build WebSocket URL
+                const wsUrl = `${protocol}${host}${context}/api/ws/AIWebSocket`;
+                console.debug("WebSocket URL:", wsUrl);
+
+                this.ws = new WebSocket(wsUrl);
+
+                this.ws.onopen = () => {
+                    this.connected = true;
+                };
+
+                this.ws.onclose = () => {
+                    this.connected = false;
+                };
+
+                this.ws.onerror = () => {
+                    this.connected = false;
+                };
+
+                this.ws.onmessage = (event) => {
+                    let parsed;
+                    try { parsed = JSON.parse(event.data); }
+                    catch { return; }
+
+                    const type = parsed.type || "chat";
+
+                    // ao_proposals : données structurées directes, pas du streaming
+                    if (type === "ao_proposals") {
+                        try {
+                            this.proposals = typeof parsed.data === "string"
+                                ? JSON.parse(parsed.data)
+                                : parsed.data;
+                        } catch (e) {
+                            console.error("Failed to parse ao_proposals", e);
+                        }
+                        return; // ne pas traiter comme un chunk de chat
+                    }
+
+                    // chat streaming normal
+                    const chunk = parsed.data || "";
+                    const done = parsed.done === true;
+
+                    if (chunk) this.appendAI(chunk);
+                    if (done)  this.finalizeAI(type);
+                };
+            },
+
+            sendAI(subject, content) {
+                if (!this.connected) return;
+
+                const payload = {
+                    subject: subject,
+                    sender: getUser().login,
+                    sessionID: this.sessionID,
+                    content: content
+                };
+
+                this.ws.send(JSON.stringify(payload));
+            },
+
+            /* =========================
+               IA STREAM
+            ========================= */
+
+            appendAI(chunk) {
+                this.aiBuffer += chunk;
+
+                const last = this.messages[this.messages.length - 1];
+                if (!last || last.role !== 'assistant' || last.streaming !== true) {
+                    this.messages.push({
+                        role: 'assistant',
+                        text: this.aiBuffer,
+                        streaming: true
+                    });
+                } else {
+                    last.text = this.aiBuffer;
+                }
+            },
+
+            finalizeAI(type) {
+                const last = this.messages[this.messages.length - 1];
+                if (last) last.streaming = false;
+
+                // proposals
+                if (type === "ao_proposals") {
+                    try {
+                        const json = JSON.parse(this.aiBuffer);
+                        this.proposals = json;
+                    } catch {}
+                }
+
+                this.aiBuffer = '';
+            },
+
+            /* =========================
+               FORM
+            ========================= */
+
+
+
+            handleHtmlFile(e) {
+                const f = e.target.files[0];
+                if (!f) return;
+                this.htmlFile = f;
+                this.htmlName = f.name;
+
+                this.html = ''; // reset
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.html = ev.target.result;
+                    console.debug("HTML loaded, length:", this.html.length);
+                };
+                reader.readAsText(f);
+            },
+
+            handleScreenshot(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                this.screenshotFile = file;
+                if (file.size > 6 * 1024 * 1024) {
+                    this.error = "Image too large (>6MB)";
+                    return;
+                }
+
+                this.screenshotName = file.name;
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // STOCKER les dimensions originales AVANT compression
+                        this.originalWidth = img.width;
+                        this.originalHeight = img.height;
+
+                        // Canvas compression
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        const MAX_W = 1920;
+                        const ratio = Math.min(1, MAX_W / img.width);
+
+                        canvas.width = img.width * ratio;
+                        canvas.height = img.height * ratio;
+
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                        this.screenshotBase64 = base64;
+                        this.screenshotSize = base64.length;
+
+                        console.log("Original:", this.originalWidth, "x", this.originalHeight);
+                        console.log("Canvas:", canvas.width, "x", canvas.height);
+                    };
+
+                    img.src = ev.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            },
+
+            addTarget() {
+                const v = this.newTarget.trim();
+                if (!v) return;
+                this.targets.push(v);
+                this.newTarget = '';
+            },
+
+            removeTarget(i) {
+                this.targets.splice(i, 1);
+            },
+
+            async submit() {
+                if (!this.page) { this.error = "Page name required"; return; }
+                if (!this.screenshotFile) { this.error = "Screenshot required"; return; }
+                if (this.targets.length === 0) { this.error = "Add at least one target"; return; }
+
+                this.error = '';
+
+                // 1️⃣ Upload files via REST
+                const formData = new FormData();
+                formData.append("screenshot", this.screenshotFile);
+                if (this.htmlFile) formData.append("htmlFile", this.htmlFile);
+
+                const context = window.location.pathname.split('/')[1];
+                const uploadUrl = `/${context}/api/applicationobjects/uploadFiles`;
+
+                const uploadResp = await fetch(uploadUrl, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!uploadResp.ok) {
+                    this.error = "Upload failed";
+                    return;
+                }
+
+                const uploadData = await uploadResp.json();
+
+                const payload = {
+                    subject: "ao_generate",
+                    sender: getUser().login,
+                    sessionID: this.sessionID,
+                    application: this.application,
+                    page: this.page,
+                    screenshotName: uploadData.screenshotName,
+                    screenshotPath: uploadData.screenshotPath,
+                    htmlName: uploadData.htmlName || null,
+                    htmlPath: uploadData.htmlPath || null,
+                    targets: this.targets
+                };
+
+                this.ws.send(JSON.stringify(payload));
+            },
+
+            /* =========================
+               PROPOSALS
+            ========================= */
+
+            acceptProposal(i) {
+                const p = this.proposals[i];
+
+                if (!p.screenshotFilename) {
+                    console.warn("No screenshot for this AO, skipping upload file");
+                }
+
+                // Construire le FormData pour le servlet
+                const formData = new FormData();
+                formData.append("application", this.application);        // obligatoire côté servlet
+                formData.append("object", p.object || p.name);    // nom de l'AO
+                formData.append("value", p.value || "");          // xpath ou valeur
+                formData.append("xOffset", p.xOffset || "0");     // optionnel
+                formData.append("yOffset", p.yOffset || "0");     // optionnel
+
+                // Ajouter le fichier screenshot temp si présent
+                if (p.screenshotFilename) {
+                    const screenshotUrl = this.getScreenshotUrl(p.screenshotFilename);
+
+                    // Récupérer le fichier via fetch et le mettre dans FormData
+                    fetch(screenshotUrl)
+                        .then(resp => resp.blob())
+                        .then(blob => {
+                            const file = new File([blob], p.screenshotFilename, { type: blob.type });
+                            formData.append("file", file);
+
+                            // POST vers ton servlet de création
+                            this.sendAOFormData(formData, i);
+                        })
+                        .catch(err => {
+                            console.error("Failed to fetch temp screenshot", err);
+                        });
+                } else {
+                    // Pas de fichier, juste envoyer le formulaire
+                    this.sendAOFormData(formData, i);
+                }
+            },
+
+            sendAOFormData(formData, proposalIndex) {
+                // Calculer le context pour WAR
+                const context = window.location.pathname.split('/')[1];
+                const url = `/${context}/CreateApplicationObject`; // ou UpdateApplicationObject si besoin
+
+                fetch(url, {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(resp => resp.json())
+                    .then(data => {
+                        if (data.messageType === "OK") {
+                            // Delete from list and notify
+                            this.proposals.splice(proposalIndex, 1);
+                            notifyInModal(
+                                "success",
+                                "Settings successfully saved",
+                                "#modalNotify"
+                            );
+                        } else {
+                            notifyInModal(
+                                "error",
+                                "Failed to save AO:"+ data.message,
+                                "#modalNotify"
+                            );
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error sending AO form data", err);
+                    });
+            },
+
+            rejectProposal(i) {
+                this.proposals.splice(i, 1);
+            },
+
+            getScreenshotUrl(fileName) {
+                const segments = window.location.pathname.split('/');
+                const context = segments[1] ? '/' + segments[1] : '';
+                return `${window.location.origin}${context}/api/applicationobjects/screenshot/temp/${fileName}`;
+            },
+
+
+            /* =========================
+               CHAT
+            ========================= */
+
+            sendChat() {
+                const txt = this.chatInput.trim();
+                if (!txt) return;
+
+                this.messages.push({ role: 'user', text: txt });
+                this.chatInput = '';
+
+                this.sendAI("ao_chat", txt);
+            },
+
+            formatAI(text) {
+                if (!text) return '';
+
+                try {
+                    const rawHtml = marked.parse(text);
+
+                    const clean = DOMPurify.sanitize(rawHtml, {
+                        ALLOWED_TAGS: [
+                            'b','i','strong','em','ul','ol','li','p','div','span',
+                            'code','pre','br','hr','h1','h2','h3','h4','table','thead',
+                            'tbody','tr','th','td','blockquote'
+                        ],
+                        ALLOWED_ATTR: ['class']
+                    });
+
+                    return clean;
+
+                } catch (e) {
+                    return text
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;");
+                }
+            }
+        }
+    }
+</script>

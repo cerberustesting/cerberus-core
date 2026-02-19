@@ -72,6 +72,11 @@ public class AIWebSocket extends TextWebSocketHandler {
                 aiService.chatWithAI(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent());
             } else if (incoming.getSubject().equals("execution_debug_assistant")){
                 aiService.executionDebugWithAI(incoming.getSender(), session, incoming.getSessionID(), Integer.valueOf(incoming.getContent()));
+            } else if (incoming.getSubject().equals("ao_init")){
+                aiService.chatWithAI(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent());
+            } else if (incoming.getSubject().equals("ao_generate")){
+                aiService.generateApplicationObjectProposalWithAI(incoming.getSender(),session,incoming.getSessionID(),incoming.getApplication(),incoming.getPage(),incoming.getHtmlPath(),
+                        incoming.getScreenshotPath(),incoming.getTargets());
             }
 
         } catch (Exception ex){

@@ -1,0 +1,176 @@
+<!-- WIDGET TIMELINE -->
+<div class="w-full h-full">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center px-2 py-1 cursor-move"
+       @mousedown.stop="editMode && startDrag($event, w)">
+
+    <div class="flex items-center gap-2">
+      <div :class="`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${w.color || 'bg-green-500'}`">
+        <i class="w-4 h-4" :data-lucide="w.icon || 'activity'"></i>
+      </div>
+      <h3 x-show="!w.editing" class="text-xs font-semibold uppercase"
+          x-text="w.title || 'Timeline'"></h3>
+    </div>
+
+    <div x-show="editMode" class="flex gap-1">
+      <button @click="w.editing = !w.editing" class="text-xs text-blue-600">✎</button>
+      <button @click="deleteWidget(w.id)" class="text-xs text-red-600">X</button>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="flex-1 flex flex-col" x-data="widgetTimeline(w)" x-init="load()">
+
+    <!-- VIEW MODE -->
+    <div x-show="!w.editing" class="flex-1 relative h-40">
+      <canvas :id="canvasId" class="w-full h-full" style="height:9rem;"></canvas>
+    </div>
+
+    <!-- EDIT MODE -->
+    <div x-show="w.editing" class="p-2 flex flex-col gap-2 bg-gray-100 rounded z-[9999]">
+
+      <!-- TITLE -->
+      <input x-model="w.title" placeholder="Title" class="border px-2 py-1 text-sm rounded">
+
+      <!-- ICON -->
+      <select x-model="w.icon" class="border px-2 py-1 text-sm rounded">
+        <template x-for="i in ['activity','star','user','server','folder','check','alert','calendar','bar-chart','bell']">
+          <option :value="i" :selected="i === w.icon" x-text="i"></option>
+        </template>
+      </select>
+
+      <!-- COLOR -->
+      <select x-model="w.color" class="border px-2 py-1 text-sm rounded">
+        <template x-for="c in ['bg-red-500','bg-green-500','bg-blue-500','bg-yellow-500','bg-indigo-500','bg-pink-500','bg-purple-500','bg-orange-500','bg-teal-500','bg-cyan-500']">
+          <option :value="c" :selected="c === w.color" x-text="c"></option>
+        </template>
+      </select>
+
+      <!-- TEST -->
+      <select x-model="w.option" @change="loadTestCases()" class="border px-2 py-1 text-sm rounded">
+        <template x-for="t in tests">
+          <option :value="t" :selected="t === w.option"  x-text="t"></option>
+        </template>
+      </select>
+
+      <!-- TESTCASE -->
+      <select x-model="w.content" class="border px-2 py-1 text-sm rounded">
+        <template x-for="tc in testcases">
+          <option :value="tc" :selected="tc === w.content" x-text="tc"></option>
+        </template>
+      </select>
+
+      <!-- DATA TYPE -->
+      <select x-model="w.dataType" class="border px-2 py-1 text-sm rounded">
+        <option value="responseTime">Temps de réponse global</option>
+        <option value="throughput">Débit</option>
+      </select>
+
+      <button @click="save()" class="bg-green-600 text-white text-xs px-2 py-1 rounded">Save</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function widgetTimeline(w) {
+    let chart = null;
+    return {
+      canvasId: w.id + '-timeline',
+      tests: [],
+      testcases: [],
+
+      load() {
+        this.loadTests();
+        this.loadTestCases();
+        this.$nextTick(() => this.render());
+      },
+
+      loadTests() {
+        fetch('ReadTest')
+                .then(r => r.json())
+                .then(data => {
+                  this.tests = data.contentTable.map(t => t.test).sort();
+                  if (!w.option) w.option = this.tests[0];
+                })
+                .catch(err => console.error(err));
+      },
+
+      loadTestCases() {
+        if (!w.option) return;
+        fetch('ReadTestCase?test=' + encodeURIComponent(w.option))
+                .then(r => r.json())
+                .then(data => {
+                  this.testcases = data.contentTable.map(tc => tc.testcase).sort();
+                  if (!w.content) w.content = this.testcases[0];
+                })
+                .catch(err => console.error(err));
+      },
+
+      save() {
+        w.editing = false;
+        this.$dispatch('save-dashboard');
+        this.$nextTick(() => this.render());
+      },
+
+      render() {
+        const canvas = document.getElementById(this.canvasId);
+        if (!canvas) return;
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(canvas.getContext('2d'), {
+          type: 'line',
+          data: { datasets: [] },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                type: 'time',
+                time: { unit: 'day' },
+                ticks: {
+                  maxTicksLimit: 5,
+                  font: { size: 10 }
+                },
+                grid: {
+                  drawTicks: false,
+                  drawBorder: true,
+                  drawOnChartArea: false
+                }
+              },
+              y: {
+                beginAtZero: false,
+                ticks: {
+                  maxTicksLimit: 4,
+                  font: { size: 10 }
+                },
+                grid: {
+                  borderDash: [5, 5]
+                }
+              }
+            }
+          }
+        });
+
+        this.loadData();
+      },
+
+      loadData() {
+        if (!w.option || !w.content) return;
+        const qS = `from=2025-07-30T22:00:00.000Z&to=2025-09-28T22:00:00.563Z&tests=${encodeURIComponent(w.option)}&testcases=${encodeURIComponent(w.content)}`;
+        fetch('ReadExecutionStat?' + qS)
+                .then(r => r.json())
+                .then(data => {
+                  if (!data.datasetExeTime?.[0]?.points) return;
+                  const points = data.datasetExeTime[0].points.map(p => ({ x: new Date(p.x), y: p.y }));
+                  chart.data.datasets = [{ label: "Execution Time", data: points, borderWidth: 1, tension: 0.3, fill: true,backgroundColor: '#e0faef', borderColor:'#00d27a', pointBorderColor: '#00d27a' }];
+                  chart.update();
+                })
+                .catch(err => console.error(err));
+      }
+    }
+  }
+</script>

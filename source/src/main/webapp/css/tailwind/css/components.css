@@ -29,6 +29,18 @@
         @apply rounded-2xl p-6 border border-sky-500/30;
     }
 
+    .crb_widget {
+        background: var(--crb-new-bg);
+
+        @apply rounded-2xl border border-slate-200 dark:border-slate-700;
+    }
+
+    .crb_widget:hover {
+        background: var(--crb-new-bg);
+
+        @apply rounded-2xl border border-sky-500/30;
+    }
+
     .crb_tableconfig {
         background: var(--crb-new-bg);
         border: 1px solid var(--crb-new-border);

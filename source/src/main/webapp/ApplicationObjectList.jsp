@@ -25,6 +25,8 @@
     <head>
         <meta name="active-menu" content="maintain">
         <meta name="active-submenu" content="ApplicationObjectList.jsp">
+        <meta name="active-page" content="ApplicationObjectList.jsp">
+        <meta name="page" content="Application Object">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/ApplicationObjectList.js"></script>
@@ -41,8 +43,10 @@
             <%@ include file="include/transversalobject/ApplicationObject.html"%>
 
 
-            <h1 class="page-title-line" id="title">Application Object</h1>
-            <div class="crb_card">
+            <h1 class="page-title-line" id="title" x-text="$store.labels.getLabel('applicationObject','title')"></h1>
+            <p class="page-subtitle-line" x-text="$store.labels.getLabel('applicationObject','subtitle')"></p>
+
+            <div>
                 <div id="applicationObjectList">
                     <table id="applicationObjectsTable" class="table table-hover display" name="applicationObjectsTable"></table>
                     <div class="marginBottom20"></div>
@@ -51,6 +55,7 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
+            <jsp:include page="include/global/aiBottomBar.html"/>
         </div>
         </main>
     </body>

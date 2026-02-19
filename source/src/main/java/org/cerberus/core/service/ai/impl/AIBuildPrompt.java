@@ -19,14 +19,14 @@
  */
 package org.cerberus.core.service.ai.impl;
 
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseStep;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Service
@@ -109,11 +109,25 @@ public class AIBuildPrompt {
                 .replace("{{testDescription}}", testCase.getDetailedDescription())
                 .replace("{{testShortDescription}}", testCase.getDescription())
                 .replace("{{testImplementation}}", execution.toJson(true).toString());
-                //replace("{{url}}", execution.getCountryEnvApplicationParam().getUrl())
-                //.replace("{{environment}}", execution.getCountryEnvApplicationParam().getEnvironment())
-                //.replace("{{browser}}", execution.getRobotObj().getBrowser())
-
-
     }
+
+    public String buildPromptForApplicationObjectGeneration(Application application, List<ApplicationObject> existingApplictionObjects, String pageName, List<String> targets) {
+
+        List<String> existingAOName = new ArrayList<> ();
+        for (ApplicationObject ao : existingApplictionObjects){
+            existingAOName.add(ao.getObject());
+        }
+        String template = readResourcesAsText("prompts/generate_applicationobject.prompt");
+        return template.replace("{{targetElements}}", String.join(",", targets))
+                .replace("{{pageName}}", pageName)
+                .replace("{{application}}", application.getApplication())
+                .replace("{{existingElements}}", String.join(",", existingAOName));
+    }
+
+    public String buildPromptForApplicationObjectSystemContext() {
+        String template = readResourcesAsText("prompts/generate_applicationobject_systemcontext.prompt");
+        return template;
+    }
+
 
 }

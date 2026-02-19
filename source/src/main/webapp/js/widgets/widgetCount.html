@@ -1,0 +1,119 @@
+<!-- INNER CARD -->
+        <div class="w-full h-full flex flex-col items-center justify-center gap-2
+            rounded-xl crb_widget p-5 hover:border-sky-500/30">
+
+            <!-- HEADER / DRAG HANDLE -->
+            <div class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 cursor-move"
+                 @mousedown.stop="editMode && startDrag($event, w)">
+
+                <!-- ICON + TITLE -->
+                <div class="flex items-center gap-4">
+                    <!--<div :class="`w-6 h-6 rounded-full flex items-center justify-center text-white text-sm ${w.color || 'bg-green-500'}`">
+                        <i class="w-4 h-4" :data-lucide="w.icon"></i>
+                    </div>-->
+                    <i class="w-5 h-5" :class="`${w.color ? 'text-'+w.color+'-500' : 'text-amber-500'}`" :data-lucide="w.icon"></i>
+                    <p x-show="!w.editing" class="text-sm font-medium text-slate-600 dark:text-slate-300 !mb-0"
+                        x-text="w.title || w.option"></p>
+                </div>
+
+                <!-- EDIT / DELETE BUTTONS ONLY VISIBLE IN PAGE EDIT MODE -->
+                <div x-show="editMode" class="flex gap-1 ml-auto">
+                    <button @click="w.editing = !w.editing" class="text-xs text-blue-600">✎</button>
+                    <button @click="deleteWidget(w.id)" class="text-xs text-red-600">X</button>
+                </div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="flex-1 flex items-center justify-center" x-data="widgetCount(w)" x-init="load()">
+
+                <!-- VIEW MODE -->
+                <div x-show="!w.editing" class="flex flex-col items-center gap-1 mt-1">
+                    <div class="text-3xl font-bold" x-text="total"></div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" x-text="label"></p>
+                </div>
+
+                <!-- WIDGET CONFIG EDIT -->
+                <div x-show="w.editing" class="w-full p-2 flex flex-col gap-2 bg-slate-100 rounded z-[9999]">
+
+                    <!-- TITLE -->
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold">Title</label>
+                        <input type="text" x-model="w.title" class="border rounded px-2 py-1 text-sm">
+                    </div>
+
+                    <!-- ICON -->
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold">Icon</label>
+                        <select x-model="w.icon" class="border rounded px-2 py-1 text-sm">
+                            <template x-for="i in ['star','user','server','folder','check','alert','activity','calendar','bar-chart','bell']">
+                                <option :value="i" :selected="i === w.icon" x-text="i"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- ICON COLOR -->
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold">Icon Color</label>
+                        <select x-model="w.color" class="border rounded px-2 py-1 text-sm">
+                            <template x-for="c in ['red','green','blue','yellow','indigo','pink','purple','orange','teal','cyan']">
+                                <option :value="c" :selected="c === w.color" x-text="c"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- TYPE -->
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold">Type</label>
+                        <select x-model="w.option" class="border rounded px-2 py-1 text-sm">
+                            <template x-for="opt in Object.keys(widgetCountOptions)">
+                                <option :value="opt" :selected="opt === w.option" x-text="opt"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- DATA -->
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold">Data</label>
+                        <select x-model="w.content" class="border rounded px-2 py-1 text-sm">
+                            <template x-for="c in widgetCountOptions[w.option]">
+                                <option :value="Object.keys(c)[0]" :selected="Object.keys(c)[0] === w.content" x-text="c[Object.keys(c)[0]].label"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <button @click="w.editing=false;" class="mt-2 text-xs bg-white px-2 py-1 rounded">
+                        Close
+                    </button>
+                    <button @click="w.editing=false; $dispatch('save-dashboard')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                        Save
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+<script>
+    var widgetCountOptions={
+        "Application":[{"Count":{label:"Total configured",uri:"api/applications/count"}},{"New":{label:"Modified this week",uri:"api/applications/count"}}],
+        "Service":[{"Count":{label:"Total configured",uri:"api/services/count"}},{"New":{label:"Modified this week",uri:"api/services/count"}}],
+        "Testcase":[{"Count":{label:"Total created",uri:"api/testcases/count"}},{"New":{label:"Created this week",uri:"api/testcases/count"}}],
+        "Execution":[{"Count":{label:"Total execution",uri:"api/executions/count"}},{"New":{label:"Executed this week",uri:"api/executions/count"}}]
+    };
+
+    function widgetCount(w) {
+        return {
+            total: 0,
+            label: "",
+            load() {
+                const options = widgetCountOptions[w.option];
+                if (!options) return;
+                const found = options.find(o => o[w.content]);
+                if (!found) return;
+                this.label = found[w.content].label;
+                fetch(found[w.content].uri)
+                    .then(r => r.json())
+                    .then(data => { this.total = data.iTotalRecords || 0; });
+            }
+        }
+    }
+</script>

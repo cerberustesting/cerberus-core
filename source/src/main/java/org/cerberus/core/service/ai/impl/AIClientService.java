@@ -60,12 +60,18 @@ public class AIClientService {
      * @param messageParamList : List of message for the session
      * @return MessageCreateParams
      */
-    private MessageCreateParams buildMessageCreateParams(List<MessageParam> messageParamList) {
-        return MessageCreateParams.builder()
+    private MessageCreateParams buildMessageCreateParams(List<MessageParam> messageParamList, String systemContext) {
+
+        MessageCreateParams.Builder builder = MessageCreateParams.builder()
                 .model(aiConfig.modelName())
                 .maxTokens(aiConfig.maxTokens())
-                .messages(messageParamList)
-                .build();
+                .messages(messageParamList);
+
+        if (systemContext != null && !systemContext.isBlank()) {
+            builder.system(systemContext);
+        }
+
+        return builder.build();
     }
 
 
@@ -74,22 +80,22 @@ public class AIClientService {
      * @param prompt
      * @return
      */
-    public Message getSyncMessage(String prompt){
+    public Message getSyncMessage(String prompt) {
 
         AnthropicClient anthropicClient = buildClient();
 
         List<MessageParam> messageParamList = new ArrayList<MessageParam>();
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(prompt).build());
-        MessageCreateParams createParams = buildMessageCreateParams(messageParamList);
+        MessageCreateParams createParams = buildMessageCreateParams(messageParamList, null);
 
         return anthropicClient.messages().create(createParams);
     }
 
 
-    public MessageAccumulator streamResponseAndAccumulate(List<MessageParam> messageParamList, Consumer<String> onToken) {
+    public MessageAccumulator streamResponseAndAccumulate(List<MessageParam> messageParamList, String systemContext, Consumer<String> onToken) {
 
         AnthropicClient client = buildClient();
-        MessageCreateParams createParams = buildMessageCreateParams(messageParamList);
+        MessageCreateParams createParams = buildMessageCreateParams(messageParamList, systemContext);
         MessageAccumulator messageAccumulator = MessageAccumulator.create();
 
         try (StreamResponse<RawMessageStreamEvent> stream =
@@ -110,13 +116,13 @@ public class AIClientService {
     }
 
 
-    public MessageAccumulator streamResponseObjectAndAccumulate(String prompt,Consumer<String> onToken) {
+    public MessageAccumulator streamResponseObjectAndAccumulate(String prompt, String systemContext, Consumer<String> onToken) {
 
         AnthropicClient client = buildClient();
 
         List<MessageParam> messageParamList = new ArrayList<MessageParam>();
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(prompt).build());
-        MessageCreateParams createParams = buildMessageCreateParams(messageParamList);
+        MessageCreateParams createParams = buildMessageCreateParams(messageParamList, systemContext);
 
         MessageAccumulator messageAccumulator = MessageAccumulator.create();
 
