@@ -4,3 +4,6 @@
 <jsp:include page="../transversalobject/ApplicationObjectGenerationAI.html"/>
 <jsp:include page="../templates/selectDropdown.html"/>
 <jsp:include page="../global/datatableConfig.html"/>
+<script>
+    window.appContext = "${pageContext.request.contextPath}";
+</script>

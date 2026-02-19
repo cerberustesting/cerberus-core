@@ -268,12 +268,9 @@
 
                 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
                 const host = window.location.host;
-                const pageName = document.querySelector('meta[name="active-page"]')?.content;
-                const fullPath = window.location.pathname;
-                const context = pageName ? fullPath.replace("/" + pageName, "") : "";
 
                 // Build WebSocket URL
-                const wsUrl = `${protocol}${host}${context}/api/ws/AIWebSocket`;
+                const wsUrl = `${protocol}${host}${window.appContext}/api/ws/AIWebSocket`;
                 console.debug("WebSocket URL:", wsUrl);
 
                 this.ws = new WebSocket(wsUrl);
@@ -457,8 +454,7 @@
                 formData.append("screenshot", this.screenshotFile);
                 if (this.htmlFile) formData.append("htmlFile", this.htmlFile);
 
-                const context = window.location.pathname.split('/')[1];
-                const uploadUrl = `/${context}/api/applicationobjects/uploadFiles`;
+                const uploadUrl = `${window.appContext}/api/applicationobjects/uploadFiles`;
 
                 const uploadResp = await fetch(uploadUrl, {
                     method: "POST",
@@ -532,8 +528,7 @@
 
             sendAOFormData(formData, proposalIndex) {
                 // Calculer le context pour WAR
-                const context = window.location.pathname.split('/')[1];
-                const url = `/${context}/CreateApplicationObject`; // ou UpdateApplicationObject si besoin
+                const url = `${window.appContext}/CreateApplicationObject`;
 
                 fetch(url, {
                     method: "POST",
@@ -567,9 +562,7 @@
             },
 
             getScreenshotUrl(fileName) {
-                const segments = window.location.pathname.split('/');
-                const context = segments[1] ? '/' + segments[1] : '';
-                return `${window.location.origin}${context}/api/applicationobjects/screenshot/temp/${fileName}`;
+                return `${window.location.origin}${window.appContext}/api/applicationobjects/screenshot/temp/${fileName}`;
             },
 
 
