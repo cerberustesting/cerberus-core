@@ -142,6 +142,7 @@ public class UpdateAppService extends HttpServlet {
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParam(fileData.get("isFollowRedir"), true);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
+        String serviceRequestExtra1 = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequestExtra1"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         boolean isAvroEnable = ParameterParserUtil.parseBooleanParam(fileData.get("isAvroEnable"), false);
         String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
@@ -225,6 +226,7 @@ public class UpdateAppService extends HttpServlet {
                 appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
                 appService.setServiceRequest(serviceRequest);
+                appService.setServiceRequestExtra1(serviceRequestExtra1);
                 appService.setOperation(operation);
                 appService.setType(type);
                 appService.setApplication(application);
