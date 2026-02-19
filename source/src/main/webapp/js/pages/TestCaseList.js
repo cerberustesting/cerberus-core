@@ -1043,7 +1043,16 @@ function aoColumnsFunc(countries, tableId) {
                     id: `testcase_action_editscript_${row}`,
                     name: "editScriptTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
-                    onClick: `window.location.href='./TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
+                    onClick: `
+                        (function(event) {
+                            const url = './TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}';
+                            if (event.ctrlKey || event.metaKey) {
+                                window.open(url, '_blank');
+                            } else {
+                                window.location.href = url;
+                            }
+                        })(event)
+                    `,
                     extraClass: "group-hover:!text-blue-500",
                     icon: icons.script
                 }));

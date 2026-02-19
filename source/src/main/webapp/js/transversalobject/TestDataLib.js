@@ -618,7 +618,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 //        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
         // init the select2
 //        $('#editTestDataLibModal #service').select2(getComboConfigService());
-        $('#editTestDataLibModal #service').select2();
+        $('#editTestDataLibModal #service').select2({width: '400px'});
         // set it with the service value
         $("#editTestDataLibModal #service").val(obj.service).trigger('change');
 
