@@ -24,6 +24,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -43,5 +45,17 @@ public class MessageTestCreationAI {
     private String tempId;
     private String testcaseObject;
     private String testDetailedDescription;
+
+    //specific application object
+    private String page;
+    private String htmlPath;
+    private String htmlName;
+    private String screenshotPath;
+    private String screenshotName;
+    private List<String> targets;
+    private Integer screenshotOriginalWidth;
+    private Integer screenshotOriginalHeight;
+    private Integer screenshotStoredWidth;
+    private Integer screenshotStoredHeight;
 
 }

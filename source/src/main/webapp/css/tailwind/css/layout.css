@@ -93,4 +93,9 @@
         font-size: clamp(0.75rem, 1em, 12px) !important;
     }
 
+    #aoConversation,
+    #aoConversation * {
+        font-size: clamp(0.75rem, 1em, 12px) !important;
+    }
+
 }

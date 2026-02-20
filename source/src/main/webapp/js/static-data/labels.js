@@ -273,9 +273,20 @@ const reportingCampaignStatisticsLabel ={
     filtergroup1:{en:"Group 1",fr:"Groupe 1"}
 }
 
+const applicationObjectLabel ={
+    title:{en:"Application Object",fr:"Objets d'Application"},
+    subtitle:{en:"Technical element of the application (ID, XPath, URI, locator), shared across all configurations (country, environment) and reusable in all tests.",fr:"Element technique de l’Application (ID, XPath, URI, locator), commun à toutes les configurations (pays, environnement) et réutilisable dans tous les tests."},
+    application:{en:"Application",fr:"Application"},
+    webpage:{en:"Page/Screen Name",fr:"Nom de Page/Ecran"},
+    screenshot:{en:"Fullpage Screenshot",fr:"Capture écran"},
+    html:{en:"HTML page code",fr:"Code de la page HTML"},
+
+}
+
 window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
 window.homepageLabel = homepageLabel;
 window.pageInvariantLabel = pageInvariantLabel;
 window.pageQuickStartLabel = pageQuickStartLabel;
 window.reportingCampaignStatisticsLabel = reportingCampaignStatisticsLabel;
+window.applicationObjectLabel = applicationObjectLabel;

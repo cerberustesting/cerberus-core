@@ -19,154 +19,276 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="java.util.Date" %>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@page import="org.springframework.context.ApplicationContext" %>
-<%@page import="org.springframework.web.context.WebApplicationContext" %>
-<%@page import="org.cerberus.core.crud.entity.Invariant" %>
-<%@page import="org.cerberus.core.session.SessionCounter" %>
-<%@page import="java.util.List" %>
-<%@page import="org.cerberus.core.crud.service.IInvariantService" %>
-<%@page import="org.cerberus.core.database.IDatabaseVersioningService" %>
-
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html class="h-full">
-    <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <title>My Dashboard</title>
-        <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-        <script type="text/javascript" src="js/pages/Widget.js"></script>
-        <script type="text/javascript" src="js/widgets/widgetAvailability.js"></script>
-        <script type="text/javascript" src="js/widgets/widgetCount.js"></script>
-        <script type="text/javascript" src="js/widgets/widgetTimeline.js"></script>
-        <script type="text/javascript" src="js/widgets/chartjsTimeLine.js"></script>
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-        <style>
-            :root{
-                --card-bg:var(--crb-white-color);
-                --text:var(--crb-dark-color);
-                --muted:#a9b2bf;
-                --primary:#4e7bf2;
-                --success:#39a983;
-                --link:#6690ff;
-                --shadow:var(--crb-shadow-bottom-color);
-                --radius:18px;
-            }
-            .card{
-                max-width: 92vw;
-                background:var(--card-bg); color:var(--text);
-                border-radius:var(--radius); box-shadow:var(--shadow);
-                padding:22px 24px 18px; line-height:1.25;
-            }
-            .card header{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
-            .card h3{margin:0; font-size:24px; font-weight:700; letter-spacing:.2px;}
-            .gear{width:22px;height:22px;opacity:.9;flex:0 0 auto}
-            .row{display:flex; align-items:center; justify-content:space-between; padding:2px 2px;}
-            .left{margin-left:10px; font-size:12px;}
-            .label{color:var(--text)}
-            .muted{color:var(--muted)}
-            .badge{min-width: 34px;height: 34px;border-radius: 999px;display: grid;
-            place-items: center;font-weight: 800;font-size: 14px;margin-right: 10px;}
-            .badge.primary{ background:var(--primary); color:white;}
-            .badge.success{ background:var(--success); color:white;}
-            a.cta{
-                display:inline-flex; align-items:center; gap:8px;
-                margin-top:10px; color:var(--link); text-decoration:none; font-weight:600;
-            }
-            a.cta:hover{ text-decoration:underline; }
-            /* Pictos (emoji fallback) */
-            .picto{font-size:22px; width:24px; text-align:center}
-            /* Optional: focus ring */
-            a:focus-visible{ outline:3px solid #94b0ff; outline-offset:3px; border-radius:10px }
-        </style>
-        <style>
-            #grid {
-                position:relative;
-                width:100%;
-                height:600px; /* 5 lignes */
-                /*border:1px solid #ddd;
-                background:#fafafa;*/
-            }
-            .widget {
-                position:absolute;
-                /*border:1px solid #ccc;*/
-                background:var(--crb-white-color);
-                padding:10px;
-                border-radius:4px;
-                overflow:hidden;
-            }
-            .drag-handle {
-                cursor:move;
-                position:absolute;
-                top:5px; left:5px;
-                font-weight:bold;
-            }
-            .widget-controls {
-                position:absolute;
-                top:5px; right:5px;
-                display:none;
-            }
-            .drag-widget{
-                display:none;
-            }
-            .widget-controls button {
-                margin-left:3px;
-            }
-            #grid.edit-mode .widget-controls { display:block; }
-            #grid.edit-mode .drag-widget { display:block; }
-            #grid .guides { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-            #grid .guides .line {
-                position: absolute;
-                border: 1px dashed #aaa;
-            }
-        </style>
-    </head>
-    <body x-data x-cloak class="crb_body">
-        <jsp:include page="include/global/header2.html"/>
-        <jsp:include page="include/global/modalInclusions.jsp"/>
-        <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
-        <%@ include file="include/utils/modal-confirmation.html" %>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>My Dashboard</title>
 
-<main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-        <div>
-            <%@ include file="include/global/messagesArea.html" %>
-            <h1 class="page-title-line" id="title">
-                My Dashboard
-                <i id="editPageBtn" class="glyphicon glyphicon-pencil" style="cursor:pointer; margin-left:10px;"></i>
-                <i id="addWidgetBtn" class="glyphicon glyphicon-plus-sign" style="cursor:pointer; margin-left:10px; display:none;"></i>
-            </h1>
-            <div class="container" style="width:100%">
-                <div id="grid">
-                    <div class="guides"></div>
-                </div>
-            </div>
+    <%@ include file="include/global/dependenciesInclusions.html" %>
 
-            <!-- Modal Ajout Widget -->
-            <div id="addWidgetModal" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Ajouter un widget</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Choisissez une taille de widget :</p>
-                            <button class="btn btn-default widget-size" data-type="count" data-dv="Application">Count (1×2)</button>
-                            <button class="btn btn-default widget-size" data-type="availability" data-dv="Count">Availability (2×3)</button>
-                            <button class="btn btn-default widget-size" data-type="timeline" data-dv="Count">Timeline (2×4)</button>
-                            <button class="btn btn-default widget-size" data-type="bigtimeline" data-dv="Count">Grand (2×8)</button>
-                        </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+</head>
+
+<body x-data x-cloak class="crb_body">
+
+<jsp:include page="include/global/header2.html"/>
+
+<main class="crb_main"
+      :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+
+<div x-data="dashboard()" x-init="init()" @save-dashboard.window="save()" class="p-4">
+
+    <%@ include file="include/global/messagesArea.html" %>
+
+    <!-- TOOLBAR -->
+    <div class="flex items-center gap-4 mb-4">
+        <!-- TITLE -->
+        <h1 class="page-title-line !pb-0 !mb-0">My Dashboard</h1>
+        <button x-show="!editMode"
+        class="text-gray-500 hover:text-blue-600 transition"
+                @click="toggleEdit()"
+                aria-label="Configuration">
+                <i data-lucide="sliders-horizontal" class="w-8 h-8"></i>
+        </button>
+
+        <button x-show="editMode"
+                @click="toggleEdit()"
+                class="px-3 py-1 rounded bg-green-600 text-white">
+            Save
+        </button>
+        <button x-show="editMode"
+                @click="openAddWidget()"
+                class="px-3 py-1 rounded bg-green-600 text-white">
+            Add Widget
+        </button>
+    </div>
+
+    <div class="inline-flex items-center gap-1 rounded-lg bg-slate-200 dark:bg-slate-700 p-1">
+    <template x-for="p in periods" :key="p">
+        <button
+            @click="timePeriod = p"
+            :class="timePeriod === p
+                ? 'bg-white dark:bg-slate-900 font-semibold shadow'
+                : 'text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+            class="w-40 px-3 py-1.5 rounded-md transition-colors duration-200"
+            x-text="p + ' jours'">
+        </button>
+    </template>
+</div>
+
+    <!-- GRID -->
+    <div class="relative w-full overflow-hidden"
+         :style="gridStyle()"
+         :class="editMode ? 'border rounded bg-gray-50' : ''"
+         @mousemove="onMouseMove"
+         @mouseup="stopDrag">
+
+         <!-- LOOP WIDGETS -->
+        <template x-for="w in widgets" :key="w.id">
+            <div class="absolute p-1 select-none"
+                 :style="widgetStyle(w)">
+
+                <!-- TEXT -->
+                <template x-if="w.type === 'text'">
+                    <div x-data="widgetText(w)" x-init="load()"
+                         class="w-full h-full flex flex-col">
+                        <jsp:include page="js/widgets/widgetText.html"/>
                     </div>
-                </div>
+                </template>
+
+                <!-- COUNT -->
+                <template x-if="w.type === 'count'">
+                    <div x-data="widgetCount(w)" x-init="load()"
+                         class="w-full h-full flex flex-col">
+                        <jsp:include page="js/widgets/widgetCount.html"/>
+                    </div>
+                </template>
+
+                <!-- TIMELINE -->
+                <template x-if="w.type === 'timeline'">
+                    <div x-data="widgetTimeline(w)" x-init="load()"
+                         class="w-full h-full crb_widget flex flex-col">
+                        <jsp:include page="js/widgets/widgetTimeline.html"/>
+                    </div>
+                </template>
+
             </div>
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
+        </template>
+
+    </div>
+
+    <!-- MODAL BACKDROP -->
+    <div x-show="showAddModal"
+         class="fixed inset-0 bg-black/40 z-40"
+         @click="closeAddWidget()"></div>
+
+    <!-- MODAL -->
+    <div x-show="showAddModal"
+         x-transition
+         class="fixed inset-0 flex items-center justify-center z-50"
+         @keydown.escape.window="closeAddWidget()">
+
+        <div class="bg-white rounded-xl shadow-xl w-[400px] p-6">
+
+            <div class="flex justify-between mb-4">
+                <h2 class="text-lg font-semibold">Ajouter un widget</h2>
+                <button @click="closeAddWidget()">✕</button>
+            </div>
+
+            <div class="grid gap-2">
+                <button @click="addWidget('text','Application')"
+                        class="px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">
+                    Text (2×1)
+                </button>
+                <button @click="addWidget('count','Application')"
+                        class="px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">
+                    Count (2×1)
+                </button>
+
+                <button @click="addWidget('timeline','Count')"
+                        class="px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">
+                    Availability (8×2)
+                </button>
+            </div>
         </div>
-        </main>
-    </body>
+    </div>
+
+</div>
+
+</main>
+
+<script>
+function dashboard() {
+
+    return {
+        editMode: false,
+        timePeriod: '7',
+        periods: ['7','30','90'],
+        showAddModal: false,
+        cols: 12,
+        rows: 20,
+        cellSize: 60,
+        widgets: [],
+        dragging: null,
+        gap: 10,
+
+        init() {
+            const saved = localStorage.getItem("widgets");
+            this.widgets = saved ? JSON.parse(saved) : this.defaultWidgets();
+
+
+        },
+
+        defaultWidgets() {
+    return [
+        {
+            id:1,
+            type:"count",
+            option:"Application",
+            content:"Count",
+            x:0,
+            y:0,
+            w:4,
+            h:2,
+            title:"Application",
+            icon:"star",
+            color:"green",
+            editing:false
+        }
+    ];
+},
+
+        toggleEdit() {
+            this.editMode = !this.editMode;
+            if (!this.editMode) this.save();
+        },
+
+        save() {
+            localStorage.setItem("widgets", JSON.stringify(this.widgets));
+        },
+
+        deleteWidget(id) {
+            this.widgets = this.widgets.filter(w => w.id !== id);
+            this.save();
+        },
+
+        gridStyle() {
+            return { height: (this.rows * this.cellSize) + 'px' };
+        },
+
+        widgetStyle(w) {
+            return {
+                left: (w.x * this.cellSize) + 'px',
+                top: (w.y * this.cellSize) + 'px',
+                width: (w.w * this.cellSize) + 'px',
+                height: (w.h * this.cellSize) + 'px'
+            };
+        },
+
+        /* MODAL */
+        openAddWidget() { this.showAddModal = true; },
+        closeAddWidget() { this.showAddModal = false; },
+
+        addWidget(type, option) {
+            const sizes = {
+                text: {w:4,h:1},
+                count: {w:4,h:2},
+                availability: {w:6,h:4},
+                timeline: {w:16,h:4}
+            };
+            const s = sizes[type];
+
+            const newId = this.widgets.length
+                ? Math.max(...this.widgets.map(w => w.id)) + 1
+                : 1;
+
+            this.widgets.push({
+                id:newId,
+                type,
+                option,
+                content:"Count",
+                x:0,
+                y:0,
+                w:s.w,
+                h:s.h,
+                title: option,
+                icon:"star",
+                color:"green",
+                editing:false
+            });
+
+            this.save();
+            this.closeAddWidget();
+        },
+
+        /* DRAG */
+        startDrag(e, w) {
+            if (!this.editMode) return;
+            this.dragging = { w };
+        },
+
+        onMouseMove(e) {
+            if (!this.dragging) return;
+
+            const rect = e.currentTarget.getBoundingClientRect();
+            const gx = Math.floor((e.clientX - rect.left) / this.cellSize);
+            const gy = Math.floor((e.clientY - rect.top) / this.cellSize);
+
+            this.dragging.w.x = Math.max(0, gx);
+            this.dragging.w.y = Math.max(0, gy);
+        },
+
+        stopDrag() {
+            if (this.dragging) this.save();
+            this.dragging = null;
+        }
+    }
+}
+</script>
+
+</body>
 </html>

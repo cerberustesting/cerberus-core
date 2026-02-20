@@ -41,7 +41,7 @@ function initPage() {
 
     var configurations = new TableConfigurationsServerSide(
             "applicationObjectsTable", "ReadApplicationObject", "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
     refreshPopoverDocumentation("applicationObjectList");
 
 
@@ -84,19 +84,54 @@ function renderOptionsForApplicationObject(data) {
     // check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createApplicationObjectButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createApplicationObjectButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> "
-                    + doc
-                    .getDocLabel("page_applicationObject",
-                            "button_create") + "</button></div>";
+            var disabledCreate = data["hasPermissionsCreate"] ? "" : "disabled";
 
-            $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
-            $("#applicationObjectList #createApplicationObjectButton").off("click");
-            $('#applicationObjectList #createApplicationObjectButton').click(
-                    function () {
-                        openModalApplicationObject(undefined, undefined, "ADD",
-                                "applicationObject");
-                    });
+            var contentToAdd = "";
+
+            // Bouton Create
+            contentToAdd += `
+                <button id='createApplicationObjectButton' type='button'
+                    class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
+                    ${disabledCreate}>
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>${doc.getDocLabel("page_applicationObject", "button_create")}</span>
+                </button>
+            `;
+
+            // Bouton TestFolder
+            contentToAdd += `
+                <button id='generate_ao_with_ai' type='button'
+                    class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'>
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Generate with AI</span>
+                </button>
+            `;
+
+
+            // Cherche ton buttonWrapper
+            var $wrapper = $("#applicationObjectsTable_buttonWrapper");
+
+            if ($wrapper.length) {
+                // Ajoute le bouton au **début** du wrapper
+                $wrapper.append(contentToAdd);
+                if (window.lucide) lucide.createIcons();
+            } else {
+                // fallback si le wrapper n’existe pas encore
+                console.warn("Wrapper #applicationObjectsTable_buttonWrapper introuvable, insertion avant length");
+                $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before("<div id='applicationObjectsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            }
+
+            $("#createApplicationObjectButton").off("click").on("click", function () {
+                openModalApplicationObject(undefined, undefined, "ADD",
+                    "applicationObject");
+            });
+
+            $("#generate_ao_with_ai").on("click", function () {
+                window.dispatchEvent(new CustomEvent('open-ao', {
+                    detail: {}
+                }));
+            });
+
         }
     }
 }
@@ -310,4 +345,17 @@ function aoColumnsFunc(tableId) {
 
 function displayPictureOfMinitature(element) {
     showPicture("screenshot", $(element).attr('src'));
+}
+
+function getAIHeaderButtons() {
+    return [
+        {
+            label: "Find XPath",
+            onClick: () => {
+                window.dispatchEvent(new CustomEvent('open-ao', {
+                    detail: {}
+                }));
+            }
+        }
+    ];
 }

@@ -1,0 +1,48 @@
+<!-- TEXT WIDGET SIMPLE -->
+<div class="w-full h-full flex items-end">
+
+    <!-- HEADER / DRAG HANDLE -->
+    <div class="flex justify-between items-end h-10 cursor-move"
+         @mousedown.stop="editMode && startDrag($event, w)">
+
+        <!-- TITLE -->
+        <p x-show="!w.editing" class="text-sm font-semibold text-gray-600"
+            x-text="w.title || 'Text Widget'"></p>
+
+        <!-- EDIT / DELETE BUTTONS -->
+        <div x-show="editMode" class="flex gap-1">
+            <button @click="w.editing = !w.editing" class="text-xs text-blue-600">✎</button>
+            <button @click="deleteWidget(w.id)" class="text-xs text-red-600">X</button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="flex-1 flex items-center justify-center" x-data="widgetText(w)" x-init="load()">
+
+        <!-- EDIT MODE -->
+        <div x-show="w.editing" class="w-full p-2 flex flex-col gap-2 bg-slate-100 rounded">
+
+            <!-- TITLE -->
+            <div class="flex flex-col">
+                <label class="text-xs font-semibold">Title</label>
+                <input type="text" x-model="w.title" class="border rounded px-2 py-1 text-sm">
+            </div>
+
+            <button @click="w.editing=false; $dispatch('save-dashboard')" class="mt-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                Save
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function widgetText(w) {
+        return {
+            content: w.content || '',
+            load() {
+                this.content = w.content || '';
+            }
+        }
+    }
+</script>

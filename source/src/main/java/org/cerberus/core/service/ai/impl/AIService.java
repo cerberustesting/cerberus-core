@@ -19,16 +19,20 @@
  */
 package org.cerberus.core.service.ai.impl;
 
+import com.anthropic.core.JsonValue;
 import com.anthropic.helpers.MessageAccumulator;
 import com.anthropic.models.messages.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cerberus.core.crud.entity.*;
+import org.cerberus.core.crud.service.impl.ApplicationObjectService;
+import org.cerberus.core.crud.service.impl.ApplicationService;
 import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.core.crud.service.impl.TestCaseService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ai.IAIService;
+import org.cerberus.core.service.ai.impl.parsing.ApplicationObjectFromAI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
@@ -36,6 +40,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -55,6 +61,12 @@ public class AIService implements IAIService {
     ObjectFromAiResponse objectFromAiResponse;
     @Autowired
     TestCaseService testCaseService;
+    @Autowired
+    ApplicationService applicationService;
+    @Autowired
+    ApplicationObjectService applicationObjectService;
+    @Autowired
+    ApplicationObjectFromAI applicationObjectFromAI;
     @Autowired
     TestCaseExecutionService testCaseExecutionService;
     @Autowired
@@ -87,7 +99,7 @@ public class AIService implements IAIService {
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
         StringBuilder fullResponse = new StringBuilder();
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, text -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null,  text -> {
                 fullResponse.append(text);
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -130,7 +142,7 @@ public class AIService implements IAIService {
         List<MessageParam> messageParamTitle = new ArrayList<MessageParam>();
         messageParamTitle.add(MessageParam.builder().role(MessageParam.Role.USER).content(title).build());
         StringBuilder fullTitle = new StringBuilder();
-        aiClientService.streamResponseAndAccumulate(messageParamTitle, text -> {
+        aiClientService.streamResponseAndAccumulate(messageParamTitle,null,  text -> {
             fullTitle.append(text);
             try {
                 ObjectMapper mapper = new ObjectMapper();
@@ -166,7 +178,7 @@ public class AIService implements IAIService {
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
 
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, objectRetrieved -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, null, objectRetrieved -> {
                 try {
                     String cleanedJson = aiClientService.sanitizeJson(objectRetrieved);
                     LOG.info("TestcaseGenerated : {}", cleanedJson);
@@ -254,7 +266,7 @@ public class AIService implements IAIService {
 
         try {
             TestCase finalTestCase = testCase;
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, objectRetrieved -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, null, objectRetrieved -> {
                 try {
                     String cleanedJson = aiClientService.sanitizeJson(objectRetrieved);
                     LOG.debug("Step : "+cleanedJson);
@@ -330,7 +342,7 @@ public class AIService implements IAIService {
         StringBuilder fullResponse = new StringBuilder();
 
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, objectRetrieved -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, null, objectRetrieved -> {
                 try {
                     String cleanedJson = aiClientService.sanitizeJson(objectRetrieved);
                     LOG.info("Step : {}", cleanedJson);
@@ -405,7 +417,7 @@ public class AIService implements IAIService {
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
         StringBuilder fullResponse = new StringBuilder();
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, text -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,null,  text -> {
                 fullResponse.append(text);
                 try {
                     ObjectMapper mapper = new ObjectMapper();
@@ -433,6 +445,134 @@ public class AIService implements IAIService {
         }
 
 
+    }
+
+    public void generateApplicationObjectProposalWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, String htmlPath, String screenshotPath, List<String> targets ) {
+
+        /*
+        Retreive Application and Application Object
+         */
+        Application application = applicationService.readByKey(applicationId).getItem();
+        List<ApplicationObject> aoList = applicationObjectService.readByApplication(applicationId).getDataList();
+
+        String screenshotBase64 = "";
+        String htmlContent = "";
+
+        /*
+        Get Picture and HTML
+         */
+        try {
+            byte[] screenshotBytes = Files.readAllBytes(Paths.get(screenshotPath));
+            screenshotBase64 = Base64.getEncoder().encodeToString(screenshotBytes);
+
+            htmlContent = Files.readString(Paths.get(htmlPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        /*
+        Build prompt and context
+         */
+        String prompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(application, aoList, pageName, targets);
+        LOG.debug(prompt);
+        String systemContext = aiBuildPrompt.buildPromptForApplicationObjectSystemContext();
+        LOG.debug(systemContext);
+
+
+        List<ContentBlockParam> contentOfBlockParams = new ArrayList<>();
+        // Image block
+        contentOfBlockParams.add(ContentBlockParam.ofImage(
+                ImageBlockParam.builder()
+                        .type(JsonValue.from("image"))
+                        .source(Base64ImageSource.builder()
+                                .mediaType(Base64ImageSource.MediaType.IMAGE_JPEG)
+                                .data(screenshotBase64)
+                                .build())
+                        .build()));
+
+        // Document block HTML — correction
+        contentOfBlockParams.add(ContentBlockParam.ofDocument(
+                DocumentBlockParam.builder()
+                        .type(JsonValue.from("document"))
+                        .source(JsonValue.from(Map.of(
+                                "type", "text",
+                                "media_type", "text/plain",
+                                "data", removeScriptsAndStyles(htmlContent)
+                        )))
+                        .build()));
+
+        /**
+         * Get all message of session and add the new message
+         */
+        List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
+        MessageParam msg =  MessageParam.builder()
+                        .role(MessageParam.Role.USER)
+                        .content(prompt)
+                        .contentOfBlockParams(contentOfBlockParams)
+                        .build();
+        messageParamList.add(msg);
+        List<String> streamingErrors = new CopyOnWriteArrayList<>();
+        StringBuilder fullResponse = new StringBuilder();
+        try {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext, text -> {
+                fullResponse.append(text);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> message = new HashMap<>();
+                    message.put("type", "chat");
+                    message.put("data", text);
+                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                } catch (Exception e) {
+                    LOG.error("Error during streaming callback:", e);
+                    streamingErrors.add(e.getMessage());
+                }
+            });
+
+            LOG.debug(fullResponse.toString());
+
+            List<ApplicationObject> aos = applicationObjectFromAI.parseAndCropAOBlocks(
+                    fullResponse.toString(),
+                    applicationId,
+                    user,
+                    screenshotPath
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> message = new HashMap<>();
+            message.put("type", "ao_proposals");
+            message.put("data", aos);
+
+            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+
+            /**
+             * store message and answer
+             */
+            aiSessionManager.saveMessage(user, aiSessionID, prompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+
+        } catch (Exception e) {
+            LOG.error("Error during chatWithAI:", e);
+            try {
+                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
+                websocketSession.close(CloseStatus.SERVER_ERROR);
+            } catch (IOException ignored) {}
+        }
+
+
+    }
+
+    private String removeScriptsAndStyles(String html) {
+
+        if (html == null || html.isEmpty()) {
+            return html;
+        }
+        LOG.info(html.length());
+        html = html.replaceAll("(?is)<script.*?>.*?</script>", "");
+        html = html.replaceAll("(?is)<style.*?>.*?</style>", "");
+        html = html.replaceAll("(?is)<!--.*?-->", "");
+        LOG.info(html.length());
+
+        return html;
     }
 
 
