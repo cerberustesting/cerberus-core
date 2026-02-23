@@ -39,11 +39,15 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 
@@ -447,35 +451,37 @@ public class AIService implements IAIService {
 
     }
 
-    public void generateApplicationObjectProposalWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, String htmlPath, String screenshotPath, List<String> targets ) {
+    public void generateApplicationObjectProposalWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, String htmlPath, String screenshotPath, String prompt, String subject ) {
 
         /*
-        Retreive Application and Application Object
+        Retreive existing Application Objects
          */
-        Application application = applicationService.readByKey(applicationId).getItem();
         List<ApplicationObject> aoList = applicationObjectService.readByApplication(applicationId).getDataList();
 
-        String screenshotBase64 = "";
-        String htmlContent = "";
 
         /*
         Get Picture and HTML
          */
+        String screenshotBase64 = "";
+        String htmlContent = "";
         try {
             byte[] screenshotBytes = Files.readAllBytes(Paths.get(screenshotPath));
             screenshotBase64 = Base64.getEncoder().encodeToString(screenshotBytes);
-
             htmlContent = Files.readString(Paths.get(htmlPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        final String screenshotBase64Final = screenshotBase64;
+        //BufferedImage fullImage = applicationObjectFromAI.loadAndConvertImage(screenshotPath);
 
         /*
-        Build prompt and context
+        Build prompt and context. For first call, generate prompt
          */
-        String prompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(application, aoList, pageName, targets);
-        LOG.debug(prompt);
+        String aoPrompt = prompt;
+        if ("ao_generate".equals(subject)) {
+            aoPrompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(applicationId, aoList, pageName, prompt);
+        }
+        LOG.debug(aoPrompt);
         String systemContext = aiBuildPrompt.buildPromptForApplicationObjectSystemContext();
         LOG.debug(systemContext);
 
@@ -491,7 +497,7 @@ public class AIService implements IAIService {
                                 .build())
                         .build()));
 
-        // Document block HTML — correction
+        // Document block HTML
         contentOfBlockParams.add(ContentBlockParam.ofDocument(
                 DocumentBlockParam.builder()
                         .type(JsonValue.from("document"))
@@ -506,59 +512,108 @@ public class AIService implements IAIService {
          * Get all message of session and add the new message
          */
         List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
-        MessageParam msg =  MessageParam.builder()
+        MessageParam.Builder mpBuilder =  MessageParam.builder()
                         .role(MessageParam.Role.USER)
-                        .content(prompt)
-                        .contentOfBlockParams(contentOfBlockParams)
-                        .build();
+                        .content(aoPrompt);
+        // Content of block param only for first call
+        if ("ao_generate".equals(subject)) {
+            mpBuilder.contentOfBlockParams(contentOfBlockParams);
+        }
+
+        MessageParam msg = mpBuilder.build();
         messageParamList.add(msg);
-        List<String> streamingErrors = new CopyOnWriteArrayList<>();
+
+
         StringBuilder fullResponse = new StringBuilder();
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext, text -> {
-                fullResponse.append(text);
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, String> message = new HashMap<>();
-                    message.put("type", "chat");
-                    message.put("data", text);
-                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-                } catch (Exception e) {
-                    LOG.error("Error during streaming callback:", e);
-                    streamingErrors.add(e.getMessage());
-                }
-            });
 
+            StringBuilder textBuffer = new StringBuilder();
+            AtomicBoolean insideJsonBlock = new AtomicBoolean(false);
+
+            //Start Streaming
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext,chunk -> {
+
+                                textBuffer.append(chunk);
+                                String current = textBuffer.toString();
+
+                                while (true) {
+
+                                    if (!insideJsonBlock.get()) {
+                                        int start = current.indexOf("```json");
+                                        if (start >= 0) {
+
+                                            // Send text before JSON in streaming
+                                            String chatPart = current.substring(0, start).trim();
+                                            if (!chatPart.isEmpty()) {
+                                                sendChatMessage(websocketSession, chatPart);
+                                            }
+
+                                            insideJsonBlock.set(true);
+                                            current = current.substring(start + 7); // skip ```json
+                                            textBuffer.setLength(0);
+                                            textBuffer.append(current);
+
+                                        } else {
+                                            // Pas de JSON détecté → stream normal
+                                            if (!current.isEmpty()) {
+                                                sendChatMessage(websocketSession, current);
+                                                textBuffer.setLength(0);
+                                            }
+                                            break;
+                                        }
+                                    } else {
+
+                                        int end = current.indexOf("```");
+                                        if (end >= 0) {
+
+                                            String jsonPart = current.substring(0, end).trim();
+
+                                            try {
+                                                String cleaned = aiClientService.sanitizeJson(jsonPart);
+                                                LOG.info("Cleaned JSON: " + cleaned);
+                                                ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId,screenshotBase64Final,cleaned,user);
+
+                                                Map<String,Object> message = new HashMap<>();
+                                                message.put("type","ao_proposals");
+                                                message.put("data", ao);
+
+                                                ObjectMapper mapper = new ObjectMapper();
+                                                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+
+                                            } catch(Exception e) {
+                                                LOG.error("Failed parsing streamed AO", e);
+                                            }
+
+                                            insideJsonBlock.set(false);
+
+                                            current = current.substring(end + 3);
+                                            textBuffer.setLength(0);
+                                            textBuffer.append(current);
+
+                                        } else {
+                                            // JSON not completed yet
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
             LOG.debug(fullResponse.toString());
-
-            List<ApplicationObject> aos = applicationObjectFromAI.parseAndCropAOBlocks(
-                    fullResponse.toString(),
-                    applicationId,
-                    user,
-                    screenshotPath
-            );
-
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> message = new HashMap<>();
-            message.put("type", "ao_proposals");
-            message.put("data", aos);
-
-            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
 
             /**
              * store message and answer
              */
-            aiSessionManager.saveMessage(user, aiSessionID, prompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+
+            //update Title
+            aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);
 
         } catch (Exception e) {
-            LOG.error("Error during chatWithAI:", e);
+            LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
             try {
                 websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
                 websocketSession.close(CloseStatus.SERVER_ERROR);
             } catch (IOException ignored) {}
         }
-
-
     }
 
     private String removeScriptsAndStyles(String html) {
@@ -575,5 +630,16 @@ public class AIService implements IAIService {
         return html;
     }
 
+    private void sendChatMessage(WebSocketSession session, String text) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> message = new HashMap<>();
+            message.put("type", "chat");
+            message.put("data", text);
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+        } catch (IOException e) {
+            LOG.error("Error sending chat message:", e);
+        }
+    }
 
 }

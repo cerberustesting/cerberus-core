@@ -2,13 +2,14 @@
      x-show="open"
      x-cloak
      @open-ao.window="openModal($event.detail)"
-     class="crb_modal">
+     class="crb_modal" xmlns="http://www.w3.org/1999/html">
 
     <!-- Overlay -->
     <div class="absolute inset-0 bg-slate-900/80" @click="close()"></div>
 
     <!-- Card -->
-    <div id="aoModalCard" class="crb_card w-full max-w-6xl mx-auto transform-gpu rounded-2xl h-[80vh] flex flex-col"
+    <div id="aoModalCard" :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl h-[85vh] rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col overflow-hidden transition-all duration-300"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -18,177 +19,263 @@
          @click.away="open = false">
 
         <!-- HEADER -->
-        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <div>
-                <h3 class="text-2xl font-semibold">Application Object Generator</h3>
-                <p class="text-sm text-slate-500">Analyse écran & HTML</p>
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-3">
+
+                <!-- ICON -->
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="box"
+                       class="w-5 h-5 text-blue-600"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold" x-text="$store.labels.getLabel('applicationObject','modaltitle')"></h2>
+                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('applicationObject','modalsubtitle')"></p>
+                </div>
             </div>
-            <button @click="close()" class="!text-xl text-slate-500 hover:text-black">✕</button>
+
+            <!-- ACTIONS -->
+            <div class="flex items-center gap-2">
+
+                <!-- FULLSCREEN -->
+                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+
+                <!-- CLOSE -->
+                <button @click="close()" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
 
-        <!-- BODY : deux colonnes moitié/moitié -->
-        <div class="flex flex-1 overflow-hidden">
+        <!-- BODY -->
+        <div class="flex flex-col flex-1 overflow-hidden">
 
             <!-- NOTIFY ANCHOR -->
             <div id="modalNotify"></div>
 
-            <!-- LEFT : Chat -->
-            <div class="w-1/2 flex flex-col border-r border-slate-200 dark:border-slate-700">
+            <!-- CONTEXT -->
+            <div class="border-slate-200 dark:border-slate-700 transition-all duration-300 overflow-hidden"
+                 :class="contextReady ? 'p-3 max-h-[140px]' : 'p-6 max-h-[420px]'">
 
-                <div class="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
-                    <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-10 h-10 flex items-center justify-center">
-                        <i data-lucide="message-circle" class="text-green-500 w-5 h-5"></i>
-                    </div>
-                    <h4 class="font-semibold">AI Chat</h4>
+                <!-- HEADER -->
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500" x-text="$store.labels.getLabel('applicationObject','modalcontext')"></span>
+                    <span class="text-[10px] bg-slate-200 dark:bg-slate-700 rounded-full px-2 py-0.5">
+                        <span x-text="(screenshotFile?1:0) + (htmlFile?1:0) + ' ' + $store.labels.getLabel('applicationObject','file')"></span>
+                    </span>
                 </div>
 
-                <!-- MESSAGES -->
-                <div id="aoConversation" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-900">
-                    <template x-for="(m, i) in messages" :key="i">
-                        <div class="text-sm" :class="m.role==='user' ? 'text-right' : 'text-left'">
-                            <div class="inline-block px-3 py-2 rounded-xl"
-                                 :class="m.role==='user'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-slate-200 dark:bg-slate-700'">
-                                <span x-html="formatAI(m.text)"></span>
+                <!-- MODE EDIT -->
+                <div x-show="!contextReady">
+
+                    <div class="space-y-4">
+
+                        <!-- UPLOAD -->
+                        <div class="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 p-6 text-center hover:border-blue-500 transition cursor-pointer"
+                             @click="$refs.fileInput.click()">
+                            <input type="file" x-ref="fileInput" multiple class="hidden" @change="handleFiles($event)">
+                            <i data-lucide="upload" class="w-8 h-8 mx-auto text-slate-400 mb-3"></i>
+                            <p class="text-sm text-slate-500" x-text="$store.labels.getLabel('applicationObject','upload')"></p>
+                            <p class="text-xs text-slate-400 mt-1" x-text="$store.labels.getLabel('applicationObject','clicktoselect')"></p>
+                        </div>
+
+                        <!-- APPLICATION / PAGE -->
+                        <div class="flex gap-4">
+                            <div class="w-1/2">
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('applicationObject','application')"></label>
+                                <div x-data="singleSelectDropdown({
+                                id: 'aoApplicationSelect',
+                                    loader: async () => {
+                                        try {
+                                            const r = await fetch('ReadApplication');
+                                            const d = await r.json();
+                                            console.log(d);
+                                            return d.contentTable.map(a => a.application);
+                                        } catch (e) {
+                                            console.error('Failed to load applications :', e);
+                                            return [];
+                                        }
+                                    }
+                                })"
+                                     x-modelable="selectedValue"
+                                     x-model="application">
+                                </div>
                             </div>
+
+                            <div class="w-1/2">
+                                <label class="font-semibold block mb-1" x-text="$store.labels.getLabel('applicationObject','webpage')"></label>
+                                <input type="text"
+                                       x-model="page"
+                                       :placeholder="$store.labels.getLabel('applicationObject','webpageplaceholder')"
+                                       class="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- MODE COMPACT -->
+                <div x-show="contextReady">
+                    <div class="flex items-center text-sm mt-2">
+
+                        <!-- 4 COLONNES -->
+                        <div class="grid grid-cols-4 flex-1 gap-4">
+
+                            <!-- Screenshot -->
+                            <div class="flex items-center gap-2 truncate">
+                                <i data-lucide="camera" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                                <span class="truncate" x-text="screenshotName"></span>
+                            </div>
+
+                            <!-- HTML -->
+                            <div class="flex items-center gap-2 truncate">
+                                <i data-lucide="file-text" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                                <span class="truncate" x-text="htmlName || 'No HTML'"></span>
+                            </div>
+
+                            <!-- Application -->
+                            <div class="flex items-center gap-2 truncate">
+                                <i data-lucide="puzzle" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                                <span class="truncate" x-text="application"></span>
+                            </div>
+
+                            <!-- Page -->
+                            <div class="flex items-center gap-2 truncate">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                                <span class="truncate" x-text="page"></span>
+                            </div>
+
+                        </div>
+
+                        <!-- Bouton Edit -->
+                        <button @click="screenshotFile=null;htmlFile=null;page='';contextSent=false;sessionID = crypto.randomUUID();"
+                                class="ml-4 flex items-center gap-1 text-xs text-red-500 hover:text-red-600 transition">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>Edit
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CHAT AREA (scrollable) -->
+            <div class="flex flex-col flex-1 overflow-hidden">
+
+                <!-- MESSAGES -->
+                <div id="aoConversation" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50 dark:bg-slate-900">
+                    <template x-for="(m, i) in messages" :key="i">
+                        <div>
+                            <!-- MESSAGE NORMAL -->
+                            <template x-if="m.type === 'message'">
+                                <div class="flex items-end gap-2"
+                                     :class="m.role === 'user' ? 'justify-end' : 'justify-start'">
+
+                                    <!-- Avatar assistant -->
+                                    <div x-show="m.role !== 'user'"
+                                         class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                        <i data-lucide="bot" class="w-4 h-4 text-sky-500"></i>
+                                    </div>
+
+                                    <!-- Bulle -->
+                                    <div class="max-w-[90%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm"
+                                         :class="m.role==='user' ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-slate-200 dark:bg-slate-800 rounded-bl-sm'">
+                                        <span x-html="formatAI(m.text)"></span>
+                                    </div>
+
+                                    <!-- Avatar user -->
+                                    <div x-show="m.role === 'user'"
+                                         class="h-8 w-8 rounded-full bg-blue-600 !text-white flex items-center justify-center shrink-0">
+                                        <i data-lucide="user" class="w-4 h-4 text-slate-700 dark:text-slate-200"></i>
+                                    </div>
+
+                                </div>
+                            </template>
+
+                            <!-- PROPOSALS MESSAGE -->
+                            <template x-if="m.type === 'proposals'">
+                                <div class="space-y-3">
+                                    <template x-for="(p, pi) in m.proposals" :key="pi">
+                                        <div class="group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 p-4 shadow-sm max-w-md ml-10">
+                                            <div class="flex justify-between items-start gap-3">
+                                                <div class="flex-1 space-y-2 min-w-0">
+
+                                                    <!-- Badge type + confiance -->
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-600 px-2 py-0.5 rounded-full uppercase tracking-wide">XPath</span>
+                                                        <div class="flex items-center gap-1">
+                                                            <div class="h-1.5 w-16 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                                <div class="h-full bg-green-500 rounded-full" :style="'width:' + (p.confidence||0) + '%'"></div>
+                                                            </div>
+                                                            <span class="text-xs text-slate-400" x-text="(p.confidence || 0) + '%'"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Nom -->
+                                                    <p class="font-semibold text-base" x-text="p.name || p.object"></p>
+
+                                                    <!-- Valeur (xpath/id) -->
+                                                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-1.5">
+                                                        <code class="text-xs flex-1 break-all" x-text="p.value"></code>
+                                                        <button @click="navigator.clipboard.writeText(p.value)"
+                                                                class="shrink-0 text-slate-400 hover:text-blue-500 transition"
+                                                                title="Copier">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-4 12h6a2 2 0 002-2v-8a2 2 0 00-2-2h-6a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <p class="text-xs text-slate-500" x-text="p.description"></p>
+
+                                                    <!-- Screenshot -->
+                                                    <img x-show="p.screenshotFilename"
+                                                         :src="getScreenshotUrl(p.screenshotFilename)"
+                                                         class="mt-2 max-w-[200px] rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                                                </div>
+
+                                                <!-- Boutons accept/reject -->
+                                                <div class="flex flex-col gap-2 shrink-0">
+                                                    <button @click="acceptProposalFromMessage(i, pi)"
+                                                            class="h-8 w-8 rounded-lg bg-green-500 hover:bg-green-600 text-white flex items-center justify-center transition shadow-sm"
+                                                            title="Accepter">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    </button>
+                                                    <button @click="rejectProposalFromMessage(i, pi)"
+                                                            class="h-8 w-8 rounded-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition shadow-sm"
+                                                            title="Rejeter">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
                     </template>
                 </div>
 
                 <!-- INPUT -->
-                <div class="flex gap-2 p-4 border-t border-slate-200 dark:border-slate-700">
-                    <input type="text"
-                           x-model="chatInput"
-                           @keydown.enter="sendChat()"
-                           placeholder="Ask AI…"
-                           class="flex-1 bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
-                    <button @click="sendChat()"
-                            class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700">
-                        Send
-                    </button>
-                </div>
-            </div>
+                <div class="border-t border-slate-200 dark:border-slate-700 p-4 flex-shrink-0">
+                    <div class="flex items-end gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 focus-within:border-blue-500 transition">
 
-            <!-- RIGHT : Form + Proposals -->
-            <div class="w-1/2 flex flex-col overflow-hidden p-4 space-y-4">
+                        <textarea rows="1" x-model="chatInput"
+                                @keydown.enter.prevent="if(contextReady) sendChat()"
+                                :placeholder="$store.labels.getLabel('applicationObject','chatplaceholder')"
+                                class="flex-1 resize-none bg-transparent text-sm focus:outline-none px-2 py-1.5 max-h-32">
+                        </textarea>
 
-                <!-- FORM compact en haut -->
-                <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 space-y-3 flex-shrink-0">
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','application')">Application</label>
-                            <div x-data="singleSelectDropdown({
-                            id: 'aoApplicationSelect',
-                                loader: async () => {
-                                    try {
-                                        const r = await fetch('ReadApplication');
-                                        const d = await r.json();
-                                        console.log(d);
-                                        return d.contentTable.map(a => a.application);
-                                    } catch (e) {
-                                        console.error('Failed to load applications :', e);
-                                        return [];
-                                    }
-                                }
-                            })"
-                                 x-modelable="selectedValue"
-                                 x-model="application">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','webpage')"></label>
-                            <input type="text"
-                                   x-model="page"
-                                   placeholder="Page / Screen name"
-                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
-                        </div>
-                        <div>
-                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','screenshot')"></label>
-                            <input type="file"
-                                   accept="image/*"
-                                   @change="handleScreenshot($event)"
-                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
-                        </div>
-                        <div>
-                            <label class="font-semibold block mb-1 w-full" x-text="$store.labels.getLabel('applicationObject','html')"></label>
-                            <input type="file"
-                                   accept=".html"
-                                   @change="handleHtmlFile($event)"
-                                   class="bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2 mt-2">
-                        <input type="text"
-                               x-model="newTarget"
-                               @keydown.enter="addTarget()"
-                               placeholder="Add target…"
-                               class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2"/>
-                        <button @click="addTarget()"
-                                class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+</button>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-                        <template x-for="(t, i) in targets" :key="i">
-                            <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs flex items-center gap-1">
-                                <span x-text="t"></span>
-                                <button @click="removeTarget(i)">✕</button>
-                            </div>
-                        </template>
-                    </div>
-
-                </div>
-
-                <!-- GENERATION / PROPOSALS en bas, scrollable -->
-                <div class="flex-1 bg-slate-50 dark:bg-slate-900 rounded-xl p-4 overflow-y-auto flex flex-col">
-
-                    <h4 class="font-semibold mb-3">AI Proposals</h4>
-
-                    <div class="flex-1 overflow-y-auto space-y-3">
-                        <template x-for="(p, i) in proposals" :key="i">
-                            <div class="bg-white dark:bg-slate-800 rounded-xl p-3 space-y-2 shadow-sm">
-
-                                <div class="text-sm font-medium" x-text="p.object"></div>
-                                <div class="text-xs font-mono break-all text-slate-500" x-text="p.value"></div>
-
-                                <!-- Image croppée -->
-                                <template x-if="p.screenshotFilename">
-                                    <img :src="getScreenshotUrl(p.screenshotFilename)"
-                                         class="rounded-lg border border-slate-200 max-h-32 object-contain"/>
-                                </template>
-
-                                <div class="flex gap-2 pt-1">
-                                    <button @click="acceptProposal(i)"
-                                            class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Accept</button>
-                                    <button @click="rejectProposal(i)"
-                                            class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Reject</button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template x-if="proposals.length===0">
-                            <div class="text-sm text-slate-400">No proposals yet</div>
-                        </template>
-                    </div>
-
-                    <template x-if="error">
-                        <div class="bg-red-100 text-red-700 p-3 rounded-xl text-sm mt-3" x-text="error"></div>
-                    </template>
-
-                    <!-- FOOTER -->
-                    <div class="flex justify-end mt-3 gap-3">
-                        <button @click="close()" class="px-4 py-2 bg-slate-200 rounded-lg hover:bg-slate-300">
-                            Close
-                        </button>
-                        <button @click="submit()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow">
-                            ▶ Generate AO
+                        <button @click="sendChat()"
+                             :disabled="!contextReady"
+                             :class="contextReady ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-400 cursor-not-allowed'"
+                             class="h-9 w-9 rounded-lg text-white flex items-center justify-center transition">
+                             <i data-lucide="send" class="w-4 h-4"></i>
                         </button>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -200,6 +287,7 @@
         return {
             open: false,
 
+            isFullscreen: false,
             application: 'Games',
             page: '',
             html: '',
@@ -222,10 +310,10 @@
             ws: null,
             connected: false,
             sessionID: null,
-            aiBuffer: '',
+            contextSent: false,
 
             /* =========================
-               MODAL
+               OPEN MODAL ACTION : INIT STATE AND FIRST MESSAGE
             ========================= */
 
             openModal(data = {}) {
@@ -235,7 +323,6 @@
                 this.application = data.application || '';
 
                 this.messages = [];
-                this.proposals = [];
                 this.targets = [];
                 this.error = '';
 
@@ -243,26 +330,75 @@
 
                 this.connectWebSocket();
 
-                // démarrage IA
-                setTimeout(() => {
-                    this.sendAI("ao_init", `
-                    You are an expert in UI automation.
-                    Guide the user step by step to create Application Objects.
-                    Explain what information is required.
-                    Ask for screenshot, HTML and targets.
-                    Anwser very succintly.
-                `);
-                }, 400);
+                const firstMessage = Alpine.store('labels').getLabel('applicationObject','firstmessage');
+
+                this.simulateStream(firstMessage);
+
+                /*
+                // Message d'accueil
+                this.messages.push({
+                    role: 'assistant',
+                    type: 'message',
+                    text: Alpine.store('labels').getLabel('applicationObject','firstmessage')
+                });
+
+
+                // Initial proposal (facultatif)
+                this.messages.push({
+                    role: 'assistant',
+                    type: 'proposals',
+                    proposals: [{
+                        name: 'Test Button',
+                        object: 'BTN_TEST',
+                        value: '//button[@id="test"]',
+                        description: 'Bouton de test',
+                        confidence: 95,
+                        screenshotFilename: null
+                    }]
+                });
+                */
+            },
+
+            /* =========================
+               SIMULATE STREAM FOR THE FIRST CALL ONLY
+            ========================= */
+            simulateStream(text) {
+                const words = text.split(" ");
+                let index = 0;
+
+                const streamNext = () => {
+                    if (index >= words.length) {
+                        const last = this.messages[this.messages.length - 1];
+                        if (last) last.streaming = false;
+                        return;
+                    }
+
+                    this.appendAI(words[index] + " ");
+                    index++;
+
+                    let delay = 30 + Math.random() * 40;
+
+                    if (words[index - 1].endsWith(".")) {
+                        delay += 200;
+                    }
+
+                    setTimeout(streamNext, delay);
+                };
+
+                streamNext();
             },
 
             close() {
                 this.open = false;
             },
 
+            get contextReady() {
+                return this.screenshotFile && this.application && this.page;
+            },
+
             /* =========================
                WEBSOCKET
             ========================= */
-
             connectWebSocket() {
                 if (this.ws && this.ws.readyState === 1) return;
 
@@ -288,85 +424,86 @@
                 };
 
                 this.ws.onmessage = (event) => {
+
                     let parsed;
                     try { parsed = JSON.parse(event.data); }
                     catch { return; }
 
                     const type = parsed.type || "chat";
 
-                    // ao_proposals : données structurées directes, pas du streaming
                     if (type === "ao_proposals") {
                         try {
-                            this.proposals = typeof parsed.data === "string"
-                                ? JSON.parse(parsed.data)
-                                : parsed.data;
+                            const obj = parsed.data;
+
+                            const proposalMessage = {
+                                role: 'assistant',
+                                type: 'proposals',
+                                proposals: [{
+                                    name: obj.object || obj.name || 'unknown',
+                                    object: obj.object || obj.name || 'unknown',
+                                    value: obj.value || '',
+                                    description: obj.description || '',
+                                    confidence: obj.confidence || 0,
+                                    screenshotFilename: obj.screenshotFilename || null
+                                }]
+                            };
+
+                            this.messages = [...this.messages, proposalMessage];
                         } catch (e) {
-                            console.error("Failed to parse ao_proposals", e);
+                            console.error("Failed to parse AO proposal", e);
                         }
-                        return; // ne pas traiter comme un chunk de chat
+                        return;
                     }
 
-                    // chat streaming normal
-                    const chunk = parsed.data || "";
-                    const done = parsed.done === true;
-
-                    if (chunk) this.appendAI(chunk);
-                    if (done)  this.finalizeAI(type);
+                    // Chat streaming simple
+                    if (parsed.data) {
+                        this.appendAI(parsed.data);
+                    }
                 };
             },
 
-            sendAI(subject, content) {
-                if (!this.connected) return;
-
-                const payload = {
-                    subject: subject,
-                    sender: getUser().login,
-                    sessionID: this.sessionID,
-                    content: content
-                };
-
-                this.ws.send(JSON.stringify(payload));
-            },
 
             /* =========================
                IA STREAM
             ========================= */
-
             appendAI(chunk) {
-                this.aiBuffer += chunk;
-
                 const last = this.messages[this.messages.length - 1];
-                if (!last || last.role !== 'assistant' || last.streaming !== true) {
+
+                if (!last || last.role !== 'assistant' || last.streaming !== true || last.type !== 'message') {
                     this.messages.push({
                         role: 'assistant',
-                        text: this.aiBuffer,
+                        type: 'message',
+                        text: chunk,
                         streaming: true
                     });
+
+                    this.messages = [...this.messages];
+
+                    this.$nextTick(() => {
+                        lucide.createIcons();
+                    });
+
                 } else {
-                    last.text = this.aiBuffer;
+                    last.text += chunk;
+                    this.messages = [...this.messages];
                 }
             },
 
-            finalizeAI(type) {
-                const last = this.messages[this.messages.length - 1];
-                if (last) last.streaming = false;
-
-                // proposals
-                if (type === "ao_proposals") {
-                    try {
-                        const json = JSON.parse(this.aiBuffer);
-                        this.proposals = json;
-                    } catch {}
-                }
-
-                this.aiBuffer = '';
-            },
 
             /* =========================
-               FORM
+               FORM FILES
             ========================= */
-
-
+            handleFiles(e) {
+                const files = e.target.files;
+                for (let file of files) {
+                    if (file.type.startsWith("image/")) {
+                        this.handleScreenshot({ target: { files: [file] } });
+                    }
+                    if (file.name.endsWith(".html") || file.name.endsWith(".htm")) {
+                        this.handleHtmlFile({ target: { files: [file] } });
+                    }
+                }
+            },
 
             handleHtmlFile(e) {
                 const f = e.target.files[0];
@@ -431,65 +568,33 @@
                 reader.readAsDataURL(file);
             },
 
-            addTarget() {
-                const v = this.newTarget.trim();
-                if (!v) return;
-                this.targets.push(v);
-                this.newTarget = '';
-            },
-
-            removeTarget(i) {
-                this.targets.splice(i, 1);
-            },
-
-            async submit() {
-                if (!this.page) { this.error = "Page name required"; return; }
-                if (!this.screenshotFile) { this.error = "Screenshot required"; return; }
-                if (this.targets.length === 0) { this.error = "Add at least one target"; return; }
-
-                this.error = '';
-
-                // 1️⃣ Upload files via REST
-                const formData = new FormData();
-                formData.append("screenshot", this.screenshotFile);
-                if (this.htmlFile) formData.append("htmlFile", this.htmlFile);
-
-                const uploadUrl = `${window.appContext}/api/applicationobjects/uploadFiles`;
-
-                const uploadResp = await fetch(uploadUrl, {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (!uploadResp.ok) {
-                    this.error = "Upload failed";
-                    return;
-                }
-
-                const uploadData = await uploadResp.json();
-
-                const payload = {
-                    subject: "ao_generate",
-                    sender: getUser().login,
-                    sessionID: this.sessionID,
-                    application: this.application,
-                    page: this.page,
-                    screenshotName: uploadData.screenshotName,
-                    screenshotPath: uploadData.screenshotPath,
-                    htmlName: uploadData.htmlName || null,
-                    htmlPath: uploadData.htmlPath || null,
-                    targets: this.targets
-                };
-
-                this.ws.send(JSON.stringify(payload));
-            },
 
             /* =========================
                PROPOSALS
             ========================= */
+            acceptProposalFromMessage(messageIndex, proposalIndex) {
+                const proposal = this.messages[messageIndex].proposals[proposalIndex];
+                this.acceptProposalObject(proposal);
 
-            acceptProposal(i) {
-                const p = this.proposals[i];
+                this.messages[messageIndex].proposals.splice(proposalIndex, 1);
+
+                if (this.messages[messageIndex].proposals.length === 0) {
+                    this.messages.splice(messageIndex, 1);
+                }
+            },
+
+            rejectProposalFromMessage(messageIndex, proposalIndex) {
+                this.messages[messageIndex].proposals.splice(proposalIndex, 1);
+
+                if (this.messages[messageIndex].proposals.length === 0) {
+                    this.messages.splice(messageIndex, 1);
+                }
+            },
+
+            /*
+            CALL API IF PROPOSAL ACCEPTED
+             */
+            acceptProposalObject(p) {
 
                 if (!p.screenshotFilename) {
                     console.warn("No screenshot for this AO, skipping upload file");
@@ -515,19 +620,18 @@
                             formData.append("file", file);
 
                             // POST vers ton servlet de création
-                            this.sendAOFormData(formData, i);
+                            this.sendAOFormData(formData);
                         })
                         .catch(err => {
                             console.error("Failed to fetch temp screenshot", err);
                         });
                 } else {
-                    // Pas de fichier, juste envoyer le formulaire
-                    this.sendAOFormData(formData, i);
+                    this.sendAOFormData(formData);
                 }
             },
 
-            sendAOFormData(formData, proposalIndex) {
-                // Calculer le context pour WAR
+            sendAOFormData(formData) {
+
                 const url = `${window.appContext}/CreateApplicationObject`;
 
                 fetch(url, {
@@ -536,18 +640,19 @@
                 })
                     .then(resp => resp.json())
                     .then(data => {
+
                         if (data.messageType === "OK") {
-                            // Delete from list and notify
-                            this.proposals.splice(proposalIndex, 1);
+
                             notifyInModal(
                                 "success",
                                 "Settings successfully saved",
                                 "#modalNotify"
                             );
+
                         } else {
                             notifyInModal(
                                 "error",
-                                "Failed to save AO:"+ data.message,
+                                "Failed to save AO: " + data.message,
                                 "#modalNotify"
                             );
                         }
@@ -557,9 +662,6 @@
                     });
             },
 
-            rejectProposal(i) {
-                this.proposals.splice(i, 1);
-            },
 
             getScreenshotUrl(fileName) {
                 return `${window.location.origin}${window.appContext}/api/applicationobjects/screenshot/temp/${fileName}`;
@@ -569,17 +671,81 @@
             /* =========================
                CHAT
             ========================= */
+            async sendChat() {
 
-            sendChat() {
                 const txt = this.chatInput.trim();
-                if (!txt) return;
+                if (!txt || !this.contextReady) return;
 
-                this.messages.push({ role: 'user', text: txt });
+                this.messages.push({ role: 'user', type: 'message', text: txt });
                 this.chatInput = '';
+                this.error = '';
 
-                this.sendAI("ao_chat", txt);
+                if (window.lucide){
+                    lucide.createIcons();
+                }
+
+                // FIRST CALL = upload + ao_generate
+                if (!this.contextSent) {
+
+                    const formData = new FormData();
+                    formData.append("screenshot", this.screenshotFile);
+                    if (this.htmlFile) formData.append("htmlFile", this.htmlFile);
+
+                    const uploadUrl = `${window.appContext}/api/applicationobjects/uploadFiles`;
+
+                    const uploadResp = await fetch(uploadUrl, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (!uploadResp.ok) {
+                        this.error = "Upload failed";
+                        return;
+                    }
+
+                    const uploadData = await uploadResp.json();
+
+                    const payload = {
+                        subject: "ao_generate",
+                        sender: getUser().login,
+                        sessionID: this.sessionID,
+                        application: this.application,
+                        page: this.page,
+                        screenshotName: uploadData.screenshotName,
+                        screenshotPath: uploadData.screenshotPath,
+                        htmlName: uploadData.htmlName || null,
+                        htmlPath: uploadData.htmlPath || null,
+                        content: txt
+                    };
+
+                    this.ws.send(JSON.stringify(payload));
+
+                    this.contextSent = true;
+                }
+
+                //NEXT CALLS = ao_generate_continue
+                else {
+
+                    const payload = {
+                        subject: "ao_generate_continue",
+                        sender: getUser().login,
+                        sessionID: this.sessionID,
+                        application: this.application,
+                        page: this.page,
+                        screenshotName: uploadData.screenshotName,
+                        screenshotPath: uploadData.screenshotPath,
+                        htmlName: uploadData.htmlName || null,
+                        htmlPath: uploadData.htmlPath || null,
+                        content: txt
+                    };
+
+                    this.ws.send(JSON.stringify(payload));
+                }
             },
 
+            /* =========================
+               FORMAT TEXT RECEIVED FROM AI
+            ========================= */
             formatAI(text) {
                 if (!text) return '';
 
@@ -598,9 +764,7 @@
                     return clean;
 
                 } catch (e) {
-                    return text
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;");
+                    return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 }
             }
         }

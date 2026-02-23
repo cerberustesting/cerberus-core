@@ -273,15 +273,33 @@ const reportingCampaignStatisticsLabel ={
     filtergroup1:{en:"Group 1",fr:"Groupe 1"}
 }
 
-const applicationObjectLabel ={
-    title:{en:"Application Object",fr:"Objets d'Application"},
-    subtitle:{en:"Technical element of the application (ID, XPath, URI, locator), shared across all configurations (country, environment) and reusable in all tests.",fr:"Element technique de l’Application (ID, XPath, URI, locator), commun à toutes les configurations (pays, environnement) et réutilisable dans tous les tests."},
-    application:{en:"Application",fr:"Application"},
-    webpage:{en:"Page/Screen Name",fr:"Nom de Page/Ecran"},
-    screenshot:{en:"Fullpage Screenshot",fr:"Capture écran"},
-    html:{en:"HTML page code",fr:"Code de la page HTML"},
+const applicationObjectLabel = {
+    title: {en: "Application Object", fr: "Objets d'Application"},
+    subtitle: {
+        en: "Technical element of the application (ID, XPath, URI, locator), shared across all configurations (country, environment) and reusable in all tests.",
+        fr: "Element technique de l’Application (ID, XPath, URI, locator), commun à toutes les configurations (pays, environnement) et réutilisable dans tous les tests."
+    },
+    application: {en: "Application", fr: "Application"},
+    webpage: {en: "Page/Screen Name", fr: "Nom de Page/Ecran"},
+    screenshot: {en: "Fullpage Screenshot", fr: "Capture écran"},
+    html: {en: "HTML page code", fr: "Code de la page HTML"},
+    firstmessage: {
+        en: "Hello! Upload an <span class='text-sky-500 font-semibold'>HTML page</span> and a <span class='text-sky-500 font-semibold'>Screenshot</span> so I can analyze the UI elements and suggest Application Objects. Define The <span class='text-sky-500 font-semibold'>Application</span> and the <span class='text-sky-500 font-semibold'>Page Name</span> so I can attach the objects to it.",
+        fr: "Bonjour ! Chargez une <span class='text-sky-500 font-semibold'>page HTML</span> et un <span class='text-sky-500 font-semibold'>Screenshot</span> pour que j'analyse les éléments de l'interface et vous propose des Application Objects. Définissez également une <span class='text-sky-500 font-semibold'>Application</span> et un <span class='text-sky-500 font-semibold'>Nom de Page</span> que je puisse y attacher les objets."
+    },
+    modaltitle: {en:"Application Object Generator", fr:"Generateur d'objets d'Application"},
+    modalsubtitle: {en:"AI Assistant to create your technical objects", fr:"Assistant IA pour créer vos objets techniques"},
+    modalcontext:  {en:"Context", fr:"Contexte"},
+    file:  {en:"files", fr:"fichiers"},
+    upload:  {en:"Upload an HTML file and a screenshot", fr:"Déposez un fichier HTML et un Screenshot"},
+    clicktoselect:  {en:"or click to select a file", fr:"ou cliquez pour sélectionner"},
+    application:  {en:"Application", fr:"Application"},
+    webpage:  {en:"Page Name", fr:"Nom de la Page"},
+    webpageplaceholder:  {en:"Page / Screen Name", fr:"Nom de la Page / de l'Ecran"},
+    chatplaceholder:  {en:"Describe elements to identify", fr:"Décrivez les éléments à identifier..."}
 
 }
+
 
 window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;

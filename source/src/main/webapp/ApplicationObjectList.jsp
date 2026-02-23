@@ -55,7 +55,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-            <jsp:include page="include/global/aiBottomBar.html"/>
         </div>
         </main>
     </body>

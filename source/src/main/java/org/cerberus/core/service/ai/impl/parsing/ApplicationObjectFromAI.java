@@ -20,6 +20,11 @@
 package org.cerberus.core.service.ai.impl.parsing;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.ApplicationObject;
@@ -31,13 +36,11 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Base64;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ApplicationObjectFromAI {
@@ -46,75 +49,69 @@ public class ApplicationObjectFromAI {
     IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(ApplicationObjectFromAI.class);
-    private static final Pattern AO_BLOCK = Pattern.compile("<AO>(.*?)</AO>", Pattern.DOTALL);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
 
     // DTO to save coord before crop
+    @Getter
+    @Setter
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private static class AORaw {
         String name;
         String xpath;
         String screenshotName;
+
+        @JsonProperty("xPct")
         double xPct;
+
+        @JsonProperty("yPct")
         double yPct;
+
+        @JsonProperty("wPct")
         double wPct;
+
+        @JsonProperty("hPct")
         double hPct;
+
+        @JsonProperty("confidence")
+        double confidence;
+
+        String notes;
+        String type;
+        String page;
     }
 
-    /**
-     * Get all <AO></AO>, generate object, and crop Picture
-     * @param text
-     * @param applicationId
-     * @param user
-     * @param screenshotPath
-     * @return
-     */
-    public List<ApplicationObject> parseAndCropAOBlocks(
-            String text,
-            String applicationId,
-            String user,
-            String screenshotPath) {
 
-        List<ApplicationObject> result = new ArrayList<>();
+    public ApplicationObject parseAndCropAOJson(String applicationId,String fullImageBase64,String jsonObject,String user) {
 
-        BufferedImage fullImage = loadAndConvertImage(screenshotPath);
-        if (fullImage == null) {
-            LOG.error("Cannot load screenshot, aborting AO generation: " + screenshotPath);
-            return result;
+        //Parse returned JSON and convert into AORaw
+        AORaw raw = parseRawAOJson(jsonObject);
+        if (raw == null || raw.name == null || raw.name.isEmpty()) {
+            LOG.warn("Skipping AO — missing name field");
+            return null;
         }
 
-        Matcher matcher = AO_BLOCK.matcher(text);
-        while (matcher.find()) {
-            String block = matcher.group(1).trim();
-            AORaw raw = parseRawAO(block);
+        String tempFilename = cropAndSaveTempScreenshot(raw, fullImageBase64);
 
-            if (raw == null || raw.name == null || raw.name.isEmpty()) {
-                LOG.warn("Skipping AO block — missing name field");
-                continue;
-            }
+        ApplicationObject ao = new ApplicationObject();
+        ao.setApplication(applicationId);
+        ao.setUsrCreated(user);
+        ao.setObject(raw.name);
+        ao.setValue(raw.xpath);
+        ao.setScreenshotFilename(tempFilename != null ? tempFilename : "");
 
-            String tempFilename = cropAndSaveTempScreenshot(raw, fullImage);
-
-            ApplicationObject ao = new ApplicationObject();
-            ao.setApplication(applicationId);
-            ao.setUsrCreated(user);
-            ao.setObject(raw.name);
-            ao.setValue(raw.xpath);
-            ao.setScreenshotFilename(tempFilename != null ? tempFilename : "");
-
-            result.add(ao);
-        }
-
-        return result;
+        return ao;
     }
 
-    private BufferedImage loadAndConvertImage(String screenshotPath) {
+    //TODO : Remove if no more necessary
+    public BufferedImage loadAndConvertImage(String screenshotPath) {
         try {
             BufferedImage image = ImageIO.read(new File(screenshotPath));
             if (image == null) {
                 LOG.warn("Could not read screenshot: " + screenshotPath);
                 return null;
             }
-            LOG.info("Image loaded: {}x{} type={}", image.getWidth(), image.getHeight(), image.getType());
+            LOG.debug("Image loaded: {}x{} type={}", image.getWidth(), image.getHeight(), image.getType());
             return image;
 
         } catch (IOException e) {
@@ -123,37 +120,29 @@ public class ApplicationObjectFromAI {
         }
     }
 
-    private AORaw parseRawAO(String block) {
-        AORaw raw = new AORaw();
 
-        String[] lines = block.split("\\r?\\n");
-        for (String line : lines) {
-            line = line.trim();
-            if (line.isEmpty() || !line.contains("=")) continue;
-
-            String[] parts = line.split("=", 2);
-            if (parts.length < 2) continue;
-
-            String key   = parts[0].trim();
-            String value = parts[1].trim();
-
-            switch (key) {
-                case "name": raw.name = value; break;
-                case "xpath": raw.xpath = value; break;
-                case "screenshotName": raw.screenshotName = value; break;
-                case "xPct": raw.xPct = parseDoubleSafe(value); break;
-                case "yPct": raw.yPct = parseDoubleSafe(value); break;
-                case "wPct": raw.wPct = parseDoubleSafe(value); break;
-                case "hPct": raw.hPct = parseDoubleSafe(value); break;
-            }
+    private AORaw parseRawAOJson(String json) {
+        try {
+            return MAPPER.readValue(json, AORaw.class);
+        } catch (Exception e) {
+            LOG.error("Failed to parse AO JSON", e);
+            return null;
         }
-
-        LOG.info("Parsed AO — name:{} xPct:{} yPct:{} wPct:{} hPct:{}", raw.name, raw.xPct, raw.yPct, raw.wPct, raw.hPct);
-        return raw;
     }
 
-    private String cropAndSaveTempScreenshot(AORaw raw, BufferedImage fullImage) {
+    /*
+    CROP Image, save sample and return path on disk
+     */
+    private String cropAndSaveTempScreenshot(AORaw raw, String base64Image) {
         try {
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            BufferedImage fullImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+
+            if (fullImage == null) {
+                LOG.error("Failed to decode base64 image for AO: {}", raw.name);
+                return null;
+            }
+
             File tempDir = new File(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_applicationobject_path, "", "")+"/temp");
             if (!tempDir.exists()) {
                 if (!tempDir.mkdirs()) {
@@ -164,36 +153,45 @@ public class ApplicationObjectFromAI {
 
 
 
-            int x = (int) Math.round(raw.xPct * fullImage.getWidth()) - 150 ;
-            int y = (int) Math.round(raw.yPct * fullImage.getHeight()) - 50;
-            int width  = (int) Math.round(raw.wPct * fullImage.getWidth()) + 100;
-            int height = (int) Math.round(raw.hPct * fullImage.getHeight()) + 100;
-            LOG.info("Crop coords (stored space) — x:{} y:{} w:{} h:{}", x, y, width, height);
+            LOG.debug("Full Picture — x:{} y:{} w:{} h:{}", fullImage.getWidth(), fullImage.getHeight(), fullImage.getWidth(), fullImage.getHeight());
+            LOG.debug("Received coords — x:{} y:{} w:{} h:{}", raw.xPct, raw.yPct, raw.wPct, raw.hPct);
+            LOG.debug("Received coords — x:{} y:{} w:{} h:{}", raw.getXPct(), raw.getYPct(), raw.getWPct(), raw.getHPct());
+            int x = (int) Math.round(raw.xPct * fullImage.getWidth());
+            int y = (int) Math.round(raw.yPct * fullImage.getHeight());
+            int width  = (int) Math.round(raw.wPct * fullImage.getWidth());
+            int height = (int) Math.round(raw.hPct * fullImage.getHeight());
+            LOG.debug("Crop coords (stored space) — x:{} y:{} w:{} h:{}", x, y, width, height);
 
             // clamp pour éviter les exceptions
-            x = Math.max(0, x);
-            y = Math.max(0, y);
-            width  = Math.min(width,  fullImage.getWidth()  - x);
-            height = Math.min(height, fullImage.getHeight() - y);
+            int paddingX = 20;
+            int paddingTop = 50;
+            int paddingBottom = 50;
+
+            x = Math.max(0, x - paddingX);
+            y = Math.max(0, y - paddingTop);
+            width  = Math.min(width  + paddingX * 2,     fullImage.getWidth()  - x);
+            height = Math.min(height + paddingTop + paddingBottom, fullImage.getHeight() - y);
 
             if (width <= 0 || height <= 0) {
                 LOG.warn("Invalid crop dimensions for AO: {}", raw.name);
                 return null;
             }
 
+            String tempFolderPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_applicationobject_path, "", "") + "/temp";
             // === DEBUG: Image complète avec rectangle rouge ===
-            BufferedImage debug = new BufferedImage(fullImage.getWidth(), fullImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = debug.createGraphics();
-            g.drawImage(fullImage, 0, 0, null);
-            g.setColor(Color.RED);
-            g.setStroke(new BasicStroke(3));
-            g.drawRect(x, y, width, height);
-            g.dispose();
+            if (LOG.isDebugEnabled()) {
+                BufferedImage debug = new BufferedImage(fullImage.getWidth(), fullImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = debug.createGraphics();
+                g.drawImage(fullImage, 0, 0, null);
+                g.setColor(Color.RED);
+                g.setStroke(new BasicStroke(3));
+                g.drawRect(x, y, width, height);
+                g.dispose();
 
-            String tempFolderPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_applicationobject_path, "", "")+"/temp";
-            File debugFile = new File(tempFolderPath, "debug_" + raw.name + "_" + UUID.randomUUID() + ".png");
-            ImageIO.write(debug, "PNG", debugFile);
-            LOG.info("Debug image saved: {}", debugFile.getAbsolutePath());
+                File debugFile = new File(tempFolderPath, "debug_" + raw.name + "_" + UUID.randomUUID() + ".png");
+                ImageIO.write(debug, "PNG", debugFile);
+                LOG.info("Debug image saved: {}", debugFile.getAbsolutePath());
+            }
 
             // === Crop normal ===
             BufferedImage cropped = fullImage.getSubimage(x, y, width, height);
@@ -217,15 +215,6 @@ public class ApplicationObjectFromAI {
         } catch (IOException e) {
             LOG.error("Failed to crop screenshot for AO: " + raw.name, e);
             return null;
-        }
-    }
-
-    private double parseDoubleSafe(String value) {
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            LOG.warn("Could not parse double value: {}", value);
-            return 0.0;
         }
     }
 

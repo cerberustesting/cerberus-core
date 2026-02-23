@@ -111,16 +111,16 @@ public class AIBuildPrompt {
                 .replace("{{testImplementation}}", execution.toJson(true).toString());
     }
 
-    public String buildPromptForApplicationObjectGeneration(Application application, List<ApplicationObject> existingApplictionObjects, String pageName, List<String> targets) {
+    public String buildPromptForApplicationObjectGeneration(String application, List<ApplicationObject> existingApplictionObjects, String pageName, String prompt) {
 
         List<String> existingAOName = new ArrayList<> ();
         for (ApplicationObject ao : existingApplictionObjects){
             existingAOName.add(ao.getObject());
         }
         String template = readResourcesAsText("prompts/generate_applicationobject.prompt");
-        return template.replace("{{targetElements}}", String.join(",", targets))
+        return template.replace("{{prompt}}", prompt)
                 .replace("{{pageName}}", pageName)
-                .replace("{{application}}", application.getApplication())
+                .replace("{{application}}", application)
                 .replace("{{existingElements}}", String.join(",", existingAOName));
     }
 
