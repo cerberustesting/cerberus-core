@@ -11,7 +11,8 @@
     <div class="absolute inset-0 bg-slate-900 opacity-60" @click="open = false"></div>
 
     <!-- Modal -->
-    <div class="crb_card w-full max-w-4xl mx-4 transform-gpu"
+    <div :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-4xl rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -20,13 +21,37 @@
          x-transition:leave-end="opacity-0 scale-95"
          @click.away="open = false">
 
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 mb-8">
-            <div class="flex flex-col">
-                <h3 class="text-xl font-semibold">Create Test Case</h3>
-                <p class="page-subtitle-line">Configure your test case settings before designing the test steps</p>
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-4 mb-8">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-3">
+
+                <!-- ICON -->
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="pencil"
+                       class="w-5 h-5 text-blue-600"></i>
+                </div>
+
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('testcaseSimpleCreation','modaltitle')"></h2>
+                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('testcaseSimpleCreation','modalsubtitle')"></p>
+                </div>
             </div>
-            <button @click="open = false" class="text-xl leading-none hover:text-gray-600 dark:hover:text-gray-300">&times;</button>
+
+            <!-- ACTIONS -->
+            <div class="flex items-center gap-2">
+
+                <!-- FULLSCREEN -->
+                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+
+                <!-- CLOSE -->
+                <button @click="open = false" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Stepper -->
@@ -193,7 +218,10 @@
                         <div class="flex-1 min-w-[150px]">
                             <label>Choose (or Create) a folder</label>
                             <div x-data="folderDropdown({ model: form.testFolderId, items: tests })"
-                                 x-effect="items = tests"
+                                 x-effect="
+                                        items = tests;
+                                        selected = form.testFolderId;
+                                    "
                                  class="relative w-full">
 
                                 <!-- Bouton principal -->
@@ -330,6 +358,7 @@
     function testCaseModal() {
         return {
             open: false,
+            isFullscreen: false,
             step: 0,
             steps: ['Application', 'Description', 'Folder'],
             completedSteps: [],
@@ -353,44 +382,44 @@
 
             applicationDropdown: { items: [], selected:'', open:false, select(item){ this.selected=item; this.open=false; }, selectedLabel(){ return this.selected || '-- Select --'; } },
 
-            setDefaultTest(test){
-                this.form.testFolderId = test || '';
-                this.loadApplications();
-                this.loadTests();
-                this.loadInvariants();
+            async setDefaultTest(test){
+                await this.loadApplications();
+                await this.loadTests();
+                await this.loadInvariants();
+
+                if (test && this.tests.includes(test)) {
+                    this.form.testFolderId = test;
+
+                    // déclenche auto génération ID
+                    this.$nextTick(() => this.fetchNextTestCaseId());
+                }
             },
 
-            loadApplications(){
-                fetch('ReadApplication')
-                    .then(resp=>resp.json())
-                    .then(data=>{
-                        this.applications = data.contentTable.map(c=>c.application);
-                        this.applicationDropdown.items = this.applications;
-                    });
+            async loadApplications(){
+                const resp = await fetch('ReadApplication');
+                const data = await resp.json();
+                this.applications = data.contentTable.map(c => c.application);
+                this.applicationDropdown.items = this.applications;
             },
 
-            loadTests(){
-                fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=100')
-                    .then(resp => resp.json())
-                    .then(data => {
-                        this.tests = data.contentTable.map(obj => obj.test);
-                    });
+            async loadTests(){
+                const resp = await fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=100');
+                const data = await resp.json();
+                this.tests = data.contentTable.map(obj => obj.test);
             },
 
-            loadInvariants() {
-                this.$nextTick(() => {
-                    const root = this.$root;
+            async loadInvariants() {
+                await this.$nextTick();
 
+                const root = this.$root;
 
-                    root.querySelectorAll("[name='editTestCaseSimpleCreationApplicationType']").forEach(el => el.innerHTML = '');
-                    root.querySelectorAll("[name='editTestCaseSimpleCreationCountry']").forEach(el => el.innerHTML = '');
-                    root.querySelectorAll("[name='editTestCaseSimpleCreationEnvironment']").forEach(el => el.innerHTML = '');
+                root.querySelectorAll("[name='editTestCaseSimpleCreationApplicationType']").forEach(el => el.innerHTML = '');
+                root.querySelectorAll("[name='editTestCaseSimpleCreationCountry']").forEach(el => el.innerHTML = '');
+                root.querySelectorAll("[name='editTestCaseSimpleCreationEnvironment']").forEach(el => el.innerHTML = '');
 
-
-                    displayInvariantList("editTestCaseSimpleCreationApplicationType", "APPLITYPE", false);
-                    displayInvariantList("editTestCaseSimpleCreationCountry", "COUNTRY", false);
-                    displayInvariantList("editTestCaseSimpleCreationEnvironment", "ENVIRONMENT", false);
-                });
+                displayInvariantList("editTestCaseSimpleCreationApplicationType", "APPLITYPE", false);
+                displayInvariantList("editTestCaseSimpleCreationCountry", "COUNTRY", false);
+                displayInvariantList("editTestCaseSimpleCreationEnvironment", "ENVIRONMENT", false);
             },
 
             fetchNextTestCaseId(){
@@ -460,10 +489,10 @@
                     });
             },
 
-            init(){
-                this.loadApplications();
-                this.loadTests();
-                this.loadInvariants();
+            async init(){
+                await this.loadApplications();
+                await this.loadTests();
+                await this.loadInvariants();
             }
         }
     }

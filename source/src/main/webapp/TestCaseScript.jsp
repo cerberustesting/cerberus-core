@@ -60,7 +60,7 @@
             <%@ include file="include/transversalobject/Application.html"%>
             <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
-            <jsp:include page="include/transversalobject/TestCaseSimpleExecution.html"/>
+            <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
             <%@ include file="include/utils/modal-generic.html"%>
 
             <div class="flex gap-3">

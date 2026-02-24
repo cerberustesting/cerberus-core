@@ -549,7 +549,7 @@ public class AIService implements IAIService {
                                             }
 
                                             insideJsonBlock.set(true);
-                                            current = current.substring(start + 7); // skip ```json
+                                            current = current.substring(start + 7); // skip ```json{}```
                                             textBuffer.setLength(0);
                                             textBuffer.append(current);
 

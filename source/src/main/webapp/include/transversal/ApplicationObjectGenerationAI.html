@@ -19,7 +19,7 @@
          @click.away="open = false">
 
         <!-- HEADER -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between px-6 py-4">
 
             <!-- LEFT -->
             <div class="flex items-center gap-3">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div>
-                    <h2 class="text-lg font-semibold" x-text="$store.labels.getLabel('applicationObject','modaltitle')"></h2>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('applicationObject','modaltitle')"></h2>
                     <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('applicationObject','modalsubtitle')"></p>
                 </div>
             </div>
@@ -56,6 +56,12 @@
 
             <!-- NOTIFY ANCHOR -->
             <div id="modalNotify"></div>
+            <!-- Error Message -->
+            <template x-if="error">
+                <div class="bg-red-100 text-red-800 p-2 rounded">
+                    <strong x-text="error"></strong>
+                </div>
+            </template>
 
             <!-- CONTEXT -->
             <div class="border-slate-200 dark:border-slate-700 transition-all duration-300 overflow-hidden"
@@ -180,8 +186,17 @@
                                         <i data-lucide="bot" class="w-4 h-4 text-sky-500"></i>
                                     </div>
 
+                                    <!-- Bubble -->
+                                    <div x-show="m.type === 'thinking'" class="bg-slate-200 dark:bg-slate-800 rounded-xl rounded-bl-sm px-4 py-3 shadow-sm">
+                                        <div class="flex items-center gap-1">
+                                            <span class="ai-dot"></span>
+                                            <span class="ai-dot"></span>
+                                            <span class="ai-dot"></span>
+                                        </div>
+                                    </div>
+
                                     <!-- Bulle -->
-                                    <div class="max-w-[90%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm"
+                                    <div x-show="m.type !== 'thinking'"  class="max-w-[90%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm"
                                          :class="m.role==='user' ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-slate-200 dark:bg-slate-800 rounded-bl-sm'">
                                         <span x-html="formatAI(m.text)"></span>
                                     </div>
@@ -288,7 +303,7 @@
             open: false,
 
             isFullscreen: false,
-            application: 'Games',
+            application: '',
             page: '',
             html: '',
             htmlFile: null,
@@ -308,6 +323,7 @@
 
             // IA
             ws: null,
+            loading: false,
             connected: false,
             sessionID: null,
             contextSent: false,
@@ -429,7 +445,16 @@
                     try { parsed = JSON.parse(event.data); }
                     catch { return; }
 
+                    this.loading = false;
+
                     const type = parsed.type || "chat";
+
+                    if (type === "error" || type === "erreur") {
+                        console.error("WebSocket Error :", parsed.message || parsed.error);
+                        this.error = parsed.message || parsed.error;
+                        this.loading = false;
+                        return;
+                    }
 
                     if (type === "ao_proposals") {
                         try {
@@ -467,7 +492,11 @@
                IA STREAM
             ========================= */
             appendAI(chunk) {
+
                 const last = this.messages[this.messages.length - 1];
+                if (last && last.type === 'thinking') {
+                    this.messages.pop();
+                }
 
                 if (!last || last.role !== 'assistant' || last.streaming !== true || last.type !== 'message') {
                     this.messages.push({
@@ -680,9 +709,14 @@
                 this.chatInput = '';
                 this.error = '';
 
-                if (window.lucide){
+                this.messages.push({
+                    role: 'assistant',
+                    type: 'thinking'
+                });
+
+                this.$nextTick(() => {
                     lucide.createIcons();
-                }
+                })
 
                 // FIRST CALL = upload + ao_generate
                 if (!this.contextSent) {

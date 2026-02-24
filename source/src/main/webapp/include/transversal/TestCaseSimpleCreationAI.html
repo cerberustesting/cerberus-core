@@ -10,7 +10,8 @@
     <div class="absolute inset-0 bg-slate-900 opacity-60" @click="open = false"></div>
 
     <!-- Modal -->
-    <div class="crb_card w-full max-w-3xl mx-4 transform-gpu"
+    <div :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -19,18 +20,46 @@
          x-transition:leave-end="opacity-0 scale-95"
          @click.away="if (!$event.target.closest('.single-select-dropdown')) open = false">
 
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 mb-8">
-            <div class="flex flex-col">
-                <h3 class="text-xl font-semibold" x-text="$store.labels.getLabel('pageQuickStart','copilotmodaltitle')"></h3>
-                <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalsubtitle')"></p>
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-4 mb-8">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-3">
+
+                <!-- ICON -->
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="bot"
+                       class="w-5 h-5 text-blue-600"></i>
+                </div>
+
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('pageQuickStart','copilotmodaltitle')"></h2>
+                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalsubtitle')"></p>
+                </div>
             </div>
-            <button @click="open = false" class="text-xl leading-none hover:text-gray-600 dark:hover:text-gray-300">&times;</button>
+
+            <!-- ACTIONS -->
+            <div class="flex items-center gap-2">
+
+                <!-- FULLSCREEN -->
+                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+
+                <!-- CLOSE -->
+                <button @click="open = false" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
 
 
         <!-- Body -->
         <div class="px-6 pb-6 space-y-4">
+
+            <!-- NOTIFY ANCHOR -->
+            <div id="modalNotify"></div>
+
             <div :class="{ 'opacity-50 pointer-events-none': loading }">
 
                 <div class="flex space-x-4">
@@ -243,6 +272,7 @@
     function createTestModal() {
         return {
             open: false,
+            isFullscreen: false,
             loading: false,
             form: {
                 application: '',

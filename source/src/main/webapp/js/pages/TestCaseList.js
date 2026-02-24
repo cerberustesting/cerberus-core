@@ -208,7 +208,7 @@ function renderOptionsForTestCaseList(data) {
         // Bind des events seulement si le bouton n'est pas disabled
         if (data["hasPermissionsCreate"]) {
             $("#createTestCaseButton").off("click").on("click", function () {
-                var firstRowTest = $("#testCaseTable td.sorting_1")[0] !== undefined ? testAutomaticModal : GetURLParameter("test", undefined);
+                var firstRowTest = $("#testCaseTable td.sorting_1")[0] !== undefined ? $("#testCaseTable td.sorting_1")[0].textContent.trim() : GetURLParameter("test", undefined);
                 //openModalTestCase(firstRowTest, undefined, "ADD");
                 window.dispatchEvent(new CustomEvent('testcase-modal-open', {detail: {defaultTest: firstRowTest}}));
             });

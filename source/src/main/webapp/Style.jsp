@@ -43,7 +43,7 @@
         <title id="pageTitle">Style Page</title>
     </head>
     <body>
-        <%@ include file="include/global/header.html" %>
+        <jsp:include page="include/global/header2.html"/>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>

@@ -52,10 +52,10 @@
         <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
         <%@ include file="include/transversalobject/TestCase.html" %>
         <%@ include file="include/transversalobject/File.html" %>
-        <jsp:include page="include/transversalobject/TestCaseSimpleExecution.html"/>
+        <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
         <%@ include file="include/transversalobject/Robot.html" %>
         <%@ include file="include/transversalobject/Application.html" %>
-        <%@ include file="include/transversalobject/Invariant.html" %>
+        <%@ include file="include/transversal/Invariant.html" %>
         <jsp:include page="include/templates/selectDropdown.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 

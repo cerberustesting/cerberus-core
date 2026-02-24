@@ -570,7 +570,8 @@ function updatePage(data, steps) {
                     application: data.application,
                     test: data.test,
                     testcase: data.testcase,
-                    description: data.description
+                    description: data.description,
+                    tag: data.tag
                 }
             }))
         });

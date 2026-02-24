@@ -32,9 +32,9 @@
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
-        <jsp:include page="include/transversalobject/TestCaseSimpleCreation.html"/>
-        <jsp:include page="include/transversalobject/TestCaseSimpleCreationAI.html"/>
-        <jsp:include page="include/transversalobject/TestCaseSimpleCreationImport.html"/>
+        <jsp:include page="include/transversal/TestCaseSimpleCreation.html"/>
+        <jsp:include page="include/transversal/TestCaseSimpleCreationAI.html"/>
+        <jsp:include page="include/transversal/TestCaseSimpleCreationImport.html"/>
         <jsp:include page="include/templates/selectDropdown.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 

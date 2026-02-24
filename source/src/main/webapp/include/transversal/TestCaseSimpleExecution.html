@@ -8,7 +8,8 @@
     <div class="absolute inset-0 bg-slate-900/80" @click="close()"></div>
 
     <!-- Card -->
-    <div class="crb_card w-full max-w-6xl mx-4 transform-gpu rounded-2xl"
+    <div :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-6xl rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -18,11 +19,36 @@
          @click.away="open = false">
 
         <!-- HEADER -->
-        <div class="flex justify-between items-center px-8 py-6">
-            <div>
-                <h3 class="text-2xl font-semibold">Run Test Case</h3>
+        <div class="flex items-center justify-between px-6 py-4 mb-8">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-3">
+
+                <!-- ICON -->
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="square-play"
+                       class="w-5 h-5 text-blue-600"></i>
+                </div>
+
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('testcaseSimpleExecution','modaltitle')"></h2>
+                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('testcaseSimpleExecution','modalsubtitle')"></p>
+                </div>
             </div>
-            <button @click="close()" class="text-xl leading-none hover:text-gray-600 dark:hover:text-gray-300">✕</button>
+
+            <!-- ACTIONS -->
+            <div class="flex items-center gap-2">
+
+                <!-- FULLSCREEN -->
+                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+
+                <!-- CLOSE -->
+                <button @click="open = false" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
 
         <!-- BODY -->
@@ -61,7 +87,7 @@
                     <input type="text"
                            x-model="envFilter"
                            placeholder="Filter environments..."
-                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
 
                     <!-- LIST -->
                     <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
@@ -70,7 +96,7 @@
                         <div class="pointer-events-none sticky top-0 h-6 bg-gradient-to-b dark:from-slate-800 from-slate-50 to-transparent"></div>
 
                         <template x-for="env in filteredEnvs()" :key="env.uiId">
-                            <button @click="toggleEnv(env)" class="w-full rounded-xl p-4 transition border text-left group"
+                            <button @click="toggleEnv(env)" class="w-full rounded-lg p-4 transition border text-left group"
                                     :class="isEnvSelected(env) ? 'bg-blue-50/80 dark:bg-blue-950 border-blue-400 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
 
                                 <div class="flex items-center justify-between gap-3">
@@ -126,7 +152,7 @@
                     <input type="text"
                            x-model="robotFilter"
                            placeholder="Filter robots..."
-                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
 
                     <!-- LIST -->
                     <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
@@ -137,7 +163,7 @@
                         <template x-for="robot in filteredRobots()" :key="robot.robot">
                             <button
                                     @click="toggleRobot(robot.robot)"
-                                    class="w-full flex items-center justify-between rounded-xl p-3 transition border"
+                                    class="w-full flex items-center justify-between rounded-lg p-3 transition border"
                                     :class="selectedRobots.includes(robot.robot) ? 'bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-600 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
 
                                 <!-- LEFT -->
@@ -200,14 +226,30 @@
 
                         <!-- Tag -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="tag" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="flex items-center gap-2 w-full">
+
+                                <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="tag" class="w-4 h-4 text-muted-foreground"></i>
+                                </div>
+                                <input x-model="settings.tag"
+                                       type="text"
+                                       placeholder="Define execution tag"
+                                       title="Tag"
+                                       class="flex-1 bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+
+                                <button
+                                        x-show="lastDispatchedTag"
+                                        x-transition.opacity.scale.duration.150ms
+                                        @click="settings.tag = lastDispatchedTag"
+                                        type="button"
+                                        title="Set the last tag"
+                                        class="h-8 w-8 flex items-center justify-center rounded-lg hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+
+                                    <i data-lucide="corner-up-left"
+                                       class="w-4 h-4 text-blue-600 dark:text-blue-300"></i>
+                                </button>
+
                             </div>
-                            <input x-model="settings.tag"
-                                   type="text"
-                                   placeholder="Define execution tag"
-                                   title="Tag"
-                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
                         </div>
 
                         <!-- Verbose -->
@@ -237,7 +279,7 @@
                                    type="number"
                                    placeholder="Override timeout (ms)"
                                    title="Timeout"
-                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
                         </div>
 
                         <!-- Retries -->
@@ -265,7 +307,7 @@
                                    type="number"
                                    placeholder="Override priority (default 1000)"
                                    title="Priority"
-                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
                         </div>
 
                         <!-- Manual / Auto Execution -->
@@ -311,11 +353,13 @@
         return {
             /* ---------------- STATE ---------------- */
             open: false,
+            isFullscreen: false,
 
             application: null,
             test: null,
             testcase: null,
             description: '',
+            lastDispatchedTag: null,
 
             envs: [],
             robots: [],
@@ -347,6 +391,8 @@
                 this.test = data.test;
                 this.testcase = data.testcase;
                 this.description = data.description || '';
+
+                this.lastDispatchedTag = data.tag || null;
 
                 await Promise.all([
                     this.loadEnvs(),

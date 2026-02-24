@@ -300,6 +300,20 @@ const applicationObjectLabel = {
 
 }
 
+const testcaseSimpleCreationImportLabel = {
+    modaltitle: {en:"Import Recording", fr:"Importation d'enregistrement"},
+    modalsubtitle: {en:"Import test cases from Selenium IDE or Katalon Recorder", fr:"Importer des cas de test depuis Selenium IDE ou Katalon Recorder"}
+}
+
+const testcaseSimpleCreationLabel = {
+    modaltitle: {en:"Create Test Case", fr:"Créer un Cas de Test"},
+    modalsubtitle: {en:"Configure your test case settings before designing the test steps", fr:"Configurer le cas de test avant le design des pas de test"}
+}
+
+const testcaseSimpleExecutionLabel = {
+    modaltitle: {en:"Run Test Case", fr:"Exécuter un Cas de Test"},
+    modalsubtitle: {en:"Run your test case on specific environments, defining robots and parameters", fr:"Exécuter le cas de test sur les environnements selectionnés, avec les robots et paramètres choisis."}
+}
 
 window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
@@ -308,3 +322,6 @@ window.pageInvariantLabel = pageInvariantLabel;
 window.pageQuickStartLabel = pageQuickStartLabel;
 window.reportingCampaignStatisticsLabel = reportingCampaignStatisticsLabel;
 window.applicationObjectLabel = applicationObjectLabel;
+window.testcaseSimpleCreationImportLabel = testcaseSimpleCreationImportLabel;
+window.testcaseSimpleCreationLabel = testcaseSimpleCreationLabel;
+window.testcaseSimpleExecutionLabel = testcaseSimpleExecutionLabel;
