@@ -158,8 +158,11 @@ function loadQueueStatusWebSocket(sockets) {
         var data = JSON.parse(e.data);
 //        console.info("received data from socket");
 //        console.info(data);
-        updatePageQueueStatus(data);
+ //       updatePageQueueStatus(data);
 //        updatePage(data, steps);
+        window.dispatchEvent(
+            new CustomEvent("queue-stats-updated", { detail: data })
+        );
     }; //on récupère les messages provenant du serveur websocket
     socket.onclose = function (e) {
     }; //on est informé lors de la fermeture de la connexion vers le serveur
@@ -788,7 +791,7 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun) {
                     </div>
                 </div>
                 <!-- Content row -->
-                <div class="flex flex-col md:flex-row md:items-center gap-4 overflow-x-auto no-scrollbar">
+                <div class="flex flex-col md:flex-row md:items-center gap-4 overflow-x-auto no-scrollbar relative">
                     <!-- Trend graph -->
                     <div class="w-full md:w-24 flex-shrink-0">
                         <div class="relative w-full h-6">
@@ -894,7 +897,7 @@ function renderExecutionDots(results, obj = []) {
                             <span>${exec.ciScore || 0} / ${exec.ciScoreMax || 100}</span>
                         </div>
                         <div class="w-full bg-gray-600 rounded h-1.5">
-                            <div class="bg-blue-500 h-1.5 rounded"
+                            <div class="bg-red-500 h-1.5 rounded"
                                  style="width:${exec.ciScoreMax ? (100 * exec.ciScore / exec.ciScoreMax) : 0}%;">
                             </div>
                         </div>
@@ -1028,18 +1031,15 @@ function renderTrendGraph(responseTime = [], status = []) {
                     <rect x="${p.x - 4}" y="0" width="8" height="${HEIGHT}" fill="transparent"
                           data-value="${p.value}" data-status="${p.status}"
                           onmousemove="
-                                const tooltip = this.closest('.relative').querySelector('#tooltip');
+                                const tooltip = document.getElementById('tooltip');
                                 tooltip.style.display = 'block';
                                 tooltip.innerHTML = this.dataset.value + ' sec. (' + this.dataset.status + ')';
-                                const rect = this.getBoundingClientRect();
-                                const parentRect = this.closest('.relative').getBoundingClientRect();
-                                tooltip.style.left = (rect.x - parentRect.x + rect.width/2) + 'px';
-                                tooltip.style.top = (rect.y - parentRect.y - 28) + 'px';
-                            "
+                                tooltip.style.left = (event.clientX + 12) + 'px';
+                                tooltip.style.top = (event.clientY - 28) + 'px';
+                          "
                           onmouseleave="
-                                const tooltip = this.closest('.relative').querySelector('#tooltip');
-                                tooltip.style.display = 'none';
-                            "
+                                document.getElementById('tooltip').style.display = 'none';
+                          "
                     ></rect>
                 `).join("")}
         
@@ -1047,7 +1047,7 @@ function renderTrendGraph(responseTime = [], status = []) {
         
             <!-- Tooltip HTML flottant -->
             <div id="tooltip"
-                 class="absolute bg-gray-800 text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap z-50" style="display:none">
+                 class="fixed bg-gray-800 text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap z-50" style="display:none">
             </div>
         </div>
         `;
@@ -1477,7 +1477,18 @@ function mapExecutions(api) {
     const system = api.systemLastMonth || {};
     const systemPrev = api.systemPreviousMonth || {};
 
+    const ongoing = api.ongoingExecution || {};
+
     return {
+        ongoing: {
+            value: ongoing.queueStats.running || 0,
+            tab: "On Going",
+            label: "Currently Executing",
+            globalLimit: ongoing.queueStats.globalLimit || 0,
+            queueSize: ongoing.queueStats.queueSize || 0,
+            runningList: ongoing.runningExecutionsList || []
+        },
+
         selected: {
             value: system.totalExecutions || 0,
             tab: "Selected",
@@ -1526,8 +1537,8 @@ function mapAIUsage(api) {
             diff: ((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)) -
                 ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
             diffPositive: true
-        },
-        totalCost: {
+        }
+        /*totalCost: {
             value: formatEuro(current.totalCost || 0),
             tab: "Cost",
             label: "coût total (global)",
@@ -1545,6 +1556,8 @@ function mapAIUsage(api) {
             diff: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
             diffPositive: false
         }
+
+         */
     };
 }
 

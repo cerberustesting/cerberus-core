@@ -23,18 +23,82 @@
             </template>
         </div>
 
-        <!-- Valeur -->
-        <div class="flex items-center justify-between text-2xl font-bold">
-            <span x-text="tabs[tab]?.value ?? ''"></span>
-            <template x-if="tabs[tab]?.diff !== undefined">
-                <span class="flex items-center space-x-1 text-sm font-semibold"
-                      :class="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).color">
-                    <i :data-lucide="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).icon" class="w-4 h-4"></i>
+        <!-- Valeur + barre + bouton + diff -->
+        <div class="flex items-center justify-between">
+
+            <!-- 🔵 Gauche : valeur + barre + bouton -->
+            <div class="flex items-center space-x-4 text-2xl font-bold">
+
+                <!-- Valeur -->
+                <span x-text="tabs[tab]?.value ?? ''"></span>
+                <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">/</span>
+                <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit" x-text="tabs[tab]?.globalLimit ?? ''"></span>
+
+                <!-- Barre uniquement pour ongoing -->
+                <div x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">
+                    <div class="flex items-center space-x-2">
+
+                        <!-- Barre -->
+                        <div class="w-20 bg-gray-200 h-2 rounded relative">
+                            <div class="bg-orange-500 h-2 rounded transition-all duration-500"
+                                 :style="'width:' + ((tabs[tab].value / tabs[tab].globalLimit) * 100) + '%'">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 🟢 Droite : Diff -->
+            <div x-show="tabs[tab]?.diff !== undefined">
+                <div class="flex items-center space-x-1 text-sm font-semibold"
+                     :class="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).color">
+                    <i :data-lucide="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).icon"
+                       class="w-4 h-4"></i>
                     <span x-text="computeDiffPercent(tabs[tab].currentValue, tabs[tab].previousValue)"></span>
-                </span>
-            </template>
+                </div>
+            </div>
+            <div x-show="tab === 'ongoing'" class="flex items-center space-x-1 text-sm font-semibold">
+                <!-- Bouton hover -->
+                <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                    <button class="text-gray-500 hover:text-orange-500 transition"
+                            x-init="$nextTick(() => window.lucide && lucide.createIcons())">
+                        <i data-lucide="list" class="w-4 h-4"></i>
+                    </button>
+
+                    <div x-show="open"
+                         class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900
+                                        border border-gray-200 dark:border-gray-700
+                                        rounded-xl shadow-xl p-3 text-xs space-y-2
+                                        transition-all duration-200 z-50"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-1">
+
+                        <template x-for="exec in tabs[tab]?.runningList ?? []" :key="exec.id">
+                            <a :href="'./TestCaseExecution.jsp?id=' + exec.id"
+                               class="block text-xs text-blue-500 hover:underline truncate">
+                                <span x-text="exec.test"></span> -
+                                <span x-text="exec.testcase"></span> -
+                                <span x-text="exec.environment"></span>
+                            </a>
+                        </template>
+
+                        <div x-show="!(tabs[tab]?.runningList?.length)" class="text-gray-400">
+                            No running executions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="text-gray-500 text-sm mt-1 truncate" x-text="tabs[tab]?.label || ''"></div>
+
+        <div class="text-gray-500 text-sm mt-1 truncate"
+             x-text="tabs[tab]?.label || ''"></div>
 
     </div>
 </template>
@@ -86,6 +150,22 @@
                         this.tabs[key].diffColor = color;
                     }
                 }
+
+                window.addEventListener("queue-stats-updated", (event) => {
+                    const data = event.detail;
+
+                    if (!this.tabs.ongoing) return;
+
+                    // compteur principal
+                    this.tabs.ongoing.value = data.queueStats?.running || 0;
+
+                    // infos utiles si tu veux la jauge
+                    this.tabs.ongoing.queueSize = data.queueStats?.queueSize || 0;
+                    this.tabs.ongoing.globalLimit = data.queueStats?.globalLimit || 0;
+
+                    // liste des exécutions en cours
+                    this.tabs.ongoing.runningList = data.runningExecutionsList || [];
+                });
 
                 this.$nextTick(() => {
                     if (window.lucide) {

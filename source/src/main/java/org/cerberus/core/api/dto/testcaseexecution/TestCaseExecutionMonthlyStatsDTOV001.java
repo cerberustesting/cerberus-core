@@ -21,11 +21,13 @@ package org.cerberus.core.api.dto.testcaseexecution;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -52,4 +54,8 @@ public class TestCaseExecutionMonthlyStatsDTOV001 {
     @JsonView(View.Public.GET.class)
     @Schema(description = "User KPIs for the previous 30 days")
     private TestCaseExecutionStatsDTOV001 systemPreviousMonth;
+
+    @JsonView(View.Public.GET.class)
+    @Schema(description = "Ongoing Executions")
+    private JsonNode ongoingExecution;
 }

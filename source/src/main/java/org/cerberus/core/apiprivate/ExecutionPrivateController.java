@@ -23,6 +23,9 @@ import java.time.LocalDate;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.apache.logging.log4j.LogManager;
@@ -189,7 +192,7 @@ public class ExecutionPrivateController {
     @Operation(hidden = true)
     @GetMapping("/monthlyStats")
     public TestCaseExecutionMonthlyStatsDTOV001 getMonthlyStats(
-            @RequestParam(name = "system", required = false) List<String> systems) {
+            @RequestParam(name = "system", required = false) List<String> systems) throws JsonProcessingException {
 
         LocalDate today = LocalDate.now();
 
@@ -241,12 +244,18 @@ public class ExecutionPrivateController {
                 .toDate(statsSystemsPreviousMonth.getToDate())
                 .build();
 
+        //ON GOING
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject ongoing = executionUUIDObject.getRunningStatus();
+        JsonNode ongoingNode = mapper.readTree(ongoing.toString());
+
         // --- Build DTO final ---
         return TestCaseExecutionMonthlyStatsDTOV001.builder()
                 .globalLastMonth(statsGlobalLastMonthDto)
                 .globalPreviousMonth(statsGlobalPreviousMonthDto)
                 .systemLastMonth(statsSystemsLastMonthDto)
                 .systemPreviousMonth(statsSystemsPreviousMonthDto)
+                .ongoingExecution(ongoingNode)
                 .build();
     }
 
