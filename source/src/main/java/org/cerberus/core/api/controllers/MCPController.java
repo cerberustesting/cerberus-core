@@ -56,9 +56,11 @@ public class MCPController {
 
             case "initialize":
                 return ok(request, Map.of(
+                        "protocolVersion", "2024-11-05",
                         "serverInfo", Map.of("name", "Cerberus MCP", "version", "1.0.0"),
-                        "capabilities", Map.of("tools", true)
+                        "capabilities", Map.of("tools", Map.of())
                 ));
+
 
             case "tools/list":
                 return ok(request, Map.of("tools", registry.listTools()));
