@@ -61,6 +61,8 @@ public class MCPController {
                         "capabilities", Map.of("tools", Map.of())
                 ));
 
+            case "notifications/initialized":
+                return ResponseEntity.ok().build();
 
             case "tools/list":
                 return ok(request, Map.of("tools", registry.listTools()));
@@ -71,6 +73,11 @@ public class MCPController {
             default:
                 return error(request, -32601, "Method not found");
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> handleGet() {
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/health")
