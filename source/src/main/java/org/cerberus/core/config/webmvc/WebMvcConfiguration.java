@@ -21,7 +21,9 @@ package org.cerberus.core.config.webmvc;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.cerberus.MCPInterceptor;
 import org.cerberus.core.config.springdoc.OpenAPIConfiguration;
+import org.cerberus.core.crud.service.impl.ParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -56,6 +59,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private static final Logger LOG = LogManager.getLogger(WebMvcConfiguration.class);
 
     @Autowired
+    private MCPInterceptor mcpInterceptor;
+
+    @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping handlerMapping;
 
@@ -69,6 +75,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     public MultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        registry.addInterceptor(mcpInterceptor)
+                .addPathPatterns("/mcp/**")
+                .excludePathPatterns("/mcp/health");
     }
 
 }

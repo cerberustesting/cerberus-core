@@ -45,6 +45,12 @@ public interface ITestService {
 
     /**
      *
+     * @return
+     */
+    public AnswerList<Test> readAll();
+
+    /**
+     *
      * @param system
      * @return
      */

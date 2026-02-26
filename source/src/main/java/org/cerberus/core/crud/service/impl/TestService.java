@@ -71,6 +71,11 @@ public class TestService implements ITestService {
     }
 
     @Override
+    public AnswerList<Test> readAll() {
+        return testDao.readAll();
+    }
+
+    @Override
     public AnswerList<Test> readDistinctBySystem(String system) {
         return testDao.readDistinctBySystem(system);
     }

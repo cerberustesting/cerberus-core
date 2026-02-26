@@ -45,6 +45,12 @@ public interface ITestDAO {
 
     /**
      *
+     * @return
+     */
+    public AnswerList<Test> readAll();
+
+    /**
+     *
      * @param system
      * @return
      */
