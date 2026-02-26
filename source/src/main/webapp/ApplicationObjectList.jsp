@@ -29,8 +29,8 @@
         <meta name="page" content="Application Object">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/ApplicationObjectList.js"></script>
-        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>
+        <script type="text/javascript" src="js/pages/ApplicationObjectList.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js?v=${appVersion}"></script>
         <title id="pageTitle">Application Object</title>
     </head>
     <body x-data x-cloak class="crb_body">

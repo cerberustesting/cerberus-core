@@ -217,7 +217,7 @@
             }
         }
     </script>
-    <script type="text/javascript" src="js/pages/Usage.js" defer></script>
+    <script type="text/javascript" src="js/pages/Usage.js?v=${appVersion}" defer></script>
 
     <title id="pageTitle">Usage</title>
 </head>

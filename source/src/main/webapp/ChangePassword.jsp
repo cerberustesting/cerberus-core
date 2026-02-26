@@ -26,7 +26,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>Change Password</title>
-    <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
+    <script type="text/javascript" src="js/pages/ChangePassword.js?v=${appVersion}"></script>
 </head>
 <body x-data x-cloak class="crb_body">
 <%@ include file="include/global/messagesArea.html"%>

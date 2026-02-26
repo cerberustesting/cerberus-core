@@ -28,10 +28,10 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Data Library</title>        
-        <script type="text/javascript" src="js/pages/TestDataLibList.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
-        <script type="text/javascript" src="js/global/autocomplete.js"></script>
+        <script type="text/javascript" src="js/pages/TestDataLibList.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestDataLib.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

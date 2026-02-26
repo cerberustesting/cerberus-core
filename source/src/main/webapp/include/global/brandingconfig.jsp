@@ -1,3 +1,11 @@
+<!--APP VERSION-->
+<%
+    request.setAttribute("appVersion",
+            org.cerberus.core.version.Infos.getInstance().getProjectVersion()
+                    + "-"
+                    + org.cerberus.core.version.Infos.getInstance().getProjectBuildId());
+%>
+
 <!--BRANDING CONTENT-->
 <script>
     window.__CERBERUS_BRANDING__ = <%= application.getAttribute("brandingConfig") %>;

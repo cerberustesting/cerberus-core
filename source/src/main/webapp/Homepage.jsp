@@ -19,14 +19,8 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="java.util.Date" %>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.springframework.context.ApplicationContext" %>
-<%@page import="org.springframework.web.context.WebApplicationContext" %>
-<%@page import="org.cerberus.core.crud.entity.Invariant" %>
-<%@page import="org.cerberus.core.session.SessionCounter" %>
-<%@page import="java.util.List" %>
-<%@page import="org.cerberus.core.crud.service.IInvariantService" %>
 <%@page import="org.cerberus.core.database.IDatabaseVersioningService" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
@@ -38,7 +32,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
-        <script type="text/javascript" src="js/pages/Homepage.js"></script>
+        <script type="text/javascript" src="js/pages/Homepage.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

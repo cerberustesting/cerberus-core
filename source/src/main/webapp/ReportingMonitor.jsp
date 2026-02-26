@@ -33,8 +33,8 @@
         <meta name="active-submenu" content="ReportingMonitor.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" type="text/css" href="css/pages/ReportingMonitor.css">
-        <script type="text/javascript" src="js/pages/ReportingMonitor.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/ReportingMonitor.css?v=${appVersion}">
+        <script type="text/javascript" src="js/pages/ReportingMonitor.js?v=${appVersion}"></script>
         <title id="pageTitle">Real-Time Monitor</title>
     </head>
     <body x-data x-cloak class="crb_body">

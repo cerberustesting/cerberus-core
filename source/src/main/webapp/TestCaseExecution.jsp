@@ -33,14 +33,14 @@
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
-        <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/transversalobject/File.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
+        <script type="text/javascript" src="js/pages/TestCaseExecution.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/File.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css?v=${appVersion}">
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
 
     </head>

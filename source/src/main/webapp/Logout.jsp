@@ -28,13 +28,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" type="text/css" href="css/global/crb_style2.css">
 
-        <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
-        <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
-
-        <script type='text/javascript' src='js/global/global.js'></script>
-        <script type='text/javascript' src='js/pages/Logout.js'></script>
+        <script type='text/javascript' src='js/global/global.js?v=${appVersion}'></script>
+        <script type='text/javascript' src='js/pages/Logout.js?v=${appVersion}'></script>
         <META HTTP-EQUIV="refresh" CONTENT="1;URL=./">
         <title>Logout</title>
     </head>

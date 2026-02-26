@@ -28,10 +28,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Service Library</title>
-        <script type="text/javascript" src="js/pages/AppServiceList.js"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <script type="text/javascript" src="js/global/autocomplete.js"></script>
+        <script type="text/javascript" src="js/pages/AppServiceList.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

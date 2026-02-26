@@ -36,8 +36,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type='text/javascript' src='js/pages/Login.js'></script>
-        <script type='text/javascript' src='js/global/global.js'></script>
+        <script type='text/javascript' src='js/pages/Login.js?v=${appVersion}'></script>
+        <script type='text/javascript' src='js/global/global.js?v=${appVersion}'></script>
         <script src="dependencies/Tsparticles-2.12.0/tsparticles.min.js"></script>
         <title>Login</title>
     </head>

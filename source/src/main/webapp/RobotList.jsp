@@ -27,8 +27,8 @@
     <meta name="active-submenu" content="RobotList.jsp">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
-    <script type="text/javascript" src="js/pages/RobotList.js"></script>
-    <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
+    <script type="text/javascript" src="js/pages/RobotList.js?v=${appVersion}"></script>
+    <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
     <title id="pageTitle">Robot</title>
     <style>
         td.details-control {

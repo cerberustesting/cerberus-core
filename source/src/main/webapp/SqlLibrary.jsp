@@ -26,7 +26,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">SQL Library</title>
-        <script type="text/javascript" src="js/pages/SqlLibrary.js"></script>
+        <script type="text/javascript" src="js/pages/SqlLibrary.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

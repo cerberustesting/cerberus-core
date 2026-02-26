@@ -36,7 +36,7 @@
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
-        <script type="text/javascript" src="js/pages/ReportingCampaignOverTime.js"></script>
+        <script type="text/javascript" src="js/pages/ReportingCampaignOverTime.js?v=${appVersion}"></script>
         <title id="pageTitle">Campaign Trends</title>
     </head>
     <body x-data x-cloak class="crb_body">

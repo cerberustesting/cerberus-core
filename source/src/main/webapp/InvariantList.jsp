@@ -28,13 +28,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>Invariant</title>
-    <script type="text/javascript" src="js/pages/InvariantList.js"></script>
+    <script type="text/javascript" src="js/pages/InvariantList.js?v=${appVersion}"></script>
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
 <jsp:include page="include/global/modalInclusions.jsp"/>
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-        <%@ include file="include/transversalobject/Invariant.html"%>
+        <%@ include file="include/transversal/Invariant.html"%>
         <jsp:include page="include/templates/selectDropdown.html"/>
 
         <h1 class="page-title-line" x-text="$store.labels.getLabel('pageInvariant','title')">Invariants</h1>

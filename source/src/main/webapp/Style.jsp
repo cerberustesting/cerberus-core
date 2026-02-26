@@ -35,11 +35,11 @@
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
-        <script type="text/javascript" src="js/pages/Style.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
+        <script type="text/javascript" src="js/pages/Style.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
         <title id="pageTitle">Style Page</title>
     </head>
     <body>

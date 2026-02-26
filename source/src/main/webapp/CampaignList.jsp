@@ -29,8 +29,8 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Campaign Management</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/CampaignList.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
+        <script type="text/javascript" src="js/pages/CampaignList.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

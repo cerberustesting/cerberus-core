@@ -28,8 +28,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/ImpactAnalysis.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="js/pages/ImpactAnalysis.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
         <title id="pageTitle">Impact Analysis</title>
     </head>
     <body x-data x-cloak class="crb_body">

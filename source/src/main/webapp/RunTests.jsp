@@ -33,9 +33,9 @@
         <meta name="active-submenu" content="RunTests.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css"/>
-        <script type="text/javascript" src="js/pages/RunTest.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css?v=${appVersion}"/>
+        <script type="text/javascript" src="js/pages/RunTest.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
         <title id="pageTitle">Run Test</title>
     </head>
     <body x-data x-cloak class="crb_body">

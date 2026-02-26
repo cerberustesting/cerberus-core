@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="SwaggerUI.jsp">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/SwaggerUI.js"></script>
+        <script type="text/javascript" src="js/pages/SwaggerUI.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="dependencies/SwaggerUI-5.26.0/swagger-ui.css" />
         <link rel="stylesheet" type="text/css" href="dependencies/SwaggerUI-5.26.0/index.css" />
         <style>

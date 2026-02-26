@@ -32,8 +32,8 @@
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <link rel="stylesheet" href="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.css" />
-        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
-        <script type="text/javascript" src="js/pages/ReportingCampaignStatistics.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/pages/ReportingCampaignStatistics.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>

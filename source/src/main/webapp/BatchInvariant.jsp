@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="BatchInvariant.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/BatchInvariant.js"></script>
+        <script type="text/javascript" src="js/pages/BatchInvariant.js?v=${appVersion}"></script>
         <title id="pageTitle">Batch Invariant</title>
     </head>
     <body x-data x-cloak class="crb_body">

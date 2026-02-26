@@ -25,10 +25,10 @@
     <head>
         <meta name="active-menu" content="insights">
         <meta name="active-submenu" content="TestCaseExecutionList.jsp">
-        <<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
-        <script type="text/javascript" src="js/pages/TestCaseExecutionList.js"></script>
+        <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css?v=${appVersion}" type="text/css"/>
+        <script type="text/javascript" src="js/pages/TestCaseExecutionList.js?v=${appVersion}"></script>
         
         <title id="pageTitle">Execution</title>
     </head>

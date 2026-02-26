@@ -33,15 +33,15 @@
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
 <!--        <script type="text/javascript" src="dependencies/Ace-1.38.0/ext-language_tools.js"></script>-->
-        <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
+        <script type="text/javascript" src="js/pages/TestCaseScript.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestDataLib.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css?v=${appVersion}">
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
