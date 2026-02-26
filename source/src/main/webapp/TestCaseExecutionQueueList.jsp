@@ -46,7 +46,7 @@
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/Parameter.html"%>
-            <%@ include file="include/transversalobject/Invariant.html"%>
+            <%@ include file="include/transversal/Invariant.html"%>
             <%@ include file="include/transversalobject/Application.html"%>
 
             <h1 class="page-title-line" id="title">Executions Queue</h1>
