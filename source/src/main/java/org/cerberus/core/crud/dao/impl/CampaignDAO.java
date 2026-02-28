@@ -108,9 +108,7 @@ public class CampaignDAO implements ICampaignDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmptyOrNull(searchTerm)) {
@@ -121,8 +119,7 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
@@ -163,8 +160,8 @@ public class CampaignDAO implements ICampaignDAO {
         query.append("SELECT * FROM campaign cpg WHERE campaign = ?");
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setString(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
@@ -190,8 +187,8 @@ public class CampaignDAO implements ICampaignDAO {
         query.append("SELECT * FROM campaign cpg WHERE campaignid = ?");
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setInt(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
@@ -242,9 +239,8 @@ public class CampaignDAO implements ICampaignDAO {
         query.append(" order by ").append(columnName).append(" asc");
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmptyOrNull(searchTerm)) {
@@ -255,8 +251,7 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -299,8 +294,8 @@ public class CampaignDAO implements ICampaignDAO {
                 .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getCampaign());
@@ -346,8 +341,7 @@ public class CampaignDAO implements ICampaignDAO {
         LOG.debug("SQL.param.campaign : {}", object.getCampaign());
         LOG.debug("SQL.param.campaignid : {}", object.getCampaignID());
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
 
             int i = 1;
             preStat.setString(i++, object.getCampaign());
@@ -388,8 +382,8 @@ public class CampaignDAO implements ICampaignDAO {
         final String query = "DELETE FROM campaign WHERE campaignID = ? ";
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getCampaignID());
 
             preStat.executeUpdate();
@@ -452,13 +446,13 @@ public class CampaignDAO implements ICampaignDAO {
         try (Connection connection = databaseSpring.connect()) {
 
             StringBuilder sql = new StringBuilder(
-                    "SELECT " +
-                            "COUNT(DISTINCT c.Campaign) AS totalExisting, " +
-                            "COUNT(DISTINCT CASE WHEN t.Campaign IS NOT NULL THEN c.Campaign END) AS totalLaunched, " +
-                            "COUNT(DISTINCT CASE WHEN t.CIResult = 'OK' THEN c.Campaign END) AS totalOK, " +
-                            "COUNT(DISTINCT CASE WHEN t.CIResult <> 'OK' THEN c.Campaign END) AS totalKO " +
-                            "FROM campaign c " +
-                            "LEFT JOIN tag t ON t.Campaign = c.Campaign "
+                    "SELECT "
+                    + "COUNT(DISTINCT c.Campaign) AS totalExisting, "
+                    + "COUNT(DISTINCT CASE WHEN t.Campaign IS NOT NULL THEN c.Campaign END) AS totalLaunched, "
+                    + "COUNT(DISTINCT CASE WHEN t.CIResult = 'OK' THEN c.Campaign END) AS totalOK, "
+                    + "COUNT(DISTINCT CASE WHEN t.CIResult <> 'OK' THEN c.Campaign END) AS totalKO "
+                    + "FROM campaign c "
+                    + "LEFT JOIN tag t ON t.Campaign = c.Campaign "
             );
 
             List<String> whereClauses = new ArrayList<>();
@@ -468,17 +462,19 @@ public class CampaignDAO implements ICampaignDAO {
             }
 
             if (filterSystems) {
-                whereClauses.add("(" +
-                        systems.stream()
+                whereClauses.add("("
+                        + systems.stream()
                                 .map(s -> "t.SystemList LIKE ?")
-                                .collect(Collectors.joining(" OR ")) +
-                        ")"
+                                .collect(Collectors.joining(" OR "))
+                        + ")"
                 );
             }
 
             if (!whereClauses.isEmpty()) {
                 sql.append("WHERE ").append(String.join(" AND ", whereClauses));
             }
+
+            LOG.debug("SQL : {}", sql);
 
             try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
 

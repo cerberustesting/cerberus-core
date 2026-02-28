@@ -58,14 +58,13 @@ public class UserPromptDAO implements IUserPromptDAO {
     @Override
     public Answer create(UserPrompt userPrompt) {
         MessageEvent msg = null;
-        final String sql = "INSERT INTO " + TABLE + " (login, sessionID, iaModel, iaMaxTokens, type, title, totalCalls, totalInputTokens, totalOutputTokens, totalCost, usrCreated) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String sql = "INSERT INTO " + TABLE + " (login, sessionID, iaModel, iaMaxTokens, type, title, totalCalls, totalInputTokens, totalOutputTokens, totalCost, usrCreated) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY)) {
 
             int i = 1;
             preStat.setString(i++, userPrompt.getLogin());
@@ -83,7 +82,6 @@ public class UserPromptDAO implements IUserPromptDAO {
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", TABLE).replace("%OPERATION%", "INSERT"));
-
 
         } catch (SQLException e) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
@@ -104,9 +102,8 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setInt(1, id);
             ResultSet rs = preStat.executeQuery();
@@ -132,7 +129,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerList<UserPrompt> readByUser(String login){
+    public AnswerList<UserPrompt> readByUser(String login) {
         AnswerList<UserPrompt> ans = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -143,9 +140,8 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, login);
             ResultSet rs = preStat.executeQuery();
@@ -186,7 +182,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerItem<UserPrompt> readByUserSessionID(String login, String sessionID){
+    public AnswerItem<UserPrompt> readByUserSessionID(String login, String sessionID) {
         AnswerItem<UserPrompt> ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -197,9 +193,8 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, login);
             preStat.setString(2, sessionID);
@@ -224,7 +219,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch){
+    public AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<UserPrompt> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -280,9 +275,8 @@ public class UserPromptDAO implements IUserPromptDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : " + query.toString());
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -377,7 +371,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName){
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -420,12 +414,9 @@ public class UserPromptDAO implements IUserPromptDAO {
         query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        LOG.debug("SQL : " + query.toString());
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isEmptyOrNull(searchParameter)) {
@@ -446,8 +437,7 @@ public class UserPromptDAO implements IUserPromptDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
 
                 //gets the data
                 while (resultSet.next()) {
@@ -501,8 +491,7 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
 
             preStat.setInt(1, id);
             result = preStat.executeUpdate() > 0;
@@ -517,14 +506,13 @@ public class UserPromptDAO implements IUserPromptDAO {
     @Override
     public boolean update(UserPrompt userPrompt) {
         boolean result = false;
-        final String sql = "UPDATE " + TABLE + " SET " +
-                "`login` = ?, `sessionID` = ?, `iaModel` = ?, `iaMaxTokens` = ?, `type` = ?, `title` = ?, `usrModif` = ?, `dateModif` = ? " +
-                "WHERE `id` = ?";
+        final String sql = "UPDATE " + TABLE + " SET "
+                + "`login` = ?, `sessionID` = ?, `iaModel` = ?, `iaMaxTokens` = ?, `type` = ?, `title` = ?, `usrModif` = ?, `dateModif` = ? "
+                + "WHERE `id` = ?";
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
 
             int i = 1;
             preStat.setString(i++, userPrompt.getLogin());
@@ -549,14 +537,13 @@ public class UserPromptDAO implements IUserPromptDAO {
     @Override
     public boolean incrementUsage(String user, String aiSessionID, Integer inputTokens, Integer outputTokens, Double cost) {
         boolean result = false;
-        final String sql = "UPDATE " + TABLE + " SET " +
-                "`totalCalls` = `totalCalls` + 1, `totalInputTokens` = `totalInputTokens` + ?, `totalOutputTokens` = `totalOutputTokens` + ?, `totalCost` = `totalCost` + ?, `usrModif` = ?, `dateModif` = ? " +
-                "WHERE `sessionID` = ?";
+        final String sql = "UPDATE " + TABLE + " SET "
+                + "`totalCalls` = `totalCalls` + 1, `totalInputTokens` = `totalInputTokens` + ?, `totalOutputTokens` = `totalOutputTokens` + ?, `totalCost` = `totalCost` + ?, `usrModif` = ?, `dateModif` = ? "
+                + "WHERE `sessionID` = ?";
 
         LOG.debug("SQL: {}", sql);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
 
             int i = 1;
             preStat.setInt(i++, inputTokens != null ? inputTokens : 0);
@@ -576,24 +563,25 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user){
+    public AnswerItem<UserPromptStats> readSumByPeriod(Timestamp startDate, Timestamp endDate, String user) {
         AnswerItem<UserPromptStats> ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
 
-        String query =
-                "SELECT " +
-                        "SUM(totalInputTokens) AS totalInput, " +
-                        "SUM(totalOutputTokens) AS totalOutput, " +
-                        "SUM(totalCost) AS totalCost " +
-                        "FROM " + TABLE + " " +
-                        "WHERE DateCreated BETWEEN ? AND ?";
+        String query
+                = "SELECT "
+                + "SUM(totalInputTokens) AS totalInput, "
+                + "SUM(totalOutputTokens) AS totalOutput, "
+                + "SUM(totalCost) AS totalCost "
+                + "FROM " + TABLE + " "
+                + "WHERE DateCreated BETWEEN ? AND ?";
 
         if (!user.equals("ALL")) {
             query += " AND UsrCreated = ?";
         }
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setTimestamp(1, startDate);
             preStat.setTimestamp(2, endDate);
@@ -627,7 +615,7 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
-    public AnswerList<UserPromptStats> readUsageByDay(Timestamp startDate, Timestamp endDate, String user){
+    public AnswerList<UserPromptStats> readUsageByDay(Timestamp startDate, Timestamp endDate, String user) {
         AnswerList<UserPromptStats> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
 
@@ -646,12 +634,15 @@ public class UserPromptDAO implements IUserPromptDAO {
         query.append("GROUP BY DATE(DateCreated) ")
                 .append("ORDER BY DATE(DateCreated) ASC");
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement ps = connection.prepareStatement(query.toString())) {
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement ps = connection.prepareStatement(query.toString())) {
 
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
-            if (!"ALL".equals(user)) ps.setString(3, user);
+            if (!"ALL".equals(user)) {
+                ps.setString(3, user);
+            }
 
             try (ResultSet rs = ps.executeQuery()) {
                 List<UserPromptStats> list = new ArrayList<>();
@@ -681,22 +672,21 @@ public class UserPromptDAO implements IUserPromptDAO {
         return answer;
     }
 
-
     @Override
     public AnswerItem<UserPromptStats> readStats(String fromDate, String toDate, String user) {
         AnswerItem<UserPromptStats> ans = new AnswerItem<>();
         MessageEvent msg;
 
         StringBuilder sql = new StringBuilder(
-                "SELECT " +
-                        "  COALESCE(SUM(up.totalInputTokens), 0) AS totalInputTokens, " +
-                        "  COALESCE(SUM(up.totalOutputTokens), 0) AS totalOutputTokens, " +
-                        "  COUNT(DISTINCT up.login) AS totalUsers, " +
-                        "  COUNT(DISTINCT up.sessionID) AS totalSessions, " +
-                        "  COALESCE(SUM(upm.cost), 0) AS totalCost " +
-                        "FROM userprompt up " +
-                        "LEFT JOIN userpromptmessage upm ON up.sessionID = upm.sessionID " +
-                        "WHERE up.DateCreated > ? AND up.DateCreated <= ?"
+                "SELECT "
+                + "  COALESCE(SUM(up.totalInputTokens), 0) AS totalInputTokens, "
+                + "  COALESCE(SUM(up.totalOutputTokens), 0) AS totalOutputTokens, "
+                + "  COUNT(DISTINCT up.login) AS totalUsers, "
+                + "  COUNT(DISTINCT up.sessionID) AS totalSessions, "
+                + "  COALESCE(SUM(upm.cost), 0) AS totalCost "
+                + "FROM userprompt up "
+                + "LEFT JOIN userpromptmessage upm ON up.sessionID = upm.sessionID "
+                + "WHERE up.DateCreated > ? AND up.DateCreated <= ?"
         );
 
         boolean hasUserFilter = (user != null && !user.trim().isEmpty());
@@ -707,8 +697,9 @@ public class UserPromptDAO implements IUserPromptDAO {
 
         UserPromptStats stats = null;
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+        LOG.debug("SQL : {}", sql);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement ps = connection.prepareStatement(sql.toString())) {
 
             ps.setString(1, fromDate);
             ps.setString(2, toDate);

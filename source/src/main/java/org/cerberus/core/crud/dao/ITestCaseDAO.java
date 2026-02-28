@@ -308,7 +308,7 @@ public interface ITestCaseDAO {
      *
      * @param fromDate
      * @param toDate
-     * @param user
+     * @param systems
      * @return
      */
     public AnswerItem<TestCaseStats> readStats(String fromDate, String toDate, List<String> systems);

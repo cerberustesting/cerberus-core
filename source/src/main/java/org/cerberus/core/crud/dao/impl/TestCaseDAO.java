@@ -143,9 +143,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(searchSQL);
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : " + query.toString());
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
@@ -263,9 +261,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : " + query.toString());
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
@@ -352,9 +348,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         final String query = "SELECT * FROM testcase tec  LEFT OUTER JOIN application app on app.application = tec.application WHERE test = ? AND testcase = ?";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : " + query);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
@@ -388,6 +382,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " INNER JOIN appservice ser ON ser.Service = tcsa.Value1 "
                 + " WHERE ser.Service = ? "
                 + " group by tc.test, tc.TestCase";
+
+        LOG.debug("SQL : {}", sql);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
@@ -468,6 +464,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " WHERE ser.Service = ?"
                 + " group by tc.test, tc.TestCase";
 
+        LOG.debug("SQL : {}", sql);
+
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             preStat.setString(1, service);
@@ -542,9 +540,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + sql);
-        }
+        LOG.debug("SQL : " + sql);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
@@ -598,9 +594,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             countryList.add(tcCountry.getCountry());
         }
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + sql_count);
-        }
+        LOG.debug("SQL : " + sql_count);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql_count);) {
 
@@ -612,6 +606,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                     countriesDB.add(rsCount.getString("Country"));
                     if (!countryList.contains(rsCount.getString("Country"))) {
                         final String sql_delete = "DELETE FROM testcasecountry WHERE Test = ? AND TestCase = ? AND Country = ?";
+
+                        LOG.debug("SQL : {}", sql_delete);
 
                         try (PreparedStatement preStat2 = connection.prepareStatement(sql_delete);) {
                             preStat2.setString(1, tc.getTest());
@@ -632,6 +628,8 @@ public class TestCaseDAO implements ITestCaseDAO {
             for (int i = 0; i < countryList.size() && res; i++) {
                 if (!countriesDB.contains(countryList.get(i))) {
                     final String sql_insert = "INSERT INTO testcasecountry (test, testcase, country) VALUES (?, ?, ?)";
+
+                    LOG.debug("SQL : {}", sql_insert);
 
                     try (PreparedStatement preStat2 = connection.prepareStatement(sql_insert);) {
                         preStat2.setString(1, tc.getTest());
@@ -668,9 +666,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?); ");
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + sql);
-        }
+        LOG.debug("SQL : " + sql);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
 
@@ -721,6 +717,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TestCase> findTestCaseByApplication(final String application) {
         List<TestCase> testCases = null;
+        LOG.debug("SQL : {}", Query.FIND_BY_APPLICATION);
+
         try (final Connection connection = databaseSpring.connect(); final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
             statement.setString(1, application);
             testCases = new ArrayList<>();
@@ -745,9 +743,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + "AND tec.test = ? AND tec.application = ? AND tcc.country = ? AND tec.isActive = ? ";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : " + query);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
@@ -1955,21 +1951,21 @@ public class TestCaseDAO implements ITestCaseDAO {
         try (Connection connection = databaseSpring.connect()) {
 
             StringBuilder sql = new StringBuilder(
-                    "SELECT " +
-                            "COUNT(*) AS totalCount, " +
-                            "COUNT(*) AS totalCreated, " +
-                            "SUM(CASE WHEN tc.Status = 'WORKING' THEN 1 ELSE 0 END) AS workingCount " +
-                            "FROM testcase tc " +
-                            "JOIN application app ON app.application = tc.application "
+                    "SELECT "
+                    + "COUNT(*) AS totalCount, "
+                    + "COUNT(*) AS totalCreated, "
+                    + "SUM(CASE WHEN tc.Status = 'WORKING' THEN 1 ELSE 0 END) AS workingCount "
+                    + "FROM testcase tc "
+                    + "JOIN application app ON app.application = tc.application "
             );
 
             List<String> whereClauses = new ArrayList<>();
 
             if (filterSystems) {
                 whereClauses.add(
-                        "app.`system` IN (" +
-                                systems.stream().map(s -> "?").collect(Collectors.joining(",")) +
-                                ")"
+                        "app.`system` IN ("
+                        + systems.stream().map(s -> "?").collect(Collectors.joining(","))
+                        + ")"
                 );
             }
 
@@ -1980,6 +1976,8 @@ public class TestCaseDAO implements ITestCaseDAO {
             if (!whereClauses.isEmpty()) {
                 sql.append(" WHERE ").append(String.join(" AND ", whereClauses));
             }
+
+            LOG.debug("SQL : {}", sql);
 
             try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
 

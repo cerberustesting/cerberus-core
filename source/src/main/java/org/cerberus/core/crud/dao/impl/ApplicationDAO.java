@@ -617,6 +617,8 @@ public class ApplicationDAO implements IApplicationDAO {
         int totalApplications = 0;
         Map<String, Integer> totalAppsByType = new HashMap<>();
 
+        LOG.debug("SQL : {}", sql);
+
         try (Connection connection = databaseSpring.connect();
              PreparedStatement ps = connection.prepareStatement(sql.toString())) {
 
