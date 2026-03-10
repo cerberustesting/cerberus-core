@@ -19,14 +19,16 @@
  */
 package org.cerberus.core.servlet.crud.transversaltables;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.entity.Invariant;
@@ -40,6 +42,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,7 +176,7 @@ public class ReadInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JSONException {
+    private AnswerItem<JSONObject> findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JsonProcessingException {
         AnswerList<Invariant> answerService;
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -216,7 +219,7 @@ public class ReadInvariant extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem<JSONObject> findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem<JSONObject> findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
@@ -314,9 +317,8 @@ public class ReadInvariant extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertInvariantToJSONObject(Invariant invariant) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(invariant));
+    private JSONObject convertInvariantToJSONObject(Invariant invariant) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(invariant));
         return result;
     }
 }

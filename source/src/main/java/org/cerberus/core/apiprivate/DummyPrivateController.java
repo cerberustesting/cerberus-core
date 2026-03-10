@@ -20,7 +20,7 @@
 package org.cerberus.core.apiprivate;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;

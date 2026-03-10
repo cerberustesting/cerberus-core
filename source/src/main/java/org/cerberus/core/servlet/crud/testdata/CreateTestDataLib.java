@@ -23,21 +23,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -72,6 +67,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author FNogueira
  */
 @WebServlet(name = "CreateTestDataLib", urlPatterns = {"/CreateTestDataLib"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 50 * 1024 * 1024,
+        maxRequestSize = 100 * 1024 * 1024
+)
 public class CreateTestDataLib extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateTestDataLib.class);
@@ -105,29 +105,48 @@ public class CreateTestDataLib extends HttpServlet {
         response.setContentType("application/json");
 
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part filePart = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), "", charset));
-                } else {
-                    file = fileItem;
+
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                Collection<Part> parts = request.getParts();
+
+                if (parts.isEmpty()) {
+                    return;
+                }
+
+                for (Part part : parts) {
+
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null) {
+                        // Champ formulaire
+                        String rawValue = new String(
+                                part.getInputStream().readAllBytes(),
+                                StandardCharsets.UTF_8
+                        );
+
+                        fileData.put(
+                                part.getName(),
+                                ParameterParserUtil.parseStringParamAndDecode(
+                                        rawValue,
+                                        "",
+                                        charset
+                                )
+                        );
+
+                    } else if (part.getSize() > 0) {
+                        // Fichier uploadé
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
-            LOG.warn(e, e);
+
         } catch (Exception e) {
-            LOG.warn(e, e);
+            LOG.warn("Error parsing multipart request", e);
         }
 
         try {
@@ -199,11 +218,11 @@ public class CreateTestDataLib extends HttpServlet {
                 List<TestDataLibData> tdldList = new ArrayList<>();
                 TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
 
-                if (file != null) {
+                if (filePart != null) {
                     String fileName;
-                    ans = libService.uploadFile(dataLibWithUploadedFile.getTestDataLibID(), file);
+                    ans = libService.uploadFile(dataLibWithUploadedFile.getTestDataLibID(), filePart);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        fileName = file.getName();
+                        fileName = filePart.getName();
                         dataLibWithUploadedFile.setCsvUrl(File.separator + dataLibWithUploadedFile.getTestDataLibID() + File.separator + fileName);
                         lib.setTestDataLibID(dataLibWithUploadedFile.getTestDataLibID());
                         ans = libService.update(lib);
@@ -214,10 +233,10 @@ public class CreateTestDataLib extends HttpServlet {
                 // Getting list of SubData from JSON Call
                 if (fileData.get("subDataList") != null) {
                     JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                    tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray, (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
+                    tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray, (filePart != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
                 }
 
-                if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
+                if (filePart != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
                     try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", null) + dataLibWithUploadedFile.getCsvUrl()));) {
@@ -251,7 +270,7 @@ public class CreateTestDataLib extends HttpServlet {
                         // Update the Database with the new list.
                     } finally {
                         try {
-                            file.getInputStream().close();
+                            filePart.getInputStream().close();
                         } catch (Throwable ignore) {
                         }
                     }

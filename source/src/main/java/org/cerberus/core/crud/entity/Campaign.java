@@ -22,7 +22,7 @@ package org.cerberus.core.crud.entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Campaign implements Serializable {

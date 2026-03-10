@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.ai.impl;
 
+import com.anthropic.core.JsonField;
 import com.anthropic.core.JsonValue;
 import com.anthropic.helpers.MessageAccumulator;
 import com.anthropic.models.messages.*;
@@ -26,10 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cerberus.core.crud.entity.*;
-import org.cerberus.core.crud.service.impl.ApplicationObjectService;
-import org.cerberus.core.crud.service.impl.ApplicationService;
-import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
-import org.cerberus.core.crud.service.impl.TestCaseService;
+import org.cerberus.core.crud.service.impl.*;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ai.IAIService;
 import org.cerberus.core.service.ai.impl.parsing.ApplicationObjectFromAI;
@@ -39,9 +37,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -73,6 +68,8 @@ public class AIService implements IAIService {
     ApplicationObjectFromAI applicationObjectFromAI;
     @Autowired
     TestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    TestCaseStepService testCaseStepService;
     @Autowired
     AIClientService aiClientService;
 
@@ -488,25 +485,27 @@ public class AIService implements IAIService {
 
         List<ContentBlockParam> contentOfBlockParams = new ArrayList<>();
         // Image block
-        contentOfBlockParams.add(ContentBlockParam.ofImage(
-                ImageBlockParam.builder()
-                        .type(JsonValue.from("image"))
-                        .source(Base64ImageSource.builder()
-                                .mediaType(Base64ImageSource.MediaType.IMAGE_JPEG)
-                                .data(screenshotBase64)
-                                .build())
-                        .build()));
+        @SuppressWarnings("unchecked")
+        ImageBlockParam imgBlock = ImageBlockParam.builder()
+                .type(JsonValue.from("image"))
+                .source(Base64ImageSource.builder()
+                        .mediaType(Base64ImageSource.MediaType.IMAGE_JPEG)
+                        .data(screenshotBase64)
+                        .build())
+                .build();
+        contentOfBlockParams.add(ContentBlockParam.ofImage(imgBlock));
 
         // Document block HTML
-        contentOfBlockParams.add(ContentBlockParam.ofDocument(
-                DocumentBlockParam.builder()
-                        .type(JsonValue.from("document"))
-                        .source(JsonValue.from(Map.of(
-                                "type", "text",
-                                "media_type", "text/plain",
-                                "data", removeScriptsAndStyles(htmlContent)
-                        )))
-                        .build()));
+        @SuppressWarnings("unchecked")
+        DocumentBlockParam docBlock = DocumentBlockParam.builder()
+                .type(JsonValue.from("document"))
+                .source(JsonValue.from(Map.of(
+                        "type", "text",
+                        "media_type", "text/plain",
+                        "data", removeScriptsAndStyles(htmlContent)
+                )))
+                .build();
+        contentOfBlockParams.add(ContentBlockParam.ofDocument(docBlock));
 
         /**
          * Get all message of session and add the new message
@@ -608,6 +607,152 @@ public class AIService implements IAIService {
             aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);
 
         } catch (Exception e) {
+            LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
+            try {
+                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
+                websocketSession.close(CloseStatus.SERVER_ERROR);
+            } catch (IOException ignored) {}
+        }
+    }
+
+
+    public void generateTestCaseFromImportWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, List<String> filePaths, String screenshotPath, String prompt, String subject ) {
+
+
+        try {
+            /*
+            Get Exiting Library
+             */
+            Application application = applicationService.readByKey(applicationId).getItem();
+            List<TestCaseStep> stepLibList = testCaseStepService.getStepLibraryBySystem(application.getSystem());
+
+
+            /*
+            Get List of Files and generate content
+             */
+            List<ContentBlockParam> contentOfBlockParams = new ArrayList<>();
+
+            for (String filePath : filePaths) {
+                //TODO
+            }
+
+            /**
+             * Get all message of session
+             */
+            List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
+
+
+            /*
+             * If first message, build prompt, else, use user prompt
+             */
+            String aoPrompt = prompt;
+            if ("ao_generate".equals(subject)) {
+                //aoPrompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(applicationId, aoList, pageName, prompt);
+            }
+            LOG.debug(aoPrompt);
+            String systemContext = aiBuildPrompt.buildPromptForApplicationObjectSystemContext();
+            LOG.debug(systemContext);
+
+            MessageParam.Builder mpBuilder =  MessageParam.builder()
+                    .role(MessageParam.Role.USER)
+                    .content(aoPrompt);
+            // Content of block param only for first call
+            if ("ao_generate".equals(subject)) {
+                mpBuilder.contentOfBlockParams(contentOfBlockParams);
+            }
+
+            MessageParam msg = mpBuilder.build();
+            messageParamList.add(msg);
+
+
+            StringBuilder fullResponse = new StringBuilder();
+            StringBuilder textBuffer = new StringBuilder();
+            AtomicBoolean insideJsonBlock = new AtomicBoolean(false);
+
+                //Start Streaming
+                MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext,chunk -> {
+
+                    textBuffer.append(chunk);
+                    String current = textBuffer.toString();
+
+                    while (true) {
+
+                        if (!insideJsonBlock.get()) {
+                            int start = current.indexOf("```json");
+                            if (start >= 0) {
+
+                                // Send text before JSON in streaming
+                                String chatPart = current.substring(0, start).trim();
+                                if (!chatPart.isEmpty()) {
+                                    sendChatMessage(websocketSession, chatPart);
+                                }
+
+                                insideJsonBlock.set(true);
+                                current = current.substring(start + 7); // skip ```json{}```
+                                textBuffer.setLength(0);
+                                textBuffer.append(current);
+
+                            } else {
+                                // Pas de JSON détecté → stream normal
+                                if (!current.isEmpty()) {
+                                    sendChatMessage(websocketSession, current);
+                                    textBuffer.setLength(0);
+                                }
+                                break;
+                            }
+                        } else {
+
+                            int end = current.indexOf("```");
+                            if (end >= 0) {
+
+                                String jsonPart = current.substring(0, end).trim();
+
+                                try {
+                                    String cleaned = aiClientService.sanitizeJson(jsonPart);
+                                    LOG.info("Cleaned JSON: " + cleaned);
+                                    //ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId,screenshotBase64Final,cleaned,user);
+                                    ApplicationObject ao = new ApplicationObject();
+
+                                    Map<String,Object> message = new HashMap<>();
+                                    message.put("type","ao_proposals");
+                                    message.put("data", ao);
+
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+
+                                } catch(Exception e) {
+                                    LOG.error("Failed parsing streamed AO", e);
+                                }
+
+                                insideJsonBlock.set(false);
+
+                                current = current.substring(end + 3);
+                                textBuffer.setLength(0);
+                                textBuffer.append(current);
+
+                            } else {
+                                // JSON not completed yet
+                                break;
+                            }
+                        }
+                    }
+                });
+                LOG.debug(fullResponse.toString());
+
+
+
+
+
+            /**
+             * store message and answer
+             */
+            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+
+            //update Title
+            aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);
+
+
+            } catch (Exception e) {
             LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
             try {
                 websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));

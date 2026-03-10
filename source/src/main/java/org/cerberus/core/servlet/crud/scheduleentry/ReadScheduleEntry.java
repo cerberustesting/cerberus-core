@@ -19,14 +19,16 @@
  */
 package org.cerberus.core.servlet.crud.scheduleentry;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.ScheduleEntry;
@@ -41,6 +43,7 @@ import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -137,9 +140,8 @@ public class ReadScheduleEntry extends HttpServlet {
 
     }
 
-    private JSONObject convertScheduleEntrytoJSONObject(ScheduleEntry sched1) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(sched1));
+    private JSONObject convertScheduleEntrytoJSONObject(ScheduleEntry sched1) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(sched1));
         return result;
     }
 

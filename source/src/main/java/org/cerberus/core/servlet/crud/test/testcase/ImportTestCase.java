@@ -22,21 +22,21 @@ package org.cerberus.core.servlet.crud.test.testcase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCase;
@@ -58,6 +58,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 10 * 1024 * 1024,
+        maxRequestSize = 20 * 1024 * 1024
+)
 @WebServlet(name = "ImportTestCase", urlPatterns = {"/ImportTestCase"})
 public class ImportTestCase extends HttpServlet {
 
@@ -219,40 +224,38 @@ public class ImportTestCase extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private HashMap<String, String> getParams(HttpServletRequest httpServletRequest) {
+    private HashMap<String, String> getParams(HttpServletRequest request) {
         HashMap<String, String> result = new HashMap<>();
 
         try {
-            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-                DiskFileItemFactory factory = new DiskFileItemFactory();
+            if (request.getContentType() != null
+                    && request.getContentType().toLowerCase().startsWith("multipart/")) {
 
-                ServletContext servletContext = this.getServletConfig().getServletContext();
-                File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-                factory.setRepository(repository);
+                Collection<Part> parts = request.getParts();
+                LOG.debug("Nb of Param to import : " + parts.size());
 
-                ServletFileUpload upload = new ServletFileUpload(factory);
+                int i = 1;
+                for (Part part : parts) {
+                    i++;
 
-                List<FileItem> formItems = upload.parseRequest(httpServletRequest);
-                if (formItems != null) {
-                    LOG.debug("Nb of Param to import : " + formItems.size());
-                    if (formItems.size() > 0) {
-                        int i = 1;
-                        for (FileItem item : formItems) {
-                            i++;
-                            LOG.debug("Param to import (" + i + ") : " + item.toString() + " | FieldName : " + item.getFieldName() + " | ContentType : " + item.getContentType());
-                            if (item.isFormField()) {
-                                result.put(item.getFieldName(), item.getString());
-                            } else {
-                                result.put(item.getFieldName() + i, item.getString());
+                    LOG.debug("Param to import (" + i + ") : "
+                            + part.getName()
+                            + " | SubmittedFileName : " + part.getSubmittedFileName()
+                            + " | ContentType : " + part.getContentType());
 
-                            }
-                        }
+                    if (part.getSubmittedFileName() == null) {
+                        String value = new String(part.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                        result.put(part.getName(), value);
+                    } else {
+                        String value = new String(part.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                        result.put(part.getName() + i, value);
                     }
                 }
             }
-        } catch (FileUploadException ex) {
+        } catch (Exception ex) {
             LOG.error(ex, ex);
         }
+
         LOG.debug("result Param : " + result.size());
         return result;
     }

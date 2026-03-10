@@ -24,11 +24,12 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author bcivel
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RobotExecutorMapperV001 {
 
     RobotExecutorDTOV001 toDTO(RobotExecutor executor);

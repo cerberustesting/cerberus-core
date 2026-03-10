@@ -19,10 +19,9 @@
  */
 package org.cerberus.core.api.mcp;
 
-import org.cerberus.core.exception.CerberusException;
+import io.modelcontextprotocol.server.McpServerFeatures;
 
 
 public interface MCPTool {
-    MCPToolMetadata getMetadata();
-    Object execute(MCPRequest request) throws CerberusException;
+    McpServerFeatures.SyncToolSpecification toToolSpecification();
 }

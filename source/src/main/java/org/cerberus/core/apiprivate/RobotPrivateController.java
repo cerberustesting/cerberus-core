@@ -19,17 +19,16 @@
  */
 package org.cerberus.core.apiprivate;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.api.dto.ai.LogAIUsageMonthlyStatsDTOV001;
-import org.cerberus.core.api.dto.ai.LogAIUsageStatsDTOV001;
+import org.cerberus.core.api.dto.robot.RobotDTOV001;
+import org.cerberus.core.api.dto.robot.RobotMapperV001;
 import org.cerberus.core.crud.entity.Robot;
-import org.cerberus.core.crud.entity.UserPrompt;
-import org.cerberus.core.crud.entity.stats.UserPromptStats;
 import org.cerberus.core.crud.service.impl.RobotService;
-import org.cerberus.core.crud.service.impl.UserPromptService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -42,16 +41,10 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author bcivel
@@ -65,6 +58,11 @@ public class RobotPrivateController {
 
     @Autowired
     RobotService robotService;
+    @Autowired
+    @Qualifier("robotMapperV001Impl")
+    private RobotMapperV001 robotMapper;
+    @Autowired
+    private ObjectMapper mapper;
 
     @Operation(hidden=true)
     @PostMapping("/read")
@@ -84,10 +82,13 @@ public class RobotPrivateController {
             robotList = robotService.readByCriteria(true, true, dti.getStartPosition(), dti.getLength(), dti.getColumnName(), dti.getSort(), dti.getSearchParameter(), dti.getIndividualSearch());
 
             JSONArray jsonArray = new JSONArray();
-            if (robotList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            if (robotList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                //the service was able to perform the query, then we should get all values
                 for (Robot robot : robotList.getDataList()) {
-                    Gson gson = new Gson();
-                    jsonArray.put(new JSONObject(gson.toJson(robot)).put("hasPermissions", userHasPermissions));
+                    RobotDTOV001 dto = robotMapper.toDTO(robot);
+                    JSONObject json = new JSONObject(mapper.writeValueAsString(dto));
+                    json.put("hasPermissions", userHasPermissions);
+                    jsonArray.put(json);
                 }
             }
 
@@ -97,7 +98,7 @@ public class RobotPrivateController {
             object.put("iTotalDisplayRecords", robotList.getTotalRows());
             object.put("messageType", "OK");
 
-        } catch (JSONException ex) {
+        } catch (JsonProcessingException ex) {
             LOG.warn(ex);
         }
         return object.toString();

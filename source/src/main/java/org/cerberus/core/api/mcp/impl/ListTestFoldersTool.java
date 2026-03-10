@@ -19,6 +19,9 @@
  */
 package org.cerberus.core.api.mcp.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.mcp.MCPRequest;
 import org.cerberus.core.api.mcp.MCPTool;
 import org.cerberus.core.api.mcp.MCPToolMetadata;
@@ -36,27 +39,46 @@ import java.util.stream.Collectors;
 @Component
 public class ListTestFoldersTool implements MCPTool {
 
-    @Autowired
-    private ITestService testService;
+    private final ITestService testService;
 
-    @Override
-    public MCPToolMetadata getMetadata() {
-        return MCPToolMetadata.builder()
-                .name("list_test_folders")
-                .description("Returns list of available Test Folders")
-                .category("test_folder")
-                .requiresAuth(true)
-                .build();
+    public ListTestFoldersTool(ITestService testService) {
+        this.testService = testService;
     }
 
     @Override
-    public Object execute(MCPRequest request) {
-        List<String> folders = testService.readAll()
-                .getDataList()
-                .stream()
-                .map(test -> ((Test) test).getTest())
-                .collect(Collectors.toList());
-        return Map.of("folders", folders);
-    }
+    public McpServerFeatures.SyncToolSpecification toToolSpecification() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new McpSchema.Tool(
+                        "list_test_folders",
+                        null,
+                        "Returns list of available Test Folders",
+                        new McpSchema.JsonSchema("object", Map.of(), null, null, null, null),
+                        null,
+                        null,
+                        null
+                ),
+                (exchange, args) -> {
+                    List<String> folders = testService.readAll()
+                            .getDataList()
+                            .stream()
+                            .map(test -> ((Test) test).getTest())
+                            .collect(Collectors.toList());
 
+                    String json = null;
+                    try {
+                        json = new com.fasterxml.jackson.databind.ObjectMapper()
+                                .writeValueAsString(Map.of("folders", folders));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return new McpSchema.CallToolResult(
+                            List.of(new McpSchema.TextContent(null, json, null)),
+                            false,
+                            null,
+                            null
+                    );
+                }
+        );
+    }
 }

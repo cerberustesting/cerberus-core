@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.crud.dao;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -72,10 +72,10 @@ public interface IApplicationObjectDAO {
     /**
      *
      * @param id
-     * @param file
+     * @param filePart
      * @return
      */
-    Answer uploadFile(int id, FileItem file);
+    Answer uploadFile(int id, Part filePart);
 
     /**
      *

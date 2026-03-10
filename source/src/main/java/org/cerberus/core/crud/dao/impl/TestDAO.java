@@ -205,7 +205,7 @@ public class TestDAO implements ITestDAO {
                 int i = 1;
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
-                preStat.setBoolean(i++, test.getActive());
+                preStat.setBoolean(i++, test.isActive());
                 preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrCreated());
 
@@ -303,7 +303,7 @@ public class TestDAO implements ITestDAO {
                 int i = 1;
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
-                preStat.setBoolean(i++, test.getActive());
+                preStat.setBoolean(i++, test.isActive());
                 preStat.setString(i++, test.getParentTest());
                 preStat.setString(i++, test.getUsrModif());
                 preStat.setString(i++, keyTest);

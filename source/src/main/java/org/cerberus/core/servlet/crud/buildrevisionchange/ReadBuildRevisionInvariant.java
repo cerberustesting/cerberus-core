@@ -19,18 +19,20 @@
  */
 package org.cerberus.core.servlet.crud.buildrevisionchange;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BuildRevisionInvariant;
@@ -44,6 +46,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -203,7 +206,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findBuildRevisionInvariantList(List<String> system, Integer level, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevisionInvariantList(List<String> system, Integer level, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -252,7 +255,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findBuildRevisionInvariantByKey(String system, Integer level, Integer seq, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem<JSONObject> findBuildRevisionInvariantByKey(String system, Integer level, Integer seq, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException, CerberusException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -276,10 +279,9 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertBuildRevisionInvariantToJSONObject(BuildRevisionInvariant brp) throws JSONException {
+    private JSONObject convertBuildRevisionInvariantToJSONObject(BuildRevisionInvariant brp) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(brp));
+        JSONObject result = new JSONObject(JsonUtil.toJson(brp));
         return result;
     }
 

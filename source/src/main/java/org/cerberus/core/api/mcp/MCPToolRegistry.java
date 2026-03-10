@@ -19,33 +19,24 @@
  */
 package org.cerberus.core.api.mcp;
 
+import io.modelcontextprotocol.server.McpServerFeatures;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
 public class MCPToolRegistry {
 
-    private final Map<String, MCPTool> toolMap;
+    private final List<MCPTool> tools;
 
     public MCPToolRegistry(List<MCPTool> tools) {
-        this.toolMap = tools.stream()
-                .collect(Collectors.toMap(
-                        t -> t.getMetadata().getName(),
-                        t -> t
-                ));
+        this.tools = tools;
     }
 
-    public MCPTool getTool(String name) {
-        return toolMap.get(name);
-    }
-
-    public List<MCPToolMetadata> listTools() {
-        return toolMap.values()
-                .stream()
-                .map(MCPTool::getMetadata)
+    public List<McpServerFeatures.SyncToolSpecification> listTools() {
+        return tools.stream()
+                .map(MCPTool::toToolSpecification)
                 .collect(Collectors.toList());
     }
 }

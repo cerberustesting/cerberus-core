@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -123,8 +123,8 @@ public interface IAppServiceDAO {
     /**
      *
      * @param service
-     * @param file
+     * @param filePart
      * @return
      */
-    Answer uploadFile(String service, FileItem file);
+    Answer uploadFile(String service, Part filePart);
 }

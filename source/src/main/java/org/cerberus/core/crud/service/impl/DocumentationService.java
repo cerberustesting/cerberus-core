@@ -19,14 +19,17 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import com.google.gson.Gson;
+
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IDocumentationDAO;
 import org.cerberus.core.crud.entity.Documentation;
 import org.cerberus.core.crud.service.IDocumentationService;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,14 +138,14 @@ public class DocumentationService implements IDocumentationService {
             if (result.has(docTable)) {
                 try {
                     result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
-                } catch (JSONException ex) {
+                } catch (JsonProcessingException ex) {
                     LOG.warn(ex);
                 }
             } else {
                 try {
                     result.put(docTable, new JSONObject());
                     result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
-                } catch (JSONException ex) {
+                } catch (JsonProcessingException ex) {
                     LOG.warn(ex);
                 }
             }
@@ -150,10 +153,9 @@ public class DocumentationService implements IDocumentationService {
         return result;
     }
 
-    private JSONObject convertDocToJSONObject(Documentation doc) throws JSONException {
+    private JSONObject convertDocToJSONObject(Documentation doc) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(doc));
+        JSONObject result = new JSONObject(JsonUtil.toJson(doc));
         return result;
     }
 

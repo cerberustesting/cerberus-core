@@ -22,7 +22,8 @@ package org.cerberus.core.crud.service.impl;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.fileupload.FileItem;
+
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationObjectDAO;
@@ -80,8 +81,8 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public Answer uploadFile(int id, FileItem file) {
-        return applicationObjectDAO.uploadFile(id, file);
+    public Answer uploadFile(int id, Part filePart) {
+        return applicationObjectDAO.uploadFile(id, filePart);
     }
 
     @Override

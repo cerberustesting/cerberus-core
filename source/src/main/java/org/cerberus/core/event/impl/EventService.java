@@ -101,7 +101,7 @@ public class EventService implements IEventService {
      */
     @Override
     @Async
-    public MessageEvent triggerEvent(String eventReference, Object object1, Object object2, Object object3, Object object4) {
+    public void triggerEvent(String eventReference, Object object1, Object object2, Object object3, Object object4) {
 
         LOG.debug("Event '" + eventReference + "' triggered.");
 
@@ -189,8 +189,6 @@ public class EventService implements IEventService {
         } catch (CerberusException | JSONException ex) {
             LOG.error(ex, ex);
         }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
     }
 
     private boolean eval_NoFilter(String obj1, String obj2) {

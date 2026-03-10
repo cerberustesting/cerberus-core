@@ -29,8 +29,8 @@ import lombok.Data;
 @Data
 public class LogEvent {
 
-    private long LogEventID;
-    private long UserID;
+    private long logEventID;
+    private long userID;
     private String login;
     private Timestamp time;
     private String page;

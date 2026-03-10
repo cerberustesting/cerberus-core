@@ -19,10 +19,10 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import jakarta.servlet.http.Part;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationObjectDAO;
@@ -46,6 +46,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -214,41 +219,72 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public Answer uploadFile(int id, FileItem file) {
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "cerberus_applicationobject_path Parameter not found");
-        AnswerItem<Parameter> parameterAnswerItem = parameterService.readByKey("", "cerberus_applicationobject_path");
-        if (parameterAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+    public Answer uploadFile(int id, Part filePart) {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                .resolveDescription("DESCRIPTION", "cerberus_applicationobject_path Parameter not found");
+
+        AnswerItem<Parameter> parameterAnswerItem =
+                parameterService.readByKey("", "cerberus_applicationobject_path");
+
+        if (!parameterAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            LOG.warn("cerberus_applicationobject_path Parameter not found");
+            parameterAnswerItem.setResultMessage(msg);
+            return parameterAnswerItem;
+        }
+
+        try {
+
             Parameter parameter = parameterAnswerItem.getItem();
             String uploadPath = parameter.getValue();
-            File appDir = new File(uploadPath + File.separator + id);
-            if (!appDir.exists()) {
-                try {
-                    appDir.mkdirs();
-                } catch (SecurityException se) {
-                    LOG.error("Unable to create application dir: {}", se.getMessage());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                            se.toString());
-                    parameterAnswerItem.setResultMessage(msg);
-                }
+
+            // 🔐 Sécurisation du nom du fichier
+            String submittedFileName = Paths.get(filePart.getSubmittedFileName())
+                    .getFileName()
+                    .toString();
+
+            if (submittedFileName == null || submittedFileName.isBlank()) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
+                        .resolveDescription("DESCRIPTION", "File name is empty");
+                parameterAnswerItem.setResultMessage(msg);
+                return parameterAnswerItem;
             }
-            if (parameterAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                deleteFolder(appDir, false);
-                File picture = new File(uploadPath + File.separator + id + File.separator + file.getName());
-                try {
-                    file.write(picture);
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                            "Application Object file uploaded");
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Object").replace("%OPERATION%", "Upload"));
-                } catch (Exception e) {
-                    LOG.error("Unable to upload application object file: {}", e.getMessage());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                            e.toString());
-                }
+
+            // 📁 Création du dossier /id
+            Path appDir = Paths.get(uploadPath, String.valueOf(id));
+
+            if (!Files.exists(appDir)) {
+                Files.createDirectories(appDir);
             }
-        } else {
-            LOG.warn("cerberus_applicationobject_path Parameter not found");
+
+            // 🧹 Suppression ancien contenu
+            deleteFolder(appDir.toFile(), false);
+
+            // 📸 Fichier final
+            Path picturePath = appDir.resolve(submittedFileName);
+
+            // 💾 Copie stream (plus sûr que part.write())
+            try (InputStream input = filePart.getInputStream()) {
+                Files.copy(input, picturePath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("DESCRIPTION", "Application Object file uploaded");
+
+            msg.setDescription(
+                    msg.getDescription()
+                            .replace("%ITEM%", "Application Object")
+                            .replace("%OPERATION%", "Upload")
+            );
+
+        } catch (Exception e) {
+
+            LOG.error("Unable to upload application object file", e);
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
         }
+
         parameterAnswerItem.setResultMessage(msg);
         return parameterAnswerItem;
     }

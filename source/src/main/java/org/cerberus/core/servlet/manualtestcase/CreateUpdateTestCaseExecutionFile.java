@@ -19,23 +19,21 @@
  */
 package org.cerberus.core.servlet.manualtestcase;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -65,6 +63,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author ryltar
  */
 @WebServlet(name = "CreateUpdateTestCaseExecutionFile", urlPatterns = {"/CreateUpdateTestCaseExecutionFile"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 20 * 1024 * 1024,
+        maxRequestSize = 40 * 1024 * 1024
+)
 public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateUpdateTestCaseExecutionFile.class);
@@ -77,14 +80,13 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     * @throws org.cerberus.core.exception.CerberusException
-     * @throws org.json.JSONException
+     * @throws CerberusException
+     * @throws JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        Gson gson = new Gson();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -94,26 +96,29 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
+        Part filePart = null;
+
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
-                } else {
-                    file = fileItem;
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                for (Part part : request.getParts()) {
+
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null) {
+                        // Champ formulaire classique
+                        String value = new String(part.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                        fileData.put(part.getName(), value);
+
+                    } else if (part.getSize() > 0) {
+                        // Fichier uploadé
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Error parsing multipart request", e);
         }
 
         /**
@@ -148,7 +153,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
                     .replace("%REASON%", "desc is missing!"));
             ans.setResultMessage(msg);
         } else {
-            ans = recorderService.recordManuallyFile(executionAction, executionControl, extension, description, file, idex, fileName, fileID);
+            ans = recorderService.recordManuallyFile(executionAction, executionControl, extension, description, filePart, idex, fileName, fileID);
         }
 
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -224,8 +229,6 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
     /**
      * update control execution with testCaseStepActionControlJson
      *
-     * @param JSONObject testCaseJson
-     * @param ApplicationContext appContext
      * @throws JSONException
      * @throws IOException
      */
@@ -279,8 +282,6 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
      * update action execution with testCaseStepActionJson and all the parameter
      * belonging to it (control)
      *
-     * @param JSONObject testCaseJson
-     * @param ApplicationContext appContext
      * @throws JSONException
      * @throws IOException
      */

@@ -27,7 +27,7 @@ import org.cerberus.core.util.answer.AnswerItem;
  */
 public interface IRhinoService {
 
-    AnswerItem eval(TestCaseExecution tce, String script);
+    AnswerItem<String> eval(TestCaseExecution tce, String script);
 
 }
 

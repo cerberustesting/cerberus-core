@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.service.ciresult.impl;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.cerberus.core.api.entity.CICampaignResult;
 import org.cerberus.core.api.entity.CampaignExecutionResult;
@@ -39,6 +40,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.util.json.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +92,7 @@ public class CIService implements ICIService {
             // Semms not necessary as already in 'TOTAL_nbOfExecution'
 //            jsonResponse.put("nb_of_retry", executions.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
             return jsonResponse;
-        } catch (CerberusException | JSONException ex) {
+        } catch (CerberusException | JsonProcessingException ex) {
             LOG.error(ex, ex);
         }
         return null;
@@ -405,7 +407,7 @@ public class CIService implements ICIService {
                     .executionStart(String.valueOf(campaignExecution.get().getDateCreated()))
                     .executionEnd(String.valueOf(campaignExecution.get().getDateEndQueue()))
                     .build();
-        } catch (JSONException | ParseException | CerberusException e) {
+        } catch (JsonProcessingException | ParseException | CerberusException e) {
             throw new FailedReadOperationException("An error occurred when retrieving the campaign execution.");
         }
     }
@@ -509,7 +511,7 @@ public class CIService implements ICIService {
         return jsonResult;
     }
 
-    private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+    private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JsonProcessingException {
 
         JSONObject jsonResult = new JSONObject();
 
@@ -535,7 +537,7 @@ public class CIService implements ICIService {
         return getStatByEnvCountryRobotDecli(testCaseExecutions, statMap);
     }
 
-    private JSONArray getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap) throws JSONException {
+    private JSONArray getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap) throws JsonProcessingException {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
 
             StringBuilder key = new StringBuilder();
@@ -555,9 +557,8 @@ public class CIService implements ICIService {
         return extractSummaryData(statMap);
     }
 
-    private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) throws JSONException {
+    private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) throws JsonProcessingException {
         JSONObject extract = new JSONObject();
-        Gson gson = new Gson();
         JSONArray dataArray = new JSONArray();
         //sort keys
         TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<>(summaryMap);
@@ -565,7 +566,7 @@ public class CIService implements ICIService {
             SummaryStatisticsDTO sumStats = summaryMap.get(key);
             //percentage values
             sumStats.updatePercentageStatistics();
-            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+            dataArray.put(new JSONObject(JsonUtil.toJson(sumStats)));
         }
 
         return dataArray;

@@ -65,7 +65,9 @@ public class AIClientService {
         MessageCreateParams.Builder builder = MessageCreateParams.builder()
                 .model(aiConfig.modelName())
                 .maxTokens(aiConfig.maxTokens())
-                .messages(messageParamList);
+                .messages(messageParamList)
+                //.tools()
+                ;
 
         if (systemContext != null && !systemContext.isBlank()) {
             builder.system(systemContext);

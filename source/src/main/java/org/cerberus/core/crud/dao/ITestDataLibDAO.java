@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -72,10 +72,10 @@ public interface ITestDataLibDAO {
     /**
     *
     * @param id
-    * @param file
+    * @param filePart
     * @return
     */
-   Answer uploadFile(int id, FileItem file);
+   Answer uploadFile(int id, Part filePart);
 
     /**
      *

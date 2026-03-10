@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestDataLibDAO;
@@ -41,6 +41,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -239,7 +242,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public Answer uploadFile(int id, FileItem file) {
+    public Answer uploadFile(int id, Part filePart) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "cerberus_testdatalibfile_path Parameter not found");
         AnswerItem a = parameterService.readByKey("", Parameter.VALUE_cerberus_testdatalibfile_path);
@@ -259,9 +262,15 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             }
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 deleteFolder(appDir, false);
-                File picture = new File(uploadPath + File.separator + id + File.separator + file.getName());
+                File picture = new File(uploadPath + File.separator + id + File.separator + filePart.getName());
                 try {
-                    file.write(picture);
+                    try (InputStream input = filePart.getInputStream()) {
+                        Files.copy(
+                                input,
+                                picture.toPath(),
+                                StandardCopyOption.REPLACE_EXISTING
+                        );
+                    }
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                             "TestDataLib File uploaded");
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "testDatalib File").replace("%OPERATION%", "Upload"));

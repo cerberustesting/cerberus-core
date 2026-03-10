@@ -30,8 +30,8 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.stereotype.Service;
 import org.mozilla.javascript.*;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -106,7 +106,7 @@ public class RhinoService implements IRhinoService {
     private String execute(String script) {
         Context cx = Context.enter();
         try {
-            cx.setOptimizationLevel(-1);
+            cx.setInterpretedMode(true);
             cx.setLanguageVersion(Context.VERSION_ES6);
 
             cx.setClassShutter(className -> false);

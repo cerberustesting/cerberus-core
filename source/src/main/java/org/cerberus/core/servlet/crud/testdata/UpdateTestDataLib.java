@@ -23,21 +23,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -102,26 +96,47 @@ public class UpdateTestDataLib extends HttpServlet {
         response.setContentType("application/json");
 
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part filePart = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), "", charset));
-                } else {
-                    file = fileItem;
+
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                Collection<Part> parts = request.getParts();
+
+                if (parts.isEmpty()) {
+                    return;
+                }
+
+                for (Part part : parts) {
+
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null) {
+                        // Equivalent à isFormField()
+                        String rawValue = new String(
+                                part.getInputStream().readAllBytes(),
+                                StandardCharsets.UTF_8
+                        );
+
+                        fileData.put(
+                                part.getName(),
+                                ParameterParserUtil.parseStringParamAndDecode(
+                                        rawValue,
+                                        "",
+                                        charset
+                                )
+                        );
+
+                    } else if (part.getSize() > 0) {
+                        // Equivalent à file = fileItem
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -210,10 +225,10 @@ public class UpdateTestDataLib extends HttpServlet {
                     TestDataLib lib = (TestDataLib) resp.getItem();
 
                     String fileName = lib.getCsvUrl();
-                    if (file != null) {
-                        ans = libService.uploadFile(lib.getTestDataLibID(), file);
+                    if (filePart != null) {
+                        ans = libService.uploadFile(lib.getTestDataLibID(), filePart);
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            fileName = file.getName();
+                            fileName = filePart.getName();
                         }
                     }
 
@@ -235,7 +250,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setDatabaseCsv(databaseCsv);
                     lib.setIgnoreFirstLine(ignoreFirstLine);
 
-                    if (file == null) {
+                    if (filePart == null) {
                         lib.setCsvUrl(csvUrl);
                     } else {
                         lib.setCsvUrl(File.separator + lib.getTestDataLibID() + File.separator + fileName);
@@ -260,11 +275,11 @@ public class UpdateTestDataLib extends HttpServlet {
                     // Getting list of SubData from JSON Call
                     if (fileData.get("subDataList") != null) {
                         JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                        tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray, (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
+                        tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray, (filePart != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
                     }
 
                     // When File has just been uploaded to servlet and flag to load the subdata value has been checked, we will parse it in order to automatically feed the subdata.
-                    if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
+                    if (filePart != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                         String str = "";
                         String firstLine = "";
                         String secondLine = "";
@@ -297,7 +312,7 @@ public class UpdateTestDataLib extends HttpServlet {
                             // Update the Database with the new list.
                         } finally {
                             try {
-                                file.getInputStream().close();
+                                filePart.getInputStream().close();
                             } catch (Throwable ignore) {
                             }
                         }

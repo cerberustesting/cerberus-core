@@ -19,18 +19,20 @@
  */
 package org.cerberus.core.servlet.crud.testdata;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +48,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -250,7 +253,7 @@ public class ReadTestDataLib extends HttpServlet {
      * that matches the identifier
      * @throws JSONException
      */
-    private AnswerItem<JSONObject> findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions, String userName) throws JSONException {
+    private AnswerItem<JSONObject> findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions, String userName) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -284,7 +287,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @return object containing values that match the name
      * @throws JSONException
      */
-    private AnswerItem<JSONObject> findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JSONException {
+    private AnswerItem<JSONObject> findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JsonProcessingException {
 
         AnswerItem<JSONObject> ansItem = new AnswerItem<>();
 
@@ -376,8 +379,6 @@ public class ReadTestDataLib extends HttpServlet {
      * defined for a type of testdatalib entries.
      *
      * @param appContext - context object used to get the required beans
-     * @param type - type that filters the list of groups that should be
-     * retrieved
      * @return an object containing all the groups that belong to that type
      * @throws JSONException
      */
@@ -404,12 +405,12 @@ public class ReadTestDataLib extends HttpServlet {
      * object.
      *
      * @param testDataLib test data library
-     * @param unescapeXML indicates whether the XML retrieved in the Envelope
+     * @param unescapeContent indicates whether the XML retrieved in the Envelope
      * should be un-escaped or not.
      * @return JSON object
      * @throws JSONException
      */
-    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JSONException {
+    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JsonProcessingException {
 
         if (unescapeContent) {
             //general
@@ -428,8 +429,7 @@ public class ReadTestDataLib extends HttpServlet {
             testDataLib.setSeparator(StringEscapeUtils.unescapeHtml4(testDataLib.getSeparator()));
         }
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testDataLib));
+        JSONObject result = new JSONObject(JsonUtil.toJson(testDataLib));
         return result;
     }
 

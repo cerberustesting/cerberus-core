@@ -22,13 +22,16 @@ package org.cerberus.core.servlet.crud.transversaltables;
 import java.io.IOException;
 import java.util.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -171,7 +174,7 @@ public class ReadParameter extends HttpServlet {
         }
     }
 
-    private AnswerItem<JSONObject> findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -224,7 +227,7 @@ public class ReadParameter extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -248,11 +251,10 @@ public class ReadParameter extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertParameterToJSONObject(Parameter parameter) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(parameter));
-        return result;
+    private JSONObject convertParameterToJSONObject(Parameter parameter) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return new JSONObject(mapper.writeValueAsString(parameter));
     }
 
     private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {

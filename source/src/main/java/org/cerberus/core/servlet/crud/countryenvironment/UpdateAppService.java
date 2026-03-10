@@ -19,11 +19,7 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -49,13 +45,14 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -103,27 +100,30 @@ public class UpdateAppService extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part filePart = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
-                } else {
-                    file = fileItem;
+            // Vérifier que la requête est multipart
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                // Parcourir tous les parts
+                for (Part part : request.getParts()) {
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null) {
+                        // Champ formulaire classique
+                        String value = new String(part.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                        fileData.put(part.getName(), value);
+
+                    } else if (part.getSize() > 0) {
+                        // Fichier uploadé
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Erreur lors du parsing multipart request", e);
         }
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
@@ -161,8 +161,8 @@ public class UpdateAppService extends HttpServlet {
         String authPass = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authVal"), "", charset);
         String authAddTo = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authAddTo"), "", charset);
         String fileName = null;
-        if (file != null) {
-            fileName = file.getName();
+        if (filePart != null) {
+            fileName = filePart.getName();
         }
 
         // Prepare the final answer.
@@ -208,10 +208,10 @@ public class UpdateAppService extends HttpServlet {
                  */
                 AppService appService = (AppService) resp.getItem();
 
-                if (file != null) {
-                    ans = appServiceService.uploadFile(appService.getService(), file);
+                if (filePart != null) {
+                    ans = appServiceService.uploadFile(appService.getService(), filePart);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        appService.setFileName(file.getName());
+                        appService.setFileName(filePart.getName());
                     }
                 }
 

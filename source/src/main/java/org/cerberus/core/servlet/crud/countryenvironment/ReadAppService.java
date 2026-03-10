@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -37,6 +38,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.cerberus.core.exception.CerberusException;
 import org.json.JSONArray;
@@ -47,11 +49,11 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,7 +156,7 @@ public class ReadAppService extends HttpServlet {
         }
     }
 
-    private AnswerItem<JSONObject> findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -204,7 +206,7 @@ public class ReadAppService extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
 
         JSONObject response = new JSONObject();
@@ -265,7 +267,7 @@ public class ReadAppService extends HttpServlet {
         return answerItem;
     }
 
-    private AnswerItem<JSONObject> findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
+    private AnswerItem<JSONObject> findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JsonProcessingException {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(IAppServiceService.class);
@@ -372,13 +374,12 @@ public class ReadAppService extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertAppServiceToJSONObject(AppService appservice) throws JSONException {
+    private JSONObject convertAppServiceToJSONObject(AppService appservice) throws JsonProcessingException {
 
-        Gson gson = new Gson();
         JSONObject result = new JSONObject();
 
         if (appservice != null) {
-            result = new JSONObject(gson.toJson(appservice));
+            result = new JSONObject(JsonUtil.toJson(appservice));
             result.remove("map");
             result.put("simulationParameters", appservice.getSimulationParameters());
             String pass = StringUtil.getPasswordFromAnyUrl(result.getString("servicePath"));

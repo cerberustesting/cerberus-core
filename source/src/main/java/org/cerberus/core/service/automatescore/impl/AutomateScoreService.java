@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;

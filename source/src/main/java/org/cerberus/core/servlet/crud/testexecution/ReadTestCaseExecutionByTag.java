@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Invariant;
@@ -48,6 +49,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,11 +58,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -736,7 +738,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return manualExecutionTable;
     }
 
-    private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JsonProcessingException {
         JSONObject jsonResult = new JSONObject();
         Map<String, JSONObject> axisMap = new HashMap<>();
         String globalStart = "";
@@ -789,7 +791,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
         }
 
-        Gson gson = new Gson();
         List<JSONObject> axisList = new ArrayList<>();
 
         for (Map.Entry<String, JSONObject> entry : axisMap.entrySet()) {
@@ -800,7 +801,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         Collections.sort(axisList, new SortExecution());
         jsonResult.put("axis", axisList);
         jsonResult.put("tag", tag);
-        jsonResult.put("globalEnd", gson.toJson(new Timestamp(globalEndL)).replace("\"", ""));
+        jsonResult.put("globalEnd", JsonUtil.toJson(new Timestamp(globalEndL)).replace("\"", ""));
         jsonResult.put("globalStart", globalStart);
         jsonResult.put("globalStatus", globalStatus);
 
@@ -828,7 +829,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
     }
 
-    private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
+    private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JsonProcessingException {
 
         JSONObject jsonResult = new JSONObject();
         boolean env = request.getParameter("env") != null || !splitStats;
@@ -868,7 +869,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return jsonResult;
     }
 
-    private JSONObject generateBugStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject generateBugStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JsonProcessingException {
 
         JSONObject jsonResult = new JSONObject();
         SummaryStatisticsBugTrackerDTO stat = new SummaryStatisticsBugTrackerDTO();
@@ -930,11 +931,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
         }
 
-        Gson gson = new Gson();
         JSONArray dataArray = new JSONArray();
         for (String key : statMap.keySet()) {
             SummaryStatisticsBugTrackerDTO sumStats = statMap.get(key);
-            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+            dataArray.put(new JSONObject(JsonUtil.toJson(sumStats)));
         }
 
         jsonResult.put("BugTrackerStat", dataArray);
@@ -946,7 +946,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return jsonResult;
     }
 
-    private JSONObject getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean robotDecli, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
+    private JSONObject getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean robotDecli, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JsonProcessingException {
         SummaryStatisticsDTO total = new SummaryStatisticsDTO();
         total.setEnvironment("Total");
 
@@ -974,9 +974,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return extractSummaryData(statMap, total, splitStats);
     }
 
-    private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total, boolean splitStats) throws JSONException {
+    private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total, boolean splitStats) throws JsonProcessingException {
         JSONObject extract = new JSONObject();
-        Gson gson = new Gson();
         if (splitStats) {
             JSONArray dataArray = new JSONArray();
             //sort keys
@@ -985,12 +984,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 SummaryStatisticsDTO sumStats = summaryMap.get(key);
                 //percentage values
                 sumStats.updatePercentageStatistics();
-                dataArray.put(new JSONObject(gson.toJson(sumStats)));
+                dataArray.put(new JSONObject(JsonUtil.toJson(sumStats)));
             }
             extract.put("split", dataArray);
         }
         total.updatePercentageStatistics();
-        extract.put("total", new JSONObject(gson.toJson(total)));
+        extract.put("total", new JSONObject(JsonUtil.toJson(total)));
         return extract;
     }
 

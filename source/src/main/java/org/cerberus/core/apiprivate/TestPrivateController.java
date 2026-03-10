@@ -19,11 +19,16 @@
  */
 package org.cerberus.core.apiprivate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.cerberus.core.api.dto.robot.RobotDTOV001;
+import org.cerberus.core.api.dto.robot.RobotMapperV001;
+import org.cerberus.core.api.dto.test.TestMapperV001;
 import org.cerberus.core.util.datatable.DataTableInformation;
-import com.google.gson.Gson;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -40,6 +45,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +53,7 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -61,17 +68,16 @@ public class TestPrivateController {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    TestCaseExecutionService testCaseExecutionService;
-    @Autowired
     ITestService testService;
     @Autowired
     IFactoryTest factoryTest;
     @Autowired
     ILogEventService logEventService;
     @Autowired
-    IFactoryLogEvent factoryLogEvent;
+    private ObjectMapper mapper;
     @Autowired
-    IParameterService parameterService;
+    @Qualifier("testMapperV001Impl")
+    private TestMapperV001 testMapper;
 
     /**
      * Create Test
@@ -193,15 +199,17 @@ public class TestPrivateController {
 
             if (answerTest.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if the service returns an OK message then we can get the item and convert it to JSONformat
-                Gson gson = new Gson();
                 Test testObj = answerTest.getItem();
-                object.put("contentTable", new JSONObject(gson.toJson(testObj)));
+                JSONObject json = new JSONObject(mapper.writeValueAsString(testObj));
+                object.put("contentTable", json);
             }
 
             object.put("hasPermissions", userHasPermissions);
 
         } catch (JSONException ex) {
             LOG.warn(ex);
+        } catch (JsonProcessingException e) {
+            LOG.warn(e);
         }
         return object.toString();
 
@@ -231,8 +239,9 @@ public class TestPrivateController {
             JSONArray jsonArray = new JSONArray();
             if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (Test test : testList.getDataList()) {
-                    Gson gson = new Gson();
-                    jsonArray.put(new JSONObject(gson.toJson(test)).put("hasPermissions", userHasPermissions));
+                    JSONObject json = new JSONObject(mapper.writeValueAsString(testMapper.toDTO(test)));
+                    json.put("hasPermissions", userHasPermissions);
+                    jsonArray.put(json);
                 }
             }
 
@@ -243,6 +252,8 @@ public class TestPrivateController {
 
         } catch (JSONException ex) {
             LOG.warn(ex);
+        } catch (JsonProcessingException e) {
+            LOG.warn(e);
         }
         return object.toString();
     }
@@ -274,8 +285,8 @@ public class TestPrivateController {
             JSONArray jsonArray = new JSONArray();
             if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (Test test : testList.getDataList()) {
-                    Gson gson = new Gson();
-                    jsonArray.put(new JSONObject(gson.toJson(test)));
+                    JSONObject json = new JSONObject(mapper.writeValueAsString(test));
+                    jsonArray.put(json);
                 }
             }
             object.put("contentTable", jsonArray);
@@ -285,6 +296,8 @@ public class TestPrivateController {
 
         } catch (JSONException ex) {
             LOG.warn(ex);
+        } catch (JsonProcessingException e) {
+            LOG.warn(e);
         }
         return object.toString();
 

@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.crud.service;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceContent;
 import org.cerberus.core.exception.CerberusException;
@@ -190,9 +190,9 @@ public interface IAppServiceService {
      * this method will store local file into application server
      *
      * @param service
-     * @param file
+     * @param filePart
      * @return
      */
-    Answer uploadFile(String service, FileItem file);
+    Answer uploadFile(String service, Part filePart);
 
 }

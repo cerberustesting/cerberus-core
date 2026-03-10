@@ -24,7 +24,7 @@ import com.google.common.collect.Collections2;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestDAO;
@@ -256,7 +256,7 @@ public class TestService implements ITestService {
             Test testData = (Test) resp.getItem();
             testData.setTest(test.getTest());
             testData.setDescription(test.getDescription());
-            testData.setActive(test.getActive());
+            testData.setActive(test.isActive());
             ans = this.update(originalTest, testData);
 
         }

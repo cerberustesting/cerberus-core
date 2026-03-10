@@ -20,7 +20,7 @@
 package org.cerberus.core.service.automatescore;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
 /**

@@ -22,9 +22,10 @@ package org.cerberus.core.crud.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
+import jakarta.servlet.http.Part;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
@@ -421,7 +422,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public Answer uploadFile(String service, FileItem file) {
-        return appServiceDao.uploadFile(service, file);
+    public Answer uploadFile(String service, Part filePart) {
+        return appServiceDao.uploadFile(service, filePart);
     }
 }

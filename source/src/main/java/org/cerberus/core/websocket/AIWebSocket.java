@@ -75,6 +75,9 @@ public class AIWebSocket extends TextWebSocketHandler {
             } else if (incoming.getSubject().equals("ao_generate")||incoming.getSubject().equals("ao_generate_continue")){
                 aiService.generateApplicationObjectProposalWithAI(incoming.getSender(),session,incoming.getSessionID(),incoming.getApplication(),incoming.getPage(),incoming.getHtmlPath(),
                         incoming.getScreenshotPath(),incoming.getContent(), incoming.getSubject());
+            } else if (incoming.getSubject().equals("import_with_ai")){
+              //  aiService.generateTestCaseFromImportWithAI(incoming.getSender(),session,incoming.getSessionID(),incoming.getApplication(),incoming.getPage(),incoming.getHtmlPath(),
+                     //   incoming.getScreenshotPath(),incoming.getContent(), incoming.getSubject());
             }
 
 

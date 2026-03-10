@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.api.dto.robot;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -28,7 +29,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @Builder
@@ -41,6 +42,7 @@ import javax.validation.constraints.NotBlank;
         "value"
 })
 @Schema(name = "RobotCapability")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RobotCapabilityDTOV001 {
 
     @JsonView(View.Public.GET.class)

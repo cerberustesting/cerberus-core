@@ -21,7 +21,7 @@ package org.cerberus.core.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.cerberus.core.crud.dao.ILogEventDAO;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryLogEvent;

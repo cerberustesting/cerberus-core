@@ -29,14 +29,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
-import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
-import org.cerberus.core.api.dto.testcasestep.TestcaseStepDTOV001;
 import org.cerberus.core.api.dto.views.View;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import java.util.List;
 
 /**
  * @author bcivel

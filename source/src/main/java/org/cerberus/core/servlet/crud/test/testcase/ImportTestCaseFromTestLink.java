@@ -24,23 +24,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
@@ -71,6 +69,11 @@ import org.xml.sax.SAXException;
  * @author bcivel
  */
 @WebServlet(name = "ImportTestCaseFromTestLink", urlPatterns = {"/ImportTestCaseFromTestLink"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 50 * 1024 * 1024,
+        maxRequestSize = 100 * 1024 * 1024
+)
 public class ImportTestCaseFromTestLink extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCaseFromTestLink.class);
@@ -226,43 +229,47 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private HashMap<String, String> getParams(HttpServletRequest httpServletRequest) {
+    private HashMap<String, String> getParams(HttpServletRequest request) {
+
         HashMap<String, String> result = new HashMap<>();
 
         try {
-            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-                DiskFileItemFactory factory = new DiskFileItemFactory();
 
-                ServletContext servletContext = this.getServletConfig().getServletContext();
-                File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-                factory.setRepository(repository);
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
 
-                ServletFileUpload upload = new ServletFileUpload(factory);
+                Collection<Part> parts = request.getParts();
 
-                List<FileItem> formItems = upload.parseRequest(httpServletRequest);
-                if (formItems != null) {
-                    LOG.debug("Nb of Param to import : " + formItems.size());
-                    if (formItems.size() > 0) {
-                        int i = 1;
-                        for (FileItem item : formItems) {
-                            LOG.debug("Param to import (" + i++ + ") : " + item.toString() + " FieldName : " + item.getFieldName() + " ContentType : " + item.getContentType());
-                            if (item.isFormField()) {
-                                result.put(item.getFieldName(), item.getString());
-                            } else {
-                                try {
-                                    result.put(item.getFieldName() + i, item.getString("utf-8"));
-                                } catch (UnsupportedEncodingException ex) {
-                                    LOG.warn(ex, ex);
-                                }
-                            }
-                        }
+                LOG.debug("Nb of Param to import : {}", parts.size());
+
+                int i = 1;
+
+                for (Part part : parts) {
+
+                    LOG.debug("Param to import ({}) : FieldName : {} ContentType : {}",
+                            i++, part.getName(), part.getContentType());
+
+                    String value = new String(
+                            part.getInputStream().readAllBytes(),
+                            StandardCharsets.UTF_8
+                    );
+
+                    if (part.getSubmittedFileName() == null) {
+                        // Champ formulaire
+                        result.put(part.getName(), value);
+                    } else {
+                        // Fichier (comportement équivalent à ton legacy)
+                        result.put(part.getName() + i, value);
                     }
                 }
             }
-        } catch (FileUploadException ex) {
-            LOG.error(ex, ex);
+
+        } catch (Exception ex) {
+            LOG.error("Error parsing multipart request", ex);
         }
-        LOG.debug("result Param : " + result.size());
+
+        LOG.debug("result Param : {}", result.size());
+
         return result;
     }
 

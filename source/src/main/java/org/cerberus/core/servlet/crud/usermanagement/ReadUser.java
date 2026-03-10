@@ -19,14 +19,16 @@
  */
 package org.cerberus.core.servlet.crud.usermanagement;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.cerberus.Property;
@@ -43,6 +45,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -170,7 +173,7 @@ public class ReadUser extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem<JSONObject> findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
@@ -250,7 +253,7 @@ public class ReadUser extends HttpServlet {
         return item;
     }
 
-    private AnswerItem readByKey(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem readByKey(ApplicationContext appContext, HttpServletRequest request) throws JsonProcessingException {
 
         String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
         boolean userHasPermissions = request.isUserInRole("Administrator");
@@ -299,24 +302,21 @@ public class ReadUser extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertUserToJSONObject(User user) throws JSONException {
+    private JSONObject convertUserToJSONObject(User user) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(user));
+        JSONObject result = new JSONObject(JsonUtil.toJson(user));
         // For obvious security reasons, We avoid the password to be return from the servlet.
         result.remove("password");
         return result;
     }
 
-    private JSONObject convertUserSystemToJSONObject(UserSystem user) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(user));
+    private JSONObject convertUserSystemToJSONObject(UserSystem user) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(user));
         return result;
     }
 
-    private JSONObject convertUserRoleToJSONObject(UserRole user) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(user));
+    private JSONObject convertUserRoleToJSONObject(UserRole user) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(user));
         return result;
     }
 }

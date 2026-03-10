@@ -19,11 +19,13 @@
  */
 package org.cerberus.core.apiprivate;
 
-import com.google.gson.Gson;
+
 
 import java.time.LocalDate;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +46,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.datatable.DataTableInformation;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -129,8 +132,7 @@ public class TestCasePrivateController {
 
                 if (testObjectAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     for (TestGenericObject objectTest : testObjectAnswerList.getDataList()) {
-                        Gson gson = new Gson();
-                        JSONObject objJSON = new JSONObject(gson.toJson(objectTest));
+                        JSONObject objJSON = new JSONObject(JsonUtil.toJson(objectTest));
                         objJSON.put("hasPermissions", testCaseService.hasPermissionsUpdateFromStatus(objectTest.getStatus(), request));
                         jsonArray.put(objJSON);
                     }
@@ -144,7 +146,7 @@ public class TestCasePrivateController {
 
             }
 
-        } catch (JSONException ex) {
+        } catch (JsonProcessingException ex) {
             LOG.warn(ex);
         }
         return jsonResponse.toString();

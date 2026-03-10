@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 import org.cerberus.core.servlet.zzpublic.AddToExecutionQueueV003;
 
 /**

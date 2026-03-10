@@ -21,8 +21,8 @@ package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

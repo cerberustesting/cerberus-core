@@ -21,7 +21,7 @@ package org.cerberus.core.engine.entity;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.json.JSONArray;
 import org.json.JSONObject;

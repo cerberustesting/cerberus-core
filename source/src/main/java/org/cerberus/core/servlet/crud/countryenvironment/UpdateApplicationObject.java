@@ -19,11 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.crud.service.IApplicationObjectService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -42,12 +39,13 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
@@ -59,6 +57,11 @@ import org.cerberus.core.crud.entity.LogEvent;
  * @author bcivel
  */
 @WebServlet(name = "UpdateApplicationObject", urlPatterns = {"/UpdateApplicationObject"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 10 * 1024 * 1024,
+        maxRequestSize = 20 * 1024 * 1024
+)
 public class UpdateApplicationObject extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateApplicationObject.class);
@@ -87,27 +90,27 @@ public class UpdateApplicationObject extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part filePart = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
-                } else {
-                    file = fileItem;
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                for (Part part : request.getParts()) {
+
+                    if (part.getSubmittedFileName() == null) {
+                        String value = new String(
+                                part.getInputStream().readAllBytes(),
+                                StandardCharsets.UTF_8
+                        );
+                        fileData.put(part.getName(), value);
+                    } else if (part.getSize() > 0) {
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Error parsing multipart request", e);
         }
 
         /**
@@ -168,10 +171,10 @@ public class UpdateApplicationObject extends HttpServlet {
                 ApplicationObject applicationObject = (ApplicationObject) resp.getItem();
 
                 String fileName = applicationObject.getScreenshotFilename();
-                if (file != null) {
-                    ans = applicationObjectService.uploadFile(applicationObject.getID(), file);
+                if (filePart != null) {
+                    ans = applicationObjectService.uploadFile(applicationObject.getID(), filePart);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        fileName = file.getName();
+                        fileName = filePart.getName();
                     }
                 }
 

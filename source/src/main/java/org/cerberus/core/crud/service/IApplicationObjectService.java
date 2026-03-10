@@ -19,13 +19,14 @@
  */
 package org.cerberus.core.crud.service;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public interface IApplicationObjectService {
      * @param file
      * @return
      */
-    Answer uploadFile(int id, FileItem file);
+    Answer uploadFile(int id, Part file);
 
     /**
      *
