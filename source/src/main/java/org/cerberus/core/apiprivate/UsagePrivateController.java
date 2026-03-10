@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.apiprivate;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.datatable.DataTableInformation;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +47,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,8 +87,7 @@ public class UsagePrivateController {
             JSONArray jsonArray = new JSONArray();
             if (userPromptList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (UserPrompt userPrompt : userPromptList.getDataList()) {
-                    Gson gson = new Gson();
-                    jsonArray.put(new JSONObject(gson.toJson(userPrompt)).put("hasPermissions", userHasPermissions));
+                    jsonArray.put(new JSONObject(JsonUtil.toJson(userPrompt)).put("hasPermissions", userHasPermissions));
                 }
             }
 
@@ -95,7 +96,7 @@ public class UsagePrivateController {
             object.put("iTotalRecords", userPromptList.getTotalRows());
             object.put("iTotalDisplayRecords", userPromptList.getTotalRows());
 
-        } catch (JSONException ex) {
+        } catch (JsonProcessingException ex) {
             LOG.warn(ex);
         }
         return object.toString();

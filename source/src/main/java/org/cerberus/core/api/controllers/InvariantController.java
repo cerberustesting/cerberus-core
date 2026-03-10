@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.invariant.InvariantDTOV001;
 import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
-import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.InvariantApiService;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;

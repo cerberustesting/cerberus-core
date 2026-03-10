@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.crud.service.IApplicationObjectService;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -29,6 +30,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,11 +40,11 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
@@ -189,7 +191,7 @@ public class ReadApplicationObject extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -239,7 +241,7 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -264,7 +266,7 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findApplicationObject(String application, String objecta, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObject(String application, String objecta, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -285,7 +287,7 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findApplicationObject(int id, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findApplicationObject(int id, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -306,10 +308,9 @@ public class ReadApplicationObject extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertApplicationObjectToJSONObject(ApplicationObject application) throws JSONException {
+    private JSONObject convertApplicationObjectToJSONObject(ApplicationObject application) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(application));
+        JSONObject result = new JSONObject(JsonUtil.toJson(application));
         return result;
     }
 

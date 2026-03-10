@@ -24,11 +24,12 @@ import org.cerberus.core.crud.entity.Label;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author MorganLmd
  */
-@Mapper(componentModel = "spring",
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {
             TimestampMapper.class
         }

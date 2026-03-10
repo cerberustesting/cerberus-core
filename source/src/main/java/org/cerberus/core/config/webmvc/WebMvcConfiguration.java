@@ -22,15 +22,12 @@ package org.cerberus.core.config.webmvc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.cerberus.MCPInterceptor;
-import org.cerberus.core.config.springdoc.OpenAPIConfiguration;
-import org.cerberus.core.crud.service.impl.ParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -39,8 +36,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
+import jakarta.annotation.PostConstruct;
 
 /**
  *
@@ -51,38 +47,36 @@ import java.util.Arrays;
 @ComponentScan(basePackages = {
         "org.cerberus.core.api",
         "org.cerberus.core.apiprivate",
-        "org.cerberus.core.config.springdoc"
+        "org.cerberus.core.config.openapi"
 })
-@Import(OpenAPIConfiguration.class)
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private static final Logger LOG = LogManager.getLogger(WebMvcConfiguration.class);
 
-    @Autowired
-    private MCPInterceptor mcpInterceptor;
-
+    // Injected to log all mapped endpoints on startup
     @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping handlerMapping;
 
+    // Logs all registered MVC endpoints at startup for debugging
     @PostConstruct
     public void logAllEndpoints() {
         handlerMapping.getHandlerMethods().forEach((k, v) -> {
-            LOG.debug("WebMVC : Mapped endpoint: " + k + " -> " + v);
+            LOG.info("WebMVC : Mapped endpoint: " + k + " -> " + v);
         });
     }
 
+    // Serves Swagger UI static assets from webjars
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    // Required for multipart file uploads
     @Bean
     public MultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(mcpInterceptor)
-                .addPathPatterns("/mcp/**")
-                .excludePathPatterns("/mcp/health");
-    }
-
 }

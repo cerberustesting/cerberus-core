@@ -19,13 +19,15 @@
  */
 package org.cerberus.core.servlet.crud.testcampaign;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.CampaignParameter;
@@ -36,6 +38,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -136,7 +139,7 @@ public class ReadCampaignParameter extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
+    private AnswerItem<JSONObject> findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
@@ -169,9 +172,8 @@ public class ReadCampaignParameter extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertProjectToJSONObject(CampaignParameter param) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(param));
+    private JSONObject convertProjectToJSONObject(CampaignParameter param) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(param));
         return result;
     }
 

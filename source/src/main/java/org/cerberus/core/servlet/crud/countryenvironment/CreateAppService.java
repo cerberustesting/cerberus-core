@@ -19,11 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -49,24 +46,27 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author cte
  */
 @WebServlet(name = "CreateAppService", urlPatterns = {"/CreateAppService"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 50 * 1024 * 1024,
+        maxRequestSize = 100 * 1024 * 1024
+)
 public class CreateAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateAppService.class);
@@ -101,27 +101,40 @@ public class CreateAppService extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part filePart = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
         try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
-            }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
-                } else {
-                    file = fileItem;
+
+            if (request.getContentType() != null &&
+                    request.getContentType().toLowerCase().startsWith("multipart/")) {
+
+                Collection<Part> parts = request.getParts();
+
+                if (parts.isEmpty()) {
+                    return;
+                }
+
+                for (Part part : parts) {
+
+                    String submittedFileName = part.getSubmittedFileName();
+
+                    if (submittedFileName == null) {
+                        // Champ formulaire
+                        String value = new String(
+                                part.getInputStream().readAllBytes(),
+                                StandardCharsets.UTF_8
+                        );
+                        fileData.put(part.getName(), value);
+
+                    } else if (part.getSize() > 0) {
+                        // Fichier uploadé
+                        filePart = part;
+                    }
                 }
             }
-        } catch (FileUploadException e) {
-            e.printStackTrace();
+
+        } catch (Exception e) {
+            LOG.error("Error parsing multipart request", e);
         }
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
@@ -160,8 +173,8 @@ public class CreateAppService extends HttpServlet {
         String authPass = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authVal"), "", charset);
         String authAddTo = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authAddTo"), "", charset);
         String fileName = null;
-        if (file != null) {
-            fileName = file.getName();
+        if (filePart != null) {
+            fileName = filePart.getName();
         }
 
         // Prepare the final answer.
@@ -228,10 +241,10 @@ public class CreateAppService extends HttpServlet {
                 logEventService = appContext.getBean(ILogEventService.class);
                 logEventService.createForPrivateCalls("/CreateAppService", "CREATE", LogEvent.STATUS_INFO, "Create AppService : ['" + service + "']", request);
 
-                if (file != null) {
+                if (filePart != null) {
                     AppService an = appServiceService.findAppServiceByKey(service);
                     if (an != null) {
-                        appServiceService.uploadFile(an.getService(), file);
+                        appServiceService.uploadFile(an.getService(), filePart);
                     }
                 }
             }

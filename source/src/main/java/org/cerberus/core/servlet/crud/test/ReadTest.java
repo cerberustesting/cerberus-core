@@ -19,20 +19,25 @@
  */
 package org.cerberus.core.servlet.crud.test;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.test.TestDTOV001;
+import org.cerberus.core.api.dto.test.TestMapperV001;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.service.ITestService;
@@ -43,12 +48,14 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -58,6 +65,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ReadTest", urlPatterns = {"/ReadTest"})
 public class ReadTest extends HttpServlet {
+
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
+    private TestMapperV001 testMapper;
 
     private static final Logger LOG = LogManager.getLogger(ReadTest.class);
     private ITestService testService;
@@ -180,7 +192,7 @@ public class ReadTest extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findTestByKey(String testName, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findTestByKey(String testName, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -191,7 +203,7 @@ public class ReadTest extends HttpServlet {
         if (answerTest.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Test test = answerTest.getItem();
-            object.put("contentTable", convertTestToJSONObject(test));
+            object.put("contentTable", convertTestToJSONObject(test, appContext));
         }
 
         object.put("hasPermissions", userHasPermissions);
@@ -201,7 +213,7 @@ public class ReadTest extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem<JSONObject> findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
         AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList<Test> testList = new AnswerList<>();
         JSONObject object = new JSONObject();
@@ -237,7 +249,7 @@ public class ReadTest extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Test test : testList.getDataList()) {
-                jsonArray.put(convertTestToJSONObject(test).put("hasPermissions", userHasPermissions));
+                jsonArray.put(convertTestToJSONObject(test, appContext).put("hasPermissions", userHasPermissions));
             }
         }
 
@@ -251,7 +263,7 @@ public class ReadTest extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem<JSONObject> findTestBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findTestBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException {
         AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList<Test> testList = new AnswerList<>();
         JSONObject object = new JSONObject();
@@ -263,7 +275,7 @@ public class ReadTest extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Test test : testList.getDataList()) {
-                jsonArray.put(convertTestToJSONObject(test));
+                jsonArray.put(convertTestToJSONObject(test, appContext));
             }
         }
 
@@ -278,10 +290,13 @@ public class ReadTest extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertTestToJSONObject(Test test) throws JSONException {
+    private JSONObject convertTestToJSONObject(Test test, ApplicationContext appContext) throws JsonProcessingException {
+        TestMapperV001 mapperTest = appContext.getBean(TestMapperV001.class);
+        ObjectMapper mapper = appContext.getBean(ObjectMapper.class);
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(test));
+        TestDTOV001 dto = mapperTest.toDTO(test);
+
+        JSONObject result = new JSONObject(mapper.writeValueAsString(dto));
         return result;
     }
 

@@ -19,41 +19,29 @@
  */
 package org.cerberus.core.service.json.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.enums.MessageEventEnum;
+import com.networknt.schema.Error;
+import com.networknt.schema.InputFormat;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SpecificationVersion;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JsonSchemaValidator {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    public Set<String> getDifferences(String jsonToValidate, String jsonSchema) throws Exception {
 
-    /**
-     * Get differences between json object and a json schema
-     * @param jsonToValidate
-     * @param jsonSchema
-     * @return a List of differences in the format Set<ValidationMessage>
-     * @throws Exception
-     */
-    public Set<ValidationMessage> getDifferences(String jsonToValidate, String jsonSchema) throws Exception {
+        SchemaRegistry registry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12);
+        Schema schema = registry.getSchema(jsonSchema, InputFormat.JSON);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode schemaNode = objectMapper.readTree(jsonSchema);
-        JsonNode validateNode = mapper.readTree(jsonToValidate);
+        List<Error> errors = schema.validate(jsonToValidate, InputFormat.JSON);
 
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-        JsonSchema schema = factory.getSchema(schemaNode);
-        return schema.validate(validateNode);
-
+        return errors.stream()
+                .map(Error::getMessage)
+                .collect(Collectors.toSet());
     }
 }

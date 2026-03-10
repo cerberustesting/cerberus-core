@@ -25,116 +25,17 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus-core</artifactId>
-    <version>4.21-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus Core</name>
 
     <properties>
         <!-- Project properties -->
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <env>local</env>
-
-        <!-- Version management -->
-        <!-- Spring Version -->
-        <spring.version>5.3.39</spring.version>
-        <spring-security.version>5.6.12</spring-security.version>
-        <!-- JSON Lib Version -->
-        <json.version>20240303</json.version>
-        <gson.version>2.9.0</gson.version>
-        <jackson-databind.version>2.18.3</jackson-databind.version>
-        <jackson-datatype-jsr310.version>2.18.3</jackson-datatype-jsr310.version>
-        <!-- jsonpath -->
-        <jsonxpath.version>2.9.0</jsonxpath.version>
-        <minidev.version>2.5.1</minidev.version>
-        <!-- Groovy Version -->
-        <groovy.version>3.0.11</groovy.version>
-        <!--        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>-->
-        <groovy-sandbox.version>1.19</groovy-sandbox.version>
-        <!-- Rhino Version -->
-        <mozilla-rhino.version>1.8.1</mozilla-rhino.version>
-        <!-- Appium/Selenium scope Version -->
-        <!--        <appium.version>7.2.0</appium.version>-->
-        <appium.version>8.6.0</appium.version>
-        <!--        <selenium.version>3.141.59</selenium.version>-->
-        <selenium.version>4.19.0</selenium.version>
-        <jna.version>4.1.0</jna.version>
-        <!-- quartz -->
-        <quartz.version>2.3.2</quartz.version>
-        <!-- Erratum API -->
-        <sftm-tree-matching.version>1.1.0</sftm-tree-matching.version>
-        <!-- Loggers -->
-        <log4j.version>2.17.2</log4j.version>
-        <!--        <slf4j.version>1.7.26</slf4j.version>-->
-        <!-- OTP Support -->
-        <jboss.aerogear.version>1.0.0</jboss.aerogear.version>
-        <!-- SOAP -->
-        <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
-        <jaxb.version>2.3.0</jaxb.version>
-        <saaj.version>1.5.1</saaj.version>
-        <!-- IA Dep -->
-        <anthropic.version>2.8.1</anthropic.version>
-        <!--        <jaxws.version>2.2.6</jaxws.version>-->
-        <!-- Kafka -->
-        <kafka-clients.version>3.7.2</kafka-clients.version>
-        <kafka-avro-serializer.version>6.2.1</kafka-avro-serializer.version>
-        <!-- MongoDB -->
-        <mongodb-driver-sync.version>4.9.1</mongodb-driver-sync.version>
-        <!-- Lombok -->
-        <lombok.version>1.18.42</lombok.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <!-- Mappers -->
-        <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <!-- Springdoc generator -->
-        <springdoc.version>1.8.0</springdoc.version>
-        <!-- REST API Calls -->
-        <httpmime.version>4.5.14</httpmime.version>
-        <!-- Compile scope -->
-        <javaee-web-api>8.0.1</javaee-web-api>
-        <!--        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>-->
-        <!--        <javax.websocket-api>1.1</javax.websocket-api>-->
-        <!--        <guava.version>32.1.3-jre</guava.version>-->
-        <xmlunit.version>1.5</xmlunit.version>
-        <owasp-java-html-sanitizer.version>20211018.1</owasp-java-html-sanitizer.version>
-        <commons-fileupload.version>1.5</commons-fileupload.version>
-        <commons-io.version>2.16.1</commons-io.version>
-        <commons-net.version>3.9.0</commons-net.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <commons-collections4.version>4.4</commons-collections4.version>
-        <java-image-scaling.version>0.8.5</java-image-scaling.version>
-        <commons-email.version>1.5</commons-email.version>
-        <commons-text.version>1.3</commons-text.version>
-        <!--        <poi.version>4.1.2</poi.version>-->
-        <apache.tika.version>1.28.3</apache.tika.version>
-        <!--        <fluent-hc.version>4.5.14</fluent-hc.version>-->
-
-        <!-- Test scope -->
-        <!--        <junit.version>4.12</junit.version>-->
-        <!--        <powermock.version>1.5.2</powermock.version>-->
-        <!--        <mockito-all.version>1.9.5</mockito-all.version>-->
-
-        <!-- Maven plugin version -->
-        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.2.3</maven-surefire-plugin.version>
-        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
-        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-        <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
-        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
-        <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-        <maven-site-plugin.version>4.0.0-M13</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
-        <license-maven-plugin.version>2.0</license-maven-plugin.version>
-        <versions-maven-plugin.version>2.16.2</versions-maven-plugin.version>
-        <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
-        <ant-jsch.version>1.10.1</ant-jsch.version>
-        <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
-        
-        <!-- PDF Generation itext version -->
-        <com.itextpdf.version>8.0.3</com.itextpdf.version>
 
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
@@ -147,221 +48,228 @@
     </properties>
 
     <dependencies>
-
-        <!-- Spring -->
+        <!-- Spring Version 6.2.16 : 12/02/2026 -->
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
+            <artifactId>spring-webmvc</artifactId>
+            <version>6.2.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-websocket</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>7.0.4.Final</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring-security.version}</version>
+            <version>6.2.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
+            <version>6.2.16</version>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Spring Security 6.5.8 : 13/02/2026
+        https://mvnrepository.com/artifact/org.springframework.security/spring-security-core  -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>6.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>6.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+            <version>6.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+            <version>6.5.8</version>
+        </dependency>
+
+
+        <!-- HikariCP 7.0.2 (LATEST) : 19/08/2025 - Usage : Connection Pool
+        https://mvnrepository.com/artifact/com.zaxxer/HikariCP  -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>7.0.2</version>
+        </dependency>
+
+        <!-- MySQL 9.6.0 (LATEST) : 29/01/2026 - Usage : Cerberus Database driver
+        https://mvnrepository.com/artifact/com.mysql/mysql-connector-j  -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.6.0</version>
+        </dependency>
+
+        <!-- Lombok Version 1.18.42 (LATEST) : 18/09/2025
+        https://mvnrepository.com/artifact/org.projectlombok/lombok  -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Mappers -->
+        <!-- Mappers Version 1.6.3 (LATEST) : 09/11/2024 - Usage : Mappers for DTO
+        https://mvnrepository.com/artifact/org.mapstruct/mapstruct/1.6.3  -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
+            <version>1.6.3</version>
         </dependency>
 
-        <!-- JSON Lib -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
+        <!-- Json Version 20251224 (LATEST) : 24/12/2025 - Usage : JSON objects
+        TO DELETE AFTER MIGRATION TO JACKSON
+        https://mvnrepository.com/artifact/com.google.code.gson/gson  -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${json.version}</version>
+            <version>20251224</version>
         </dependency>
+
+        <!-- Json Schema Validator Version 2.0.1  : 12/12/2025 - Usage :  Control Validate JSON Structure
+        https://mvnrepository.com/artifact/com.networknt/json-schema-validator -->
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>1.5.8</version>
+            <version>3.0.0</version>
         </dependency>
+
+        <!-- Json Version 2.21.1 (LATEST) : 23/02/2026 - Usage :  Convert object to JSON
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
+            <version>2.21.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson-datatype-jsr310.version}</version>
+            <version>2.21.1</version>
         </dependency>
 
-
-        <!-- Groovy -->
+        <!-- Groovy 3.0.25 (LATEST) : 27/05/2025 - Usage :  Property GetFromGroovy
+        https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
+            <version>3.0.25</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-dateutil</artifactId>
-            <version>${groovy.version}</version>
+            <version>3.0.25</version>
         </dependency>
+        <!-- Groovy Sandbox 1.19 (LATEST) : 12/04/2018 - Usage :  Property GetFromGroovy
+        TODO : Dependency too old. To Replace
+        https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-->
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>groovy-sandbox</artifactId>
-            <version>${groovy-sandbox.version}</version>
+            <version>1.19</version>
         </dependency>
 
-        <!-- Rhino -->
+        <!-- Rhino Version 1.9.1 (LATEST) : 16/02/2026 - Usage : Execute JS in sandbox
+        https://mvnrepository.com/artifact/org.mozilla/rhino -->
         <dependency>
             <groupId>org.mozilla</groupId>
             <artifactId>rhino</artifactId>
-            <version>${mozilla-rhino.version}</version>
+            <version>1.9.1</version>
         </dependency>
 
-        <!-- Appium/Selenium scope -->
+        <!-- Appium 8.6.0 : 09/10/2023
+        TODO : Migrate to 10.0.0
+        https://mvnrepository.com/artifact/io.appium/java-client -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>${appium.version}</version>
+            <version>8.6.0</version>
         </dependency>
+
+        <!-- Selenium 4.19.0 : 27/03/2024 - TODO : Migrate to 4.41.0
+        https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>${selenium.version}</version>
+            <version>4.19.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-remote-driver</artifactId>
-            <version>${selenium.version}</version>
+            <version>4.19.0</version>
         </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>${jna.version}</version>
-            <classifier />
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform</artifactId>
-            <version>${jna.version}</version>
-        </dependency>
+
+        <!-- Selenium 4.13.0 : Sep 25, 2023 - TODO : Remove?
+        https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-http-jdk-client -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-http-jdk-client</artifactId>
             <version>4.13.0</version>
         </dependency>
 
-        <!-- Log4J -->
+        <!-- JNA 5.18.1 : Sep 30, 2025 - Usage : Keypress Action -  TODO : Remove?
+        https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.18.1</version>
+            <classifier />
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>5.18.1</version>
+        </dependency>
+
+
+        <!-- Log4J 2.25.3 (LATEST STABLE) : 16/12/2025 - Usage : Log
+        https://mvnrepository.com/artifact/org.mozilla/rhino -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
+            <version>2.25.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
+            <version>2.25.3</version>
         </dependency>
 
-        <!-- jsonpath -->
+        <!-- JsonPath Version 2.10.0 : 31/10/2025 - Usage : Parse JSON using JSONPath
+        https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>${jsonxpath.version}</version>
+            <version>2.10.0</version>
         </dependency>
+        <!-- Json Smart Version 2.6.0 : 02/08/2025 - Usage : JSONArray and JSONStyle
+        TO REPLACE WITH JACKSON ?
+        https://mvnrepository.com/artifact/net.minidev/json-smart -->
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
-            <version>${minidev.version}</version>
+            <version>2.6.0</version>
         </dependency>
 
-        <!-- Kafka -->
+        <!-- Kafka 3.9.2 : 22/02/2026 - Usage : Kafka service
+        To Migrate to 4.x.x
+        https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>${kafka-clients.version}</version>
+            <version>3.9.2</version>
         </dependency>
+
+        <!-- Kafka avro serializer 8.1.1 (LATEST) : 03/12/2025 - Usage : Kafka service
+        https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer -->
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>${kafka-avro-serializer.version}</version>
+            <version>8.1.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -378,19 +286,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <!-- MongoDB -->
+
+        <!-- Mongo DB 4.11.5 : 06/11/2024 - Usage : MongoDB connector
+        TODO : Migrate to 5.x.x
+        https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb-driver-sync.version}</version>
+            <version>4.11.5</version>
         </dependency>
         
-        <!-- TOPTP support for 2 factor authentification support (getFromOtp property) -->
+        <!-- TOPTP (Mar 23, 2013) support for 2 factor authentification support (getFromOtp property)
+        TODO : Replace > No more maintained-->
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-otp-java</artifactId>
-            <version>${jboss.aerogear.version}</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -398,199 +309,217 @@
         <dependency>
             <groupId>io.github.amaris</groupId>
             <artifactId>sftm-tree-matching</artifactId>
-            <version>${sftm-tree-matching.version}</version>
+            <version>1.1.0</version>
         </dependency>
 
-        <!-- SOAP Calls -->
+        <!-- SOAP Calls Version 3.0.2 (LATEST)
+         https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api. -->
         <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>javax.xml.soap-api</artifactId>
-            <version>${javax.xml.soap.version}</version>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+            <version>3.0.2</version>
         </dependency>
+        <!-- Bind API no more included in xml package Version 4.0.5 (LATEST) -->
+        <!-- Source: https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.5</version>
+        </dependency>
+
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
-            <version>${saaj.version}</version>
+            <version>3.0.4</version>
         </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>
-        <!-- IA Dependencies -->
+
+        <!-- Anthropic 2.16.0 : Mar 06, 2026 - Usage : AI
+        https://mvnrepository.com/artifact/com.anthropic/anthropic-java/2.16.0 -->
         <dependency>
             <groupId>com.anthropic</groupId>
             <artifactId>anthropic-java</artifactId>
-            <version>${anthropic.version}</version>
+            <version>2.16.0</version>
         </dependency>
+        <!-- kotlin-stdlib 2.2.21 : Mar 06, 2026 - Usage : Anthropic is written in kotlin
+        https://mvnrepository.com/artifact/com.anthropic/anthropic-java/2.16.0 -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <version>1.9.0</version>
+            <version>2.2.21</version>
         </dependency>
-        <!--end of IA dependencies-->
+
+        <!-- MCP 1.0.0 : Feb 23, 2026 - Usage : AI
+        https://mvnrepository.com/artifact/io.modelcontextprotocol.sdk/mcp -->
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>${javaee-web-api}</version>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp-json-jackson3</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.modelcontextprotocol.sdk</groupId>
+                    <artifactId>mcp-json-jackson2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+
+        <!-- Jakarta EE 11.0.0 : 08/04/2025 - Usage : Servlet & Web API
+        https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-web-api -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>11.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb.version}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>${javax.websocket-api}</version>
-            <scope>provided</scope>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>-->
+
+        <!-- xmlunit : 31/12/2018 (LATEST) - Usage : Property GetDifferencesFromXML
+        TODO : Replace or remove
+        https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-web-api -->
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
-            <version>${xmlunit.version}</version>
+            <version>1.6</version>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer -->
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>${owasp-java-html-sanitizer.version}</version>
+            <version>20260102.1</version>
         </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${commons-fileupload.version}</version>
-        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
+            <version>2.21.0</version>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/commons-net/commons-net -->
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>${commons-net.version}</version>
+            <version>3.12.0</version>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/com.mortennobel/java-image-scaling
+        TODO : Replace : No more Maintained-->
         <dependency>
             <groupId>com.mortennobel</groupId>
             <artifactId>java-image-scaling</artifactId>
-            <version>${java-image-scaling.version}</version>
+            <version>0.8.6</version>
         </dependency>
+
+        <!-- Apache Commons Lang3 3.20.0 (LATEST) : Nov 12, 2025 -
+        https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
+            <version>3.20.0</version>
         </dependency>
+
+        <!-- Apache Commons Collections4 4.5.0 (LATEST) : Apr 19, 2025 -
+        https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>${commons-collections4.version}</version>
+            <version>4.5.0</version>
         </dependency>
+
+
+        <!-- Apache Commons Email 1.6.0 (LATEST) : Dec 22, 2023 - TODO : Replace
+        https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
-            <version>${commons-email.version}</version>
+            <version>1.6.0</version>
         </dependency>
+
+        <!-- Apache Commons Text 1.15.0 (LATEST) : 11/09/2025 -
+        https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>${commons-text.version}</version>
+            <version>1.15.0</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
-        </dependency>-->
+
+        <!-- Apache Tika Version 3.2.3 (LATEST) : 11/09/2025 - Usage : MIMETYPE for Sikuli
+        TODO : To replace because few usage
+        https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>${apache.tika.version}</version>
+            <version>3.2.3</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
-            <version>${fluent-hc.version}</version>
-        </dependency>-->
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>${httpmime.version}</version>
+            <version>4.5.14</version>
         </dependency>
 
-        <!-- Quartz -->
+
+        <!-- Quartz Version 2.5.2 : 01/12/2025 - Usage : Scheduler
+         https://mvnrepository.com/artifact/org.quartz-scheduler/quartz  -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>${quartz.version}</version>
+            <version>2.5.2</version>
         </dependency>
 
-        <!-- Springdoc -->
+        <!-- Springdoc Version 1.8.0 : 22/03/2024 - Usage : Swagger
+        https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-common</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
-            <version>2.2.20</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>2.2.20</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>2.2.20</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>5.18.2</version>
         </dependency>
 
-        <!-- PDF Generation -->
+        <!-- Swagger core pour les annotations -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core-jakarta</artifactId>
+            <version>2.2.25</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-jakarta</artifactId>
+            <version>2.2.25</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-integration-jakarta</artifactId>
+            <version>2.2.25</version>
+        </dependency>
+
+
+        <!-- PDF Generation 8.0.3 : 28/01/2026 - Usage : Service FTP
+        https://mvnrepository.com/artifact/org.apache.sshd/sshd-sftp  -->
         <dependency>         
             <groupId>com.itextpdf</groupId>         
             <artifactId>kernel</artifactId>         
-            <version>${com.itextpdf.version}</version>     
+            <version>8.0.3</version>
         </dependency>  
         <dependency>         
             <groupId>com.itextpdf</groupId>         
             <artifactId>io</artifactId>         
-            <version>${com.itextpdf.version}</version>     
+            <version>8.0.3</version>
         </dependency>  
         <dependency>         
             <groupId>com.itextpdf</groupId>         
             <artifactId>layout</artifactId>         
-            <version>${com.itextpdf.version}</version>
+            <version>8.0.3</version>
         </dependency>  
         <dependency>         
             <groupId>com.itextpdf</groupId>         
             <artifactId>sign</artifactId>         
-            <version>${com.itextpdf.version}</version>     
+            <version>8.0.3</version>
         </dependency>  
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -598,67 +527,13 @@
             <version>5.0.3</version>
         </dependency>
 
-        <!-- SFTP Support -->
+        <!-- SFTP Version 2.17.1 : 28/01/2026 - Usage : Service FTP
+         https://mvnrepository.com/artifact/org.apache.sshd/sshd-sftp  -->
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-sftp</artifactId>
-            <version>2.12.1</version>
+            <version>2.17.1</version>
         </dependency>
-        
-        <!-- Test scope -->
-        <!--        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>-->
-
-        <!-- Comment temporary the dependency -->
-        <!-- Jax-RS Scope-->
-        <!-- 
-    <dependency>
-        <groupId>org.glassfish.jersey.containers</groupId>
-        <artifactId>jersey-container-servlet</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.inject</groupId>
-        <artifactId>jersey-hk2</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-json-jackson</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-jaxb</artifactId>
-        <version>2.28</version>
-    </dependency>
-        -->
-
     </dependencies>
 
     <repositories>
@@ -671,8 +546,9 @@
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
 
+        <!-- Copy Resources into package -->
         <resources>
-            <!-- Filter the lang property files -->
+            <!-- Copy Resources replacing properties -->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -683,7 +559,7 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
-            <!-- Resource with no filtering for prompts -->
+            <!-- Copy Resources as is -->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -693,28 +569,14 @@
             </resource>
         </resources>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>${maven-release-plugin.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
 
+            <!-- Compiler Plugin Configuration -->
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>3.15.0</version>
                 <configuration>
                     <release>${java.version}</release>
                     <source>${java.version}</source>
@@ -731,81 +593,56 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
+                            <version>1.18.42</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>${lombok-mapstruct-binding.version}</version>
+                            <version>0.2.0</version>
                         </path>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
+                            <version>1.6.3</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Check dependencies version -->
+            <!-- Source: https://mvnrepository.com/artifact/org.codehaus.mojo/versions-maven-plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>${versions-maven-plugin.version}</version>
+                <version>2.21.0</version>
                 <configuration>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
             </plugin>
-            <!-- Fix jenkins build issue  -->
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
-            </plugin>
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-project-info-reports-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven-project-info-reports-plugin.version}</version>
+                <version>3.9.0</version>
             </plugin>
 
-            <!-- end -->
-
+            <!-- WAR Packaging Plugin - Purpose : Generate WAR for Tomcat 11 -->
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>${maven-war-plugin.version}</version>
+                <version>3.5.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
 
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven-dependency-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
-                            <silent>true</silent>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>javax</groupId>
-                                    <artifactId>javaee-endorsed-api</artifactId>
-                                    <version>${javaee-endorsed-api.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
+            <!-- Generate ASCII Doc -->
+            <!-- Source: https://mvnrepository.com/artifact/org.asciidoctor/asciidoctor-maven-plugin -->
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>${asciidoctor-maven-plugin.version}</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>outputd1-html</id>
@@ -849,10 +686,12 @@
                 </executions>
             </plugin>
 
+            <!-- Verify Licence on all file -->
+            <!-- Source: https://mvnrepository.com/artifact/com.mycila/license-maven-plugin -->
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>${license-maven-plugin.version}</version>
+                <version>5.0.0</version>
                 <configuration>
                     <failIfMissing>true</failIfMissing>
                     <!-- Due to https://issues.apache.org/jira/browse/MRELEASE-266, we cannot be strict as the maven-release-plugin is modifying license headers during process -->
@@ -884,9 +723,10 @@
                 </executions>
             </plugin>
 
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
+                <version>3.8.0</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/${env}-assembly.xml</descriptor>
@@ -904,10 +744,12 @@
                 </executions>
             </plugin>
 
+            <!-- Install Node, NPM and build CSS (Tailwind) -->
+            <!-- Source: https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.15.0</version>
+                <version>2.0.0</version>
 
                 <configuration>
                     <workingDirectory>src/main/webapp/css/tailwind</workingDirectory>
@@ -948,19 +790,12 @@
                 </executions>
             </plugin>
 
+            <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>${maven-deploy-plugin.version}</version>
+                <version>3.1.4</version>
                 <configuration>
                     <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -1006,9 +841,10 @@
             </properties>
             <build>
                 <plugins>
+                    <!-- Source: https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-antrun-plugin -->
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
+                        <version>3.2.0</version>
                         <executions>
                             <!-- Upload built artifacts into our infra during the deploy phase -->
                             <execution>
@@ -1038,7 +874,7 @@
                             <dependency>
                                 <groupId>org.apache.ant</groupId>
                                 <artifactId>ant-jsch</artifactId>
-                                <version>${ant-jsch.version}</version>
+                                <version>1.10.15</version>
                             </dependency>
                         </dependencies>
                     </plugin>

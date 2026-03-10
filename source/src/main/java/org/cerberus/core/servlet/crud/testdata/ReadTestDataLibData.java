@@ -19,14 +19,16 @@
  */
 package org.cerberus.core.servlet.crud.testdata;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest; 
-import javax.servlet.http.HttpServletResponse; 
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestDataLib;
@@ -39,6 +41,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -175,7 +178,7 @@ public class ReadTestDataLibData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem readById(ApplicationContext appContext, int testDatalib, HttpServletRequest request) throws JSONException {
+    private AnswerItem readById(ApplicationContext appContext, int testDatalib, HttpServletRequest request) throws JsonProcessingException {
         JSONObject jsonResponse = new JSONObject();
         ITestDataLibService testDataLibService = appContext.getBean(ITestDataLibService.class);
         ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
@@ -211,9 +214,8 @@ public class ReadTestDataLibData extends HttpServlet {
         return item;
     }
     
-    private JSONObject convertTestDataLibDataToJSONObject(TestDataLibData subdata) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(subdata));
+    private JSONObject convertTestDataLibDataToJSONObject(TestDataLibData subdata) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(subdata));
         
         return result;
     }

@@ -19,14 +19,15 @@
  */
 package org.cerberus.core.servlet.guipages;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.CountryEnvParam_log;
@@ -39,6 +40,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,7 +136,7 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
 
     }
 
-    private AnswerItem<JSONObject> findBuildRevList(String system, String envGp, Integer nbDays, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findBuildRevList(String system, String envGp, Integer nbDays, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -172,15 +174,13 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertToJSONObject(Invariant object) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(object));
+    private JSONObject convertToJSONObject(Invariant object) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(object));
         return result;
     }
 
-    private JSONObject convertToJSONObject(CountryEnvParam_log object) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(object));
+    private JSONObject convertToJSONObject(CountryEnvParam_log object) throws JsonProcessingException {
+        JSONObject result = new JSONObject(JsonUtil.toJson(object));
         return result;
     }
 }

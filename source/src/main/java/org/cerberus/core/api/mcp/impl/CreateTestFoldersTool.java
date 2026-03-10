@@ -19,35 +19,37 @@
  */
 package org.cerberus.core.api.mcp.impl;
 
-import org.cerberus.core.api.mcp.MCPRequest;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.mcp.MCPTool;
-import org.cerberus.core.api.mcp.MCPToolMetadata;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.service.ITestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class CreateTestFoldersTool implements MCPTool {
 
-    @Autowired
-    private ITestService testService;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final ITestService testService;
+
+    public CreateTestFoldersTool(ITestService testService) {
+        this.testService = testService;
+    }
 
     @Override
-    public MCPToolMetadata getMetadata() {
-        return MCPToolMetadata.builder()
-                .name("create_test_folder")
-                .description("Creates a new test folder in Cerberus. Call this tool whenever the user asks to create, add, or organize a test folder. Requires a folder name.")
-                .category("test_folder")
-                .requiresAuth(true)
-                .inputSchema(
-                        Map.of(
-                                "type", "object",
-                                "properties", Map.of(
+    public McpServerFeatures.SyncToolSpecification toToolSpecification() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new McpSchema.Tool(
+                        "create_test_folder",
+                        null,
+                        "Creates a new test folder in Cerberus. Call this tool whenever the user asks to create, add, or organize a test folder. Requires a folder name.",
+                        new McpSchema.JsonSchema(
+                                "object",
+                                Map.of(
                                         "testFolder", Map.of(
                                                 "type", "string",
                                                 "description", "Name of the new test folder"
@@ -57,43 +59,63 @@ public class CreateTestFoldersTool implements MCPTool {
                                                 "description", "Optional description of the test folder"
                                         )
                                 ),
-                                "required", List.of("testFolder")
-                        )
-                )
-                .build();
-    }
+                                List.of("testFolder"), // required
+                                null,
+                                null,
+                                null
+                        ),
+                        null,
+                        null,
+                        null
+                ),
+                (exchange, args) -> {
+                    try {
+                        Map<String, Object> arguments = args.arguments();
 
+                        if (arguments == null || !arguments.containsKey("testFolder")) {
+                            return new McpSchema.CallToolResult(
+                                    List.of(new McpSchema.TextContent(null, "Missing required parameter: testFolder", null)),
+                                    true, null, null
+                            );
+                        }
 
-    @Override
-    public Object execute(MCPRequest request) {
+                        String testFolder = String.valueOf(arguments.get("testFolder"));
+                        String description = arguments.get("description") != null
+                                ? String.valueOf(arguments.get("description"))
+                                : "";
 
-        Map<String, Object> params = request.getParams();
+                        if (testService.exist(testFolder)) {
+                            return new McpSchema.CallToolResult(
+                                    List.of(new McpSchema.TextContent(null, "Test Folder already exists: " + testFolder, null)),
+                                    true, null, null
+                            );
+                        }
 
-        if (params == null || !params.containsKey("testFolder")) {
-            throw new IllegalArgumentException("Missing required parameter: testFolder");
-        }
+                        Test test = new Test();
+                        test.setTest(testFolder);
+                        test.setDescription(description);
+                        test.setUsrCreated("MCP");
+                        test.setActive(true);
 
-        String testFolder = String.valueOf(params.get("testFolder"));
-        String description = params.get("description") != null
-                ? String.valueOf(params.get("description"))
-                : "";
+                        testService.create(test);
 
-        if (testService.exist(testFolder)) {
-            throw new IllegalStateException("Test Folder already exists: " + testFolder);
-        }
+                        String json = OBJECT_MAPPER.writeValueAsString(Map.of(
+                                "status", "created",
+                                "testFolder", testFolder
+                        ));
 
-        Test test = new Test();
-        test.setTest(testFolder);
-        test.setDescription(description);
-        test.setUsrCreated("MCP");
-        test.setActive(true);
+                        return new McpSchema.CallToolResult(
+                                List.of(new McpSchema.TextContent(null, json, null)),
+                                false, null, null
+                        );
 
-        testService.create(test);
-
-        return Map.of(
-                "status", "created",
-                "testFolder", testFolder
+                    } catch (Exception e) {
+                        return new McpSchema.CallToolResult(
+                                List.of(new McpSchema.TextContent(null, "Error: " + e.getMessage(), null)),
+                                true, null, null
+                        );
+                    }
+                }
         );
     }
-
 }

@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,11 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
@@ -56,6 +58,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -312,10 +315,9 @@ public class ReadExecutionTagHistory extends HttpServlet {
         return 0;
     }
 
-    private JSONObject convertApplicationToJSONObject(Application app) throws JSONException {
+    private JSONObject convertApplicationToJSONObject(Application app) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(app));
+        JSONObject result = new JSONObject(JsonUtil.toJson(app));
         return result;
     }
 

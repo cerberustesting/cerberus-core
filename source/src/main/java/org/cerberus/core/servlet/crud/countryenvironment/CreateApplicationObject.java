@@ -19,11 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.crud.factory.IFactoryApplicationObject;
 import org.cerberus.core.crud.service.IApplicationObjectService;
@@ -44,12 +41,13 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,6 +62,9 @@ import org.cerberus.core.crud.entity.LogEvent;
  * @author bcivel
  */
 @WebServlet(name = "CreateApplicationObject", urlPatterns = {"/CreateApplicationObject"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 50,
+        maxRequestSize = 1024 * 1024 * 100)
 public class CreateApplicationObject extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateApplicationObject.class);
@@ -94,27 +95,18 @@ public class CreateApplicationObject extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
         Map<String, String> fileData = new HashMap<>();
-        FileItem file = null;
+        Part uploadedFile = null;
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        try {
-            List<FileItem> fields = upload.parseRequest(request);
-            Iterator<FileItem> it = fields.iterator();
-            if (!it.hasNext()) {
-                return;
+        // Parcourir tous les champs du formulaire
+        for (Part part : request.getParts()) {
+            if (part.getSubmittedFileName() == null) {
+                // Champ de formulaire classique
+                String value = new String(part.getInputStream().readAllBytes(), charset);
+                fileData.put(part.getName(), value);
+            } else {
+                // Champ fichier
+                uploadedFile = part;
             }
-            while (it.hasNext()) {
-                FileItem fileItem = it.next();
-                boolean isFormField = fileItem.isFormField();
-                if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
-                } else {
-                    file = fileItem;
-                }
-            }
-        } catch (FileUploadException e) {
-            e.printStackTrace();
         }
 
         /**
@@ -156,29 +148,37 @@ public class CreateApplicationObject extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationObjectService applicationobjectService = appContext.getBean(IApplicationObjectService.class);
             IFactoryApplicationObject factoryApplicationobject = appContext.getBean(IFactoryApplicationObject.class);
-            String fileName = "";
-            if (file != null) {
-                fileName = file.getName();
-            }
+            String fileName = uploadedFile != null ? uploadedFile.getSubmittedFileName() : "";
 
             ApplicationObject applicationData = factoryApplicationobject.create(-1, application, object, value, fileName, xOffset, yOffset, usrcreated, datecreated, usrmodif, datemodif);
             ans = applicationobjectService.create(applicationData);
 
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && uploadedFile != null) {
+                AnswerItem an = applicationobjectService.readByKey(application, object);
                 /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateApplicationObject", "CREATE", LogEvent.STATUS_INFO, "Create Application Object: ['" + application + "','" + object + "']", request);
 
-                if (file != null) {
-                    AnswerItem an = applicationobjectService.readByKey(application, object);
-                    if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
-                        applicationData = (ApplicationObject) an.getItem();
-                        ans = applicationobjectService.uploadFile(applicationData.getID(), file);
-                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
+                    applicationData = (ApplicationObject) an.getItem();
+                    // Conversion du Part en fichier temporaire
+                    File tempFile = File.createTempFile("upload_", "_" + uploadedFile.getSubmittedFileName());
+                    try (InputStream is = uploadedFile.getInputStream();
+                         OutputStream os = new FileOutputStream(tempFile)) {
+                        byte[] buffer = new byte[8192];
+                        int bytesRead;
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
                         }
                     }
+
+                    // Appel du service DAO existant qui attend un File
+                   // ans = applicationobjectService.uploadFile(applicationData.getID(), tempFile);
+
+                    // Supprimer le fichier temporaire après usage
+                    tempFile.delete();
                 }
             }
         }

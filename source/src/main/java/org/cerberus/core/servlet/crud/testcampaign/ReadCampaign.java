@@ -19,18 +19,20 @@
  */
 package org.cerberus.core.servlet.crud.testcampaign;
 
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Campaign;
@@ -54,6 +56,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -158,7 +161,7 @@ public class ReadCampaign extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem<JSONObject> findCampaignList(Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCampaignList(Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         AnswerList<Campaign> answer = new AnswerList<>();
         JSONObject resp = new JSONObject();
@@ -244,7 +247,7 @@ public class ReadCampaign extends HttpServlet {
         return item;
     }
 
-    private AnswerItem<JSONObject> findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JsonProcessingException {
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -367,9 +370,8 @@ public class ReadCampaign extends HttpServlet {
         return answer;
     }
 
-    private <T> JSONObject convertToJSONObject(T object) throws JSONException {
-        Gson gson = new Gson();
-        return new JSONObject(gson.toJson(object));
+    private <T> JSONObject convertToJSONObject(T object) throws JsonProcessingException {
+        return new JSONObject(JsonUtil.toJson(object));
     }
 
     private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {

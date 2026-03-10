@@ -21,7 +21,7 @@ package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +30,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionDTOV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionMapperV001;
 import org.cerberus.core.api.dto.queueexecution.QueuedExecutionResultDTOV001;

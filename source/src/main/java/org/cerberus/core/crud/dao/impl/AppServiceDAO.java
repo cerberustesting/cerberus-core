@@ -19,10 +19,10 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import jakarta.servlet.http.Part;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IAppServiceDAO;
@@ -46,6 +46,11 @@ import org.cerberus.core.util.security.UserSecurity;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -637,41 +642,57 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public Answer uploadFile(String service, FileItem file) {
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "cerberus_ftpfile_path Parameter not found");
+    public Answer uploadFile(String service, Part filePart) {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                .resolveDescription("DESCRIPTION", "cerberus_ftpfile_path Parameter not found");
+
         AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
-        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+
+        if (!a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            LOG.warn("cerberus_ftpfile_path Parameter not found");
+            a.setResultMessage(msg);
+            return a;
+        }
+
+        try {
             Parameter p = a.getItem();
             String uploadPath = p.getValue();
-            File appDir = new File(uploadPath + File.separator + service);
-            if (!appDir.exists()) {
-                try {
-                    appDir.mkdirs();
-                } catch (SecurityException se) {
-                    LOG.warn("Unable to create ftp local file dir: {}", se.getMessage());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                            se.toString());
-                    a.setResultMessage(msg);
-                }
+
+            // Crée le dossier de service si nécessaire
+            Path appDir = Paths.get(uploadPath, service);
+            if (!Files.exists(appDir)) {
+                Files.createDirectories(appDir);
             }
-            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                deleteFolder(appDir, false);
-                File picture = new File(uploadPath + File.separator + service + File.separator + file.getName());
-                try {
-                    file.write(picture);
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                            "ftp local file uploaded");
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "FTP Local File").replace("%OPERATION%", "Upload"));
-                } catch (Exception e) {
-                    LOG.warn("Unable to upload ftp local file: {}", e.getMessage());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                            e.toString());
-                }
+
+            // Supprime l'ancien contenu
+            deleteFolder(appDir.toFile(), false);
+
+            // Sécurise le nom du fichier pour éviter path traversal
+            String fileName = Paths.get(filePart.getSubmittedFileName())
+                    .getFileName()
+                    .toString();
+
+            // Fichier final
+            Path picturePath = appDir.resolve(fileName);
+
+            // Copie le fichier uploadé dans le dossier cible
+            try (InputStream input = filePart.getInputStream()) {
+                Files.copy(input, picturePath, StandardCopyOption.REPLACE_EXISTING);
             }
-        } else {
-            LOG.warn("cerberus_ftpfile_path Parameter not found");
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                    .resolveDescription("DESCRIPTION", "ftp local file uploaded");
+            msg.setDescription(msg.getDescription()
+                    .replace("%ITEM%", "FTP Local File")
+                    .replace("%OPERATION%", "Upload"));
+
+        } catch (Exception e) {
+            LOG.warn("Unable to upload ftp local file", e);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
         }
+
         a.setResultMessage(msg);
         return a;
     }

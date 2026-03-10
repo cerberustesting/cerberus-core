@@ -20,37 +20,45 @@
 package org.cerberus.core.api.controllers;
 
 
+import io.modelcontextprotocol.server.McpServer;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.mcp.MCPRequest;
 import org.cerberus.core.api.mcp.MCPTool;
 import org.cerberus.core.api.mcp.MCPToolRegistry;
-import org.cerberus.core.exception.CerberusException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author bcivel
  */
 @Tag(name = "MCP", description = "Endpoints related to MCP")
 @RestController
-@RequestMapping("/mcp")
+@RequestMapping("/mcp2")
 public class MCPController {
 
-    private final MCPToolRegistry registry;
+    /*private final MCPToolRegistry registry;
+    private final PublicApiAuthenticationService authenticationService;
+    private final McpServer mcpServer;
 
-    public MCPController(MCPToolRegistry registry) {
+    public MCPController(MCPToolRegistry registry, PublicApiAuthenticationService authenticationService) {
         this.registry = registry;
+        this.authenticationService = authenticationService;
+        this.mcpServer = McpServer.builder()
+                .name("Cerberus MCP")
+                .version("1.0.0")
+                .toolRegistry(registry)
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<?> handle(@RequestBody MCPRequest request) {
+    public ResponseEntity<?> handle(@RequestBody MCPRequest request,HttpServletRequest httpRequest) {
 
         switch (request.getMethod()) {
 
@@ -68,7 +76,7 @@ public class MCPController {
                 return ok(request, Map.of("tools", registry.listTools()));
 
             case "tools/call":
-                return handleToolCall(request);
+                return handleToolCall(request, httpRequest);
 
             default:
                 return error(request, -32601, "Method not found");
@@ -89,16 +97,23 @@ public class MCPController {
         ));
     }
 
-    private ResponseEntity<?> handleToolCall(MCPRequest request) {
-        MCPTool tool = registry.getTool(request.getToolName());
+    private ResponseEntity<?> handleToolCall(MCPRequest request, HttpServletRequest httpRequest) {
 
-        if (tool == null) {
-            return error(request, -32601, "Tool not found");
-        }
+        String apiKey = httpRequest.getHeader("X-API-KEY");
+        Principal principal = httpRequest.getUserPrincipal();
 
         try {
+            String login = authenticationService.authenticateLogin(principal, apiKey);
+            MCPTool tool = registry.getTool(request.getToolName());
+            if (tool == null) {
+                return error(request, -32601, "Tool not found");
+            }
+
             Object result = tool.execute(request);
             return ok(request, result);
+
+        } catch (BadCredentialsException e) {
+            return error(request, -32001, "Unauthorized");
         } catch (Exception e) {
             return error(request, -32000, e.getMessage());
         }
@@ -121,5 +136,5 @@ public class MCPController {
                         "message", message
                 )
         ));
-    }
+    }*/
 }

@@ -21,7 +21,7 @@ package org.cerberus.core.apiprivate;
 
 import java.time.LocalDate;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,6 +56,7 @@ public class ApplicationPrivateController {
 
     @Operation(hidden=true)
     @GetMapping("/count")
+    @PreAuthorize("hasRole('Integrator')")
     public String getnbByCriteria(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
             HttpServletRequest request) {

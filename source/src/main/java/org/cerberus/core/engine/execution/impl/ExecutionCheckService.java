@@ -119,7 +119,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     private boolean checkTestActive(Test test) {
         LOG.debug("Checking if test is active");
-        if (test.getActive()) {
+        if (test.isActive()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOTACTIVE);

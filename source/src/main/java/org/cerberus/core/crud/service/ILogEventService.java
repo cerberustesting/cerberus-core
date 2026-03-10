@@ -21,7 +21,7 @@ package org.cerberus.core.crud.service;
 
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.util.answer.Answer;

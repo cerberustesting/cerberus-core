@@ -21,7 +21,7 @@ package org.cerberus.core.apiprivate;
 
 import java.time.LocalDate;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

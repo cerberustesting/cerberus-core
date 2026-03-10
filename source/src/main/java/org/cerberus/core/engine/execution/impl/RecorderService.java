@@ -22,7 +22,7 @@ package org.cerberus.core.engine.execution.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.cerberus.core.crud.entity.AppService;
@@ -71,6 +71,9 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import org.cerberus.core.engine.entity.ExecutionLog;
@@ -257,7 +260,7 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution actionExecution, TestCaseStepActionControlExecution controlExecution,
-            String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
+                                                                String extension, String desc, Part filePart, Integer id, String fileName, Integer fileID) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", "Can't upload file");
         AnswerItem<TestCaseExecutionFile> a = new AnswerItem<>();
         TestCaseExecutionFile object = null;
@@ -295,8 +298,8 @@ public class RecorderService implements IRecorderService {
             Recorder recorder = new Recorder();
             String name = "";
             File dir = null;
-            if (file != null) {
-                name = file.getName();
+            if (filePart != null) {
+                name = filePart.getName();
                 extension = testCaseExecutionFileService.checkExtension(name, extension);
                 recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name, extension, true);
                 dir = new File(recorder.getFullPath());
@@ -330,7 +333,7 @@ public class RecorderService implements IRecorderService {
                     return a;
                 }
             }
-            if (file != null) {
+            if (filePart != null) {
                 AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 if (current.getItem() != null) {
@@ -344,11 +347,17 @@ public class RecorderService implements IRecorderService {
                     }
                 }
                 try {
-                    file.write(new File(recorder.getFullFilename()));
+                    try (InputStream input = filePart.getInputStream()) {
+                        Files.copy(
+                                input,
+                                Paths.get(recorder.getFullFilename()),
+                                StandardCopyOption.REPLACE_EXISTING
+                        );
+                    }
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                             "Manual Execution File uploaded");
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
-                    LOG.debug("{}Copy file finished with success - source: {} destination: {}", logPrefix, file.getName(), recorder.getRelativeFilenameURL());
+                    LOG.debug("{}Copy file finished with success - source: {} destination: {}", logPrefix, filePart.getName(), recorder.getRelativeFilenameURL());
                     object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
                 } catch (Exception e) {
                     LOG.warn("Unable to upload Manual Execution File: {}", e.getMessage());

@@ -546,7 +546,7 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public String getElements(Session session, Identifier identifier) {
         WebDriver driver = session.getDriver();
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<String>();
 
         List<WebElement> elements = driver.findElements(this.getBy(identifier));
         for (WebElement element : elements) {
@@ -1473,7 +1473,7 @@ public class WebDriverService implements IWebDriverService {
      */
     public interface User32 extends W32APIOptions {
 
-        User32 instance = (User32) Native.loadLibrary("user32", User32.class, DEFAULT_OPTIONS);
+        User32 instance = Native.load("user32", User32.class, DEFAULT_OPTIONS);
 
         boolean ShowWindow(HWND hWnd, int nCmdShow);
 

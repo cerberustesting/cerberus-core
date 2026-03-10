@@ -21,8 +21,8 @@ package org.cerberus.core.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
 
 /**
  *

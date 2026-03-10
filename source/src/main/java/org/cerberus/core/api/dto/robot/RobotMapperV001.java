@@ -19,16 +19,18 @@
  */
 package org.cerberus.core.api.dto.robot;
 
+import jakarta.inject.Named;
 import org.cerberus.core.crud.entity.Robot;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author bcivel
  */
 @Mapper(
-        componentModel = "spring",
+        componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {
                 RobotCapabilityMapperV001.class,
                 RobotExecutorMapperV001.class
@@ -36,6 +38,8 @@ import org.mapstruct.Mapping;
 )
 public interface RobotMapperV001 {
 
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "acceptInsecureCerts", target = "isAcceptInsecureCerts")
     RobotDTOV001 toDTO(Robot robot);
 
     @InheritInverseConfiguration

@@ -20,12 +20,8 @@
 package org.cerberus.core.engine.gwt.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
-import java.time.Duration;
-
-import com.networknt.schema.ValidationMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.*;
@@ -2136,10 +2132,10 @@ public class ControlService implements IControlService {
 
         try {
             StringBuilder differences = new StringBuilder();
-            Set<ValidationMessage> errors = jsonSchemaValidator.getDifferences(jsonToVerify, jsonSchema);
+            Set<String> errors = jsonSchemaValidator.getDifferences(jsonToVerify, jsonSchema);
             LOG.info("Control: verifyJsonFormat differences found: {}", errors.size());
             if (!errors.isEmpty()) {
-                    errors.forEach(e -> differences.append("- " + e.getMessage()));
+                errors.forEach(e -> differences.append("- " + e));
                     message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VERIFYJSONFORMAT);
                     message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
                     message.resolveDescription("JSONSCHEMA",jsonSchema);

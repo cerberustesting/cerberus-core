@@ -19,7 +19,7 @@
  */
 package org.cerberus.core.engine.execution;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.engine.entity.Recorder;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -241,7 +241,7 @@ public interface IRecorderService {
      * @return
      */
     AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution,
-            String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
+                                                         String extension, String desc, Part filePart, Integer id, String fileName, Integer fileID);
 
     /**
      * @param testCaseExecution

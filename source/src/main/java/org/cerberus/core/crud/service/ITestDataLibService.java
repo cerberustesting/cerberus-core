@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.exception.CerberusException;
@@ -73,10 +73,10 @@ public interface ITestDataLibService {
     /**
     *
     * @param id
-    * @param file
+    * @param filePart
     * @return
     */
-   Answer uploadFile(int id, FileItem file);
+   Answer uploadFile(int id, Part filePart);
 
     /**
      *

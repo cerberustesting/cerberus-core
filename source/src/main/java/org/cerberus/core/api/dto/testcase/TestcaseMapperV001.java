@@ -28,12 +28,13 @@ import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.TestCase;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author mlombard
  */
 @Mapper(
-        componentModel = "spring",
+        componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE,
         uses = {
             TestcaseStepMapperV001.class,
             TestcaseStepActionMapperV001.class,

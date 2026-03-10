@@ -33,7 +33,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Configuration
@@ -70,8 +70,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
      */
     private static class HttpHandshakeInterceptor implements HandshakeInterceptor {
         @Override
-        public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                       WebSocketHandler wsHandler, Map<String, Object> attributes) {
+        public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,WebSocketHandler wsHandler, Map<String, Object> attributes) {
             if (request instanceof ServletServerHttpRequest) {
                 HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
 
@@ -84,11 +83,12 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         }
 
         @Override
-        public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                   WebSocketHandler wsHandler, Exception exception) {
-
+        public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,WebSocketHandler wsHandler, Exception exception) {
+            if (exception == null) {
+                LOG.debug("Handshake successful");
+            } else {
+                LOG.warn("Handshake error : " + exception.getMessage());
+            }
         }
     }
-
-
 }

@@ -22,10 +22,13 @@ package org.cerberus.core.config.cerberus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +40,7 @@ import java.nio.file.Paths;
 @WebListener
 public class BrandingConfigLoader implements ServletContextListener {
 
+    private static final Logger LOG = LogManager.getLogger(BrandingConfigLoader.class);
     private static final String CONTEXT_ATTR = "brandingConfig";
     private static final String CONTEXT_FAVICON = "brandingFavicon";
     private static final String DEFAULT_FAVICON_TYPE = "brandingFaviconType";
@@ -68,29 +72,26 @@ public class BrandingConfigLoader implements ServletContextListener {
 
             ctx.setAttribute(CONTEXT_FAVICON, favicon);
             ctx.setAttribute(DEFAULT_FAVICON_TYPE, faviconType);
-            ctx.log("[Cerberus] Branding loaded successfully");
+            LOG.info("[Cerberus] Branding loaded successfully");
 
         } catch (Exception e) {
-            ctx.log("[Cerberus] FATAL: cannot load branding", e);
-            throw new RuntimeException(e); // stop startup
+            LOG.info("[Cerberus] FATAL: cannot load branding", e);
+            throw new RuntimeException(e);
         }
     }
 
     private String loadBranding(ServletContext ctx) throws IOException {
 
         // 1️⃣ External override
-        Path external = Paths.get(
-                System.getProperty("catalina.base"),
-                "conf", "cerberus", "branding.json"
-        );
+        Path external = Paths.get(System.getProperty("catalina.base"),"conf", "cerberus", "branding.json");
 
         if (Files.exists(external)) {
-            ctx.log("[Cerberus] Using external branding.json");
+            LOG.info("[Cerberus] Using external branding.json");
             return Files.readString(external, StandardCharsets.UTF_8);
         }
 
         // 2️⃣ Fallback in WAR
-        ctx.log("[Cerberus] Using embedded branding.json");
+        LOG.info("[Cerberus] Using embedded branding.json");
 
         try (InputStream is = ctx.getResourceAsStream("/WEB-INF/branding.json")) {
             if (is == null) {

@@ -24,7 +24,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.cerberus.core.crud.entity.UserSystem;
 import org.springframework.web.context.request.*;
 
-import javax.servlet.http.*;
+import jakarta.servlet.http.*;
 import java.util.*;
 import java.util.stream.*;
 import org.apache.logging.log4j.LogManager;
@@ -138,7 +138,7 @@ public class UserSecurity {
         if (str == null) {
             return null;
         }
-        return StringUtils.replace(str, "'", "''");
+        return str.replace("'", "''");
     }
 
     private UserSecurity() {

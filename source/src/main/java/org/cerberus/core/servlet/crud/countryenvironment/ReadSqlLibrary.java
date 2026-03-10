@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import com.google.gson.Gson;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.SqlLibrary;
 import org.cerberus.core.crud.service.ISqlLibraryService;
@@ -29,6 +30,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.json.JsonUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,13 +40,13 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.util.StringUtil;
@@ -127,7 +129,7 @@ public class ReadSqlLibrary extends HttpServlet {
         }
     }
 
-    private AnswerItem<JSONObject> findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JsonProcessingException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -177,7 +179,7 @@ public class ReadSqlLibrary extends HttpServlet {
     }
 
     
-    private AnswerItem<JSONObject> findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem<JSONObject> findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JsonProcessingException {
         AnswerItem<JSONObject> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
@@ -227,10 +229,9 @@ public class ReadSqlLibrary extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertSqlLibraryToJSONObject(SqlLibrary parameter) throws JSONException {
+    private JSONObject convertSqlLibraryToJSONObject(SqlLibrary parameter) throws JsonProcessingException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(parameter));
+        JSONObject result = new JSONObject(JsonUtil.toJson(parameter));
         return result;
     }
 

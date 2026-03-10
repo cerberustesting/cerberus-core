@@ -21,7 +21,7 @@ package org.cerberus.core.crud.service.impl;
 
 import java.util.*;
 
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.Part;
 import org.cerberus.core.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.core.crud.dao.ITestDataLibDAO;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -74,8 +74,8 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public Answer uploadFile(int id, FileItem file) {
-        return testDataLibDAO.uploadFile(id, file);
+    public Answer uploadFile(int id, Part filePart) {
+        return testDataLibDAO.uploadFile(id, filePart);
     }
 
     @Override

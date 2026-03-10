@@ -29,9 +29,10 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author bcivel
@@ -49,6 +50,7 @@ public class AIPrivateController {
     AIService aIService;
 
     @Operation(hidden=true)
+    @PreAuthorize("hasRole('Integrator')")
     @GetMapping("/prompts")
     public String getAllUserPrompts(HttpServletRequest request) {
 

@@ -19,6 +19,11 @@
  */
 package org.cerberus.core.config.cerberus;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,43 +43,43 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 @EnableScheduling
-@ComponentScan(
-        basePackages = {
-                "org.cerberus"
-        },
-        excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "org\\.cerberus\\.core\\.api\\.controllers\\..*"
-                ),
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "org\\.cerberus\\.core\\.apiprivate\\..*"
-                ),
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "org\\.cerberus\\.core\\.config\\.webmvc\\..*"
-                ),
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "org\\.cerberus\\.core\\.config\\.springdoc\\..*"
-                )
-        }
-)
+@ComponentScan(basePackages = {"org.cerberus"})
 public class CerberusConfiguration {
 
+    private static final Logger LOG = LogManager.getLogger(CerberusConfiguration.class);
+
     @Bean
-    public DataSource dataSource() throws NamingException {
-        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
-        jndiObjectFactoryBean.setJndiName("jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT));
-        jndiObjectFactoryBean.setResourceRef(true);
-        jndiObjectFactoryBean.setProxyInterface(DataSource.class);
-        jndiObjectFactoryBean.afterPropertiesSet();
-        return (DataSource) jndiObjectFactoryBean.getObject();  //NOT NULL
+    public DataSource dataSource() {
+
+        String url      = System.getProperty("db.url");
+        String username = System.getProperty("db.username");
+        String password = System.getProperty("db.password");
+
+        LOG.info("DataSource init → url={}, username={}", url, username);
+
+        if (url == null) {
+            throw new IllegalStateException("db.url system property is not set!");
+        }
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(System.getProperty("db.url"));
+        config.setUsername(System.getProperty("db.username"));
+        config.setPassword(System.getProperty("db.password"));
+        config.setMaximumPoolSize(Integer.getInteger("db.pool.maxTotal", 100));
+        config.setMinimumIdle(Integer.getInteger("db.pool.maxIdle", 30));
+        config.setConnectionTimeout(Long.getLong("db.pool.maxWaitMillis", 10000));
+        config.setConnectionTestQuery("SELECT 1");
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return new HikariDataSource(config);
     }
 
     @Bean
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

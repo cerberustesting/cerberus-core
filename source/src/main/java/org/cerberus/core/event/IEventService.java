@@ -36,6 +36,6 @@ public interface IEventService {
      * @param object4
      * @return
      */
-    public MessageEvent triggerEvent(String eventReference, Object object1, Object object2, Object object3, Object object4);
+    public void triggerEvent(String eventReference, Object object1, Object object2, Object object3, Object object4);
 
 }

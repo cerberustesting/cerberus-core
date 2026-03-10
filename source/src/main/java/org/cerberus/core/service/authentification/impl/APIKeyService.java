@@ -21,8 +21,8 @@ package org.cerberus.core.service.authentification.impl;
 
 import java.io.IOException;
 import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.User;
 import org.cerberus.core.crud.service.IParameterService;

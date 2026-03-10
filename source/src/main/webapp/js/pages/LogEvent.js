@@ -113,9 +113,9 @@ function aoColumnsFunc() {
             }
         },
         {
-            "data": "LogEventID",
+            "data": "logEventID",
             "like": true,
-            "sName": "LogEventID",
+            "sName": "logEventID",
             "sWidth": "40px",
             "title": doc.getDocOnline("logevent", "logeventid")
         },

@@ -19,40 +19,49 @@
  */
 package org.cerberus.core.api.mcp.impl;
 
-import org.cerberus.core.api.mcp.MCPRequest;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.mcp.MCPTool;
-import org.cerberus.core.api.mcp.MCPToolMetadata;
 import org.cerberus.core.database.IDatabaseVersioningService;
-import org.cerberus.core.exception.CerberusException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class GetDbVersionTool implements MCPTool {
 
-    @Autowired
-    private IDatabaseVersioningService databaseVersioningService;
+    private final IDatabaseVersioningService databaseVersioningService;
 
     public GetDbVersionTool(IDatabaseVersioningService databaseVersioningService) {
         this.databaseVersioningService = databaseVersioningService;
     }
 
     @Override
-    public MCPToolMetadata getMetadata() {
-        return MCPToolMetadata.builder()
-                .name("get_db_version")
-                .description("Returns current Cerberus DB schema version")
-                .category("database")
-                .requiresAuth(true)
-                .build();
-    }
-
-    @Override
-    public Object execute(MCPRequest request) {
-        return Map.of(
-                "version", databaseVersioningService.getSqlVersion()
+    public McpServerFeatures.SyncToolSpecification toToolSpecification() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new McpSchema.Tool(
+                        "get_db_version",           // name
+                        null,                       // title
+                        "Returns current Cerberus DB schema version", // description
+                        new McpSchema.JsonSchema("object", Map.of(), null, null, null, null), // inputSchema
+                        null,                       // outputSchema
+                        null,                       // annotations
+                        null                        // meta
+                ),
+                (exchange, args) -> {
+                    String version = String.valueOf(databaseVersioningService.getSqlVersion());
+                    return new McpSchema.CallToolResult(
+                            List.of(new McpSchema.TextContent(
+                                    null,               // annotations
+                                    "DB version: " + version,  // text
+                                    null                // meta
+                            )),
+                            false,
+                            null,
+                            null
+                    );
+                }
         );
     }
 }
