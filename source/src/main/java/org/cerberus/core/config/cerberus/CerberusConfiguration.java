@@ -62,14 +62,25 @@ public class CerberusConfiguration {
         }
 
         HikariConfig config = new HikariConfig();
+
         config.setJdbcUrl(System.getProperty("db.url"));
         config.setUsername(System.getProperty("db.username"));
         config.setPassword(System.getProperty("db.password"));
-        config.setMaximumPoolSize(Integer.getInteger("db.pool.maxTotal", 100));
-        config.setMinimumIdle(Integer.getInteger("db.pool.maxIdle", 30));
-        config.setConnectionTimeout(Long.getLong("db.pool.maxWaitMillis", 10000));
-        config.setConnectionTestQuery("SELECT 1");
+
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        config.setConnectionTestQuery("SELECT 1");
+        // Pool size
+        config.setMaximumPoolSize(Integer.getInteger("db.pool.maxTotal", 100));
+        config.setMinimumIdle(Integer.getInteger("db.pool.minIdle", 3));
+        // Wait for connection
+        config.setConnectionTimeout(Long.getLong("db.pool.maxWaitMillis", 10000));
+        // Connection lifetime (important for MySQL)
+        config.setMaxLifetime(Long.getLong("db.pool.maxLifetimeMillis", 1800000)); // 30 min
+        // Optional but recommended
+        config.setIdleTimeout(Long.getLong("db.pool.idleTimeoutMillis", 600000)); // 10 min
+        // Pool name for debugging
+        config.setPoolName("CerberusPool");
+
         return new HikariDataSource(config);
     }
 
