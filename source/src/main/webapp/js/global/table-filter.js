@@ -511,12 +511,13 @@ function _buildColumnFilter(opts) {
         + '<line x1="10" y1="18" x2="14" y2="18"/>'
         + '</svg>';
 
+    var filterId = 'columnButtonFilter_' + index;
     var $triggerBtn = $('<span>')
-        .attr({ 'data-col-index': index, title: hasValues ? valueFiltered.join(', ') : '' })
+        .attr({ id: filterId, 'data-col-index': index, title: hasValues ? valueFiltered.join(', ') : '' })
         .addClass(
             'col-filter-trigger inline-flex items-center justify-end ml-auto cursor-pointer rounded transition-colors duration-150 ' +
             (hasValues
-                ? 'text-blue-500 dark:text-blue-400'
+                ? 'text-blue-500 dark:text-blue-400 font-bold'
                 : 'text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400')
         )
         .html(svgFunnel);
@@ -524,8 +525,13 @@ function _buildColumnFilter(opts) {
     // Injecter l'icône dans le th principal (à côté du label de colonne).
     // On cible le <th> de la première ligne de headers via columnVisibleIndex.
     var $th = $($('#' + tableId + '_wrapper .dataTables_scrollHeadInner table thead tr:first th')[opts.columnVisibleIndex]);
-    $th.find('.col-filter-trigger').remove(); // éviter les doublons au refresh
-    $th.append($triggerBtn);
+
+    if (!$th.find('.th-content').length) {
+        $th.wrapInner('<div class="th-content flex items-center w-full"></div>');
+    }
+
+    $th.find('.col-filter-trigger').remove();
+    $th.find('.th-content').append($triggerBtn);
 
     // filterHeader reste vide — c'est juste un spacer structurel
     $(tableCell).empty();
