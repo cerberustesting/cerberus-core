@@ -34,6 +34,7 @@ import org.cerberus.core.crud.entity.TestCaseStepAction;
 import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.core.crud.entity.TestCaseStepExecution;
+import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.core.crud.service.ITestCaseStepActionExecutionService;
@@ -127,8 +128,8 @@ public class UpdateTestCaseExecution extends HttpServlet {
         
         // Update Tags table with end of queue data using the tag from TestCaseExecution
         String tag = executionToUpdate.getTag();
-        if (tag != null && !tag.isEmpty()) {
-            org.cerberus.core.crud.service.ITagService tagService = appContext.getBean(org.cerberus.core.crud.service.ITagService.class);
+        if (!StringUtil.isEmptyOrNull(tag)) {
+            ITagService tagService = appContext.getBean(ITagService.class);
             tagService.updateEndOfQueueData(tag);
         }
     }
