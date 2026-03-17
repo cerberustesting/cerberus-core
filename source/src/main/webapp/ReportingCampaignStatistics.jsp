@@ -163,6 +163,7 @@
                         <div class="mt-6">
                             <button
                               class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md h-10"
+                              id="reportingCampaingStatisticsLoadButton"
                               @click.prevent="$dispatch('load-stats')">
                               Load
                             </button>
