@@ -17,12 +17,14 @@
       <div class="flex gap-1 items-center" @click.stop>
         <!-- Select all items -->
         <button @click="selectAll()" x-show="open" type="button"
+                :id="id + '-all'"
                 class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
           <span x-text="$store.labels.getLabel('common','all')">All</span>
         </button>
 
         <!-- Clear all selections -->
         <button @click="clearAll()" x-show="open" type="button"
+                :id="id + '-none'"
                 class="text-[10px] px-2 py-0.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 rounded">
           <span x-text="$store.labels.getLabel('common','none')">None</span>
         </button>
@@ -32,19 +34,20 @@
     <!-- Dropdown content, teleported to <body> to avoid overflow clipping -->
     <template x-teleport="body">
       <div x-show="open"
-           @click.outside="open = false"
            x-transition
            class="absolute rounded-md border shadow-lg z-50
                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
                   bg-white border-slate-300 text-slate-900"
-           :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }">
+           :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }"
+           :id="id + '-dropdown'">
 
         <div class="bg-white dark:bg-slate-800 max-h-64 overflow-hidden rounded-md dark:border-slate-600">
 
           <!-- Search bar -->
-          <div class="p-2 border-b dark:border-slate-700">
-            <input type="text" x-model="search" :placeholder="$store.labels.getLabel('common','search')"
-                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
+          <div class="p-2 border-b dark:border-slate-700 border-slate-300">
+            <input type="text" x-model="search" :placeholder="$store.labels.getLabel('common','search')" :id="id + '-search'"
+                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
+                                                bg-white border-slate-300 text-slate-900 hover:bg-slate-100">
           </div>
 
           <!-- Selectable list of items -->
@@ -102,7 +105,7 @@ function multiSelectDropdown(config = {}) {
           this.$el.appendChild(tpl);
 
           // Load dropdown items using the provided loader function
-          this.items = this.loader();
+          this.items = await this.loader();
 
           // Set preselected values (if any)
           if (this.preselected.length) {
@@ -114,7 +117,16 @@ function multiSelectDropdown(config = {}) {
 
           // Close dropdown when clicking outside of it
           document.addEventListener('click', e => {
-            if (this.open && !this.$el.contains(e.target)) this.open = false;
+            const dropdown = document.getElementById(this.id + '-dropdown');
+
+            if (
+                    this.open &&
+                    !this.$el.contains(e.target) &&
+                    dropdown &&
+                    !dropdown.contains(e.target)
+            ) {
+              this.open = false;
+            }
           });
 
           // Listen to external refresh event for dynamic updates

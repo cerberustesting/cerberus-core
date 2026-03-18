@@ -49,13 +49,11 @@
                 <%@ include file="include/global/messagesArea.html"%>
                 <%@ include file="include/utils/modal-confirmation.html"%>
                 <%@ include file="include/transversalobject/TestCase.html"%>
-                <jsp:include page="include/transversal/TestCaseSimpleCreation.html"/>
                 <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
                 <%@ include file="include/transversalobject/Application.html"%>
                 <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
                 <jsp:include page="include/transversal/TestCaseListMassActionUpdate.html"/>
                 <jsp:include page="include/transversal/TestCaseListMassActionLabel.html"/>
-                <jsp:include page="include/transversal/TestCaseSimpleCreationImport.html"/>
                 <jsp:include page="include/templates/selectDropdown.html"/>
 
                 <h1 class="page-title-line" id="title">Test Case</h1>

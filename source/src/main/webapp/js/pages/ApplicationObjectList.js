@@ -84,15 +84,13 @@ function renderOptionsForApplicationObject(data) {
     // check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createApplicationObjectButton").length === 0) {
-            var disabledCreate = data["hasPermissionsCreate"] ? "" : "disabled";
 
             var contentToAdd = "";
 
             // Bouton Create
             contentToAdd += `
                 <button id='createApplicationObjectButton' type='button'
-                    class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
-                    ${disabledCreate}>
+                    class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     <span>${doc.getDocLabel("page_applicationObject", "button_create")}</span>
                 </button>
