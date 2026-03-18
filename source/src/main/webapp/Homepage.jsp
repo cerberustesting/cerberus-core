@@ -23,6 +23,14 @@
 <%@page import="org.springframework.context.ApplicationContext" %>
 <%@page import="org.cerberus.core.database.IDatabaseVersioningService" %>
 
+<%-- Forcer l'authentification : si non connecté, rediriger vers Homepage.jsp pour passer par Spring Security --%>
+<%
+    if (request.getUserPrincipal() == null) {
+        response.sendRedirect(request.getContextPath() + "/Homepage.jsp");
+        return;
+    }
+%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html class="h-full">

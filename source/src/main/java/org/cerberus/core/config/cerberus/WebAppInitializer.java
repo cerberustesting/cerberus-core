@@ -23,6 +23,8 @@ import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTrans
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.webmvc.WebMvcConfiguration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -38,9 +40,15 @@ import java.util.EnumSet;
  */
 public class WebAppInitializer implements WebApplicationInitializer {
 
+    private static final Logger LOG = LogManager.getLogger(WebAppInitializer.class);
+
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 
+        LOG.info("========================================");
+        LOG.info(">>> WebAppInitializer.onStartup() called");
+        LOG.info("========================================");
+        
         // Single shared Spring context for both root beans and MVC beans.
         // Avoids the classic root/servlet context split that causes issues with Spring Security.
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
