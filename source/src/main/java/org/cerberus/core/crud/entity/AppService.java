@@ -19,6 +19,9 @@
  */
 package org.cerberus.core.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +59,7 @@ public class AppService {
     private String type; // either SOAP/REST/KAFKA/FTP
     private String method; // Method used : POST/GET
     private String servicePath; // Path to access the service
+    @JsonProperty("isFollowRedir")
     private boolean isFollowRedir; // Path to access the service
     private String fileName;
     private String operation; // Operation used for SOAP Requests
@@ -69,10 +73,13 @@ public class AppService {
     private String kafkaFilterValue;
     private String kafkaFilterHeaderPath;
     private String kafkaFilterHeaderValue;
+    @JsonProperty("isAvroEnable")
     private boolean isAvroEnable;
     private String schemaRegistryURL;
+    @JsonProperty("isAvroEnableKey")
     private boolean isAvroEnableKey;
     private String avroSchemaKey;
+    @JsonProperty("isAvroEnableValue")
     private boolean isAvroEnableValue;
     private String avroSchemaValue;
     private String parentContentService;
@@ -84,8 +91,10 @@ public class AppService {
     private JSONObject simulationParameters;
     private String description;
     private String usrCreated;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Timestamp dateCreated;
     private String usrModif;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Timestamp dateModif;
 
     /**

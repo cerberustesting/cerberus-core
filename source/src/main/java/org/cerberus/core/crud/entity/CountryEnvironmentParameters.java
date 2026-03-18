@@ -20,6 +20,10 @@
 package org.cerberus.core.crud.entity;
 
 import java.sql.Timestamp;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,7 +51,7 @@ public class CountryEnvironmentParameters {
     private String environment;
     @Id
     private String application;
-    
+    @JsonProperty("isActive")
     private boolean isActive;
     private String ip;
     private String domain;
@@ -63,8 +67,10 @@ public class CountryEnvironmentParameters {
     private String mobilePackage;
     private int poolSize;
     private String usrCreated;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Timestamp dateCreated;
     private String usrModif;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Timestamp dateModif;
 
     public CountryEnvironmentParameters(String system, String country, String environment, String application) {

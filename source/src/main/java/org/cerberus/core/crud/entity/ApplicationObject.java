@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -27,12 +28,15 @@ import lombok.Data;
 @Data
 public class ApplicationObject {
 
+    @JsonProperty("ID")
     private int ID;
     private String application;
     private String object;
     private String value;
     private String screenshotFilename;
+    @JsonProperty("xOffset")
     private String xOffset;
+    @JsonProperty("yOffset")
     private String yOffset;
     private String usrCreated;
     private String dateCreated;
