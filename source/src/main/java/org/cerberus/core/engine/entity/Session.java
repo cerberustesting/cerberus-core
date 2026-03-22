@@ -40,16 +40,15 @@ public class Session {
 
     private Integer executorExtensionPort; //Port where the cerberus robot extension is available on the node host
     private Integer executorExtensionProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
-    
+
     private boolean started;
     private boolean sikuliAvailable;
-    
-    
+
     private WebDriver driver;
     private AppiumDriver appiumDriver;
 
     private Integer cerberus_selenium_implicitlyWait;
-    
+
     private Integer cerberus_selenium_pageLoadTimeout;
     private Integer cerberus_selenium_pageLoadTimeout_default; // Default value
     private Integer cerberus_selenium_setScriptTimeout;
@@ -76,7 +75,7 @@ public class Session {
 
     private String cerberus_sikuli_minSimilarity;
     private String cerberus_sikuli_minSimilarity_default;
-    
+
     private String cerberus_sikuli_typeDelay;
     private String cerberus_sikuli_typeDelay_default;
 

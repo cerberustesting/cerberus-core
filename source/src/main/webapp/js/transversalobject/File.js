@@ -254,7 +254,7 @@ function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto
     var doc = new Doc();
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
             || (mode === "ADD"));
-
+    
     // Data Feed.
     if (mode === "EDIT") {
         formEdit.find("#preview").empty()
@@ -268,8 +268,8 @@ function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto
         if ((manualFile.fileType == "JPG") || (manualFile.fileType == "PNG")) {
             var image = $('<img>').addClass("selectedPicture").attr("src", urlImage + "&r=true");
             $("#preview").append(image)
-        } else if ((manualFile.fileType == "PDF") || (manualFile.fileType == "BIN")) {
-            $("#preview").append("<p>impossible to get a preview of your file</p>");
+        } else if ((manualFile.fileType == "PDF") || (manualFile.fileType == "BIN") || (manualFile.fileType == "MP4")) {
+            $("#preview").append("<div class='form-control'>Preview of the file not supported. Please open full file.</div>");
         } else {
             var jqxhr = $.get(urlImage, "&autoContentType=N");
             $.when(jqxhr).then(function (data) {
@@ -292,10 +292,12 @@ function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto
                 };
                 var session = editor.getSession();
 
-                if (textMode.endsWith("json")) {
-                    session.setValue(js_beautify(session.getValue(), jsbOpts));
-                } else if (textMode.endsWith("xml")) {
-                    session.setValue(html_beautify(session.getValue(), jsbOpts));
+                if (textMode !== undefined) {
+                    if (textMode.endsWith("json")) {
+                        session.setValue(js_beautify(session.getValue(), jsbOpts));
+                    } else if (textMode.endsWith("xml")) {
+                        session.setValue(html_beautify(session.getValue(), jsbOpts));
+                    }
                 }
             });
         }

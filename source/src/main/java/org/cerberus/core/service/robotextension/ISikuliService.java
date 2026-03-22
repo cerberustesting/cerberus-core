@@ -50,12 +50,15 @@ public interface ISikuliService {
     /**
      *
      * @param session
+     * @param executionId
      * @param action
      * @param locator
+     * @param locator2
      * @param text
+     * @param text2
      * @return
      */
-    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String locator2, String text, String text2);
+    public AnswerItem<JSONObject> doSikuliAction(Session session, long executionId, String action, String locator, String locator2, String text, String text2);
 
     /**
      *
@@ -64,7 +67,15 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionClick(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliActionClick(Session session, String locator, String text);
+
+    /**
+     *
+     * @param session
+     * @param executionId
+     * @return
+     */
+    public MessageEvent doSikuliActionStartVideo(Session session, long executionId);
 
     /**
      *
@@ -73,7 +84,7 @@ public interface ISikuliService {
      * @param locatorDrop
      * @return
      */
-    public MessageEvent doSikuliActionDragAndDrop(Session session, Identifier locatorDrag, Identifier locatorDrop);
+    public AnswerItem<JSONObject> doSikuliActionDragAndDrop(Session session, Identifier locatorDrag, Identifier locatorDrop);
 
     /**
      *
@@ -105,7 +116,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionRightClick(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliActionRightClick(Session session, String locator, String text);
 
     /**
      *
@@ -144,7 +155,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionDoubleClick(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliActionDoubleClick(Session session, String locator, String text);
 
     /**
      *
@@ -153,7 +164,7 @@ public interface ISikuliService {
      * @param property
      * @return
      */
-    public MessageEvent doSikuliActionType(Session session, String locator, String property);
+    public AnswerItem<JSONObject> doSikuliActionType(Session session, String locator, String property);
 
     /**
      *
@@ -162,7 +173,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text, String offset);
+    public AnswerItem<JSONObject> doSikuliActionMouseOver(Session session, String locator, String text, String offset);
 
     /**
      *
@@ -171,7 +182,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionWait(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliActionWait(Session session, String locator, String text);
 
     /**
      *
@@ -180,7 +191,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionWaitVanish(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliActionWaitVanish(Session session, String locator, String text);
 
     /**
      *
@@ -190,7 +201,7 @@ public interface ISikuliService {
      * @param modifier
      * @return
      */
-    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String textToKey, String modifier);
+    public AnswerItem<JSONObject> doSikuliActionKeyPress(Session session, String locator, String textToKey, String modifier);
 
     /**
      *
@@ -199,7 +210,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator, String text);
+    public AnswerItem<JSONObject>  doSikuliVerifyElementPresent(Session session, String locator, String text);
 
     /**
      *
@@ -208,7 +219,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator, String text);
+    public AnswerItem<JSONObject>  doSikuliVerifyElementNotPresent(Session session, String locator, String text);
 
     /**
      *
@@ -221,8 +232,10 @@ public interface ISikuliService {
     /**
      *
      * @param session
+     * @param executionId
+     * @param withVideo
      * @return
      */
-    public MessageEvent doSikuliEndExecution(Session session);
+    public AnswerItem<JSONObject> doSikuliEndExecution(Session session, long executionId, boolean withVideo);
 
 }

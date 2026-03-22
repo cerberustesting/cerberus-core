@@ -128,7 +128,9 @@ public class TestCaseStepActionExecution {
     }
 
     public void addFileList(TestCaseExecutionFile file) {
-        this.fileList.add(file);
+        if (file != null) {
+            this.fileList.add(file);
+        }
     }
 
     public void addFileList(List<TestCaseExecutionFile> fileList) {
@@ -449,23 +451,24 @@ public class TestCaseStepActionExecution {
         }
     }
 
-    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionBySortId(int sortID){
-        for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
-            if (sortID == tcsace.getTestCaseStepActionControl().getSort()){
+    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionBySortId(int sortID) {
+        for (TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList) {
+            if (sortID == tcsace.getTestCaseStepActionControl().getSort()) {
                 return tcsace;
             }
         }
         return null;
     }
 
-    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionByControlId(int sortID){
-        for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
-            if (sortID == tcsace.getTestCaseStepActionControl().getControlId()){
+    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionByControlId(int sortID) {
+        for (TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList) {
+            if (sortID == tcsace.getTestCaseStepActionControl().getControlId()) {
                 return tcsace;
             }
         }
         return null;
     }
+
     public String getDescription() {
         return description;
     }
@@ -518,7 +521,7 @@ public class TestCaseStepActionExecution {
             result.put("end", this.getEnd());
             result.put("startlong", this.getStartLong());
             result.put("endlong", this.getEndLong());
-            
+
             result.put("description", StringUtil.secureFromSecrets(this.getDescription(), secrets));
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", StringUtil.secureFromSecrets(this.getReturnMessage(), secrets));

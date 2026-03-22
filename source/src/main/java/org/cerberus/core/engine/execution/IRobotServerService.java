@@ -106,5 +106,10 @@ public interface IRobotServerService {
      */
     public void setOptionsToDefault(Session session);
 
+    /**
+     *
+     * @param tCExecution
+     * @throws CerberusException
+     */
     void startServerV2(TestCaseExecution tCExecution) throws CerberusException;
 }

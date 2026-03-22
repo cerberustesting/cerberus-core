@@ -139,4 +139,17 @@ public class AnswerUtil {
         return answer;
 
     }
+
+    public static MessageEvent getMessageDependingOnNbOfElement(Integer numberOfElement, String elementLocator) {
+        MessageEvent foundElementMsg;
+        if (numberOfElement == 1) {
+            foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_UNIQUEELEMENT);
+        } else {
+            foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+            foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+        }
+        foundElementMsg.resolveDescription("ELEMENT", elementLocator);
+        return foundElementMsg;
+    }
+
 }

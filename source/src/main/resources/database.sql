@@ -6808,3 +6808,7 @@ ALTER TABLE appservice ADD ServiceRequestExtra1 MEDIUMTEXT NULL AFTER `ServiceRe
 -- 1933
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
     VALUES ('PROXYTYPE', 'MITMPROXY', 400, 'Mitm Proxy with Network Traffic analysis and control.');
+
+-- 1934
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
+  VALUES ('FILETYPE', 'MP4', '25000', '', '');

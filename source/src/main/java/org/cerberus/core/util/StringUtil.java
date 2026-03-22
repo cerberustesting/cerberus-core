@@ -38,8 +38,10 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
@@ -531,6 +533,15 @@ public final class StringUtil {
             LOG.error("JSONException in convertToString.", ex);
         }
         return result.toString();
+    }
+
+    public static String convertAnswerJSONToString(AnswerItem answer, String attribute) {
+        if (answer != null) {
+            if (((JSONObject) answer.getItem()).has(attribute)) {
+                return ((JSONObject) answer.getItem()).getString(attribute);
+            }
+        }
+        return null;
     }
 
     public static String convertHtmlToString(String html) {

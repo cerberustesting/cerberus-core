@@ -69,6 +69,7 @@ import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
 import org.cerberus.core.service.xmlunit.IXmlUnitService;
+import org.cerberus.core.servlet.reporting.TestCaseActionExecutionDetail;
 import org.cerberus.core.util.PDFUtil;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
@@ -323,7 +324,7 @@ public class ActionService implements IActionService {
         try {
             switch (actionExecution.getAction()) {
                 case TestCaseStepAction.ACTION_CLICK:
-                    res = this.doActionClick(execution, value1, value2);
+                    res = this.doActionClick(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_LONGPRESS:
                     res = this.doActionLongPress(execution, value1, value2);
@@ -338,13 +339,13 @@ public class ActionService implements IActionService {
                     res = this.doActionMouseMove(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_DOUBLECLICK:
-                    res = this.doActionDoubleClick(execution, value1, value2);
+                    res = this.doActionDoubleClick(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_RIGHTCLICK:
-                    res = this.doActionRightClick(execution, value1, value2);
+                    res = this.doActionRightClick(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSEOVER:
-                    res = this.doActionMouseOver(execution, value1, value2);
+                    res = this.doActionMouseOver(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
                     res = this.doActionFocusToIframe(execution, value1, value2);
@@ -399,16 +400,16 @@ public class ActionService implements IActionService {
                     res = this.doActionCloseApp(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
-                    res = this.doActionDragAndDrop(execution, value1, value2);
+                    res = this.doActionDragAndDrop(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SELECT:
                     res = this.doActionSelect(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_KEYPRESS:
-                    res = this.doActionKeyPress(execution, value1, value2, value3);
+                    res = this.doActionKeyPress(execution, actionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_TYPE:
-                    res = this.doActionType(execution, value1, value2, propertyName);
+                    res = this.doActionType(execution, actionExecution, value1, value2, propertyName);
                     break;
                 case TestCaseStepAction.ACTION_CLEARFIELD:
                     res = this.doActionClearField(execution, value1);
@@ -429,10 +430,10 @@ public class ActionService implements IActionService {
                     res = this.doActionRemoveApp(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_WAIT:
-                    res = this.doActionWait(execution, value1, value2);
+                    res = this.doActionWait(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_WAITVANISH:
-                    res = this.doActionWaitVanish(execution, value1);
+                    res = this.doActionWaitVanish(execution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
                     res = this.doActionWaitNetworkTrafficIdle(execution);
@@ -935,7 +936,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String offsetString) {
+    private MessageEvent doActionClick(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String offsetString) {
         String element;
         try {
             Offset offset = new Offset(offsetString);
@@ -950,44 +951,54 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
             LOG.debug("Click : " + identifier.toString());
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
+                    return webdriverService.doSeleniumActionClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClick(execution.getSession(), identifier.getLocator(), "");
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClick(execution.getSession(), "", identifier.getLocator());
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
+                        return webdriverService.doSeleniumActionClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return androidAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+                return androidAppiumService.click(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return iosAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+                return iosAppiumService.click(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClick(execution.getSession(), "", "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClick(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClick(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
 
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Click")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", execution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Click :" + ex, ex);
@@ -1052,7 +1063,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String offsetString) {
+    private MessageEvent doActionRightClick(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
@@ -1062,29 +1073,39 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(value1);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionRightClick(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionRightClick(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+                    return webdriverService.doSeleniumActionRightClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionRightClick(execution.getSession(), "", "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionRightClick(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionRightClick(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_RIGHTCLICK));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action RightClick :" + ex);
@@ -1092,13 +1113,13 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String offsetString) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution execution, String value1, String offsetString) {
         MessageEvent message;
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
-                return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return sikuliService.doSikuliActionLeftButtonRelease(execution.getSession());
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 Offset offset = new Offset(offsetString);
                 /**
                  * Get Identifier (identifier, locator)
@@ -1106,11 +1127,11 @@ public class ActionService implements IActionService {
                 Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
+                return webdriverService.doSeleniumActionMouseUp(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action MouseUp :" + ex);
@@ -1236,7 +1257,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String offsetString) {
+    private MessageEvent doActionDoubleClick(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
@@ -1251,41 +1272,51 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return androidAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+                    return androidAppiumService.doubleClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDoubleClick(execution.getSession(), identifier.getLocator(), "");
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDoubleClick(execution.getSession(), "", identifier.getLocator());
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
+                        return webdriverService.doSeleniumActionDoubleClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return androidAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return iosAppiumService.doubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return androidAppiumService.doubleClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return iosAppiumService.doubleClick(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDoubleClick(execution.getSession(), "", "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDoubleClick(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDoubleClick(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_DOUBLECLICK));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action DoubleClick :" + ex);
@@ -1293,19 +1324,19 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionType(TestCaseExecution tCExecution, String value1, String value2, String propertyName) {
+    private MessageEvent doActionType(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String value2, String propertyName) {
         try {
             /**
              * Check object and property are not null for GUI/APK/IPA Check
              * property is not null for FAT Application
              */
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (value1 == null || value2 == null) {
                     return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (value2 == null) {
                     return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
                 }
@@ -1318,33 +1349,35 @@ public class ActionService implements IActionService {
                 identifier = identifierService.convertStringToIdentifier(value1);
             }
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, value2, propertyName, false, false);
+                    return webdriverService.doSeleniumActionType(execution.getSession(), identifier, value2, propertyName, false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), value2);
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionType(execution.getSession(), identifier.getLocator(), value2);
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, value2, propertyName, true, true);
+                        return webdriverService.doSeleniumActionType(execution.getSession(), identifier, value2, propertyName, true, true);
                     }
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.type(tCExecution.getSession(), identifier, value2, propertyName);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.type(tCExecution.getSession(), identifier, value2, propertyName);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.type(execution.getSession(), identifier, value2, propertyName);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.type(execution.getSession(), identifier, value2, propertyName);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 String locator = "";
                 if (!StringUtil.isEmptyOrNull(value1)) {
                     identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                     locator = identifier.getLocator();
                 }
-                return sikuliService.doSikuliActionType(tCExecution.getSession(), locator, value2);
+                return sikuliService.doSikuliActionType(execution.getSession(), locator, value2).getResultMessage();
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Type")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", execution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Type : " + ex);
@@ -1352,7 +1385,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String element, String offsetString) {
+    private MessageEvent doActionMouseOver(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String element, String offsetString) {
         MessageEvent message;
         try {
 
@@ -1362,32 +1395,40 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
+                    return webdriverService.doSeleniumActionMouseOver(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionMouseOver(execution.getSession(), identifier.getLocator(), "", offsetString);
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliActionMouseOver(execution.getSession(), "", identifier.getLocator(), offsetString);
+                        actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
+                        return webdriverService.doSeleniumActionMouseOver(execution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionMouseOver(execution.getSession(), identifier.getLocator(), "", offsetString);
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionMouseOver(execution.getSession(), "", identifier.getLocator(), offsetString);
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSEOVER));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action MouseOver :" + ex);
@@ -1395,7 +1436,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionWait(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionWait(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         long timeToWaitInMs = 0;
@@ -1405,19 +1446,19 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, null if both are empty
              */
-            element = getElementToUse(value1, value2, "wait", tCExecution);
+            element = getElementToUse(value1, value2, "wait", execution);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) { // If application are Selenium or appium based, we have a session and can use it to wait.
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) { // If application are Selenium or appium based, we have a session and can use it to wait.
 
                 /**
                  * if element is integer, set time to that value else Get
                  * Identifier (identifier, locator)
                  */
                 if (StringUtil.isEmptyOrNull(element)) {
-                    timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
+                    timeToWaitInMs = execution.getCerberus_action_wait_default();
                 } else if (StringUtil.isInteger(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 } else {
@@ -1425,17 +1466,21 @@ public class ActionService implements IActionService {
                 }
 
                 if (identifier != null && identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWait(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else if (identifier != null && identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWait(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else if (identifier != null) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                        return androidAppiumService.wait(tCExecution.getSession(), identifier);
-                    } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                        return iosAppiumService.wait(tCExecution.getSession(), identifier);
+                    if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                        return androidAppiumService.wait(execution.getSession(), identifier);
+                    } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                        return iosAppiumService.wait(execution.getSession(), identifier);
                     } else {
-                        return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                        return webdriverService.doSeleniumActionWait(execution.getSession(), identifier);
                     }
                 } else {
                     return this.waitTime(timeToWaitInMs);
@@ -1443,7 +1488,7 @@ public class ActionService implements IActionService {
             } else { // For any other application we wait for the integer value.
                 if (StringUtil.isEmptyOrNull(element)) {
                     // Get default wait from parameter
-                    timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
+                    timeToWaitInMs = execution.getCerberus_action_wait_default();
                 } else if (StringUtil.isInteger(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 }
@@ -1456,9 +1501,9 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String element, String valueToKey, String modifier) {
+    private MessageEvent doActionKeyPress(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String element, String valueToKey, String modifier) {
         try {
-            String appType = tCExecution.getApplicationObj().getType();
+            String appType = execution.getApplicationObj().getType();
             /**
              * Check value1 and value2 are not null For IPA and APK, only value2
              * (key to press) is mandatory For GUI and FAT, both parameters are
@@ -1476,29 +1521,32 @@ public class ActionService implements IActionService {
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(element);
 
             if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
-                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
-                    return iosAppiumService.keyPress(tCExecution.getSession(), valueToKey);
+                if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
+                        || execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
+                    return iosAppiumService.keyPress(execution.getSession(), valueToKey);
 
-                } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
-                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, valueToKey, false, false);
+                } else if (execution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+                    return webdriverService.doSeleniumActionKeyPress(execution.getSession(), objectIdentifier, valueToKey, false, false);
                 }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), valueToKey, modifier);
-
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionKeyPress(execution.getSession(), objectIdentifier.getLocator(), valueToKey, modifier);
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
-                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, valueToKey, true, true);
+                    return webdriverService.doSeleniumActionKeyPress(execution.getSession(), objectIdentifier, valueToKey, true, true);
                 }
 
             } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.keyPress(tCExecution.getSession(), valueToKey);
+                return androidAppiumService.keyPress(execution.getSession(), valueToKey);
 
             } else if (appType.equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.keyPress(tCExecution.getSession(), valueToKey);
+                return iosAppiumService.keyPress(execution.getSession(), valueToKey);
 
             } else if (appType.equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), valueToKey, modifier);
+                AnswerItem<JSONObject> answer = sikuliService.doSikuliActionKeyPress(execution.getSession(), objectIdentifier.getLocator(), valueToKey, modifier);
+                actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                return answer.getResultMessage();
 
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
@@ -1601,7 +1649,7 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private MessageEvent doActionWaitVanish(TestCaseExecution tCExecution, String value1) {
+    private MessageEvent doActionWaitVanish(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1) {
         try {
             /**
              * Check value1 is not null or empty
@@ -1614,30 +1662,38 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(value1);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWaitVanish(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWaitVanish(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
+                    return webdriverService.doSeleniumActionWaitVanish(execution.getSession(), identifier);
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return webdriverService.doSeleniumActionWaitVanish(execution.getSession(), identifier);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWaitVanish(execution.getSession(), identifier.getLocator(), "");
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionWaitVanish(execution.getSession(), "", identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 }
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "WaitVanish")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", execution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action KeyPress :" + ex);
@@ -1745,7 +1801,7 @@ public class ActionService implements IActionService {
 
     }
 
-    public MessageEvent doActionDragAndDrop(TestCaseExecution tCExecution, String value1, String value2) throws IOException {
+    public MessageEvent doActionDragAndDrop(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1, String value2) throws IOException {
         MessageEvent message;
         try {
             /**
@@ -1763,32 +1819,34 @@ public class ActionService implements IActionService {
             Identifier identifierDrag = identifierService.convertStringToIdentifier(value1);
             Identifier identifierDrop = identifierService.convertStringToIdentifier(value2);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
 
                 identifierService.checkWebElementIdentifier(identifierDrag.getIdentifier());
                 identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
 
                 if (identifierDrag.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)
                         && identifierDrop.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionDragAndDrop(execution.getSession(), identifierDrag, identifierDrop);
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
                 } else {
                     if (Identifier.IDENTIFIER_OFFSET.equals(identifierDrop.getIdentifier())) {
-                        return webdriverService.doSeleniumActionDragAndDropByOffset(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                        return webdriverService.doSeleniumActionDragAndDropByOffset(execution.getSession(), identifierDrag, identifierDrop, true, true);
                     } else {
-                        return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                        return webdriverService.doSeleniumActionDragAndDrop(execution.getSession(), identifierDrag, identifierDrop, true, true);
                     }
                 }
             }
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 identifierService.checkSikuliIdentifier(identifierDrag.getIdentifier());
                 identifierService.checkSikuliIdentifier(identifierDrop.getIdentifier());
 
-                return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
+                return sikuliService.doSikuliActionDragAndDrop(execution.getSession(), identifierDrag, identifierDrop).getResultMessage();
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_DRAGANDDROP));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action DragAndDrop :" + ex);
@@ -1953,8 +2011,8 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())&&
-                !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
+            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())
+                    && !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -2008,8 +2066,8 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())&&
-                    !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()))
+            if ((!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType())
+                    && !RobotExecutor.PROXY_TYPE_MITMPROXY.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()))
                     || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorBrowserProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));

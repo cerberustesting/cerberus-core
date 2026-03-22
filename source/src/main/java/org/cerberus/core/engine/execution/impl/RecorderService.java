@@ -72,6 +72,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import org.cerberus.core.crud.entity.Parameter;
 
 import org.cerberus.core.engine.entity.ExecutionLog;
 
@@ -499,7 +500,7 @@ public class RecorderService implements IRecorderService {
         long runId = actionExecution.getId();
         String extension = "";
 
-        LOG.debug("Saving picture.");
+        LOG.debug("Saving element picture.");
 
         //Take Screenshot and write it
         try {
@@ -514,9 +515,9 @@ public class RecorderService implements IRecorderService {
 //            extension = mt.getExtension();
             byte[] bytes = IOUtils.toByteArray(istream);
 
-            Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "picture" + valueFieldName, "png", false);
+            Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "element" + valueFieldName, "png", false);
 
-            LOG.debug("Picture FullPath {}", recorder.getFullPath());
+            LOG.debug("Picture Element FullPath {}", recorder.getFullPath());
 
             File dir = new File(recorder.getFullPath());
             if (!dir.exists()) {
@@ -530,11 +531,11 @@ public class RecorderService implements IRecorderService {
 //            IOUtils.close(outStream);
 
             // Index file created to database.
-            object = testCaseExecutionFileFactory.create(0, runId, recorder.getLevel(), "Picture " + valueFieldName, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
+            object = testCaseExecutionFileFactory.create(0, runId, recorder.getLevel(), "Element " + valueFieldName, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
             testCaseExecutionFileService.save(object);
 
             //deletes the temporary file
-            LOG.debug("Picture saved to : {}", recorder.getRelativeFilenameURL());
+            LOG.debug("Picture element saved to : {}", recorder.getRelativeFilenameURL());
 
         } catch (IOException | CerberusException ex) {
             LOG.error("{}", ex.toString(), ex);
@@ -628,7 +629,7 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public List<TestCaseExecutionFile> recordJsonFormatComparison(TestCaseStepActionControlExecution controlExecution, String jsonToVerify, String jsonSchema, String differences){
+    public List<TestCaseExecutionFile> recordJsonFormatComparison(TestCaseStepActionControlExecution controlExecution, String jsonToVerify, String jsonSchema, String differences) {
         // Used for logging purposes
         //String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -1208,7 +1209,6 @@ public class RecorderService implements IRecorderService {
         return object;
     }
 
-
     @Override
     public TestCaseExecutionFile recordHar(TestCaseExecution execution, JSONObject har) {
         TestCaseExecutionFile object = null;
@@ -1352,6 +1352,116 @@ public class RecorderService implements IRecorderService {
             }
         } else {
             LOG.debug("Console Log not recorded because test on non GUI application");
+        }
+        return object;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordExecutionVideo(TestCaseExecution execution, String base64) {
+        TestCaseExecutionFile object = null;
+
+        if (StringUtil.isEmptyOrNull(base64)) {
+            return null;
+        }
+
+        try {
+
+            byte[] data = org.apache.commons.codec.binary.Base64.decodeBase64(base64);
+
+            Recorder recorderVideo = this.initFilenames(execution.getId(), execution.getTest(), execution.getTestCase(), null, null, null, null, null, 0, "video-desktop", "mp4", false);
+            LOG.debug("Video recorder FullPath {}", recorderVideo.getFullPath());
+
+            File image = new File(recorderVideo.getFullFilename());
+            FileUtils.writeByteArrayToFile(image, data);
+
+            // Getting the max size of the screenshot.
+            String fileDesc = "Video";
+            // Copies the temp file to the execution file
+            LOG.info("File saved : {}", recorderVideo.getFullFilename());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorderVideo.getLevel(), fileDesc, recorderVideo.getRelativeFilenameURL(), "MP4", "", null, "", null);
+            // Save index to database
+            testCaseExecutionFileService.save(object);
+
+        } catch (IOException ex) {
+            LOG.error(ex, ex);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+        }
+        return object;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordExecutionScreenshotDebug(TestCaseExecution execution, TestCaseStepActionExecution action, String base64) {
+        TestCaseExecutionFile object = null;
+
+        if (StringUtil.isEmptyOrNull(base64)) {
+            return null;
+        }
+
+        try {
+
+            byte[] data = org.apache.commons.codec.binary.Base64.decodeBase64(base64);
+
+            Recorder recorderScreenshot = this.initFilenames(execution.getId(), execution.getTest(), execution.getTestCase(),
+                    String.valueOf(action.getStepId()), String.valueOf(action.getIndex()), String.valueOf(action.getSequence()), null, null, 0, "debug", "png", false);
+            LOG.debug("Screenshot debug FullPath {}", recorderScreenshot.getFullPath());
+
+            File image = new File(recorderScreenshot.getFullFilename());
+            FileUtils.writeByteArrayToFile(image, data);
+
+            // Getting the max size of the screenshot.
+            String fileDesc = "Debug";
+            // Copies the temp file to the execution file
+            LOG.info("File saved : {}", recorderScreenshot.getFullFilename());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorderScreenshot.getLevel(), fileDesc, recorderScreenshot.getRelativeFilenameURL(), "PNG", "", null, "", null);
+            // Save index to database
+            testCaseExecutionFileService.save(object);
+
+        } catch (IOException ex) {
+            LOG.error(ex, ex);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+        }
+        return object;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordExecutionScreenshotDebug(TestCaseExecution execution, TestCaseStepActionControlExecution control, String base64) {
+        TestCaseExecutionFile object = null;
+
+        if (StringUtil.isEmptyOrNull(base64)) {
+            return null;
+        }
+
+        try {
+
+            byte[] data = org.apache.commons.codec.binary.Base64.decodeBase64(base64);
+
+            Recorder recorderScreenshot = this.initFilenames(execution.getId(), execution.getTest(), execution.getTestCase(),
+                    String.valueOf(control.getStepId()), String.valueOf(control.getIndex()), String.valueOf(control.getSequence()), String.valueOf(control.getControlId()), null, 0, "debug", "png", false);
+            LOG.debug("Screenshot debug FullPath {}", recorderScreenshot.getFullPath());
+
+            File image = new File(recorderScreenshot.getFullFilename());
+            FileUtils.writeByteArrayToFile(image, data);
+
+            // Getting the max size of the screenshot.
+            String fileDesc = "Debug";
+            // Copies the temp file to the execution file
+            LOG.info("File saved : {}", recorderScreenshot.getFullFilename());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorderScreenshot.getLevel(), fileDesc, recorderScreenshot.getRelativeFilenameURL(), "PNG", "", null, "", null);
+            // Save index to database
+            testCaseExecutionFileService.save(object);
+
+        } catch (IOException ex) {
+            LOG.error(ex, ex);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
         }
         return object;
     }

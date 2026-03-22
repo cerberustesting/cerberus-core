@@ -99,7 +99,6 @@
                                         try {
                                             const r = await fetch('ReadApplication');
                                             const d = await r.json();
-                                            console.log(d);
                                             return d.contentTable.map(a => a.application);
                                         } catch (e) {
                                             console.error('Failed to load applications :', e);

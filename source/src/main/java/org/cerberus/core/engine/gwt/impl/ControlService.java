@@ -58,6 +58,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import org.json.JSONObject;
 
 /**
  * {Insert class description here}
@@ -305,16 +306,16 @@ public class ControlService implements IControlService {
                     res = this.evaluateControlIfNumericXXX(controlExecution.getControl(), value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT:
-                    res = this.verifyElementPresent(execution, value1);
+                    res = this.verifyElementPresent(execution, controlExecution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT:
-                    res = this.verifyElementNotPresent(execution, value1);
+                    res = this.verifyElementNotPresent(execution, controlExecution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE:
-                    res = this.verifyElementVisible(execution, value1);
+                    res = this.verifyElementVisible(execution, controlExecution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE:
-                    res = this.verifyElementNotVisible(execution, value1);
+                    res = this.verifyElementNotVisible(execution, controlExecution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCHECKED:
                     res = this.verifyElementChecked(execution, value1);
@@ -736,25 +737,29 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String elementPath) {
+    private MessageEvent verifyElementPresent(TestCaseExecution execution, TestCaseStepActionControlExecution controlExecution, String elementPath) {
         LOG.debug("Control: verifyElementPresent on: {}", elementPath);
         MessageEvent mes;
 
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), identifier.getLocator(), "");
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), "", identifier.getLocator());
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
-                    } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    } else if (this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                         mes.resolveDescription("STRING1", elementPath);
                         return mes;
@@ -768,12 +773,12 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
 
-                if (tCExecution.getLastServiceCalled() != null) {
-                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                if (execution.getLastServiceCalled() != null) {
+                    String responseBody = execution.getLastServiceCalled().getResponseHTTPBody();
 
-                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                    switch (execution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (xmlUnitService.isElementPresent(responseBody, elementPath)) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
@@ -785,7 +790,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(tCExecution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
+                                if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -804,7 +809,7 @@ public class ControlService implements IControlService {
                         }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("TYPE", execution.getLastServiceCalled().getResponseHTTPBodyContentType());
                             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
                             return mes;
                     }
@@ -813,19 +818,23 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
-            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), identifier.getLocator(), "");
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), "", identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
-                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
                     return mes;
 
                 }
@@ -833,7 +842,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -841,7 +850,7 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementNotPresent(TestCaseExecution execution, String elementPath) {
+    private MessageEvent verifyElementNotPresent(TestCaseExecution execution, TestCaseStepActionControlExecution controlExecution, String elementPath) {
         LOG.debug("Control: verifyElementNotPresent on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
@@ -853,10 +862,14 @@ public class ControlService implements IControlService {
 
                 try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (!this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
@@ -873,10 +886,14 @@ public class ControlService implements IControlService {
             } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
@@ -985,23 +1002,27 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String elementPath) {
+    private MessageEvent verifyElementVisible(TestCaseExecution execution, TestCaseStepActionControlExecution controlExecution, String elementPath) {
         LOG.debug("Control: verifyElementVisible on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), identifier.getLocator(), "");
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), "", identifier.getLocator());
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
-                    } else if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
+                    } else if (this.webdriverService.isElementVisible(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
                         mes.resolveDescription("STRING1", elementPath);
                         return mes;
@@ -1015,20 +1036,24 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), identifier.getLocator(), "");
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), "", identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
-                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
                     return mes;
 
                 }
@@ -1036,7 +1061,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE_NULL);
@@ -1044,7 +1069,7 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementNotVisible(TestCaseExecution execution, String elementPath) {
+    private MessageEvent verifyElementNotVisible(TestCaseExecution execution, TestCaseStepActionControlExecution controlExecution, String elementPath) {
         LOG.debug("Control: verifyElementNotVisible on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
@@ -1055,10 +1080,14 @@ public class ControlService implements IControlService {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                        AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                        controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                        return answer.getResultMessage();
 
                     } else if (this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         if (this.webdriverService.isElementNotVisible(execution.getSession(), identifier)) {
@@ -1081,10 +1110,14 @@ public class ControlService implements IControlService {
 
                 Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, controlExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
 
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
@@ -1489,13 +1522,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(tCExecution, responseBody, null, path, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
-                        } catch (Exception ex) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.resolveDescription("ERROR", ex.toString());
-                            return mes;
-                        }
-                        break;
+                                pathContent = jsonService.getFromJson(tCExecution, responseBody, null, path, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.resolveDescription("ERROR", ex.toString());
+                                return mes;
+                            }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -2131,19 +2164,19 @@ public class ControlService implements IControlService {
         LOG.info("Control: verifyJsonFormat format: {}", jsonSchema);
 
         MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VERIFYJSONFORMAT);
-        message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
-        message.resolveDescription("JSONSCHEMA",jsonSchema);
+        message.resolveDescription("JSONTOVALIDATE", jsonToVerify);
+        message.resolveDescription("JSONSCHEMA", jsonSchema);
 
         try {
             StringBuilder differences = new StringBuilder();
             Set<ValidationMessage> errors = jsonSchemaValidator.getDifferences(jsonToVerify, jsonSchema);
             LOG.info("Control: verifyJsonFormat differences found: {}", errors.size());
             if (!errors.isEmpty()) {
-                    errors.forEach(e -> differences.append("- " + e.getMessage()));
-                    message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VERIFYJSONFORMAT);
-                    message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
-                    message.resolveDescription("JSONSCHEMA",jsonSchema);
-                    message.resolveDescription("DIFFERENCES",differences.toString());
+                errors.forEach(e -> differences.append("- " + e.getMessage()));
+                message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VERIFYJSONFORMAT);
+                message.resolveDescription("JSONTOVALIDATE", jsonToVerify);
+                message.resolveDescription("JSONSCHEMA", jsonSchema);
+                message.resolveDescription("DIFFERENCES", differences.toString());
             }
 
             List<TestCaseExecutionFile> fileList = recorderService.recordJsonFormatComparison(controlExecution, jsonToVerify, jsonSchema, differences.toString());
@@ -2151,14 +2184,13 @@ public class ControlService implements IControlService {
                 controlExecution.addFileList(fileList);
             }
 
-            } catch (Exception exception) {
-                LOG.warn(exception);
-                message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                message.resolveDescription("ERROR",exception.toString());
-            }
+        } catch (Exception exception) {
+            LOG.warn(exception);
+            message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            message.resolveDescription("ERROR", exception.toString());
+        }
         return message;
     }
-
 
     /**
      * @param exception the exception need to be parsed by Cerberus

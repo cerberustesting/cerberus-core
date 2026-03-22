@@ -118,6 +118,8 @@ public class TestCaseExecution {
     private String seleniumIPUser;
     private String seleniumIPPassword;
     private String seleniumPort;
+    private String remoteLiveUrl;
+    private String remoteControlLiveUrl;
     private Integer pageSource;
     private Integer robotLog;
     private Integer consoleLog;
@@ -410,6 +412,8 @@ public class TestCaseExecution {
             result.put("robotExecutor", this.getRobotExecutor());
             result.put("robotHost", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));
             result.put("robotPort", this.getRobotPort());
+            result.put("remoteLiveUrl", this.getRemoteLiveUrl());
+            result.put("remoteControlLiveUrl", this.getRemoteControlLiveUrl());
             result.put("url", StringUtil.secureFromSecrets(this.getUrl(), this.getSecrets()));
             result.put("tag", this.getTag());
             result.put("verbose", this.getVerbose());

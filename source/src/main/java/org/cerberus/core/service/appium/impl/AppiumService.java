@@ -48,6 +48,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
+import org.cerberus.core.util.answer.AnswerUtil;
 
 /**
  * @author bcivel
@@ -124,13 +125,16 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         try {
             WebElement elmt = this.getElement(session, identifier, false, false);
+
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.resolveDescription("ELEMENTFOUND", "At least one element was found")
+                    .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             return message;
 
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.resolveDescription("MESSAGE", "")
+                    .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             LOG.debug(exception.toString());
             return message;
 
@@ -148,10 +152,9 @@ public abstract class AppiumService implements IAppiumService {
             if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
                 Integer numberOfElement = this.getNumberOfElements(session, identifier);
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
-                if (elmt instanceof WebElement ) {
+                foundElementMsg = AnswerUtil.getMessageDependingOnNbOfElement(numberOfElement, identifier.toString());
+
+                if (elmt instanceof WebElement) {
                     ((WebElement) this.getElement(session, identifier, false, false)).sendKeys(valueToType);
                 }
 //                else { // FIXME See if we can delete it ??
@@ -195,9 +198,7 @@ public abstract class AppiumService implements IAppiumService {
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 Point offset = new Point(coordinates.getX(), coordinates.getY());
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", "1");
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                foundElementMsg = AnswerUtil.getMessageDependingOnNbOfElement(1, identifier.toString());
 
                 tap(appiumDriver, offset.getX(), offset.getY());
 
@@ -205,10 +206,7 @@ public abstract class AppiumService implements IAppiumService {
 
                 WebElement element = getElement(session, identifier, false, false);
                 Integer numberOfElement = this.getNumberOfElements(session, identifier);
-
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                foundElementMsg = AnswerUtil.getMessageDependingOnNbOfElement(numberOfElement, identifier.toString());
 
                 Rectangle rect = element.getRect();
                 int elementX = rect.getX() + (rect.getWidth() / 2) + ((hOffset != null && hOffset != 0) ? hOffset : 0);
@@ -221,7 +219,9 @@ public abstract class AppiumService implements IAppiumService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(e.getMessage());
             }
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT)
+                    .resolveDescription("ELEMENT", identifier.toString())
+                    .resolveDescription("MESSAGE", "");
         } catch (WebDriverException e) {
             LOG.warn(e.getMessage());
             return parseWebDriverException(e);
@@ -230,7 +230,7 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent doubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset){
+    public MessageEvent doubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset) {
 
         try {
             MessageEvent foundElementMsg;
@@ -241,23 +241,18 @@ public abstract class AppiumService implements IAppiumService {
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 Point offset = new Point(coordinates.getX(), coordinates.getY());
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", "1");
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                foundElementMsg = AnswerUtil.getMessageDependingOnNbOfElement(1, identifier.toString());
 
                 tap(appiumDriver, offset.getX(), offset.getY());
                 Thread.sleep(150);
                 tap(appiumDriver, offset.getX(), offset.getY());
-
 
             } else {
 
                 WebElement element = getElement(session, identifier, false, false);
                 Integer numberOfElement = this.getNumberOfElements(session, identifier);
 
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                foundElementMsg = AnswerUtil.getMessageDependingOnNbOfElement(numberOfElement, identifier.toString());
 
                 Rectangle rect = element.getRect();
                 int elementX = rect.getX() + (rect.getWidth() / 2) + ((hOffset != null && hOffset != 0) ? hOffset : 0);
@@ -272,7 +267,9 @@ public abstract class AppiumService implements IAppiumService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(e.getMessage());
             }
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT)
+                    .resolveDescription("ELEMENT", identifier.toString())
+                    .resolveDescription("MESSAGE", "");
         } catch (WebDriverException e) {
             LOG.warn(e.getMessage());
             return parseWebDriverException(e);
@@ -287,7 +284,7 @@ public abstract class AppiumService implements IAppiumService {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence tap = new Sequence(finger, 1);
 
-        tap.addAction(finger.createPointerMove(Duration.ZERO,PointerInput.Origin.viewport(),x,y));
+        tap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, y));
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
         tap.addAction(new Pause(finger, Duration.ofMillis(80)));
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
@@ -312,11 +309,11 @@ public abstract class AppiumService implements IAppiumService {
      * Get the {@link Coordinates} represented by the given {@link Identifier}
      *
      * @param identifier the {@link Identifier} to parse to get the
-     *                   {@link Coordinates}
+     * {@link Coordinates}
      * @return the {@link Coordinates} represented by the given
      * {@link Identifier}
      * @throws NoSuchElementException if no {@link Coordinates} can be found
-     *                                inside the given {@link Identifier}
+     * inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
         if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
@@ -495,7 +492,7 @@ public abstract class AppiumService implements IAppiumService {
      * @param element
      * @return
      */
-    private boolean scrollDown(TestCaseExecution testCaseExecution, By element, int numberOfScrollDown, Integer hOffset, Integer vOffset) throws CerberusEventException{
+    private boolean scrollDown(TestCaseExecution testCaseExecution, By element, int numberOfScrollDown, Integer hOffset, Integer vOffset) throws CerberusEventException {
 
         AppiumDriver driver = testCaseExecution.getSession().getAppiumDriver();
         Dimension screenSize = driver.manage().window().getSize();
@@ -504,10 +501,12 @@ public abstract class AppiumService implements IAppiumService {
         float screenBottomPercentage = parameters.getParameterFloatByKey("cerberus_appium_scroll_startBottomPercentageScreenHeight", null, 0.8f);
 
         /**
-         * Check if cerberus_appium_scroll_endTopScreenPercentageScreenHeight and cerberus_appium_scroll_startBottomPercentageScreenHeight parameters are float between 0 and 1
+         * Check if cerberus_appium_scroll_endTopScreenPercentageScreenHeight
+         * and cerberus_appium_scroll_startBottomPercentageScreenHeight
+         * parameters are float between 0 and 1
          */
-        if (screenTopPercentage < 0 || screenTopPercentage > 1 ||  screenBottomPercentage < 0 || screenBottomPercentage > 1){
-            MessageEvent me  =new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_INVALID_PARAMETER);
+        if (screenTopPercentage < 0 || screenTopPercentage > 1 || screenBottomPercentage < 0 || screenBottomPercentage > 1) {
+            MessageEvent me = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_INVALID_PARAMETER);
             throw new CerberusEventException(me);
         }
 
@@ -525,23 +524,22 @@ public abstract class AppiumService implements IAppiumService {
 
                 //Element found, perform another scroll to put the element at the middle of the screen at the defined offset.
                 int distanceFromMiddleOfTheScreen = (driver.manage().window().getSize().height / 2) - driver.findElement(element).getLocation().getY();
-                testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Coordinate : (" + driver.findElement(element).getLocation().getX() + ";" + driver.findElement(element).getLocation().getY() + "). Distance from the middle of the screen ("+distanceFromMiddleOfTheScreen+"px)");
-
+                testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Coordinate : (" + driver.findElement(element).getLocation().getX() + ";" + driver.findElement(element).getLocation().getY() + "). Distance from the middle of the screen (" + distanceFromMiddleOfTheScreen + "px)");
 
                 if (distanceFromMiddleOfTheScreen > 0) {
                     int targetCoordinateY = topY + distanceFromMiddleOfTheScreen + vOffset;
                     scroll(driver, pressX, topY, pressX, targetCoordinateY);
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+topY+") to coord("+pressX+";"+targetCoordinateY+")");
-                } else if (distanceFromMiddleOfTheScreen < 0 ){
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord(" + pressX + ";" + topY + ") to coord(" + pressX + ";" + targetCoordinateY + ")");
+                } else if (distanceFromMiddleOfTheScreen < 0) {
                     int targetCoordinateY = bottomY + distanceFromMiddleOfTheScreen + vOffset;
                     scroll(driver, pressX, bottomY, pressX, targetCoordinateY);
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+targetCoordinateY+")");
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord(" + pressX + ";" + bottomY + ") to coord(" + pressX + ";" + targetCoordinateY + ")");
                 }
 
                 return true;
             } else {
                 scroll(driver, pressX, bottomY, pressX, topY);
-                testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element "+element+" not displayed. Scrolled "+i+"/"+numberOfScrollDown+" from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+topY+")");
+                testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " not displayed. Scrolled " + i + "/" + numberOfScrollDown + " from coord(" + pressX + ";" + bottomY + ") to coord(" + pressX + ";" + topY + ")");
             }
 
         } while (i < numberOfScrollDown);
@@ -615,9 +613,9 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent clearField(final Session session, final Identifier identifier) {
         try {
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
-                click(session, identifier,0, 0);
+                click(session, identifier, 0, 0);
             } else {
-                click(session, identifier, 0 ,0);
+                click(session, identifier, 0, 0);
                 this.getElement(session, identifier, false, false).clear();
 
             }

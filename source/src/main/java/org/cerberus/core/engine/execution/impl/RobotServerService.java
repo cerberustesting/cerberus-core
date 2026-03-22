@@ -257,9 +257,8 @@ public class RobotServerService implements IRobotServerService {
              * Starting Cerberus Robot Proxy if it has been activated at
              * robot level.
              */
-            if (execution.getRobotExecutorObj() != null && (
-                    RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType()) ||
-                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
+            if (execution.getRobotExecutorObj() != null && (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())
+                    || RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
                 LOG.debug("Start Remote Cerberus Proxy");
                 executorService.startRemoteProxy(execution, execution.getRobotExecutorObj().getExecutorProxyType());
                 LOG.debug("Started Remote Cerberus Robot Proxy on port: {}", execution.getRemoteProxyPort());
@@ -310,10 +309,10 @@ public class RobotServerService implements IRobotServerService {
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
                 }
                 clientConfig = ClientConfig.defaultConfig()
-                                .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
-                                .readTimeout(java.time.Duration.ofMillis(robotTimeout))
-                                .baseUri(url.toURI())
-                                .proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
+                        .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .baseUri(url.toURI())
+                        .proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
 
             } else {
                 clientConfig = ClientConfig.defaultConfig()
@@ -617,9 +616,9 @@ public class RobotServerService implements IRobotServerService {
              * Starting Cerberus Executor Proxy if it has been activated at
              * robot level.
              */
-            if (execution.getRobotExecutorObj() != null &&
-                    (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType()) ||
-                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
+            if (execution.getRobotExecutorObj() != null
+                    && (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())
+                    || RobotExecutor.PROXY_TYPE_MITMPROXY.equals(execution.getRobotExecutorObj().getExecutorProxyType()))) {
                 LOG.debug("Start Remote Proxy");
                 executorService.startRemoteProxy(execution, execution.getRobotExecutorObj().getExecutorProxyType());
                 LOG.debug("Started Remote Proxy on port: {}", execution.getRemoteProxyPort());
@@ -638,7 +637,6 @@ public class RobotServerService implements IRobotServerService {
             } catch (Exception ex) {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
-
 
             // SetUp HubURL
             String hubUrl = generateHubUrl(execution, session);
@@ -1121,6 +1119,7 @@ public class RobotServerService implements IRobotServerService {
 
     /**
      * Verify if a capability is already defined in a HashMap
+     *
      * @param caps HashMap to search in
      * @param capability Capability to search
      * @return true if the capability is not defined in the HashMap
@@ -1130,7 +1129,9 @@ public class RobotServerService implements IRobotServerService {
     }
 
     /**
-     * Parse the capabilities list entered by the user and build a MutableCapabilities object according to the W3C protocol.
+     * Parse the capabilities list entered by the user and build a
+     * MutableCapabilities object according to the W3C protocol.
+     *
      * @param caps Capabilities list entered by the user
      * @return MutableCapabilities built according to the W3C protocol.
      */
@@ -1140,7 +1141,9 @@ public class RobotServerService implements IRobotServerService {
 
         for (RobotCapability capability : caps) {
             String[] labels = capability.getCapability().split(":");
-            if (labels.length == 1) capabilities.setCapability(labels[0], castCapability(capability));
+            if (labels.length == 1) {
+                capabilities.setCapability(labels[0], castCapability(capability));
+            }
 
             if (labels.length == 2) {
                 String prefix = labels[0];
@@ -1200,7 +1203,6 @@ public class RobotServerService implements IRobotServerService {
         }
 
         // if application is a mobile one, then set the "app" capability to the application binary path
-
         if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             if (execution.getRobotExecutorObj() != null) {
                 // Setting deviceUdid and device name from executor.
@@ -1274,13 +1276,13 @@ public class RobotServerService implements IRobotServerService {
                 }
 
                 if (execution.getVerbose() >= 2) {
-                    if (isNotAlreadyDefined(browserstackCapabilities,"debug")) {
+                    if (isNotAlreadyDefined(browserstackCapabilities, "debug")) {
                         browserstackCapabilities.put("debug", true);
                     }
-                    if (isNotAlreadyDefined(browserstackCapabilities,"consoleLogs")) {
+                    if (isNotAlreadyDefined(browserstackCapabilities, "consoleLogs")) {
                         browserstackCapabilities.put("consoleLogs", "warnings");
                     }
-                    if (isNotAlreadyDefined(browserstackCapabilities,"networkLogs")) {
+                    if (isNotAlreadyDefined(browserstackCapabilities, "networkLogs")) {
                         browserstackCapabilities.put("networkLogs", true);
                     }
                 }
@@ -1365,13 +1367,13 @@ public class RobotServerService implements IRobotServerService {
 
     private MutableCapabilities sortCapabilities(MutableCapabilities capsToSort) {
         Map<String, Object> map = capsToSort.asMap().entrySet()
-            .stream()
-            .sorted(Map.Entry.<String, Object>comparingByKey())
-            .collect(Collectors.toMap(
-                    Map.Entry::getKey,
-                    Map.Entry::getValue,
-                    (oldValue, newValue) -> oldValue, LinkedHashMap::new
-            ));
+                .stream()
+                .sorted(Map.Entry.<String, Object>comparingByKey())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new
+                ));
         return new MutableCapabilities(map);
     }
 
@@ -1604,7 +1606,7 @@ public class RobotServerService implements IRobotServerService {
 //                    }
 //                    optionsOP.setCapability("browser", "opera");
 //                    // Forcing a profile in order to force UserAgent. This has been commented because it fail when using BrowserStack that does not allow to create the correcponding profile folder.
-////                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                ////                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
 ////                        optionsOP.setCapability("opera.profile", "{profileName: \"foo\",userAgent: \"" + usedUserAgent + "\"}");
 ////                    }
 //                    return optionsOP;
@@ -1652,9 +1654,9 @@ public class RobotServerService implements IRobotServerService {
 
     private Proxy getProxyFromExecutor(RobotExecutor executor, Integer remoteProxyPort) {
 
-        if (executor != null &&
-                (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())||
-                RobotExecutor.PROXY_TYPE_MITMPROXY.equals(executor.getExecutorProxyType()))) {
+        if (executor != null
+                && (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())
+                || RobotExecutor.PROXY_TYPE_MITMPROXY.equals(executor.getExecutorProxyType()))) {
             Proxy proxy = new Proxy();
             proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
             proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
@@ -1778,8 +1780,8 @@ public class RobotServerService implements IRobotServerService {
             try {
                 // Get Har File when Cerberus Robot Proxy is activated.
                 // If proxy started and parameter verbose >= 1 activated
-                if ((RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())||
-                    RobotExecutor.PROXY_TYPE_MITMPROXY.equals(tce.getRobotExecutorObj().getExecutorProxyType()))
+                if ((RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())
+                        || RobotExecutor.PROXY_TYPE_MITMPROXY.equals(tce.getRobotExecutorObj().getExecutorProxyType()))
                         && tce.getVerbose() >= 1 && (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false))) {
 
                     // Before collecting the stats, we wait the network idles for few minutes
@@ -1842,16 +1844,44 @@ public class RobotServerService implements IRobotServerService {
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
             Session session = tCExecution.getSession();
-            String nodeUri;
+            String nodeUri = null;
+            JSONObject selSession;
 
             HttpClient client = HttpClientBuilder.create().build();
 
-            nodeUri = getIpOfNodeSelenium4(client, session);
+            selSession = getSessionOfNodeSelenium4(client, session);
 
             //If null, we are on selenium 3
-            if (StringUtil.isEmptyOrNull(nodeUri)) {
+            if (!selSession.has("nodeUri")) {
                 LOG.debug("nodeUri is null. Trying to get with Selenium 3.");
                 nodeUri = getIpOfNodeSelenium3(client, session);
+            } else {
+                nodeUri = selSession.getString("nodeUri");
+                try {
+                    String sessionId = selSession.getString("nodeId");
+                    LOG.debug("nodeUri is defined. We are on selenium 4 and can try to get the guacamole URL of the node for live debug.");
+                    JSONArray nodeInfos = getNodesInfosOfSelenium4(client, session);
+                    for (Object nodeInfo : nodeInfos) {
+                        JSONObject node = (JSONObject) nodeInfo;
+                        if (node.getString("id").equals(sessionId)) {
+                            JSONArray stereotype = new JSONArray(node.getString("stereotypes"));
+                            LOG.debug("found on current session");
+                            LOG.debug(stereotype.toString(1));
+                            LOG.debug("Extract URLs of Guacamole :");
+                            if (stereotype.getJSONObject(0).has("stereotype")) {
+                                if (stereotype.getJSONObject(0).getJSONObject("stereotype").has("crb:remoteUrl")) {
+                                    tCExecution.setRemoteLiveUrl(stereotype.getJSONObject(0).getJSONObject("stereotype").getString("crb:remoteUrl"));
+                                }
+                                if (stereotype.getJSONObject(0).getJSONObject("stereotype").has("crb:remoteControlUrl")) {
+                                    tCExecution.setRemoteControlLiveUrl(stereotype.getJSONObject(0).getJSONObject("stereotype").getString("crb:remoteControlUrl"));
+                                }
+                            }
+                        }
+                    }
+
+                } catch (IOException | JSONException ex) {
+                    LOG.warn(ex.toString(), ex);
+                }
             }
 
             if (nodeUri != null) {
@@ -1898,13 +1928,34 @@ public class RobotServerService implements IRobotServerService {
         return nodeUri;
     }
 
-    private static String getIpOfNodeSelenium4(HttpClient client, Session session) throws IOException, JSONException {
+    private static JSONObject getSessionOfNodeSelenium4(HttpClient client, Session session) throws IOException, JSONException {
         SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
         HttpPost request = new HttpPost(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/graphql");
         StringEntity params = new StringEntity(String.format("{\"query\":\"{ session (id: \\\"%s\\\") { id, uri, nodeId, nodeUri } } \"}", sessionId));
         request.addHeader("Content-Type", "application/json");
         request.setEntity(params);
-        LOG.debug("Calling Hub to get the node information (Selenium 4). {}", request.getURI());
+        LOG.debug("Calling Hub to get the session information (Selenium 4). {}", request.getURI());
+        HttpResponse response = client.execute(request);
+        //If 404, we are on Selenium 3
+        if (response.getStatusLine().getStatusCode() != 200) {
+            return new JSONObject();
+        } else {
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            JSONObject json = new JSONObject(content);
+            LOG.debug("Selenium Hub answer :");
+            LOG.debug(json.toString(1));
+            return json.getJSONObject("data").getJSONObject("session");
+        }
+    }
+
+    private static JSONArray getNodesInfosOfSelenium4(HttpClient client, Session session) throws IOException, JSONException {
+        SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
+        HttpPost request = new HttpPost(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/graphql");
+        StringEntity params = new StringEntity(String.format("{\"query\":\"{ nodesInfo { nodes { id uri status slotCount sessionCount stereotypes } } } \"}", sessionId));
+        request.addHeader("Content-Type", "application/json");
+        request.setEntity(params);
+        LOG.debug("Calling Hub to get the nodes information (Selenium 4). {}", request.getURI());
         HttpResponse response = client.execute(request);
         //If 404, we are on Selenium 3
         if (response.getStatusLine().getStatusCode() != 200) {
@@ -1913,7 +1964,9 @@ public class RobotServerService implements IRobotServerService {
             HttpEntity entity = response.getEntity();
             String content = EntityUtils.toString(entity);
             JSONObject json = new JSONObject(content);
-            return json.getJSONObject("data").getJSONObject("session").getString("nodeUri");
+            LOG.debug("Selenium Hub answer :");
+            LOG.debug(json.toString(1));
+            return json.getJSONObject("data").getJSONObject("nodesInfo").getJSONArray("nodes");
         }
     }
 
@@ -2080,10 +2133,10 @@ public class RobotServerService implements IRobotServerService {
 
     private String generateHubUrl(TestCaseExecution execution, Session session) {
         String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
-                        execution.getSession().getHostUser(),
-                        execution.getSession().getHostPassword(),
-                        session.getHost()),
-                session.getPort())+"/wd/hub");
+                execution.getSession().getHostUser(),
+                execution.getSession().getHostPassword(),
+                session.getHost()),
+                session.getPort()) + "/wd/hub");
 
         //Only remove /wd/hub on app because not supported anymore on Appium 2.
         if ((execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA))) {
