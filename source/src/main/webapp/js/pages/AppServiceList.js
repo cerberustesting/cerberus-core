@@ -137,27 +137,46 @@ function getTestCasesUsingService(service) {
 
         $.each(result["TestCasesList"], function (idx, obj) {
 
-            var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
-            data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
-                                        <span style="margin-left: 25px;" class="pull-right">' + doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTestCases") + obj[2] + '</span>\n\
-                                        <span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span>\n\
-                                    </a></b>';
-            htmlContent += item;
-            htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
+            var item = `<div x-data="{open:false}" class="border-b">
+                <b>
+                    <a @click="open=!open"
+                       class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-100">
+                        <span>${obj[0]}</span>
+                        <span class="ml-6 text-sm text-gray-600">
+                            ${doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTestCases")}${obj[2]}
+                        </span>
+                        <span class="transition-transform"
+                              :class="{'rotate-180': open}"><i class="fa fa-chevron-down"></i>
+                        </span>
+                    </a>
+                </b>
+                <div x-show="open" x-collapse class="bg-gray-50">
+            `;
 
+            htmlContent += item;
 
             $.each(obj[3], function (idx2, obj2) {
                 var hrefTest = 'TestCaseScript.jsp?test=' + obj[0] + '&testcase=' + obj2.TestCaseNumber;
-                htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;height: 50px;">';
-                htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span></br>';
-                htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
-                        + doc.getDocLabel("testcase", "IsActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
-                        doc.getDocLabel("invariant", "TESTCASE_TYPE") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
-                htmlContent += '</span>';
+                htmlContent += `
+                <div class="px-16 py-3 border-t">
+                    <div>
+                        <a href="${hrefTest}" target="_blank" class="font-medium hover:underline">
+                            ${obj2.TestCaseNumber} - ${obj2.TestCaseDescription}
+                        </a>
+                    </div>
+        
+                    <div class="text-sm text-gray-600 mt-1">
+                        ${doc.getDocLabel("testcase", "Creator")}: ${obj2.Creator} |
+                        ${doc.getDocLabel("testcase", "IsActive")}: ${obj2.Active} |
+                        ${doc.getDocLabel("testcase", "Status")}: ${obj2.Status} |
+                        ${doc.getDocLabel("invariant", "TESTCASE_TYPE")}: ${obj2.Group} |
+                        ${doc.getDocLabel("application", "Application")}: ${obj2.Application}
+                    </div>
+                </div>
+                `;
             });
 
-            htmlContent += '</div>';
-
+            htmlContent += `</div></div>`;
         });
         if (htmlContent !== '') {
             $('#testCaseListModal #testCaseListGroup').append(htmlContent);
