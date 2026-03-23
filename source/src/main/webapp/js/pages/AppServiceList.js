@@ -35,7 +35,12 @@ function initPage() {
 
     // configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("soapLibrarysTable", "ReadAppService", "contentTable", aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForAppService, "#soapLibraryList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForAppService, "#soapLibraryList", undefined, true);
+
+    $('#soapLibrarysTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
+    });
 
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
 }
@@ -53,58 +58,38 @@ function displayPageLabel() {
 
 function renderOptionsForAppService(data) {
     var doc = new Doc();
-    if (data["hasPermissions"]) {
-        if ($("#createSoapLibraryButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createSoapLibraryButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> "
-                    + doc.getDocLabel("page_appservice", "button_create")
-                    + "</button></div>";
-            $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
-                    .before(contentToAdd);
-            $('#soapLibraryList #createSoapLibraryButton').off("click");
-            $('#soapLibraryList #createSoapLibraryButton').click(function () {
+
+    if ($("#createSoapLibraryButton").length === 0) {
+        var disabledCreate = data["hasPermissions"] ? "" : "disabled";
+
+        var contentToAdd = `
+            <button id='createSoapLibraryButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
+                ${disabledCreate}>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>${doc.getDocLabel("page_appservice", "button_create")}</span>
+            </button>
+        `;
+
+        var $wrapper = $("#soapLibrarysTable_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.append(contentToAdd);
+            if (window.lucide) lucide.createIcons();
+        } else {
+            $("#soapLibrarysTable_wrapper #soapLibrarysTable_length").before("<div id='soapLibrarysTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            if (window.lucide) lucide.createIcons();
+        }
+
+        if (data["hasPermissions"]) {
+            $("#createSoapLibraryButton").off("click").on("click", function () {
                 openModalAppService(undefined, "ADD");
             });
-        }
-    } else {
-        if ($("#blankSpace").length === 0) {
-            var contentToAdd = "<div class='marginBottom10' id='blankSpace'></div>";
-            $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
-                    .before(contentToAdd);
         }
     }
 }
 
 function removeEntryClick(service) {
-    var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var name = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteAppService?service=" + encodeURIComponent(name),
-            async: true,
-            dataType: "json",
-            method: "GET",
-            success: function (data) {
-
-                var messageType = getAlertType(data.messageType);
-                if (messageType === "success") {
-
-                }
-                hideLoaderInModal('#removeSoapLibraryModal');
-                var oTable = $("#soapLibrarysTable").dataTable();
-                oTable.fnDraw(false);
-                $('#removeSoapLibraryModal').modal('hide');
-                showMessageMainPage(messageType, data.message, false);
-
-            },
-            error: showUnexpectedError
-        });
-
-        $('#confirmationModal').modal('hide');
-    }, undefined, doc.getDocLabel("page_appservice", "title_remove"), doc
-            .getDocLabel("page_appservice", "message_remove").replace(
-            '%SERVICE%', service), service, undefined, undefined,
-            undefined);
+    deleteEntryClick(service);
 }
 
 /**
@@ -197,55 +182,77 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "150px",
             "title": doc.getDocLabel("page_global", "columnAction"),
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId)
-                        .attr("hasPermissions");
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
 
-                var editEntry = '<button id="editEntry" onclick="openModalAppService(\''
-                        + obj["service"]
-                        + '\', \'EDIT\'  );"\n\
-                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplicationObject" title="'
-                        + doc.getDocLabel("page_appservice", "button_edit")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var duplicateEntry = '<button class="btn btn-default btn-xs margin-right5" \n\
-					                    	 name="duplicateApplicationObject" title="'
-                        + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")
-                        + '" type="button" onclick="openModalAppService(\'' + obj["service"] + '\', \'DUPLICATE\'  )">\n\
-					                        <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="openModalAppService(\''
-                        + obj["service"]
-                        + '\',\'EDIT\');"\n\
-                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplicationObject" title="'
-                        + doc.getDocLabel("page_appservice", "button_edit")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\''
-                        + obj["service"]
-                        + '\');" \n\
-                                    class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteApplicationObject" title="'
-                        + doc.getDocLabel("page_appservice",
-                                "button_delete")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-trash"></span></button>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-
-                var viewTestCase = '<button class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
-                        name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
-                        onclick="getTestCasesUsingService(' + "'" + obj.service + '\')"><span class="glyphicon glyphicon-list"></span></button>';
-
-
-                if (hasPermissions === "true") {
-                    return '<div class="center btn-group width250">'
-                            + editEntry + duplicateEntry + deleteEntry + viewTestCase
-                            + '</div>';
+                function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `
+                        <button id="${id}" name="${name}" type="button"
+                            class="${baseBtnClass} ${extraClass} ${disabledClass}"
+                            title="${title}"
+                            ${disabled ? "disabled" : `onclick="${onClick}"`}>
+                            ${icon}
+                        </button>`;
                 }
-                return '<div class="center btn-group width250">'
-                        + viewEntry + '</div>';
 
+                const icons = {
+                    edit: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    view: `<i data-lucide="eye" class="w-4 h-4"></i>`,
+                    duplicate: `<i data-lucide="copy" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    list: `<i data-lucide="list" class="w-4 h-4"></i>`
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: `editService_${row}`,
+                    name: "editAppService",
+                    title: doc.getDocLabel("page_appservice", "button_edit"),
+                    onClick: `openModalAppService('${obj["service"]}', 'EDIT')`,
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Duplicate
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `duplicateService_${row}`,
+                        name: "duplicateAppService",
+                        title: doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry"),
+                        onClick: `openModalAppService('${obj["service"]}', 'DUPLICATE')`,
+                        icon: icons.duplicate
+                    }));
+                }
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `deleteService_${row}`,
+                        name: "deleteAppService",
+                        title: doc.getDocLabel("page_appservice", "button_delete"),
+                        onClick: `deleteEntryClick('${obj["service"]}')`,
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // View Test Cases
+                buttons.push(actionButton({
+                    id: `viewTestCases_${row}`,
+                    name: "getTestCasesUsing",
+                    title: doc.getDocLabel("page_testdatalib", "tooltip_gettestcases"),
+                    onClick: `getTestCasesUsingService('${obj.service}')`,
+                    icon: icons.list
+                }));
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {
@@ -446,38 +453,41 @@ function aoColumnsFunc(tableId) {
     return aoColumns;
 }
 
-function deleteEntryHandlerClick() {
-    var application = $('#confirmationModal').find('#hiddenField1').prop(
-            "value");
-    var object = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteApplicationService", {
-        service: service
-    }, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            // redraw the datatable
-            var oTable = $("#soapLibrarysTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {// page has only one row, then returns to the
-                // previous page
-                oTable.fnPageChange('previous');
-            }
-        }
-        // show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        // close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function deleteEntryClick(service) {
+async function deleteEntryClick(service) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_appservice", "message_delete");
+    var messageComplete = doc.getDocLabel("page_appservice", "message_delete") || "Are you sure you want to delete this service?";
     messageComplete = messageComplete.replace("%ENTRY%", service);
-    removeEntryClick(service);
-}
 
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_appservice", "title_remove") || "Delete Service",
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || "Delete",
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || "Cancel",
+        preConfirm: async () => {
+            try {
+                const resp = await fetch("DeleteAppService?service=" + encodeURIComponent(service), {
+                    method: "GET"
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#soapLibrarysTable").dataTable();
+        oTable.fnDraw(false);
+        if (oTable.fnGetData().length === 1) {
+            oTable.fnPageChange('previous');
+        }
+        notifyInPage("success", result.value.message || "Service deleted successfully");
+    }
+}

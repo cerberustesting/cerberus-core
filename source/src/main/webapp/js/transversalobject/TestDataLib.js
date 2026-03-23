@@ -22,11 +22,7 @@ var initMode = "";
 
 $(function () {
     $('[data-toggle="popover"]').popover()
-
-    $('#editTestDataLibModal #service').change(function () {
-        changeAppServiceFromHere();
-    });
-
+    // changeAppServiceFromHere not needed with crbDropdown
 })
 
 
@@ -186,15 +182,7 @@ function initModalDataLib() {
         addNewSubDataRow("SubdataTable_edit");
     });
 
-    displayInvariantList("system", "SYSTEM", false, "", "");
-    displayInvariantList("environment", "ENVIRONMENT", false, "", "");
-    displayInvariantList("country", "COUNTRY", false, "", "");
-    displayInvariantList("database", "PROPERTYDATABASE", false, "", "");
-    displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
-    displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
-    displayInvariantList("types", "TESTDATATYPE", false, "INTERNAL");
-
-    displayAppServiceList("service", "", "", "");
+    // crbDropdown loaders handle these now (no more displayInvariantList / displayAppServiceList)
 
 
     $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
@@ -414,7 +402,8 @@ function confirmDataLibModalHandler(mode, page, aceElementId, dataLibName) {
                     }
                 }
 
-                $('#editTestDataLibModal').modal('hide');
+                $('#editTestDataLibModal').find('[x-data]').each(function() { if (this.__x) this.__x.$data.open = false; });
+                window.dispatchEvent(new CustomEvent('testdatalib-modal-close'));
                 showMessage(data);
             } else {
                 showMessage(data, $('#editTestDataLibModal'));
@@ -500,7 +489,7 @@ function feedDataLibModal(datalibId, modalId, mode, dataLibName) {
                     var service = data.testDataLib;
                     feedDataLibModalData(service, modalId, mode, data.hasPermissions);
 
-                    formEdit.modal('show');
+                    window.dispatchEvent(new CustomEvent('testdatalib-modal-open'));
                 } else {
                     showUnexpectedError();
                 }
@@ -535,7 +524,7 @@ function feedDataLibModal(datalibId, modalId, mode, dataLibName) {
         DataObj1.subDataList = "";
 
         feedDataLibModalData(DataObj1, modalId, mode, hasPermissions);
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('testdatalib-modal-open'));
     }
 
 }
@@ -586,10 +575,12 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #tdlname').prop("value", obj.name);
         $("#buttonDownloadCsvFile").attr("href", "./api/testdatalibs/" + encodeURI(obj.testDataLibID) + "/csv/");
 
-        $('#editTestDataLibModal #types').prop("value", obj.type);
-        $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
-        $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
-        $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
+        $('#editTestDataLibModal #types').val(obj.type);
+        window.dispatchEvent(new CustomEvent('dlTypes-preselect', {detail: obj.type}));
+        window.dispatchEvent(new CustomEvent('dl-type-changed', {detail: obj.type}));
+        window.dispatchEvent(new CustomEvent('dlSystem-preselect', {detail: obj.system}));
+        window.dispatchEvent(new CustomEvent('dlEnvironment-preselect', {detail: obj.environment}));
+        window.dispatchEvent(new CustomEvent('dlCountry-preselect', {detail: obj.country}));
 
         obj.privateData === "Y" ? obj.privateData = true : obj.privateData = false;
         var disabled = hasPermissionsUpdate ? "" : "disabled";
@@ -613,25 +604,21 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         });
 
         //loads the information for the entries
-        $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+        window.dispatchEvent(new CustomEvent('dlDatabaseUrl-preselect', {detail: obj.databaseUrl}));
 
-//        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
-        // init the select2
-//        $('#editTestDataLibModal #service').select2(getComboConfigService());
-        $('#editTestDataLibModal #service').select2({width: '400px'});
-        // set it with the service value
-        $("#editTestDataLibModal #service").val(obj.service).trigger('change');
+        // Service - use crbDropdown preselect instead of select2
+        window.dispatchEvent(new CustomEvent('dlService-preselect', {detail: obj.service}));
 
         $('#editTestDataLibModal #servicepaths').prop("value", obj.servicePath);
         $('#editTestDataLibModal #methods').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').text(obj.envelope);
 //        activateSOAPServiceFields("#editTestDataLibModal", obj.service);
-        $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
+        window.dispatchEvent(new CustomEvent('dlDatabaseCsv-preselect', {detail: obj.databaseCsv}));
         $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#editTestDataLibModal #separator').prop("value", obj.separator);
         $('#editTestDataLibModal #ignoreFirstLine').prop("checked", obj.ignoreFirstLine);
 
-        $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+        window.dispatchEvent(new CustomEvent('dlDatabase-preselect', {detail: obj.database}));
         $('#editTestDataLibModal #script').text(obj.script);
 
         $('#editTestDataLibModal #libdescription').prop("value", obj.description);
@@ -642,7 +629,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #lastModified').prop("value", getDate(obj.lastModified));
         $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
-        changeAppServiceFromHere();
+        // changeAppServiceFromHere not needed with crbDropdown
 
         // Loading the list of subdata.       
         if ((mode === "EDIT") || (mode === "DUPLICATE")) {
@@ -700,7 +687,8 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
     } else {
         formEdit.find("#tdlname").prop("readonly", "");
         if (mode === "ADD") {
-            $('#editTestDataLibModal #types option[value="INTERNAL"]').prop("selected", true);
+            window.dispatchEvent(new CustomEvent('dlTypes-preselect', {detail: 'INTERNAL'}));
+            window.dispatchEvent(new CustomEvent('dl-type-changed', {detail: 'INTERNAL'}));
             $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "title_create"));
         } else {
             $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "title_duplicate"));
@@ -719,40 +707,57 @@ function appendSubDataRow(subdata, targetTableBody) {
     if (subdata.subData === "") {
         isKey = true;
     }
+
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var tdStyle = { "padding": "10px 8px", "verticalAlign": "middle" };
+
     if (isKey) {
-        var deleteBtn = $("<button type=\"button\" disabled=\"disabled\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-        var subDataInput = $("<input  maxlength=\"200\" disabled=\"disabled\">").addClass("form-control").val(subdata.subData);
+        var deleteBtn = $("<button type='button' disabled='disabled'></button>")
+            .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #e2e8f0", "background": "#f8fafc", "color": "#94a3b8", "cursor": "not-allowed", "display": "flex", "alignItems": "center", "justifyContent": "center", "fontSize": "12px", "width": "34px", "height": "34px" })
+            .html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
+        var subDataInput = $("<input maxlength='200' disabled='disabled'>").addClass(inputClasses).css({"background": "#f8fafc", "color": "#94a3b8", "borderColor": "#e2e8f0"}).val(subdata.subData);
     } else {
-        var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-        var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control").val(subdata.subData);
+        var deleteBtn = $("<button type='button'></button>")
+            .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "justifyContent": "center", "fontSize": "12px", "transition": "all 0.2s", "width": "34px", "height": "34px" })
+            .html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+            .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+            .on("mouseleave", function() { if (!subdata.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+        var subDataInput = $("<input onkeydown='return dtl_keyispressed(event);' maxlength='200' placeholder='Sub data name'>").addClass(inputClasses).val(subdata.subData);
     }
     subdata.encrypt === "Y" ? subdata.encrypt = true : subdata.encrypt = false;
-    var encryptInput = $("<input type='checkbox' \">").prop("checked", subdata.encrypt).addClass("form-control input-sm");
+    var encryptInput = $("<input type='checkbox'>").css({ "width": "18px", "height": "18px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", subdata.encrypt);
     var typeStyle = subdata.encrypt === true ? "password" : "";
-    var valueInput = $("<input type=\"" + typeStyle + "\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control").val(subdata.value);
-    var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control").val(subdata.column);
-    var parsingAnswerInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "parsingAnswer") + " --\">").addClass("form-control").val(subdata.parsingAnswer);
-    var columnPositionInput = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "columnPosition") + " --\">").addClass("form-control").val(subdata.columnPosition);
-    var descriptionInput = $("<input  maxlength=\"1000\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "description") + " --\">").addClass("form-control").val(subdata.description);
+    var valueInput = $("<input type='" + typeStyle + "' placeholder='Value'>").addClass(inputClasses).val(subdata.value);
+    var columnInput = $("<input maxlength='255' placeholder='Column'>").addClass(inputClasses).val(subdata.column);
+    var parsingAnswerInput = $("<input placeholder='XPath / JSONPath'>").addClass(inputClasses).val(subdata.parsingAnswer);
+    var columnPositionInput = $("<input maxlength='45' placeholder='Position'>").addClass(inputClasses).val(subdata.columnPosition);
+    var descriptionInput = $("<input maxlength='1000' placeholder='Description'>").addClass(inputClasses).val(subdata.description);
     var table = $("#" + targetTableBody);
 
-
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var subData = $("<td></td>").append(subDataInput);
-    var encrypt = $("<td></td>").append(encryptInput);
-    var value = $("<td></td>").append(valueInput);
-    var column = $("<td></td>").append(columnInput);
-    var parsingAnswer = $("<td></td>").append(parsingAnswerInput);
-    var columnPosition = $("<td></td>").append(columnPositionInput);
-    var description = $("<td></td>").append(descriptionInput);
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!subdata.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseleave", function() { if (!subdata.toDelete) $(this).css("background", ""); });
+    var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "50px", "textAlign": "center" })).append(deleteBtn);
+    var subData = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(subDataInput);
+    var encrypt = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "70px" })).append(encryptInput);
+    var value = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(valueInput);
+    var column = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "100px" })).append(columnInput);
+    var parsingAnswer = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(parsingAnswerInput);
+    var columnPosition = $("<td></td>").css($.extend({}, tdStyle, { "width": "100px" })).append(columnPositionInput);
+    var description = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "140px" })).append(descriptionInput);
     deleteBtn.click(function () {
         subdata.toDelete = (subdata.toDelete) ? false : true;
 
         if (subdata.toDelete) {
-            row.addClass("danger");
+            row.css({ "background": "#fef2f2", "opacity": "0.5" });
+            row.find("input[type='text'], input[type='password']").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
+            deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+            deleteBtn.html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
         } else {
-            row.removeClass("danger");
+            row.css({ "background": "", "opacity": "1" });
+            row.find("input[type='text'], input[type='password']").css({ "textDecoration": "none", "color": "#0f172a", "background": "white" });
+            deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+            deleteBtn.html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
         }
     });
     subDataInput.change(function () {

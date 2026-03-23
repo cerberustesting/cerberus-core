@@ -1395,6 +1395,75 @@ function showModalConfirmation(handlerClickOk, handlerClickNo, title, message, h
     $('#confirmationModal').modal('show');
 }
 
+/**
+ * Modern confirmation dialog using SweetAlert2.
+ * Follows the project modal design system (sky-400 buttons, 1rem rounded, CSS vars).
+ *
+ * @param {Object} options
+ * @param {string} options.title     - Dialog title
+ * @param {string} options.html      - Message body (HTML allowed)
+ * @param {string} [options.confirmText] - Confirm button label (default: "Delete")
+ * @param {string} [options.cancelText]  - Cancel button label (default: "Cancel")
+ * @param {string} [options.icon]        - SweetAlert icon: 'warning','error','success','info','question'
+ * @param {string} [options.confirmColor]- Confirm button color (default: '#dc2626' red for deletes)
+ * @param {Function} options.preConfirm  - Async function called on confirm. Return data on success, or call Swal.showValidationMessage on error.
+ * @returns {Promise} Swal result
+ *
+ * Usage:
+ *   const result = await crbConfirmDelete({
+ *       title: 'Delete entry?',
+ *       html: 'Are you sure you want to delete <b>MyEntry</b>?',
+ *       preConfirm: async () => { ... }
+ *   });
+ *   if (result.isConfirmed && result.value) { ... }
+ */
+async function crbConfirmDelete(options) {
+    options = options || {};
+
+    // Inject custom CSS on first call (lazy)
+    if (!document.getElementById('crb-swal-styles')) {
+        var style = document.createElement('style');
+        style.id = 'crb-swal-styles';
+        style.textContent = '.crb-swal-popup{border-radius:1rem!important;border:1px solid var(--crb-border-color,#e2e8f0)!important;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)!important;font-family:inherit!important}.crb-swal-popup .swal2-title{font-size:1.125rem!important;font-weight:600!important}.crb-swal-popup .swal2-html-container{font-size:.875rem!important}.crb-swal-popup .swal2-actions{gap:.5rem!important}.crb-swal-popup .swal2-confirm{border-radius:.375rem!important;font-size:.875rem!important;font-weight:500!important;padding:.5rem 1rem!important}.crb-swal-cancel{border-radius:.375rem!important;font-size:.875rem!important;font-weight:500!important;padding:.5rem 1rem!important;border:1px solid var(--crb-border-color,#cbd5e1)!important;color:var(--crb-black-color,#334155)!important;background:transparent!important}.crb-swal-cancel:hover{background:var(--crb-hover-bg,#f1f5f9)!important}';
+        document.head.appendChild(style);
+    }
+
+    // Fallback to native confirm if Swal is not available
+    if (typeof Swal === 'undefined') {
+        console.warn('crbConfirmDelete: SweetAlert2 not available, using native confirm()');
+        var confirmed = confirm((options.title || 'Confirm') + '\n\n' + (options.html || '').replace(/<[^>]*>/g, ''));
+        if (confirmed && typeof options.preConfirm === 'function') {
+            try {
+                var data = await options.preConfirm();
+                return { isConfirmed: true, value: data };
+            } catch (e) {
+                return { isConfirmed: false, value: null };
+            }
+        }
+        return { isConfirmed: confirmed, value: confirmed };
+    }
+
+    return Swal.fire({
+        title: options.title || 'Confirm Deletion',
+        html: options.html || 'Are you sure?',
+        icon: options.icon || 'warning',
+        showCancelButton: true,
+        confirmButtonText: options.confirmText || 'Delete',
+        cancelButtonText: options.cancelText || 'Cancel',
+        confirmButtonColor: options.confirmColor || '#dc2626',
+        cancelButtonColor: 'transparent',
+        background: 'var(--crb-new-bg)',
+        color: 'var(--crb-black-color)',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: function() { return !Swal.isLoading(); },
+        customClass: {
+            popup: 'crb-swal-popup',
+            cancelButton: 'crb-swal-cancel'
+        },
+        preConfirm: options.preConfirm || function() { return true; }
+    });
+}
+
 function modalConfirmationIsVisible() {
     return $('#confirmationModal').is(":visible");
 }

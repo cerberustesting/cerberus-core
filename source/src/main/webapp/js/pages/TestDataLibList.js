@@ -30,7 +30,7 @@ function initPage() {
     var doc = new Doc();
     displayPageLabel();
 
-    $('#editTestDataLibModal').on('hidden.bs.modal', {extra: "#editTestLibData"}, buttonCloseHandler);
+    window.addEventListener('testdatalib-modal-close', function() { buttonCloseHandler({data: {extra: "#editTestLibData"}}); });
 
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
 
@@ -52,9 +52,12 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
     //creates the main table and draws the management buttons if the user has the permissions
-    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
-        $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
-        refreshPopoverDocumentation("testDataLibList");
+    var table = createDataTableWithPermissionsNew(configurations, renderOptionsForTestDataLib, "#testDataLibList", undefined, true);
+    refreshPopoverDocumentation("testDataLibList");
+
+    $('#listOfTestDataLib').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
     });
 
 }
@@ -72,40 +75,53 @@ function displayPageLabel() {
 }
 
 function renderOptionsForTestDataLib(data) {
-    //check if user has permissions to perform the add and import operations
     var doc = new Doc();
 
-    if (data["hasPermissions"]) {
-        if ($("#createLibButton").length === 0 && $("#bulkRenameButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> ";
-            contentToAdd += doc.getDocLabel("page_testdatalib", "btn_create"); //translation for the create button;
-            contentToAdd += "</button>";
-            contentToAdd += "<button id='bulkRenameButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-duplicate'></span> ";
-            contentToAdd += doc.getDocLabel("page_testdatalib", "btn_bulkrename"); // translation for the bulk rename button
-            contentToAdd += "</button>";
-            contentToAdd += "</div>";
+    if ($("#createLibButton").length === 0) {
+        var disabledCreate = data["hasPermissions"] ? "" : "disabled";
 
-            $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
+        var contentToAdd = "";
 
-            if (window.matchMedia("(max-width: 768px)").matches) {
-                $("#createLibButton").addClass("pull-right")
-                $("#bulkRenameButton").addClass("pull-right");
-            }
+        // Bouton Create
+        contentToAdd += `
+            <button id='createLibButton' type='button'
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'
+                ${disabledCreate}>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>${doc.getDocLabel("page_testdatalib", "btn_create")}</span>
+            </button>
+        `;
 
-            $("#createLibButton").off("click");
-            $('#createLibButton').click(function () {
+        // Bouton Bulk Rename
+        if (data["hasPermissions"]) {
+            contentToAdd += `
+                <button id='bulkRenameButton' type='button'
+                    class='flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-sky-500 h-10'>
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <span>${doc.getDocLabel("page_testdatalib", "btn_bulkrename")}</span>
+                </button>
+            `;
+        }
+
+        // Insert into buttonWrapper
+        var $wrapper = $("#listOfTestDataLib_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.append(contentToAdd);
+            if (window.lucide) lucide.createIcons();
+        } else {
+            $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before("<div id='listOfTestDataLib_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            if (window.lucide) lucide.createIcons();
+        }
+
+        if (data["hasPermissions"]) {
+            $("#createLibButton").off("click").on("click", function () {
                 openModalDataLib(null, null, "ADD");
-
             });
 
-            $("#bulkRenameButton").off("click");
-            $('#bulkRenameButton').click(function () {
+            $("#bulkRenameButton").off("click").on("click", function () {
                 openModalDataLibBulk();
             });
-
         }
-    } else {
-        $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("page_global", "columnAction"));
     }
 }
 
@@ -133,7 +149,8 @@ function openModalDataLibBulk() {
         confirmDataLibBulkModalHandler();
     });
 
-    $('#bulkRenameDataLibModal').modal('show');
+    window.dispatchEvent(new CustomEvent('bulkrename-modal-open'));
+    setTimeout(function() { if (window.lucide) lucide.createIcons(); }, 100);
 }
 
 /**
@@ -197,7 +214,7 @@ function confirmDataLibBulkModalHandler() {
             success: function (data) {
                 hideLoaderInModal('#bulkRenameDataLibModal');
                 if (getAlertType(data.messageType) === "success") {
-                    $('#bulkRenameDataLibModal').modal('hide');
+                    window.dispatchEvent(new CustomEvent('bulkrename-modal-close'));
                     var oTable = $("#listOfTestDataLib").dataTable();
                     oTable.fnDraw(false);
                     var doc = new Doc();
@@ -212,39 +229,56 @@ function confirmDataLibBulkModalHandler() {
 }
 
 function deleteTestDataLibHandlerClick() {
-    var testDataLibID = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteTestDataLib", {testdatalibid: testDataLibID}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#listOfTestDataLib").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
+    // Legacy — kept for backward compat but no longer called directly
 }
 
-function deleteTestDataLibClick(testDataLibID, name, system, environment, country, type) {
+async function deleteTestDataLibClick(testDataLibID, name, system, environment, country, type) {
     var doc = new Doc();
 
     var systemLabel = system === '' ? doc.getDocLabel("page_global", "lbl_all") : system;
     var environmentLabel = environment === '' ? doc.getDocLabel("page_global", "lbl_all") : environment;
     var countryLabel = country === '' ? doc.getDocLabel("page_global", "lbl_all") : country;
 
-    var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete").replace("%ENTRY%", name).replace("%ID%", testDataLibID).replace("%SYSTEM%", systemLabel)
-            .replace("%ENVIRONMENT%", environmentLabel).replace("%COUNTRY%", countryLabel);
-    showModalConfirmation(deleteTestDataLibHandlerClick, undefined, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
+    var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete")
+        .replace("%ENTRY%", name)
+        .replace("%ID%", testDataLibID)
+        .replace("%SYSTEM%", systemLabel)
+        .replace("%ENVIRONMENT%", environmentLabel)
+        .replace("%COUNTRY%", countryLabel);
 
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_testdatalib_delete", "title"),
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await fetch("DeleteTestDataLib", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "testdatalibid=" + testDataLibID
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#listOfTestDataLib").dataTable();
+        oTable.fnDraw(false);
+        if (oTable.fnGetData().length === 1) {
+            oTable.fnPageChange('previous');
+        }
+        notifyInPage("success", result.value.message || "Data Library deleted successfully");
+    }
 }
 
 /**
@@ -336,34 +370,76 @@ function aoColumnsFuncTestDataLib(tableId) {
             "bSearchable": false,
             "sWidth": "150px",
             "title": doc.getDocLabel("testdatalib", "actions"),
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'EDIT\', \'TestDataLibList\', null);" \n\
-                                class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'EDIT\', \'TestDataLibList\', null);" \n\
-                                class="editTestDataLib btn btn-default btn-xs margin-right25" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteElement = '<button onclick="deleteTestDataLibClick(' + obj.testDataLibID + ',\'' + obj.name
-                        + '\', ' + '\'' + obj.system + '\', ' + '\'' + obj.environment + '\', ' + '\'' + obj.country + '\', '
-                        + '\'' + obj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
-                            name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-trash"></span></button>';
-                var duplicateEntryElement = '<button class="btn btn-default btn-xs margin-right5" \n\
-                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
-                                 type="button" onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'DUPLICATE\', \'TestDataLibList\', null)">\n\
-                                <span class="glyphicon glyphicon-duplicate"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
-                var viewTestCase = '<button class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
-                            name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
-                            onclick="getTestCasesUsing(' + data + ', \'' + obj.name + '\', \'' + obj.country + '\')"><span class="glyphicon glyphicon-list"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + meta.row;
 
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width250">' + editElement + duplicateEntryElement + deleteElement + viewTestCase + '</div>';
-                } else {
-                    return '<div class="center btn-group width250">' + viewElement + viewTestCase + '</div>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `
+                        <button id="${id}" name="${name}" type="button"
+                            class="${baseBtnClass} ${extraClass} ${disabledClass}"
+                            title="${title}"
+                            ${disabled ? "disabled" : `onclick="${onClick}"`}>
+                            ${icon}
+                        </button>`;
                 }
+
+                const icons = {
+                    edit: `<i data-lucide="${hasPermissions ? 'pencil' : 'eye'}" class="w-4 h-4"></i>`,
+                    duplicate: `<i data-lucide="copy" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    list: `<i data-lucide="list" class="w-4 h-4"></i>`
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: `editTestDataLib_${row}`,
+                    name: "editTestDataLib",
+                    title: doc.getDocLabel("page_testdatalib", "tooltip_editentry"),
+                    onClick: `openModalDataLib('${obj.testDataLibID}', '${obj.name}', 'EDIT', 'TestDataLibList', null)`,
+                    icon: icons.edit
+                }));
+
+                // Duplicate
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `duplicateTestDataLib_${row}`,
+                        name: "duplicateTestDataLib",
+                        title: doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry"),
+                        onClick: `openModalDataLib('${obj.testDataLibID}', '${obj.name}', 'DUPLICATE', 'TestDataLibList', null)`,
+                        icon: icons.duplicate
+                    }));
+                }
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `deleteTestDataLib_${row}`,
+                        name: "deleteTestDataLib",
+                        title: doc.getDocLabel("page_testdatalib", "tooltip_delete"),
+                        onClick: `deleteTestDataLibClick(${obj.testDataLibID}, '${obj.name}', '${obj.system}', '${obj.environment}', '${obj.country}', '${obj.type}')`,
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // View Test Cases
+                buttons.push(actionButton({
+                    id: `viewTestCases_${row}`,
+                    name: "getTestCasesUsing",
+                    title: doc.getDocLabel("page_testdatalib", "tooltip_gettestcases"),
+                    onClick: `getTestCasesUsing(${data}, '${obj.name}', '${obj.country}')`,
+                    icon: icons.list
+                }));
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {

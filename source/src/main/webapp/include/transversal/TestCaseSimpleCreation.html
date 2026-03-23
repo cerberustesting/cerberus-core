@@ -1,4 +1,4 @@
-<!-- Modal Component -->
+<!-- Create Test Case - Alpine.js/Tailwind refactored -->
 <div
         x-data="testCaseModal()"
         x-init="init()"
@@ -8,88 +8,68 @@
         class="crb_modal">
 
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-slate-900 opacity-60" @click="open = false"></div>
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
-    <!-- Modal -->
-    <div :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-4xl rounded-2xl'"
-         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300"
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         @click.away="if (!$event.target.closest('.single-select-dropdown')) open = false">
+         @click.stop>
 
         <!-- HEADER -->
-        <div class="flex items-center justify-between px-6 py-4 mb-8">
-
-            <!-- LEFT -->
+        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
             <div class="flex items-center gap-3">
-
-                <!-- ICON -->
                 <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
-                    <i data-lucide="pencil"
-                       class="w-5 h-5 text-blue-600"></i>
+                    <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i>
                 </div>
-
                 <div>
-                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('testcaseSimpleCreation','modaltitle')"></h2>
-                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('testcaseSimpleCreation','modalsubtitle')"></p>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" x-text="$store.labels.getLabel('testcaseSimpleCreation','modaltitle')"></h2>
+                    <p class="text-xs text-slate-500 !mb-0" x-text="$store.labels.getLabel('testcaseSimpleCreation','modalsubtitle')"></p>
                 </div>
             </div>
-
-            <!-- ACTIONS -->
-            <div class="flex items-center gap-2">
-
-                <!-- FULLSCREEN -->
-                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
                 </button>
-
-                <!-- CLOSE -->
-                <button @click="open = false" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Stepper -->
-        <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
-            <template x-for="(label, index) in steps" :key="index">
-                <button @click="step = index"
-                        :class="step === index ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                        class="flex-1 flex items-center justify-center px-4 py-2 rounded-md transition-colors duration-200 gap-2">
-                    <template x-if="completedSteps.includes(index)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </template>
-                    <span x-text="label"></span>
-                </button>
+        <!-- Messages -->
+        <div class="px-6 shrink-0">
+            <template x-if="errorMessage">
+                <div class="bg-red-100 text-red-800 p-2 rounded-lg flex justify-between items-center mt-2 text-sm">
+                    <strong x-text="errorMessage"></strong>
+                    <button @click="errorMessage=''" class="ml-2 text-red-600 hover:text-red-800">&times;</button>
+                </div>
             </template>
         </div>
 
-        <!-- Body -->
-        <div class="p-6 space-y-6">
-            <template x-if="errorMessage">
-                <div class="bg-red-100 text-red-800 p-2 rounded flex justify-between items-center">
-                    <strong x-text="errorMessage"></strong>
-                    <button @click="errorMessage=''" class="ml-2">&times;</button>
-                </div>
-            </template>
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form @submit.prevent="submitForm()" id="createTestCaseForm" role="form" autocomplete="off">
 
-            <form @submit.prevent="submitForm()" class="space-y-4">
+                <!-- Section 1: Application -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="app-window" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Application</span>
+                    </div>
 
-                <!-- Step 1: Application -->
-                <div x-show="step === 0" class="space-y-4" x-data="{ open: false, creatingApplication: false }">
-
-                    <div class="p-4 space-y-2">
-                        <div class="font-semibold">Choose the application</div>
-
-                        <!-- Bloc SELECTION d'application existante -->
-                        <div x-show="!creatingApplication" x-transition>
-                            <div x-data="singleSelectDropdown({
+                    <!-- Sélection existante -->
+                    <div x-show="!creatingApplication" x-transition>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Choose the application</label>
+                        <div x-data="singleSelectDropdown({
                                 id: 'editTestCaseSimpleCreationApplication',
                                 loader: async () => {
                                     try {
@@ -102,143 +82,109 @@
                                     }
                                 }
                             })"
-                                 x-modelable="selectedValue"
-                                 x-model="form.application">
-                            </div>
+                             x-modelable="selectedValue"
+                             x-model="form.application">
+                        </div>
+                        <div class="mt-2">
+                            <button type="button"
+                                    @click="creatingApplication = true; form.application=''"
+                                    class="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3 h-3"></i>
+                                Create a new application
+                            </button>
+                        </div>
+                    </div>
 
-                            <div class="mt-2">
-                                <button type="button"
-                                        @click="creatingApplication = true; form.application=''"
-                                        class="text-sm text-blue-600 hover:underline">
-                                    + Create a new application
-                                </button>
+                    <!-- Création d'une nouvelle app -->
+                    <div x-show="creatingApplication" x-transition
+                         class="space-y-3 mt-2 rounded-lg p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                        <div class="flex gap-3">
+                            <div class="flex-[1_1_33%] min-w-[150px]">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Name</label>
+                                <input type="text" x-model="form.application"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                            </div>
+                            <div class="flex-[2_1_66%] min-w-[200px]">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">URL</label>
+                                <input type="text" x-model="form.url"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
                             </div>
                         </div>
-
-                        <!-- Bloc CREATION d'une nouvelle application -->
-                        <div x-show="creatingApplication" x-transition
-                             class="space-y-2 mt-4 rounded p-4 bg-slate-50 dark:bg-slate-800"
-                             x-init="
-                                    $watch('form.application', checkAllFilled);
-                                    $watch('form.type', checkAllFilled);
-                                    $watch('form.url', checkAllFilled);
-                                    $watch('form.country', checkAllFilled);
-                                    $watch('form.environment', checkAllFilled);
-
-                                    function checkAllFilled() {
-                                        if(form.application && form.type && form.url && form.country && form.environment) {
-                                            nextStepIfValid('application');
-                                        }
-                                    }
-                                 ">
-                            <!-- Ligne 1 : Name + URL -->
-                            <div class="flex gap-2 flex-wrap">
-                                <div class="flex-[1_1_33%] min-w-[150px]">
-                                    <label>Name</label>
-                                    <input type="text" x-model="form.application" class="w-full border rounded px-2 py-1 h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-                                </div>
-                                <div class="flex-[2_1_66%] min-w-[200px]">
-                                    <label>URL</label>
-                                    <input type="text" x-model="form.url" class="w-full border rounded px-2 py-1 h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-                                </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1 min-w-[120px]">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Type</label>
+                                <select name="editTestCaseSimpleCreationApplicationType" x-model="form.type"
+                                        class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                                </select>
                             </div>
-
-                            <!-- Ligne 2 : Type + Country + Environment -->
-                            <div class="flex gap-2 flex-wrap mt-2">
-                                <div class="flex-1 min-w-[120px]">
-                                    <label>Type</label>
-                                    <select name="editTestCaseSimpleCreationApplicationType"
-                                            x-model="form.type"
-                                            class="w-full border rounded px-2 py-1 h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label>Country</label>
-                                    <select name="editTestCaseSimpleCreationCountry"
-                                            x-model="form.country"
-                                            class="w-full border rounded px-2 py-1 h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-                                    </select>
-                                </div>
-                                <div class="flex-1 min-w-[120px]">
-                                    <label>Environment</label>
-                                    <select name="editTestCaseSimpleCreationEnvironment"
-                                            x-model="form.environment"
-                                            class="w-full border rounded px-2 py-1 h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-                                    </select>
-                                </div>
+                            <div class="flex-1 min-w-[120px]">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Country</label>
+                                <select name="editTestCaseSimpleCreationCountry" x-model="form.country"
+                                        class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                                </select>
                             </div>
-
-                            <!-- Lien "Choose existing application" -->
-                            <div class="flex gap-2 mt-4">
-                                <button type="button"
-                                        @click="creatingApplication=false; form.application='';"
-                                        class="text-sm text-blue-600 hover:underline">
-                                    ← Choose existing application
-                                </button>
+                            <div class="flex-1 min-w-[120px]">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Environment</label>
+                                <select name="editTestCaseSimpleCreationEnvironment" x-model="form.environment"
+                                        class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                                </select>
                             </div>
                         </div>
+                        <button type="button"
+                                @click="creatingApplication=false; form.application='';"
+                                class="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                            <i data-lucide="arrow-left" class="w-3 h-3"></i>
+                            Choose existing application
+                        </button>
                     </div>
                 </div>
 
-                <!-- Step 2: Description -->
-                <div x-show="step === 1" class="p-4 space-y-2">
-                    <label>Describe shortly your TestCase</label>
-                    <input type="text" id="editTestCaseSimpleCreationDescription" x-model="form.description" @keyup.enter="nextStepIfValid('description')" placeholder="As a user..."
-                           class="w-full h-10 text-sm border rounded px-2 py-1 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                <!-- Section 2: Description -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</span>
+                    </div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Describe shortly your test case</label>
+                    <input type="text" id="editTestCaseSimpleCreationDescription" x-model="form.description" placeholder="As a user..."
+                           class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
                 </div>
 
-                <!-- Step 3: Folder -->
-                <div x-show="step === 2" class="p-4 space-y-2">
-                    <div class="flex gap-2 flex-wrap items-end">
+                <!-- Section 3: Folder & Test Case ID -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="folder" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Test Location</span>
+                    </div>
+                    <div class="flex gap-3">
                         <!-- Folder dropdown -->
                         <div class="flex-1 min-w-[150px]">
-                            <label>Choose (or Create) a folder</label>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Test Folder</label>
                             <div x-data="folderDropdown({ model: form.testFolderId, items: tests })"
-                                 x-effect="
-                                        items = tests;
-                                        selected = form.testFolderId;
-                                    "
+                                 x-effect="items = tests; selected = form.testFolderId;"
                                  class="relative w-full">
 
-                                <!-- Bouton principal -->
                                 <button type="button"
                                         @click="open = !open"
                                         id="editTestCaseSimpleCreationTestFolder"
-                                        class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
-                               dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                        class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
                                     <span x-text="selectedLabel()"></span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2"
-                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                    </svg>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
                                 </button>
 
                                 <!-- Dropdown -->
                                 <div x-show="open"
                                      @click.away="open = false"
                                      x-transition
-                                     class="absolute mt-1 w-full rounded-md border shadow-lg z-50
-                            dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
-                            bg-white border-slate-300 text-slate-900 max-h-64 overflow-hidden">
+                                     class="absolute mt-1 w-full rounded-md border shadow-lg z-50 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden">
 
-                                    <!-- Barre de recherche -->
-                                    <div class="p-2 border-b dark:border-slate-700">
+                                    <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                                         <input type="text" x-model="search" placeholder="Search or create..."
                                                id="editTestCaseSimpleCreationTestFolderSearch"
-                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600">
+                                               class="w-full text-sm border rounded-md px-3 py-1.5 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     </div>
 
-                                    <!-- Liste / création -->
                                     <div class="max-h-52 overflow-auto">
-
-                                        <!-- Résultats existants -->
                                         <template x-if="filteredItems().length > 0">
                                             <template x-for="item in filteredItems()" :key="item">
                                                 <button type="button"
@@ -250,7 +196,6 @@
                                             </template>
                                         </template>
 
-                                        <!-- Aucun résultat → proposer création -->
                                         <template x-if="filteredItems().length === 0">
                                             <button type="button"
                                                     id="editTestCaseSimpleCreationTestFolderNew"
@@ -259,7 +204,6 @@
                                                 Create "<span x-text="search"></span>"
                                             </button>
                                         </template>
-
                                     </div>
                                 </div>
                             </div>
@@ -267,27 +211,26 @@
 
                         <!-- Test Case ID -->
                         <div class="flex-1 min-w-[150px]">
-                            <label>Test Case ID</label>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Test Case ID</label>
                             <input type="text"
                                    x-model="form.testcaseId"
                                    id="editTestCaseSimpleCreationTestcaseId"
-                                   class="w-full border rounded px-3 py-2 text-sm h-10
-                          dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
-                               bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
                         </div>
-
                     </div>
                 </div>
-
 
             </form>
         </div>
 
-        <!-- Footer -->
-        <div class="flex justify-end gap-2 px-6 py-4 mt-8">
-            <button @click="prevStep()" :disabled="step === 0" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Back</button>
-            <button @click="step === 2 ? submitForm() : nextStep()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                <span x-text="step === 2 ? 'Create' : 'Next'"></span>
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" @click="submitForm()"
+                    class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Create</span>
             </button>
         </div>
     </div>
@@ -317,17 +260,9 @@
 
             createNew() {
                 if (!this.search.trim()) return;
-
                 const newItem = this.search.trim();
-
-                if (!Array.isArray(this.items)) {
-                    this.items = [];
-                }
-
-                if (!this.items.includes(newItem)) {
-                    this.items.push(newItem);
-                }
-
+                if (!Array.isArray(this.items)) { this.items = []; }
+                if (!this.items.includes(newItem)) { this.items.push(newItem); }
                 this.select(newItem);
             },
 
@@ -341,9 +276,6 @@
         return {
             open: false,
             isFullscreen: false,
-            step: 0,
-            steps: ['Application', 'Description', 'Folder'],
-            completedSteps: [],
             errorMessage: '',
             creatingApplication: false,
             form: {
@@ -358,25 +290,20 @@
             },
             applications: [],
             tests: [],
-            countries: [],
-            environments: [],
-            appTypes: [],
 
-
-            async setDefaultTest(test){
+            async setDefaultTest(test) {
                 await this.loadTests();
                 await this.loadInvariants();
 
                 if (test && this.tests.includes(test)) {
                     this.form.testFolderId = test;
-
-                    // déclenche auto génération ID
                     this.$nextTick(() => this.fetchNextTestCaseId());
                 }
+
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
             },
 
-
-            async loadTests(){
+            async loadTests() {
                 const resp = await fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=100');
                 const data = await resp.json();
                 this.tests = data.contentTable.map(obj => obj.test);
@@ -384,56 +311,34 @@
 
             async loadInvariants() {
                 await this.$nextTick();
-
                 const root = this.$root;
-
                 root.querySelectorAll("[name='editTestCaseSimpleCreationApplicationType']").forEach(el => el.innerHTML = '');
                 root.querySelectorAll("[name='editTestCaseSimpleCreationCountry']").forEach(el => el.innerHTML = '');
                 root.querySelectorAll("[name='editTestCaseSimpleCreationEnvironment']").forEach(el => el.innerHTML = '');
-
                 displayInvariantList("editTestCaseSimpleCreationApplicationType", "APPLITYPE", false);
                 displayInvariantList("editTestCaseSimpleCreationCountry", "COUNTRY", false);
                 displayInvariantList("editTestCaseSimpleCreationEnvironment", "ENVIRONMENT", false);
             },
 
-            fetchNextTestCaseId(){
-                if(!this.form.testFolderId) return;
+            fetchNextTestCaseId() {
+                if (!this.form.testFolderId) return;
                 fetch(`ReadTestCase?test=${encodeURIComponent(this.form.testFolderId)}&getMaxTC=true`)
-                    .then(resp=>resp.json())
-                    .then(data=>{ this.form.testcaseId = data.nextAvailableTestcaseId || ''; });
+                    .then(resp => resp.json())
+                    .then(data => { this.form.testcaseId = data.nextAvailableTestcaseId || ''; });
             },
 
-            validateStep(field){
-                switch(field){
-                    case 'application': return !!this.form.application;
-                    case 'description': return !!this.form.description;
-                    case 'testFolderId': return !!this.form.testFolderId && !!this.form.testcaseId;
-                }
+            validateForm() {
+                if (!this.form.application) { this.errorMessage = "Please specify the application!"; return false; }
+                if (!this.form.testFolderId) { this.errorMessage = "Please specify the test folder!"; return false; }
+                if (!this.form.testcaseId) { this.errorMessage = "Please specify the Testcase ID!"; return false; }
+                if (this.form.testFolderId.includes('&')) { this.errorMessage = "Test folder name cannot contain &"; return false; }
+                if (this.form.testcaseId.includes('&')) { this.errorMessage = "Testcase ID cannot contain &"; return false; }
+                this.errorMessage = '';
                 return true;
             },
 
-            nextStepIfValid(field){
-                if(this.validateStep(field)){
-                    if(!this.completedSteps.includes(this.step)) this.completedSteps.push(this.step);
-                    this.nextStep();
-                }
-            },
-
-            nextStep(){ if(this.step<2) this.step++; },
-            prevStep(){ if(this.step>0) this.step--; },
-
-            validateForm(){
-                if(!this.form.application){ this.errorMessage="Please specify the application!"; return false; }
-                if(!this.form.testFolderId){ this.errorMessage="Please specify the test folder!"; return false; }
-                if(!this.form.testcaseId){ this.errorMessage="Please specify the Testcase ID!"; return false; }
-                if(this.form.testFolderId.includes('&')){ this.errorMessage="Test folder name cannot contain &"; return false; }
-                if(this.form.testcaseId.includes('&')){ this.errorMessage="Testcase ID cannot contain &"; return false; }
-                this.errorMessage='';
-                return true;
-            },
-
-            submitForm(){
-                if(!this.validateForm()) return;
+            submitForm() {
+                if (!this.validateForm()) return;
                 const data = {...this.form, system: getUser().defaultSystem};
 
                 fetch('api/public/testcases/create', {
@@ -443,14 +348,11 @@
                 })
                     .then(resp => resp.json())
                     .then(respData => {
-                        console.log("Create response:", respData);
-
                         if (respData.messageType === 'success' || respData.messageType === 'OK') {
                             if (respData.test && respData.testcase) {
                                 window.location.href = `./TestCaseScript.jsp?test=${encodeURIComponent(respData.test)}&testcase=${encodeURIComponent(respData.testcase)}&oneclickcreation=true`;
                             } else {
-                                this.errorMessage = "✅ TestCase created successfully, but redirect info is missing.";
-                                console.warn("Missing test/testcase in response.");
+                                this.errorMessage = "TestCase created but redirect info is missing.";
                             }
                         } else {
                             this.errorMessage = respData.message || "Error during creation.";
@@ -462,15 +364,9 @@
                     });
             },
 
-            async init(){
+            async init() {
                 await this.loadTests();
                 await this.loadInvariants();
-
-                this.$watch('form.application', (value) => {
-                    if (value && this.step === 0) {
-                        this.nextStepIfValid('application');
-                    }
-                });
             }
         }
     }

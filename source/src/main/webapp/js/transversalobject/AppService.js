@@ -20,6 +20,17 @@
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
 
+/**
+ * Helper to switch simulation tab via Alpine data.
+ * Maps: 'params' | 'response' | 'responsedet' | 'simrequest' | 'simrequestdet'
+ */
+function setAppServiceSimTab(tabId) {
+    var el = document.getElementById('editSoapLibraryModal');
+    if (el && el._x_dataStack) {
+        el._x_dataStack[0].showSimTab = tabId;
+    }
+}
+
 function openModalAppService(service, mode, page = undefined) {
     if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
         initModalAppService();
@@ -55,16 +66,12 @@ function openModalAppService(service, mode, page = undefined) {
 function initModalAppService() {
     var doc = new Doc();
 
-    displayInvariantList("type", "SRVTYPE", false, "REST", undefined, undefined, undefined, "editServiceModal");
-    displayInvariantList("method", "SRVMETHOD", false, "GET", undefined, undefined, undefined, "editServiceModal");
-    displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw", undefined, undefined, undefined, "editServiceModal");
+    // type, bodyType, method, authType, authAddTo are now handled by crbDropdown in HTML
     displayAppServiceList("parentContentService", "", "");
     displayInvariantList("callSystem", "SYSTEM", false, undefined, undefined, undefined, undefined, "editServiceModal");
-    displayInvariantList("authType", "AUTHTYPE", false, undefined, undefined, undefined, undefined, "editServiceModal");
-    displayInvariantList("authAddTo", "AUTHADDTO", false, undefined, undefined, undefined, undefined, "editServiceModal");
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
-    $("[name='buttonCall']").html(doc.getDocLabel("page_global", "buttonCall"));
+    $("[name='buttonCall']").html('<i data-lucide="play" class="w-3 h-3"></i> ' + doc.getDocLabel("page_global", "buttonCall"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_global", "btn_add"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_global", "btn_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_global", "btn_edit"));
@@ -200,7 +207,7 @@ function editAppServiceClick(service, page) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#editSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editSoapLibraryButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeAttr('hidden');
     $('#addSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#duplicateSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
@@ -220,7 +227,7 @@ function duplicateAppServiceClick(service) {
         confirmAppServiceModalHandler("DUPLICATE", undefined);
     });
 
-    $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+    setAppServiceSimTab('params');
     $('#resmessage').html("");
     $('#resmessage').removeClass("alert-danger");
     $('#resmessage').hide();
@@ -228,7 +235,7 @@ function duplicateAppServiceClick(service) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#duplicateSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateSoapLibraryButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeAttr('hidden');
     $('#addSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#editSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
@@ -250,7 +257,7 @@ function addAppServiceClick(service, page) {
     // Prepare all Events handler of the modal.
     prepareAppServiceModal();
 
-    $('#addSoapLibraryButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addSoapLibraryButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeAttr('hidden');
     $('#duplicateSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#editSoapLibraryButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
@@ -489,7 +496,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
                         oTable.fnDraw(false);
                     }
                     $('#editSoapLibraryModal').data("Saved", true);
-                    $('#editSoapLibraryModal').modal('hide');
+                    window.dispatchEvent(new CustomEvent('appservice-modal-close'));
                     showMessage(data);
                 }
             } else {
@@ -595,7 +602,7 @@ function performCall(service) {
             if ((CallContent.messageCode !== "OK")) {
 
                 // Show Parameters and Message Tab
-                $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+                setAppServiceSimTab('params');
 
                 $('#callStatus').removeClass("spin glyphicon-refresh").addClass("glyphicon-remove");
 
@@ -685,7 +692,7 @@ function performCall(service) {
                         });
 
                         // Show Response Tab
-                        $('.nav-tabs a[href="#tabsSimul-1"]').tab('show');
+                        setAppServiceSimTab('response');
 
                     } else if (CallContent.call.Response.hasOwnProperty('ResponseArray')) {
                         $('#editSoapLibraryModal  #srvResponse').text(JSON.stringify(CallContent.call.Response["ResponseArray"], null, '\t'));
@@ -705,19 +712,19 @@ function performCall(service) {
                         });
 
                         // Show Response Tab
-                        $('.nav-tabs a[href="#tabsSimul-1"]').tab('show');
+                        setAppServiceSimTab('response');
 
                     } else {
 
                         // Show Parameters and Message Tab
-                        $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+                        setAppServiceSimTab('params');
 
                     }
 
                 } else {
 
                     // Show Parameters and Message Tab
-                    $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+                    setAppServiceSimTab('params');
 
                 }
 
@@ -767,7 +774,7 @@ function performCall(service) {
             } else {
 
                 // Show Parameters and Message Tab
-                $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+                setAppServiceSimTab('params');
 
 
             }
@@ -855,15 +862,7 @@ function refreshDisplayOnTypeChange() {
 
     } else if (newValueType === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
+        window.dispatchEvent(new CustomEvent('method-filter', {detail: ['GET', 'POST']}));
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -900,15 +899,7 @@ function refreshDisplayOnTypeChange() {
         $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
 
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
+        window.dispatchEvent(new CustomEvent('method-filter', {detail: ['SEARCH', 'PRODUCE']}));
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
@@ -973,15 +964,7 @@ function refreshDisplayOnTypeChange() {
         }
 
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "block");
+        window.dispatchEvent(new CustomEvent('method-filter', {detail: ['FIND', 'UPDATEONE']}));
         $('#editSoapLibraryModal #bodyType').parent().hide();
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -1012,15 +995,7 @@ function refreshDisplayOnTypeChange() {
         $("#editSoapLibraryModal #srvRequestDiv").show();
         $("#editSoapLibraryModal #tabAuthor").show();
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
-        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
-        $('#editSoapLibraryModal #method option[value="UPDATEONE"]').css("display", "none");
+        window.dispatchEvent(new CustomEvent('method-filter', {detail: ['DELETE', 'PUT', 'PATCH', 'GET', 'POST']}));
         $('#editSoapLibraryModal #bodyType').parent().show();
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
@@ -1122,17 +1097,16 @@ function feedAppServiceModal(serviceName, modalId, mode) {
                     // Force a change event on author field.
                     refreshAuthorDisplayOnAnyChange();
 
-                    //initialize the select2
-                    $('#editSoapLibraryModal #application').select2();
-                    // set it with the service value
-                    $("#editSoapLibraryModal #application").val(service.application).trigger('change');
+                    //initialize the crbDropdown application
+                    window.dispatchEvent(new CustomEvent('application-preselect', {detail: service.application}));
 
                     //initialize the select2
                     $('#editSoapLibraryModal #parentContentService').select2(getComboConfigAppServiceList());
                     // set it with the service value
                     $("#editSoapLibraryModal #parentContentService").val(service.parentContentService).trigger('change');
 
-                    formEdit.modal('show');
+                    window.dispatchEvent(new CustomEvent('appservice-modal-open'));
+                    if (window.lucide) lucide.createIcons();
                 } else {
                     showUnexpectedError();
                 }
@@ -1193,7 +1167,8 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         // Force a change event on author field.
         refreshAuthorDisplayOnAnyChange();
 
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('appservice-modal-open'));
+        if (window.lucide) lucide.createIcons();
 
     }
 
@@ -1281,15 +1256,23 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#callCountry").prop("value", "");
         formEdit.find("#callEnv").prop("value", "");
         formEdit.find("#callSystem").prop("value", "");
+        window.dispatchEvent(new CustomEvent('type-preselect', {detail: 'REST'}));
+        window.dispatchEvent(new CustomEvent('bodytype-preselect', {detail: 'raw'}));
         formEdit.find("#authType").prop("value", "none");
+        window.dispatchEvent(new CustomEvent('authtype-preselect', {detail: 'none'}));
         formEdit.find("#authKey").prop("value", "");
         formEdit.find("#authVal").prop("value", "");
         formEdit.find("#authAddTo").prop("value", "Header");
+        window.dispatchEvent(new CustomEvent('authaddto-preselect', {detail: 'Header'}));
     } else {
         formEdit.find("#application").val(service.application);
+        window.dispatchEvent(new CustomEvent('application-preselect', {detail: service.application}));
         formEdit.find("#type").val(service.type);
+        window.dispatchEvent(new CustomEvent('type-preselect', {detail: service.type}));
         formEdit.find("#method").val(service.method);
+        window.dispatchEvent(new CustomEvent('method-preselect', {detail: service.method}));
         formEdit.find("#bodyType").val(service.bodyType);
+        window.dispatchEvent(new CustomEvent('bodytype-preselect', {detail: service.bodyType}));
         formEdit.find("#servicePath").prop("value", service.servicePath);
         formEdit.find("#isFollowRedir").prop("checked", service.isFollowRedir);
         formEdit.find("#isAvroEnable").prop("checked", service.isAvroEnable);
@@ -1312,9 +1295,11 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#kafkaFilterHeaderPath").prop("value", service.kafkaFilterHeaderPath);
         formEdit.find("#kafkaFilterHeaderValue").prop("value", service.kafkaFilterHeaderValue);
         formEdit.find("#authType").prop("value", service.authType);
+        window.dispatchEvent(new CustomEvent('authtype-preselect', {detail: service.authType}));
         formEdit.find("#authKey").prop("value", service.authUser);
         formEdit.find("#authVal").prop("value", service.authPassword);
         formEdit.find("#authAddTo").prop("value", service.authAddTo);
+        window.dispatchEvent(new CustomEvent('authaddto-preselect', {detail: service.authAddTo}));
         if (service.fileName === "") {
             srv_updateDropzone("Drag and drop Files", "#" + modalId);
         } else {
@@ -1451,7 +1436,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#kafkaFilterPath").prop("readonly", "readonly");
         formEdit.find("#kafkaFilterValue").prop("readonly", "readonly");
         // We hide Save button.
-        $('#editSoapLibraryButton').attr('class', '');
+        $('#editSoapLibraryButton').attr('class', 'hidden');
         $('#editSoapLibraryButton').attr('hidden', 'hidden');
     } else {
         formEdit.find("#service").removeProp("readonly");
@@ -1482,29 +1467,20 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
 }
 
 function appendApplicationListServiceModal(defaultValue) {
-    $('#editServiceModal [name="application"]').select2(getComboConfigApplicationList());
-//    console.info($("#editServiceModal [name='application']")[0].options);
-//    console.info(defaultValue);
-    const select = $("#editServiceModal [name='application']")[0];
-    const optionLabels = Array.from(select.options).map((opt) => opt.value);
-    const hasOption = optionLabels.includes(defaultValue);
-
-    if (!hasOption) {
-        var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
-        $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
-    }
+    // Application field is now handled by crbDropdown Alpine component.
+    // Preselection is done via 'application-preselect' event in feedAppServiceModal.
 
     $("#editSoapLibraryModal #editApplication").off("click");
     $("#editSoapLibraryModal #editApplication").click(function () {
         openModalApplication($("#editSoapLibraryModal #application").val(), "EDIT");
     });
-
 }
 
 function appendAppServiceListServiceModal(defaultValue) {
-    $('#editServiceModal [name="parentContentService"]').select2(getComboConfigAppServiceList());
+    // parentContentService select2 is already initialized in feedAppServiceModal.
+    // Just ensure value is set if needed.
     var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
-    $("#editServiceModal [name='parentContentService']").append(myoption).trigger('change'); // append the option and update Select2
+    $("#editSoapLibraryModal [name='parentContentService']").append(myoption).trigger('change');
 }
 
 function feedAppServiceModalDataContent(contentList) {
@@ -1519,47 +1495,69 @@ function feedAppServiceModalDataContent(contentList) {
 
 function appendContentRow(content) {
     var doc = new Doc();
-    var ro = 'readonly';
-    var deleteBtn = $("<button disable type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
 
     if (content.isInherited) {
-        var ro = 'readonly ';
-        var deleteBtn = "";
-    }
-    var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
-//    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false, false);
-    if (content.isInherited) {
-        activeSelect.prop("disabled", "disabled");
+        var deleteBtn = $("<button type='button' disabled='disabled'></button>")
+            .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #e2e8f0", "background": "#f8fafc", "color": "#94a3b8", "cursor": "not-allowed", "display": "flex", "alignItems": "center", "justifyContent": "center", "width": "32px", "height": "32px" })
+            .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
+        var roAttr = 'readonly ';
+    } else {
+        var deleteBtn = $("<button type='button'></button>")
+            .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "justifyContent": "center", "transition": "all 0.2s", "width": "32px", "height": "32px" })
+            .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+            .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+            .on("mouseleave", function() { if (!content.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+        var roAttr = '';
     }
 
-    var sortInput = $("<input " + ro + "maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control").val(content.sort);
-    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control crb-autocomplete-variable").val(content.key);
-    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control crb-autocomplete-variable").val(content.value);
-    var descriptionInput = $("<input  " + ro + "maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
+    var activeSelect = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", content.isActive);
+    if (content.isInherited) {
+        activeSelect.prop("disabled", "disabled").css("cursor", "not-allowed");
+    }
+    var sortInput = $("<input " + roAttr + "maxlength='4' placeholder='Sort'>").addClass(inputClasses).val(content.sort);
+    var keyInput = $("<input " + roAttr + "maxlength='255' placeholder='Key'>").addClass(inputClasses + " crb-autocomplete-variable").val(content.key);
+    var valueInput = $("<textarea " + roAttr + "rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-variable").css({"resize": "none", "minHeight": "32px"}).val(content.value);
+    var descriptionInput = $("<input " + roAttr + "maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
+
+    if (content.isInherited) {
+        sortInput.css({"background": "#f8fafc", "color": "#94a3b8", "borderColor": "#e2e8f0"});
+        keyInput.css({"background": "#f8fafc", "color": "#94a3b8", "borderColor": "#e2e8f0"});
+        valueInput.css({"background": "#f8fafc", "color": "#94a3b8", "borderColor": "#e2e8f0"});
+        descriptionInput.css({"background": "#f8fafc", "color": "#94a3b8", "borderColor": "#e2e8f0"});
+    }
+
     var table = $("#contentTableBody");
 
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var isActive = $("<td></td>").append(activeSelect);
-    var sortName = $("<td></td>").append(sortInput);
-    var keyName = $("<td></td>").append(keyInput);
-    var valueName = $("<td></td>").append(valueInput);
-    var descriptionName = $("<td></td>").append(descriptionInput);
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
+    var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
+    var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect);
+    var sortName = $("<td></td>").css($.extend({}, tdStyle, { "width": "70px" })).append(sortInput);
+    var keyName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(keyInput);
+    var valueName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "140px" })).append(valueInput);
+    var descriptionName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(descriptionInput);
 
     if (!content.isInherited) {
         deleteBtn.click(function () {
             content.toDelete = (content.toDelete) ? false : true;
-
             if (content.toDelete) {
-                row.addClass("danger");
+                row.css({ "background": "#fef2f2", "opacity": "0.5" });
+                row.find("input[type='text'], textarea").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
+                deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+                deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
             } else {
-                row.removeClass("danger");
+                row.css({ "background": "", "opacity": "1" });
+                row.find("input[type='text'], textarea").css({ "textDecoration": "none", "color": "#0f172a", "background": "white" });
+                deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+                deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
             }
         });
     }
     activeSelect.change(function () {
         content.isActive = $(this)[0].checked;
-//        console.info(content.isActive);
     });
     sortInput.change(function () {
         content.sort = $(this).val();
@@ -1609,41 +1607,55 @@ function feedAppServiceModalDataHeader(headerList) {
 
 function appendHeaderRow(content) {
     var doc = new Doc();
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
-    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control").val(content.sort);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control crb-autocomplete-header").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control crb-autocomplete-headervalue").val(content.value);
-    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
+
+    var deleteBtn = $("<button type='button'></button>")
+        .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "justifyContent": "center", "transition": "all 0.2s", "width": "32px", "height": "32px" })
+        .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+        .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+        .on("mouseleave", function() { if (!content.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+
+    var activeSelect = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", content.isActive);
+    var sortInput = $("<input maxlength='4' placeholder='Sort'>").addClass(inputClasses).val(content.sort);
+    var keyInput = $("<input maxlength='255' placeholder='Key'>").addClass(inputClasses + " crb-autocomplete-header").val(content.key);
+    var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-headervalue").css({"resize": "none", "minHeight": "32px"}).val(content.value);
+    var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
     var table = $("#headerTableBody");
 
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var isActive = $("<td></td>").append(activeSelect);
-    var sortName = $("<td></td>").append(sortInput);
-    var keyName = $("<td></td>").append(keyInput);
-    var valueName = $("<td></td>").append(valueInput);
-    var descriptionName = $("<td></td>").append(descriptionInput);
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
+    var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
+    var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect);
+    var sortName = $("<td></td>").css($.extend({}, tdStyle, { "width": "70px" })).append(sortInput);
+    var keyName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(keyInput);
+    var valueName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "140px" })).append(valueInput);
+    var descriptionName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(descriptionInput);
+
     deleteBtn.click(function () {
         content.toDelete = (content.toDelete) ? false : true;
         if (content.toDelete) {
-            row.addClass("danger");
+            row.css({ "background": "#fef2f2", "opacity": "0.5" });
+            row.find("input[type='text'], textarea").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
+            deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
         } else {
-            row.removeClass("danger");
+            row.css({ "background": "", "opacity": "1" });
+            row.find("input[type='text'], textarea").css({ "textDecoration": "none", "color": "#0f172a", "background": "white" });
+            deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
         }
     });
     activeSelect.change(function () {
         content.isActive = $(this)[0].checked;
-//        console.info(content.isActive);
     });
     sortInput.change(function () {
         content.sort = $(this).val();
     });
     keyInput.change(function () {
         content.key = $(this).val();
-//        console.info(content.key);
     });
-
     valueInput.change(function () {
         content.value = $(this).val();
     });
@@ -1658,8 +1670,6 @@ function appendHeaderRow(content) {
     row.append(descriptionName);
     row.data("header", content);
     table.append(row);
-
-
 }
 
 function addNewHeaderRow() {
@@ -1688,31 +1698,46 @@ function feedAppServiceModalDataCallProp(callPropList) {
 
 function appendCallPropRow(content) {
     var doc = new Doc();
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
-//    console.info(content.isActive);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control").val(content.value);
-    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
+
+    var deleteBtn = $("<button type='button'></button>")
+        .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "justifyContent": "center", "fontSize": "12px", "transition": "all 0.2s", "width": "32px", "height": "32px" })
+        .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+        .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+        .on("mouseleave", function() { if (!content.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+
+    var activeSelect = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", content.isActive);
+    var keyInput = $("<input maxlength='255' placeholder='Key'>").addClass(inputClasses).val(content.key);
+    var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses).css({"resize": "none", "minHeight": "32px"}).val(content.value);
+    var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
     var table = $("#callPropTableBody");
 
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var isActive = $("<td></td>").append(activeSelect.val(content.isActive.toString()));
-    var keyName = $("<td></td>").append(keyInput);
-    var valueName = $("<td></td>").append(valueInput);
-    var descriptionName = $("<td></td>").append(descriptionInput);
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
+    var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
+    var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect.val(content.isActive.toString()));
+    var keyName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(keyInput);
+    var valueName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "140px" })).append(valueInput);
+    var descriptionName = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(descriptionInput);
+
     deleteBtn.click(function () {
         content.toDelete = (content.toDelete) ? false : true;
         if (content.toDelete) {
-            row.addClass("danger");
+            row.css({ "background": "#fef2f2", "opacity": "0.5" });
+            row.find("input[type='text'], textarea").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
+            deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
         } else {
-            row.removeClass("danger");
+            row.css({ "background": "", "opacity": "1" });
+            row.find("input[type='text'], textarea").css({ "textDecoration": "none", "color": "#0f172a", "background": "white" });
+            deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
         }
     });
     activeSelect.change(function () {
         content.isActive = $(this)[0].checked;
-//        console.info(content.isActive);
     });
     keyInput.change(function () {
         content.key = $(this).val();

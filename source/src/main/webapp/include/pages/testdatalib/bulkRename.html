@@ -1,51 +1,97 @@
-<!-- DataLib Bulk Rename -->
-<div data-backdrop="static" class="modal fade center"
-	id="bulkRenameDataLibModal" tabindex="-1" role="dialog"
-	aria-labelledby="bulkRenameDataLibModalLabel" aria-hidden="true">
-	<div class="modal-dialog nomargintop nomarginbottom modal-l">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="bulkRenameDataLibModalLabel">
-					<span id="bulkRenameDataLibModalTitle">Bulk Rename</span>
-				</h4>
-			</div>
-			<div class="modal-body">
-				<form id="bulkRenameDataLibData" role="form">
-					<!-- messages area-->
-					<div id="DialogMessagesAreaEdit">
-						<div class="alert" id="DialogMessagesAlertBulkRename"
-							style="display: none;">
-							<strong><span class="alert-description"
-								id="DialogAlertDescriptionBulkRename"></span></strong>
-							<button type="button" class="close" data-hide="alert"
-								aria-hidden="true">
-								<span
-									class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-							</button>
-						</div>
-					</div>
-					<!-- current name and old name -->
-					<div class="row">
-						<div class="form-group col-xs-6">
-							<label id="lbl_currentname" for="system" name='lbl_currentname'>Current Name JSP</label>
-							<input id="dl_currentname" name="currentname" class="form-control"/>
-						</div>
-						<div class="form-group col-xs-6">
-							<label id="lbl_newname" for="environment" name='lbl_newname'>New Name JSP</label>
-							<input id="dl_newname" name="newname" class="form-control"/>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-				<button type="button" id="bulkRenameValidate" class="btn btn-primary" name="bulkRename">Rename</button>
-			</div>
-		</div>
-	</div>
+<!-- DataLib Bulk Rename - Alpine.js/Tailwind refactored -->
+<div
+    x-data="{ open: false }"
+    x-show="open"
+    x-cloak
+    @bulkrename-modal-open.window="open = true"
+    @bulkrename-modal-close.window="open = false"
+    class="crb_modal"
+    id="bulkRenameDataLibModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card rounded-2xl"
+         style="max-height: calc(100vh - 4rem); margin: 2rem 1rem; width: 520px;"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="replace" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="bulkRenameDataLibModalLabel">
+                        <span id="bulkRenameDataLibModalTitle">Bulk Rename</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 !mb-0">Rename all matching data library entries</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="open = false; window.dispatchEvent(new CustomEvent('bulkrename-modal-close'))"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesAreaEdit">
+            <div class="alert" id="DialogMessagesAlertBulkRename" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescriptionBulkRename"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="bulkRenameDataLibData" role="form" autocomplete="off">
+
+                <!-- Rename Section -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="text-cursor-input" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Rename Configuration</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" id="lbl_currentname" for="dl_currentname" name="lbl_currentname">Current Name</label>
+                            <input id="dl_currentname" name="currentname" placeholder="Current name..."
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" id="lbl_newname" for="dl_newname" name="lbl_newname">New Name</label>
+                            <input id="dl_newname" name="newname" placeholder="New name..."
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false; window.dispatchEvent(new CustomEvent('bulkrename-modal-close'))" name="buttonClose"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="bulkRenameValidate" name="bulkRename"
+                    class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Rename</button>
+        </div>
+    </div>
 </div>
-<!--end <!-- DataLib Bulk Rename--> 
+
+<script>
+    window.addEventListener('bulkrename-modal-open', function() {
+        setTimeout(function() { if (window.lucide) lucide.createIcons(); }, 50);
+    });
+</script>

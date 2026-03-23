@@ -1,94 +1,395 @@
-<!--addApplicationObject custom css-->
-<link rel="stylesheet" type="text/css" href="css/pages/ApplicationObject.css">
-<!--Add an applicationObject -->
-<div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" role="dialog" aria-labelledby="editApplicationObjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editEntryModalLabel" name="editApplicationObjectField">Create Application Object</h4>
+<!--addApplicationObject - Alpine.js/Tailwind refactored -->
+<!-- ApplicationObject.css removed: .hidden and .upload-drop-zone conflicted with Tailwind -->
+<div
+        x-data="appObjectModal()"
+        x-init="init()"
+        x-show="open"
+        x-cloak
+        @appobject-modal-open.window="handleOpen($event.detail)"
+        @appobject-modal-close.window="open = false"
+        class="crb_modal"
+        id="editApplicationObjectModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="box" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="editEntryModalLabel" name="editApplicationObjectField">Application Object</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Manage application objects and their screenshots</p>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
 
-                <!--add form-->
-                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="application" name="applicationField">Application</label>
-                                <select class="form-control" name="application" id="application" aria-describedby="basic-editon1" maxlength="200"></select>
-                                <input type="text" class="form-control input-sm" name="originalApplication" id="originalApplication" style="display:none;"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="object" name="objectField">Object</label>
-                                <input type="text" class="form-control" name="object" id="object" aria-describedby="basic-addon1" maxlength="150">
-                                <input type="text" class="form-control input-sm" name="originalObject" id="originalObject" style="display:none;"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="value" name="valueField">Value</label>
-                                <input type="text" class="form-control" name="value" id="value" aria-describedby="basic-addon1">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-9">
-                                <!-- Drop Zone -->                                
-                                <label for="screenshotfilenameLabel" name="screenshotfilenameField">Screenshot File</label>
-                                <label  for="inputFile" id="dropzone" class="upload-drop-zone" >
-                                    <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
-                                    <label for="inputFile" class="btn btn-primary browseFile">Browse Files </label>
-                                </label>
-                                <input type="file" name="screenshotfilename" id="inputFile" class="hidden"/> 
-                                <div class ="text-muted" id="DropzoneClipboardPasteMessage"><kbd>Ctrl+v</kbd> to paste it from your clipboard </div>
-                            </div>
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
 
-                            <div class="form-group col-xs-3">
-                                <div class="row">
-                                    <div class="form-group col-xl-12">
-                                        <label for="xOffset" name="xOffsetField">X Offset</label>
-                                        <input type="text" class="form-control" name="xOffset" id="xOffset" aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xl-12">
-                                        <label for="yOffset" name="yOffsetField">Y Offset</label>
-                                        <input type="text" class="form-control" name="yOffset" id="yOffset" aria-describedby="basic-addon1">
-                                    </div>
-                                </div>
-                            </div>
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm" role="form">
 
-                        </div>
-
-                        <label name="pictureField">Picture</label>
-                        <div class="well well-sm">
-                            <div class="row">
-                                <div class="form-group col-xs-12">
-                                    <img class="selectedPicture" id="selectedPicture" src="">
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- Section 1: Identity -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="tag" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Identity</span>
                     </div>
-                </form>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editApplicationObjectButton" name="buttonEdit">Save</button>
-                <button type="button" id="addApplicationObjectButton" name="buttonAdd">Add</button>
-            </div>
+                    <div class="mb-3" x-data="crbDropdown({id:'aoApplication', hiddenInput:'application', preselectEvent:'aoApplication-preselect', loader: function(cb) { fetch('ReadApplication').then(function(r){return r.json();}).then(function(d){var items=(d.contentTable||[]).map(function(a){return {value:a.application,label:a.application};}).sort(function(a,b){return a.label.localeCompare(b.label);});cb(items);}).catch(function(){cb([]);}); }})" @click.stop>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="applicationField">Application</label>
+                        <input type="hidden" id="application" name="application">
+                        <input type="text" class="form-control input-sm" name="originalApplication" id="originalApplication" style="display:none;"/>
+                        <div class="relative w-full">
+                            <div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                <span x-text="selectedLabel||'-- Select --'" class="truncate"></span>
+                                <svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                            <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <div class="flex-1 min-w-0">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="object" name="objectField">Object</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="object" id="object" aria-describedby="basic-addon1" maxlength="150">
+                            <input type="text" class="form-control input-sm" name="originalObject" id="originalObject" style="display:none;"/>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="value" name="valueField">Value</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="value" id="value" aria-describedby="basic-addon1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Screenshot & Preview (full Alpine.js) -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3"
+                     x-data="crbUploadZone()"
+                     x-init="initUpload()"
+                     @ao-preview-update.window="showExistingPreview($event.detail)"
+                     @ao-preview-reset.window="removeImage()">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="screenshotfilenameField">Screenshot</span>
+                        </div>
+                        <span x-show="fileName" x-text="fileName" class="text-xs text-slate-400 truncate max-w-[200px]"></span>
+                    </div>
+
+                    <!-- Upload zone / Preview area -->
+                    <div class="relative" style="min-height: 140px;">
+
+                        <!-- STATE 1: Empty / Dropzone -->
+                        <div x-show="!hasPreview"
+                             @click="$refs.fileInput.click()"
+                             @dragenter.prevent.stop="isDragging = true"
+                             @dragover.prevent.stop="isDragging = true"
+                             @dragleave.prevent.stop="isDragging = false"
+                             @drop.prevent.stop="isDragging = false; handleDrop($event)"
+                             class="relative rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                             :class="isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]' : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'"
+                             style="min-height: 140px;">
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3 mb-3"
+                                     :class="isDragging ? 'animate-bounce' : ''">
+                                    <svg class="w-7 h-7 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                                </div>
+                                <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Drop your image here</span>
+                                <span class="text-xs text-slate-400 mt-1">or click to browse</span>
+                                <div class="flex items-center gap-2 mt-3">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700 text-[10px] font-medium text-slate-600 dark:text-slate-300">Ctrl+V to paste</span>
+                                    <span class="text-[10px] text-slate-300 dark:text-slate-600">|</span>
+                                    <span class="text-[10px] text-blue-500 font-medium">PNG, JPG, GIF</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STATE 2: Preview with image -->
+                        <div x-show="hasPreview" class="relative rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700" style="min-height: 120px;">
+                            <img class="selectedPicture w-full max-h-[350px] object-contain" id="selectedPicture" :src="previewSrc" alt="Preview">
+
+                            <!-- Delete button (top right) -->
+                            <button type="button"
+                                    @click.prevent="removeImage()"
+                                    class="absolute top-2 right-2 z-30 h-8 w-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                                    title="Remove image">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
+
+                            <!-- Hover overlay to change image -->
+                            <div @click="$refs.fileInput.click()"
+                                 class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/0 hover:bg-slate-900/50 cursor-pointer transition-all duration-300 group/overlay z-20">
+                                <div class="opacity-0 group-hover/overlay:opacity-100 transition-opacity duration-300 flex flex-col items-center">
+                                    <div class="rounded-full bg-white/20 backdrop-blur-sm p-2.5 mb-2">
+                                        <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                                    </div>
+                                    <span class="text-white text-sm font-medium">Change image</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden file input -->
+                        <input type="file" name="screenshotfilename" id="inputFile" x-ref="fileInput" class="hidden"
+                               accept="image/*"
+                               @change="handleFileInput($event)">
+                    </div>
+
+
+                    <div id="DropzoneClipboardPasteMessage" style="display:none;"></div>
+
+                    <!-- Offsets row -->
+                    <div class="flex gap-3 mt-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="xOffset" name="xOffsetField">X Offset</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="xOffset" id="xOffset">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="yOffset" name="yOffsetField">Y Offset</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="yOffset" id="yOffset">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="editApplicationObjectButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
+            <button type="button" id="addApplicationObjectButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Add</button>
         </div>
     </div>
 </div>
+
+<script>
+    function appObjectModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    // ===== CRB DROPDOWN COMPONENT =====
+    if (typeof window.crbDropdown === 'undefined') {
+        window.crbDropdown = function(config) {
+            return {
+                id: config.id || 'dropdown',
+                hiddenInput: config.hiddenInput || '',
+                preselectEvent: config.preselectEvent || '',
+                items: [], search: '', isOpen: false,
+                selectedValue: '', selectedLabel: '',
+                pos: { top: 0, left: 0, width: 200 },
+                config: config,
+                init: function() {
+                    var self = this;
+                    if (config.loader) config.loader(function(items) { self.items = items; });
+                    if (self.preselectEvent) {
+                        window.addEventListener(self.preselectEvent, function(e) { self.preselect(e.detail); });
+                    }
+                    window.addEventListener('crb-dropdown-close-all', function(e) {
+                        if (e.detail !== self.id) self.isOpen = false;
+                    });
+                    document.addEventListener('click', function(e) {
+                        if (!self.isOpen) return;
+                        var btn = document.getElementById(self.id + '-btn');
+                        if (btn && btn.contains(e.target)) return;
+                        if (e.target.closest && e.target.closest('[x-show="isOpen"]')) return;
+                        self.isOpen = false;
+                    }, true);
+                },
+                preselect: function(value) {
+                    this.selectedValue = value || '';
+                    var match = null;
+                    for (var i = 0; i < this.items.length; i++) {
+                        if (this.items[i].value === value) { match = this.items[i]; break; }
+                    }
+                    this.selectedLabel = match ? match.label : (value || '');
+                    var input = document.getElementById(this.hiddenInput);
+                    if (input) input.value = value || '';
+                },
+                toggle: function() {
+                    this.isOpen = !this.isOpen;
+                    if (this.isOpen) {
+                        window.dispatchEvent(new CustomEvent('crb-dropdown-close-all', { detail: this.id }));
+                        this.updatePosition();
+                    }
+                },
+                updatePosition: function() {
+                    var btn = document.getElementById(this.id + '-btn');
+                    if (!btn) return;
+                    var rect = btn.getBoundingClientRect();
+                    this.pos.top = rect.bottom + 4;
+                    this.pos.left = rect.left;
+                    this.pos.width = Math.max(rect.width, 200);
+                },
+                filtered: function() {
+                    var q = this.search.toLowerCase();
+                    if (!q) return this.items;
+                    return this.items.filter(function(i) { return i.label.toLowerCase().indexOf(q) !== -1; });
+                },
+                select: function(item) {
+                    this.selectedValue = item.value;
+                    this.selectedLabel = item.label;
+                    this.isOpen = false;
+                    this.search = '';
+                    var input = document.getElementById(this.hiddenInput);
+                    if (input) { input.value = item.value; $(input).trigger('change'); }
+                    if (this.config.onSelect) this.config.onSelect(item);
+                }
+            };
+        };
+    }
+
+    // ===== CRB UPLOAD ZONE COMPONENT =====
+    if (typeof window.crbUploadZone === 'undefined') {
+        window.crbUploadZone = function() {
+            return {
+                hasPreview: false,
+                isDragging: false,
+                fileName: '',
+                previewSrc: '',
+                _pasteHandler: null,
+
+                initUpload: function() {
+                    var self = this;
+                    // Listen for clipboard paste (global)
+                    this._pasteHandler = function(e) {
+                        if (e.clipboardData && !$(e.target).is('input') && !$(e.target).is('textarea')) {
+                            var items = e.clipboardData.items;
+                            if (items) {
+                                for (var i = 0; i < items.length; i++) {
+                                    if (items[i].type.indexOf('image') !== -1) {
+                                        var blob = items[i].getAsFile();
+                                        self.handleFile(blob, blob.name || 'clipboard-paste');
+                                        e.preventDefault();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    document.addEventListener('paste', this._pasteHandler, false);
+                },
+
+                handleFile: function(file, name) {
+                    if (!file || file.type.indexOf('image') === -1) {
+                        var message = new Message('danger', 'The file input is not a picture');
+                        showMessage(message, $('#editApplicationObjectModal'));
+                        return;
+                    }
+                    // Store blob for AJAX submit compatibility
+                    window.imagePasteFromClipboard = file;
+                    this.fileName = name || file.name || 'image';
+                    this.hasPreview = true;
+
+                    // Generate preview
+                    var self = this;
+                    var URLObj = window.URL || window.webkitURL;
+                    self.previewSrc = URLObj.createObjectURL(file);
+                },
+
+                handleDrop: function(event) {
+                    var dt = event.dataTransfer;
+                    if (dt && dt.items) {
+                        for (var i = 0; i < dt.items.length; i++) {
+                            if (dt.items[i].type.indexOf('image') !== -1) {
+                                var blob = dt.items[i].getAsFile();
+                                this.handleFile(blob, blob.name);
+                                return;
+                            }
+                        }
+                    }
+                    if (dt && dt.files && dt.files.length > 0) {
+                        this.handleFile(dt.files[0], dt.files[0].name);
+                    }
+                },
+
+                handleFileInput: function(event) {
+                    var input = event.target;
+                    if (input.files && input.files[0]) {
+                        var file = input.files[0];
+                        if (file.type.indexOf('image') !== -1) {
+                            // Clear clipboard blob since we're using file input
+                            window.imagePasteFromClipboard = undefined;
+                            this.fileName = file.name;
+                            this.hasPreview = true;
+                            var self = this;
+                            var reader = new FileReader();
+                            reader.onload = function(e) {
+                                self.previewSrc = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            var message = new Message('danger', 'The file input is not a picture');
+                            showMessage(message, $('#editApplicationObjectModal'));
+                        }
+                    }
+                },
+
+                showExistingPreview: function(detail) {
+                    this.hasPreview = true;
+                    this.fileName = detail.name || '';
+                    if (detail.url) {
+                        this.previewSrc = detail.url;
+                    }
+                },
+
+                removeImage: function() {
+                    this.hasPreview = false;
+                    this.fileName = '';
+                    this.previewSrc = '';
+                    window.imagePasteFromClipboard = undefined;
+                    var input = document.getElementById('inputFile');
+                    if (input) input.value = '';
+                }
+            };
+        };
+    }
+</script>

@@ -21,6 +21,7 @@ var curMode = "";
 var bugTrackerUrl = "";
 var checkEmptyDescription = false;
 var isInTutorial = false;
+var curOpenTab = null;
 
 /***
  * Open the modal with testcase information.
@@ -44,9 +45,8 @@ function openModalTestCase(test, testcase, mode, tab) {
     $('#editTestCaseModal').data("Saved", false);
     $('#editTestCaseModal').data("testcase", undefined);
 
-    if (!isEmpty(tab)) {
-        $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-    }
+    // Tab switching is now handled by Alpine.js via the event detail
+    curOpenTab = (!isEmpty(tab)) ? tab : null;
 
     if (mode === "EDIT") {
         editTestCaseClick(test, testcase);
@@ -151,9 +151,10 @@ function initModalTestCase() {
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
     $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
 
-    displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
-    displayInvariantList("status", "TCSTATUS", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
-    displayInvariantList("priority", "PRIORITY", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    // Alpine dropdowns handle their own data loading via crbLoaders
+    // displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    // displayInvariantList("status", "TCSTATUS", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    // displayInvariantList("priority", "PRIORITY", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
     displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
 
     $('[data-toggle="popover"]').popover({
@@ -210,15 +211,14 @@ function initModalTestCase() {
     $("#addTestCaseDependencyButton").off("click").click(function () {
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
-        var testCaseTxt = $("#selectTestCase option:selected").text();
+        // For crbDropdown, get the label from the depTestCase dropdown button text
+        var testCaseBtnEl = document.getElementById('depTestCase-btn');
+        var testCaseTxt = testCaseBtnEl ? testCaseBtnEl.textContent.trim() : testCase;
 
-        var indexTest = $("#selectTest").prop('selectedIndex')
-        var indexTestCase = $("#selectTestCase").prop('selectedIndex')
-
-        if ($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
-            showMessage(new Message("KO", 'Test case is already added'), $('#editTestCaseModal'));
-        } else if (indexTest === 0 || indexTestCase === 0) {
+        if (!test || !testCase) {
             showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
+        } else if ($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
+            showMessage(new Message("KO", 'Test case is already added'), $('#editTestCaseModal'));
         } else {
             addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "", 0, "TCEXEEND");
         }
@@ -230,20 +230,25 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
     let checked = "";
     if (activate)
         checked = "checked";
+
+    var inputStyle = 'style="width: 100%; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: white; color: #0f172a; transition: all 0.2s;"';
+    var checkStyle = 'style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;"';
+    var tdStyle = 'style="padding: 8px 12px; vertical-align: middle;"';
+    var btnStyle = 'style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 12px; transition: all 0.2s;"';
+    var trashSvg = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+
     $("#depenencyTable").append(
-            '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
-            '<td class="sorting_1" style="width: 50px;">' +
-            '<div class="center btn-group">' +
-            '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" class="removeTestparameter btn btn-default btn-xs margin-right5" name="removeTestparameter" title="Remove Test Case Dependency" type="button">' +
-            '<span class="glyphicon glyphicon-trash"></span>' +
+            '<tr role="row" id="' + getHtmlIdForTestCase(test, testCase) + '" test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '" style="transition: all 0.2s;">' +
+            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 50px;">' +
+            '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" ' + btnStyle + ' name="removeTestparameter" title="Remove" type="button" onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" onmouseleave="this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';">' +
+            trashSvg +
             '</button>' +
-            '</div>' +
             '</td>' +
-            '<td style="font-size: 14px">' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
+            '<td ' + tdStyle + ' style="padding: 8px 12px; font-size: 13px; color: #334155;">' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
             '</td>' +
-            '<td style="width: 50px;">  <input class="form-control input-xs"  type="checkbox"  name="activate" ' + checked + '/></td>' +
-            '<td style="width: 60px;">  <input class="form-control" name="depDelay" value="' + delay + '"/></td>' +
-            '<td>  <input class="form-control" name="depDescription" value="' + description + '"/></td>' +
+            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 50px; text-align: center;"><input type="checkbox" name="activate" ' + checkStyle + ' ' + checked + '/></td>' +
+            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 80px;"><input name="depDelay" value="' + delay + '" ' + inputStyle + '/></td>' +
+            '<td ' + tdStyle + ' style="padding: 8px 12px;"><input name="depDescription" value="' + description + '" ' + inputStyle + '/></td>' +
             '</tr>'
             );
 }
@@ -258,7 +263,7 @@ function depTypeSelect(value) {
     } else {
         selectedOK = "";
     }
-    return "<select type='text' class='form-control marginTop5' name='type'>" +
+    return "<select type='text' name='type' style='width: 100%; height: 32px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 12px; background: white; color: #334155; cursor: pointer;'>" +
             "<option value='TCEXEEND' " + selected + ">" + desc + "</option>" +
             "<option value='TCEXEENDOK' " + selectedOK + ">" + descOK + "</option>" +
             "</select>";
@@ -690,7 +695,7 @@ function confirmTestCaseModalHandler(mode) {
                 $('#editTestCaseModal').data("testcase", data);
                 $('#editTestCaseModal').data("bug", table_bug);
                 $('#editTestCaseModal').data("appURL", bugTrackerUrl);
-                $('#editTestCaseModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('testcase-header-modal-close'));
                 showMessage(dataMessage);
             } else {
                 showMessage(dataMessage, $('#editTestCaseModal'));
@@ -725,7 +730,7 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     //Application Combo
     appendApplicationList(undefined, undefined, modalId);
 
-    formEdit.modal('show');
+    window.dispatchEvent(new CustomEvent('testcase-header-modal-open', { detail: { tab: curOpenTab } }));
 }
 
 /***
@@ -773,13 +778,11 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
         });
 
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('testcase-header-modal-open', { detail: { tab: curOpenTab } }));
     });
 
-    fillTestAndTestCaseSelect("#selectTest", "#selectTestCase", undefined, undefined, true)
-    $("#selectTest").change(function () {
-        fillTestCaseSelect("#selectTestCase", $("#selectTest").val(), undefined, true);
-    });
+    // Dependency dropdowns are now handled by crbDropdown in TestCase.html
+    // No need to call fillTestAndTestCaseSelect or select2
 
 
 }
@@ -903,7 +906,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_edit"));
         appendTestList(testCase.test);
         formEdit.find("#testCase").prop("value", testCase.testcase);
-        formEdit.find("#status").prop("value", testCase.status);
+        window.dispatchEvent(new CustomEvent('status-preselect', { detail: testCase.status }));
         formEdit.find("#usrcreated").prop("value", testCase.usrCreated);
         formEdit.find("#datecreated").prop("value", getDate(testCase.dateCreated));
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
@@ -914,7 +917,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
         formEdit.find("#isActivePROD").prop("checked", false);
-        formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
+        // First status will be auto-selected once dropdown items load
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
             appendTestList(defaultTest);
@@ -956,8 +959,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#implementer").prop("value", testCase.implementer);
         formEdit.find("#executor").prop("value", testCase.executor);
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
-        formEdit.find("#type").prop("value", testCase.type);
-        formEdit.find("#priority").prop("value", testCase.priority);
+        window.dispatchEvent(new CustomEvent('type-preselect', { detail: testCase.type }));
+        window.dispatchEvent(new CustomEvent('priority-preselect', { detail: testCase.priority }));
         formEdit.find("#isActiveQA").prop("checked", testCase.isActiveQA);
         formEdit.find("#isActiveUAT").prop("checked", testCase.isActiveUAT);
         formEdit.find("#isActivePROD").prop("checked", testCase.isActivePROD);
@@ -1124,34 +1127,49 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
         }
     }
 
-    var row = $("<tr></tr>");
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
-    var bugidInput = $("<input  maxlength=\"30\">").addClass("form-control").val(obj.id);
-    var bugdescInput = $("<input  maxlength=\"100\">").addClass("form-control").val(obj.desc);
-    var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated));
-    var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed));
+    var inputClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500";
+    var readonlyClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-slate-50 border-slate-200 text-slate-500";
+
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" });
+    var deleteBtn = $("<button type='button'></button>")
+        .css({ "padding": "4px 8px", "border-radius": "6px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "gap": "4px", "fontSize": "12px", "transition": "all 0.2s" })
+        .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+        .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+        .on("mouseleave", function() { if (!obj.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+    var actInput = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", obj.act);
+    var bugidInput = $("<input maxlength='30'>").addClass(inputClasses).val(obj.id);
+    var bugdescInput = $("<input maxlength='100'>").addClass(inputClasses).val(obj.desc);
+    var dateCreatedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateCreated));
+    var dateClosedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateClosed));
     if (newbugTrackerUrl !== "") {
-        var buglinkText = $("<a></a>").text(obj.id);
+        var buglinkText = $("<a></a>").text(obj.id).css({ "color": "#3b82f6", "textDecoration": "underline", "fontSize": "13px" });
         buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
     } else {
-        var buglinkText = $("<div></div>").text(obj.id);
+        var buglinkText = $("<div></div>").text(obj.id).css({ "fontSize": "13px", "color": "#64748b" });
     }
-    var deleteData = $("<td></td>").append(deleteBtn);
-    var actData = $("<td></td>").append(actInput);
-    var bugidData = $("<td></td>").append(bugidInput);
-    var bugdescData = $("<td></td>").append(bugdescInput);
-    var buglinkData = $("<td></td>").append(buglinkText);
-    var dateCreatedData = $("<td></td>").append(dateCreatedInput);
-    var dateClosedData = $("<td></td>").append(dateClosedInput);
+
+    var tdStyle = { "padding": "8px 12px", "verticalAlign": "middle" };
+    var deleteData = $("<td></td>").css(tdStyle).append(deleteBtn);
+    var actData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(actInput);
+    var bugidData = $("<td></td>").css(tdStyle).append(bugidInput);
+    var bugdescData = $("<td></td>").css(tdStyle).append(bugdescInput);
+    var buglinkData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(buglinkText);
+    var dateCreatedData = $("<td></td>").css(tdStyle).append(dateCreatedInput);
+    var dateClosedData = $("<td></td>").css(tdStyle).append(dateClosedInput);
 
     deleteBtn.click(function () {
         obj.toDelete = (obj.toDelete) ? false : true;
 
         if (obj.toDelete) {
-            row.addClass("danger");
+            row.css({ "background": "#fef2f2", "opacity": "0.6" });
+            row.find("input").css({ "textDecoration": "line-through", "color": "#94a3b8" });
+            deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
         } else {
-            row.removeClass("danger");
+            row.css({ "background": "", "opacity": "1" });
+            row.find("input").css({ "textDecoration": "none", "color": "#0f172a" });
+            deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
         }
     });
 
@@ -1362,46 +1380,19 @@ function loadLabel(labels, mySystem, myLabelDiv, labelSize, test, testCase) {
 }
 
 function appendApplicationList(defautValue, mySystem, modalId) {
+    // Dispatch preselect event to Alpine application dropdown
+    window.dispatchEvent(new CustomEvent('application-preselect', { detail: defautValue }));
 
-    $("[name=application]").empty();
-
-    var targetSystem = mySystem;
-    if (isEmpty(targetSystem)) {
-        targetSystem = getUser().defaultSystem;
-    }
-
-    var jqxhr = $.getJSON("ReadApplication", "q=1" + getUser().systemQuery);
-    $.when(jqxhr).then(function (data) {
-        var applicationList = $("[name=application]");
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            if (data.contentTable[index].system === targetSystem) {
-                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application + " [" + data.contentTable[index].type + "]").val(data.contentTable[index].application));
-            } else {
-                applicationList.append($('<option></option>').text(data.contentTable[index].application + " [" + data.contentTable[index].type + "]").val(data.contentTable[index].application));
-            }
-        }
-        $("#editTestCaseModalForm #application").val(defautValue);
-
-        $('#' + modalId + " #editApplication").off("click");
-        $('#' + modalId + " #editApplication").click(function () {
-            openModalApplication($("#editTestCaseModalForm #application").val(), "EDIT");
-        });
-
-
+    // Rebind edit application button
+    $('#' + modalId + " #editApplication").off("click");
+    $('#' + modalId + " #editApplication").click(function () {
+        openModalApplication($("#editTestCaseModalForm #application").val(), "EDIT");
     });
 }
 
 function appendTestList(defautValue) {
-    $('#editTestCaseModal [name="test"]').empty();
-    $('#editTestCaseModal [name="test"]').select2({...getComboConfigTest(), dropdownParent: $('#editTestCaseModal')});
-//    fillTestAndTestCaseSelect("#test", undefined, undefined, undefined, true)
-
-
-    // Set Select2 Value.
-    var myoption = $('<option></option>').text(defautValue).val(defautValue);
-    $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
-
+    // Dispatch event to the Alpine.js test folder dropdown in TestCase.html
+    window.dispatchEvent(new CustomEvent('testfolder-preselect', { detail: defautValue }));
 }
 
 function toggleIsMuted() {

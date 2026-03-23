@@ -55,8 +55,8 @@ function initModalApplicationObject(page, application) {
     $("[name='xOffsetField']").html(doc.getDocOnline("page_applicationObject", "XOffset"));
     $("[name='yOffsetField']").html(doc.getDocOnline("page_applicationObject", "YOffset"));
 
-    //displayApplicationList('application', undefined, application, undefined);
-    $('[name="application"]').select2(getComboConfigApplication(false));
+    // Application dropdown is now a crbDropdown component, no select2 needed
+    // $('[name="application"]').select2(getComboConfigApplication(false));
 
 
     $("#editApplicationObjectButton").off("click");
@@ -68,7 +68,7 @@ function initModalApplicationObject(page, application) {
         confirmApplicationObjectModalHandler(page, "ADD");
     });
 
-    setUpDragAndDrop('#editApplicationObjectModal');
+    // Upload drag/drop/paste now handled by Alpine crbUploadZone component
     
     refreshPopoverDocumentation("editApplicationObjectModal");
     
@@ -86,8 +86,7 @@ function editApplicationObjectClick(applicationObject, value) {
     $('#editApplicationObjectModalForm input[name="value"]').off("change");
 
     feedApplicationObjectModal(applicationObject, value, "editApplicationObjectModal", "EDIT");
-    listennerForInputTypeFile('#editApplicationObjectModal')
-    pasteListennerForClipboardPicture('#editApplicationObjectModal');
+    // Upload listeners now handled by Alpine crbUploadZone component
 }
 
 function addApplicationObjectClick(applicationObject, value) {
@@ -102,8 +101,7 @@ function addApplicationObjectClick(applicationObject, value) {
 
 
     feedApplicationObjectModal(applicationObject, value, "editApplicationObjectModal", "ADD");
-    listennerForInputTypeFile('#editApplicationObjectModal');
-    pasteListennerForClipboardPicture('#editApplicationObjectModal');
+    // Upload listeners now handled by Alpine crbUploadZone component
 }
 
 function confirmApplicationObjectModalHandler(page, mode) {
@@ -168,7 +166,7 @@ function confirmApplicationObjectModalHandler(page, mode) {
 
                 }
                 $('#editApplicationObjectModal').data("Saved", true);
-                $('#editApplicationObjectModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('appobject-modal-close'));
                 showMessage(data);
             } else {
                 showMessage(data, $('#editApplicationObjectModal'));
@@ -202,7 +200,7 @@ function feedApplicationObjectModal(application, object, modalId, mode) {
 
                     feedApplicationObjectModalData(applicationObj, modalId, mode,
                             hasPermissions);
-                    formEdit.modal('show');
+                    window.dispatchEvent(new CustomEvent('appobject-modal-open', { detail: {} }));
                 } else {
                     showUnexpectedError();
                 }
@@ -218,7 +216,7 @@ function feedApplicationObjectModal(application, object, modalId, mode) {
         applicationObj1.screenshotfilename = "Drag and drop Files";
         var hasPermissions = true;
         feedApplicationObjectModalData(applicationObj1, modalId, mode, hasPermissions);
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('appobject-modal-open', { detail: {} }));
     }
 }
 
@@ -236,8 +234,8 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
     }
 
     if (applicationObject === undefined) {
-        formEdit.find('#application').val("").trigger('change');
-        formEdit.find('#application').trigger('change');
+        formEdit.find("#application").val("");
+        window.dispatchEvent(new CustomEvent('aoApplication-preselect', { detail: '' }));
         formEdit.find("#object").prop("value", "");
         formEdit.find("#value").prop("value", "");
         formEdit.find("#inputFile").val("Drag and drop Files");
@@ -246,17 +244,20 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         formEdit.find("#originalApplication").prop("value", applicationObject.application);
 
         if (applicationObject.application === undefined) {
-            formEdit.find('#application').val("").trigger('change');
+            formEdit.find('#application').val("");
+            window.dispatchEvent(new CustomEvent('aoApplication-preselect', { detail: '' }));
         } else {
-            //formEdit.find("#application").val(applicationObject.application);
-            var newOption = new Option(applicationObject.application, applicationObject.application, true, true);
-            formEdit.find('#application').append(newOption).trigger('change');
+            formEdit.find("#application").val(applicationObject.application);
+            window.dispatchEvent(new CustomEvent('aoApplication-preselect', { detail: applicationObject.application }));
         }
 
-        if (applicationObject.screenshotfilename == "") {
-            updateDropzone("Drag and drop Files", "#" + modalId);
+        // Handle screenshot preview: only show preview in EDIT mode with a real image
+        if (mode === "EDIT" && applicationObject.screenshotfilename !== "" && applicationObject.application && applicationObject.object) {
+            var pictureUrl = "ReadApplicationObjectImage?application=" + applicationObject.application + "&object=" + applicationObject.object + "&time=" + new Date().getTime();
+            window.dispatchEvent(new CustomEvent('ao-preview-update', { detail: { name: applicationObject.screenshotFilename || '', url: pictureUrl + "&h=400&w=800" } }));
         } else {
-            updateDropzone(applicationObject.screenshotFilename, "#" + modalId);
+            // ADD mode or no screenshot — show the dropzone
+            window.dispatchEvent(new CustomEvent('ao-preview-reset'));
         }
 
         formEdit.find("#originalObject").prop("value", applicationObject.object);
@@ -264,9 +265,6 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         formEdit.find("#value").prop("value", cleanErratum(applicationObject.value));
         formEdit.find("#xOffset").prop("value", applicationObject.xOffset);
         formEdit.find("#yOffset").prop("value", applicationObject.yOffset);
-
-        pictureUrl = "ReadApplicationObjectImage?application=" + applicationObject.application + "&object=" + applicationObject.object + "&time=" + new Date().getTime()
-        formEdit.find("#selectedPicture").attr("src", pictureUrl + "&h=400&w=800");
 
     }
 
@@ -281,160 +279,9 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
     }
 }
 
-/**
- * add a listenner for a paste event to catch clipboard if it's a picture
- * @returns {void}
- */
-function pasteListennerForClipboardPicture(idModal) {
-    var _self = this;
-    //handlers
-    document.addEventListener('paste', function (e) {
-        _self.paste_auto(e);
-    }, false);
-    //on paste
-    this.paste_auto = function (e) {
-        //handle paste event if the user do not select an input;
-        if (e.clipboardData && !$(e.target).is("input")) {
-            var items = e.clipboardData.items;
-            handlePictureSend(items, idModal);
-            e.preventDefault();
-        }
-    };
-
-}
-
-
-/**
- * set up the event listenner to make a drag and drop dropzone
- * @returns {void}
- */
-function setUpDragAndDrop(idModal) {
-    var dropzone = $(idModal).find("#dropzone")[0];
-    dropzone.addEventListener("dragenter", dragenter, false);
-    dropzone.addEventListener("dragover", dragover, false);
-    dropzone.addEventListener("drop", function (event) {
-        drop(event, idModal);
-    });
-}
-
-/**
- * prevent the browser to open the file drag into an other tab
- * @returns {void}
- */
-function dragenter(e) {
-    e.stopPropagation();
-    e.preventDefault();
-}
-
-/**
- * prevent the browser to open the file drag into an other tab
- * @returns {void}
- */
-function dragover(e) {
-    e.stopPropagation();
-    e.preventDefault();
-}
-
-/**
- * prevent the browser to open the file drag into an other tab and handle the file when the user put his file
- * @returns {void}
- */
-function drop(e, idModal) {
-    e.stopPropagation();
-    e.preventDefault();
-
-    var dt = e.dataTransfer;
-    var items = dt.items;
-    handlePictureSend(items, idModal);
-}
-
-/**
- * get the picture from items and update the label with the name of the 
- * return a boolean if whether or not it succeed to handle the file 
- * @param {DataTransferItemList} items 
- * @returns {boolean}
- */
-function handlePictureSend(items, idModal) {
-    if (!items)
-        return false;
-    //access data directly
-    for (var i = 0; i < items.length; i++) {
-        ///check if the input is an image
-        if (items[i].type.indexOf("image") !== -1) {
-            //image from clipboard found
-            var blob = items[i].getAsFile();
-            imagePasteFromClipboard = blob;
-
-            // Crossbrowser support for URL
-            var URLObj = window.URL || window.webkitURL;
-
-            // Creates a DOMString containing a URL representing the object given in the parameter
-            // namely the original Blob
-            $(idModal).find("#selectedPicture").attr("src", URLObj.createObjectURL(imagePasteFromClipboard));
-
-            var source = URLObj.createObjectURL(blob);
-            var nameToDisplay = blob.name;
-            updateDropzone(nameToDisplay, idModal, blob.lastModifiedDate);
-            return true;
-        } else {
-            var message = new Message("danger", "The file input is not a picture");
-            showMessage(message, $(idModal));
-        }
-    }
-}
-
-
-
-/* functions used by both modal */
-
-/**
- * add a listenner for an input type file
- * @returns {void}
- */
-
-function listennerForInputTypeFile(idModal) {
-
-    var inputs = $(idModal).find("#inputFile");
-    inputs[0].addEventListener('change', function (e) {
-        //check if the input is an image
-        if (inputs[0].files[0].type.indexOf("image") !== -1) {
-            var fileName = '';
-            if (this.files && this.files.length > 1)
-                fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length);
-            else
-                fileName = e.target.value.split('\\').pop();
-            if (fileName) {
-                updateDropzone(fileName, idModal);
-            }
-        } else {//not an image 
-            var message = new Message("danger", "The file input is not a picture");
-            showMessage(message, $(idModal));
-        }
-    });
-
-}
-
-
-/**
- * change the text inside the label specified and add the attribute uploadSources
- * @param {string} id of the input the label link to
- * @param {string} message that will put inside the label
- * @param {boolean} is the picture upload should be taken from the clipboard
- * @returns {void}
- */
-function updateDropzone(messageToDisplay, idModal, modifDate) {
-
-    var dropzoneText = $(idModal).find("#dropzoneText");
-    var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
-    dropzoneText.html(messageToDisplay + " " + glyphIconUpload + " <br><i>" + getDateMedium(modifDate) + "</i> ");
-    if (imagePasteFromClipboard !== undefined) {
-        //reset value inside the input
-        var inputs = $(idModal).find("#inputFile")[0];
-        inputs.value = "";
-    } else {
-        //reset value for the var that stock the picture inside the clipboard
-        imagePasteFromClipboard = undefined;
-    }
-}
-
-
+// All upload functions (drag/drop, paste, file input, preview) are now
+// handled by the Alpine.js crbUploadZone component defined in ApplicationObject.html.
+// The component communicates via:
+//   - 'ao-preview-update' event (with {name, url}) to show preview
+//   - 'ao-preview-reset' event to reset to dropzone
+//   - window.imagePasteFromClipboard for AJAX submit compatibility

@@ -33,15 +33,15 @@ function initPage() {
     var application = GetURLParameter("application");
     displayPageLabel();
 
-    $('#editApplicationObjectModal').on('hidden.bs.modal', {
-        extra: "#editApplicationObjectModalForm"
-    }, buttonCloseHandler);
+    window.addEventListener('appobject-modal-close', function() {
+        buttonCloseHandler({ data: { extra: '#editApplicationObjectModalForm' } });
+    });
 
     // configure and create the dataTable
 
     var configurations = new TableConfigurationsServerSide(
             "applicationObjectsTable", "ReadApplicationObject", "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
-    createDataTableWithPermissionsNew(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true, undefined, function(row) { $(row).addClass('group'); });
     refreshPopoverDocumentation("applicationObjectList");
 
 
@@ -135,43 +135,48 @@ function renderOptionsForApplicationObject(data) {
 }
 
 function deleteEntryHandlerClick() {
-    var application = $('#confirmationModal').find('#hiddenField1').prop(
-            "value");
-    var object = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteApplicationObject", {
-        application: application,
-        object: object
-    }, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            // redraw the datatable
-            var oTable = $("#applicationObjectsTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {// page has only one row, then returns to the
-                // previous page
-                oTable.fnPageChange('previous');
-            }
-        }
-        // show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        // close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
+    // Legacy — kept for backward compat but no longer called directly
 }
 
-function deleteEntryClick(application, object) {
+async function deleteEntryClick(application, object) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_applicationObject",
             "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", application + " - "
             + object);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel(
-            "page_applicationObject", "button_delete"), messageComplete,
-            application, object, "", "");
+
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_applicationObject", "button_delete"),
+        html: messageComplete,
+        preConfirm: async function() {
+            try {
+                const resp = await fetch("DeleteApplicationObject", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "application=" + encodeURIComponent(application) + "&object=" + encodeURIComponent(object)
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#applicationObjectsTable").dataTable();
+        oTable.fnDraw(false);
+        if (oTable.fnGetData().length === 1) {
+            oTable.fnPageChange('previous');
+        }
+        showMessageMainPage("success", result.value.message, false);
+    }
 }
 
 function buttonCloseHandler(event) {
@@ -184,7 +189,7 @@ function buttonCloseHandler(event) {
     // clear the response messages of the modal
     clearResponseMessage($(modalID));
 
-    updateDropzone("Drag and drop Files", '#editApplicationObjectModal');
+    window.dispatchEvent(new CustomEvent('ao-preview-reset'));
     // reset imagePasteFromClipboard
     imagePasteFromClipboard = undefined;
 
@@ -199,52 +204,53 @@ function aoColumnsFunc(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": "60px",
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId)
-                        .attr("hasPermissions");
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
 
-                var editEntry = '<button id="editEntry" onclick="openModalApplicationObject(\''
-                        + obj["application"]
-                        + '\', \''
-                        + obj["object"]
-                        + '\',\'EDIT\'  ,\'applicationObject\' );"\n\
-                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplicationObject" title="'
-                        + doc.getDocLabel("page_applicationObject",
-                                "button_edit")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="openModalApplicationObject(\''
-                        + obj["application"]
-                        + '\', \''
-                        + obj["object"]
-                        + '\',\'EDIT\' , \'applicationObject\');"\n\
-                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplicationObject" title="'
-                        + doc.getDocLabel("page_applicationObject",
-                                "button_edit")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\''
-                        + obj["application"]
-                        + '\', \''
-                        + obj["object"]
-                        + '\');" \n\
-                                    class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteApplicationObject" title="'
-                        + doc.getDocLabel("page_applicationObject",
-                                "button_delete")
-                        + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-trash"></span></button>';
-                if (hasPermissions === "true") { // only draws the
-                    // options if the user
-                    // has the correct
-                    // privileges
-                    return '<div class="center btn-group width150">'
-                            + editEntry + deleteEntry + '</div>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, extraClass = "" }) {
+                    return `<button id="${id}" name="${name}" type="button"
+                        class="${baseBtnClass} ${extraClass}"
+                        title="${title}"
+                        onclick="${onClick}">
+                        ${icon}
+                    </button>`;
                 }
-                return '<div class="center btn-group width150">'
-                        + viewEntry + '</div>';
+
+                const icons = {
+                    edit: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    view: `<i data-lucide="eye" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: `editAppObject_${row}`,
+                    name: "editApplicationObject",
+                    title: doc.getDocLabel("page_applicationObject", "button_edit"),
+                    onClick: `openModalApplicationObject('${obj["application"]}', '${obj["object"]}', 'EDIT', 'applicationObject')`,
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `deleteAppObject_${row}`,
+                        name: "deleteApplicationObject",
+                        title: doc.getDocLabel("page_applicationObject", "button_delete"),
+                        onClick: `deleteEntryClick('${obj["application"]}', '${obj["object"]}')`,
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {

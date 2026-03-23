@@ -1,360 +1,541 @@
-<!-- Edit test data lib-->
-<div data-backdrop="static" class="modal fade center" id="editTestDataLibModal" role="dialog" aria-labelledby="editTestDataLibModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close margin-right25" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editTestDataLibModalLabel"><span id="editTestDataLibTitle">Edit Test Data Lib </span> <span id="NameEdit" ></span> </h4>
+<!--Edit test data lib - Alpine.js/Tailwind refactored -->
+<div
+        x-data="dataLibModal()"
+        x-init="init()"
+        x-show="open"
+        x-cloak
+        @testdatalib-modal-open.window="handleOpen($event.detail)"
+        @testdatalib-modal-close.window="open = false"
+        class="crb_modal"
+        id="editTestDataLibModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="database" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="editTestDataLibModalLabel">
+                        <span id="editTestDataLibTitle">Edit Test Data Lib</span>
+                        <span id="NameEdit" style="opacity: 0.7; font-weight: 400;"></span>
+                    </h2>
+                    <p class="text-xs text-slate-500 !mb-0">Manage data library definition, sub data and traceability</p>
+                </div>
             </div>
-            <div class="modal-body"> 
-                <form id="editTestLibData" role="form" autocomplete="off" >
-                    <input autocomplete="false" name="hidden" type="text" style="display:none;">
-                    <!-- messages area-->
-                    <div id="DialogMessagesAreaEdit">
-                        <div class="alert" id="DialogMessagesAlertEdit"  style="display:none;">
-                            <strong><span class="alert-description" id="DialogAlertDescriptionEdit"></span></strong>
-                            <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 mx-6 mt-2 mb-2 rounded-lg shrink-0">
+            <template x-for="tab in tabs" :key="tab.id">
+                <button @click="showTab = tab.id"
+                        :class="showTab === tab.id
+                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-2 py-1.5 rounded-md transition-colors duration-200 text-xs"
+                        :id="tab.btnId" :name="tab.name"
+                        x-text="tab.label">
+                </button>
+            </template>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesAreaEdit">
+            <div class="alert" id="DialogMessagesAlertEdit" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescriptionEdit"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editTestLibData" role="form" autocomplete="off">
+                <input autocomplete="false" name="hidden" type="text" style="display:none;">
+
+                <!-- ========== TAB: DEFINITION ========== -->
+                <div x-show="showTab === 'definition'" class="space-y-3" id="tabsedit-1"
+                     x-data="{type: '', openFile: false, openSql: false, openService: false,
+                                syncOpenStates() {
+                                    this.openFile = this.type === 'FILE';
+                                    this.openSql = this.type === 'SQL';
+                                    this.openService = this.type === 'SERVICE';
+                                }
+                            }"
+                     @dl-type-changed.window="type = $event.detail; syncOpenStates()">
+
+                    <!-- Datalib Entry Selector -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4" id="selectDatalibID">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-blue-600"></i>
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="lbl_datalibEntry" for="datalibEntry">Select the datalib to edit</label>
+                        </div>
+                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" id="datalibEntry" name="datalibEntry"></select>
+                    </div>
+
+                    <!-- General Info -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">General Information</span>
+                        </div>
+                        <div class="flex gap-3 mb-3">
+                            <div style="width: 80px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_id" for="testdatalibid">ID</label>
+                                <input id="testdatalibid" name="testdatalibid" readonly="readonly"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-200 text-slate-500"/>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_tdlname" for="tdlname">Data Lib Name</label>
+                                <input id="tdlname" name="tdlname"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"/>
+                            </div>
+                            <div style="width: 200px; flex-shrink: 0;" x-data="crbDropdown({id:'dlTypes', hiddenInput:'types', preselectEvent:'dlTypes-preselect', loader: crbLoaders.invariant('TESTDATATYPE'), onSelect: function(item) { window.dispatchEvent(new CustomEvent('dl-type-changed', {detail: item.value})); }})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_type">Type</label>
+                                <input type="hidden" id="types" name="types">
+                                <div class="relative w-full">
+                                    <div @click.stop="toggle()" :id="id + '-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                        <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                        <svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                    <template x-teleport="body">
+                                        <div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}">
+                                            <div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div>
+                                            <div class="max-h-52 overflow-auto">
+                                                <template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template>
+                                                <template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1" x-data="crbDropdown({id:'dlSystem', hiddenInput:'system', preselectEvent:'dlSystem-preselect', loader: crbLoaders.invariant('SYSTEM')})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_system">System</label>
+                                <input type="hidden" id="system" name="system">
+                                <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                    <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                </div>
+                            </div>
+                            <div class="flex-1" x-data="crbDropdown({id:'dlEnvironment', hiddenInput:'environment', preselectEvent:'dlEnvironment-preselect', loader: crbLoaders.invariant('ENVIRONMENT')})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_environment">Environment</label>
+                                <input type="hidden" id="environment" name="environment">
+                                <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                    <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                </div>
+                            </div>
+                            <div class="flex-1" x-data="crbDropdown({id:'dlCountry', hiddenInput:'country', preselectEvent:'dlCountry-preselect', loader: crbLoaders.invariant('COUNTRY')})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_country">Country</label>
+                                <input type="hidden" id="country" name="country">
+                                <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                    <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FILE Configurations -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="flex justify-between items-center cursor-pointer px-4 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                             @click="openFile = !openFile">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file" class="w-4 h-4 text-green-600"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="csvConfigurationsLbl">FILE Configurations</span>
+                            </div>
+                            <svg :class="{'rotate-90': openFile}" class="w-4 h-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <div x-show="openFile" x-transition class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="flex gap-3">
+                                <div style="width: 200px; flex-shrink: 0;" x-data="crbDropdown({id:'dlDatabaseCsv', hiddenInput:'databaseCsv', preselectEvent:'dlDatabaseCsv-preselect', loader: crbLoaders.invariant('PROPERTYDATABASE')})" @click.stop>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_databaseCsv">Database URL</label>
+                                    <input type="hidden" id="databaseCsv" name="databaseCsv">
+                                    <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                        <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_csvUrl" for="csvUrl">File Url</label>
+                                    <div class="flex">
+                                        <input id="csvUrl" name="csvUrl" class="flex-1 h-10 border rounded-l-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"/>
+                                        <a id="buttonDownloadCsvFile" href="#" style="text-decoration: none;">
+                                            <button id="downloadCSV" type="button"
+                                                    class="h-10 px-3 border border-l-0 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-r-md flex items-center transition">
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-slate-500"><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-6 items-center">
+                                <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                                    <input type="checkbox" id="subdataCheck" name="subdataCheck" value="1" class="w-4 h-4 rounded border-slate-300" style="accent-color: #3b82f6;">
+                                    Generate Subdata list from first line of CSV after saving
+                                </label>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="inputFile">Upload File</label>
+                                    <input type="file" id="inputFile" class="text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-300 file:text-sm file:bg-white file:text-slate-700 hover:file:bg-slate-50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SQL Configurations -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="flex justify-between items-center cursor-pointer px-4 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                             @click="openSql = !openSql">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="database" class="w-4 h-4 text-purple-600"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="sqlConfigurationsLbl">SQL Configurations</span>
+                            </div>
+                            <svg :class="{'rotate-90': openSql}" class="w-4 h-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <div x-show="openSql" x-transition class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
+                            <div style="max-width: 300px;" x-data="crbDropdown({id:'dlDatabase', hiddenInput:'database', preselectEvent:'dlDatabase-preselect', loader: crbLoaders.invariant('PROPERTYDATABASE')})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_database">Database</label>
+                                <input type="hidden" id="database" name="database">
+                                <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                    <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_script" for="script">Script</label>
+                                <div id="scriptContainer">
+                                    <pre id="script" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2" style="min-height: 150px; overflow: auto;"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SERVICE Configurations -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="flex justify-between items-center cursor-pointer px-4 py-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                             @click="openService = !openService">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="globe" class="w-4 h-4 text-orange-500"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="serviceConfigurationsLbl">SERVICE Configurations</span>
+                            </div>
+                            <svg :class="{'rotate-90': openService}" class="w-4 h-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                        <div x-show="openService" x-transition class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="flex gap-3">
+                                <div style="width: 200px; flex-shrink: 0;" x-data="crbDropdown({id:'dlDatabaseUrl', hiddenInput:'databaseUrl', preselectEvent:'dlDatabaseUrl-preselect', loader: crbLoaders.invariant('PROPERTYDATABASE')})" @click.stop>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_databaseUrl">Database URL</label>
+                                    <input type="hidden" id="databaseUrl" name="databaseUrl">
+                                    <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                        <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                    </div>
+                                </div>
+                                <div class="flex-1" x-data="crbDropdown({id:'dlService', hiddenInput:'service', preselectEvent:'dlService-preselect', loader: crbLoaders.appServices})" @click.stop>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_service">Service</label>
+                                    <input type="hidden" id="service" name="service">
+                                    <div class="relative w-full"><div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
+                                        <template x-teleport="body"><div x-show="isOpen" x-transition class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 max-h-64 overflow-hidden" style="z-index:9999;" :style="{top:pos.top+'px',left:pos.left+'px',width:pos.width+'px'}"><div class="p-2 border-b dark:border-slate-700 border-slate-200"><input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen=false" class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900"></div><div class="max-h-52 overflow-auto"><template x-for="item in filtered()" :key="item.value"><button type="button" @click.stop="select(item)" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition" :class="item.value===selectedValue?'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300':''"><span x-text="item.label"></span></button></template><template x-if="filtered().length===0"><div class="px-3 py-2 text-sm text-slate-400 italic">No results</div></template></div></div></template>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden">
+                                <div class="flex gap-3">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_service_path" for="servicepaths">Service Path</label>
+                                        <input id="servicepaths" name="servicepaths" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all"/>
+                                    </div>
+                                    <div style="width: 200px; flex-shrink: 0;">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_method" for="methods">Method</label>
+                                        <input id="methods" name="methods" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_envelope" for="envelope">Envelope</label>
+                                <div id="envelopeContainer">
+                                    <pre id="envelope" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2" style="min-height: 150px; overflow: auto;"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group & Privacy -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="folder" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Group & Privacy</span>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_group" for="group">Group</label>
+                                <input id="group" name="group" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"/>
+                            </div>
+                            <div style="width: 200px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_privateData" for="privateData">Private</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="checkbox" id="privateData" name="privateData" class="w-4 h-4 rounded border-slate-300" style="accent-color: #3b82f6; cursor: pointer;">
+                                    <span id="messagePrivate" class="text-xs text-blue-600 font-medium"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="align-left" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="lbl_description">Description</span>
+                        </div>
+                        <textarea id="libdescription" name="libdescription" rows="3"
+                                  class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-y"
+                                  placeholder="Enter a description..."></textarea>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: SUB DATA ========== -->
+                <div x-show="showTab === 'subdata'" class="space-y-3" id="tabsedit-2">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4" id="listPanelSubdata">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="table" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Sub Data Configuration</span>
+                        </div>
+                        <div class="flex gap-3 mb-4 items-end">
+                            <div style="width: 200px;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_separator" for="separator">CSV File Separator</label>
+                                <input id="separator" name="separator" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
+                            </div>
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition" style="min-width: 160px;"
+                                 onclick="var cb = this.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); var t = this.querySelector('.crb-toggle'); t.style.background = cb.checked ? '#3b82f6' : '#cbd5e1'; t.querySelector('.crb-knob').style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';">
+                                <div style="width: 36px; height: 20px; flex-shrink: 0;">
+                                    <input type="checkbox" id="ignoreFirstLine" name="ignoreFirstLine" style="display:none;">
+                                    <div class="crb-toggle" style="width: 36px; height: 20px; border-radius: 10px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;">
+                                        <div class="crb-knob" style="width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); position: relative; top: 2px; left: 2px; transition: transform 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Ignore First Line</span>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                            <table class="w-full text-sm text-left" id="SubdataTable_edit">
+                                <thead style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-bottom: 2px solid #cbd5e1;">
+                                    <tr>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; width: 50px;"></th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; min-width: 120px;" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 70px;" id="encryptHeader" name="encryptHeader">Encrypt</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; min-width: 120px;" id="valueHeader" name="valueHeader">Value</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; min-width: 100px;" id="columnHeader" name="columnHeader">Column</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; min-width: 120px;" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; width: 100px;" id="columnPositionHeader" name="columnPositionHeader">Col. Position</th>
+                                        <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; min-width: 140px;" id="descriptionHeader" name="descriptionHeader">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subdataTableBody_edit" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" id="addSubData_edit"
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Subdata
                             </button>
                         </div>
                     </div>
-                    <!-- type and system-->
-                    <div class="row" id="selectDatalibID">
-                        <div class="form-group col-sm-12">
-                            <label name="lbl_datalibEntry" for="datalibEntry">Select the datalib to edit</label>
-                            <div>
-                                <select class="form-control" id="datalibEntry" name="datalibEntry">
-                                </select>  
+                </div>
+
+                <!-- ========== TAB: TRACEABILITY ========== -->
+                <div x-show="showTab === 'traceability'" class="space-y-3" id="tabsedit-3">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4" id="listPanelTraca">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Audit Trail</span>
+                        </div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_created" for="created">Date Created</label>
+                                <input id="created" name="created" readonly="readonly"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-200 text-slate-500"/>
                             </div>
-                        </div> 
-                    </div>    
-                    <div class="row">
-                        <div class="form-group col-sm-2">
-                            <label name="lbl_id" for="testdatalibid">ID</label>
-                            <div>
-                                <input id="testdatalibid" name="testdatalibid" class="form-control" readonly="readonly"/>     
-                            </div>
-                        </div> 
-                        <div class="form-group col-sm-6">
-                            <label name="lbl_tdlname" for="tdlname">Data Lib Name</label>
-                            <div>
-                                <input id="tdlname" name="tdlname" class="form-control" readonly="readonly" />     
-                            </div>
-                        </div> 
-                        <div class="form-group col-sm-4">
-                            <label name="lbl_type" for="type">Type</label>
-                            <div>
-                                <select class="form-control" id="types" name="types">
-                                </select>
-                            </div>
-                        </div> 
-                    </div>    
-                    <!--environment + country-->
-                    <div class="row">
-                        <div class="form-group col-sm-4">
-                            <label name="lbl_system" for="system">System</label>
-                            <select class="form-control" id="system" name="system">
-                            </select>      
-                        </div>         
-                        <div class="form-group col-sm-4">
-                            <label name="lbl_environment"  for="environment">Environment</label>
-                            <select class="form-control" id="environment" name="environment">
-                            </select>  
-                        </div> 
-                        <div class="form-group col-sm-4">
-                            <label name="lbl_country" for="country">Country</label>
-                            <select class="form-control"  id="country" name="country">
-                            </select>  
-                        </div>            
-                    </div> 
-                    <!-- tabs definition-->
-                    <ul id="edittabs" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsedit-1">Definition</a></li>
-                        <li><a data-toggle="tab" href="#tabsedit-2" id="tab2Text" name="tab2Text">Sub data</a></li>
-                        <li><a data-toggle="tab" href="#tabsedit-3" id="tab3Text" name="tab3Text">Traceability</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1"
-                             x-data="{type: '', openFile: false, openSql: false, openService: false,
-                                        syncOpenStates() {
-                                            this.openFile = this.type === 'FILE';
-                                            this.openSql = this.type === 'SQL';
-                                            this.openService = this.type === 'SERVICE';
-                                        }
-                                    }"
-                             x-init="const select = document.getElementById('types');
-                                    if (select) {
-                                        type = select.value;
-                                        syncOpenStates();
-                                        select.addEventListener('change', e => {
-                                            type = e.target.value;
-                                            syncOpenStates();
-                                        });
-                                    }">
-                            <!-- SERVICE SECTION -->
-                            <div class="space-y-4">
-
-                                <!-- FILE Configurations -->
-                                <div x-transition x-cloak class="border rounded-lg shadow">
-                                    <div class="flex justify-between items-center cursor-pointer px-4 py-2  hover:bg-gray-200"
-                                            @click="openFile = !openFile">
-                                        <label class="font-semibold">FILE Configurations</label>
-                                        <svg
-                                                :class="{'rotate-90': openFile}"
-                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </div>
-
-                                    <div x-show="openFile" x-transition class="p-4 border-t space-y-4">
-
-                                        <!-- Row 1 -->
-                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
-                                            <div class="sm:col-span-3">
-                                                <label for="databaseCsv" class="block text-sm font-medium text-gray-700">Database URL</label>
-                                                <select id="databaseCsv" name="databaseCsv" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
-                                            </div>
-
-                                            <div class="sm:col-span-9">
-                                                <label for="csvUrl" class="block text-sm font-medium text-gray-700">File Url</label>
-                                                <div class="flex mt-1">
-                                                    <input id="csvUrl" name="csvUrl" class="flex-1 border-gray-300 rounded-l-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                                    <a id="buttonDownloadCsvFile" href="#" class="inline-flex">
-                                                        <button id="downloadCSV" type="button" class="px-3 py-2 border border-gray-300 bg-gray-50 hover:bg-gray-100 rounded-r-md">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
-                                                            </svg>
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Row 2 -->
-                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
-                                            <div class="sm:col-span-3">
-                                                <label class="block text-sm font-medium text-gray-700">
-                                                    <input type="checkbox" id="subdataCheck" name="subdataCheck" value="1" class="mr-2">
-                                                    Generate Subdata list from first line of CSV after saving
-                                                </label>
-                                            </div>
-
-                                            <div class="sm:col-span-9">
-                                                <label for="inputFile" class="block text-sm font-medium text-gray-700">Upload File</label>
-                                                <input type="file" id="inputFile" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- SQL Configurations -->
-                                <div x-transition x-cloak class="border rounded-lg bg-white shadow">
-                                    <div
-                                            class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
-                                            @click="openSql = !openSql"
-                                    >
-                                        <label class="font-semibold">SQL Configurations</label>
-                                        <svg
-                                                :class="{'rotate-90': openSql}"
-                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </div>
-
-                                    <div x-show="openSql" x-transition class="p-4 border-t space-y-4">
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <label for="database" class="block text-sm font-medium text-gray-700">Database</label>
-                                                <select id="database" name="database" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label for="script" class="block text-sm font-medium text-gray-700">Script</label>
-                                            <button type="button" class="ml-2 px-2 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                          d="M8 3H5a2 2 0 00-2 2v3m0 8v3a2 2 0 002 2h3m8-16h3a2 2 0 012 2v3m0 8v3a2 2 0 01-2 2h-3" />
-                                                </svg>
-                                            </button>
-                                            <div id="scriptContainer" class="mt-2">
-                                                <pre id="script" class="bg-gray-50 border border-gray-200 rounded p-2 min-h-[150px] overflow-auto"></pre>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- SERVICE Configurations -->
-                                <div x-transition x-cloak class="border rounded-lg bg-white shadow">
-                                <div
-                                            class="flex justify-between items-center cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200"
-                                            @click="openService = !openService"
-                                    >
-                                        <label class="font-semibold">SERVICE Configurations</label>
-                                        <svg
-                                                :class="{'rotate-90': openService}"
-                                                class="w-4 h-4 transform transition-transform duration-300 text-gray-600"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </div>
-
-                                    <div x-show="openService" x-transition class="p-4 border-t space-y-4">
-                                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
-                                            <div class="sm:col-span-4">
-                                                <label for="databaseUrl" class="block text-sm font-medium text-gray-700">Database URL</label>
-                                                <select id="databaseUrl" name="databaseUrl" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
-                                            </div>
-
-                                            <div class="sm:col-span-7">
-                                                <label for="service" class="block text-sm font-medium text-gray-700">Service</label>
-                                                <select id="service" name="service" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Hidden Rows -->
-                                        <div class="hidden grid grid-cols-1 sm:grid-cols-12 gap-4">
-                                            <div class="sm:col-span-8">
-                                                <label for="servicepaths" class="block text-sm font-medium text-gray-700">Service Path</label>
-                                                <input id="servicepaths" name="servicepaths" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                            </div>
-                                            <div class="sm:col-span-4">
-                                                <label for="methods" class="block text-sm font-medium text-gray-700">Method</label>
-                                                <input id="methods" name="methods" class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                            </div>
-                                        </div>
-
-                                        <div class="hidden">
-                                            <label for="envelope" class="block text-sm font-medium text-gray-700">Envelope</label>
-                                            <div id="envelopeContainer" class="mt-1">
-                                                <pre id="envelope" class="bg-gray-50 border border-gray-200 rounded p-2 min-h-[150px] overflow-auto"></pre>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!--group information -->
-                            <div class="row">
-                                <div class="form-group col-sm-9">
-                                    <label name="lbl_group"  for="groupedit">or enter new group</label>
-                                    <input id="group" name="group" class="form-control" />     
-                                </div>                  
-                                <div class="form-group col-sm-3">
-                                    <label name="lbl_privateData" for="privateData">Private</label><br>
-                                    <input class="col-xs-2 form-control input-sm" type="checkbox" id="privateData" name="privateData"/>
-                                    <div class="marginTop10 pull-left text-info">
-                                        <p><strong id="messagePrivate"></strong></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!--description-->
-                            <div class="row">
-                                <div class="form-group col-xs-12">
-                                    <label name="lbl_description" for="libdescription">Description</label>
-                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
-                                </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_creator" for="creator">Creator</label>
+                                <input id="creator" name="creator" readonly="readonly"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-200 text-slate-500"/>
                             </div>
                         </div>
-                        <div class="center tab-pane fade marginTop25" id="tabsedit-2">
-                            <div id="listPanelSubdata">
-
-                                <div class="well well-sm" >
-
-                                    <div class="row">
-                                        <div class="form-group col-sm-3"> 
-                                            <label name="lbl_separator" for="separator">CSV File Separator</label> 
-                                            <input id="separator" name="separator" class="form-control">   
-                                        </div>
-                                        <div class="form-group col-sm-3">
-                                            <div class="form-check">
-                                                <label class="form-check-label">
-                                                    Ignore First Line
-                                                </label>
-                                                <input class="form-check-input form-control input-sm" id="ignoreFirstLine" name="ignoreFirstLine" type="checkbox">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <table class="table table-hover nomarginbottom" id="SubdataTable_edit">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width: 5%;"></th>
-                                                    <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
-                                                    <th class="text-center" id="encryptHeader" name="encryptHeader">Encrypt</th>
-                                                    <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
-                                                    <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
-                                                    <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
-                                                    <th class="text-center" id="columnPositionHeader" name="columnPositionHeader">Column Position</th>
-                                                    <th class="text-center" id="descriptionHeader" name="descriptionHeader">Description</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="subdataTableBody_edit">
-                                            </tbody>
-                                        </table>
-                                        <button type="button" class="btn btn-default marginTop20" id="addSubData_edit">Add Subdata</button>
-                                    </div>
-                                </div>  
-                            </div>   
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModified" for="lastModified">Last Modified</label>
+                                <input id="lastModified" name="lastModified" readonly="readonly"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-200 text-slate-500"/>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
+                                <input id="lastModifier" name="lastModifier" readonly="readonly"
+                                       class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-200 text-slate-500"/>
+                            </div>
                         </div>
-                        <div class="center tab-pane fade marginTop25" id="tabsedit-3">
-                            <div id="listPanelTraca">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_created" for="created">Created</label>
-                                                <div>
-                                                    <input id="created" name="created" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_creator" for="creator">Creator</label>
-                                                <div>
-                                                    <input id="creator" name="creator" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div> 
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
-                                                <div>
-                                                    <input id="lastModified" name="lastModified" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
-                                                <div>
-                                                    <input id="lastModifier" name="lastModifier" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                </div>  
-                            </div>   
-                        </div>
-                    </div>       
-                </form>  
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editDataLibButton" name="buttonEdit">Save</button>
-                <button type="button" id="addDataLibButton" name="buttonAdd">Add</button>
-                <button type="button" id="duplicateDataLibButton" name="buttonDuplicate">Duplicate</button>
-            </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" id="closeButton" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="editDataLibButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Save</button>
+            <button type="button" id="addDataLibButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Add</button>
+            <button type="button" id="duplicateDataLibButton" name="buttonDuplicate" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Duplicate</button>
         </div>
     </div>
 </div>
 <!--end view data modal -->
+
+<script>
+    // ===== DATALIB MODAL CONTROLLER =====
+    function dataLibModal() {
+        return {
+            open: false, isFullscreen: false, showTab: 'definition',
+            tabs: [
+                { id: 'definition', label: 'Definition', btnId: 'tab1Text', name: 'tab1Text' },
+                { id: 'subdata', label: 'Sub data', btnId: 'tab2Text', name: 'tab2Text' },
+                { id: 'traceability', label: 'Traceability', btnId: 'tab3Text', name: 'tab3Text' }
+            ],
+            handleOpen: function(detail) {
+                this.open = true;
+                this.showTab = 'definition';
+                var self = this;
+                this.$nextTick(function() {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                });
+            },
+            init: function() {
+                var self = this;
+                window.addEventListener('testdatalib-modal-close', function() { self.open = false; });
+            }
+        }
+    }
+
+    // ===== CRB DROPDOWN COMPONENT =====
+    if (typeof window.crbDropdown === 'undefined') {
+        window.crbDropdown = function(config) {
+            return {
+                id: config.id || 'dropdown',
+                hiddenInput: config.hiddenInput || '',
+                preselectEvent: config.preselectEvent || '',
+                items: [], search: '', isOpen: false,
+                selectedValue: '', selectedLabel: '',
+                pos: { top: 0, left: 0, width: 200 },
+                config: config,
+                init: function() {
+                    var self = this;
+                    if (config.loader) config.loader(function(items) { self.items = items; });
+                    if (self.preselectEvent) {
+                        window.addEventListener(self.preselectEvent, function(e) { self.preselect(e.detail); });
+                    }
+                    window.addEventListener('crb-dropdown-close-all', function(e) {
+                        if (e.detail !== self.id) self.isOpen = false;
+                    });
+                    document.addEventListener('click', function(e) {
+                        if (!self.isOpen) return;
+                        var btn = document.getElementById(self.id + '-btn');
+                        if (btn && btn.contains(e.target)) return;
+                        if (e.target.closest && e.target.closest('[x-show="isOpen"]')) return;
+                        self.isOpen = false;
+                    }, true);
+                },
+                preselect: function(value) {
+                    this.selectedValue = value || '';
+                    var match = null;
+                    for (var i = 0; i < this.items.length; i++) {
+                        if (this.items[i].value === value) { match = this.items[i]; break; }
+                    }
+                    this.selectedLabel = match ? match.label : (value || '');
+                    var input = document.getElementById(this.hiddenInput);
+                    if (input) input.value = value || '';
+                },
+                toggle: function() {
+                    this.isOpen = !this.isOpen;
+                    if (this.isOpen) {
+                        window.dispatchEvent(new CustomEvent('crb-dropdown-close-all', { detail: this.id }));
+                        this.updatePosition();
+                    }
+                },
+                updatePosition: function() {
+                    var btn = document.getElementById(this.id + '-btn');
+                    if (!btn) return;
+                    var rect = btn.getBoundingClientRect();
+                    this.pos.top = rect.bottom + 4;
+                    this.pos.left = rect.left;
+                    this.pos.width = Math.max(rect.width, 200);
+                },
+                filtered: function() {
+                    var q = this.search.toLowerCase();
+                    if (!q) return this.items;
+                    return this.items.filter(function(i) { return i.label.toLowerCase().indexOf(q) !== -1; });
+                },
+                select: function(item) {
+                    this.selectedValue = item.value;
+                    this.selectedLabel = item.label;
+                    this.isOpen = false;
+                    this.search = '';
+                    var input = document.getElementById(this.hiddenInput);
+                    if (input) { input.value = item.value; $(input).trigger('change'); }
+                    if (this.config.onSelect) this.config.onSelect(item);
+                }
+            };
+        };
+    }
+
+    // ===== CRB LOADERS =====
+    if (typeof window.crbLoaders === 'undefined') {
+        window.crbLoaders = {
+            invariant: function(idName) {
+                return function(callback) {
+                    fetch('FindInvariantByID?idName=' + idName)
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            var items = data.map(function(obj) {
+                                return { value: obj.value, label: obj.value };
+                            }).sort(function(a, b) { return a.label.localeCompare(b.label); });
+                            callback(items);
+                        })
+                        .catch(function() { callback([]); });
+                };
+            },
+            appServices: function(callback) {
+                fetch('ReadAppService?iSortCol_0=0&sSortDir_0=asc&iDisplayLength=10000&sColumns=service')
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var items = (data.contentTable || []).map(function(obj) {
+                            return { value: obj.service, label: obj.service };
+                        }).sort(function(a, b) { return a.label.localeCompare(b.label); });
+                        callback(items);
+                    })
+                    .catch(function() { callback([]); });
+            }
+        };
+    }
+</script>

@@ -263,8 +263,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                 <div id="${tableConfigurations.divId}_buttonWrapper" class="flex w-full gap-2 mb-2 min-h-[40px]"></div>
         
                 <!-- Ligne 2 : search + refresh + config -->
-                <div class="flex items-center justify-between mb-2 min-h-[40px]">
-                    <div class="flex items-center gap-2 flex-grow">
+                <div class="flex items-center gap-2 mb-2 min-h-[40px]">
                         <input type="search" id="${tableConfigurations.divId}_globalSearch"
                                class="flex-grow border rounded-md px-3 py-2 h-10 border-gray-300 dark:border-gray-600"
                                placeholder="${searchPlaceholder}"
@@ -275,17 +274,12 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                                 title="Refresh">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                         </button>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div id="${tableConfigurations.divId}_customInfo"
-                             class="text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap"></div>
                         <button id="${tableConfigurations.divId}_toggleConfig"
                                 type="button"
                                 class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 h-10 flex items-center gap-2">
                             <i data-lucide="sliders" class="w-4 h-4"></i>
                             <span>Config</span>
                         </button>
-                    </div>
                 </div>
         
                 <!-- Ligne 3 : filtre avancé -->
@@ -293,15 +287,19 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
                     <!-- Contenu filtre plus tard -->
                 </div>
                 
-                <!-- Ligne 4 : pagination / length TOUJOURS visible -->
+                <!-- Ligne 4 : info + pagination / length TOUJOURS visible -->
                 <div id="${tableConfigurations.divId}_extraControls"
                      class="flex items-center justify-between w-full min-h-[40px]">
                 
                     <div id="${tableConfigurations.divId}_lengthContainer"
                          class="flex items-center gap-2"></div>
-                
-                    <div id="${tableConfigurations.divId}_paginateContainer"
-                         class="flex items-center gap-1"></div>
+
+                    <div class="flex items-center gap-4">
+                        <div id="${tableConfigurations.divId}_customInfo"
+                             class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"></div>
+                        <div id="${tableConfigurations.divId}_paginateContainer"
+                             class="flex items-center gap-1"></div>
+                    </div>
                 </div>          
         `);
 
