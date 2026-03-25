@@ -524,7 +524,7 @@ function refreshMonitorTable(dataFromWs) {
         exeId = item.getAttribute("data-exeid");
         fn = item.getAttribute("data-fn");
         id = item.getAttribute("id");
-        console.info(item);
+//        console.info(item);
         indexPreviousValues[id] = exeId + fn;
 
     });

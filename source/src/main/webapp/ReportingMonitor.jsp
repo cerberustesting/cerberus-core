@@ -161,7 +161,7 @@
                             <label id="filters" >Monitoring Status</label>
                         </div>
 
-                        <div class="panel-body collapse in" style="overflow-y: scroll;"  id="monitoringChart">
+                        <div class="panel-body" style="overflow-y: scroll;"  id="monitoringChart">
                             <div class="row">
                                 <div class="col-sm-6 global-counter" id="MonitorHeader">
                                     Last refresh = xx s
