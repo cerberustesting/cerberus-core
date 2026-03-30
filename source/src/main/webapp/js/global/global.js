@@ -3575,3 +3575,13 @@ function setTheme(theme) {
         localStorage.setItem('theme', 'light');
     }
 }
+
+/**
+ * Returns the appropriate Ace editor theme based on the current dark/light mode.
+ * @returns {string} Ace theme path, e.g. "ace/theme/chrome" or "ace/theme/tomorrow_night"
+ */
+function getAceTheme() {
+    return document.documentElement.classList.contains('dark')
+        ? 'ace/theme/tomorrow_night'
+        : 'ace/theme/chrome';
+}

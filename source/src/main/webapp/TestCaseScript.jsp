@@ -85,7 +85,7 @@
             <div>
                 <div>
                     <div id="divPanelDefault">
-                        <div class="crb_card sticky top-0 z-50" id="testCaseTitle">
+                        <div class="crb_card sticky top-0 z-40" id="testCaseTitle">
                             <div>
                                 <div class="col-lg-5" style="padding: 0px;">
                                     <div class="row">

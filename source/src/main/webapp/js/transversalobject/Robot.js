@@ -165,6 +165,10 @@ function initModalRobot() {
        originalRobotName = null;
     });
 
+    $("#editRobotModal").on("shown.bs.modal", function() {
+        if (window.lucide) lucide.createIcons();
+    });
+
 }
 
 /***
@@ -567,12 +571,13 @@ function loadExecutorsTable(tableBody, executors) {
 
 function appendCapabilityRow(tableBody, capability) {
     var doc = new Doc();
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var inputCapability = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityCapability") + " --\">").addClass("form-control").val(capability.capability);
-//    var inputCapability = getSelectInvariant("CAPABILITY", false, false);
-    var valueInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control").val(capability.value);
-    var table = $("#" + tableBody);
 
+    var inputClasses = "w-full h-9 border rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all";
+
+    var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>');
+    var inputCapability = $('<input maxlength="45" placeholder="-- ' + doc.getDocLabel("robot", "capabilityCapability") + ' --">').addClass(inputClasses).val(capability.capability);
+    var valueInput = $('<input maxlength="255" placeholder="-- ' + doc.getDocLabel("robot", "capabilityValue") + ' --">').addClass(inputClasses).val(capability.value);
+    var table = $("#" + tableBody);
 
     inputCapability.autocomplete({
         source: getInvariantArray("CAPABILITY", false),
@@ -590,17 +595,20 @@ function appendCapabilityRow(tableBody, capability) {
         $(this).autocomplete("search", "");
     });
 
-
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var cap = $("<td></td>").append(inputCapability);
-    var value = $("<td></td>").append(valueInput);
+    var row = $("<tr></tr>").addClass("border-b border-slate-100 dark:border-slate-800 group/row transition-colors");
+    var deleteBtnRow = $('<td class="py-1.5 px-1 w-10 align-middle"></td>').append(deleteBtn);
+    var cap = $('<td class="py-1.5 px-1 align-middle"></td>').append(inputCapability);
+    var value = $('<td class="py-1.5 px-1 align-middle"></td>').append(valueInput);
     deleteBtn.click(function () {
         capability.toDelete = (capability.toDelete) ? false : true;
         if (capability.toDelete) {
-            row.addClass("danger");
+            row.addClass("opacity-40");
+            inputCapability.addClass("line-through");
+            valueInput.addClass("line-through");
         } else {
-            row.removeClass("danger");
+            row.removeClass("opacity-40");
+            inputCapability.removeClass("line-through");
+            valueInput.removeClass("line-through");
         }
     });
     inputCapability.change(function () {
@@ -612,9 +620,9 @@ function appendCapabilityRow(tableBody, capability) {
     row.append(deleteBtnRow);
     row.append(cap);
     row.append(value);
-//    capability.capability = inputCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo values so we take the real selected value.
     row.data("capability", capability);
     table.append(row);
+    if (window.lucide) lucide.createIcons();
 }
 
 function appendExecutorRow(tableBody, executor) {

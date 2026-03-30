@@ -1,183 +1,238 @@
-<!--Edit Robot page-->
-<div data-backdrop="static" class="modal fade center" id="editRobotModal" role="dialog" aria-labelledby="editRobotModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
+<!--Edit Robot page - Redesigned with Tailwind + Alpine.js -->
+<style>
+    /* Center the modal vertically */
+    #editRobotModal .modal-dialog { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); margin: 30px auto; max-width: 900px; width: 100%; }
+    #editRobotModal .modal-content { background: transparent; border: 0; box-shadow: none; width: 100%; }
+</style>
+<div data-backdrop="static" class="modal fade" id="editRobotModal" role="dialog" aria-labelledby="editRobotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editEntryModalLabel" name="editRobotField">Edit Robot</h4>
-            </div>
-            <div class="modal-body">
 
-                <!--edit form-->
-                <form id="editRobotModalForm" name="editRobotModalForm"  role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
+            <!-- Modal Card -->
+            <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl flex flex-col" style="max-height: calc(100vh - 4rem);">
+
+                <!-- HEADER -->
+                <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                            <i data-lucide="bot" class="w-5 h-5 text-blue-600"></i>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-sm-3">
-                                <label for="robotid" name="robotField">Robot</label>
-                                <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
-                            </div>
-                            <div class="form-group col-sm-6">
-                                <label for="robot" name="robotField">Robot</label>
-                                <input type="text" class="form-control" name="robot" id="robotName" aria-describedby="basic-addon1" maxlength="50">
-                            </div>
-                            <div class="form-group col-sm-3">
-                                <label for="active" name="activeField">Active</label>
-                                <input class="form-control input-xs" id="robotIsActive" name="robotIsActive" type="checkbox" value="1">
-                            </div>
+                        <div>
+                            <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editEntryModalLabel" name="editRobotField">Robot</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Define robot configuration, capabilities & executors</p>
                         </div>
-                        <!-- tabs definition-->
-                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDefinition">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabCapabilities">Capabilities</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="editTab3Text" name="tabExecutors">Executors</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
-                                <div class="panel panel-default" style="padding:10px;">
-                                    <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <label for="screensize" name="typeField">Type</label>
-                                            <select class="form-control" name="type" id="type" aria-describedby="basic-addon1" ></select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-4">
-                                            <label for="platform" name="platformField">Platform</label>
-                                            <select class="form-control"  id="platform" name="robotPlatform">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm-1 marginTop10">
-                                            <img id="platformLogo" style='height:40px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0' src="./images/platform-XP.png"></img>
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <label for="screensize" name="screensizeField">Screen Size</label>
-                                            <input type="text" class="form-control" name="screensize" id="screensize" aria-describedby="basic-addon1" maxlength="250">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-4">
-                                            <label for="browser" name="browserField">Browser</label>
-                                            <select class="form-control"  id="browser" name="robotBrowser">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm-1 marginTop10">
-                                            <img id="browserLogo" style='height:40px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0' src="./images/platform-XP.png"></img>
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <label for="version" name="versionField">Version</label>
-                                            <input type="text" class="form-control" name="version" id="version" aria-describedby="basic-addon1" maxlength="45">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-3">
-                                            <label for="isAcceptInsecureCerts" name="isAcceptInsecureCertsField">Accept Insecure Certs</label>
-                                            <input type="checkbox" class="form-control"  id="isAcceptInsecureCerts" name="isAcceptInsecureCerts">
-                                            </input>
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <label for="acceptNotifications" name="acceptNotificationsField">Accept Notifications</label>
-                                            <div class="btn-group btn-group-toggle" name="acceptNotifications"  id="acceptNotifications" data-toggle="buttons">
-                                                <label class="btn btn-default active" title data-content="Default" data-toggle="popover" data-trigger="hover">
-                                                    <input type="radio" name="acceptNotifications" id="acceptNotifications0" data-accnotif="0" autocomplete="off"> 0
-                                                </label>
-                                                <label class="btn btn-default" title data-content="Allow" data-toggle="popover" data-trigger="hover">
-                                                    <input type="radio" name="acceptNotifications" id="acceptNotifications1" data-accnotif="1" autocomplete="off" > 1
-                                                </label>
-                                                <label class="btn btn-default" title data-content="Block" data-toggle="popover" data-trigger="hover">
-                                                    <input type="radio" name="acceptNotifications" id="acceptNotifications2" data-accnotif="2" autocomplete="off"> 2
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-sm-7">
-                                            <label for="extraParam" name="extraParamField">Extra Parameters</label>
-                                            <input type="text" class="form-control" name="extraParam" id="extraParam" aria-describedby="basic-addon1" maxlength="1000">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="profileFolder" name="profileFolderField">Profile Folder</label>
-                                            <input type="text" class="form-control" name="profileFolder" id="profileFolder" aria-describedby="basic-addon1" maxlength="400">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="useragent" name="useragentField">User Agent</label>
-                                            <input type="text" class="form-control" name="useragent" id="useragent" aria-describedby="basic-addon1" maxlength="250">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="robotdecli" name="robotdecliField">Declination</label>
-                                            <input type="text" class="form-control" name="robotdecli" id="robotdecli" aria-describedby="basic-addon1" maxlength="100">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <label for="Description" name="descriptionField">Description</label>
-                                            <textarea id="Description" name="description" class="form-control" maxlength="250"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
-                                <div id="listPanelEditCapabilities">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <table class="table table-hover nomarginbottom" id="editCapabilitiesTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 5%;"></th>
-                                                        <th class="text-center" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
-                                                        <th class="text-center" id="editValueHeader" name="editValueHeader">Value</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="editCapabilitiesTableBody">
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-default marginTop20" id="addEditCapability">Add Capability</button>
-                                        </div>
-                                    </div>  
-                                </div>   
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
-                                <div class="row">
-                                    <div class="form-group col-sm-12">
-                                        <label for="lbexemethod" name="lbexemethodField">Load Balancing Method</label>
-                                        <select class="form-control"  id="lbexemethod" name="lbexemethod">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="listPanelEditExecutors">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <table class="table table-hover nomarginbottom" id="editExecutorsTable">
-                                                <tbody id="editExecutorsTableBody">
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-default marginTop20" id="addEditExecutor">Add Executor</button>
-                                        </div>
-                                    </div>  
-                                </div>   
+                    </div>
+                    <button type="button" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition" data-dismiss="modal" aria-label="Close">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Top fields: ID + Robot Name + Active -->
+                <div class="px-6 pt-3 pb-2 shrink-0">
+                    <div class="flex gap-3">
+                        <div style="width: 80px; flex-shrink: 0;">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotid" name="robotField">ID</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="robotid" id="robotid" readonly>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotName" name="robotField">Robot</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robot" id="robotName" maxlength="50">
+                        </div>
+                        <div style="width: 70px; flex-shrink: 0;">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotIsActive" name="activeField">Active</label>
+                            <div class="flex items-center h-10">
+                                <input class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="robotIsActive" name="robotIsActive" type="checkbox" value="1">
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
+
+                <!-- TABS -->
+                <div x-data="{ robotTab: 'definition' }" class="flex flex-col flex-1 min-h-0">
+                    <div class="flex bg-slate-100 dark:bg-slate-800 p-1 mx-6 mb-2 rounded-lg shrink-0">
+                        <button type="button" @click="robotTab = 'definition'"
+                                :class="robotTab === 'definition'
+                                    ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
+                                id="editTab1Text" name="tabDefinition">
+                            Definition
+                        </button>
+                        <button type="button" @click="robotTab = 'capabilities'"
+                                :class="robotTab === 'capabilities'
+                                    ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
+                                id="editTab2Text" name="tabCapabilities">
+                            Capabilities
+                        </button>
+                        <button type="button" @click="robotTab = 'executors'"
+                                :class="robotTab === 'executors'
+                                    ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
+                                id="editTab3Text" name="tabExecutors">
+                            Executors
+                        </button>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+                        <form id="editRobotModalForm" name="editRobotModalForm" role="form">
+                            <!-- Messages area -->
+                            <div id="DialogMessagesArea" class="mb-3">
+                                <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                                    <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                    <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                        <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- TAB: Definition -->
+                            <div x-show="robotTab === 'definition'" id="tabsEdit-1">
+                                <!-- Type -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
+                                    <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="type" id="type"></select>
+                                </div>
+
+                                <!-- Platform + Logo + Screen Size -->
+                                <div class="flex gap-3 mb-3">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="platformField">Platform</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="platform" name="robotPlatform"></select>
+                                    </div>
+                                    <div class="flex items-end pb-0.5" style="width: 44px;">
+                                        <img id="platformLogo" class="h-9 rounded" src="./images/platform-XP.png">
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="screensizeField">Screen Size</label>
+                                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="screensize" id="screensize" maxlength="250">
+                                    </div>
+                                </div>
+
+                                <!-- Browser + Logo + Version -->
+                                <div class="flex gap-3 mb-3">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="browserField">Browser</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="browser" name="robotBrowser"></select>
+                                    </div>
+                                    <div class="flex items-end pb-0.5" style="width: 44px;">
+                                        <img id="browserLogo" class="h-9 rounded" src="./images/platform-XP.png">
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="versionField">Version</label>
+                                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="version" id="version" maxlength="45">
+                                    </div>
+                                </div>
+
+                                <!-- Accept Insecure Certs + Notifications + Extra Param -->
+                                <div class="flex gap-3 mb-3">
+                                    <div style="width: 140px; flex-shrink: 0;">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="isAcceptInsecureCertsField">Accept Insecure Certs</label>
+                                        <div class="flex items-center h-10">
+                                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="isAcceptInsecureCerts" name="isAcceptInsecureCerts">
+                                        </div>
+                                    </div>
+                                    <div style="width: 180px; flex-shrink: 0;">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="acceptNotificationsField">Accept Notifications</label>
+                                        <div class="flex items-center gap-1 h-10" name="acceptNotifications" id="acceptNotifications" data-toggle="buttons">
+                                            <label class="btn btn-default active inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Default" data-toggle="popover" data-trigger="hover">
+                                                <input type="radio" name="acceptNotifications" id="acceptNotifications0" data-accnotif="0" autocomplete="off"> 0
+                                            </label>
+                                            <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Allow" data-toggle="popover" data-trigger="hover">
+                                                <input type="radio" name="acceptNotifications" id="acceptNotifications1" data-accnotif="1" autocomplete="off"> 1
+                                            </label>
+                                            <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Block" data-toggle="popover" data-trigger="hover">
+                                                <input type="radio" name="acceptNotifications" id="acceptNotifications2" data-accnotif="2" autocomplete="off"> 2
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="extraParamField">Extra Parameters</label>
+                                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="extraParam" id="extraParam" maxlength="1000">
+                                    </div>
+                                </div>
+
+                                <!-- Profile Folder -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="profileFolderField">Profile Folder</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="profileFolder" id="profileFolder" maxlength="400">
+                                </div>
+
+                                <!-- User Agent -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="useragentField">User Agent</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="useragent" id="useragent" maxlength="250">
+                                </div>
+
+                                <!-- Declination -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="robotdecliField">Declination</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robotdecli" id="robotdecli" maxlength="100">
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
+                                    <textarea id="Description" name="description" maxlength="250" rows="3"
+                                              class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- TAB: Capabilities -->
+                            <div x-show="robotTab === 'capabilities'" id="tabsEdit-2">
+                                <div id="listPanelEditCapabilities">
+                                    <table class="w-full text-sm" id="editCapabilitiesTable">
+                                        <thead>
+                                            <tr class="border-b border-slate-200 dark:border-slate-700">
+                                                <th class="text-left py-2 px-2 text-xs font-medium text-slate-500 dark:text-slate-400" style="width: 40px;"></th>
+                                                <th class="text-left py-2 px-2 text-xs font-medium text-slate-500 dark:text-slate-400" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
+                                                <th class="text-left py-2 px-2 text-xs font-medium text-slate-500 dark:text-slate-400" id="editValueHeader" name="editValueHeader">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editCapabilitiesTableBody">
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEditCapability">
+                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Capability
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- TAB: Executors -->
+                            <div x-show="robotTab === 'executors'" id="tabsEdit-3">
+                                <!-- Load Balancing Method -->
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbexemethodField">Load Balancing Method</label>
+                                    <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="lbexemethod" name="lbexemethod"></select>
+                                </div>
+                                <div id="listPanelEditExecutors">
+                                    <table class="w-full text-sm" id="editExecutorsTable">
+                                        <tbody id="editExecutorsTableBody">
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEditExecutor">
+                                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Executor
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="flex justify-end gap-2 px-6 py-3 border-t border-slate-200 dark:border-slate-700 shrink-0">
+                        <button type="button" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" data-dismiss="modal" name="buttonClose">Close</button>
+                        <button type="button" id="editRobotButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-500 transition" name="buttonEdit">Save</button>
+                        <button type="button" id="duplicateRobotButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-500 transition" name="buttonDuplicate">Duplicate</button>
+                        <button type="button" id="addRobotButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonAdd">Add</button>
+                    </div>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editRobotButton" name="buttonEdit">Save</button>
-                <button type="button" id="duplicateRobotButton" name="buttonDuplicate">Duplicate</button>
-                <button type="button" id="addRobotButton" name="buttonAdd">Add</button>
-            </div>
+
         </div>
     </div>
 </div>

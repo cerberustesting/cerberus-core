@@ -36,10 +36,6 @@
                 </div>
             </div>
             <div class="flex items-center gap-1">
-                <!-- Mute toggle -->
-                <div id="isMuted" class="h-8 w-8 rounded-lg flex items-center justify-center cursor-pointer text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition" onclick="toggleIsMuted();">
-                    <span class="glyphicon glyphicon-volume-off" style="font-size: 14px;"></span>
-                </div>
                 <button @click="isFullscreen = !isFullscreen"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
@@ -119,7 +115,7 @@
                                         <div class="max-h-52 overflow-auto">
                                             <template x-for="item in filtered()" :key="item.value">
                                                 <button type="button" @click.stop="select(item)"
-                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                         :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                     <span x-text="item.label"></span>
                                                 </button>
@@ -160,7 +156,7 @@
                                         <div class="max-h-52 overflow-auto">
                                             <template x-for="item in filtered()" :key="item.value">
                                                 <button type="button" @click.stop="select(item)"
-                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                         :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                     <span x-text="item.label"></span>
                                                 </button>
@@ -173,6 +169,30 @@
                                 </template>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Row 1.5: Muted Toggle -->
+                    <div id="isMuted" class="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 transition-all"
+                         :class="isMutedActive ? 'bg-amber-50 dark:bg-amber-900/10 border-amber-300 dark:border-amber-700' : ''"
+                         x-data="{ isMutedActive: false }"
+                         @muted-preselect.window="isMutedActive = ($event.detail === true || $event.detail === 'true')">
+                        <div class="flex items-center gap-3">
+                            <div class="h-9 w-9 rounded-lg flex items-center justify-center transition-colors"
+                                 :class="isMutedActive ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-slate-100 dark:bg-slate-800'">
+                                <i :data-lucide="isMutedActive ? 'bell-off' : 'bell'" class="w-4 h-4 transition-colors"
+                                   :class="isMutedActive ? 'text-amber-600' : 'text-slate-400'"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium" :class="isMutedActive ? 'text-amber-700 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300'">Muted (Silent)</span>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 !mb-0">When muted, this test case is ignored in notifications without changing its priority</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="isMutedActive = !isMutedActive; $nextTick(() => { if(window.lucide) lucide.createIcons({nodes: $el.closest('#isMuted').querySelectorAll('[data-lucide]')}) })"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                :class="isMutedActive ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-600'">
+                            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  :class="isMutedActive ? 'translate-x-5' : 'translate-x-0'"></span>
+                        </button>
                     </div>
 
                     <!-- Row 2: Application + Status + Type -->
@@ -198,7 +218,7 @@
                                             <div class="max-h-52 overflow-auto">
                                                 <template x-for="item in filtered()" :key="item.value">
                                                     <button type="button" @click.stop="select(item)"
-                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                             :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                         <span x-text="item.label"></span>
                                                     </button>
@@ -237,7 +257,7 @@
                                         <div class="max-h-52 overflow-auto">
                                             <template x-for="item in filtered()" :key="item.value">
                                                 <button type="button" @click.stop="select(item)"
-                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                         :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                     <span x-text="item.label"></span>
                                                 </button>
@@ -271,7 +291,7 @@
                                         <div class="max-h-52 overflow-auto">
                                             <template x-for="item in filtered()" :key="item.value">
                                                 <button type="button" @click.stop="select(item)"
-                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                         :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                     <span x-text="item.label"></span>
                                                 </button>
@@ -296,7 +316,7 @@
                     <!-- Row 4: Detailed Description (TinyMCE) -->
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="detailedDescription" name="detailedDescriptionField">Detailed Description</label>
-                        <textarea id="detailedDescription" name="detailedDescription" class="form-control wysiwyg" style="height: 160px"></textarea>
+                        <textarea id="detailedDescription" name="detailedDescription" class="form-control wysiwyg w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200" style="height: 160px"></textarea>
                     </div>
 
                     <!-- Row 5: Origin + Ref Origin -->
@@ -524,24 +544,22 @@
                                 <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Bug Tracker</span>
                             </div>
                             <button type="button" id="addBug"
-                                    style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #334155; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"
-                                    onmouseenter="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';"
-                                    onmouseleave="this.style.background='white'; this.style.borderColor='#e2e8f0';">
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
                                 <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
                                 Add Bug
                             </button>
                         </div>
                         <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
                             <table class="w-full text-sm text-left" id="bugTable">
-                                <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
                                     <tr>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; width: 48px;"></th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center;" name="actHeader">Active</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center;" name="bugidHeader">Bug ID</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;" name="descHeader">Description</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center;" name="linkHeader">Bug Link</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center;" name="dateCloseHeader">Closure Date</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center;" name="dateCreateHeader">Creation Date</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="actHeader">Active</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="bugidHeader">Bug ID</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" name="descHeader">Description</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="linkHeader">Bug Link</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="dateCloseHeader">Closure Date</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="dateCreateHeader">Creation Date</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bugTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
@@ -592,7 +610,7 @@
                                             <div class="max-h-52 overflow-auto">
                                                 <template x-for="item in filtered()" :key="item.value">
                                                     <button type="button" @click.stop="select(item)"
-                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                             :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                         <span x-text="item.label"></span>
                                                     </button>
@@ -626,7 +644,7 @@
                                             <div class="max-h-52 overflow-auto">
                                                 <template x-for="item in filtered()" :key="item.value">
                                                     <button type="button" @click.stop="select(item)"
-                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                             :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                         <span x-text="item.label"></span>
                                                     </button>
@@ -641,9 +659,7 @@
                             </div>
                             <!-- Button: Add test case -->
                             <button type="button" id="addTestCaseDependencyButton" name="buttonAddDependency"
-                                    style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; color: #334155; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space: nowrap;"
-                                    onmouseenter="this.style.background='#f1f5f9'; this.style.borderColor='#94a3b8';"
-                                    onmouseleave="this.style.background='white'; this.style.borderColor='#e2e8f0';">
+                                    class="flex items-center gap-1.5 h-10 px-4 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition whitespace-nowrap" style="font-weight: 500; cursor: pointer;">
                                 <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
                                 Add test case
                             </button>
@@ -658,13 +674,13 @@
                         </div>
                         <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
                             <table class="w-full text-sm text-left" id="depenencyTable">
-                                <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
                                     <tr>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; width: 50px;">Actions</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Test Cases</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center; width: 60px;">Activate</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; text-align: center; width: 80px;">Delay</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;">Description</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300">Actions</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Test Cases</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300">Activate</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 80px;" class="text-slate-600 dark:text-slate-300">Delay</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>

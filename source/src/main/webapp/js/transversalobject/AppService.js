@@ -645,7 +645,7 @@ function performCall(service) {
                     $('#editSoapLibraryModal  #srvResponseDet').text(JSON.stringify(CallContent.call.Response, null, '\t'));
                     //Highlight envelop on modal loading
                     var editorResponseDet = ace.edit($('#editSoapLibraryModal  #srvResponseDet')[0]);
-                    editorResponseDet.setTheme("ace/theme/chrome");
+                    editorResponseDet.setTheme(getAceTheme());
                     editorResponseDet.getSession().setMode(defineAceMode(editorResponseDet.getSession().getDocument().getValue()));
                     editorResponseDet.setOptions({
                         maxLines: 50
@@ -678,7 +678,7 @@ function performCall(service) {
                         }
                         //Highlight envelop on modal loading
                         var editorResponse = ace.edit($('#editSoapLibraryModal  #srvResponse')[0]);
-                        editorResponse.setTheme("ace/theme/chrome");
+                        editorResponse.setTheme(getAceTheme());
                         editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
                         editorResponse.setOptions({
                             maxLines: 50
@@ -698,7 +698,7 @@ function performCall(service) {
                         $('#editSoapLibraryModal  #srvResponse').text(JSON.stringify(CallContent.call.Response["ResponseArray"], null, '\t'));
                         //Highlight envelop on modal loading
                         var editorResponse = ace.edit($('#editSoapLibraryModal  #srvResponse')[0]);
-                        editorResponse.setTheme("ace/theme/chrome");
+                        editorResponse.setTheme(getAceTheme());
                         editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
                         editorResponse.setOptions({
                             maxLines: 50
@@ -735,7 +735,7 @@ function performCall(service) {
                     $('#editSoapLibraryModal  #srvRequestDet').text(JSON.stringify(CallContent.call.Request, null, '\t'));
                     //Highlight envelop on modal loading
                     var editorRequestDet = ace.edit($('#editSoapLibraryModal  #srvRequestDet')[0]);
-                    editorRequestDet.setTheme("ace/theme/chrome");
+                    editorRequestDet.setTheme(getAceTheme());
                     editorRequestDet.getSession().setMode(defineAceMode(editorRequestDet.getSession().getDocument().getValue()));
                     editorRequestDet.setOptions({
                         maxLines: 50
@@ -757,7 +757,7 @@ function performCall(service) {
                     }
                     //Highlight envelop on modal loading
                     var editorRequestSrvCall = ace.edit($('#editSoapLibraryModal  #srvCallRequest')[0]);
-                    editorRequestSrvCall.setTheme("ace/theme/chrome");
+                    editorRequestSrvCall.setTheme(getAceTheme());
                     editorRequestSrvCall.getSession().setMode(defineAceMode(editorRequestSrvCall.getSession().getDocument().getValue()));
                     editorRequestSrvCall.setOptions({
                         maxLines: 50
@@ -1336,7 +1336,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
 
     //Highlight envelop on modal loading
     var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    editor.setTheme("ace/theme/chrome");
+    editor.setTheme(getAceTheme());
     editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
     editor.setOptions({
         maxLines: 50
@@ -1344,7 +1344,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     document.getElementById('srvRequest').style.fontSize = '14px';
 
     var editor = ace.edit($("#editSoapLibraryModal #srvRequestExtra1")[0]);
-    editor.setTheme("ace/theme/chrome");
+    editor.setTheme(getAceTheme());
     editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
     editor.setOptions({
         maxLines: 50
@@ -1352,7 +1352,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     document.getElementById('srvRequestExtra1').style.fontSize = '14px';
 
     var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
-    editorKey.setTheme("ace/theme/chrome");
+    editorKey.setTheme(getAceTheme());
     editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
     editorKey.setOptions({
         maxLines: 50
@@ -1360,7 +1360,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     document.getElementById('kfkKey').style.fontSize = '14px';
 
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
-    editorSchemaKey.setTheme("ace/theme/chrome");
+    editorSchemaKey.setTheme(getAceTheme());
     editorSchemaKey.getSession().setMode(defineAceMode(editorSchemaKey.getSession().getDocument().getValue()));
     editorSchemaKey.setOptions({
         maxLines: 50
@@ -1368,7 +1368,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     document.getElementById('avrSchemaKey').style.fontSize = '14px';
 
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
-    editorSchemaValue.setTheme("ace/theme/chrome");
+    editorSchemaValue.setTheme(getAceTheme());
     editorSchemaValue.getSession().setMode(defineAceMode(editorSchemaValue.getSession().getDocument().getValue()));
     editorSchemaValue.setOptions({
         maxLines: 50
@@ -1495,7 +1495,7 @@ function feedAppServiceModalDataContent(contentList) {
 
 function appendContentRow(content) {
     var doc = new Doc();
-    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
     var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
 
     if (content.isInherited) {
@@ -1529,9 +1529,11 @@ function appendContentRow(content) {
     }
 
     var table = $("#contentTableBody");
+    var isDark = document.documentElement.classList.contains('dark');
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
 
     var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
-        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", hoverBg); })
         .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
     var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
     var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect);
@@ -1607,7 +1609,7 @@ function feedAppServiceModalDataHeader(headerList) {
 
 function appendHeaderRow(content) {
     var doc = new Doc();
-    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
     var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
 
     var deleteBtn = $("<button type='button'></button>")
@@ -1622,9 +1624,11 @@ function appendHeaderRow(content) {
     var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-headervalue").css({"resize": "none", "minHeight": "32px"}).val(content.value);
     var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
     var table = $("#headerTableBody");
+    var isDark = document.documentElement.classList.contains('dark');
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
 
     var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
-        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", hoverBg); })
         .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
     var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
     var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect);
@@ -1698,7 +1702,7 @@ function feedAppServiceModalDataCallProp(callPropList) {
 
 function appendCallPropRow(content) {
     var doc = new Doc();
-    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
     var tdStyle = { "padding": "8px 6px", "verticalAlign": "middle" };
 
     var deleteBtn = $("<button type='button'></button>")
@@ -1712,9 +1716,11 @@ function appendCallPropRow(content) {
     var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses).css({"resize": "none", "minHeight": "32px"}).val(content.value);
     var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
     var table = $("#callPropTableBody");
+    var isDark = document.documentElement.classList.contains('dark');
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
 
     var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
-        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseenter", function() { if (!content.toDelete) $(this).css("background", hoverBg); })
         .on("mouseleave", function() { if (!content.toDelete) $(this).css("background", ""); });
     var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "44px", "textAlign": "center" })).append(deleteBtn);
     var isActive = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center", "width": "60px" })).append(activeSelect.val(content.isActive.toString()));

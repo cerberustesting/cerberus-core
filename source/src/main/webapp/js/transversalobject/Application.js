@@ -107,13 +107,13 @@ function initModalApplication(application, mode, page) {
     getSelectInvariant("ENVIRONMENT", true);
     getSelectInvariant("COUNTRY", true);
 
-    $('#editApplicationModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var doc = new Doc();
-        var target = $(e.target).attr("href"); // activated tab
-
-        if (target == "#tabsEdit-3") {
-            $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
-        }
+    // Redraw applicationObjects DataTable when Object tab is clicked (Alpine.js tabs)
+    $(document).off('click.appObjectTab').on('click.appObjectTab', '#editApplicationModal button[name="tabsAppEdit3"]', function () {
+        setTimeout(function () {
+            if ($("#editApplicationModal #applicationObjectsTable_wrapper").length > 0) {
+                $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
+            }
+        }, 100);
     });
 
 }
@@ -476,10 +476,11 @@ function renderOptionsForApplicationObject(id, data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if ($("#createApplicationObjectButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><a href='ApplicationObjectList.jsp?application=" + id + "' target='_blank'><button id='createApplicationObjectButton' type='button' class='btn btn-default'>\n\
-        " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
+        var contentToAdd = "<div class='mb-3'><a href='ApplicationObjectList.jsp?application=" + id + "' target='_blank'><button id='createApplicationObjectButton' type='button' class='px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-300 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5'>" +
+            "<i data-lucide='external-link' class='w-3.5 h-3.5'></i> " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
 
         $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
+        if (window.lucide) lucide.createIcons();
     }
 }
 
@@ -501,129 +502,123 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
 function appendEnvironmentRow(env) {
     nbRow++;
     var doc = new Doc();
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var n = nbRow;
+
+    // Inputs keep form-control class — CSS in Application.html overrides it
     var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
     var selectCountry = getSelectInvariant("COUNTRY", false);
-    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control").val(env.ip);
-    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control").val(env.domain);
-    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control").val(env.url);
-    var urlLoginInput = $("<input  maxlength=\"300\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control").val(env.urlLogin);
-    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control").val(env.var1);
-    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control").val(env.var2);
-    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control").val(env.var3);
-    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control").val(env.var4);
-    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control").val(env.secret1);
-    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control").val(env.secret2);
-    var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control").val(env.poolSize);
-    var activeInput = $("<input  type=\"checkbox\">").addClass("form-control input-sm").prop("checked", env.isActive);
-    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control").val(env.mobileActivity);
-    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control").val(env.mobilePackage);
+    var ipInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: doc.getDocLabel("countryenvironmentparameters", "IP") || "Host"}).val(env.ip);
+    var urlInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: doc.getDocLabel("countryenvironmentparameters", "URL") || "/"}).val(env.url);
+    var poolSizeInput = $('<input class="form-control">').attr({maxlength: 10, placeholder: "0"}).val(env.poolSize);
+    var var1Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 1"}).val(env.var1);
+    var var2Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 2"}).val(env.var2);
+    var secret1Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Secret 1"}).val(env.secret1);
+    var domainInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: "Domain"}).val(env.domain);
+    var urlLoginInput = $('<input class="form-control">').attr({maxlength: 300, placeholder: "URL Login"}).val(env.urlLogin);
+    var var3Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 3"}).val(env.var3);
+    var var4Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 4"}).val(env.var4);
+    var secret2Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Secret 2"}).val(env.secret2);
+    var mobileActivity = $('<input class="form-control">').attr({maxlength: 254, placeholder: "Mobile Activity"}).val(env.mobileActivity);
+    var mobilePackage = $('<input class="form-control">').attr({maxlength: 254, placeholder: "Mobile Package"}).val(env.mobilePackage);
+    var activeInput = $('<input type="checkbox" class="env-check">').prop("checked", env.isActive);
+
+    // Helper: label (plain text, no doc popover noise) + input
+    function F(labelText, input) {
+        var w = $('<div></div>');
+        w.append($('<span class="env-label"></span>').text(labelText));
+        w.append(input);
+        return w;
+    }
 
     var table = $("#environmentTableBody");
+    var card = $('<tr></tr>');
+    var cardTd = $('<td></td>');
+    var cardDiv = $('<div class="env-card"></div>');
 
-    var row = $("<tr></tr>");
+    // ── ROW 1: Environment · Country · Active · Delete ──
+    var row1 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 44px 28px; margin-bottom:6px;"></div>');
+    row1.append(F("Environment", selectEnvironment.val(env.environment)));
+    row1.append(F("Country", selectCountry.val(env.country)));
+    // Active checkbox
+    var actWrap = $('<div style="text-align:center;"></div>');
+    actWrap.append($('<span class="env-label">Active</span>'));
+    actWrap.append($('<div style="display:flex;align-items:center;justify-content:center;height:30px;"></div>').append(activeInput));
+    row1.append(actWrap);
+    // Delete button
+    var deleteBtn = $('<button type="button" class="env-btn env-btn-del" title="Delete"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>');
+    row1.append($('<div style="display:flex;align-items:end;"></div>').append(deleteBtn));
+    cardDiv.append(row1);
 
-    var td1 = $("<td></td>").append(deleteBtn);
+    // ── ROW 2: Host · Context Root · Pool Size ──
+    var row2 = $('<div class="env-grid" style="grid-template-columns: 5fr 3fr 60px; margin-bottom:6px;"></div>');
+    row2.append(F("Host", ipInput));
+    row2.append(F("Context Root", urlInput));
+    row2.append(F("Pool", poolSizeInput));
+    cardDiv.append(row2);
 
-    var environment = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "ENVIRONMENT") + "</label>").append(selectEnvironment.val(env.environment));
-    var drow01 = $("<div class='row'></div>").append(environment);
-    var country = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "COUNTRY") + "</label>").append(selectCountry.val(env.country));
-    var drow02 = $("<div class='row'></div>").append(country);
-    var td2 = $("<td></td>").append(drow01).append(drow02);
+    // ── ROW 3: Var1 · Var2 · Secret1 · Expand ──
+    var row3 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 1fr 28px;"></div>');
+    row3.append(F("Variable 1", var1Input));
+    row3.append(F("Variable 2", var2Input));
+    row3.append(F("Secret 1", secret1Input));
+    var expandBtn = $('<button type="button" class="env-btn env-btn-expand" data-toggle="collapse" data-target="#envX' + n + '" title="More"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button>');
+    row3.append($('<div style="display:flex;align-items:end;"></div>').append(expandBtn));
+    cardDiv.append(row3);
 
-    var ipName = $("<div class='form-group col-sm-6'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
-    var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
-    var poolSizeName = $("<div class='form-group col-sm-1'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
-    var activeName = $("<div class='form-group col-sm-1'></div>").append("<label for='isActive'>" + doc.getDocOnline("countryenvironmentparameters", "isActive") + "</label>").append(activeInput);
-    var expandName = $("<div class='form-group col-sm-1'></div>").append("<button class='btn btn-primary pull-right marginTop20' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    // ── COLLAPSED SECTION ──
+    var extra = $('<div class="collapse" id="envX' + n + '"></div>');
+    var inner = $('<div class="env-separator"></div>');
 
-    var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
-    var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
+    var er1 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:6px;"></div>');
+    er1.append(F("URL Login", urlLoginInput));
+    er1.append(F("Domain", domainInput));
+    inner.append(er1);
 
-    var var1Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(var1Input);
-    var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(var2Input);
-    var var3Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(var3Input);
-    var var4Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(var4Input);
+    var er2 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:6px;"></div>');
+    er2.append(F("Variable 3", var3Input));
+    er2.append(F("Variable 4", var4Input));
+    er2.append(F("Secret 2", secret2Input));
+    inner.append(er2);
 
-    var secret1Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret1'>" + doc.getDocOnline("countryenvironmentparameters", "secret1") + "</label>").append(secret1Input);
-    var secret2Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret2'>" + doc.getDocOnline("countryenvironmentparameters", "secret2") + "</label>").append(secret2Input);
-    var mobileActivityName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
-    var mobilePackageName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    var er3 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr;"></div>');
+    er3.append(F("Mobile Activity", mobileActivity));
+    er3.append(F("Mobile Package", mobilePackage));
+    inner.append(er3);
 
-    var drow1 = $("<div class='row'></div>").append(activeName).append(ipName).append(urlName).append(poolSizeName);
-    var drow2 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(secret1Name).append(expandName);
-    var drow3 = $("<div class='row'></div>").append(loginName).append(domainName);
-    var drow4 = $("<div class='row'></div>").append(var3Name).append(var4Name).append(secret2Name);
-    var drow5 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+    extra.append(inner);
+    cardDiv.append(extra);
 
-    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow3).append(drow4).append(drow5);
+    cardTd.append(cardDiv);
+    card.append(cardTd);
 
-    var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
-
+    // ── Events ──
     deleteBtn.click(function () {
-        env.toDelete = (env.toDelete) ? false : true;
-        if (env.toDelete) {
-            row.addClass("danger");
-        } else {
-            row.removeClass("danger");
-        }
+        env.toDelete = !env.toDelete;
+        cardDiv.toggleClass("env-deleted", env.toDelete);
     });
-    selectEnvironment.change(function () {
-        env.environment = $(this).val();
-    });
-    selectCountry.change(function () {
-        env.country = $(this).val();
-    });
-    activeInput.change(function () {
-        env.isActive = $(this).prop("checked");
-    });
-    ipInput.change(function () {
-        env.ip = $(this).val();
-    });
-    domainInput.change(function () {
-        env.domain = $(this).val();
-    });
-    urlInput.change(function () {
-        env.url = $(this).val();
-    });
-    urlLoginInput.change(function () {
-        env.urlLogin = $(this).val();
-    });
-    var1Input.change(function () {
-        env.var1 = $(this).val();
-    });
-    var2Input.change(function () {
-        env.var2 = $(this).val();
-    });
-    var3Input.change(function () {
-        env.var3 = $(this).val();
-    });
-    var4Input.change(function () {
-        env.var4 = $(this).val();
-    });
-    secret1Input.change(function () {
-        env.secret1 = $(this).val();
-    });
-    secret2Input.change(function () {
-        env.secret2 = $(this).val();
-    });
-    poolSizeInput.change(function () {
-        env.poolSize = $(this).val();
-    });
-    mobileActivity.change(function () {
-        env.mobileActivity = $(this).val();
-    });
-    mobilePackage.change(function () {
-        env.mobilePackage = $(this).val();
-    });
-    row.append(td1);
-    row.append(td2);
-    row.append(td3);
+    selectEnvironment.change(function () { env.environment = $(this).val(); });
+    selectCountry.change(function () { env.country = $(this).val(); });
+    activeInput.change(function () { env.isActive = $(this).prop("checked"); });
+    ipInput.change(function () { env.ip = $(this).val(); });
+    domainInput.change(function () { env.domain = $(this).val(); });
+    urlInput.change(function () { env.url = $(this).val(); });
+    urlLoginInput.change(function () { env.urlLogin = $(this).val(); });
+    var1Input.change(function () { env.var1 = $(this).val(); });
+    var2Input.change(function () { env.var2 = $(this).val(); });
+    var3Input.change(function () { env.var3 = $(this).val(); });
+    var4Input.change(function () { env.var4 = $(this).val(); });
+    secret1Input.change(function () { env.secret1 = $(this).val(); });
+    secret2Input.change(function () { env.secret2 = $(this).val(); });
+    poolSizeInput.change(function () { env.poolSize = $(this).val(); });
+    mobileActivity.change(function () { env.mobileActivity = $(this).val(); });
+    mobilePackage.change(function () { env.mobilePackage = $(this).val(); });
 
-    env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
-    env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
-    row.data("environment", env);
-    table.append(row);
+    env.environment = selectEnvironment.prop("value");
+    env.country = selectCountry.prop("value");
+    card.data("environment", env);
+    table.append(card);
+
+    if (window.lucide) lucide.createIcons();
 }
 
 function addNewEnvironmentRow() {

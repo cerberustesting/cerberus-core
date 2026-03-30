@@ -54,10 +54,11 @@
           <div class="max-h-52 overflow-auto">
             <template x-for="item in filteredItems()" :key="item[valueField]">
               <button type="button" @click.stop="toggleItem(item)"
-                      class="w-full text-left gap-2 px-3 py-2 flex hover:bg-slate-100 dark:hover:bg-slate-700">
+                      :class="isSelected(item) ? 'bg-blue-50 dark:bg-slate-600 font-medium' : ''"
+                      class="w-full text-left gap-2 px-3 py-2 flex text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200">
                 <!-- Checkmark icon when selected -->
                 <svg x-show="isSelected(item)" xmlns="http://www.w3.org/2000/svg"
-                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                     class="h-4 w-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>

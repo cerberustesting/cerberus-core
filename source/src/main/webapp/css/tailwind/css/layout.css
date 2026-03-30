@@ -71,7 +71,7 @@
     =========================== */
     .crb_modal {
         color: var(--crb-black-color);
-        @apply fixed inset-0 z-50 flex items-center justify-center overflow-auto
+        @apply fixed inset-0 z-[9999] flex items-center justify-center overflow-auto
     }
 
     /* ===========================

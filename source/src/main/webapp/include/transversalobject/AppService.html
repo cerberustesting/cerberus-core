@@ -1,5 +1,20 @@
 <!--addApplicationObject custom css-->
 <link rel="stylesheet" type="text/css" href="css/pages/AppService.css">
+<style>
+    .dark #editSoapLibraryModal .ace_editor,
+    .dark #editSoapLibraryModal .ace_editor .ace_gutter {
+        background-color: #1e293b !important;
+        color: #e2e8f0 !important;
+    }
+    .dark #editSoapLibraryModal pre {
+        background-color: #1e293b !important;
+        color: #e2e8f0 !important;
+        border-color: #475569 !important;
+    }
+    .dark #editSoapLibraryModal .ace_editor .ace_content {
+        background-color: #1e293b !important;
+    }
+</style>
 <!--Edit soapLibrary page - Alpine/Tailwind refactored -->
 <div x-data="appServiceModal()"
      x-show="open"
@@ -93,7 +108,7 @@
                                             <div class="max-h-52 overflow-auto">
                                                 <template x-for="item in filtered()" :key="item.value">
                                                     <button type="button" @click.stop="select(item)"
-                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                             :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                         <span x-text="item.label"></span>
                                                     </button>
@@ -166,7 +181,7 @@
                                                     <div class="max-h-52 overflow-auto">
                                                         <template x-for="item in filtered()" :key="item.value">
                                                             <button type="button" @click.stop="select(item)"
-                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                     :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                                 <span x-text="item.label"></span>
                                                             </button>
@@ -206,7 +221,7 @@
                                                 <div class="max-h-52 overflow-auto">
                                                     <template x-for="item in filtered()" :key="item.value">
                                                         <button type="button" @click.stop="select(item)"
-                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                 :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                             <span x-text="item.label"></span>
                                                         </button>
@@ -240,7 +255,7 @@
                                                 <div class="max-h-52 overflow-auto">
                                                     <template x-for="item in filtered()" :key="item.value">
                                                         <button type="button" @click.stop="select(item)"
-                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                 :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                             <span x-text="item.label"></span>
                                                         </button>
@@ -368,14 +383,14 @@
                             <div id="listPanelContent">
                                 <div class="rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
                                     <table class="w-full text-sm" id="ContentTable">
-                                        <thead style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-bottom: 2px solid #cbd5e1;">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
                                             <tr>
                                                 <th style="padding: 12px 10px; width: 44px;"></th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 60px;" id="contentActiveHeader" name="contentActiveHeader">Active</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 70px;" id="contentSortHeader" name="contentSortHeader">Sort</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="contentKeyHeader" name="contentKeyHeader">Key</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="contentValueHeader" name="contentValueHeader">Value</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="contentDescriptionHeader" name="contentDescriptionHeader">Description</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300" id="contentActiveHeader" name="contentActiveHeader">Active</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 70px;" class="text-slate-600 dark:text-slate-300" id="contentSortHeader" name="contentSortHeader">Sort</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="contentKeyHeader" name="contentKeyHeader">Key</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="contentValueHeader" name="contentValueHeader">Value</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="contentDescriptionHeader" name="contentDescriptionHeader">Description</th>
                                             </tr>
                                         </thead>
                                         <tbody id="contentTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -396,14 +411,14 @@
                             <div id="listPanelHeader">
                                 <div class="rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
                                     <table class="w-full text-sm" id="HeaderTable">
-                                        <thead style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-bottom: 2px solid #cbd5e1;">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
                                             <tr>
                                                 <th style="padding: 12px 10px; width: 44px;"></th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 60px;" id="headerActiveHeader" name="headerActiveHeader">Active</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 70px;" id="headerSortHeader" name="headerSortHeader">Sort</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="headerKeyHeader" name="headerKeyHeader">Key</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="headerValueHeader" name="headerValueHeader">Value</th>
-                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="headerDescriptionHeader" name="headerDescriptionHeader">Description</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300" id="headerActiveHeader" name="headerActiveHeader">Active</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 70px;" class="text-slate-600 dark:text-slate-300" id="headerSortHeader" name="headerSortHeader">Sort</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="headerKeyHeader" name="headerKeyHeader">Key</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="headerValueHeader" name="headerValueHeader">Value</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="headerDescriptionHeader" name="headerDescriptionHeader">Description</th>
                                             </tr>
                                         </thead>
                                         <tbody id="headerTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -471,7 +486,7 @@
                                                 <div class="max-h-52 overflow-auto">
                                                     <template x-for="item in filtered()" :key="item.value">
                                                         <button type="button" @click.stop="select(item)"
-                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                 :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                             <span x-text="item.label"></span>
                                                         </button>
@@ -516,7 +531,7 @@
                                                 <div class="max-h-52 overflow-auto">
                                                     <template x-for="item in filtered()" :key="item.value">
                                                         <button type="button" @click.stop="select(item)"
-                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                 :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
                                                             <span x-text="item.label"></span>
                                                         </button>
@@ -579,18 +594,21 @@
             </div>
 
             <!-- SIMULATION SECTION -->
-            <div class="px-6 pb-5">
-                <div class="rounded-md border border-slate-200 dark:border-slate-700">
-                    <!-- Simulation Header -->
-                    <div class="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 rounded-t-md">
-                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Simulation</span>
-                        <button type="button" id="callSoapLibraryButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition flex items-center gap-1.5" name="buttonCall">
+            <div class="px-6 pb-5" x-data="{ simOpen: false }">
+                <div class="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                    <!-- Simulation Header (clickable to toggle) -->
+                    <div @click="simOpen = !simOpen" class="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 rounded-t-md cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        <div class="flex items-center gap-2">
+                            <svg :class="simOpen ? 'rotate-90' : ''" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Simulation</span>
+                        </div>
+                        <button type="button" id="callSoapLibraryButton" @click.stop class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition flex items-center gap-1.5" name="buttonCall">
                             <i data-lucide="play" class="w-3.5 h-3.5" style="color:white;"></i>
                             Call
                         </button>
                     </div>
 
-                    <div class="p-4">
+                    <div x-show="simOpen" x-collapse x-cloak class="p-4">
                         <!-- Simulation tabs -->
                         <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-4">
                             <template x-for="tab in simTabs" :key="tab.id">
@@ -642,12 +660,12 @@
                                     <div class="rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
                                         <table class="w-full text-sm" id="callPropTable">
                                             <thead>
-                                                <tr style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);">
+                                                <tr class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
                                                     <th style="padding: 12px 10px; width: 44px;"></th>
-                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; text-align: center; width: 60px;" id="callPropActiveHeader" name="callPropActiveHeader">Active</th>
-                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="callPropKeyHeader" name="callPropKeyHeader">Key</th>
-                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="callPropValueHeader" name="callPropValueHeader">Value</th>
-                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569;" id="callPropDescriptionHeader" name="callPropDescriptionHeader">Description</th>
+                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300" id="callPropActiveHeader" name="callPropActiveHeader">Active</th>
+                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="callPropKeyHeader" name="callPropKeyHeader">Key</th>
+                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="callPropValueHeader" name="callPropValueHeader">Value</th>
+                                                    <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" id="callPropDescriptionHeader" name="callPropDescriptionHeader">Description</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="callPropTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">

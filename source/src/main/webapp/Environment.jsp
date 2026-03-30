@@ -44,7 +44,7 @@
 
             <h1 class="page-title-line" id="title">Environment</h1>
 
-            <div class="crb_card">
+            <div class="">
                 <div id="environmentList">
                     <table id="environmentsTable" class="table table-hover display" name="environmentsTable"></table>
                     <div class="marginBottom20"></div>

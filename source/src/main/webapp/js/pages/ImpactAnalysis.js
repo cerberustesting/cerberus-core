@@ -24,26 +24,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
-
-        // 
         var doc = new Doc();
-
     });
 });
 
 function initPage() {
     displayPageLabel();
-    // handle the click for specific action buttons
-//    $("#editLabelButton").click(editEntryModalSaveHandler);
 
-    //clear the modals fields when closed
-//    $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-//    $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
-
-//    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
-//
-//    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
-//
     tinymce.init({
         selector: ".wysiwyg",
         menubar: true,
@@ -54,71 +41,69 @@ function initPage() {
         skin: 'oxide-dark'
     });
 
-    //configure and create the dataTable
-    // + getUser().defaultSystemsQuery
-    var configurations = new TableConfigurationsServerSide("tcTable", "api/testcases/objects", "contentTable", aoColumnsFunc_TestCases("TCTable"), [2, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForTestCases, "#tcList", undefined, false, refreshTestcaseResultSummary);
+    // Configure and create the dataTable using the NEW function (same as AppServiceList)
+    var configurations = new TableConfigurationsServerSide("tcTable", "api/testcases/objects", "contentTable", aoColumnsFunc_TestCases("tcTable"), [2, 'asc']);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForTestCases, "#tcList", undefined, false, refreshTestcaseResultSummary);
+
+    // Add group class for hover effects + init Lucide icons
+    $('#tcTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
+    });
 }
 
 function refreshTestcaseResultSummary(data) {
-    $("#nbTC").text(data.iTotalRecords);
+    // Update the badge counter in the button wrapper
+    var $badge = $("#tcCountBadge");
+    if ($badge.length) {
+        $badge.text(data.iTotalRecords + " results");
+    }
 }
 
 function displayPageLabel() {
     var doc = new Doc();
 
-    //displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_impactAnalysis", "title"));
     $("#title").html(doc.getDocOnline("page_impactAnalysis", "title"));
-    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "btn_search"));
-    $("[name='tabTC']").html(doc.getDocLabel("page_impactAnalysis", "tabTestCases") + " <span id='nbTC' class='label label-primary'></span>");
-    $("[name='tabDL']").html(doc.getDocOnline("page_impactAnalysis", "tabDataLib"));
-    $("[name='tabAPP']").html(doc.getDocOnline("page_impactAnalysis", "tabApplications"));
-    $("[name='tabSRV']").html(doc.getDocOnline("page_impactAnalysis", "tabServices"));
-    $("[name='searchQ']").attr("placeholder", doc.getDocOnline("page_impactAnalysis", "searchPlaceholderServices"));
 
     displayFooter(doc);
 }
 
-function loadAllTables() {
-// tcTable_filter
-//    $("#tcTable_filter [type='search']").val("TOTO");
-    let searchString = $("#searchQ").val();
-    $("#tcTable").DataTable().search(searchString).draw();
-}
+function renderOptionsForTestCases(data) {
+    var doc = new Doc();
 
-function searchKeyDown() {
-    if (event.keyCode == 13) {
-        loadAllTables();
+    // Add a result count badge in the button wrapper (same pattern as AppServiceList create button)
+    if ($("#tcCountBadge").length === 0) {
+        var contentToAdd = `
+            <div class="flex items-center gap-2">
+                <span id="tcCountBadge" class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium
+                       bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">
+                    ${data.iTotalRecords || 0} results
+                </span>
+            </div>
+        `;
+
+        var $wrapper = $("#tcTable_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.append(contentToAdd);
+        } else {
+            $("#tcTable_wrapper #tcTable_length").before("<div id='tcTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+        }
+        if (window.lucide) lucide.createIcons();
     }
 }
 
-function emptySearch() {
-    $("#searchQ").val("");
-    $("#tcTable").DataTable().search("").draw();
-}
-
-function renderOptionsForTestCases(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-//    if (data["hasPermissions"]) {
-//        if ($("#createLabelButton").length === 0) {
-//            var contentToAdd = "<div class='marginBottom10'><button id='createLabelButton' type='button' class='btn btn-default'>\n\
-//            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_label", "btn_create") + "</button></div>";
-//            $("#labelsTable_wrapper div#labelsTable_length").before(contentToAdd);
-//            $('#labelList #createLabelButton').click(addEntryClick);
-//        }
-//    }
-}
-
-
 function textMatch(text) {
-    let searchString = $("#searchQ").val().toLowerCase();
-    return  (text !== "" && searchString !== "" && text.toLowerCase().includes(searchString))
+    // Read from the DataTable's built-in search
+    var searchString = $("#tcTable_globalSearch").val();
+    if (!searchString) searchString = $("#tcTable").DataTable().search();
+    if (!searchString) return false;
+    searchString = searchString.toLowerCase();
+    return (text !== "" && searchString !== "" && text.toLowerCase().includes(searchString));
 }
 
 function formatedTextMatched(text) {
-    return "<div style='background-color:lightyellow;;padding:0%;'>" + text + "</div>";
+    return '<span class="px-1 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200">' + text + '</span>';
 }
 
 function aoColumnsFunc_TestCases(tableId) {
@@ -130,8 +115,10 @@ function aoColumnsFunc_TestCases(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "80px",
-            "mRender": function (data, type, obj) {
+            "sWidth": "100px",
+            "mRender": function (data, type, obj, meta) {
+                var row = "row_" + (meta ? meta.row : 0);
+
                 let targetUrl = "TestCaseScript.jsp?test=" + encodeURI(obj.test) + "&testcase=" + encodeURI(obj.testcase) + "&stepId=" + obj.stepId;
                 switch (obj.object) {
                     case "HEADER":
@@ -139,22 +126,49 @@ function aoColumnsFunc_TestCases(tableId) {
                         targetUrl = "TestCaseScript.jsp?test=" + encodeURI(obj.test) + "&testcase=" + encodeURI(obj.testcase) + "&stepId=" + obj.stepId;
                         break;
                 }
-                var editHeader = '<button onclick="openModalTestCase(\'' + escapeHtml(obj.test) + '\',\'' + escapeHtml(obj.testcase) + '\',\'EDIT\');"\n\
-                                    class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="editHeader" title="' + doc.getDocLabel("page_impactAnalysis", "EditHeader") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewHeader = '<button onclick="openModalTestCase(\'' + escapeHtml(obj.test) + '\',\'' + escapeHtml(obj.testcase) + '\',\'EDIT\');"\n\
-                                    class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="viewHeader" title="' + doc.getDocLabel("page_impactAnalysis", "ViewHeader") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var openScript = '<button onclick="window.open(\'' + targetUrl + '\');"\n\
-                                    class="openScript btn btn-primary btn-xs margin-right5" \n\
-                                    name="openScript" title="' + doc.getDocLabel("page_impactAnalysis", "OpenScript") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                if (obj.hasPermissions) { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editHeader + openScript + '</div>';
+
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({id, name, title, onClick, icon, extraClass = ""}) {
+                    return `
+                        <button id="${id}" name="${name}" type="button"
+                            class="${baseBtnClass} ${extraClass}"
+                            title="${title}"
+                            onclick="${onClick}">
+                            ${icon}
+                        </button>`;
                 }
-                return '<div class="center btn-group width150">' + viewHeader + openScript + '</div>';
+
+                const icons = {
+                    edit: '<i data-lucide="pencil" class="w-4 h-4"></i>',
+                    view: '<i data-lucide="eye" class="w-4 h-4"></i>',
+                    script: '<i data-lucide="code" class="w-4 h-4"></i>'
+                };
+
+                let buttons = [];
+
+                // Edit / View header
+                buttons.push(actionButton({
+                    id: "editTC_" + row,
+                    name: obj.hasPermissions ? "editHeader" : "viewHeader",
+                    title: doc.getDocLabel("page_impactAnalysis", obj.hasPermissions ? "EditHeader" : "ViewHeader"),
+                    onClick: "openModalTestCase('" + escapeHtml(obj.test) + "','" + escapeHtml(obj.testcase) + "','EDIT');",
+                    icon: obj.hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Open Script
+                buttons.push(actionButton({
+                    id: "openScript_" + row,
+                    name: "openScript",
+                    title: doc.getDocLabel("page_impactAnalysis", "OpenScript"),
+                    onClick: "window.open('" + targetUrl + "');",
+                    icon: icons.script,
+                    extraClass: "group-hover:!text-sky-500"
+                }));
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {

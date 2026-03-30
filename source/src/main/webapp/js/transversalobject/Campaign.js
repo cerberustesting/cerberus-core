@@ -27,9 +27,9 @@ function renderOptionsForCampaign_Label(tableId) {
     var data = getSelectInvariant("SYSTEM", false, false, "");
     $("#" + tableId + "_wrapper #addLabelTestcampaign").remove();
     var contentToAdd =
-            "<div class='marginBottom10 form-inline' id='addLabelTestcampaign'>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='labelSelect' class='form-control' style='width:100%;' onchange='updateSelectLabel(\"" + tableId + "\")'>";
+            "<div class='flex items-center gap-2 mb-3' id='addLabelTestcampaign'>" +
+            "<div class='flex-1'>" +
+            "<select id='labelSelect' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;' onchange='updateSelectLabel(\"" + tableId + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
                 "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
@@ -37,12 +37,12 @@ function renderOptionsForCampaign_Label(tableId) {
     contentToAdd +=
             "</select>" +
             "</div>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='labelSelect2' class='form-control' style='width:100%;'>" +
+            "<div class='flex-1'>" +
+            "<select id='labelSelect2' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;'>" +
             "</select>" +
             "</div>" +
-            "<div class='form-group'>" +
-            "<button type='button' id='addLabelTestcampaignButton' disabled='true' class='btn btn-primary' name='ButtonEdit' onclick='addLabelEntryClick(\"" + tableId + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "<div>" +
+            "<button type='button' id='addLabelTestcampaignButton' disabled='true' class='px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition disabled:opacity-50 disabled:cursor-not-allowed h-10' name='ButtonEdit' onclick='addLabelEntryClick(\"" + tableId + "\")'>"+doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
             "</div>" +
             "</div>";
     $("#" + tableId + "_wrapper div#" + tableId + "_length").before(contentToAdd);
@@ -148,9 +148,9 @@ function renderOptionsForCampaign_Parameter(id) {
     var data = getSelectInvariant("CAMPAIGN_PARAMETER", false, false);
     $("#" + id + "_wrapper #addParameterTestcampaign").remove();
     var contentToAdd =
-            "<div class='marginBottom10 form-inline' id='addParameterTestcampaign'>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='parameterTestSelect' class='form-control' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
+            "<div class='flex items-center gap-2 mb-3' id='addParameterTestcampaign'>" +
+            "<div class='flex-1'>" +
+            "<select id='parameterTestSelect' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
                 "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
@@ -158,12 +158,12 @@ function renderOptionsForCampaign_Parameter(id) {
     contentToAdd +=
             "</select>" +
             "</div>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='parameterTestSelect2' class='form-control' style='width:100%;'>" +
+            "<div class='flex-1'>" +
+            "<select id='parameterTestSelect2' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;'>" +
             "</select>" +
             "</div>" +
-            "<div class='form-group'>" +
-            "<button type='button' id='addParameterTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addParameterEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "<div>" +
+            "<button type='button' id='addParameterTestcampaignButton' class='px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition h-10' name='ButtonEdit' onclick='addParameterEntryClick(\"" + id + "\")'>"+doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
             "</div>" +
             "</div>";
     $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
@@ -178,9 +178,9 @@ function renderOptionsForCampaign_TestcaseCriterias(id) {
     var data = getSelectInvariant("CAMPAIGN_TCCRITERIA", false, false);
     $("#" + id + "_wrapper #addParameterTestcase").remove();
     var contentToAdd =
-            "<div class='marginBottom10 form-inline' id='addParameterTestcase'>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='criteriaTestSelect' class='form-control' style='width:100%;' onchange='updateSelectCriteria(\"" + id + "\")'>";
+            "<div class='flex items-center gap-2 mb-3' id='addParameterTestcase'>" +
+            "<div class='flex-1'>" +
+            "<select id='criteriaTestSelect' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;' onchange='updateSelectCriteria(\"" + id + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
                 "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
@@ -188,12 +188,12 @@ function renderOptionsForCampaign_TestcaseCriterias(id) {
     contentToAdd +=
             "</select>" +
             "</div>" +
-            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='criteriaTestSelect2' class='form-control' style='width:100%;'>" +
+            "<div class='flex-1'>" +
+            "<select id='criteriaTestSelect2' class='w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300' style='width:100%;'>" +
             "</select>" +
             "</div>" +
-            "<div class='form-group'>" +
-            "<button type='button' id='addCriteriaTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addCriteriaEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "<div>" +
+            "<button type='button' id='addCriteriaTestcampaignButton' class='px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition h-10' name='ButtonEdit' onclick='addCriteriaEntryClick(\"" + id + "\")'>"+doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
             "</div>" +
             "</div>";
     $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
@@ -433,7 +433,8 @@ function editEntryClick(param) {
         renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
         hideLoader("#testcampaignList");
 
-        $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+        // Switch to description tab via Alpine
+        var el = document.querySelector('#editTestcampaignModal [x-data]'); if (el && el._x_dataStack) el._x_dataStack[0].campTab = 'description';
         formEdit.modal('show');
 
         /* CRITERIAS */
@@ -459,7 +460,7 @@ function editEntryClick(param) {
         var doc = new Doc();
         $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
 
-        $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+        var el2 = document.querySelector('#editTestcampaignModal [x-data]'); if (el2 && el2._x_dataStack) el2._x_dataStack[0].campTab = 'description';
         $('#addScheduleEntry').off('click');
         $('#addScheduleEntry').click(addNewSchedulerRow);
 
@@ -652,7 +653,7 @@ function addEntryClick() {
     }
     renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable");
 
-    $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+    var elAdd = document.querySelector('#editTestcampaignModal [x-data]'); if (elAdd && elAdd._x_dataStack) elAdd._x_dataStack[0].campTab = 'description';
     $('#editTestcampaignModal').modal('show');
 
     /* SCHEDULER */
@@ -928,11 +929,11 @@ function aoColumnsFunc_Label(tableId) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var removeButton = '<button id="removeTestlabel" key="' + obj[2] + '" onclick="removeLabelEntryClick(\'' + tableId + '\',\'' + obj[2] + '\');"\n\
-                                        class="removeTestlabel btn btn-default btn-xs margin-right5" \n\
+                                        class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition" \n\
                                         name="removeTestlabel" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i></button>';
 
-                return '<div class="center btn-group">' + removeButton + '</div>';
+                return '<div class="flex items-center">' + removeButton + '</div>';
 
             }
         },
@@ -968,11 +969,11 @@ function aoColumnsFunc_Parameter(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var removeButton = '<button id="removeTestparameter" key="' + obj[2] + '" key1="' + obj[3] + '" onclick="removeParameterEntryClick(\'' + tableId + '\',\'' + obj[2] + '\',\'' + obj[3] + '\');"\n\
-                                        class="removeTestparameter btn btn-default btn-xs margin-right5" \n\
+                                        class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition" \n\
                                         name="removeTestparameter" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i></button>';
 
-                return '<div class="center btn-group">' + removeButton + '</div>';
+                return '<div class="flex items-center">' + removeButton + '</div>';
 
             }
         },
@@ -1212,7 +1213,7 @@ function appendSchedulerRow(scheduler) {
     }
 
     var doc = new Doc();
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>');
     var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control").val(scheduler.cronDefinition);
     loadCronList(cronInput);
     var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control").val(scheduler.description);
@@ -1272,7 +1273,7 @@ function appendEventHookRow(eventHook) {
 
     var doc = new Doc();
 
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs col-sm-12 marginBottom20").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>');
     var eventRefInput = $("<select></select>").addClass("form-control");
     eventRefInput.append($("<option></option>").text("CAMPAIGN_START").val("CAMPAIGN_START"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END").val("CAMPAIGN_END"));

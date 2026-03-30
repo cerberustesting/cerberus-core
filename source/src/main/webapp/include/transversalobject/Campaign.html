@@ -1,20 +1,219 @@
-<!--Edit testcampaign page-->
-<div data-backdrop="static" class="modal fade center" id="editTestcampaignModal" role="dialog"
-     aria-labelledby="editTestcampaignModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editTestcampaignModalLabel" name="editTestcampaignField">Edit Testcampaign</h4>
-            </div>
-            <div class="modal-body">
+<!--Edit testcampaign page - Redesigned with Tailwind + Alpine.js -->
+<style>
+    #editTestcampaignModal .modal-dialog { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); margin: 30px auto; max-width: 1050px; width: 100%; }
+    #editTestcampaignModal .modal-content { background: transparent; border: 0; box-shadow: none; width: 100%; }
 
-                <!--edit form-->
-                <form id="editTestcampaignModalForm" name="editTestcampaignModalForm" role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
+    /* ── DataTable wrapper reset inside campaign modal ── */
+    #editTestcampaignModal .dataTables_wrapper {
+        font-size: 0.8125rem;
+    }
+
+    /* Length (Show X entries) dropdown */
+    #editTestcampaignModal .dataTables_length {
+        display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+    }
+    #editTestcampaignModal .dataTables_length label {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.75rem; font-weight: 500; color: #64748b; margin: 0;
+    }
+    .dark #editTestcampaignModal .dataTables_length label { color: #94a3b8; }
+    #editTestcampaignModal .dataTables_length select {
+        height: 32px; padding: 2px 8px; border-radius: 6px; border: 1px solid #cbd5e1;
+        font-size: 0.75rem; background: #fff; color: #334155; outline: none;
+        -webkit-appearance: auto; appearance: auto;
+    }
+    .dark #editTestcampaignModal .dataTables_length select {
+        background: #1e293b; border-color: #475569; color: #cbd5e1;
+    }
+
+    /* Search / filter input */
+    #editTestcampaignModal .dataTables_filter {
+        display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+    }
+    #editTestcampaignModal .dataTables_filter label {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.75rem; font-weight: 500; color: #64748b; margin: 0;
+    }
+    .dark #editTestcampaignModal .dataTables_filter label { color: #94a3b8; }
+    #editTestcampaignModal .dataTables_filter input {
+        height: 32px; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1;
+        font-size: 0.75rem; background: #fff; color: #334155; outline: none; min-width: 160px;
+    }
+    .dark #editTestcampaignModal .dataTables_filter input {
+        background: #1e293b; border-color: #475569; color: #cbd5e1;
+    }
+    #editTestcampaignModal .dataTables_filter input:focus {
+        border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.15);
+    }
+
+    /* Info text (Showing 1 to X of Y entries) */
+    #editTestcampaignModal .dataTables_info {
+        font-size: 0.7rem; color: #94a3b8; padding-top: 6px;
+    }
+    .dark #editTestcampaignModal .dataTables_info { color: #64748b; }
+
+    /* Pagination */
+    #editTestcampaignModal .dataTables_paginate {
+        padding-top: 6px;
+    }
+    #editTestcampaignModal .dataTables_paginate .paginate_button {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 28px; height: 28px; padding: 0 6px;
+        border-radius: 6px; border: 1px solid #e2e8f0 !important;
+        font-size: 0.7rem; color: #64748b !important; background: #fff !important;
+        margin: 0 2px; cursor: pointer; transition: all 150ms;
+    }
+    .dark #editTestcampaignModal .dataTables_paginate .paginate_button {
+        background: #1e293b !important; border-color: #475569 !important; color: #94a3b8 !important;
+    }
+    #editTestcampaignModal .dataTables_paginate .paginate_button:hover {
+        background: #f1f5f9 !important; color: #0ea5e9 !important; border-color: #0ea5e9 !important;
+    }
+    .dark #editTestcampaignModal .dataTables_paginate .paginate_button:hover {
+        background: #334155 !important;
+    }
+    #editTestcampaignModal .dataTables_paginate .paginate_button.current {
+        background: #0ea5e9 !important; color: #fff !important; border-color: #0ea5e9 !important; font-weight: 600;
+    }
+    #editTestcampaignModal .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.35; cursor: default;
+    }
+
+    /* Hide legacy DataTable state buttons (Show/Save/Load/Reset + ColVis) */
+    #editTestcampaignModal #resetFilterButton,
+    #editTestcampaignModal #restoreFilterButton,
+    #editTestcampaignModal #saveTableConfigurationButton,
+    #editTestcampaignModal #showHideColumnsButton,
+    #editTestcampaignModal .dt-buttons,
+    #editTestcampaignModal .ColVis,
+    #editTestcampaignModal .ColVis_MasterButton,
+    #editTestcampaignModal .DTTT_container,
+    #editTestcampaignModal .dataTables_wrapper > .btn-group,
+    #editTestcampaignModal .dataTables_wrapper > .clear {
+        display: none !important;
+    }
+
+    /* Select2 inside modal - fix dropdowns */
+    #editTestcampaignModal .select2-container--default .select2-selection--single {
+        height: 36px !important; border-radius: 6px !important; border: 1px solid #cbd5e1 !important;
+        background: #fff !important; display: flex !important; align-items: center !important;
+        padding: 0 10px !important;
+    }
+    .dark #editTestcampaignModal .select2-container--default .select2-selection--single {
+        background: #1e293b !important; border-color: #475569 !important;
+    }
+    #editTestcampaignModal .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #334155 !important; font-size: 0.8125rem !important; line-height: 34px !important;
+    }
+    .dark #editTestcampaignModal .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #cbd5e1 !important;
+    }
+    #editTestcampaignModal .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 34px !important;
+    }
+
+    /* Table rows inside modal */
+    #editTestcampaignModal table.dataTable tbody tr {
+        transition: background-color 150ms;
+    }
+    #editTestcampaignModal table.dataTable tbody tr:hover {
+        background-color: #f8fafc !important;
+    }
+    .dark #editTestcampaignModal table.dataTable tbody tr:hover {
+        background-color: #1e293b !important;
+    }
+    #editTestcampaignModal table.dataTable thead th {
+        font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em;
+        border-bottom: 1px solid #e2e8f0 !important; padding: 6px 8px !important;
+    }
+    .dark #editTestcampaignModal table.dataTable thead th {
+        color: #94a3b8; border-bottom-color: #334155 !important;
+    }
+    #editTestcampaignModal table.dataTable tbody td {
+        font-size: 0.8rem; padding: 5px 8px !important; border-bottom: 1px solid #f1f5f9 !important;
+        color: #334155;
+    }
+    .dark #editTestcampaignModal table.dataTable tbody td {
+        border-bottom-color: #1e293b !important; color: #cbd5e1;
+    }
+
+    /* Custom add-row controls (Label, Parameters, Criterias) */
+    #editTestcampaignModal #addLabelTestcampaign,
+    #editTestcampaignModal #addParameterTestcampaign,
+    #editTestcampaignModal #addParameterTestcase {
+        padding: 8px 0;
+    }
+</style>
+<div data-backdrop="static" class="modal fade" id="editTestcampaignModal" role="dialog"
+     aria-labelledby="editTestcampaignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Card -->
+            <div x-data="{ campTab: 'description', labelSubTab: 'labels' }"
+                 class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl flex flex-col"
+                 style="max-height: calc(100vh - 4rem);">
+
+                <!-- HEADER -->
+                <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-xl bg-green-600/10 flex items-center justify-center">
+                            <i data-lucide="flag" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editTestcampaignModalLabel" name="editTestcampaignField">Campaign</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Manage campaign configuration, test scope & scheduling</p>
+                        </div>
+                    </div>
+                    <button type="button" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition" data-dismiss="modal" aria-label="Close">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Campaign Name field (always visible) -->
+                <form id="editTestcampaignModalForm" name="editTestcampaignModalForm" role="form" style="display:contents;">
+                <div class="px-6 pt-3 pb-2 shrink-0">
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="campaign" name="campaignField">Campaign</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="campaign" id="campaign">
+                            <input type="text" name="originalCampaign" id="originalCampaign" style="display:none;"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden fields -->
+                <input type="hidden" id="campaignKey" name="campaignKey" value="" />
+                <input type="hidden" name="id" id="id">
+
+                <!-- TABS -->
+                <div class="flex flex-wrap bg-slate-100 dark:bg-slate-800 p-1 mx-6 mb-2 rounded-lg shrink-0 gap-0.5">
+                    <template x-for="t in [
+                        {id:'description', label:'Description', name:'tabDescription'},
+                        {id:'testcases', label:'TestCase List', name:'tabTCList'},
+                        {id:'envs', label:'Env / Countries / Robots', name:'tabEnv'},
+                        {id:'settings', label:'Exec Settings', name:'tabParameters'},
+                        {id:'scheduler', label:'Scheduler', name:'tabsEdit8'},
+                        {id:'notifs', label:'Notifications', name:'tabNotification'},
+                        {id:'advanced', label:'Advanced', name:'tabAdvanced'},
+                        {id:'trace', label:'Traceability', name:'tabsEdit5'}
+                    ]" :key="t.id">
+                        <button type="button" @click="campTab = t.id"
+                                :class="campTab === t.id
+                                    ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center px-2.5 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap"
+                                :id="'createTab' + t.name + 'Text'" :name="t.name"
+                                x-text="t.label">
+                        </button>
+                    </template>
+                </div>
+
+                <!-- BODY -->
+                <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+                        <!-- Messages area -->
+                        <div id="DialogMessagesArea" class="mb-3">
                             <div class="alert" id="DialogMessagesAlert" style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert" aria-hidden="true">
@@ -22,282 +221,242 @@
                                 </button>
                             </div>
                         </div>
-                        <input type="hidden" id="campaignKey" name="campaignKey" value="" />
-                        <input type="hidden" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly></input>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="campaign" name="campaignField">Campaign</label>
-                                <input type="text" class="form-control" name="campaign" id="campaign" aria-describedby="basic-addon1"></input>
-                                <input type="text" class="form-control input-sm" name="originalCampaign" id="originalCampaign" style="display:none;"/>
+
+                        <!-- TAB: Description -->
+                        <div x-show="campTab === 'description'" id="tabsCreate-1">
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
+                                <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="description" id="description"/>
+                            </div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="w-1/2">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="cIScoreThresholdField">CI Score Threshold</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="cIScoreThreshold" id="cIScoreThreshold"/>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="longDescriptionField">Long Description</label>
+                                <textarea class="form-control wysiwyg" name="longDescription" id="longDescription"></textarea>
                             </div>
                         </div>
 
-                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabDescription">Description</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-6" id="createTab6Text" name="tabTCList">TestCase List</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabEnv">Environments, Countries & Robots List</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Settings</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-8" id="createTab8Text" name="tabsEdit8">Scheduler</a></li>
-                            <li><a data-toggle="tab" href="#tabsNotif" id="notifText" name="tabNotification">Notifications</a></li>
-                            <li><a data-toggle="tab" href="#tabs-9" id="createTab9Text" name="tabAdvanced">Advanced</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Traceability</a></li>
-                        </ul>
+                        <!-- TAB: TestCase List -->
+                        <div x-show="campTab === 'testcases'" id="tabsCreate-6">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2" name="labelTCField" id="labelField">Define the TestCase scope from Labels and criterias.</label>
 
-                        <div class="tab-content">
-
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-1">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <input class="form-control" name="description" id="description" aria-describedby="basic-addon1"/>
-                                    </div>
-                                </div>
-                                <div class="row" style="">
-                                    <div class="form-group col-sm-6 col-xs-12">
-                                        <label for="cIScoreThreshold" name="cIScoreThresholdField">CI Score</label>
-                                        <input class="form-control" name="cIScoreThreshold" id="cIScoreThreshold" aria-describedby="basic-addon1"/>
-                                    </div>
-                                </div>
-                                <div class="row" style="">
-                                    <div class="form-group col-xs-12">
-                                        <label for="longDescription" name="longDescriptionField">Long Description</label>
-                                        <textarea class="form-control wysiwyg" name="longDescription" id="longDescription" aria-describedby="basic-addon1"></textarea>
-                                    </div>
-                                </div>
+                            <!-- Sub-tabs: Label List / Test Case Criterias -->
+                            <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-3">
+                                <button type="button" @click="labelSubTab = 'labels'"
+                                        :class="labelSubTab === 'labels'
+                                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
+                                        id="editLTab1Text" name="tabLabelS">
+                                    Label List
+                                </button>
+                                <button type="button" @click="labelSubTab = 'criterias'"
+                                        :class="labelSubTab === 'criterias'
+                                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
+                                        id="editLTab2Text" name="tabLabelR">
+                                    Test Case Criterias
+                                </button>
                             </div>
 
-
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-3">
-                                <div id="parameterTestcampaignList">
-                                    <table id="parameterTestcampaignsTable" class="table table-hover display" name="parameterTestcampaignsTable"></table>
-                                    <div class="marginBottom20"></div>
+                            <div x-show="labelSubTab === 'labels'" id="tabsCreate-4">
+                                <div id="labelTestcampaignList">
+                                    <table id="labelTestcampaignsTable" class="table table-hover display" name="labelTestcampaignsTable"></table>
+                                    <div class="mb-5"></div>
                                 </div>
                             </div>
-
-
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-6">
-                                <label for="labelTC" name="labelTCField" id="labelField">Define the TestCase scope from Labels and criterias.</label>
-                                <ul id="tabsLabel" class="nav nav-tabs" data-tabs="tabs">
-                                    <li class="active"><a data-toggle="tab" href="#tabsCreate-4" id="editLTab1Text" name="tabLabelS">Label List</a></li>
-                                    <li><a data-toggle="tab" href="#tabsCreate-5" id="editLTab2Text" name="tabLabelR">Test Case Criterias</a></li>
-                                </ul>
-                                <div class="tab-content">
-
-                                    <div class="center tab-pane fade marginTop25 in active" id="tabsCreate-4">
-                                        <div id="labelTestcampaignList">
-                                            <table id="labelTestcampaignsTable" class="table table-hover display" name="labelTestcampaignsTable"></table>
-                                            <div class="marginBottom20"></div>
-                                        </div>
-                                    </div>
-                                    <div class="center tab-pane fade marginTop25" id="tabsCreate-5">
-                                        <div id="parameterTestcaseList">
-                                            <table id="parameterTestcaseTable" class="table table-hover display" name="parameterTestcaseTable"></table>
-                                            <div class="marginBottom20"></div>
-                                        </div>
-                                    </div>
+                            <div x-show="labelSubTab === 'criterias'" id="tabsCreate-5">
+                                <div id="parameterTestcaseList">
+                                    <table id="parameterTestcaseTable" class="table table-hover display" name="parameterTestcaseTable"></table>
+                                    <div class="mb-5"></div>
                                 </div>
                             </div>
-
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-7">
-                                <div id="exeParamList">
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <span class="toggle glyphicon glyphicon-tag"></span>
-                                            <label for="tag" name="tagField">Tag</label>
-                                            <input class="form-control" name="tags" id="tag" aria-describedby="basic-addon1"/>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-list"></span>
-                                            <label for="verbose" name="verboseField">Verbose</label>
-                                            <select class="form-control" id="verbose" name="verbose"></select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-picture"></span>
-                                            <label for="screenshot" name="screenshotField">Screenshot</label>
-                                            <select class="form-control" id="screenshot" name="screenshot"></select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-film"></span>
-                                            <label for="video" name="videoField">Video</label>
-                                            <select class="form-control" id="video" name="video"></select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-list"></span>
-                                            <label for="pageSource" name="pageSourceField">Page Source</label>
-                                            <select class="form-control" id="pageSource" name="pageSource"></select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-list"></span>
-                                            <label for="robotLog" name="robotLogField">Robot Log</label>
-                                            <select class="form-control" id="robotLog" name="robotLog"></select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <span class="toggle glyphicon glyphicon-console"></span>
-                                            <label for="consoleLog" name="consoleLogField">Console Log</label>
-                                            <select class="form-control" id="consoleLog" name="consoleLog"></select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <span class="toggle glyphicon glyphicon-time"></span>
-                                            <label for="timeout" name="timeoutField">Timeout</label>
-                                            <input class="form-control" name="timeout" id="timeout" aria-describedby="basic-addon1"/>
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <span class="toggle glyphicon glyphicon-repeat"></span>
-                                            <label for="retries" name="retriesField">Retries</label>
-                                            <select class="form-control" id="retries" name="retries"></select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-6">
-                                            <label for="priority" name="pritorityField">Priority</label>
-                                            <input class="form-control" name="priority" id="priority" aria-describedby="basic-addon1"/>
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <label for="manualExecution" name="manualExecutionField">Manual Execution</label>
-                                            <select class="form-control" id="manualExecution" name="manualExecution"></select>
-                                        </div>
-                                    </div>
-                                    <div class="marginBottom20"></div>
-                                </div>
-                            </div>
-
-                            <div class="center marginTop25 tab-pane fade" id="tabsNotif">
-
-                                <div id="listPanelEditExecutors">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <table class="table table-hover nomarginbottom" id="eventHookTable">
-                                                <tbody id="eventHookTableBody">
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-default marginTop20" id="addEventHook">Add Notification</button>
-                                        </div>
-                                    </div>  
-                                </div>   
-
-                            </div>
-
-                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_created" for="created">Created</label>
-                                                <div>
-                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_creator" for="creator">Creator</label>
-                                                <div>
-                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div> 
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
-                                                <div>
-                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
-                                                <div>
-                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                </div>  
-                            </div>  
-
-                            <div class="center marginTop25 tab-pane fade in" id="tabs-9">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_gp1" for="group1">Group 1</label>
-                                                <div>
-                                                    <input id="group1" name="group1" class="form-control" maxlength="100"/>     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_gp2" for="group2">Group 2</label>
-                                                <div>
-                                                    <input id="group2" name="group2" class="form-control" maxlength="100"/>     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_gp3" for="group3">Group 3</label>
-                                                <div>
-                                                    <input id="group3" name="group3" class="form-control" maxlength="100"/>     
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>  
-                            </div>  
-
-                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-8">
-                                <div class="row">
-<!--                                    <div class="form-group col-sm-6">
-                                        <label name="lbl_cronexp" for="cronexp">Cron Expression</label>
-                                        <div class="input-group col-sm-6">
-                                            <input type="text" class="form-control" id='schedulerinput'>
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id='addscheduler'>Add</button>
-                                            </span>
-                                        </div>
-                                    </div>-->
-                                    <div class="form-group col-sm-12">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <label name="lbl_ex1" for="ex1">Example 1 : Every Week day at 12</label>
-                                                <div>
-                                                    <input id="ex1" class="form-control" readonly="readonly" value="0 0 12 ? * MON-FRI *"/>     
-                                                </div>
-                                                <label name="lbl_ex2" for="ex2">Example 2 : Every 10 minutes</label>
-                                                <div>
-                                                    <input id="ex2" class="form-control" readonly="readonly"  value="0 0/10 * 1/1 * ? *"/>     
-                                                </div>
-                                                <div>
-                                                    <h4 class="">Build your own syntax at <a target="_blank" href="http://www.cronmaker.com/">cronmaker.com</a></h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div id="listPanelEditScheduler">
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <table class="table table-hover nomarginbottom" id="schedulerTable">
-                                                    <tbody id="schedulerTableBody">
-                                                    </tbody>
-                                                </table>
-                                                <button type="button" class="btn btn-default marginTop20" id="addScheduleEntry">Add Schedule Entry</button>
-                                            </div>
-                                        </div>  
-                                    </div>   
-
-                                </div>
-                            </div>
-
                         </div>
-                    </div>
-                </form>
+
+                        <!-- TAB: Environments, Countries & Robots -->
+                        <div x-show="campTab === 'envs'" id="tabsCreate-3">
+                            <div id="parameterTestcampaignList">
+                                <table id="parameterTestcampaignsTable" class="table table-hover display" name="parameterTestcampaignsTable"></table>
+                                <div class="mb-5"></div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Execution Settings -->
+                        <div x-show="campTab === 'settings'" id="tabsCreate-7">
+                            <div id="exeParamList">
+                                <div class="mb-3">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="tagField">Tag</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="tags" id="tag"/>
+                                </div>
+                                <div class="grid grid-cols-3 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="verboseField">Verbose</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="verbose" name="verbose"></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="screenshotField">Screenshot</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="screenshot" name="screenshot"></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="videoField">Video</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="video" name="video"></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="pageSourceField">Page Source</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="pageSource" name="pageSource"></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="robotLogField">Robot Log</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="robotLog" name="robotLog"></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="consoleLogField">Console Log</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="consoleLog" name="consoleLog"></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="timeoutField">Timeout</label>
+                                        <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="timeout" id="timeout"/>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="retriesField">Retries</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="retries" name="retries"></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="pritorityField">Priority</label>
+                                        <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="priority" id="priority"/>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="manualExecutionField">Manual Execution</label>
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="manualExecution" name="manualExecution"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Scheduler -->
+                        <div x-show="campTab === 'scheduler'" id="tabsEdit-8">
+                            <div class="mb-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-1" name="lbl_ex1">Example 1 : Every Week day at 12</p>
+                                <input class="w-full h-9 border rounded-md px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 mb-2" id="ex1" readonly value="0 0 12 ? * MON-FRI *"/>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-1" name="lbl_ex2">Example 2 : Every 10 minutes</p>
+                                <input class="w-full h-9 border rounded-md px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 mb-2" id="ex2" readonly value="0 0/10 * 1/1 * ? *"/>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Build your own syntax at <a target="_blank" href="http://www.cronmaker.com/" class="text-sky-500 hover:underline">cronmaker.com</a></p>
+                            </div>
+                            <div id="listPanelEditScheduler">
+                                <table class="w-full text-sm" id="schedulerTable">
+                                    <tbody id="schedulerTableBody">
+                                    </tbody>
+                                </table>
+                                <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addScheduleEntry">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Schedule Entry
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Notifications -->
+                        <div x-show="campTab === 'notifs'" id="tabsNotif">
+                            <div id="listPanelEditExecutors">
+                                <table class="w-full text-sm" id="eventHookTable">
+                                    <tbody id="eventHookTableBody">
+                                    </tbody>
+                                </table>
+                                <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEventHook">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Notification
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Advanced -->
+                        <div x-show="campTab === 'advanced'" id="tabs-9">
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_gp1">Group 1</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="group1" name="group1" maxlength="100"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_gp2">Group 2</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="group2" name="group2" maxlength="100"/>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_gp3">Group 3</label>
+                                <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="group3" name="group3" maxlength="100"/>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Traceability -->
+                        <div x-show="campTab === 'trace'" id="tabsEdit-5">
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_created">Created</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="datecreated" name="datecreated" readonly/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_creator">Creator</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="usrcreated" name="usrcreated" readonly/>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModified">Last Modified</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="datemodif" name="datemodif" readonly/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModifier">Last Modifier</label>
+                                    <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="usrmodif" name="usrmodif" readonly/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="flex justify-end gap-2 px-6 py-3 border-t border-slate-200 dark:border-slate-700 shrink-0">
+                    <button type="button" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" data-dismiss="modal" name="buttonClose">Close</button>
+                    <button type="button" id="editTestcampaignButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-500 transition" name="buttonEdit">Save</button>
+                    <button type="button" id="addTestcampaignButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonAdd">Create</button>
+                </div>
+
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editTestcampaignButton" name="buttonEdit">Save</button>
-                <button type="button" id="addTestcampaignButton" name="buttonAdd">Create1</button>
-            </div>
+
         </div>
     </div>
 </div>
+<script>
+(function(){
+    function hideLegacyButtons(){
+        var m = document.getElementById('editTestcampaignModal');
+        if(!m) return;
+        var ids = ['resetFilterButton','restoreFilterButton','saveTableConfigurationButton','showHideColumnsButton'];
+        ids.forEach(function(id){
+            var els = m.querySelectorAll('#'+id);
+            els.forEach(function(el){ el.style.display='none'; });
+        });
+        // Also hide any dt-buttons group
+        m.querySelectorAll('.dt-buttons, .DTTT_container').forEach(function(el){ el.style.display='none'; });
+    }
+    // Run on modal show
+    $(document).on('shown.bs.modal','#editTestcampaignModal', function(){
+        hideLegacyButtons();
+        // Also run after a short delay in case DataTables creates them after modal show
+        setTimeout(hideLegacyButtons, 300);
+        setTimeout(hideLegacyButtons, 800);
+    });
+    // Run when any tab is clicked inside the modal (buttons may appear on tab switch)
+    $(document).on('click','#editTestcampaignModal [x-data] button', function(){
+        setTimeout(hideLegacyButtons, 200);
+    });
+})();
+</script>

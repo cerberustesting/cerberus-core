@@ -660,7 +660,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
-        editor.setTheme("ace/theme/chrome");
+        editor.setTheme(getAceTheme());
         editor.getSession().setMode("ace/mode/xml");
         editor.setOptions({
             maxLines: Infinity
@@ -669,7 +669,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #script")[0]);
-        editor.setTheme("ace/theme/chrome");
+        editor.setTheme(getAceTheme());
         editor.getSession().setMode("ace/mode/sql");
         editor.setOptions({
             maxLines: Infinity
@@ -708,7 +708,7 @@ function appendSubDataRow(subdata, targetTableBody) {
         isKey = true;
     }
 
-    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+    var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
     var tdStyle = { "padding": "10px 8px", "verticalAlign": "middle" };
 
     if (isKey) {
@@ -733,9 +733,11 @@ function appendSubDataRow(subdata, targetTableBody) {
     var columnPositionInput = $("<input maxlength='45' placeholder='Position'>").addClass(inputClasses).val(subdata.columnPosition);
     var descriptionInput = $("<input maxlength='1000' placeholder='Description'>").addClass(inputClasses).val(subdata.description);
     var table = $("#" + targetTableBody);
+    var isDark = document.documentElement.classList.contains('dark');
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
 
     var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
-        .on("mouseenter", function() { if (!subdata.toDelete) $(this).css("background", "#f8fafc"); })
+        .on("mouseenter", function() { if (!subdata.toDelete) $(this).css("background", hoverBg); })
         .on("mouseleave", function() { if (!subdata.toDelete) $(this).css("background", ""); });
     var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "50px", "textAlign": "center" })).append(deleteBtn);
     var subData = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "120px" })).append(subDataInput);
