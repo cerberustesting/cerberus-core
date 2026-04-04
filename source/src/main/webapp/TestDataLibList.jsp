@@ -45,7 +45,7 @@
             <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
             <%@ include file="include/transversalobject/AppService.html"%>      
             <h1 class="page-title-line" id="title">Data Library</h1>
-            <div class="crb_card">
+            <div class="">
                 <div id="testDataLibList">
                     <table id="listOfTestDataLib" class="table table-hover display" name="listOfTestDataLib"></table>
                     <div class="marginBottom20"></div>

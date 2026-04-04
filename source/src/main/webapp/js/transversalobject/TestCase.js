@@ -578,7 +578,8 @@ function confirmTestCaseModalHandler(mode) {
         };
         table_label.push(newLabel1);
     }
-    let dataIsMuted = ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off"));
+    let isMutedEl = document.querySelector('#isMuted');
+    let dataIsMuted = isMutedEl ? (isMutedEl._x_dataStack && isMutedEl._x_dataStack[0] ? isMutedEl._x_dataStack[0].isMutedActive : false) : false;
 
 
     // Getting Dependency data
@@ -928,7 +929,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
         }
     }
-    formEdit.find("#isMuted .glyphicon").removeClass("glyphicon-volume-up glyphicon-volume-off");
     if (isEmpty(testCase)) {
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
@@ -950,7 +950,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#comment").prop("value", "");
         formEdit.find("#origin").prop("value", "");
         formEdit.find("#refOrigin").prop("value", "");
-        formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-up");
+        window.dispatchEvent(new CustomEvent('muted-preselect', { detail: false }));
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
@@ -970,11 +970,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#isActive").prop("checked", testCase.isActive);
         formEdit.find("#origin").prop("value", testCase.origine);
         formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
-        if (testCase.isMuted) {
-            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-off");
-        } else {
-            formEdit.find("#isMuted .glyphicon").addClass("glyphicon-volume-up");
-        }
+        window.dispatchEvent(new CustomEvent('muted-preselect', { detail: testCase.isMuted }));
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
@@ -1127,10 +1123,14 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
         }
     }
 
-    var inputClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-white border-slate-300 text-slate-900 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500";
-    var readonlyClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-slate-50 border-slate-200 text-slate-500";
+    var isDark = document.documentElement.classList.contains('dark');
+    var inputClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500";
+    var readonlyClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400";
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
 
-    var row = $("<tr></tr>").css({ "transition": "all 0.2s" });
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!obj.toDelete) $(this).css("background", hoverBg); })
+        .on("mouseleave", function() { if (!obj.toDelete) $(this).css("background", ""); });
     var deleteBtn = $("<button type='button'></button>")
         .css({ "padding": "4px 8px", "border-radius": "6px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "gap": "4px", "fontSize": "12px", "transition": "all 0.2s" })
         .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
@@ -1396,9 +1396,5 @@ function appendTestList(defautValue) {
 }
 
 function toggleIsMuted() {
-    if ($("#editTestCaseModalForm").find("#isMuted .glyphicon").hasClass("glyphicon-volume-off")) {
-        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-off").addClass("glyphicon-volume-up");
-    } else {
-        $("#editTestCaseModalForm").find("#isMuted .glyphicon").removeClass("glyphicon-volume-up").addClass("glyphicon-volume-off");
-    }
+    // Legacy stub — isMuted is now controlled by Alpine.js toggle in the Definition tab
 }

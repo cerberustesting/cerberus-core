@@ -1,147 +1,231 @@
-<!--Add an Environment  -->
-<div data-backdrop="static" class="modal fade center" id="addEnvModal" tabindex="-1" role="dialog" aria-labelledby="addEnvModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addEnvModalLabel" name="createEnvField">Create Environment</h4>
-            </div>
-            <div class="modal-body">
+<!--Add Environment - Full Alpine.js pattern (like TestCase.html) -->
+<div
+    x-data="addEnvModal()"
+    x-init="init()"
+    x-show="open"
+    x-cloak
+    @add-env-modal-open.window="handleOpen($event.detail)"
+    @add-env-modal-close.window="open = false"
+    class="crb_modal"
+    id="addEnvModal">
 
-                <!--add form-->
-                <form id="addEnvModalForm" name="addEnvModalForm"  title="Add Environment" role="form">
-                    <div id="tabs" class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="server" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" name="createEnvField">Create Environment</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Configure environment settings, builds & notifications</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TABS (pillow style) -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 mx-6 mt-2 mb-2 rounded-lg shrink-0">
+            <template x-for="tab in tabs" :key="tab.id">
+                <button type="button" @click="showTab = tab.id"
+                        :class="showTab === tab.id
+                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-2 py-1.5 rounded-md transition-colors duration-200 text-xs"
+                        x-text="tab.label">
+                </button>
+            </template>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="addEnvModalForm" name="addEnvModalForm" title="Add Environment" role="form">
+
+                <!-- ========== TAB: DEFINITION ========== -->
+                <div x-show="showTab === 'definition'" class="space-y-4">
+
+                    <!-- Section: Key Fields -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="key" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Key</span>
                         </div>
-                        <!-- Key definition-->
-                        <div class="row">
-                            <div class="form-group col-sm-4">
-                                <label for="system" name="systemField">System</label>
-                                <select class="form-control"  id="system" name="system">
-                                </select>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="system" name="systemField">System</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="system" name="system"></select>
                             </div>
-                            <div class="form-group col-sm-4">
-                                <label for="country" name="countryField">Country</label>
-                                <select class="form-control"  id="country" name="country">
-                                </select>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="country" name="countryField">Country</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="country" name="country"></select>
                             </div>
-                            <div class="form-group col-sm-4">
-                                <label for="environment" name="environmentField">Environment</label>
-                                <select class="form-control"  id="environment" name="environment">
-                                </select>
-                            </div>
-                        </div>
-                        <!-- tabs definition-->
-                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsAdd-1" id="tab3Text" name="tabDefinition">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-3" id="tab3Text" name="tabBuild">Build/Revision</a></li>
-<!--                            <li><a data-toggle="tab" href="#tabsAdd-4" id="tab4Text" name="tabChain">Chain</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-8" id="tab8Text" name="tabApplication">Applications</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-6" id="tab6Text" name="tabDatabase">Database</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-5" id="tab5Text" name="tabDependencies">Dependencies</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-7" id="tab7Text" name="tabDeploy">Deploy Type</a></li>-->
-                            <li><a data-toggle="tab" href="#tabsAdd-2" id="tab2Text" name="tabNotif">Specific Notifications</a></li>
-                        </ul>
-                        <div class="tab-content">   
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsAdd-1">
-                                <div class="row">
-                                    <div class="form-group col-sm-9">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
-                                    </div>
-                                    <div class="form-group col-sm-3">
-                                        <label for="type" name="typeField">Type</label>
-                                        <select class="form-control"  id="type" name="type">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <label for="maintenanceAct" name="maintenanceActField">Activate Maintenance</label>
-                                        <select class="form-control"  id="maintenanceAct" name="maintenanceAct">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-sm-4">
-                                        <label for="maintenanceStr" name="maintenanceStrField">Start</label>
-                                        <input type="text" class="form-control" name="maintenanceStr" id="maintenanceStr" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
-                                    </div>
-                                    <div class="form-group col-sm-4">
-                                        <label for="maintenanceEnd" name="maintenanceEndField">End</label>
-                                        <input type="text" class="form-control" name="maintenanceEnd" id="maintenanceEnd" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-2">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="distribList" name="distribListField">Specific Distribution List</label>
-                                        <textarea id="distribList" name="distribList"
-                                                  class="form-control"></textarea> 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="eMailBodyChain" name="eMailBodyChainField">Specific Email Body on New Chain Event</label>
-                                        <textarea id="eMailBodyChain" name="eMailBodyChain"
-                                                  class="form-control"></textarea> 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="eMailBodyRevision" name="eMailBodyRevisionField">Specific Email Body on New Build/Revision Event</label>
-                                        <textarea id="eMailBodyRevision" name="eMailBodyRevision"
-                                                  class="form-control"></textarea> 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironmentField">Specific Email Body on Disable Event</label>
-                                        <textarea id="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironment"
-                                                  class="form-control"></textarea> 
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-3">
-                                <div class="row">
-                                    <div class="form-group col-sm-2">
-                                        <label for="active" name="activeField">Active</label>
-                                        <br><input type="checkbox" checked="" id="active" name="active" class="form-control activecb"  >
-                                    </div>
-                                    <div class="form-group col-sm-5">
-                                        <label for="build" name="buildField">Build</label>
-                                        <select class="form-control" name="build" id="build" aria-describedby="basic-addon1"></select>
-                                    </div>
-                                    <div class="form-group col-sm-5">
-                                        <label for="revision" name="revisionField">Revision</label>
-                                        <select class="form-control" name="revision" id="revision" aria-describedby="basic-addon1"></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-4">
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-5">
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-6">
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-7">
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-8">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="environment" name="environmentField">Environment</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="environment" name="environment"></select>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addEnvButton" class="btn btn-primary" name="buttonAdd">Save</button>
-            </div>
+
+                    <!-- Section: Description -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</span>
+                        </div>
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="descriptionField">Description</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="description" id="description" maxlength="200">
+                            </div>
+                            <div style="width: 160px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="type" name="typeField">Type</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="type" name="type"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Maintenance -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="wrench" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Maintenance</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="maintenanceAct" name="maintenanceActField">Activate</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="maintenanceAct" name="maintenanceAct"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="maintenanceStr" name="maintenanceStrField">Start</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="maintenanceStr" id="maintenanceStr" maxlength="8" placeholder="00:00:00">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="maintenanceEnd" name="maintenanceEndField">End</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="maintenanceEnd" id="maintenanceEnd" maxlength="8" placeholder="00:00:00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: BUILD/REVISION ========== -->
+                <div x-show="showTab === 'build'" class="space-y-4">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="git-branch" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Build & Revision</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <div style="width: 80px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="active" name="activeField">Active</label>
+                                <div class="flex items-center h-10">
+                                    <input type="checkbox" checked id="active" name="active" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="build" name="buildField">Build</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" name="build" id="build"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="revision" name="revisionField">Revision</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" name="revision" id="revision"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: NOTIFICATIONS ========== -->
+                <div x-show="showTab === 'notif'" class="space-y-4">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="bell" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Notification Settings</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="distribList" name="distribListField">Distribution List</label>
+                                <textarea id="distribList" name="distribList" rows="2" class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="eMailBodyChain" name="eMailBodyChainField">Email Body — New Chain</label>
+                                <textarea id="eMailBodyChain" name="eMailBodyChain" rows="2" class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="eMailBodyRevision" name="eMailBodyRevisionField">Email Body — New Build/Revision</label>
+                                <textarea id="eMailBodyRevision" name="eMailBodyRevision" rows="2" class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironmentField">Email Body — Disable Event</label>
+                                <textarea id="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironment" rows="2" class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="addEnvButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Save</button>
         </div>
     </div>
 </div>
+
+<script>
+function addEnvModal() {
+    return {
+        open: false, isFullscreen: false, showTab: 'definition',
+        tabs: [
+            { id: 'definition', label: 'Definition' },
+            { id: 'build', label: 'Build / Revision' },
+            { id: 'notif', label: 'Notifications' }
+        ],
+        handleOpen: function(detail) {
+            this.open = true;
+            this.showTab = 'definition';
+            var self = this;
+            this.$nextTick(function() {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+        },
+        init: function() {
+            var self = this;
+            window.addEventListener('add-env-modal-close', function() { self.open = false; });
+        }
+    }
+}
+</script>

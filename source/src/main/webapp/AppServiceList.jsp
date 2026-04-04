@@ -45,7 +45,7 @@
 
             <h1 class="page-title-line" id="title">Service Library</h1>
 
-            <div class="crb_card">
+            <div class="">
                 <div id="soapLibraryList">
                     <table id="soapLibrarysTable" class="table table-hover display"
                            name="soapLibrarysTable"></table>
@@ -55,7 +55,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
         </main>
     </body>
 </html>

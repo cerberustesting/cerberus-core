@@ -98,6 +98,10 @@ function initPage() {
     $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
+    // Init Lucide icons when modals are shown
+    $('#addLabelModal').on('shown.bs.modal', function() { if (window.lucide) lucide.createIcons(); });
+    $('#editLabelModal').on('shown.bs.modal', function() { if (window.lucide) lucide.createIcons(); });
+
 //    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
 //
 //    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
@@ -115,6 +119,11 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?q=1" + getUser().defaultSystemsQuery, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissionsNew(configurations, renderOptionsForLabel, "#labelList", undefined, true);
+
+    $('#labelsTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
+    });
 }
 
 function displayPageLabel() {
@@ -143,20 +152,17 @@ function displayPageLabel() {
     $("[name='tabsEdit1']").html(doc.getDocOnline("page_label", "tabDef"));
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
 
-    displayInvariantList("system", "SYSTEM", false, '', '');
-    displayInvariantList("type", "LABELTYPE", false, undefined, undefined, undefined, undefined, "editLabelModal");
-    displayInvariantList("type", "LABELTYPE", false, undefined, undefined, undefined, undefined, "addLabelModal");
-    displayInvariantList("reqtype", "REQUIREMENTTYPE", false);
-    displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
-    displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);
+    // Invariant lists are now loaded by labelDropdown Alpine components in the HTML
 
-    refreshParentLabelCombo($("#type").val(), "editLabelModalForm");
-    refreshParentLabelCombo($("#type").val(), "addLabelModalForm");
-    $("#editLabelModalForm #type").change(function () {
-        refreshParentLabelCombo($("#type").val(), "editLabelModalForm");
+    refreshParentLabelCombo('', "editLabelModalForm");
+    refreshParentLabelCombo('', "addLabelModalForm");
+    $("#edit_type").change(function () {
+        refreshParentLabelCombo($("#edit_type").val(), "editLabelModalForm");
+        showHideRequirementPanelEdit();
     });
-    $("#addLabelModalForm #type").change(function () {
-        refreshParentLabelCombo($("#type").val(), "addLabelModalForm");
+    $("#add_type").change(function () {
+        refreshParentLabelCombo($("#add_type").val(), "addLabelModalForm");
+        showHideRequirementPanelAdd();
     });
     displayFooter(doc);
 }
@@ -182,9 +188,9 @@ function renderOptionsForLabel(data) {
     if (data["hasPermissions"] && $("#createLabelButton").length === 0) {
         var contentToAdd = `
             <button id='createLabelButton' type='button'
-                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded mr-2 h-10 w-auto'>
-                <i class='glyphicon glyphicon-plus-sign'></i>
-                <span>` + doc.getDocLabel("page_label", "btn_create") + `</span>
+                class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>${doc.getDocLabel("page_label", "btn_create")}</span>
             </button>
         `;
 
@@ -192,12 +198,11 @@ function renderOptionsForLabel(data) {
         var $wrapper = $("#labelsTable_buttonWrapper");
 
         if ($wrapper.length) {
-            // Ajoute le bouton au **début** du wrapper
             $wrapper.prepend(contentToAdd);
+            if (window.lucide) lucide.createIcons();
         } else {
-            // fallback si le wrapper n’existe pas encore
-            console.warn("Wrapper #labelsTable_buttonWrapper introuvable, insertion avant length");
-            $("#labelsTable_wrapper div#labelsTable_length").before("<div id='labelsTable_buttonWrapper'>" + contentToAdd + "</div>");
+            $("#labelsTable_wrapper div#labelsTable_length").before("<div id='labelsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
+            if (window.lucide) lucide.createIcons();
         }
 
         $('#createLabelButton').off("click").click(addEntryClick);
@@ -228,31 +233,30 @@ function emptyService() {
 
 
 function showHideRequirementPanelEdit() {
-
-    refreshParentLabelCombo($('#editLabelModal #editLabelModalForm #type').val(), "editLabelModalForm");
-    if ($('#editLabelModal #editLabelModalForm #type').val() === "REQUIREMENT") {
+    refreshParentLabelCombo($('#edit_type').val(), "editLabelModalForm");
+    if ($('#edit_type').val() === "REQUIREMENT") {
         $("#editLabelModal #panelReq").show();
     } else {
         $("#editLabelModal #panelReq").hide();
-        $("#editLabelModal #panelReq #reqtype").val("");
-        $("#editLabelModal #panelReq #reqstatus").val("");
-        $("#editLabelModal #panelReq #reqcriticity").val("");
+        $('#edit_reqtype').val('');
+        $('#edit_reqstatus').val('');
+        $('#edit_reqcriticity').val('');
+        window.dispatchEvent(new CustomEvent('edit-label-reqtype-preselect', { detail: '' }));
+        window.dispatchEvent(new CustomEvent('edit-label-reqstatus-preselect', { detail: '' }));
+        window.dispatchEvent(new CustomEvent('edit-label-reqcriticity-preselect', { detail: '' }));
     }
-
 }
 
 function showHideRequirementPanelAdd() {
-
-    refreshParentLabelCombo($('#addLabelModal #addLabelModalForm #type').val(), "addLabelModalForm");
-    if ($('#addLabelModal #addLabelModalForm #type').val() === "REQUIREMENT") {
+    refreshParentLabelCombo($('#add_type').val(), "addLabelModalForm");
+    if ($('#add_type').val() === "REQUIREMENT") {
         $("#addLabelModal #panelReq").show();
     } else {
         $("#addLabelModal #panelReq").hide();
-        $("#addLabelModal #panelReq #reqtype").val("");
-        $("#addLabelModal #panelReq #reqstatus").val("");
-        $("#addLabelModal #panelReq #reqcriticity").val("");
+        $('#add_reqtype').val('');
+        $('#add_reqstatus').val('');
+        $('#add_reqcriticity').val('');
     }
-
 }
 
 function deleteEntryHandlerClick() {
@@ -333,16 +337,14 @@ function addEntryModalCloseHandler() {
 
 function addEntryClick(type) {
     clearResponseMessageMainPage();
-    // When creating a new label, System takes the default value of the 
-    // system already selected in header.
-    var formAdd = $('#addLabelModal');
-    formAdd.find("#system").prop("value", getUser().defaultSystem);
+    // Pre-select system via event for crbDropdown
+    window.dispatchEvent(new CustomEvent('add-label-system-preselect', { detail: getUser().defaultSystem }));
     $('#addLabelModal').modal('show');
     //ColorPicker
     $("[name='colorDiv']").colorpicker();
     $("[name='colorDiv']").colorpicker('setValue', '#000000');
     if (type !== undefined) {
-        $("[name='type']").val(type);
+        window.dispatchEvent(new CustomEvent('add-label-type-preselect', { detail: type }));
     }
 }
 
@@ -402,13 +404,14 @@ function editEntryClick(id, system) {
         formEdit.find("#id").prop("value", id);
         formEdit.find("#label").prop("value", obj["label"]);
         formEdit.find("#color").prop("value", obj["color"]);
-        formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#longdesc").prop("value", obj["longDesc"]);
-        formEdit.find("#reqtype").prop("value", obj["requirementType"]);
-        formEdit.find("#reqstatus").prop("value", obj["requirementStatus"]);
-        formEdit.find("#reqcriticity").prop("value", obj["requirementCriticity"]);
-        formEdit.find("#system").prop("value", obj["system"]);
+        // Use preselect events for crbDropdown fields
+        window.dispatchEvent(new CustomEvent('edit-label-type-preselect', { detail: obj["type"] }));
+        window.dispatchEvent(new CustomEvent('edit-label-system-preselect', { detail: obj["system"] }));
+        window.dispatchEvent(new CustomEvent('edit-label-reqtype-preselect', { detail: obj["requirementType"] }));
+        window.dispatchEvent(new CustomEvent('edit-label-reqstatus-preselect', { detail: obj["requirementStatus"] }));
+        window.dispatchEvent(new CustomEvent('edit-label-reqcriticity-preselect', { detail: obj["requirementCriticity"] }));
         if (tinyMCE.get('longdesc') != null)
             tinyMCE.get('longdesc').setContent(obj["longDescription"]);
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -512,29 +515,65 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "80px",
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
-                                    class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="editLabel" title="' + doc.getDocLabel("page_label", "btn_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
-                                    class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="editLabel" title="' + doc.getDocLabel("page_label", "btn_view") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteLabel = '<button id="deleteLabel" onclick="deleteEntryClick(\'' + obj["id"] + '\',\'' + obj["label"] + '\');" \n\
-                                    class="deleteLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteLabel" title="' + doc.getDocLabel("page_label", "btn_delete") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-trash"></span></button>';
-                var tcLabel = '<a id="tcLabel" href="./TestCaseList.jsp?label=' + obj["label"] + '" \n\
-                                    class="btn btn-primary btn-xs marginRight5" \n\
-                                    name="tcLabel" title="' + doc.getDocLabel("page_label", "btn_tclist") + '" >\n\
-                                    <span class="glyphicon glyphicon-list"></span></a>';
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editLabel + deleteLabel + tcLabel + '</div>';
+            "sWidth": "120px",
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
+
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, href, extraClass = "" }) {
+                    if (href) {
+                        return `<a id="${id}" name="${name}" title="${title}" href="${href}" class="${baseBtnClass} ${extraClass}">${icon}</a>`;
+                    }
+                    return `<button id="${id}" name="${name}" type="button" class="${baseBtnClass} ${extraClass}" title="${title}" onclick="${onClick}">${icon}</button>`;
                 }
-                return '<div class="center btn-group width150">' + viewLabel + '</div>';
+
+                const icons = {
+                    edit: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    view: `<i data-lucide="eye" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    list: `<i data-lucide="list" class="w-4 h-4"></i>`
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: `editLabel_${row}`,
+                    name: "editLabel",
+                    title: hasPermissions ? doc.getDocLabel("page_label", "btn_edit") : doc.getDocLabel("page_label", "btn_view"),
+                    onClick: `editEntryClick('${obj["id"]}', '${obj["system"]}')`,
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `deleteLabel_${row}`,
+                        name: "deleteLabel",
+                        title: doc.getDocLabel("page_label", "btn_delete"),
+                        onClick: `deleteEntryClick('${obj["id"]}','${obj["label"]}')`,
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // Test Cases link
+                buttons.push(actionButton({
+                    id: `tcLabel_${row}`,
+                    name: "tcLabel",
+                    title: doc.getDocLabel("page_label", "btn_tclist"),
+                    href: `./TestCaseList.jsp?label=${obj["label"]}`,
+                    icon: icons.list,
+                    extraClass: "group-hover:!text-blue-500"
+                }));
+
+                var html = `<div class="flex items-center gap-1">${buttons.join('')}</div>`;
+                setTimeout(function() { if (window.lucide) lucide.createIcons(); }, 50);
+                return html;
             }
         },
         {"data": "id",

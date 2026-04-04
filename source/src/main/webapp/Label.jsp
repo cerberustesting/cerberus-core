@@ -93,16 +93,16 @@
                     <!-- Requirement Tree -->
                     <div x-show="tab === 'treeR'" x-transition.opacity>
                         <div class="mb-5 ml-6 flex space-x-2">
-                            <button id="refreshButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                            <button id="refreshButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                               <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
                             </button>
-                            <button id="createLabelButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                            <button id="createLabelButtonTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                               <i data-lucide="plus" class="w-4 h-4"></i> Create
                             </button>
-                            <button id="collapseAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                            <button id="collapseAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                               <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
                             </button>
-                            <button id="expandAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                            <button id="expandAllTreeR" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                               <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
                             </button>
                         </div>
@@ -112,16 +112,16 @@
                     <!-- Sticker Tree -->
                     <div x-show="tab === 'treeS'" x-transition.opacity>
                       <div class="mb-5 ml-6 flex space-x-2">
-                        <button id="refreshButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="refreshButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
                         </button>
-                        <button id="createLabelButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="createLabelButtonTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="plus" class="w-4 h-4"></i> Create
                         </button>
-                        <button id="collapseAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="collapseAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
                         </button>
-                        <button id="expandAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="expandAllTreeS" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
                         </button>
                       </div>
@@ -131,16 +131,16 @@
                     <!-- Battery Tree -->
                     <div x-show="tab === 'treeB'" x-transition.opacity>
                       <div class="mb-5 ml-6 flex space-x-2">
-                        <button id="refreshButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="refreshButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Refresh
                         </button>
-                        <button id="createLabelButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="createLabelButtonTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="plus" class="w-4 h-4"></i> Create
                         </button>
-                        <button id="collapseAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="collapseAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="chevron-up" class="w-4 h-4"></i> Collapse All
                         </button>
-                        <button id="expandAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white hover:bg-gray-50 text-gray-700 shadow-sm flex items-center gap-1">
+                        <button id="expandAllTreeB" type="button" class="px-3 py-2 rounded-md border text-sm bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 shadow-sm flex items-center gap-1">
                           <i data-lucide="chevron-down" class="w-4 h-4"></i> Expand All
                         </button>
                       </div>
