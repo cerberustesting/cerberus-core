@@ -903,27 +903,28 @@ function renderExecutionDots(results, obj = []) {
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-1 pt-2 text-center">
-                        <div class="px-2 py-1 rounded bg-green-500/80 text-white">OK: ${exec.nbOK || 0}</div>
-                        <div class="px-2 py-1 rounded bg-red-500/80 text-white">KO: ${exec.nbKO || 0}</div>
-                        <div class="px-2 py-1 rounded bg-orange-500/80 text-white">FA: ${exec.nbFA || 0}</div>
-                        <div class="px-2 py-1 rounded bg-blue-500/80 text-white">PE: ${exec.nbPE || 0}</div>
-                        <div class="px-2 py-1 rounded bg-gray-500/80 text-white">NA: ${exec.nbNA || 0}</div>
-                        <div class="px-2 py-1 rounded bg-purple-500/80 text-white">WE: ${exec.nbWE || 0}</div>
+                        ${exec.nbOK > 0 ? "<div class='px-2 py-1 rounded bg-green-500/80 text-white'>OK: "+exec.nbOK+"</div>" : ""}
+                        ${exec.nbKO > 0 ? "<div class='px-2 py-1 rounded bg-red-500/80 text-white'>KO: "+exec.nbKO+"</div>" : ""}
+                        ${exec.nbFA > 0 ? "<div class='px-2 py-1 rounded bg-orange-500/80 text-white'>FA: "+exec.nbFA+"</div>" : ""}
+                        ${exec.nbPE > 0 ? "<div class='px-2 py-1 rounded bg-blue-500/80 text-white'>PE: "+exec.nbPE+"</div>" : ""}
+                        ${exec.nbNA > 0 ? "<div class='px-2 py-1 rounded bg-gray-500/80 text-white'>NA: "+exec.nbNA+"</div>" : ""}
+                        ${exec.nbWE > 0 ? "<div class='px-2 py-1 rounded bg-purple-500/80 text-white'>WE: "+exec.nbWE+"</div>" : ""}
                     </div>
                 </div>
             `;
 
             const encodedTag = encodeURIComponent(exec.tag || "");
+            console.info(exec.ciResult);
             return `
                 <span class="execution-dot w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-xl cursor-pointer
-                    ${exec.nbPE > 0
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+                    ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK')
+                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 spin"
                 : status === "OK"
                     ? "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
                     : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"}"
                     data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}"
                     onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}'">
-                    ${exec.nbPE > 0 ? "⧗" : status === "OK" ? "✓" : "✕"}
+                    ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK') ? "⧗" : status === "OK" ? "✓" : "✕"}
                 </span>
             `;
         })
