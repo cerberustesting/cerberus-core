@@ -447,16 +447,16 @@ function openSocketAndBuildTable() {
 
         socket.onclose = function (e) {
             console.info("ws onclose");
-            showLoader("#tableMonitor", "Connection closed from server please refresh page.");
-            showLoader("#progressMonitor", "Connection closed from server please refresh page.");
+            showLoader("#tableMonitor", "Connection closed from server.");
+            showLoader("#progressMonitor", "Connection closed from server.");
             wsOpen = false;
             wsStartOpenning = false;
         }; //on est informé lors de la fermeture de la connexion vers le serveur
 
         socket.onerror = function (e) {
             console.info("ws onerror");
-            showLoader("#tableMonitor", "Connection error on server please refresh page.");
-            showLoader("#progressMonitor", "Connection error on server please refresh page.");
+            showLoader("#tableMonitor", "Connection error on server.");
+            showLoader("#progressMonitor", "Connection error on server.");
             wsOpen = false;
             wsStartOpenning = false;
         }; //on traite les cas d'erreur*/

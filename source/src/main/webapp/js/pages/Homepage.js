@@ -26,6 +26,16 @@ var futureCampaignRunTime = [];
 var futureCampaignRunTimeDurationToTrigger = [];
 var idTimeout;
 
+var lastReceivedPush = new Date();
+var lastReceivedData = {};
+var wsOpen = false;
+var wsStartOpenning = false;
+
+var reopenWSTimeout;
+var reopenWSTimeoutPeriod = 5000;
+
+
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
@@ -105,7 +115,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
     $(document).on('mouseenter', '.execution-dot', function (e) {
 
         const content = $(this).data('tooltip');
-        if (!content) return;
+        if (!content)
+            return;
 
         const $tooltip = $(`
         <div class="execution-tooltip fixed z-[9999]
@@ -140,37 +151,110 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 function loadQueueStatusWebSocket(sockets) {
 
-    var parser = document.createElement('a');
-    parser.href = window.location.href;
 
-    var protocol = "ws:";
-    if (parser.protocol === "https:") {
-        protocol = "wss:";
+
+    if (!wsOpen) {
+
+        sockets = [];
+        var parser = document.createElement('a');
+        parser.href = window.location.href;
+
+        var protocol = "ws:";
+        if (parser.protocol === "https:") {
+            protocol = "wss:";
+        }
+        var path = parser.pathname.split("Homepage")[0];
+        var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
+        console.info("Open Socket to : " + new_uri);
+        wsStartOpenning = true;
+        socket = new WebSocket(new_uri);
+
+        socket.onopen = function (e) {
+//            hideLoader("#currentlyRunning");
+            console.info("ws onopen");
+            wsOpen = true;
+            wsStartOpenning = false;
+            lastReceivedData.active = true;
+            window.dispatchEvent(
+                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                    );
+        }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+
+        socket.onmessage = function (e) {
+            var data = JSON.parse(e.data);
+//            hideLoader("#currentlyRunning");
+            console.info("ws onmessage");
+            let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
+            console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
+            lastReceivedPush = new Date();
+            lastReceivedData = data;
+//            console.info(data);
+            data.active = true;
+            window.dispatchEvent(
+                    new CustomEvent("queue-stats-updated", {detail: data})
+                    );
+        }; //on récupère les messages provenant du serveur websocket
+
+        socket.onclose = function (e) {
+            console.info("ws onclose");
+//            showLoader("#currentlyRunning", "Connection closed.");
+            lastReceivedData.active = false;
+            window.dispatchEvent(
+                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                    );
+            wsOpen = false;
+            wsStartOpenning = false;
+        }; //on est informé lors de la fermeture de la connexion vers le serveur
+
+        socket.onerror = function (e) {
+            console.info("ws onerror");
+//            showLoader("#tableMonitor", "Connection error on server please refresh page.");
+//            showLoader("#progressMonitor", "Connection error on server please refresh page.");
+            lastReceivedData.active = false;
+            window.dispatchEvent(
+                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                    );
+            wsOpen = false;
+            wsStartOpenning = false;
+        }; //on traite les cas d'erreur*/
+
+        // Remain in memory
+        sockets.push(socket);
+
     }
-    var path = parser.pathname.split("Homepage")[0];
-    var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
-    console.info("Open Socket to : " + new_uri);
-    var socket = new WebSocket(new_uri);
 
-    socket.onopen = function (e) {
-    }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-    socket.onmessage = function (e) {
-        var data = JSON.parse(e.data);
-//        console.info("received data from socket");
-//        console.info(data);
- //       updatePageQueueStatus(data);
-//        updatePage(data, steps);
-        window.dispatchEvent(
-            new CustomEvent("queue-stats-updated", { detail: data })
-        );
-    }; //on récupère les messages provenant du serveur websocket
-    socket.onclose = function (e) {
-    }; //on est informé lors de la fermeture de la connexion vers le serveur
-    socket.onerror = function (e) {
-    }; //on traite les cas d'erreur*/
 
-    // Remain in memory
-    sockets.push(socket);
+//    var parser = document.createElement('a');
+//    parser.href = window.location.href;
+//
+//    var protocol = "ws:";
+//    if (parser.protocol === "https:") {
+//        protocol = "wss:";
+//    }
+//    var path = parser.pathname.split("Homepage")[0];
+//    var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
+//    console.info("Open Socket to : " + new_uri);
+//    var socket = new WebSocket(new_uri);
+
+//    socket.onopen = function (e) {
+//    }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+//    socket.onmessage = function (e) {
+//        var data = JSON.parse(e.data);
+////        console.info("received data from socket");
+////        console.info(data);
+//        //       updatePageQueueStatus(data);
+////        updatePage(data, steps);
+//        window.dispatchEvent(
+//                new CustomEvent("queue-stats-updated", {detail: data})
+//                );
+//    }; //on récupère les messages provenant du serveur websocket
+//    socket.onclose = function (e) {
+//    }; //on est informé lors de la fermeture de la connexion vers le serveur
+//    socket.onerror = function (e) {
+//    }; //on traite les cas d'erreur*/
+//
+//    // Remain in memory
+//    sockets.push(socket);
 
 }
 
@@ -305,7 +389,7 @@ function updatePageQueueStatus(data) {
         }
 //        console.info(data.runningExecutionsList);
         for (var i = 0; i < newList.length; i++) {
-            let exe = newList[i]; 
+            let exe = newList[i];
             contentCel = "<div class='Exe-tooltip'><strong>Exe : </strong>" + exe.id + "</div>"
             contentCel += "<div class='Exe-tooltip'><strong>Application : </strong>" + exe.application + "</div>"
             contentCel += "<div class='Exe-tooltip'><strong>Testcase : </strong>" + exe.test + " - " + exe.testcase + "</div>"
@@ -353,10 +437,39 @@ function loadExeCurrentlyRunning() {
         dataType: 'json',
         success: function (data) {
 
-            updatePageQueueStatus(data);
-
+//            updatePageQueueStatus(data);
+//console.info(data);
+//            var data = JSON.parse(e.data);
+            lastReceivedData = data;
+            
             sockets = [];
             loadQueueStatusWebSocket(sockets);
+
+            // Trigger automatic reopen of ws only after 2 sec delay
+            wait(2000, function reOpenWSTimings() {
+//                console.info("is socket still open ?");
+                if ((!wsOpen) & (!wsStartOpenning)) {
+                    if (wsOpen) {
+//                        console.info("   Yes 2");
+                        lastReceivedData.active = true;
+                        window.dispatchEvent(
+                                new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                                );
+//                        refreshMonitorTable(lastReceivedData);
+                    } else if (!wsStartOpenning) {
+//                        console.info("   No");
+                        loadQueueStatusWebSocket();
+                    }
+//                } else {
+//                    console.info("   Yes");
+                }
+                // Loop on refresh reopen ws
+                reopenWSTimeout = setTimeout(() => {
+                    reOpenWSTimings();
+                }, reopenWSTimeoutPeriod);
+            }
+            );
+
 
         }
     });
@@ -368,7 +481,7 @@ function loadExecutionsHistoBar() {
     showLoader($("#panelHistory"));
 
     const period = localStorage.getItem("execHistoryPeriod") || "1m";
-    const { from, to } = getFromToByPeriod(period);
+    const {from, to} = getFromToByPeriod(period);
 
     $.ajax({
         url: "ReadExecutionTagHistory?from=" + from.toISOString() + "&to=" + to.toISOString() + getUser().defaultSystemsQuery,
@@ -436,22 +549,33 @@ function buildExeBar(data) {
 function getFromToByPeriod(period) {
     const to = new Date();
     const from = new Date();
-    switch(period) {
-        case "1w": from.setDate(to.getDate() - 7); break;
-        case "2w": from.setDate(to.getDate() - 14); break;
-        case "1m": from.setMonth(to.getMonth() - 1); break;
-        case "2m": from.setMonth(to.getMonth() - 2); break;
-        case "3m": from.setMonth(to.getMonth() - 3); break;
-        default: from.setMonth(to.getMonth() - 1);
+    switch (period) {
+        case "1w":
+            from.setDate(to.getDate() - 7);
+            break;
+        case "2w":
+            from.setDate(to.getDate() - 14);
+            break;
+        case "1m":
+            from.setMonth(to.getMonth() - 1);
+            break;
+        case "2m":
+            from.setMonth(to.getMonth() - 2);
+            break;
+        case "3m":
+            from.setMonth(to.getMonth() - 3);
+            break;
+        default:
+            from.setMonth(to.getMonth() - 1);
     }
-    return { from, to };
+    return {from, to};
 }
 
 function loadTestcaseHistoGraph() {
     showLoader($("#panelTcHistory"));
 
     const period = localStorage.getItem("tcHistoryPeriod") || "1m";
-    const { from, to } = getFromToByPeriod(period);
+    const {from, to} = getFromToByPeriod(period);
 
     $.ajax({
         url: "ReadTestCaseStat?from=" + from.toISOString() + "&to=" + to.toISOString() + getUser().defaultSystemsQuery,
@@ -714,7 +838,7 @@ function loadLastTagResultList() {
 //    }
 
 //    if (tagList === null || tagList.length === 0) {
-       var tagList = readLastTagExec("", reportArea);
+    var tagList = readLastTagExec("", reportArea);
 //    } else {
 //        nbTagLoadedTarget = tagList.length;
 //        refreshTagList(tagList, reportArea);
@@ -739,7 +863,8 @@ function refreshTagList(tagList1, reportArea) {
     const nextRuns = readNextTagScheduled();
     renderCampaignGrid(reportArea, tagList1, nextRuns);
     updateNextFireTime();
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide)
+        lucide.createIcons();
 }
 
 /**
@@ -755,7 +880,7 @@ function renderCampaignGrid(container, tagList1, nextRuns) {
         const nextRun = nextRuns.find(n =>
             tags.some(t => t.campaign === n.tag)
         );
-        grid.append(renderCampaignCard(name,tags,nextRun ? `${nextRun.nextRunLabel}` : null));
+        grid.append(renderCampaignCard(name, tags, nextRun ? `${nextRun.nextRunLabel}` : null));
     });
     container.append(grid);
 }
@@ -859,7 +984,8 @@ function computeCampaignStats(tags) {
 }
 
 function getResponseTime(startStr, endStr) {
-    if (!startStr || !endStr) return null;
+    if (!startStr || !endStr)
+        return null;
 
     const start = new Date(startStr.replace(" ", "T"));
     const end = new Date(endStr.replace(" ", "T"));
@@ -876,15 +1002,15 @@ function getResponseTime(startStr, endStr) {
 function renderExecutionDots(results, obj = []) {
 
     return results
-        .slice(0, 5)
-        .map((status, i) => ({
-            status,
-            exec: obj[i] || {}
-        }))
-        .reverse()
-        .map(({ status, exec }) => {
+            .slice(0, 5)
+            .map((status, i) => ({
+                    status,
+                    exec: obj[i] || {}
+                }))
+            .reverse()
+            .map(({ status, exec }) => {
 
-            const tooltipContent = `
+                const tooltipContent = `
                 <div class="space-y-2 text-xs">
                     <div><strong>Tag :</strong> ${exec.tag || '-'}</div>
                     <div><strong>Status :</strong> ${status}</div>
@@ -903,32 +1029,31 @@ function renderExecutionDots(results, obj = []) {
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-1 pt-2 text-center">
-                        ${exec.nbOK > 0 ? "<div class='px-2 py-1 rounded bg-green-500/80 text-white'>OK: "+exec.nbOK+"</div>" : ""}
-                        ${exec.nbKO > 0 ? "<div class='px-2 py-1 rounded bg-red-500/80 text-white'>KO: "+exec.nbKO+"</div>" : ""}
-                        ${exec.nbFA > 0 ? "<div class='px-2 py-1 rounded bg-orange-500/80 text-white'>FA: "+exec.nbFA+"</div>" : ""}
-                        ${exec.nbPE > 0 ? "<div class='px-2 py-1 rounded bg-blue-500/80 text-white'>PE: "+exec.nbPE+"</div>" : ""}
-                        ${exec.nbNA > 0 ? "<div class='px-2 py-1 rounded bg-gray-500/80 text-white'>NA: "+exec.nbNA+"</div>" : ""}
-                        ${exec.nbWE > 0 ? "<div class='px-2 py-1 rounded bg-purple-500/80 text-white'>WE: "+exec.nbWE+"</div>" : ""}
+                        ${exec.nbOK > 0 ? "<div class='px-2 py-1 rounded bg-green-500/80 text-white'>OK: " + exec.nbOK + "</div>" : ""}
+                        ${exec.nbKO > 0 ? "<div class='px-2 py-1 rounded bg-red-500/80 text-white'>KO: " + exec.nbKO + "</div>" : ""}
+                        ${exec.nbFA > 0 ? "<div class='px-2 py-1 rounded bg-orange-500/80 text-white'>FA: " + exec.nbFA + "</div>" : ""}
+                        ${exec.nbPE > 0 ? "<div class='px-2 py-1 rounded bg-blue-500/80 text-white'>PE: " + exec.nbPE + "</div>" : ""}
+                        ${exec.nbNA > 0 ? "<div class='px-2 py-1 rounded bg-gray-500/80 text-white'>NA: " + exec.nbNA + "</div>" : ""}
+                        ${exec.nbWE > 0 ? "<div class='px-2 py-1 rounded bg-purple-500/80 text-white'>WE: " + exec.nbWE + "</div>" : ""}
                     </div>
                 </div>
             `;
 
-            const encodedTag = encodeURIComponent(exec.tag || "");
-            console.info(exec.ciResult);
-            return `
+                const encodedTag = encodeURIComponent(exec.tag || "");
+                return `
                 <span class="execution-dot w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-xl cursor-pointer
                     ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK')
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 spin"
-                : status === "OK"
-                    ? "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
-                    : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"}"
+                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+                        : status === "OK"
+                        ? "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
+                        : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"}"
                     data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}"
                     onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}'">
-                    ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK') ? "⧗" : status === "OK" ? "✓" : "✕"}
+                    ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK') ? "<span class='spin'>⧗</span>" : status === "OK" ? "✓" : "✕"}
                 </span>
             `;
-        })
-        .join("");
+            })
+            .join("");
 }
 
 /**
@@ -994,17 +1119,17 @@ function renderTrendGraph(responseTime = [], status = []) {
 
     // Création des points
     const points = responseTime.map((v, i) => ({
-        x: getX(i),
-        y: getY(v),
-        value: v,
-        status: status[i]
-    }));
+            x: getX(i),
+            y: getY(v),
+            value: v,
+            status: status[i]
+        }));
 
     // Inverser l'ordre pour affichage de droite à gauche
     const pointsReversed = points.slice().reverse().map((p, i) => ({
-        ...p,
-        x: getX(i) // recalcule x pour l'affichage inversé
-    }));
+            ...p,
+            x: getX(i) // recalcule x pour l'affichage inversé
+        }));
 
     const linePoints = pointsReversed.map(p => `${p.x},${p.y}`).join(" ");
     const fillPoints = `0,${HEIGHT} ${linePoints} 100,${HEIGHT}`;
@@ -1070,7 +1195,8 @@ function readLastTagExec(searchString, reportArea) {
     const maxPerCampaign = (savedConfig.maxPerCampaign >= 0 && savedConfig.maxPerCampaign <= 20) ? savedConfig.maxPerCampaign : 5;
 
     let resultSetSize = parseInt(savedConfig.resultSetSize);
-    if (!(resultSetSize >= 10 && resultSetSize <= 5000)) resultSetSize = 1000;
+    if (!(resultSetSize >= 10 && resultSetSize <= 5000))
+        resultSetSize = 1000;
 
     const displayNoCampaign = savedConfig.displayNoCampaign !== false; // default true
     const displayNextCampaign = savedConfig.displayNextCampaign !== false; // default true
@@ -1079,15 +1205,15 @@ function readLastTagExec(searchString, reportArea) {
 
     // === Construction de l’URL ===
     var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description" +
-        "&iDisplayLength=" + resultSetSize +
-        getUser().defaultSystemsQuery;
+            "&iDisplayLength=" + resultSetSize +
+            getUser().defaultSystemsQuery;
 
     if (!isEmpty(searchString)) {
         myUrl += "&sSearch=" + searchString;
     }
 
     if (tagFilterList.trim().length > 0) {
-        myUrl += "&sSearch_2="+encodeURIComponent(tagFilterList);
+        myUrl += "&sSearch_2=" + encodeURIComponent(tagFilterList);
     }
 
     // === Appel AJAX ===
@@ -1136,10 +1262,10 @@ function readNextTagScheduled() {
     const result = [];
 
     let nbExe = getParameter(
-        "cerberus_homepage_nbdisplayedscheduledtag",
-        getUser().defaultSystem,
-        true
-    );
+            "cerberus_homepage_nbdisplayedscheduledtag",
+            getUser().defaultSystem,
+            true
+            );
 
     let limit = nbExe?.value;
     if (!(limit >= 0 && limit <= 50)) {
@@ -1164,10 +1290,10 @@ function readNextTagScheduled() {
                 result.push({
                     tag: t.triggerName,
                     nextRunLabel:
-                        "will trigger in " +
-                        getHumanReadableDuration(
-                            Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
-                        ),
+                            "will trigger in " +
+                            getHumanReadableDuration(
+                                    Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
+                                    ),
                     nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
                     durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
                     user: t.triggerUserCreated
@@ -1175,8 +1301,8 @@ function readNextTagScheduled() {
 
                 futureCampaignRunTime.push(new Date());
                 futureCampaignRunTimeDurationToTrigger.push(
-                    t.triggerNextFiretimeDurationToTriggerInMs
-                );
+                        t.triggerNextFiretimeDurationToTriggerInMs
+                        );
             }
         }
     });
@@ -1294,7 +1420,7 @@ function saveConfigPanel() {
 
     localStorage.setItem("cerberus_homepage_lasttagexecutionconfig", JSON.stringify(localConfig));
 
-    notifyInPage("success","Configuration locale mise à jour.");
+    notifyInPage("success", "Configuration locale mise à jour.");
 
     $("#tagConfigPanel").addClass("hidden");
     loadLastTagResultList();
@@ -1382,13 +1508,20 @@ function updateHeaderStats() {
 
 function getStatusColor(status) {
     switch (status) {
-        case "OK": return "text-emerald-600 bg-emerald-100/50 dark:text-emerald-400 dark:bg-emerald-900/50";
-        case "KO": return "text-red-600 bg-red-100/50 dark:text-red-400 dark:bg-red-900/50";
-        case "FA": return "bg-yellow-500";
-        case "NA": return "text-gray-600 bg-gray-100/50 dark:text-gray-400 dark:bg-gray-900/50";
-        case "NE": return "bg-blue-500";
-        case "PE": return "bg-purple-500";
-        default: return "text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50";
+        case "OK":
+            return "text-emerald-600 bg-emerald-100/50 dark:text-emerald-400 dark:bg-emerald-900/50";
+        case "KO":
+            return "text-red-600 bg-red-100/50 dark:text-red-400 dark:bg-red-900/50";
+        case "FA":
+            return "bg-yellow-500";
+        case "NA":
+            return "text-gray-600 bg-gray-100/50 dark:text-gray-400 dark:bg-gray-900/50";
+        case "NE":
+            return "bg-blue-500";
+        case "PE":
+            return "bg-purple-500";
+        default:
+            return "text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/50";
     }
 }
 
@@ -1484,7 +1617,7 @@ function mapExecutions(api) {
         ongoing: {
             value: ongoing.queueStats.running || 0,
             tab: "On Going",
-            label: "Currently Executing",
+            label: ((ongoing.queueStats.running || 0) > 0 ? "Currently Executing" : "No execution running"),
             globalLimit: ongoing.queueStats.globalLimit || 0,
             queueSize: ongoing.queueStats.queueSize || 0,
             runningList: ongoing.runningExecutionsList || []
@@ -1522,7 +1655,7 @@ function mapAIUsage(api) {
         totalRequests: {
             value: current.totalSessions || 0,
             tab: "Requests",
-            label: "requêtes IA (total)",
+            label: "AI Requests (total)",
             currentValue: current.totalSessions || 0,
             previousValue: (current.totalSessions || 0) - (previous.totalSessions || 0),
             diff: (current.totalSessions || 0) - (previous.totalSessions || 0),
@@ -1531,40 +1664,40 @@ function mapAIUsage(api) {
         totalTokens: {
             value: formatTokens((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)),
             tab: "Tokens",
-            label: "tokens consommés",
+            label: "Tokens Consumed",
             currentValue: (current.totalInputTokens || 0) + (current.totalOutputTokens || 0),
             previousValue: ((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)) -
-                ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
+                    ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
             diff: ((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)) -
-                ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
+                    ((previous.totalInputTokens || 0) + (previous.totalOutputTokens || 0)),
             diffPositive: true
         }
         /*totalCost: {
-            value: formatEuro(current.totalCost || 0),
-            tab: "Cost",
-            label: "coût total (global)",
-            currentValue: current.totalCost || 0,
-            previousValue: (current.totalCost || 0) - (previous.totalCost || 0),
-            diff: (current.totalCost || 0) - (previous.totalCost || 0),
-            diffPositive: false
-        },
-        userCost: {
-            value: formatEuro(currentUser.totalCost || 0),
-            tab: "User",
-            label: "coût utilisateur",
-            currentValue: currentUser.totalCost || 0,
-            previousValue: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
-            diff: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
-            diffPositive: false
-        }
-
+         value: formatEuro(current.totalCost || 0),
+         tab: "Cost",
+         label: "coût total (global)",
+         currentValue: current.totalCost || 0,
+         previousValue: (current.totalCost || 0) - (previous.totalCost || 0),
+         diff: (current.totalCost || 0) - (previous.totalCost || 0),
+         diffPositive: false
+         },
+         userCost: {
+         value: formatEuro(currentUser.totalCost || 0),
+         tab: "User",
+         label: "coût utilisateur",
+         currentValue: currentUser.totalCost || 0,
+         previousValue: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
+         diff: (currentUser.totalCost || 0) - (previousUser.totalCost || 0),
+         diffPositive: false
+         }
+         
          */
     };
 }
 
 function mapApplication(api) {
     const store = Alpine.store('labels');
-    console.log(store);
+//    console.log(store);
     const global = api.global || {};
     const globalPrev = api.globalPreviousMonth || {};
 
@@ -1574,8 +1707,8 @@ function mapApplication(api) {
     return {
         workspaces: {
             value: system.totalApplications || 0,
-            tab: store.getLabel('homepage','applicationtabselected'),
-            label: store.getLabel('homepage','applicationtabselectedlabel'),
+            tab: store.getLabel('homepage', 'applicationtabselected'),
+            label: store.getLabel('homepage', 'applicationtabselectedlabel'),
             currentValue: system.totalApplications || 0,
             previousValue: (system.totalApplications || 0) - (systemPrev.totalApplications || 0),
             diff: (system.totalApplications || 0) - (systemPrev.totalApplications || 0),
@@ -1590,9 +1723,9 @@ function mapApplication(api) {
                     return "Aucun type";
                 }
                 return Object.entries(map)
-                    .filter(([type, count]) => type && count != null)
-                    .map(([type, count]) => type+':'+count)
-                    .join(", ");
+                        .filter(([type, count]) => type && count != null)
+                        .map(([type, count]) => type + ':' + count)
+                        .join(", ");
             })()
         },
         total: {
@@ -1604,7 +1737,6 @@ function mapApplication(api) {
             diff: (global.totalApplications || 0) - (globalPrev.totalApplications || 0),
             diffPositive: true
         },
-
 
     };
 }
