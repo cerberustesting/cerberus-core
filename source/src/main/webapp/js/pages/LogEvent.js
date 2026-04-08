@@ -89,7 +89,7 @@ function editEntryClick(id) {
         formEdit.find("#login").prop("value", obj["login"]);
         formEdit.find("#log").prop("value", obj["log"]);
 
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('editlogevent-modal-open'));
     });
 }
 

@@ -29,8 +29,6 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Data Library</title>        
         <script type="text/javascript" src="js/pages/TestDataLibList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestDataLib.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -40,10 +38,8 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/utils/modal-upload.html"%>
-            <%@ include file="include/transversalobject/TestDataLib.html"%>              
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
             <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
-            <%@ include file="include/transversalobject/AppService.html"%>      
             <h1 class="page-title-line" id="title">Data Library</h1>
             <div class="">
                 <div id="testDataLibList">

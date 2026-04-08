@@ -29,7 +29,6 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/ImpactAnalysis.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
         <title id="pageTitle">Impact Analysis</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -38,7 +37,6 @@
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/TestCase.html"%>
 
             <h1 class="page-title-line" id="title">Impact Analysis</h1>
 

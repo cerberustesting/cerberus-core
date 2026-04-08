@@ -34,11 +34,8 @@
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/File.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+
+
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css?v=${appVersion}">
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
@@ -49,12 +46,9 @@
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <%@ include file="include/utils/modal-generic.html" %>
         <%@ include file="include/pages/testcasescript/manageProperties.html" %>
-        <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
-        <%@ include file="include/transversalobject/TestCase.html" %>
-        <%@ include file="include/transversalobject/File.html" %>
+
         <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
-        <%@ include file="include/transversalobject/Robot.html" %>
-        <%@ include file="include/transversalobject/Application.html" %>
+
         <%@ include file="include/transversal/Invariant.html" %>
         <jsp:include page="include/templates/selectDropdown.html"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">

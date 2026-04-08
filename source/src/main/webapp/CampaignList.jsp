@@ -30,7 +30,6 @@
         <title id="pageTitle">Campaign Management</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/CampaignList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -40,7 +39,6 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcampaign/viewTestcampaign.html"%>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
-            <%@ include file="include/transversalobject/Campaign.html"%>
 
             <h1 class="page-title-line" id="title">Campaign Management</h1>
             <div class="">

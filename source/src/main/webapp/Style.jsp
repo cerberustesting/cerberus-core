@@ -36,20 +36,12 @@
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/Style.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
         <title id="pageTitle">Style Page</title>
     </head>
     <body>
         <jsp:include page="include/global/header2.html"/>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html" %>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
-            <%@ include file="include/transversalobject/TestCase.html" %>
-            <%@ include file="include/transversalobject/Campaign.html" %>
-            <%@ include file="include/transversalobject/Application.html" %>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html" %>
 
             <h1 class="page-title-line" id="title">Reporting</h1>

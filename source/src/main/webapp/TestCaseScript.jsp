@@ -34,12 +34,6 @@
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
 <!--        <script type="text/javascript" src="dependencies/Ace-1.38.0/ext-language_tools.js"></script>-->
         <script type="text/javascript" src="js/pages/TestCaseScript.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestDataLib.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css?v=${appVersion}">
     </head>
@@ -48,18 +42,12 @@
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <main class="crb_main" x-init="$store.sidebar.expanded = false" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcasescript/manageProperties.html"%>
             <%@ include file="include/pages/testcasescript/addStep.html"%>
             <%@ include file="include/pages/testcasescript/manageActionControlOptions.html"%>
             <%@ include file="include/pages/testcasescript/manageStepOptions.html"%>
-            <%@ include file="include/transversalobject/ApplicationObject.html"%>
-            <%@ include file="include/transversalobject/TestDataLib.html"%>
-            <%@ include file="include/transversalobject/AppService.html"%>
-            <%@ include file="include/transversalobject/Application.html"%>
-            <%@ include file="include/transversalobject/Property.html"%>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+
             <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
             <%@ include file="include/utils/modal-generic.html"%>
 

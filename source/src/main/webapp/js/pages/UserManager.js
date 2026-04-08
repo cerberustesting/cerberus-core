@@ -20,6 +20,135 @@
 var kcUrl;
 var kcRealm;
 
+/**
+ * Build a toggle-row list from a hidden <select multiple>.
+ * Uses styled rows with toggle switches for clean selection UX.
+ */
+function buildCheckboxList(selectSelector, containerSelector, modalSelector, onChangeCallback) {
+    var $select = $(modalSelector + ' ' + selectSelector);
+    var $container = $(modalSelector + ' ' + containerSelector);
+    $container.empty();
+    $select.find('option').each(function (idx) {
+        var val = $(this).val();
+        var text = $(this).text();
+        var checked = $(this).prop('selected');
+        var uid = 'cb_' + selectSelector.replace('#', '') + '_' + val.replace(/[^a-zA-Z0-9]/g, '_');
+
+        var row = document.createElement('div');
+        row.className = 'crb-toggle-row flex items-center justify-between px-4 py-2 cursor-pointer select-none transition-colors duration-150 ' +
+            (checked ? 'bg-sky-50 dark:bg-sky-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50');
+        row.setAttribute('data-uid', uid);
+
+        // Left: label text
+        var labelSpan = document.createElement('span');
+        labelSpan.className = 'text-sm font-medium ' + (checked ? 'text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-400');
+        labelSpan.textContent = text;
+
+        // Right: toggle switch
+        var toggle = document.createElement('div');
+        toggle.className = 'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ' +
+            (checked ? 'bg-sky-500' : 'bg-slate-300 dark:bg-slate-600');
+        var knob = document.createElement('span');
+        knob.className = 'pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm ring-0 transition-transform duration-200 ease-in-out ' +
+            (checked ? 'translate-x-4' : 'translate-x-0');
+        toggle.appendChild(knob);
+
+        row.appendChild(labelSpan);
+        row.appendChild(toggle);
+
+        // Hidden checkbox for form compat
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = uid;
+        cb.className = 'sr-only';
+        cb.checked = checked;
+        row.appendChild(cb);
+
+        // Click handler
+        $(row).on('click', function (e) {
+            e.preventDefault();
+            var $cb = $(this).find('input[type=checkbox]');
+            var nowChecked = !$cb.prop('checked');
+            $cb.prop('checked', nowChecked);
+            $select.find('option[value="' + val + '"]').prop('selected', nowChecked);
+
+            // Update visual state
+            var $toggle = $(this).find('div');
+            var $knob = $toggle.find('span');
+            var $label = $(this).find('span').first();
+            if (nowChecked) {
+                $(this).removeClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').addClass('bg-sky-50 dark:bg-sky-900/20');
+                $label.removeClass('text-slate-600 dark:text-slate-400').addClass('text-sky-700 dark:text-sky-300');
+                $toggle.removeClass('bg-slate-300 dark:bg-slate-600').addClass('bg-sky-500');
+                $knob.removeClass('translate-x-0').addClass('translate-x-4');
+            } else {
+                $(this).addClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').removeClass('bg-sky-50 dark:bg-sky-900/20');
+                $label.addClass('text-slate-600 dark:text-slate-400').removeClass('text-sky-700 dark:text-sky-300');
+                $toggle.addClass('bg-slate-300 dark:bg-slate-600').removeClass('bg-sky-500');
+                $knob.addClass('translate-x-0').removeClass('translate-x-4');
+            }
+
+            if (typeof onChangeCallback === 'function') onChangeCallback(val, nowChecked);
+        });
+
+        $container.append(row);
+    });
+}
+
+/** Sync all toggle rows from the hidden select state */
+function syncCheckboxesFromSelect(selectSelector, containerSelector, modalSelector) {
+    var $select = $(modalSelector + ' ' + selectSelector);
+    $(modalSelector + ' ' + containerSelector).find('.crb-toggle-row').each(function () {
+        var $row = $(this);
+        var uid = $row.attr('data-uid');
+        var $cb = $row.find('input[type=checkbox]');
+        $select.find('option').each(function () {
+            var optUid = 'cb_' + selectSelector.replace('#', '') + '_' + $(this).val().replace(/[^a-zA-Z0-9]/g, '_');
+            if (optUid === uid) {
+                var isSelected = $(this).prop('selected');
+                $cb.prop('checked', isSelected);
+                var $toggle = $row.find('div');
+                var $knob = $toggle.find('span');
+                var $label = $row.find('span').first();
+                if (isSelected) {
+                    $row.removeClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').addClass('bg-sky-50 dark:bg-sky-900/20');
+                    $label.removeClass('text-slate-600 dark:text-slate-400').addClass('text-sky-700 dark:text-sky-300');
+                    $toggle.removeClass('bg-slate-300 dark:bg-slate-600').addClass('bg-sky-500');
+                    $knob.removeClass('translate-x-0').addClass('translate-x-4');
+                } else {
+                    $row.addClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').removeClass('bg-sky-50 dark:bg-sky-900/20');
+                    $label.addClass('text-slate-600 dark:text-slate-400').removeClass('text-sky-700 dark:text-sky-300');
+                    $toggle.addClass('bg-slate-300 dark:bg-slate-600').removeClass('bg-sky-500');
+                    $knob.addClass('translate-x-0').removeClass('translate-x-4');
+                }
+            }
+        });
+    });
+}
+
+/** Set all toggle rows + options */
+function setAllCheckboxes(selectSelector, containerSelector, modalSelector, checked) {
+    $(modalSelector + ' ' + selectSelector + ' option').prop('selected', checked);
+    $(modalSelector + ' ' + containerSelector).find('.crb-toggle-row').each(function () {
+        var $row = $(this);
+        $row.find('input[type=checkbox]').prop('checked', checked);
+        var $toggle = $row.find('div');
+        var $knob = $toggle.find('span');
+        var $label = $row.find('span').first();
+        if (checked) {
+            $row.removeClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').addClass('bg-sky-50 dark:bg-sky-900/20');
+            $label.removeClass('text-slate-600 dark:text-slate-400').addClass('text-sky-700 dark:text-sky-300');
+            $toggle.removeClass('bg-slate-300 dark:bg-slate-600').addClass('bg-sky-500');
+            $knob.removeClass('translate-x-0').addClass('translate-x-4');
+        } else {
+            $row.addClass('hover:bg-slate-50 dark:hover:bg-slate-800/50').removeClass('bg-sky-50 dark:bg-sky-900/20');
+            $label.addClass('text-slate-600 dark:text-slate-400').removeClass('text-sky-700 dark:text-sky-300');
+            $toggle.addClass('bg-slate-300 dark:bg-slate-600').removeClass('bg-sky-500');
+            $knob.addClass('translate-x-0').removeClass('translate-x-4');
+        }
+    });
+}
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -39,22 +168,19 @@ function initPage() {
     $("#editUserPasswordButton").click(editEntryPassModalSaveHandler);
     $("#addUserButton").click(addEntryModalSaveHandler);
 
-    //clear the modals fields when closed
-    $('#editUserModal').on('hidden.bs.modal', editEntryModalCloseHandler);
-    $('#editUserPasswordModal').on('hidden.bs.modal', editEntryPassModalCloseHandler);
-    $('#addUserModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    // Close handlers are managed by Alpine $watch
 
-    $('#addcheckall').click(function (e) {
-        $("#addUserModal").find("#systems option").prop('selected', true)
+    $('#addcheckall').click(function () {
+        setAllCheckboxes('#systems', '#systemsCheckboxList', '#addUserModal', true);
     });
-    $('#adduncheckall').click(function (e) {
-        $("#addUserModal").find("#systems option").prop('selected', false)
+    $('#adduncheckall').click(function () {
+        setAllCheckboxes('#systems', '#systemsCheckboxList', '#addUserModal', false);
     });
-    $('#editcheckall').click(function (e) {
-        $("#editUserModal").find("#systems option").prop('selected', true)
+    $('#editcheckall').click(function () {
+        setAllCheckboxes('#systems', '#systemsCheckboxList', '#editUserModal', true);
     });
-    $('#edituncheckall').click(function (e) {
-        $("#editUserModal").find("#systems option").prop('selected', false)
+    $('#edituncheckall').click(function () {
+        setAllCheckboxes('#systems', '#systemsCheckboxList', '#editUserModal', false);
     });
 
     $('#setAPIKey').click(function (e) {
@@ -189,10 +315,6 @@ function editEntryClick(param) {
         }
 
         // SYSTEMS
-        // System size will take the full size of total systems.
-        var nbsystem = formEdit.find("#systems option").size();
-        formEdit.find("#systems").prop('size', nbsystem);
-        // Selecting the values from the current user loaded.
         formEdit.find("#systems option").each(function (i, e) {
             for (var i = 0; i < obj.systems.length; i++) {
                 if (obj.systems[i].system == $(e).val()) {
@@ -200,15 +322,10 @@ function editEntryClick(param) {
                 }
             }
         });
-        // Removing the need to press ctrl on modify a selection.
-        formEdit.find("#systems option").mousedown(function (e) {
-            e.preventDefault();
-            $(this).prop('selected', !$(this).prop('selected'));
-            return false;
-        });
+        // Build checkbox list for systems
+        buildCheckboxList('#systems', '#systemsCheckboxList', '#editUserModal');
 
         // GROUPS
-        // Selecting the values from the current user loaded.
         formEdit.find("#groups option").each(function (i, e) {
             for (var i = 0; i < obj.roles.length; i++) {
                 if (obj.roles[i].role == $(e).val()) {
@@ -216,16 +333,11 @@ function editEntryClick(param) {
                 }
             }
         });
-        // Removing the need to press ctrl on modify a selection AND pre(un)select on some groups.
-        formEdit.find("#groups option").mousedown(function (e) {
-            e.preventDefault();
-            $(this).prop('selected', !$(this).prop('selected'));
-            clickGroup($(this).val(), $(this).prop('selected'), $("#editUserModal"));
-            return false;
-        });
-
-        formEdit.find("#groups option").click(function () {
-            clickGroup($(this).val(), $(this).prop('selected'), formEdit);
+        // Build checkbox list for roles with cascading group logic
+        buildCheckboxList('#groups', '#groupsCheckboxList', '#editUserModal', function(val, checked) {
+            clickGroup(val, checked, $('#editUserModal'));
+            // After clickGroup modifies other options, sync checkboxes
+            syncCheckboxesFromSelect('#groups', '#groupsCheckboxList', '#editUserModal');
         });
 
         if (obj["isKeycloakManaged"]) {
@@ -239,7 +351,7 @@ function editEntryClick(param) {
 
     });
 
-    formEdit.modal('show');
+    window.dispatchEvent(new CustomEvent('edituser-modal-open'));
 }
 
 function clickGroup(groupClicked, selected, formEdit) {
@@ -375,7 +487,7 @@ function editEntryModalSaveHandler() {
             data = JSON.parse(data);
             console.log(data.messageType);
             if (getAlertType(data.messageType) === 'success') {
-                $('#editUserModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('edituser-modal-close'));
                 var oTable = $("#usersTable").dataTable();
                 oTable.fnDraw(false);
                 showMessage(data);
@@ -391,11 +503,9 @@ function editEntryModalSaveHandler() {
 }
 
 function editEntryModalCloseHandler() {
-    // reset form values
-    $('#editUserModal #editUserModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#editUserModal #editUserModalForm')[0];
+    if (form) form.reset();
+    $('#editUserModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#editUserModal'));
 }
 
@@ -422,7 +532,7 @@ function editEntryPassModalSaveHandler() {
 //            data = JSON.parse(data);
             console.log(data.messageType);
             if (getAlertType(data.messageType) === 'success') {
-                $('#editUserPasswordModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('editpassword-modal-close'));
                 showMessage(data);
             } else {
                 showMessage(data, $('#editUserPasswordModal'));
@@ -444,15 +554,13 @@ function editEntryPassClick(param) {
     var formEdit = $('#editUserPasswordModal');
     formEdit.find("#login").prop("value", param);
 
-    formEdit.modal('show');
+    window.dispatchEvent(new CustomEvent('editpassword-modal-open'));
 }
 
 function editEntryPassModalCloseHandler() {
-    // reset form values
-    $('#editUserPasswordModal #editUserPasswordModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#editUserPasswordModal #editUserPasswordModalForm')[0];
+    if (form) form.reset();
+    $('#editUserPasswordModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#editUserPasswordModal'));
 }
 
@@ -470,33 +578,19 @@ function addEntryClick() {
     displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
     displayInvariantList("team", "TEAM", false, "", "", false);
 
-    // System size will take the full size of total systems.
-    var nbsystem = $("#addUserModal").find("#systems option").size();
-    $("#addUserModal").find("#systems").prop('size', nbsystem);
-    $("#addUserModal").find('#systems option').mousedown(function (e) {
-        e.preventDefault();
-        var select = this;
-        var scroll = select.scrollTop;
-        e.target.selected = !e.target.selected;
-        setTimeout(function () {
-            select.scrollTop = scroll;
-        }, 0);
-        $(select).focus();
-    }).mousemove(function (e) {
-        e.preventDefault()
-    });
+    // Build checkbox list for systems
+    buildCheckboxList('#systems', '#systemsCheckboxList', '#addUserModal');
 
-    $("#addUserModal").find('#groups option').mousedown(function (e) {
-        e.preventDefault();
-        $(this).prop('selected', !$(this).prop('selected'));
-        clickGroup($(this).val(), $(this).prop('selected'), $("#addUserModal"));
-        return false;
+    // Build checkbox list for roles with cascading group logic
+    buildCheckboxList('#groups', '#groupsCheckboxList', '#addUserModal', function(val, checked) {
+        clickGroup(val, checked, $('#addUserModal'));
+        syncCheckboxesFromSelect('#groups', '#groupsCheckboxList', '#addUserModal');
     });
 
     $("#addUserModal").find("#request").show();
     $("[name='requestField']").show();
 
-    $('#addUserModal').modal('show');
+    window.dispatchEvent(new CustomEvent('adduser-modal-open'));
 }
 
 function addEntryModalSaveHandler() {
@@ -537,7 +631,7 @@ function addEntryModalSaveHandler() {
             data = JSON.parse(data);
             hideLoaderInModal('#addUserModal');
             if (getAlertType(data.messageType) === 'success') {
-                $('#addUserModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('adduser-modal-close'));
                 var oTable = $("#usersTable").dataTable();
                 oTable.fnDraw(false);
                 showMessage(data);
@@ -551,35 +645,48 @@ function addEntryModalSaveHandler() {
 }
 
 function addEntryModalCloseHandler() {
-    // reset form values
-    $('#addUserModal #addUserModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#addUserModal #addUserModalForm')[0];
+    if (form) form.reset();
+    $('#addUserModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#addUserModal'));
 }
 
-function removeEntryClick(key) {
+async function removeEntryClick(key) {
+    clearResponseMessageMainPage();
     var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var id = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteUser?login=" + encodeURIComponent(key),
-            async: true,
-            method: "GET",
-            success: function (data) {
-                data = JSON.parse(data);
-                hideLoaderInModal('#removeTestampaignModal');
-                var oTable = $("#usersTable").dataTable();
-                oTable.fnDraw(false);
-                $('#removeUserModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
+    var messageComplete = doc.getDocLabel("page_user", "message_remove") || "Are you sure you want to delete user '%USER%'?";
+    messageComplete = messageComplete.replace('%USER%', key);
 
-        $('#confirmationModal').modal('hide');
-    }, undefined, doc.getDocLabel("page_user", "title_remove"), doc.getDocLabel("page_user", "message_remove").replace('%USER%', key), key, undefined, undefined, undefined);
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_user", "title_remove") || 'Delete User',
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await $.ajax({
+                    url: "DeleteUser?login=" + encodeURIComponent(key),
+                    method: "GET",
+                    dataType: "json"
+                });
+                var parsed = (typeof resp === 'string') ? JSON.parse(resp) : resp;
+                if (getAlertType(parsed.messageType) !== "success") {
+                    Swal.showValidationMessage(parsed.message || "Delete failed");
+                    return null;
+                }
+                return parsed;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#usersTable").dataTable();
+        oTable.fnDraw(false);
+        showMessageMainPage(getAlertType(result.value.messageType), result.value.message, false);
+    }
 }
 
 function aoColumnsFunc(tableId) {

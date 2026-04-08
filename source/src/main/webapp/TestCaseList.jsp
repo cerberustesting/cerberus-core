@@ -36,8 +36,7 @@
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
         <title id="pageTitle">Test Case</title>
     </head>
@@ -48,9 +47,8 @@
             <div>
                 <%@ include file="include/global/messagesArea.html"%>
                 <%@ include file="include/utils/modal-confirmation.html"%>
-                <%@ include file="include/transversalobject/TestCase.html"%>
+
                 <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
-                <%@ include file="include/transversalobject/Application.html"%>
                 <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
                 <jsp:include page="include/transversal/TestCaseListMassActionUpdate.html"/>
                 <jsp:include page="include/transversal/TestCaseListMassActionLabel.html"/>

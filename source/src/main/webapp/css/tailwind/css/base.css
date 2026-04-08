@@ -138,7 +138,9 @@
         --crb-shadow-bottom-color: rgba(255, 255, 255, 0.17);
     }
 
-    [x-cloak] {
-        display: none !important;
-    }
+}
+
+/* Must be outside @layer to survive Tailwind purge */
+[x-cloak] {
+    display: none !important;
 }

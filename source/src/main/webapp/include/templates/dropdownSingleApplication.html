@@ -20,9 +20,10 @@
       <div x-show="open"
            @click.away="open = false"
            x-transition
-           class="absolute rounded-md border shadow-lg z-50
+           class="fixed rounded-md border shadow-lg
                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
                   bg-white border-slate-300 text-slate-900"
+           style="z-index: 99999;"
            :style="{ top: `${top}px`, left: `${left}px`, width: `${width}px` }">
 
         <!-- Barre de recherche -->
@@ -112,8 +113,8 @@
         const btn = document.getElementById(this.id + '-mainbutton');
         if (!btn) return;
         const rect = btn.getBoundingClientRect();
-        this.top = rect.bottom + window.scrollY + 5; // dropdown appears 5px below
-        this.left = rect.left + window.scrollX;
+        this.top = rect.bottom + 4;
+        this.left = rect.left;
         this.width = Math.max(rect.width, 320);
       },
 

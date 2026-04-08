@@ -1,0 +1,893 @@
+<!-- Robot Modal - Alpine.js/Tailwind refactored -->
+<div x-data="robotModal()"
+     x-show="open"
+     x-cloak
+     @robot-modal-open.window="handleOpen($event.detail)"
+     @robot-modal-close.window="open = false"
+     class="crb_modal"
+     id="editRobotModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[900px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="bot" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editEntryModalLabel" name="editRobotField">Robot</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Define robot configuration, capabilities & executors</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Top fields: ID + Robot Name + Active -->
+        <form id="editRobotModalForm" name="editRobotModalForm" role="form" class="flex flex-col flex-1 min-h-0 overflow-hidden">
+        <div class="px-6 pt-3 pb-2 shrink-0">
+            <div class="flex gap-3">
+                <div style="width: 80px; flex-shrink: 0;">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotid" name="robotField">ID</label>
+                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="robotid" id="robotid" readonly>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotName" name="robotField">Robot</label>
+                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robot" id="robotName" maxlength="50">
+                </div>
+                <div style="width: 70px; flex-shrink: 0;">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotIsActive" name="activeField">Active</label>
+                    <div class="flex items-center h-10">
+                        <input class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="robotIsActive" name="robotIsActive" type="checkbox" value="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 mx-6 mb-2 rounded-lg shadow-sm h-10" style="width: calc(100% - 3rem);">
+                <template x-for="t in [
+                    {id:'definition', label:'Definition', name:'tabDefinition'},
+                    {id:'capabilities', label:'Capabilities', name:'tabCapabilities'},
+                    {id:'executors', label:'Executors', name:'tabExecutors'}
+                ]" :key="t.id">
+                    <button type="button" @click="robotTab = t.id"
+                            :class="robotTab === t.id
+                                ? 'bg-slate-50 font-semibold dark:bg-slate-900'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap"
+                            :name="t.name"
+                            x-text="t.label">
+                    </button>
+                </template>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+                    <!-- Messages area -->
+                    <div id="DialogMessagesArea" class="mb-3">
+                        <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Definition -->
+                    <div x-show="robotTab === 'definition'" id="tabsEdit-1">
+                        <!-- Type -->
+                        <div class="mb-3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="type" id="type"></select>
+                        </div>
+
+                        <!-- Platform + Logo + Screen Size -->
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="platformField">Platform</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="platform" name="robotPlatform"></select>
+                            </div>
+                            <div class="flex items-end pb-0.5" style="width: 44px;">
+                                <img id="platformLogo" class="h-9 rounded" src="./images/platform-XP.png">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="screensizeField">Screen Size</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="screensize" id="screensize" maxlength="250">
+                            </div>
+                        </div>
+
+                        <!-- Browser + Logo + Version -->
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="browserField">Browser</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="browser" name="robotBrowser"></select>
+                            </div>
+                            <div class="flex items-end pb-0.5" style="width: 44px;">
+                                <img id="browserLogo" class="h-9 rounded" src="./images/platform-XP.png">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="versionField">Version</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="version" id="version" maxlength="45">
+                            </div>
+                        </div>
+
+                        <!-- Accept Insecure Certs + Notifications + Extra Param -->
+                        <div class="flex gap-3 mb-3">
+                            <div style="width: 140px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="isAcceptInsecureCertsField">Accept Insecure Certs</label>
+                                <div class="flex items-center h-10">
+                                    <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="isAcceptInsecureCerts" name="isAcceptInsecureCerts">
+                                </div>
+                            </div>
+                            <div style="width: 180px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="acceptNotificationsField">Accept Notifications</label>
+                                <div class="flex items-center gap-1 h-10" name="acceptNotifications" id="acceptNotifications" data-toggle="buttons">
+                                    <label class="btn btn-default active inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Default" data-toggle="popover" data-trigger="hover">
+                                        <input type="radio" name="acceptNotifications" id="acceptNotifications0" data-accnotif="0" autocomplete="off"> 0
+                                    </label>
+                                    <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Allow" data-toggle="popover" data-trigger="hover">
+                                        <input type="radio" name="acceptNotifications" id="acceptNotifications1" data-accnotif="1" autocomplete="off"> 1
+                                    </label>
+                                    <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Block" data-toggle="popover" data-trigger="hover">
+                                        <input type="radio" name="acceptNotifications" id="acceptNotifications2" data-accnotif="2" autocomplete="off"> 2
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="extraParamField">Extra Parameters</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="extraParam" id="extraParam" maxlength="1000">
+                            </div>
+                        </div>
+
+                        <!-- Profile Folder + User Agent -->
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="profileFolderField">Profile Folder</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="profileFolder" id="profileFolder" maxlength="400">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="useragentField">User Agent</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="useragent" id="useragent" maxlength="250">
+                            </div>
+                        </div>
+
+                        <!-- Declination + Description -->
+                        <div class="flex gap-3 mb-3">
+                            <div style="width: 200px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="robotdecliField">Declination</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robotdecli" id="robotdecli" maxlength="100">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="Description" name="description" maxlength="250">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Capabilities -->
+                    <div x-show="robotTab === 'capabilities'" id="tabsEdit-2">
+                        <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4" id="listPanelEditCapabilities">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="settings-2" class="w-4 h-4 text-blue-600"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Capabilities Configuration</span>
+                            </div>
+                            <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                                <table class="w-full text-sm text-left" id="editCapabilitiesTable">
+                                    <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                        <tr>
+                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300"></th>
+                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
+                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editValueHeader" name="editValueHeader">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="editCapabilitiesTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" id="addEditCapability"
+                                        class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                    <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                    Add Capability
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Executors -->
+                    <div x-show="robotTab === 'executors'" id="tabsEdit-3">
+                        <!-- Load Balancing Method -->
+                        <div class="mb-3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbexemethodField">Load Balancing Method</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="lbexemethod" name="lbexemethod"></select>
+                        </div>
+                        <div id="listPanelEditExecutors">
+                            <table class="w-full text-sm" id="editExecutorsTable">
+                                <tbody id="editExecutorsTableBody">
+                                </tbody>
+                            </table>
+                            <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEditExecutor">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Executor
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+            <!-- FOOTER -->
+            <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+                <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+                <button type="button" id="editRobotButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonEdit">Save</button>
+                <button type="button" id="duplicateRobotButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonDuplicate">Duplicate</button>
+                <button type="button" id="addRobotButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonAdd">Add</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // ===== ALPINE COMPONENT =====
+    function robotModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+            robotTab: 'definition',
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.robotTab = 'definition';
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    // ===== MODAL LOGIC (merged from js/transversalobject/Robot.js) =====
+
+    var availableHost = [];
+    var nbRow = 0;
+    var originalRobotName = null;
+
+    function openModalRobot(robot, mode) {
+        if ($('#editRobotModal').data("initLabel") === undefined) {
+            initModalRobot();
+            $('#editRobotModal').data("initLabel", true);
+        }
+        $('#editRobotModal').data("Saved", false);
+        $('#editRobotModal').data("robot", undefined);
+
+        if (mode === "EDIT") {
+            editRobotClick(robot);
+        } else if (mode === "ADD") {
+            addRobotClick(robot);
+        } else {
+            duplicateRobotClick(robot);
+        }
+    }
+
+    function initModalRobot() {
+        var doc = new Doc();
+        $("#editRobotModal [name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+        $("#editRobotModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
+        $("#editRobotModal [name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
+        $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
+
+        $("#editRobotModal [name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
+        $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
+        $("#editRobotModal [name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
+        $("#editRobotModal [name='robotField']").html(doc.getDocOnline("robot", "robot"));
+        $("#editRobotModal [name='platformField']").html(doc.getDocOnline("robot", "platform"));
+        $("#editRobotModal [name='browserField']").html(doc.getDocOnline("robot", "browser"));
+        $("#editRobotModal [name='versionField']").html(doc.getDocOnline("robot", "version"));
+        $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
+        $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
+        $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
+        $("#editRobotModal [name='isAcceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
+        $("#editRobotModal [name='extraParamField']").html(doc.getDocOnline("robot", "ExtraParam"));
+        $("#editRobotModal [name='acceptNotificationsField']").html(doc.getDocOnline("robot", "AcceptNotifications"));
+        $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
+        $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+        $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+        $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+        $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+        $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+        $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
+        $("#editRobotModal [name='lbexemethodField']").html(doc.getDocOnline("robot", "lbexemethod"));
+        $("#editRobotModal [name='typeField']").html(doc.getDocOnline("robot", "type"));
+
+        displayInvariantList("robotActive", "ROBOTACTIVE", false);
+        displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
+        displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
+        displayInvariantList("type", "APPLITYPE", false, undefined, "", undefined, undefined, "editRobotModal");
+        displayInvariantList("lbexemethod", "ROBOTLBMETHOD", false);
+
+        var availableUserAgent = getInvariantArray("USERAGENT", false);
+        $("#editRobotModal [name='useragent']").autocomplete({
+            source: availableUserAgent, minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+
+        var availableScreenSize = getInvariantArray("SCREENSIZE", false);
+        $("#editRobotModal [name='screensize']").autocomplete({
+            source: availableScreenSize, minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+
+        getInvariantArray("ROBOTHOST", false);
+        getInvariantArray("ROBOTPROXYHOST", false);
+        getSelectInvariant("CAPABILITY", true);
+        getSelectInvariant("ROBOTEXECUTORACTIVE", true);
+        getSelectInvariant('PROXYTYPE', false);
+
+        $("#addEditCapability").off("click").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
+        $("#addEditExecutor").off("click").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
+
+        $("#editRobotButton").off("click").click(function () { confirmRobotModalHandler("EDIT"); });
+        $("#addRobotButton").off("click").click(function () { confirmRobotModalHandler("ADD"); });
+        $("#duplicateRobotButton").off("click").click(function () { confirmRobotModalHandler("DUPLICATE"); });
+
+        $("#platform").off("change").change(function () {
+            if ($(this).val() !== "") {
+                $('#platformLogo').attr('src', './images/platform-' + $(this).val() + '.png');
+            } else {
+                $('#platformLogo').attr('src', '');
+            }
+        });
+        $("#browser").off("change").change(function () {
+            if ($(this).val() !== "") {
+                $('#browserLogo').attr('src', './images/browser-' + $(this).val() + '.png');
+            } else {
+                $('#browserLogo').attr('src', '');
+            }
+        });
+
+        // Clean up on close
+        window.addEventListener('robot-modal-close', function() {
+            originalRobotName = null;
+        });
+    }
+
+    function editRobotClick(robot) {
+        clearResponseMessage($('#editRobotModal'));
+        $('#editRobotButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#addRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#duplicateRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+        $('#editRobotModalForm select[name="idname"]').off("change").change(function () {});
+        $('#editRobotModalForm input[name="value"]').off("change").change(function () {});
+
+        feedRobotModal(robot, "editRobotModal", "EDIT");
+    }
+
+    function duplicateRobotClick(robot) {
+        clearResponseMessage($('#editRobotModal'));
+        $('#duplicateRobotButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#addRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#editRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+        $('#editRobotModalForm select[name="idname"]').off("change");
+        $('#editRobotModalForm input[name="value"]').off("change");
+
+        feedRobotModal(robot, "editRobotModal", "DUPLICATE");
+    }
+
+    function addRobotClick(robot) {
+        clearResponseMessage($('#editRobotModal'));
+        $('#addRobotButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#duplicateRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#editRobotButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+        $('#editRobotModalForm select[name="idname"]').off("change");
+        $('#editRobotModalForm input[name="value"]').off("change");
+
+        feedRobotModal(robot, "editRobotModal", "ADD");
+    }
+
+    function confirmRobotModalHandler(mode) {
+        clearResponseMessage($('#editRobotModal'));
+        var formEdit = $('#editRobotModal #editRobotModalForm');
+        var myServlet = "UpdateRobot";
+        if ((mode === "ADD") || (mode === "DUPLICATE")) { myServlet = "CreateRobot"; }
+
+        var capabilityTable = $("#editCapabilitiesTableBody tr");
+        var capabilities = [];
+        for (var i = 0; i < capabilityTable.length; i++) {
+            var capability = $(capabilityTable[i]).data("capability");
+            if (!capability.toDelete) { capabilities.push(capability); }
+        }
+
+        var executorTable = $("#editExecutorsTableBody tr");
+        var executors = [];
+        for (var i = 0; i < executorTable.length; i++) {
+            var executor = $(executorTable[i]).data("executor");
+            if (!executor.toDelete) { executors.push(executor); }
+        }
+
+        var data = convertSerialToJSONObject(formEdit.serialize());
+        data.capabilities = JSON.stringify(capabilities);
+        data.executors = JSON.stringify(executors);
+
+        var tcElement = formEdit.find("#robotName");
+        if (isEmpty(data.robot)) {
+            tcElement.parents("div.form-group").addClass("has-error");
+            var localMessage = new Message("danger", "Please specify an robot name !");
+            showMessage(localMessage, $('#editRobotModal'));
+            return;
+        } else {
+            tcElement.parents("div.form-group").removeClass("has-error");
+        }
+
+        data.acceptNotifications = formEdit.find("#acceptNotifications").find("label[class*='active'] > input").attr('data-accnotif');
+        data.isAcceptInsecureCerts = formEdit.find("#isAcceptInsecureCerts").prop("checked");
+        data.robotIsActive = formEdit.find("#robotIsActive").prop("checked");
+
+        showLoaderInModal('#editRobotModal');
+        $.ajax({
+            url: myServlet, async: true, method: "POST",
+            data: {
+                originalRobotName: originalRobotName,
+                robot: data.robot, robotid: data.robotid, isActive: data.robotIsActive,
+                host: data.host, port: data.port,
+                hostUsername: data.hostUsernameToSend, hostPassword: data.hostPasswordToSend,
+                platform: data.robotPlatform, browser: data.robotBrowser,
+                version: data.version, useragent: data.useragent, type: data.type,
+                screensize: data.screensize, profileFolder: data.profileFolder,
+                robotDecli: data.robotdecli, description: data.description,
+                isAcceptInsecureCerts: data.isAcceptInsecureCerts,
+                extraParam: data.extraParam, acceptNotifications: data.acceptNotifications,
+                lbexemethod: data.lbexemethod,
+                capabilities: data.capabilities, executors: data.executors
+            },
+            success: function (dataMessage) {
+                hideLoaderInModal('#editRobotModal');
+                if (getAlertType(dataMessage.messageType) === "success") {
+                    var oTable = $("#robotsTable").dataTable();
+                    oTable.fnDraw(false);
+                    $('#editRobotModal').data("Saved", true);
+                    $('#editRobotModal').data("robot", data);
+                    window.dispatchEvent(new CustomEvent('robot-modal-close'));
+                    showMessage(dataMessage);
+                } else {
+                    showMessage(dataMessage, $('#editRobotModal'));
+                }
+            },
+            error: showUnexpectedError
+        });
+    }
+
+    function feedRobotModal(robot, modalId, mode) {
+        clearResponseMessageMainPage();
+        var formEdit = $('#' + modalId);
+        originalRobotName = robot;
+
+        if (mode === "DUPLICATE" || mode === "EDIT") {
+            $.ajax({
+                url: "ReadRobot?withCapabilities=true&withExecutors=true",
+                async: true, method: "POST",
+                data: { robot: robot },
+                success: function (data) {
+                    if (data.messageType === "OK") {
+                        var robotObj = data.contentTable;
+                        var hasPermissions = data.contentTable.hasPermissionsUpdate;
+                        feedRobotModalData(robotObj, modalId, mode, hasPermissions);
+                        window.dispatchEvent(new CustomEvent('robot-modal-open', { detail: {} }));
+                    } else {
+                        showUnexpectedError();
+                    }
+                },
+                error: showUnexpectedError
+            });
+        } else {
+            var robotObj1 = {};
+            robotObj1.robot = ""; robotObj1.isActive = true;
+            robotObj1.host = ""; robotObj1.port = "";
+            robotObj1.platform = ""; robotObj1.browser = "";
+            robotObj1.version = ""; robotObj1.userAgent = "";
+            robotObj1.screenSize = ""; robotObj1.profileFolder = "";
+            robotObj1.robotDecli = ""; robotObj1.description = "";
+            robotObj1.lbexemethod = "BYRANKING"; robotObj1.type = "";
+            robotObj1.extraParam = ""; robotObj1.acceptNotifications = 0;
+            robotObj1.isAcceptInsecureCerts = true;
+            var hasPermissions = true;
+            feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
+            window.dispatchEvent(new CustomEvent('robot-modal-open', { detail: {} }));
+        }
+    }
+
+    function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
+        var formEdit = $('#' + modalId);
+        var doc = new Doc();
+        var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT")) || (mode === "DUPLICATE") || (mode === "ADD"));
+
+        if (mode === "EDIT") {
+            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_edit"));
+        } else if (mode === "ADD") {
+            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_add"));
+        } else if (mode === "DUPLICATE") {
+            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
+        }
+
+        if (isEmpty(robot)) {
+            formEdit.find("#robotid").prop("value", "");
+            formEdit.find("#robotName").prop("value", "");
+            formEdit.find("#robotIsActive").prop("checked", true);
+            formEdit.find("#platform").val("");
+            formEdit.find("#browser").val("");
+            formEdit.find("#version").prop("value", "");
+            formEdit.find("#useragent").prop("value", "");
+            formEdit.find("#screensize").prop("value", "");
+            formEdit.find("#profileFolder").prop("value", "");
+            formEdit.find("#robotdecli").prop("value", "");
+            formEdit.find("#Description").prop("value", "");
+            formEdit.find("#type").val("");
+            formEdit.find("#lbexemethod").val("ROUNDROBIN");
+            formEdit.find("#extraParam").val("");
+            formEdit.find("#acceptNotifications").val("");
+            formEdit.find("#isAcceptInsecureCerts").prop("checked", true);
+        } else {
+            if (mode === "EDIT") {
+                formEdit.find("#robotid").prop("value", robot.robotID);
+            } else {
+                formEdit.find("#robotid").prop("value", "");
+            }
+            formEdit.find("#robotName").prop("value", robot.robot);
+            formEdit.find("#robotIsActive").prop("checked", robot.isActive);
+            formEdit.find("#platform").val(robot.platform);
+            if (robot.platform !== "") {
+                $('#platformLogo').attr('src', './images/platform-' + robot.platform + '.png');
+            } else {
+                $('#platformLogo').attr('src', '');
+            }
+            formEdit.find("#browser").val(robot.browser);
+            if (robot.browser !== "") {
+                $('#browserLogo').attr('src', './images/browser-' + robot.browser + '.png');
+            } else {
+                $('#browserLogo').attr('src', '');
+            }
+            formEdit.find("#version").prop("value", robot.version);
+            formEdit.find("#useragent").prop("value", robot.userAgent);
+            formEdit.find("#screensize").prop("value", robot.screenSize);
+            formEdit.find("#profileFolder").prop("value", robot.profileFolder);
+            formEdit.find("#robotdecli").prop("value", robot.robotDecli);
+            formEdit.find("#Description").prop("value", robot.description);
+            formEdit.find("#type").val(robot.type);
+            formEdit.find("#lbexemethod").val(robot.lbexemethod);
+            formEdit.find("#extraParam").val(robot.extraParam);
+            formEdit.find("#acceptNotifications").find("input[data-accnotif='" + robot.acceptNotifications + "']").off("click").click();
+            formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
+            loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
+            loadExecutorsTable("editExecutorsTableBody", robot.executors);
+        }
+
+        formEdit.find("#robotid").prop("readonly", true);
+        if (isEditable) {
+            formEdit.find("#robotName").prop("readonly", false);
+            formEdit.find("#robotIsActive").removeAttr("disabled");
+            formEdit.find("#host").prop("readonly", false);
+            formEdit.find("#port").prop("readonly", false);
+            formEdit.find("#platform").removeAttr("disabled");
+            formEdit.find("#browser").removeAttr("disabled");
+            formEdit.find("#lbexemethod").removeAttr("disabled");
+            formEdit.find("#version").prop("readonly", false);
+            formEdit.find("#useragent").prop("readonly", false);
+            formEdit.find("#screensize").prop("readonly", false);
+            formEdit.find("#profileFolder").prop("readonly", false);
+            formEdit.find("#robotdecli").prop("readonly", false);
+            formEdit.find("#Description").prop("readonly", false);
+            formEdit.find("#type").prop("readonly", false);
+            formEdit.find("#extraParam").prop("readonly", false);
+        } else {
+            formEdit.find("#robotName").prop("readonly", "readonly");
+            formEdit.find("#robotIsActive").prop("disabled", "disabled");
+            formEdit.find("#host").prop("readonly", "readonly");
+            formEdit.find("#port").prop("readonly", "readonly");
+            formEdit.find("#platform").prop("disabled", "disabled");
+            formEdit.find("#browser").prop("disabled", "disabled");
+            formEdit.find("#lbexemethod").prop("disabled", "disabled");
+            formEdit.find("#version").prop("readonly", "readonly");
+            formEdit.find("#useragent").prop("readonly", "readonly");
+            formEdit.find("#screensize").prop("readonly", "readonly");
+            formEdit.find("#profileFolder").prop("readonly", "readonly");
+            formEdit.find("#robotdecli").prop("readonly", "readonly");
+            formEdit.find("#Description").prop("readonly", "readonly");
+            formEdit.find("#type").prop("readonly", "readonly");
+            formEdit.find("#extraParam").prop("readonly", "readonly");
+        }
+    }
+
+    function loadCapabilitiesTable(tableBody, capabilities) {
+        $('#' + tableBody + ' tr').remove();
+        $.each(capabilities, function (idx, capability) {
+            capability.toDelete = false;
+            appendCapabilityRow(tableBody, capability);
+        });
+    }
+
+    function loadExecutorsTable(tableBody, executors) {
+        $('#' + tableBody + ' tr').remove();
+        $.each(executors, function (idx, executor) {
+            executor.toDelete = false;
+            appendExecutorRow(tableBody, executor);
+        });
+        $('#' + tableBody + ' [data-toggle="popover"]').popover({
+            'placement': 'auto', 'container': '#listPanelEditExecutors'
+        });
+    }
+
+    function appendCapabilityRow(tableBody, capability) {
+        var doc = new Doc();
+        var inputClasses = "w-full h-8 border rounded-md px-3 py-1 text-xs bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500";
+        var tdStyle = { "padding": "10px 8px", "verticalAlign": "middle" };
+
+        var deleteBtn = $("<button type='button'></button>")
+            .css({ "padding": "6px 8px", "border-radius": "8px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "justifyContent": "center", "fontSize": "12px", "transition": "all 0.2s", "width": "34px", "height": "34px" })
+            .html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+            .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+            .on("mouseleave", function() { if (!capability.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+
+        var inputCapability = $('<input maxlength="45" placeholder="-- ' + doc.getDocLabel("robot", "capabilityCapability") + ' --">').addClass(inputClasses).val(capability.capability);
+        var valueInput = $('<input maxlength="255" placeholder="-- ' + doc.getDocLabel("robot", "capabilityValue") + ' --">').addClass(inputClasses).val(capability.value);
+        var table = $("#" + tableBody);
+        var isDark = document.documentElement.classList.contains('dark');
+        var hoverBg = isDark ? '#1e293b' : '#f8fafc';
+
+        inputCapability.autocomplete({
+            source: getInvariantArray("CAPABILITY", false), minLength: 0,
+            select: function (event, ui) { capability.capability = ui.item.value; },
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+
+        var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+            .on("mouseenter", function() { if (!capability.toDelete) $(this).css("background", hoverBg); })
+            .on("mouseleave", function() { if (!capability.toDelete) $(this).css("background", ""); });
+        var deleteBtnRow = $("<td></td>").css($.extend({}, tdStyle, { "width": "50px", "textAlign": "center" })).append(deleteBtn);
+        var cap = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "150px" })).append(inputCapability);
+        var value = $("<td></td>").css($.extend({}, tdStyle, { "minWidth": "150px" })).append(valueInput);
+
+        deleteBtn.click(function () {
+            capability.toDelete = !capability.toDelete;
+            if (capability.toDelete) {
+                row.css({ "background": "#fef2f2", "opacity": "0.5" });
+                row.find("input").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
+                deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+                deleteBtn.html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
+            } else {
+                row.css({ "background": "", "opacity": "1" });
+                row.find("input").css({ "textDecoration": "none", "color": "#0f172a", "background": "white" });
+                deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+                deleteBtn.html('<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
+            }
+        });
+        inputCapability.change(function () { capability.capability = $(this).val(); });
+        valueInput.change(function () { capability.value = $(this).val(); });
+        row.append(deleteBtnRow).append(cap).append(value);
+        row.data("capability", capability);
+        table.append(row);
+    }
+
+    function appendExecutorRow(tableBody, executor) {
+        nbRow++;
+        var doc = new Doc();
+        var inputCls = "w-full h-9 border rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all";
+        var checkCls = "h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500";
+        var currentNbRow = nbRow;
+
+        function makeField(labelHtml, inputEl, extraClass) {
+            var wrap = $('<div class="' + (extraClass || '') + ' overflow-hidden"></div>');
+            var lbl = $('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 truncate overflow-hidden"></div>').html(labelHtml);
+            wrap.append(lbl).append(inputEl);
+            return wrap;
+        }
+
+        // Inputs
+        var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 shrink-0 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition self-end mb-0.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>');
+        var selectActive = $('<input type="checkbox">').addClass(checkCls).prop("checked", executor.isActive);
+        var nameInput = $('<input maxlength="150">').addClass(inputCls).attr("placeholder", "-- " + doc.getDocLabel("robotexecutor", "executor") + " --").val(executor.executor);
+        var rankInput = $('<input>').addClass(inputCls).attr("placeholder", "Rank").val(executor.rank);
+        var hostInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Host --").val(executor.host);
+        var portInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Port --").val(executor.port);
+        var hostUserInput = $('<input>').addClass(inputCls).attr("placeholder", "-- User --").val(executor.hostUser);
+        var hostPasswordInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Password --").val(executor.hostPassword);
+        var deviceUdidInput = $('<input>').addClass(inputCls).attr("placeholder", "-- UDID --").val(executor.deviceUdid);
+        var deviceNameInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Name --").val(executor.deviceName);
+        var devicePortInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Port --").val(executor.devicePort);
+        var deviceLockUnlockInput = $('<input type="checkbox">').addClass(checkCls).prop("checked", executor.isDeviceLockUnlock);
+        var executorProxyServiceHostInput = $('<input>').addClass(inputCls).val(executor.executorProxyServiceHost);
+        var executorProxyServicePortInput = $('<input>').addClass(inputCls).val(executor.executorProxyServicePort);
+        var executorBrowserProxyHostInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyHost);
+        var executorBrowserProxyPortInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyPort);
+        var executorExtensionPortInput = $('<input>').addClass(inputCls).val(executor.executorExtensionPort);
+        var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false).addClass(inputCls);
+        var table = $("#" + tableBody);
+
+        // Proxy readonly logic
+        if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
+            executorProxyServiceHostInput.prop("readonly", true); executorProxyServicePortInput.prop("readonly", true);
+        }
+        if (executor.executorProxyType === 'NONE') {
+            executorBrowserProxyHostInput.prop("readonly", true); executorBrowserProxyPortInput.prop("readonly", true);
+        }
+        selectProxyTypeLnk.change(function () {
+            executor.executorProxyType = $(this).val();
+            var isNoneOrManual = (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL');
+            executorProxyServiceHostInput.prop("readonly", isNoneOrManual);
+            executorProxyServicePortInput.prop("readonly", isNoneOrManual);
+            executorBrowserProxyHostInput.prop("readonly", executor.executorProxyType === 'NONE');
+            executorBrowserProxyPortInput.prop("readonly", executor.executorProxyType === 'NONE');
+        });
+
+        // === BUILD CARD ===
+        var card = $('<div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 mb-3 overflow-hidden"></div>');
+
+        // Line 1: Delete + Executor name + Active + Rank
+        var line1 = $('<div class="flex gap-3 mb-3"></div>');
+        line1.append(deleteBtn);
+        line1.append(makeField(doc.getDocOnline("robotexecutor", "executor"), nameInput, "flex-1 min-w-0"));
+        var activeWrap = $('<div style="width:55px; flex-shrink:0;"></div>');
+        activeWrap.append($('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1"></div>').html(doc.getDocOnline("robotexecutor", "active")));
+        activeWrap.append($('<div class="flex items-center h-9"></div>').append(selectActive));
+        line1.append(activeWrap);
+        line1.append(makeField(doc.getDocOnline("robotexecutor", "rank"), rankInput, "shrink-0").css("width", "70px"));
+        card.append(line1);
+
+        // Line 2: Host + Port
+        var line2 = $('<div class="flex gap-3 mb-3"></div>');
+        line2.append(makeField(doc.getDocOnline("robotexecutor", "host"), hostInput, "flex-1 min-w-0"));
+        line2.append(makeField(doc.getDocOnline("robotexecutor", "Port"), portInput, "shrink-0").css("width", "100px"));
+        card.append(line2);
+
+        // Line 3: Host User + Host Password
+        var line3 = $('<div class="flex gap-3 mb-3"></div>');
+        line3.append(makeField(doc.getDocOnline("robotexecutor", "hostUser"), hostUserInput, "flex-1 min-w-0"));
+        line3.append(makeField(doc.getDocOnline("robotexecutor", "hostPassword"), hostPasswordInput, "flex-1 min-w-0"));
+        card.append(line3);
+
+        // Advanced toggle
+        var advToggle = $('<button type="button" class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-sky-500 transition mb-2"><i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200 adv-icon"></i> Advanced</button>');
+        var advPanel = $('<div class="hidden" id="col' + currentNbRow + '"></div>');
+
+        // Device section
+        var devTitle = $('<div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2 mt-1">Device</div>');
+        var devLine1 = $('<div class="flex gap-3 mb-3"></div>');
+        devLine1.append(makeField(doc.getDocOnline("robotexecutor", "deviceUdid"), deviceUdidInput, "flex-1 min-w-0"));
+        devLine1.append(makeField(doc.getDocOnline("robotexecutor", "deviceName"), deviceNameInput, "flex-1 min-w-0"));
+        var devLine2 = $('<div class="flex gap-3 mb-3"></div>');
+        devLine2.append(makeField(doc.getDocOnline("robotexecutor", "devicePort"), devicePortInput, "shrink-0").css("width", "100px"));
+        var lockWrap = $('<div style="width:100px; flex-shrink:0;"></div>');
+        lockWrap.append($('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1"></div>').html(doc.getDocOnline("robotexecutor", "deviceLockUnlock")));
+        lockWrap.append($('<div class="flex items-center h-9"></div>').append(deviceLockUnlockInput));
+        devLine2.append(lockWrap);
+        devLine2.append($('<div class="flex-1"></div>'));
+
+        // Proxy section
+        var proxyTitle = $('<div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Proxy</div>');
+        var proxyLine0 = $('<div class="flex gap-3 mb-3"></div>');
+        proxyLine0.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyType"), selectProxyTypeLnk.val(executor.executorProxyType), "flex-1 min-w-0"));
+        proxyLine0.append($('<div class="flex-1"></div>'));
+        var proxyLine1 = $('<div class="flex gap-3 mb-3"></div>');
+        proxyLine1.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyServiceHost"), executorProxyServiceHostInput, "flex-1 min-w-0"));
+        proxyLine1.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyServicePort"), executorProxyServicePortInput, "shrink-0").css("width", "100px"));
+        var proxyLine2 = $('<div class="flex gap-3 mb-3"></div>');
+        proxyLine2.append(makeField(doc.getDocOnline("robotexecutor", "executorBrowserProxyHost"), executorBrowserProxyHostInput, "flex-1 min-w-0"));
+        proxyLine2.append(makeField(doc.getDocOnline("robotexecutor", "executorBrowserProxyPort"), executorBrowserProxyPortInput, "shrink-0").css("width", "100px"));
+
+        // Extension
+        var extLine = $('<div class="flex gap-3"></div>');
+        extLine.append(makeField(doc.getDocOnline("robotexecutor", "executorExtensionPort"), executorExtensionPortInput, "shrink-0").css("width", "120px"));
+        extLine.append($('<div class="flex-1"></div>'));
+
+        advPanel.append(devTitle).append(devLine1).append(devLine2);
+        advPanel.append(proxyTitle).append(proxyLine0).append(proxyLine1).append(proxyLine2);
+        advPanel.append(extLine);
+
+        advToggle.on('click', function() {
+            advPanel.toggleClass('hidden');
+            $(this).find('.adv-icon').toggleClass('rotate-180');
+        });
+
+        card.append(advToggle).append(advPanel);
+
+        // Wrap in TR > TD
+        var row = $("<tr></tr>").addClass("border-none");
+        var td = $("<td colspan='3' class='p-0'></td>").append(card);
+        row.append(td);
+
+        // Delete toggle
+        deleteBtn.click(function () {
+            executor.toDelete = !executor.toDelete;
+            if (executor.toDelete) { card.addClass("opacity-40"); } else { card.removeClass("opacity-40"); }
+        });
+
+        // Bind changes
+        selectActive.change(function () { executor.isActive = $(this).prop("checked"); });
+        nameInput.change(function () { executor.executor = $(this).val(); });
+        rankInput.change(function () { executor.rank = $(this).val(); });
+        hostInput.change(function () { executor.host = $(this).val(); });
+        portInput.change(function () { executor.port = $(this).val(); });
+        hostUserInput.change(function () { executor.hostUser = $(this).val(); });
+        hostPasswordInput.change(function () { executor.hostPassword = $(this).val(); });
+        deviceNameInput.change(function () { executor.deviceName = $(this).val(); });
+        deviceUdidInput.change(function () { executor.deviceUdid = $(this).val(); });
+        devicePortInput.change(function () { executor.devicePort = $(this).val(); });
+        deviceLockUnlockInput.change(function () { executor.isDeviceLockUnlock = $(this).prop("checked"); });
+        executorProxyServiceHostInput.change(function () { executor.executorProxyServiceHost = $(this).val(); });
+        executorProxyServicePortInput.change(function () { executor.executorProxyServicePort = $(this).val(); });
+        executorBrowserProxyHostInput.change(function () { executor.executorBrowserProxyHost = $(this).val(); });
+        executorBrowserProxyPortInput.change(function () { executor.executorBrowserProxyPort = $(this).val(); });
+        executorExtensionPortInput.change(function () { executor.executorExtensionPort = $(this).val(); });
+
+        // Autocomplete
+        hostInput.autocomplete({
+            source: getInvariantArray("ROBOTHOST", false), minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+        executorProxyServiceHostInput.autocomplete({
+            source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+        executorBrowserProxyHostInput.autocomplete({
+            source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+
+        executor.executorProxyType = selectProxyTypeLnk.prop("value");
+        row.data("executor", executor);
+        table.append(row);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function addNewCapabilityRow(tableBody) {
+        var newCapability = { toDelete: false, id: 0, capability: "", value: "" };
+        appendCapabilityRow(tableBody, newCapability);
+    }
+
+    function addNewExecutorRow(tableBody) {
+        var nbExecutorTable = $("#editExecutorsTableBody tr").length;
+        nbExecutorTable++;
+        var newExecutor = {
+            toDelete: false, ID: 0, executor: "EXE-" + nbExecutorTable,
+            isActive: true, rank: nbExecutorTable, host: "", port: "",
+            hostUser: "", hostPassword: "", deviceUdid: "", deviceName: "",
+            isDeviceLockUnlock: false, description: "",
+            executorProxyServiceHost: "", executorProxyServicePort: 8093,
+            executorBrowserProxyHost: "", executorBrowserProxyPort: 0,
+            executorExtensionPort: 0, executorProxyType: "NONE"
+        };
+        appendExecutorRow(tableBody, newExecutor);
+        refreshPopoverDocumentation("editExecutorsTable");
+    }
+
+</script>

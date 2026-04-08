@@ -94,14 +94,6 @@ function initPage() {
     $("#addLabelButton").click(addEntryModalSaveHandler);
     $("#editLabelButton").click(editEntryModalSaveHandler);
 
-    //clear the modals fields when closed
-    $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
-
-    // Init Lucide icons when modals are shown
-    $('#addLabelModal').on('shown.bs.modal', function() { if (window.lucide) lucide.createIcons(); });
-    $('#editLabelModal').on('shown.bs.modal', function() { if (window.lucide) lucide.createIcons(); });
-
 //    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
 //
 //    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
@@ -210,20 +202,17 @@ function renderOptionsForLabel(data) {
 }
 
 function changeLabelParent(modal) {
-
-    var doc = new Doc();
-
-    $('#' + modal + ' #parentLabel').parent().find(".input-group-btn").remove();
-
     var par = $('#' + modal + ' #parentLabel').val();
+    var $clearBtn = $('#' + modal + ' .crb-clear-parent');
     if (!isEmpty(par) && par !== 0) {
-        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" style="margin-left: 10px;" onclick="emptyService();"\n\
-            class="buttonObject btn btn-sm btn-default " \n\
-           title="Empty" type="button">\n\
-            <span class="glyphicon glyphicon-remove"></span></button></span>';
-        $('#' + modal + ' #parentLabel').parent().append(emptyEntry);
-
+        $clearBtn.show();
+        $clearBtn.off('click').on('click', function() {
+            $('#' + modal + ' #parentLabel').val(null).trigger('change');
+        });
+    } else {
+        $clearBtn.hide();
     }
+    if (window.lucide) lucide.createIcons();
 }
 
 function emptyService() {
@@ -319,7 +308,7 @@ function addEntryModalSaveHandler() {
             oTable.fnDraw(false);
             generateLabelTree();
             showMessage(data);
-            $('#addLabelModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('addlabel-modal-close'));
         } else {
             showMessage(data, $('#addLabelModal'));
         }
@@ -328,9 +317,10 @@ function addEntryModalSaveHandler() {
 
 function addEntryModalCloseHandler() {
 // reset form values
-    $('#addLabelModal #addLabelModalForm')[0].reset();
+    var form = $('#addLabelModal #addLabelModalForm')[0];
+    if (form) form.reset();
     // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
+    $('#addLabelModal').find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
     clearResponseMessage($('#addLabelModal'));
 }
@@ -339,7 +329,7 @@ function addEntryClick(type) {
     clearResponseMessageMainPage();
     // Pre-select system via event for crbDropdown
     window.dispatchEvent(new CustomEvent('add-label-system-preselect', { detail: getUser().defaultSystem }));
-    $('#addLabelModal').modal('show');
+    window.dispatchEvent(new CustomEvent('addlabel-modal-open'));
     //ColorPicker
     $("[name='colorDiv']").colorpicker();
     $("[name='colorDiv']").colorpicker('setValue', '#000000');
@@ -376,7 +366,7 @@ function editEntryModalSaveHandler() {
                 var oTable = $("#labelsTable").dataTable();
                 oTable.fnDraw(false);
                 generateLabelTree();
-                $('#editLabelModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('editlabel-modal-close'));
                 showMessage(data);
             } else {
                 showMessage(data, $('#editLabelModal'));
@@ -388,9 +378,10 @@ function editEntryModalSaveHandler() {
 
 function editEntryModalCloseHandler() {
 // reset form values
-    $('#editLabelModal #editLabelModalForm')[0].reset();
+    var form = $('#editLabelModal #editLabelModalForm')[0];
+    if (form) form.reset();
     // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
+    $('#editLabelModal').find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
     clearResponseMessage($('#editLabelModal'));
 }
@@ -436,7 +427,7 @@ function editEntryClick(id, system) {
         $("[name='colorDiv']").colorpicker();
         $("[name='colorDiv']").colorpicker('setValue', obj["color"]);
         showHideRequirementPanelEdit();
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('editlabel-modal-open'));
     });
 }
 

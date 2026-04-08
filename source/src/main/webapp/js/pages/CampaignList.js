@@ -127,7 +127,7 @@ function renderOptionsForCampaign(data) {
                 console.warn("Wrapper #testcampaignsTable_buttonWrapper introuvable, insertion avant length");
                 $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before("<div id='testcampaignsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
             }
-            $('#testcampaignList #createTestcampaignButton').click(addEntryClick);
+            $('#testcampaignList #createTestcampaignButton').click(campaign_addEntryClick);
         }
     }
 }
@@ -213,7 +213,7 @@ function aoColumnsFunc(tableId) {
                     id: "editTestcampaign_" + row,
                     name: "editTestcampaign",
                     title: doc.getDocLabel("page_testcampaign", "button_edit"),
-                    onClick: "editEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    onClick: "campaign_editEntryClick('" + escapeHtml(obj["campaign"]) + "');",
                     icon: hasPermissions ? icons.edit : icons.view
                 }));
 
@@ -234,7 +234,7 @@ function aoColumnsFunc(tableId) {
                     id: "viewTestcampaign_" + row,
                     name: "viewTestcampaign",
                     title: doc.getDocLabel("page_testcampaign", "button_testcaselist"),
-                    onClick: "viewEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    onClick: "campaign_viewEntryClick('" + escapeHtml(obj["campaign"]) + "');",
                     icon: icons.list
                 }));
 
@@ -243,7 +243,7 @@ function aoColumnsFunc(tableId) {
                     id: "viewStatcampaign_" + row,
                     name: "viewStatcampaign",
                     title: doc.getDocLabel("page_testcampaign", "button_taglist"),
-                    onClick: "viewStatEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    onClick: "campaign_viewStatEntryClick('" + escapeHtml(obj["campaign"]) + "');",
                     icon: icons.stats
                 }));
 

@@ -68,12 +68,9 @@ function initPage() {
     $("#editEnvButton").click(editEntryModalSaveHandler);
 
     // Note: addEntryModalCloseHandler and editEntryModalCloseHandler are called explicitly before opening
-    $('#eventEnableModal').on('hidden.bs.modal', eventEnableModalCloseHandler);
     $("#eventEnablePreviewNotificationButton").click(eventEnablePreview);
     $("#eventEnableButton").click(eventEnableModalConfirmHandler);
-    $('#eventDisableModal').on('hidden.bs.modal', eventDisableModalCloseHandler);
     $("#eventDisableButton").click(eventDisableModalConfirmHandler);
-    $('#eventNewChainModal').on('hidden.bs.modal', eventNewChainModalCloseHandler);
     $("#eventNewChainPreviewNotificationButton").click(eventNewChainPreview);
     $("#eventNewChainButton").click(eventNewChainModalConfirmHandler);
 
@@ -940,7 +937,7 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find("#notifBody div").remove();
     $('#installInstructionsTableBody tr').remove();
 
-    formEvent.modal('show');
+    window.dispatchEvent(new CustomEvent('event-enable-modal-open'));
 }
 
 function eventEnablePreview() {
@@ -972,15 +969,11 @@ function eventEnablePreview() {
 }
 
 function eventEnableModalCloseHandler() {
-    // reset form values
-    $('#eventEnableModal #eventEnableModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventEnableModal #eventEnableModalForm')[0];
+    if (form) form.reset();
+    $('#eventEnableModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventEnableModal'));
-    // Clean old html data
-    $('#notifBody div').remove();
-    console.debug("Closed.");
+    $('#eventEnableModal #notifBody div').remove();
 }
 
 function eventEnableModalConfirmHandler() {
@@ -1000,7 +993,7 @@ function eventEnableModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventEnableModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-enable-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventEnableModal'));
@@ -1094,20 +1087,16 @@ function eventDisableClick(system, country, environment) {
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
         formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
-        formEvent.modal('show');
+        window.dispatchEvent(new CustomEvent('event-disable-modal-open'));
     });
 }
 
 function eventDisableModalCloseHandler() {
-    // reset form values
-    $('#eventDisableModal #eventDisableModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventDisableModal #eventDisableModalForm')[0];
+    if (form) form.reset();
+    $('#eventDisableModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventDisableModal'));
-    // Clean old html data
-    $('#notifBody div').remove();
-    console.debug("Closed.");
+    $('#eventDisableModal #notifBody div').remove();
 }
 
 function eventDisableModalConfirmHandler() {
@@ -1124,7 +1113,7 @@ function eventDisableModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventDisableModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-disable-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventDisableModal'));
@@ -1141,7 +1130,7 @@ function eventNewChainClick(system, country, environment) {
 
     $("#eventNewChainButton").prop("disabled", "disabled");
 
-    formEvent.modal('show');
+    window.dispatchEvent(new CustomEvent('event-newchain-modal-open'));
 }
 
 function eventNewChainPreview() {
@@ -1168,19 +1157,15 @@ function eventNewChainPreview() {
 }
 
 function eventNewChainModalCloseHandler() {
-    // reset form values
-    $('#eventNewChainModal #eventNewChainModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventNewChainModal #eventNewChainModalForm')[0];
+    if (form) form.reset();
+    $('#eventNewChainModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventNewChainModal'));
-    // Clean old html data
     var formEvent = $('#eventNewChainModal');
     formEvent.find("#notifTo").prop("value", '');
     formEvent.find("#notifCc").prop("value", '');
     formEvent.find("#notifSubject").prop("value", '');
     formEvent.find("#notifBody div").remove();
-    console.debug("Closed.");
 }
 
 function eventNewChainModalConfirmHandler() {
@@ -1199,7 +1184,7 @@ function eventNewChainModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventNewChainModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-newchain-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventNewChainModal'));
