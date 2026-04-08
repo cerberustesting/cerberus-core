@@ -197,7 +197,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, acceptNotifications, extraParam, isAcceptInsecureCerts, capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, acceptNotifications, extraParam, isAcceptInsecureCerts, capabilities, executors, robotDecli, type, null);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

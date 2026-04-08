@@ -21,6 +21,7 @@ package org.cerberus.core.engine.execution.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mchange.v1.lang.BooleanUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
@@ -40,6 +41,7 @@ import org.cerberus.core.crud.factory.IFactoryRobotCapability;
 import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionHttpStatService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.engine.execution.IRecorderService;
@@ -52,12 +54,17 @@ import org.cerberus.core.service.proxy.IProxyService;
 import org.cerberus.core.service.rest.IRestService;
 import org.cerberus.core.service.robotproviders.ILambdaTestService;
 import org.cerberus.core.service.robotextension.ISikuliService;
+import org.cerberus.core.service.webdriver.impl.BiDiUtils;
+import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.*;
+import org.openqa.selenium.bidi.BiDi;
+import org.openqa.selenium.bidi.HasBiDi;
+import org.openqa.selenium.bidi.Command;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
@@ -684,9 +691,30 @@ public class RobotServerService implements IRobotServerService {
                     } else if (finalCapabilities.getPlatformName() != null && (finalCapabilities.getPlatformName().is(Platform.IOS) || finalCapabilities.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, finalCapabilities);
                     }
+
+                    //if preloadScript set, add webSocketUrl capability to enable bidi
+                    if(!StringUtil.isEmptyOrNull(execution.getRobotObj().getPreloadScript())) {
+                        finalCapabilities.setCapability("webSocketUrl", true);
+                    }
+
                     driver = appiumDriver == null ? new RemoteWebDriver(executor, finalCapabilities) : appiumDriver;
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
+
+                    //if webSocketUrl = true, and  capability to enable bidi
+                    BiDi biDiSession = null;
+                    Object ws = finalCapabilities.getCapability("webSocketUrl");
+                    if(ws != null && ParameterParserUtil.parseBooleanParam(ws.toString(), false)) {
+                        biDiSession = BiDiUtils.enableBiDi(driver);
+                    }
+
+                    //if preloadScript set and bidi not null, add preload script
+                    if(biDiSession != null && !StringUtil.isEmptyOrNull(execution.getRobotObj().getPreloadScript())) {
+                        String preloadJs = "function() {" + execution.getRobotObj().getPreloadScript() + "}";
+                        BiDiUtils.addPreloadScript(biDiSession, preloadJs);
+                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
+                    }
+
                     break;
 
                 case Application.TYPE_APK:

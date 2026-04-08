@@ -35,21 +35,21 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type) {
-        Robot r = create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder,acceptNotifications, extraParam, isAcceptInsecureCerts, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
+            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type, String preloadScript) {
+        Robot r = create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder,acceptNotifications, extraParam, isAcceptInsecureCerts, new ArrayList<>(), new ArrayList<>(), robotDecli, type, preloadScript);
         return r;
     }
 
     @Override
     public Robot create(Integer robotID, String robot, String platform, String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent,
-            String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
+            String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type, String preloadScript) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
         newRobot.setPlatform(platform);
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
-        newRobot.setIsActive(isActive);
+        newRobot.setActive(isActive);
         newRobot.setLbexemethod(lbexemethod);
         newRobot.setDescription(description);
         newRobot.setUserAgent(userAgent);
@@ -59,9 +59,10 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setProfileFolder(profileFolder);
         newRobot.setRobotDecli(robotDecli);
         newRobot.setType(type);
-        newRobot.setIsAcceptInsecureCerts(isAcceptInsecureCerts);
+        newRobot.setAcceptInsecureCerts(isAcceptInsecureCerts);
         newRobot.setAcceptNotifications(acceptNotifications);
         newRobot.setExtraParam(extraParam);
+        newRobot.setPreloadScript(preloadScript);
         return newRobot;
     }
 

@@ -69,7 +69,6 @@ import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
 import org.cerberus.core.service.xmlunit.IXmlUnitService;
-import org.cerberus.core.servlet.reporting.TestCaseActionExecutionDetail;
 import org.cerberus.core.util.PDFUtil;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;

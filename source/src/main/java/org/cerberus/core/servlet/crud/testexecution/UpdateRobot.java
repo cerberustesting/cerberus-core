@@ -214,7 +214,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setPlatform(platform);
                 robotData.setBrowser(browser);
                 robotData.setVersion(version);
-                robotData.setIsActive(isActive);
+                robotData.setActive(isActive);
                 robotData.setDescription(description);
                 robotData.setUserAgent(userAgent);
                 robotData.setScreenSize(screenSize);
@@ -223,7 +223,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setLbexemethod(lbexemethod);
                 robotData.setAcceptNotifications(acceptNotifications);
                 robotData.setExtraParam(extraParam);
-                robotData.setIsAcceptInsecureCerts(isAcceptCerts);
+                robotData.setAcceptInsecureCerts(isAcceptCerts);
                 robotData.setCapabilities(capabilities);
                 robotData.setExecutors(executors);
                 robotData.setType(type);
