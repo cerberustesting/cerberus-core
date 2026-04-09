@@ -177,7 +177,7 @@
 //                    console.info(event);
 
                     // label
-                    this.tabs.ongoing.active = (data?.active || true) ? true : false;
+                    this.tabs.ongoing.active = (data?.active);
 
                     // label
                     this.tabs.ongoing.label = (data.queueStats?.running || 0) > 0 ? "Currently Executing" : "No execution running";
