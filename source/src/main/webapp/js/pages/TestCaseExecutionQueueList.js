@@ -106,6 +106,7 @@ function initPage() {
     $("#massActionExeQButtonErrorForce").click(massActionModalSaveHandler_errorForce);
     $("#massActionExeQButtonPrio").click(massActionModalSaveHandler_changePrio);
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
+    window.addEventListener('massaction-modal-close', massActionModalCloseHandler);
 
     var tab = sessionStorage.getItem("TestCaseExecutionQueueList-TAB")
     if (isEmpty(tab)) {
@@ -290,7 +291,7 @@ function massActionClick() {
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
         showMessage(localMessage, null);
     } else {
-        $('#massActionExeQModal').modal('show');
+        window.dispatchEvent(new CustomEvent('massaction-modal-open'));
     }
 }
 
@@ -310,7 +311,7 @@ function massActionModalSaveHandler_submit() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#massActionExeQModal'));
@@ -334,7 +335,7 @@ function massActionModalSaveHandler_copy() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             if (data.addedEntries === 1) {
                 data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
             }
@@ -361,7 +362,7 @@ function massActionModalSaveHandler_cancel() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#massActionExeQModal'));
@@ -385,7 +386,7 @@ function massActionModalSaveHandler_cancelForce() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#massActionExeQModal'));
@@ -409,7 +410,7 @@ function massActionModalSaveHandler_errorForce() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#massActionExeQModal'));
@@ -434,7 +435,7 @@ function massActionModalSaveHandler_changePrio() {
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
-            $('#massActionExeQModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('massaction-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#massActionExeQModal'));

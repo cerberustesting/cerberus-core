@@ -28,7 +28,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <script type="text/javascript" src="js/pages/RobotList.js?v=${appVersion}"></script>
-    <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
+
     <title id="pageTitle">Robot</title>
     <style>
         td.details-control {
@@ -69,7 +69,7 @@
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
         <%@ include file="include/global/messagesArea.html"%>
         <%@ include file="include/utils/modal-confirmation.html"%>
-        <%@ include file="include/transversalobject/Robot.html"%>
+
 
         <h1 class="page-title-line" id="title">Robot Management</h1>
         <div class="">

@@ -31,9 +31,6 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Parameter.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
         <title id="pageTitle">Executions Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css?v=${appVersion}"/>
     </head>
@@ -44,10 +41,8 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
-            <%@ include file="include/transversalobject/Parameter.html"%>
+
             <%@ include file="include/transversal/Invariant.html"%>
-            <%@ include file="include/transversalobject/Application.html"%>
 
             <h1 class="page-title-line" id="title">Executions Queue</h1>
 

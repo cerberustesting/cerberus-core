@@ -560,11 +560,12 @@ public class RobotDAO implements IRobotDAO {
         String type = ParameterParserUtil.parseStringParam(rs.getString("type"), "");
         Integer acceptNotifications = ParameterParserUtil.parseIntegerParam(rs.getString("AcceptNotifications"), 0);
         String extraParam = ParameterParserUtil.parseStringParam(rs.getString("ExtraParam"), "");
+        String preloadScript = ParameterParserUtil.parseStringParam(rs.getString("preloadScript"), "");
         boolean isAcceptInsecureCerts = rs.getBoolean("isAcceptInsecureCerts");
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, acceptNotifications, extraParam, isAcceptInsecureCerts, robotDecli, type);
+        return factoryRobot.create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, acceptNotifications, extraParam, isAcceptInsecureCerts, robotDecli, type, preloadScript);
     }
 
     @Override

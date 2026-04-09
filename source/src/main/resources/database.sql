@@ -6812,3 +6812,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 -- 1934
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
   VALUES ('FILETYPE', 'MP4', '25000', '', '');
+
+-- 1935
+ALTER TABLE `robot`
+    ADD COLUMN `preloadScript` TEXT NULL DEFAULT NULL AFTER `IsAcceptInsecureCerts`;

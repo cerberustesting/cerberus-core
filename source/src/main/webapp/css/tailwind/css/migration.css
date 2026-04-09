@@ -1,6 +1,27 @@
 /* ===========================
     Specific class during Bootstrap removal
 =========================== */
+
+/* Alpine.js: hide elements until Alpine initializes */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Dropdown teleported to body must sit above fixed modals */
+.single-select-dropdown {
+    z-index: 99999 !important;
+}
+
+/* Transversal Modal Base Classes */
+.crb_modal {
+    @apply fixed inset-0 z-[1050] flex items-center justify-center pointer-events-auto;
+}
+
+/* Keep dropdown panels above modals */
+.crb-dropdown-panel {
+    z-index: 99999 !important;
+}
+
 .crb_body aside {
     display: flex;
 }
@@ -25,3 +46,130 @@
     white-space: pre;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   Transversal Modal DataTable overrides
+   (Application, Campaign, and similar modals)
+   ══════════════════════════════════════════════════════════ */
+
+/* --- Hide legacy DataTable state buttons inside modals --- */
+.crb_modal #resetFilterButton,
+.crb_modal #restoreFilterButton,
+.crb_modal #saveTableConfigurationButton,
+.crb_modal #showHideColumnsButton,
+.crb_modal .dt-buttons,
+.crb_modal .ColVis,
+.crb_modal .ColVis_MasterButton,
+.crb_modal .DTTT_container,
+.crb_modal .dataTables_wrapper > .btn-group,
+.crb_modal .dataTables_wrapper > .clear {
+    display: none !important;
+}
+
+/* --- DataTable controls --- */
+.crb_modal .dataTables_wrapper { font-size: 0.8125rem; }
+.crb_modal .dataTables_length { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.crb_modal .dataTables_length label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 500; color: #64748b; margin: 0; }
+.dark .crb_modal .dataTables_length label { color: #94a3b8; }
+.crb_modal .dataTables_length select { height: 32px; padding: 2px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.75rem; background: #fff; color: #334155; outline: none; -webkit-appearance: auto; appearance: auto; }
+.dark .crb_modal .dataTables_length select { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+
+.crb_modal .dataTables_filter { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.crb_modal .dataTables_filter label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 500; color: #64748b; margin: 0; }
+.dark .crb_modal .dataTables_filter label { color: #94a3b8; }
+.crb_modal .dataTables_filter input { height: 32px; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.75rem; background: #fff; color: #334155; outline: none; min-width: 160px; }
+.dark .crb_modal .dataTables_filter input { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+.crb_modal .dataTables_filter input:focus { border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.15); }
+
+.crb_modal .dataTables_info { font-size: 0.7rem; color: #94a3b8; padding-top: 6px; }
+.dark .crb_modal .dataTables_info { color: #64748b; }
+
+/* --- Pagination --- */
+.crb_modal .dataTables_paginate { padding-top: 6px; }
+.crb_modal .dataTables_paginate .paginate_button { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 6px; border: 1px solid #e2e8f0 !important; font-size: 0.7rem; color: #64748b !important; background: #fff !important; margin: 0 2px; cursor: pointer; transition: all 150ms; }
+.dark .crb_modal .dataTables_paginate .paginate_button { background: #1e293b !important; border-color: #475569 !important; color: #94a3b8 !important; }
+.crb_modal .dataTables_paginate .paginate_button:hover { background: #f1f5f9 !important; color: #0ea5e9 !important; border-color: #0ea5e9 !important; }
+.dark .crb_modal .dataTables_paginate .paginate_button:hover { background: #334155 !important; }
+.crb_modal .dataTables_paginate .paginate_button.current { background: #0ea5e9 !important; color: #fff !important; border-color: #0ea5e9 !important; font-weight: 600; }
+.crb_modal .dataTables_paginate .paginate_button.disabled { opacity: 0.35; cursor: default; }
+
+/* --- Table rows --- */
+.crb_modal table.dataTable tbody tr { transition: background-color 150ms; }
+.crb_modal table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
+.dark .crb_modal table.dataTable tbody tr:hover { background-color: #1e293b !important; }
+.crb_modal table.dataTable thead th { font-size: 0.7rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #e2e8f0 !important; padding: 6px 8px !important; }
+.dark .crb_modal table.dataTable thead th { color: #94a3b8; border-bottom-color: #334155 !important; }
+.crb_modal table.dataTable tbody td { font-size: 0.8rem; padding: 5px 8px !important; border-bottom: 1px solid #f1f5f9 !important; color: #334155; }
+.dark .crb_modal table.dataTable tbody td { border-bottom-color: #1e293b !important; color: #cbd5e1; }
+
+/* --- Select2 inside modals --- */
+.crb_modal .select2-container--default .select2-selection--single { height: 36px !important; border-radius: 6px !important; border: 1px solid #cbd5e1 !important; background: #fff !important; display: flex !important; align-items: center !important; padding: 0 10px !important; }
+.dark .crb_modal .select2-container--default .select2-selection--single { background: #1e293b !important; border-color: #475569 !important; }
+.crb_modal .select2-container--default .select2-selection--single .select2-selection__rendered { color: #334155 !important; font-size: 0.8125rem !important; line-height: 34px !important; }
+.dark .crb_modal .select2-container--default .select2-selection--single .select2-selection__rendered { color: #cbd5e1 !important; }
+.crb_modal .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px !important; }
+
+/* --- Environment Cards (Application modal) --- */
+.env-card { border-radius: 10px; border: 1px solid #e2e8f0; padding: 12px 14px; margin-bottom: 8px; background: #fafbfc; transition: opacity 0.2s; }
+.dark .env-card { border-color: #334155; background: #0f172a; }
+.env-card.env-deleted { opacity: 0.3; }
+.env-card .env-grid { display: grid; gap: 8px; align-items: end; }
+.env-card .env-grid > div { min-width: 0; overflow: hidden; }
+.env-card .env-label { display: block; font-size: 10px; font-weight: 600; color: #64748b; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.02em; text-transform: uppercase; }
+.dark .env-card .env-label { color: #94a3b8; }
+.env-card .env-label .glyphicon { font-size: 9px; }
+.env-card input.form-control, .env-card select.form-control, .env-card input.env-input, .env-card select.env-input { width: 100% !important; height: 30px !important; padding: 2px 8px !important; font-size: 12px !important; border-radius: 6px !important; border: 1px solid #cbd5e1 !important; background: #fff !important; color: #1e293b !important; box-shadow: none !important; outline: none !important; box-sizing: border-box !important; }
+.dark .env-card input.form-control, .dark .env-card select.form-control, .dark .env-card input.env-input, .dark .env-card select.env-input { background: #1e293b !important; border-color: #475569 !important; color: #cbd5e1 !important; }
+.env-card input.form-control:focus, .env-card select.form-control:focus, .env-card input.env-input:focus, .env-card select.env-input:focus { border-color: #38bdf8 !important; box-shadow: 0 0 0 2px rgba(56,189,248,0.15) !important; }
+.env-card input[type="checkbox"].env-check { width: 16px !important; height: 16px !important; border-radius: 4px; cursor: pointer; }
+.env-card .env-separator { border-top: 1px solid #e2e8f0; margin: 8px 0; padding-top: 8px; }
+.dark .env-card .env-separator { border-top-color: #334155; }
+.env-card .env-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: none; background: none; cursor: pointer; transition: all 0.15s; }
+.env-card .env-btn-del { color: #94a3b8; }
+.env-card .env-btn-del:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+.env-card .env-btn-expand { color: #94a3b8; }
+.env-card .env-btn-expand:hover { color: #38bdf8; background: rgba(56,189,248,0.08); }
+
+/* --- Campaign add-row controls --- */
+.crb_modal #addLabelTestcampaign,
+.crb_modal #addParameterTestcampaign,
+.crb_modal #addParameterTestcase { padding: 8px 0; }
+
+/* --- Select2 inside Label modals --- */
+#addLabelModal .select2-container,
+#editLabelModal .select2-container { width: 100% !important; }
+#addLabelModal .select2-container .select2-selection--single,
+#editLabelModal .select2-container .select2-selection--single {
+    height: 40px; border-radius: 0.375rem; border-color: #cbd5e1;
+    display: flex; align-items: center; padding: 0 12px; background-color: #fff;
+}
+#addLabelModal .select2-container .select2-selection--single .select2-selection__rendered,
+#editLabelModal .select2-container .select2-selection--single .select2-selection__rendered {
+    padding: 0; line-height: 38px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#addLabelModal .select2-container .select2-selection--single .select2-selection__clear,
+#editLabelModal .select2-container .select2-selection--single .select2-selection__clear {
+    position: relative; top: 0; margin-right: 4px; font-size: 18px; font-weight: bold;
+    color: #94a3b8; cursor: pointer; order: 2; flex-shrink: 0; line-height: 38px; float: none;
+}
+#addLabelModal .select2-container .select2-selection--single .select2-selection__clear:hover,
+#editLabelModal .select2-container .select2-selection--single .select2-selection__clear:hover { color: #ef4444; }
+#addLabelModal .select2-container .select2-selection--single .select2-selection__arrow,
+#editLabelModal .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 38px; top: 0; right: 0; position: relative; order: 3;
+}
+.dark #addLabelModal .select2-container .select2-selection--single,
+.dark #editLabelModal .select2-container .select2-selection--single { background-color: #1e293b; border-color: #475569; color: #cbd5e1; }
+.dark #addLabelModal .select2-container .select2-selection--single .select2-selection__rendered,
+.dark #editLabelModal .select2-container .select2-selection--single .select2-selection__rendered { color: #cbd5e1; }
+.dark #addLabelModal .select2-container .select2-selection--single .select2-selection__clear,
+.dark #editLabelModal .select2-container .select2-selection--single .select2-selection__clear { color: #64748b; }
+.dark #addLabelModal .select2-container .select2-selection--single .select2-selection__clear:hover,
+.dark #editLabelModal .select2-container .select2-selection--single .select2-selection__clear:hover { color: #ef4444; }
+.dark .select2-dropdown { background-color: #1e293b; border-color: #475569; }
+.dark .select2-search--dropdown .select2-search__field { background-color: #334155; border-color: #475569; color: #e2e8f0; }
+.dark .select2-results__option { color: #e2e8f0; }
+.dark .select2-container--default .select2-results__option--highlighted[aria-selected],
+.dark .select2-container--default .select2-results__option[aria-selected=true] { background-color: #334155; color: #93c5fd; }
+.dark .select2-container--default .select2-results__option[aria-selected=true] { background-color: #1e3a5f; }

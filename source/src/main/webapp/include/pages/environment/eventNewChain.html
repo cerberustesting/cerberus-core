@@ -1,80 +1,103 @@
-<!--Edit Environment page-->
-<div data-backdrop="static" class="modal fade center" id="eventNewChainModal" tabindex="-1" role="dialog" aria-labelledby="eventNewChainModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="eventNewChainModalLabel" name="eventNewChainField">New Chain Event on Environment</h4>
-            </div>
-            <div class="modal-body">
+<!--New Chain Event - Alpine.js/Tailwind refactored -->
+<div x-data="eventNewChainModal()"
+     x-show="open"
+     x-cloak
+     @event-newchain-modal-open.window="handleOpen($event.detail)"
+     @event-newchain-modal-close.window="open = false"
+     class="crb_modal"
+     id="eventNewChainModal">
 
-                <!--edit form-->
-                <form id="eventNewChainModalForm" name="eventNewChainModalForm"  title="Edit Environment" role="form">
-                    <div id="tabs" class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Key definition-->
-                        <div class="row">
-                            <div class="form-group col-xs-4">
-                                <label for="system" name="systemField">System</label>
-                                <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly="">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="country" name="countryField">Country</label>
-                                <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly="">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="environment" name="environmentField">Environment</label>
-                                <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly="">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="batch" name="batchField">Select Chain Event</label>
-                                <select class="form-control"  id="batch" name="batch">
-                                </select>
-                            </div>
-                            <div class="form-group col-xs-6" style="padding-top: 20px;">
-                                <button type="button" id="eventNewChainPreviewNotificationButton" class="btn btn-primary" name="buttonNewChainPreviewNotification">Preview Notification</button>
-                            </div>
-                        </div>
-                        <!-- tabs definition-->
-                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsAdd-1">Email Preview</a></li>
-                        </ul>
-                        <div class="tab-content">   
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsAdd-1">
-                                <div class="row">
-                                    <label for="toField" name="toField">To</label>
-                                    <textarea  class="form-control" id="notifTo" name="notifTo" aria-describedby="basic-addon1" readonly></textarea> 
-                                </div>
-                                <div class="row">
-                                    <label for="ccField" name="ccField">Cc</label>
-                                    <textarea  class="form-control" id="notifCc" name="notifCc" aria-describedby="basic-addon1" readonly></textarea> 
-                                </div>
-                                <div class="row">
-                                    <label for="subjectField" name="subjectField">Subject</label>
-                                    <input type="text" class="form-control" name="notifSubject" id="notifSubject" aria-describedby="basic-addon1" readonly="">
-                                </div>
-                                <br>
-                                <div id="notifBody" class="row">
-                                </div>
-                            </div>
-                        </div>
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[700px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-amber-600/10 flex items-center justify-center">
+                    <i data-lucide="link" class="w-5 h-5 text-amber-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="eventNewChainModalLabel" name="eventNewChainField">New Chain Event</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Create new chain event and send notification</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="eventNewChainModalForm" name="eventNewChainModalForm" role="form">
+                <div id="DialogMessagesArea" class="mb-3">
+                    <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                        <button type="button" class="close" data-hide="alert" aria-hidden="true"><span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="eventNewChainButton" class="btn btn-primary" name="buttonNewChain">Create New Chain Event and Send notification</button>
-            </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemField">System</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="system" id="system" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="countryField">Country</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="country" id="country" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="environmentField">Environment</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="environment" id="environment" readonly>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="batchField">Select Chain Event</label>
+                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" id="batch" name="batch"></select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" id="eventNewChainPreviewNotificationButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonNewChainPreviewNotification">Preview Notification</button>
+                    </div>
+                </div>
+
+                <!-- Email Preview -->
+                <div class="space-y-3">
+                    <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="toField">To</label><textarea class="w-full border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="notifTo" name="notifTo" readonly></textarea></div>
+                    <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="ccField">Cc</label><textarea class="w-full border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" id="notifCc" name="notifCc" readonly></textarea></div>
+                    <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="subjectField">Subject</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="notifSubject" id="notifSubject" readonly></div>
+                    <div id="notifBody" class="rounded-lg border border-slate-200 dark:border-slate-700 p-3 bg-white dark:bg-slate-800 min-h-[100px]"></div>
+                </div>
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+            <button type="button" id="eventNewChainButton" class="px-4 py-2 rounded-md bg-amber-500 text-white text-sm hover:bg-amber-600 transition" name="buttonNewChain">Create New Chain Event and Send notification</button>
         </div>
     </div>
 </div>
+
+<script>
+function eventNewChainModal() {
+    return {
+        open: false, isFullscreen: false,
+        handleOpen: function(detail) { this.open = true; this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }); },
+        init: function() {
+            this.$watch('open', function(val) { if (!val && typeof eventNewChainModalCloseHandler === 'function') eventNewChainModalCloseHandler(); });
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+        }
+    };
+}
+</script>

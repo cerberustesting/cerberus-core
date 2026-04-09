@@ -1,0 +1,603 @@
+<!-- File Modal - Alpine.js/Tailwind refactored -->
+<div
+        x-data="fileModal()"
+        x-show="open"
+        x-cloak
+        @file-modal-open.window="handleOpen($event.detail)"
+        @file-modal-close.window="open = false"
+        class="crb_modal"
+        id="editManualFileModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="file" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="editEntryModalLabel" name="editManualFileField">Execution File</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Manage execution files</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editManualFileModalForm" name="editManualModalForm" role="form">
+
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3">
+                    <div class="flex gap-3">
+                        <div class="w-1/3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="type" name="typeField">File Type</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="type" id="type" maxlength="200"></select>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="desc" name="descField">Description</label>
+                            <textarea class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" required name="desc" maxlength="150" rows="1" id="desc"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload zone -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3" id="screenshotFile"
+                     x-data="crbFileUploadZone()"
+                     x-init="initUpload()"
+                     @file-preview-update.window="showExistingPreview($event.detail)"
+                     @file-preview-reset.window="removeImage()">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="upload" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="filenameField">File</span>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div @click="$refs.fileInput.click()"
+                         @dragenter.prevent.stop="isDragging = true"
+                         @dragover.prevent.stop="isDragging = true"
+                         @dragleave.prevent.stop="isDragging = false"
+                         @drop.prevent.stop="isDragging = false; handleDrop($event)"
+                         class="relative rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                         :class="isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]' : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'"
+                         style="min-height: 100px;">
+                        <label for="inputFile" id="dropzone" class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer">
+                            <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3 mb-2"
+                                 :class="isDragging ? 'animate-bounce' : ''">
+                                <svg class="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                            </div>
+                            <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400" id="dropzoneText">
+                                Drag and drop Files
+                            </h3>
+                            <span class="text-xs text-slate-400 mt-1">or click to browse</span>
+                        </label>
+                    </div>
+
+                    <input type="file" name="filename" id="inputFile" x-ref="fileInput" class="hidden"
+                           @change="handleFileInput($event)">
+                    <div class="text-xs text-slate-400 mt-2 hidden" id="DropzoneClipboardPasteMessage">
+                        <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px]">Ctrl+V</kbd>
+                        to paste from clipboard
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3" id="preview" style="overflow-x: auto;"></div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="seeManualFileButton" name="buttonSee" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">See Full File</button>
+            <button type="button" id="deleteManualFileButton" name="buttonDelete" class="px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition">Delete</button>
+            <button type="button" id="editManualFileButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
+            <button type="button" id="addManualFileButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Add</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+     * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This file is part of Cerberus.
+     *
+     * Cerberus is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * Cerberus is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+     */
+
+    var imagePasteFromClipboard = undefined;
+
+    // ===== ALPINE COMPONENT =====
+    function fileModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    // ===== CRB FILE UPLOAD ZONE COMPONENT =====
+    if (typeof window.crbFileUploadZone === 'undefined') {
+        window.crbFileUploadZone = function() {
+            return {
+                isDragging: false,
+                _pasteHandler: null,
+
+                initUpload: function() {
+                    var self = this;
+                    this._pasteHandler = function(e) {
+                        if (e.clipboardData && !$(e.target).is('input') && !$(e.target).is('textarea')) {
+                            var items = e.clipboardData.items;
+                            if (items) {
+                                for (var i = 0; i < items.length; i++) {
+                                    var blob = items[i].getAsFile();
+                                    if (blob) {
+                                        imagePasteFromClipboard = blob;
+                                        updateDropzone(blob.name || 'clipboard-paste', '#editManualFileModal');
+                                        e.preventDefault();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    document.addEventListener('paste', this._pasteHandler, false);
+                    hidePasteMessageIfNotOnFirefox();
+                },
+
+                handleDrop: function(event) {
+                    var dt = event.dataTransfer;
+                    if (dt && dt.items) {
+                        for (var i = 0; i < dt.items.length; i++) {
+                            var blob = dt.items[i].getAsFile();
+                            if (blob) {
+                                imagePasteFromClipboard = blob;
+                                updateDropzone(blob.name, '#editManualFileModal');
+                                return;
+                            }
+                        }
+                    }
+                },
+
+                handleFileInput: function(event) {
+                    var input = event.target;
+                    if (input.files && input.files[0]) {
+                        imagePasteFromClipboard = undefined;
+                        var fileName = input.files[0].name;
+                        updateDropzone(fileName, '#editManualFileModal');
+                    }
+                },
+
+                removeImage: function() {
+                    imagePasteFromClipboard = undefined;
+                    var input = document.getElementById('inputFile');
+                    if (input) input.value = '';
+                    updateDropzone('Drag and drop Files', '#editManualFileModal');
+                }
+            };
+        };
+    }
+
+    // ===== MODAL LOGIC (merged from js/transversalobject/File.js) =====
+
+    function openModalFile(action, manualFile, mode, idex, file, auto) {
+
+        if ($('#editManualFileModal').data("initLabel") === undefined) {
+            initModalFile(file, mode)
+            $('#editManualFileModal').data("initLabel", true);
+        }
+
+        if (mode === "EDIT") {
+            editFileClick(file, auto);
+        } else if (mode === "ADD") {
+            addFileClick(file, auto);
+        } else if (mode === "VIEW") {
+            viewFileClick(file, auto);
+        }
+
+        $("#editManualFileButton").off("click");
+        $("#editManualFileButton").click(function () {
+            confirmFileModalHandler(action, manualFile, "EDIT", idex, file);
+        });
+        $("#addManualFileButton").off("click");
+        $("#addManualFileButton").click(function () {
+            confirmFileModalHandler(action, manualFile, "ADD", idex, file);
+        });
+        $("#deleteManualFileButton").off("click");
+        $("#deleteManualFileButton").click(function () {
+            confirmFileModalHandler(action, manualFile, "DELETE", idex, file);
+        });
+    }
+
+    function initModalFile(file, mode) {
+        console.info("init");
+        var doc = new Doc();
+        $("[name='buttonClose']").html(
+                doc.getDocLabel("page_global", "buttonClose"));
+
+        if (mode === "EDIT") {
+            displayInvariantList("type", "FILETYPE", false, file.fileType, "");
+        } else {
+            displayInvariantList("type", "FILETYPE", false, undefined, "");
+        }
+
+        // Drag/drop now handled by Alpine crbFileUploadZone component
+        hidePasteMessageIfNotOnFirefox()
+    }
+
+    function editFileClick(manualFile, auto) {
+
+        clearResponseMessage($('#editManualFileModal'));
+
+        $("#editEntryModalLabel").text("Edit Execution File")
+
+        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#editManualFileButton').removeProp('hidden');
+
+        $('#deleteManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition');
+        $('#deleteManualFileButton').removeProp('hidden');
+
+        $('#seeManualFileButton').attr('class', 'px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition');
+        $('#seeManualFileButton').removeProp('hidden');
+
+        $('#addManualFileButton').attr('class', 'hidden');
+        $('#addManualFileButton').attr('hidden', 'hidden');
+
+        $('#editManualFileModalForm select[name="idname"]').off("change");
+        $('#editManualFileModalForm input[name="value"]').off("change");
+
+        feedFileModal(manualFile, "editManualFileModal", "EDIT", auto);
+    }
+
+    function viewFileClick(manualFile, auto) {
+
+        clearResponseMessage($('#editManualFileModal'));
+
+        $("#editEntryModalLabel").text("Execution File")
+
+        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#editManualFileButton').removeProp('hidden');
+
+        $('#deleteManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition');
+        $('#deleteManualFileButton').removeProp('hidden');
+
+        $('#seeManualFileButton').attr('class', 'px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition');
+        $('#seeManualFileButton').removeProp('hidden');
+
+        $('#addManualFileButton').attr('class', 'hidden');
+        $('#addManualFileButton').attr('hidden', 'hidden');
+
+        $('#editManualFileModalForm select[name="idname"]').off("change");
+        $('#editManualFileModalForm input[name="value"]').off("change");
+
+        feedFileModal(manualFile, "editManualFileModal", "EDIT", auto);
+    }
+
+    function addFileClick(manualFile, auto) {
+
+        clearResponseMessage($('#editManualFileModal'));
+
+        $("#editEntryModalLabel").text("Create Manual Execution File")
+
+        $('#editManualFileButton').attr('class', 'hidden');
+        $('#editManualFileButton').attr('hidden', 'hidden');
+
+        $('#seeManualFileButton').attr('class', 'hidden');
+        $('#seeManualFileButton').attr('hidden', 'hidden');
+
+        $('#deleteManualFileButton').attr('class', 'hidden');
+        $('#deleteManualFileButton').attr('hidden', 'hidden');
+
+        $('#addManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#addManualFileButton').removeProp('hidden');
+
+        $('#editManualFileModalForm select[name="idname"]').off("change");
+        $('#editManualFileModalForm input[name="value"]').off("change");
+
+        feedFileModal(manualFile, "editManualFileModal", "ADD", auto);
+    }
+
+    function confirmFileModalHandler(action, manualFile, mode, idex, myFile, auto) {
+        clearResponseMessage($('#editManualFileModal'));
+
+        var formEdit = $('#editManualFileModal #editManualFileModalForm');
+        formEdit.find("#type").attr("disabled", false);
+
+        var sa = formEdit.serializeArray();
+        var formData = new FormData();
+
+        for (var i in sa) {
+            formData.append(sa[i].name, sa[i].value);
+        }
+
+        try {
+            if (imagePasteFromClipboard !== undefined) {
+                formData.append("file", imagePasteFromClipboard);
+            } else {
+                var file = $("#editManualFileModal input[type=file]");
+                formData.append("file", file.prop("files")[0]);
+            }
+
+            var temp = [];
+
+            delete manualFile.controls;
+            delete manualFile.controlsJson;
+            delete manualFile.parentStep;
+            delete manualFile.parentAction;
+            delete manualFile.fileList;
+            delete manualFile.html;
+
+            temp.push(manualFile)
+
+            if (action) {
+                formData.append("action", JSON.stringify(temp))
+            } else {
+                formData.append("control", JSON.stringify(temp))
+            }
+            formData.append("idex", idex)
+            formData.append("fileName", $("#editManualFileModal").find("#dropzoneText").text())
+            formData.append("fileID", myFile.id)
+        } catch (e) {
+            console.log("exception : " + e);
+        }
+
+        var myServlet = "CreateUpdateTestCaseExecutionFile"
+
+        if (mode === "DELETE") {
+            var myServlet = "DeleteTestCaseExecutionFile?fileID=" + myFile.id;
+        }
+
+        showLoaderInModal('#editManualFileModal');
+
+        $.ajax({
+            url: myServlet,
+            async: true,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (getAlertType(data.messageType) === "success") {
+                    $('#editManualFileModal').data("Saved", true);
+                    window.dispatchEvent(new CustomEvent('file-modal-close'));
+                    saveExecution(null)
+                } else {
+                    showMessage(data, $('#editManualFileModal'));
+                }
+                hideLoaderInModal('#editManualFileModal');
+            },
+            error: showUnexpectedError
+        });
+    }
+
+    function feedFileModal(manualFile, modalId, mode, auto) {
+        clearResponseMessageMainPage();
+
+        var formEdit = $('#' + modalId);
+
+        if (mode === "EDIT") {
+            if (auto) {
+                var hasPermissions = false;
+            } else {
+                var hasPermissions = true;
+            }
+            feedFileModalData(manualFile, modalId, mode, hasPermissions, auto);
+            window.dispatchEvent(new CustomEvent('file-modal-open', { detail: {} }));
+        } else {
+            var manualFile1 = {};
+            manualFile1.fileType = "";
+            manualFile1.fileDesc = "";
+            manualFile1.fileName = "";
+            var hasPermissions = true;
+            feedFileModalData(manualFile1, modalId, mode, hasPermissions, auto);
+            window.dispatchEvent(new CustomEvent('file-modal-open', { detail: {} }));
+        }
+    }
+
+    function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto) {
+        var formEdit = $('#' + modalId);
+        var doc = new Doc();
+        var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
+                || (mode === "ADD"));
+
+        // Data Feed.
+        if (mode === "EDIT") {
+            formEdit.find("#preview").empty()
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto=" + auto;
+            $("#seeManualFileButton").off("click").click(function (e) {
+                window.open(urlImage + "&r=true", "_blank");
+                e.preventDefault();
+                e.stopPropagation();
+            })
+
+            if ((manualFile.fileType == "JPG") || (manualFile.fileType == "PNG")) {
+                var image = $('<img>').addClass("selectedPicture w-full max-h-[350px] object-contain").attr("src", urlImage + "&r=true");
+                $("#preview").append(image)
+            } else if ((manualFile.fileType == "PDF") || (manualFile.fileType == "BIN") || (manualFile.fileType == "MP4")) {
+                $("#preview").append("<div class='text-sm text-slate-500 p-4'>Preview of the file not supported. Please open full file.</div>");
+            } else {
+                var jqxhr = $.get(urlImage, "&autoContentType=N");
+                $.when(jqxhr).then(function (data) {
+                    $('#preview').append($("<div>").addClass("form-group").append($("<pre id='previewContent'></pre>").addClass("form-control").attr("style", "min-height:15px").text(data)));
+                    var editor = ace.edit($("#previewContent")[0]);
+                    editor.setTheme("ace/theme/chrome");
+                    var textMode = defineAceMode(editor.getSession().getDocument().getValue());
+                    editor.getSession().setMode(textMode);
+                    editor.setOptions({
+                        maxLines: 30
+                    });
+                    if (!isEditable) {
+                        editor.setReadOnly(true);
+                    }
+                    $("#previewContent")[0].style.fontSize = "14px";
+                    var jsbOpts = {
+                        indent_size: 2
+                    };
+                    var session = editor.getSession();
+                    if (textMode !== undefined) {
+                        if (textMode.endsWith("json")) {
+                            session.setValue(js_beautify(session.getValue(), jsbOpts));
+                        } else if (textMode.endsWith("xml")) {
+                            session.setValue(html_beautify(session.getValue(), jsbOpts));
+                        }
+                    }
+                });
+            }
+        } else {
+            formEdit.find("#desc").prop("readonly", false);
+            formEdit.find("#preview").empty()
+        }
+
+        if (isEmpty(manualFile)) {
+            formEdit.find("#type")[0].selectedIndex = "";
+            formEdit.find("#desc").prop("value", "");
+            formEdit.find("#inputFile").val("Drag and drop Files");
+        } else {
+            formEdit.find("#type").val(manualFile.fileType);
+            formEdit.find("#desc").prop("value", manualFile.fileDesc);
+
+            if (manualFile.fileName == "") {
+                updateDropzone("Drag and drop Files", "#" + modalId);
+            } else {
+                updateDropzone(manualFile.fileName, "#" + modalId);
+            }
+        }
+
+        if (isEditable) {
+            formEdit.find("#type").prop("readonly", false);
+            formEdit.find("#desc").attr("disabled", false);
+            formEdit.find("#inputFile").attr("disabled", false);
+        } else {
+            formEdit.find("#type").attr("disabled", true);
+            formEdit.find("#desc").attr("disabled", true);
+            formEdit.find("#inputFile").attr("disabled", true);
+            $('#editManualFileButton').attr('class', 'hidden');
+            $('#editManualFileButton').attr('hidden', 'hidden');
+            $('#deleteManualFileButton').attr('class', 'hidden');
+            $('#deleteManualFileButton').attr('hidden', 'hidden');
+            $('#screenshotFile').hide();
+        }
+    }
+
+    function pasteListennerForClipboardPicture(idModal) {
+        // Now handled by Alpine crbFileUploadZone component
+    }
+
+    function setUpDragAndDrop(idModal) {
+        // Now handled by Alpine crbFileUploadZone component
+    }
+
+    function dragenter(e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    function dragover(e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    function drop(e, idModal) {
+        e.stopPropagation();
+        e.preventDefault();
+        var dt = e.dataTransfer;
+        var items = dt.items;
+        handlePictureSend(items, idModal);
+    }
+
+    function handlePictureSend(items, idModal) {
+        if (!items)
+            return false;
+        for (var i = 0; i < items.length; i++) {
+            var blob = items[i].getAsFile();
+            imagePasteFromClipboard = blob;
+            var URLObj = window.URL || window.webkitURL;
+            var source = URLObj.createObjectURL(blob);
+            var nameToDisplay = blob.name;
+            updateDropzone(nameToDisplay, idModal);
+            return true;
+        }
+    }
+
+    function hidePasteMessageIfNotOnFirefox() {
+        var isOnFirefox = typeof InstallTrigger !== 'undefined';
+        if (!isOnFirefox) {
+            for (var i = 0; i < $('[id*="DropzoneClipboardPasteMessage"]').length; i++) {
+                $('[id*="DropzoneClipboardPasteMessage"]')[i].style.display = 'none';
+            }
+        }
+    }
+
+    function listennerForInputTypeFile(idModal) {
+        // Now handled by Alpine crbFileUploadZone component
+    }
+
+    function updateDropzone(messageToDisplay, idModal) {
+        var dropzoneText = $(idModal).find("#dropzoneText");
+        dropzoneText.html(messageToDisplay);
+        if (imagePasteFromClipboard !== undefined) {
+            var inputs = $(idModal).find("#inputFile")[0];
+            if (inputs) inputs.value = "";
+        } else {
+            imagePasteFromClipboard = undefined;
+        }
+    }
+</script>

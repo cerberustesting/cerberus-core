@@ -1,76 +1,108 @@
-<!--Edit LogEvent page-->
-<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editLogEventModalLabel" name="editLogEventField">View Log Event</h4>
-            </div>
-            <div class="modal-body">
+<!--View Log Event - Alpine.js/Tailwind refactored -->
+<div x-data="editLogEventModal()"
+     x-show="open"
+     x-cloak
+     @editlogevent-modal-open.window="handleOpen($event.detail)"
+     @editlogevent-modal-close.window="open = false"
+     class="crb_modal"
+     id="editEntryModal">
 
-                <!--edit form-->
-                <form id="editLogEventModalForm" name="editLogEventModalForm"  title="LogEvent" role="form">
-                    <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="logeventid" name="logeventidField">Log Event ID</label>
-                                <input type="text" class="form-control" name="logeventid" id="logeventid" aria-describedby="basic-addon1" readonly>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="time" name="timeField">Time</label>
-                                <input type="text" class="form-control" name="time" id="time" aria-describedby="basic-addon1" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="page" name="pageField">Page</label>
-                                <input type="text" class="form-control" name="page" id="page" aria-describedby="basic-addon1" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="action" name="actionField">Action</label>
-                                <input type="text" class="form-control" name="action" id="action" aria-describedby="basic-addon1" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="login" name="loginField">User Login</label>
-                                <input type="text" class="form-control" name="login" id="login" aria-describedby="basic-addon1" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="log" name="logField">Log Message</label>
-                                <textarea rows="6" id="log" name="log"
-                                          class="form-control" readonly></textarea> 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="remoteip" name="remoteipField">Remote IP</label>
-                                <input type="text" class="form-control" name="remoteip" id="remoteip" aria-describedby="basic-addon1" readonly>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="localip" name="localipField">Local IP</label>
-                                <input type="text" class="form-control" name="localip" id="localip" aria-describedby="basic-addon1" readonly>
-                            </div>
-                        </div>
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[700px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="scroll-text" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editLogEventModalLabel" name="editLogEventField">View Log Event</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Read-only event details</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editLogEventModalForm" name="editLogEventModalForm" role="form">
+                <div id="DialogMessagesArea" class="mb-3">
+                    <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                        <button type="button" class="close" data-hide="alert" aria-hidden="true"><span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-            </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="logeventidField">Log Event ID</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="logeventid" id="logeventid" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="timeField">Time</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="time" id="time" readonly>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="pageField">Page</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="page" id="page" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="actionField">Action</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="action" id="action" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="loginField">User Login</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="login" id="login" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="logField">Log Message</label>
+                        <textarea rows="6" id="log" name="log" class="w-full border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 font-mono" readonly></textarea>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="remoteipField">Remote IP</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="remoteip" id="remoteip" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="localipField">Local IP</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="localip" id="localip" readonly>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
         </div>
     </div>
 </div>
+
+<script>
+function editLogEventModal() {
+    return {
+        open: false, isFullscreen: false,
+        handleOpen: function(detail) { this.open = true; this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }); },
+        init: function() {
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+        }
+    };
+}
+</script>

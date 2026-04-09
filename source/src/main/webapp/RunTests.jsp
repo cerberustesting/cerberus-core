@@ -35,7 +35,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css?v=${appVersion}"/>
         <script type="text/javascript" src="js/pages/RunTest.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Robot.js?v=${appVersion}"></script>
+
         <title id="pageTitle">Run Test</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -62,7 +62,7 @@
             </div>
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/pages/runtests/TestCaseNotValid.html"%>
-            <%@ include file="include/transversalobject/Robot.html"%>
+
             <h1 class="page-title-line">Run Test Case</h1>
             <div class="row">
                 <div class="col-lg-12">

@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import com.iab.gpp.encoder.GppModel;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class IabGppDecoder {
         try {
             GppModel gppModel = new GppModel(iabgpp);
             TcfEuV2 tcfEuV2Section = (TcfEuV2) gppModel.getSection(TcfEuV2.NAME);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             Map<String, Object> tcfeuV2Data = new HashMap<>();
             if (tcfEuV2Section != null) {
@@ -48,7 +50,7 @@ public class IabGppDecoder {
                 tcfeuV2Data.put("cmpId", tcfEuV2Section.getCmpId());
                 tcfeuV2Data.put("publisherCountryCode", tcfEuV2Section.getPublisherCountryCode());
                 tcfeuV2Data.put("consentString", tcfEuV2Section.getVendorConsents());
-                tcfeuV2Data.put("purposesAllowed", tcfEuV2Section.getLastUpdated());
+                tcfeuV2Data.put("lastUpdated",tcfEuV2Section.getLastUpdated().format(formatter));
                 tcfeuV2Data.put("vendorsAllowed", tcfEuV2Section.getVendorsAllowed());
             } else {
                 tcfeuV2Data.put("error", "TCFEuV2 not present");

@@ -50,3 +50,18 @@
     position: absolute;
     z-index: -1;
 }
+
+/* === ACE Editor Dark Mode Overrides (moved from inline style) === */
+.dark #editSoapLibraryModal .ace_editor,
+.dark #editSoapLibraryModal .ace_editor .ace_gutter {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+}
+.dark #editSoapLibraryModal pre {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-color: #475569 !important;
+}
+.dark #editSoapLibraryModal .ace_editor .ace_content {
+    background-color: #1e293b !important;
+}
