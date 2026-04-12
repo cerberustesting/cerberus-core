@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.cerberus.Property;
 import org.cerberus.core.crud.entity.CountryEnvironmentDatabase;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -411,7 +412,7 @@ public class SQLService implements ISQLService {
     public AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
         AnswerList<HashMap<String, String>> listResult = new AnswerList<>();
         List<HashMap<String, String>> list;
-        int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
+        int maxSecurityFetch = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_testdatalib_sql_fetchmax, system, 100);
         int maxFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;

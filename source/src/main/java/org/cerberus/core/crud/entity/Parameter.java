@@ -98,6 +98,9 @@ public class Parameter {
     public static final String VALUE_cerberus_gitlab_apitoken = "cerberus_gitlab_apitoken";
     public static final String VALUE_cerberus_use_w3c_capabilities = "cerberus_use_w3c_capabilities";
 
+    public static final String VALUE_cerberus_testdatalib_sql_fetchmax = "cerberus_testdatalib_sql_fetchmax";
+    public static final String VALUE_cerberus_testdatalib_mongodb_fetchmax = "cerberus_testdatalib_mongodb_fetchmax";
+    
     public static final String VALUE_cerberus_tagcombofilterpersystem_boolean = "cerberus_tagcombofilterpersystem_boolean";
 
     public static final String VALUE_cerberus_automatescore_changehorizon = "cerberus_automatescore_changehorizon";

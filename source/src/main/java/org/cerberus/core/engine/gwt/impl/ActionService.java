@@ -1859,7 +1859,7 @@ public class ActionService implements IActionService {
         TestCaseExecution execution = action.getTestCaseStepExecution().gettCExecution();
         AnswerItem lastServiceCalledAnswer;
 
-        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, execution, robotServerService.getFromOptions(action.getOptions(), RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, execution, robotServerService.getFromOptions(action.getOptions(), RobotServerService.OPTIONS_TIMEOUT_SYNTAX), 0);
         message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {

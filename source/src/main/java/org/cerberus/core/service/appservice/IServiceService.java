@@ -47,9 +47,11 @@ public interface IServiceService {
      * @param manualOperation Used when service not defined.
      * @param execution
      * @param timeoutMs
+     * @param rowLimit
      * @return
      */
-    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePath, String manualOperation, TestCaseExecution execution, int timeoutMs);
+    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePath, String manualOperation, 
+            TestCaseExecution execution, int timeoutMs, int rowLimit);
 
     /**
      * Simulate a call from outside a normal testcase execution.

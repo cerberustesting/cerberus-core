@@ -40,8 +40,9 @@ public interface IMongodbService {
      * @param timeOutMs
      * @param system
      * @param tcexecution
+     * @param rowLimit
      * @return
      */
-    AnswerItem<AppService> callMONGODB(String servicePath, String queryString, String requestExtra1String, String method, String operation, int timeOutMs, String system, TestCaseExecution tcexecution);
+    AnswerItem<AppService> callMONGODB(String servicePath, String queryString, String requestExtra1String, String method, String operation, int timeOutMs, String system, TestCaseExecution tcexecution, int rowLimit);
 
 }

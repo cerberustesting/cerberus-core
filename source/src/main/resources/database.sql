@@ -6816,3 +6816,10 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 -- 1935
 ALTER TABLE `robot`
     ADD COLUMN `preloadScript` TEXT NULL DEFAULT NULL AFTER `IsAcceptInsecureCerts`;
+
+-- 1936
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_testdatalib_mongodb_fetchmax', '10000', 'Maximum number of fetched records that Cerberus will perform when retrieving a data from a Mongodg service Data Library.');
+
+-- 1937
+UPDATE `parameter` SET `param`='cerberus_testdatalib_sql_fetchmax' WHERE `param`='cerberus_testdatalib_fetchmax';

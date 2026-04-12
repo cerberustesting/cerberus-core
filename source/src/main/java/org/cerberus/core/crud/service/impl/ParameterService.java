@@ -483,7 +483,8 @@ public class ParameterService implements IParameterService {
             case "cerberus_proxy_nonproxyhosts":
             case "cerberus_proxy_port":
             case "cerberus_propertyexternalsql_timeout":
-            case "cerberus_testdatalib_fetchmax":
+            case Parameter.VALUE_cerberus_testdatalib_sql_fetchmax:
+            case Parameter.VALUE_cerberus_testdatalib_mongodb_fetchmax:
             case "cerberus_notification_disableenvironment_body":
             case "cerberus_notification_disableenvironment_cc":
             case "cerberus_notification_disableenvironment_subject":

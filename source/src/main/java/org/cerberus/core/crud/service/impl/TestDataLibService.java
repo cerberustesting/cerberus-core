@@ -24,6 +24,7 @@ import java.util.*;
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.core.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.core.crud.dao.ITestDataLibDAO;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -108,7 +109,7 @@ public class TestDataLibService implements ITestDataLibService {
         List<HashMap<String, String>> result = new ArrayList<>();
 
         // We start by calculating the max nb of row we can fetch. Either specified by rowLimit either defined by a parameter.
-        int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
+        int maxSecurityFetch = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_testdatalib_sql_fetchmax, system, 100);
         int maxFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;

@@ -33,7 +33,6 @@ import com.mongodb.client.MongoIterable;
 import com.mongodb.client.result.UpdateResult;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -52,6 +51,7 @@ import org.springframework.stereotype.Service;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import org.bson.Document;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.service.mongodb.IMongodbService;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
@@ -77,10 +77,11 @@ public class MongodbService implements IMongodbService {
     IProxyService proxyService;
 
     private static final Logger LOG = LogManager.getLogger(MongodbService.class);
+    private static final int MAW_ROW = 10000;
 
     @Override
     public AnswerItem<AppService> callMONGODB(String servicePath, String requestString, String requestExtra1String, String method, String operation, int timeOutMs,
-            String system, TestCaseExecution tcexecution) {
+            String system, TestCaseExecution tcexecution, int rowLimit) {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
 
@@ -165,23 +166,31 @@ public class MongodbService implements IMongodbService {
             switch (method) {
 
                 case AppService.METHOD_MONGODBFIND:
-                    try (
-                            MongoCursor<Document> cursor = collection.find(BasicDBObject.parse(requestString))
-                                    .iterator()) {
-                                int i = 0;
-                                while (cursor.hasNext() && i < 5) {
-                                    LOG.debug("Results found.");
-                                    mongoDBResult = cursor.next().toJson();
-                                    i++;
-                                    mongoDBResultArray.put(new JSONObject(mongoDBResult));
-                                    LOG.debug(mongoDBResult);
-//                    System.out.println(cursor.next().toJson());
-                                }
-                                serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
-                                serviceMONGODB.setResponseNb(i);
-                                serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
 
-                            }
+                    int maxSecurityFetch = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_testdatalib_mongodb_fetchmax, system, 10000);
+                    int maxFetch;
+                    if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
+                        maxFetch = rowLimit;
+                    } else {
+                        maxFetch = maxSecurityFetch;
+                    }
+
+                    try (MongoCursor<Document> cursor = collection.find(BasicDBObject.parse(requestString)).limit(maxFetch)
+                            .iterator()) {
+                        int i = 0;
+                        while (cursor.hasNext() && i < 5) {
+                            LOG.debug("Results found.");
+                            mongoDBResult = cursor.next().toJson();
+                            i++;
+                            mongoDBResultArray.put(new JSONObject(mongoDBResult));
+                            LOG.debug(mongoDBResult);
+//                    System.out.println(cursor.next().toJson());
+                        }
+                        serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
+                        serviceMONGODB.setResponseNb(i);
+                        serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
+
+                    }
                     break;
 
                 case AppService.METHOD_MONGODBUPDATEONE:
@@ -214,7 +223,7 @@ public class MongodbService implements IMongodbService {
             result.setResultMessage(message);
             serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
             return result;
-            
+
         } catch (MongoSocketOpenException ex) {
             LOG.info("Exception when performing the MONGODB Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
@@ -222,7 +231,7 @@ public class MongodbService implements IMongodbService {
             result.setResultMessage(message);
             serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
             return result;
-            
+
         } catch (Exception ex) {
             LOG.error(ex, ex);
             LOG.info("Exception when performing the MONGODB Call. " + ex.toString());
