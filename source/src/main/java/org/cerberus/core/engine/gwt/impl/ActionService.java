@@ -411,7 +411,7 @@ public class ActionService implements IActionService {
                     res = this.doActionType(execution, actionExecution, value1, value2, propertyName);
                     break;
                 case TestCaseStepAction.ACTION_CLEARFIELD:
-                    res = this.doActionClearField(execution, value1);
+                    res = this.doActionClearField(execution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_HIDEKEYBOARD:
                     res = this.doActionHideKeyboard(execution);
@@ -1362,10 +1362,13 @@ public class ActionService implements IActionService {
                         return webdriverService.doSeleniumActionType(execution.getSession(), identifier, value2, propertyName, true, true);
                     }
                 }
+
             } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.type(execution.getSession(), identifier, value2, propertyName);
+
             } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.type(execution.getSession(), identifier, value2, propertyName);
+
             } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 String locator = "";
                 if (!StringUtil.isEmptyOrNull(value1)) {
@@ -1373,6 +1376,7 @@ public class ActionService implements IActionService {
                     locator = identifier.getLocator();
                 }
                 return sikuliService.doSikuliActionType(execution.getSession(), locator, value2).getResultMessage();
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Type")
@@ -2394,9 +2398,11 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Long Click")
@@ -2408,15 +2414,15 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClearField(TestCaseExecution tCExecution, String value1) {
+    private MessageEvent doActionClearField(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String value1) {
         String element;
         try {
             /**
              * Check object and property are not null for GUI/APK/IPA Check
              * property is not null for FAT Application
              */
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (value1 == null) {
                     return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEARFIELD);
                 }
@@ -2429,16 +2435,29 @@ public class ActionService implements IActionService {
                 identifier = identifierService.convertStringToIdentifier(value1);
             }
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return androidAppiumService.clearField(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return androidAppiumService.clearField(execution.getSession(), identifier);
+
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return iosAppiumService.clearField(tCExecution.getSession(), identifier);
+                return iosAppiumService.clearField(execution.getSession(), identifier);
+
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    AnswerItem<JSONObject> answer = sikuliService.doSikuliActionClearField(execution.getSession(), identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordExecutionScreenshotDebug(execution, actionExecution, StringUtil.convertAnswerJSONToString(answer, "screenshotDebug")));
+                    return answer.getResultMessage();
+                } else {
+                    return webdriverService.doSeleniumActionType(execution.getSession(), identifier, "", "", true, true);
+                }
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "ClearField")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", execution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Type : " + ex);

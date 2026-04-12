@@ -28,17 +28,52 @@ import org.cerberus.core.exception.CerberusEventException;
  */
 public interface IIdentifierService {
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     Identifier convertStringToIdentifier(String input);
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     Identifier convertStringToIdentifierStrict(String input);
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     Identifier convertStringToSelectIdentifier(String input);
 
+    /**
+     *
+     * @param identifier
+     * @throws CerberusEventException
+     */
     void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException;
 
+    /**
+     *
+     * @param identifier
+     * @throws CerberusEventException
+     */
     void checkWebElementIdentifier(String identifier) throws CerberusEventException;
 
+    /**
+     *
+     * @param identifier
+     * @throws CerberusEventException
+     */
     void checkSQLIdentifier(String identifier) throws CerberusEventException;
 
+    /**
+     *
+     * @param identifier
+     * @throws CerberusEventException
+     */
     void checkSikuliIdentifier(String identifier) throws CerberusEventException;
 }

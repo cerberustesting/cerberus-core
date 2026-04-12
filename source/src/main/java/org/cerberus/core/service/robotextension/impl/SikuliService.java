@@ -86,6 +86,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_CLOSEAPP = "closeApp";
     public static final String SIKULI_SWITCHAPP = "switchApp";
     public static final String SIKULI_PASTE = "paste";
+    public static final String SIKULI_CLEARFIELD = "clearField";
     public static final String SIKULI_WAIT = "wait";
     public static final String SIKULI_WAITVANISH = "waitVanish";
     public static final String SIKULI_MOUSEOVER = "mouseOver";
@@ -715,6 +716,28 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
+            mes.resolveDescription("MESSAGE", actionResult.getMessageDescription())
+                    .resolveDescription("ELEMENT", generateSikuliObjectFromLocator(locator));
+            actionResult.setResultMessage(mes);
+            return actionResult;
+        }
+
+        return actionResult;
+    }
+
+    @Override
+    public AnswerItem<JSONObject> doSikuliActionClearField(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, 0, this.SIKULI_CLEARFIELD, locator, null, "", "");
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE_CLEARINPUT);
+            message.resolveDescription("ELEMENTFOUND", actionResult.getMessageDescription())
+                    .resolveDescription("ELEMENT", generateSikuliObjectFromLocator(locator));
+            actionResult.setResultMessage(message);
+            return actionResult;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEARFIELD_NO_SUCH_ELEMENT);
             mes.resolveDescription("MESSAGE", actionResult.getMessageDescription())
                     .resolveDescription("ELEMENT", generateSikuliObjectFromLocator(locator));
             actionResult.setResultMessage(mes);

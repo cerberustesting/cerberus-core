@@ -414,7 +414,7 @@ public class WebDriverService implements IWebDriverService {
             answer.setItem(element);
             Integer numberOfElement = this.getNumberOfElements(session, identifier);
             msg = AnswerUtil.getMessageDependingOnNbOfElement(numberOfElement, identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
- 
+
             /**
              * Element was found, so we can now highlight it if requested.
              */
@@ -1312,14 +1312,14 @@ public class WebDriverService implements IWebDriverService {
                     if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                         webElement.sendKeys(valueToType);
                     }
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-                    message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", answer.getResultMessage().getDescription()));
-                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     if (!StringUtil.isEmptyOrNULLString(valueToType)) {
-                        message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+                        message.resolveDescription("DATA", ParameterParserUtil.securePassword(valueToType, propertyName));
                     } else {
-                        message.setDescription(message.getDescription().replace("%DATA%", "No property"));
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE_CLEARINPUT);
                     }
+                    message.resolveDescription("ELEMENTFOUND", answer.getResultMessage().getDescription());
+                    message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
                     return message;
                 }
             }

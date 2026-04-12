@@ -164,6 +164,15 @@ public interface ISikuliService {
      * @param property
      * @return
      */
+    public AnswerItem<JSONObject> doSikuliActionClearField(Session session, String locator);
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param property
+     * @return
+     */
     public AnswerItem<JSONObject> doSikuliActionType(Session session, String locator, String property);
 
     /**
