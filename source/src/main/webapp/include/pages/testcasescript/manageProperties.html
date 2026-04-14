@@ -1,20 +1,102 @@
-<div class="modal fade"  id="modalProperty" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Property</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+<!-- Property Modal - Alpine.js/Tailwind -->
+<div x-data="propertyModal()"
+     x-show="open"
+     x-cloak
+     @modalproperty-open.window="handleOpen($event.detail)"
+     @modalproperty-close.window="open = false"
+     class="crb_modal"
+     id="modalProperty">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[700px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                    <i data-lucide="variable" class="w-5 h-5 text-purple-500"></i>
+                </div>
+                <div>
+                    <h5 class="modal-title !text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100">Property</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Property definition</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div id="firstRowProperty"></div>
-                <div id="secondRowProperty"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <div id="firstRowProperty" class="mb-3"></div>
+            <div id="secondRowProperty"></div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
         </div>
     </div>
 </div>
+
+<script>
+function propertyModal() {
+    return {
+        open: false,
+        isFullscreen: false,
+        handleOpen(detail) {
+            this.open = true;
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+        },
+        init() {
+            this.$watch('open', function(val) {
+                if (!val) { $('#modalProperty').trigger('hidden.bs.modal'); }
+            });
+        }
+    };
+}
+
+// ========== Bootstrap → Alpine Bridge (modalProperty only) ==========
+// Overrides $.fn.modal so that existing JS calls like
+//   data-toggle="modal" data-target="#modalProperty"
+// from TestCaseScript.js dispatch Alpine events instead of Bootstrap modals.
+// The other modals (addStepModal, modalOptions, modalStepOptions) are now
+// fully Alpine-driven from their own script tags.
+(function() {
+    var origModal = $.fn.modal;
+    $.fn.modal = function(action) {
+        if (this.length === 1) {
+            var id = this.attr('id');
+            if (id === 'modalProperty') {
+                if (action === 'hide') {
+                    window.dispatchEvent(new CustomEvent('modalproperty-close'));
+                } else if (action === 'show' || action === 'toggle' || typeof action === 'object') {
+                    window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
+                }
+                return this;
+            }
+        }
+        return origModal.apply(this, arguments);
+    };
+})();
+</script>

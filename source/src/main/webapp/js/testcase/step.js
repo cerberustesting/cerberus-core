@@ -18,178 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function displayStepOptionsModal(step, htmlElement) {
-
-    var user = getUser();
-    $("#modalStepOptions").find("h5").text("Override Step Option Values");
-
-    $("#stepLoop").val("");
-    $("#stepConditionOperator").val("");
-    $("#stepConditionVal1").val("");
-    $("#stepConditionVal2").val("");
-    $("#stepConditionVal3").val("");
-    $("#stepForceExe").prop("checked", false);
-    $("#timeoutStepConditionVal").val("");
-    $("#timeoutStepConditionAct").prop("checked", false);
-    $("#highlightStepConditionVal").val("");
-    $("#highlightStepConditionAct").prop("checked", false);
-    $("#minSimilarityStepConditionVal").val("");
-    $("#minSimilarityStepConditionAct").prop("checked", false);
-    $("#typeDelayStepConditionVal").val("");
-    $("#typeDelayStepConditionAct").prop("checked", false);
-
-
-//FATAL
-    if (step.isExecutionForced) {
-        $("#stepForceExe").prop("checked", true);
-    }
-//END OF FATAL
-
-//LOOP
-    $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, false).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
-    $("#stepLoop").val(step.loop);
-//END OF LOOP
-
-//CONDITION
-    $("#stepConditionOperator").empty();
-    for (var key in conditionNewUIList) {
-        $("#stepConditionOperator").append($("<option></option>").text(conditionNewUIList[key].label[user.language]).val(conditionNewUIList[key].value));
-    }
-    $("#stepConditionOperator").val(step.conditionOperator);
-    $("#stepConditionVal1").val(step.conditionValue1);
-    $("#stepConditionVal2").val(step.conditionValue2);
-    $("#stepConditionVal3").val(step.conditionValue3);
-    setPlaceholderCondition($("#stepConditionOperator"));
-    if (conditionNewUIList[step.conditionOperator].type ==="combo") {
-        appendActionsForConditionCombobox($("#stepconditionval4"), step.conditionOperator);
-        if (conditionNewUIList[step.conditionOperator].level ==="step"){
-            $("#stepconditionval4").val(step.conditionValue1);
-        }
-        if (conditionNewUIList[step.conditionOperator].level ==="action"){
-            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2);
-        }
-        if (conditionNewUIList[step.conditionOperator].level ==="control"){
-            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2+"-"+step.conditionValue3);
-        }
-    }
-
-//END OF CONDITION
-
-    $("#stepConditionOperator").off("change");
-    $("#stepConditionOperator").on("change", function () {
-        setModif(true);
-        setPlaceholderCondition($(this));
-        appendActionsForConditionCombobox($("#stepconditionval4"), $(this).val());
-    });
-    $("#stepConditionVal1").off("change");
-    $("#stepConditionVal1").on("change", function () {
-        setModif(true);
-    });
-    $("#stepConditionVal2").off("change");
-    $("#stepConditionVal2").on("change", function () {
-        setModif(true);
-    });
-    $("#stepConditionVal3").off("change");
-    $("#stepConditionVal3").on("change", function () {
-        setModif(true);
-    });
-    $("#stepLoop").off("change");
-    $("#stepLoop").on("change", function () {
-        setModif(true);
-    });
-    $("#stepForceExe").off("change");
-    $("#stepForceExe").on("change", function () {
-        setModif(true);
-    });
-
-    setOptionModal(step.conditionOptions, "StepCondition");
-
-
-
-    $("#timeoutStepConditionAct").off("change");
-    $("#timeoutStepConditionAct").on("change", function () {
-        setModif(true);
-    });
-    $("#timeoutStepConditionVal").off("change");
-    $("#timeoutStepConditionVal").on("change", function () {
-        setModif(true);
-    });
-    $("#minSimilarityStepConditionAct").off("change");
-    $("#minSimilarityStepConditionAct").on("change", function () {
-        setModif(true);
-    });
-    $("#minSimilarityStepConditionVal").off("change");
-    $("#minSimilarityStepConditionVal").on("change", function () {
-        setModif(true);
-    });
-    $("#highlightStepConditionAct").off("change");
-    $("#highlightStepConditionAct").on("change", function () {
-        setModif(true);
-    });
-    $("#highlightStepConditionVal").off("change");
-    $("#highlightStepConditionVal").on("change", function () {
-        setModif(true);
-    });
-    $("#typeDelayStepConditionAct").off("change");
-    $("#typeDelayStepConditionAct").on("change", function () {
-        setModif(true);
-    });
-    $("#typeDelayStepConditionVal").off("change");
-    $("#typeDelayStepConditionVal").on("change", function () {
-        setModif(true);
-    });
-
-
-    //EVENT ON SAVE
-    $("#optionStepSave").off("click");
-    $("#optionStepSave").click(function () {
-
-        step.isExecutionForced = $("#stepForceExe").is(':checked');
-        step.conditionOperator = $("#stepConditionOperator").val();
-        step.conditionValue1 = $("#stepConditionVal1").val();
-        step.conditionValue2 = $("#stepConditionVal2").val();
-        step.conditionValue3 = $("#stepConditionVal3").val();
-        if (conditionNewUIList[step.conditionOperator].type === "combo") {
-            step.conditionValue1 = $("#stepconditionval4 option:selected").attr("stepId");
-            step.conditionValue2 = $("#stepconditionval4 option:selected").attr("actionId") === undefined ? "":$("#stepconditionval4 option:selected").attr("actionId");
-            step.conditionValue3 = $("#stepconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#stepconditionval4 option:selected").attr("controlId");
-        }
-        step.loop = $("#stepLoop").val();
-
-
-        let newConditionOpts = [];
-        newConditionOpts.push({
-            "act": $("#timeoutStepConditionAct").prop("checked"),
-            "value": $("#timeoutStepConditionVal").val(),
-            "option": "timeout"
-        });
-        newConditionOpts.push({
-            "act": $("#minSimilarityStepConditionAct").prop("checked"),
-            "value": $("#minSimilarityStepConditionVal").val(),
-            "option": "minSimilarity"
-        });
-        newConditionOpts.push({
-            "act": $("#highlightStepConditionAct").prop("checked"),
-            "value": $("#highlightStepConditionVal").val(),
-            "option": "highlightElement"
-        });
-        newConditionOpts.push({
-            "act": $("#typeDelayStepConditionAct").prop("checked"),
-            "value": $("#typeDelayStepConditionVal").val(),
-            "option": "typeDelay"
-        });
-
-        if (JSON.stringify(step.conditionOptions) !== JSON.stringify(newConditionOpts)) {
-            step.conditionOptions = newConditionOpts;
-        }
-
-        //printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newOpts,"actionOption");
-        //printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newConditionOpts,"conditionOption");
-        //printLabelForCondition(secondRow,action.conditionOperator);
-        //printLabelForFatal(action.isFatal, $($(htmlElement)[0]).find(".secondRow"));
-
-    });
-};
+// displayStepOptionsModal has been moved to manageStepOptions.html for Alpine.js integration
 
 Step.prototype.setActions = function (actions, canUpdate) {
     //var start =  Date.now();
@@ -326,7 +155,7 @@ Step.prototype.show = function () {
     thisButtonContainer.append('<div style="margin-right: auto; margin-left: auto;" id="stepButtons">');
     $("#stepButtons").append('<button class="btn btn-default btnPurple" title="Is Use Step" data-toggle="tooltip" id="isUseStep"><span class="glyphicon glyphicon-lock"></span></button>');
     $("#stepButtons").append('<button class="btn btn-default btnLightPurple" title="Is Library" data-toggle="tooltip" id="isLib"><span class="glyphicon glyphicon-book"></span></button>');
-    $("#stepButtons").append('<button class="btn add-btn btnLightOrange" data-toggle="modal" data-target="#modalStepOptions" id="stepPlus"><span class="glyphicon glyphicon-cog"></span></button>');
+    $("#stepButtons").append('<button class="btn add-btn btnLightOrange" id="stepPlus"><span class="glyphicon glyphicon-cog"></span></button>');
     $("#stepButtons").append('<button class="btn add-btn btnLightRed" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>');
 
 
@@ -736,7 +565,7 @@ function loadLibraryStep(search, system) {
 
 function addStep(event) {
     var steps = event.data.steps;
-    $("#addStepModal").modal('show');
+    window.dispatchEvent(new CustomEvent('addstepmodal-open', { detail: {} }));
 
     // Setting the focus on the Description of the step.
     $('#addStepModal').on('shown.bs.modal', function () {
@@ -844,14 +673,16 @@ function showImportStepDetail(element) {
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-            '<div id="' + importInfoId + '" class="row">' +
-            '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-            '   <div name="importInfo" class="col-sm-5"></div>' +
-            '   <div class="col-sm-2">' +
-            '    <label class="checkbox-inline">' +
-            '        <input type="checkbox" name="useStep" checked> Use Step' +
-            '    </label>' +
+            '<div id="' + importInfoId + '" class="grid gap-1 p-3 mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" style="grid-template-columns: 1fr auto; align-items: center;">' +
+            '   <div class="flex items-center gap-2 min-w-0">' +
+            '       <span class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full text-[11px] font-semibold text-white bg-blue-500 shrink-0">' + importInfoIdx + '</span>' +
+            '       <span class="truncate font-medium text-slate-800 dark:text-slate-200">' + stepInfo.description + '</span>' +
             '   </div>' +
+            '   <div class="flex items-center gap-1.5 shrink-0">' +
+            '       <input type="checkbox" name="useStep" checked class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 cursor-pointer">' +
+            '       <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Use Step</span>' +
+            '   </div>' +
+            '   <div name="importInfo" class="text-[11px] text-slate-400 dark:text-slate-500 truncate" style="grid-column: 1 / -1;"></div>' +
             '</div>';
 
         $("#importDetail").append(importInfo);

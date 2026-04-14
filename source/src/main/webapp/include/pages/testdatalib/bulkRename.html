@@ -1,6 +1,6 @@
 <!-- DataLib Bulk Rename - Alpine.js/Tailwind refactored -->
 <div
-    x-data="{ open: false }"
+    x-data="{ open: false, isFullscreen: false }"
     x-show="open"
     x-cloak
     @bulkrename-modal-open.window="open = true"
@@ -11,9 +11,9 @@
     <!-- Overlay -->
     <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
-    <!-- Modal Card -->
-    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card rounded-2xl"
-         style="max-height: calc(100vh - 4rem); margin: 2rem 1rem; width: 520px;"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[520px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -23,7 +23,7 @@
          @click.stop>
 
         <!-- HEADER -->
-        <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
                     <i data-lucide="replace" class="w-5 h-5 text-blue-600"></i>
@@ -36,7 +36,11 @@
                 </div>
             </div>
             <div class="flex items-center gap-1">
-                <button @click="open = false; window.dispatchEvent(new CustomEvent('bulkrename-modal-close'))"
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
@@ -82,7 +86,7 @@
 
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
-            <button type="button" @click="open = false; window.dispatchEvent(new CustomEvent('bulkrename-modal-close'))" name="buttonClose"
+            <button type="button" @click="open = false" name="buttonClose"
                     class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
             <button type="button" id="bulkRenameValidate" name="bulkRename"
                     class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Rename</button>

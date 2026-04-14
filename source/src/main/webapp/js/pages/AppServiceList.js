@@ -167,7 +167,7 @@ function getTestCasesUsingService(service) {
             $('#testCaseListModal #testCaseListGroup').append(htmlContent);
         }
         hideLoaderInModal('#testCaseListModal');
-        $('#testCaseListModal').modal('show');
+        window.dispatchEvent(new CustomEvent('testcaselist-modal-open'));
 
     }).fail(handleErrorAjaxAfterTimeout);
 

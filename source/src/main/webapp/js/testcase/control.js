@@ -69,7 +69,7 @@ Control.prototype.generateContent = function () {
                     .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
-    var plusBtn = $("<button></button>").addClass("btn add-btn btnLightOrange").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var plusBtn = $("<button></button>").addClass("btn add-btn btnLightOrange").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn btnLightGreen").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn add-btn btnLightBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn btnLightRed").append($("<span></span>").addClass("glyphicon glyphicon-trash"));

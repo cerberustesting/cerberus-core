@@ -48,9 +48,7 @@ function initPage() {
     });
 
     // Redraw datatables inside modal when switching tabs via Alpine
-    $('#editTestcampaignModal').on('shown.bs.modal', function () {
-        if (window.lucide) lucide.createIcons();
-    });
+
 
     $(document).on('click', '#editTestcampaignModal [x-data] button', function() {
         setTimeout(function() {
@@ -60,9 +58,7 @@ function initPage() {
         }, 100);
     });
 
-    $("#viewTestcampaignModal").on('shown.bs.modal', function (e) {
-        $("#viewTestcampaignsTable").DataTable().columns.adjust();
-    })
+
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc("testcampaignsTable"), [1, 'asc']);

@@ -144,16 +144,20 @@
                             </div>
                             <div style="width: 180px; flex-shrink: 0;">
                                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="acceptNotificationsField">Accept Notifications</label>
-                                <div class="flex items-center gap-1 h-10" name="acceptNotifications" id="acceptNotifications" data-toggle="buttons">
-                                    <label class="btn btn-default active inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Default" data-toggle="popover" data-trigger="hover">
-                                        <input type="radio" name="acceptNotifications" id="acceptNotifications0" data-accnotif="0" autocomplete="off"> 0
-                                    </label>
-                                    <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Allow" data-toggle="popover" data-trigger="hover">
-                                        <input type="radio" name="acceptNotifications" id="acceptNotifications1" data-accnotif="1" autocomplete="off"> 1
-                                    </label>
-                                    <label class="btn btn-default inline-flex items-center justify-center h-8 px-3 rounded-md border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" title data-content="Block" data-toggle="popover" data-trigger="hover">
-                                        <input type="radio" name="acceptNotifications" id="acceptNotifications2" data-accnotif="2" autocomplete="off"> 2
-                                    </label>
+                                <div class="flex items-center gap-1 h-10" id="acceptNotifications"
+                                     x-data="{ accNotif: '0' }"
+                                     @accnotif-preselect.window="accNotif = String($event.detail)">
+                                    <template x-for="opt in [{v:'0',tip:'Default'},{v:'1',tip:'Allow'},{v:'2',tip:'Block'}]" :key="opt.v">
+                                        <button type="button"
+                                                @click="accNotif = opt.v"
+                                                :title="opt.tip"
+                                                class="inline-flex items-center justify-center h-8 px-3 rounded-md border text-xs font-medium transition cursor-pointer"
+                                                :class="accNotif === opt.v
+                                                    ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 text-blue-700 dark:text-blue-300 ring-1 ring-blue-400/30'
+                                                    : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                                                x-text="opt.v"></button>
+                                    </template>
+                                    <input type="hidden" name="acceptNotifications" :value="accNotif">
                                 </div>
                             </div>
                             <div class="flex-1">
@@ -450,7 +454,7 @@
             tcElement.parents("div.form-group").removeClass("has-error");
         }
 
-        data.acceptNotifications = formEdit.find("#acceptNotifications").find("label[class*='active'] > input").attr('data-accnotif');
+        data.acceptNotifications = formEdit.find("#acceptNotifications input[type='hidden']").val();
         data.isAcceptInsecureCerts = formEdit.find("#isAcceptInsecureCerts").prop("checked");
         data.robotIsActive = formEdit.find("#robotIsActive").prop("checked");
 
@@ -555,7 +559,7 @@
             formEdit.find("#type").val("");
             formEdit.find("#lbexemethod").val("ROUNDROBIN");
             formEdit.find("#extraParam").val("");
-            formEdit.find("#acceptNotifications").val("");
+            window.dispatchEvent(new CustomEvent('accnotif-preselect', { detail: 0 }));
             formEdit.find("#isAcceptInsecureCerts").prop("checked", true);
         } else {
             if (mode === "EDIT") {
@@ -586,7 +590,7 @@
             formEdit.find("#type").val(robot.type);
             formEdit.find("#lbexemethod").val(robot.lbexemethod);
             formEdit.find("#extraParam").val(robot.extraParam);
-            formEdit.find("#acceptNotifications").find("input[data-accnotif='" + robot.acceptNotifications + "']").off("click").click();
+            window.dispatchEvent(new CustomEvent('accnotif-preselect', { detail: robot.acceptNotifications }));
             formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
             loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
             loadExecutorsTable("editExecutorsTableBody", robot.executors);

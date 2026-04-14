@@ -575,7 +575,7 @@ function campaign_viewEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
-        $('#viewTestcampaignModal').modal('show');
+        window.dispatchEvent(new CustomEvent('viewtestcampaign-modal-open'));
 
     });
     refreshPopoverDocumentation("editTestcampaignModal");
@@ -621,7 +621,7 @@ function campaign_viewStatEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
-        $('#viewStatcampaignModal').modal('show');
+        window.dispatchEvent(new CustomEvent('viewstatcampaign-modal-open'));
 
     });
 

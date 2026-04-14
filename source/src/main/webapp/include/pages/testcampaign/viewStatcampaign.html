@@ -1,39 +1,64 @@
-<!--view statcampaign page-->
-<div data-backdrop="static" class="modal fade center" id="viewStatcampaignModal" tabindex="-1" role="dialog"
-     aria-labelledby="viewStatcampaignModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="viewStatcampaignModalLabel" name="viewStatcampaignField">view Statcampaign</h4>
-            </div>
-            <div class="modal-body">
+<!-- View Stat Campaign Modal - Alpine.js/Tailwind -->
+<div x-data="{ open: false, isFullscreen: false }"
+     x-show="open"
+     x-cloak
+     @viewstatcampaign-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); setTimeout(() => { if ($('#viewTagcampaignsTable_wrapper').length > 0) $('#viewTagcampaignsTable').DataTable().columns.adjust(); }, 300); })"
+     @viewstatcampaign-modal-close.window="open = false"
+     class="crb_modal"
+     id="viewStatcampaignModal">
 
-<!--                <ul id="tabscampview" class="nav nav-tabs" data-tabs="tabs">
-                    <li class="active"><a data-toggle="tab" href="#tabsCView-1" id="viewCTab1Text" name="tabtestcase">Test Case List</a></li>
-                    <li><a data-toggle="tab" href="#tabsCView-2" id="viewCTab2Text" name="tabtags">Tags Statistics</a></li>
-                </ul>
--->
-<!--                <div class="tab-content">
-                    <div class="center marginTop25 tab-pane fade in active" id="tabsCView-1">
-                        <div id="viewTestcampaignList">
-                            <table id="viewTestcampaignsTable" class="table table-hover display" name="viewTestcampaignsTable"></table>
-                            <div class="marginBottom20"></div>
-                        </div>
-                    </div>-->
-                    <div class="center marginTop25" id="tabsCView-2">
-                        <div id="viewTagcampaignList">
-                            <table id="viewTagcampaignsTable" class="table table-hover display" name="viewTagcampaignsTable"></table>
-                            <div class="marginBottom20"></div>
-                        </div>
-                    </div>
-<!--                </div>-->
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[1200px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-500"></i>
+                </div>
+                <div>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="viewStatcampaignModalLabel" name="viewStatcampaignField">View Statcampaign</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Tag statistics for this campaign</p>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
             </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <div id="tabsCView-2">
+                <div id="viewTagcampaignList" class="overflow-x-auto">
+                    <table id="viewTagcampaignsTable" class="table table-hover display" name="viewTagcampaignsTable" style="width:100%"></table>
+                    <div class="mb-5"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonClose">Close</button>
         </div>
     </div>
 </div>

@@ -248,36 +248,28 @@ function showHideRequirementPanelAdd() {
     }
 }
 
-function deleteEntryHandlerClick() {
-    var idLabel = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteLabel", {id: idLabel}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            // Redraw the datatable
-            var oTable = $("#labelsTable").dataTable();
-            oTable.fnDraw(false);
-            generateLabelTree();
-            var info = oTable.fnGetData().length;
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        // Show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function deleteEntryClick(id, label) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", id + " - " + label);
     messageComplete = messageComplete.replace("%TABLE%", " label ");
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_label", "btn_delete"), messageComplete, id, "", "", "");
+    crbConfirmDelete({
+        title: doc.getDocLabel("page_label", "btn_delete"),
+        html: messageComplete,
+        preConfirm: function() {
+            return $.post("DeleteLabel", {id: id}, "json").then(function (data) {
+                var messageType = getAlertType(data.messageType);
+                if (messageType === "success") {
+                    var oTable = $("#labelsTable").dataTable();
+                    oTable.fnDraw(false);
+                    generateLabelTree();
+                }
+                showMessageMainPage(messageType, data.message, false);
+                return data;
+            }).fail(handleErrorAjaxAfterTimeout);
+        }
+    });
 }
 
 function addEntryModalSaveHandler() {
