@@ -5,21 +5,22 @@
      class="crb_modal z-[9999]">
 
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-slate-900/80" @click="close()"></div>
+    <div class="absolute inset-0 bg-slate-900/60" @click="close()"></div>
 
     <!-- Card -->
-    <div :class="isFullscreen  ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-6xl rounded-2xl'"
-         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-6xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         @click.away="open = false">
+         @click.stop>
 
         <!-- HEADER -->
-        <div class="flex items-center justify-between px-6 py-4 mb-8">
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
 
             <!-- LEFT -->
             <div class="flex items-center gap-3">
@@ -31,73 +32,73 @@
                 </div>
 
                 <div>
-                    <h2 class="!text-lg !font-semibold !mb-0 !mt-2" x-text="$store.labels.getLabel('testcaseSimpleExecution','modaltitle')"></h2>
-                    <p class="text-xs text-slate-500" x-text="$store.labels.getLabel('testcaseSimpleExecution','modalsubtitle')"></p>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" x-text="$store.labels.getLabel('testcaseSimpleExecution','modaltitle')"></h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0" x-text="$store.labels.getLabel('testcaseSimpleExecution','modalsubtitle')"></p>
                 </div>
             </div>
 
             <!-- ACTIONS -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1">
 
                 <!-- FULLSCREEN -->
-                <button @click="isFullscreen = !isFullscreen" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <button @click="isFullscreen = !isFullscreen" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
                 </button>
 
                 <!-- CLOSE -->
-                <button @click="open = false" class="h-9 w-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                <button @click="open = false" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
 
         <!-- BODY -->
-        <div class="p-8">
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
 
             <!-- NOTIFY ANCHOR -->
             <div id="modalNotify"></div>
 
             <!-- TEST INFO -->
-            <div>
-                <div class="text-sm text-slate-500 flex items-center gap-2">
+            <div class="mb-4">
+                <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <i data-lucide="play" class="w-4 h-4"></i>
                     <span>Testcase to launch</span>
                 </div>
-                <div class="text-lg font-medium">
+                <div class="text-lg font-medium text-slate-900 dark:text-slate-100">
                     <span x-text="test"></span> /
                     <span x-text="testcase"></span> :
-                    <span class="font-thin" x-text="description"></span>
+                    <span class="font-thin text-slate-600 dark:text-slate-400" x-text="description"></span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-8">
+            <div class="grid grid-cols-3 gap-6">
 
                 <!-- ENVIRONMENTS -->
                 <div class="space-y-4 pr-4 border-r border-slate-200 dark:border-slate-700">
 
                     <!-- TITLE -->
                     <div class="flex items-center gap-3">
-                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
-                            <i data-lucide="earth" class="text-green-500 w-6 h-6"></i>
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl w-10 h-10 flex items-center justify-center">
+                            <i data-lucide="earth" class="text-green-500 w-5 h-5"></i>
                         </div>
-                        <h4 class="font-semibold text-lg">Choose environment</h4>
+                        <h4 class="font-semibold text-base text-slate-900 dark:text-slate-100">Choose environment</h4>
                     </div>
 
                     <!-- FILTER -->
                     <input type="text"
                            x-model="envFilter"
                            placeholder="Filter environments..."
-                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                           class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500"/>
 
                     <!-- LIST -->
-                    <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
+                    <div class="relative max-h-72 overflow-y-auto pr-1 space-y-2">
 
                         <!-- fade top -->
-                        <div class="pointer-events-none sticky top-0 h-6 bg-gradient-to-b dark:from-slate-800 from-slate-50 to-transparent"></div>
+                        <div class="pointer-events-none sticky top-0 h-4 bg-gradient-to-b from-white dark:from-slate-900 to-transparent"></div>
 
                         <template x-for="env in filteredEnvs()" :key="env.uiId">
-                            <button @click="toggleEnv(env)" class="w-full rounded-lg p-4 transition border text-left group"
-                                    :class="isEnvSelected(env) ? 'bg-blue-50/80 dark:bg-blue-950 border-blue-400 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
+                            <button @click="toggleEnv(env)" class="w-full rounded-lg p-3 transition border text-left group"
+                                    :class="isEnvSelected(env) ? 'bg-blue-50/80 dark:bg-blue-950 border-blue-400 shadow-sm' : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700'">
 
                                 <div class="flex items-center justify-between gap-3">
 
@@ -105,28 +106,28 @@
                                     <div class="min-w-0 flex-1">
 
                                         <!-- URL -->
-                                        <div class="text-sm font-medium truncate group-hover:text-blue-500"
+                                        <div class="text-sm font-medium truncate text-slate-900 dark:text-slate-100 group-hover:text-blue-500"
                                              :title="env.ip"
                                              x-text="env.ip">
                                         </div>
 
                                         <!-- HOST / INFO -->
-                                        <div class="text-xs text-slate-400 truncate"
+                                        <div class="text-xs text-slate-400 dark:text-slate-500 truncate"
                                              x-text="env.application">
                                         </div>
 
                                     </div>
 
                                     <!-- RIGHT BADGES -->
-                                    <div class="flex gap-2 shrink-0">
+                                    <div class="flex gap-1.5 shrink-0">
 
-                                        <span class="px-2 py-1 text-[10px] font-semibold rounded
+                                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded
                                                      bg-blue-100 text-blue-700
                                                      dark:bg-blue-900 dark:text-blue-300"
                                               x-text="env.country">
                                         </span>
 
-                                        <span class="px-2 py-1 text-[10px] font-semibold rounded
+                                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded
                                                      bg-green-100 text-green-700
                                                      dark:bg-green-900 dark:text-green-300"
                                               x-text="env.environment">
@@ -143,33 +144,33 @@
                 <div class="space-y-4 px-4 border-r border-slate-200 dark:border-slate-700">
 
                     <div class="flex items-center gap-3">
-                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
-                            <i data-lucide="bot" class="text-blue-500 w-6 h-6"></i>
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl w-10 h-10 flex items-center justify-center">
+                            <i data-lucide="bot" class="text-blue-500 w-5 h-5"></i>
                         </div>
-                        <h4 class="font-semibold text-lg">Choose robot</h4>
+                        <h4 class="font-semibold text-base text-slate-900 dark:text-slate-100">Choose robot</h4>
                     </div>
 
                     <input type="text"
                            x-model="robotFilter"
                            placeholder="Filter robots..."
-                           class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                           class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500"/>
 
                     <!-- LIST -->
-                    <div class="relative max-h-80 overflow-y-auto pr-2 space-y-3 no-scrollbar">
+                    <div class="relative max-h-72 overflow-y-auto pr-1 space-y-2">
 
                         <!-- fade top -->
-                        <div class="pointer-events-none sticky top-0 h-6 bg-gradient-to-b dark:from-slate-800 from-slate-50 to-transparent"></div>
+                        <div class="pointer-events-none sticky top-0 h-4 bg-gradient-to-b from-white dark:from-slate-900 to-transparent"></div>
 
                         <template x-for="robot in filteredRobots()" :key="robot.robot">
                             <button
                                     @click="toggleRobot(robot.robot)"
                                     class="w-full flex items-center justify-between rounded-lg p-3 transition border"
-                                    :class="selectedRobots.includes(robot.robot) ? 'bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-600 shadow-sm' : 'hover:bg-slate-100 dark:hover:bg-slate-900 border-transparent'">
+                                    :class="selectedRobots.includes(robot.robot) ? 'bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-600 shadow-sm' : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700'">
 
                                 <!-- LEFT -->
                                 <div class="flex items-center gap-3">
 
-                                    <!-- ICONES -->
+                                    <!-- ICONS -->
                                     <div class="flex items-center gap-1 shrink-0">
                                         <img :src="'images/platform-' + robot.platform + '.png'"
                                              class="w-6 h-6 object-contain opacity-80"
@@ -182,7 +183,7 @@
 
                                     <!-- TEXT -->
                                     <div>
-                                        <div class="font-medium leading-tight"
+                                        <div class="font-medium leading-tight text-slate-900 dark:text-slate-100"
                                              x-text="robot.robot"></div>
 
                                         <!-- STATUS + EXECUTORS -->
@@ -211,11 +212,11 @@
                 <div class="space-y-4 pl-4">
 
                     <!-- Header -->
-                    <div class="flex items-center gap-2">
-                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl w-12 h-12 flex items-center justify-center">
-                            <i data-lucide="sliders" class="text-orange-500 w-6 h-6"></i>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl w-10 h-10 flex items-center justify-center">
+                            <i data-lucide="sliders" class="text-orange-500 w-5 h-5"></i>
                         </div>
-                        <h4 class="font-semibold text-foreground">Customize execution settings</h4>
+                        <h4 class="font-semibold text-base text-slate-900 dark:text-slate-100">Execution settings</h4>
                         <button @click="saveSettings()"
                                 class="ml-auto text-green-600 hover:text-green-500 cursor-pointer">
                             <i data-lucide="save" class="w-4 h-4"></i>
@@ -228,14 +229,14 @@
                         <div class="flex items-center gap-3">
                             <div class="flex items-center gap-2 w-full">
 
-                                <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                    <i data-lucide="tag" class="w-4 h-4 text-muted-foreground"></i>
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="tag" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                                 </div>
                                 <input x-model="settings.tag"
                                        type="text"
                                        placeholder="Define execution tag"
                                        title="Tag"
-                                       class="flex-1 bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                                       class="flex-1 h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500"/>
 
                                 <button
                                         x-show="lastDispatchedTag"
@@ -243,7 +244,7 @@
                                         @click="settings.tag = lastDispatchedTag"
                                         type="button"
                                         title="Set the last tag"
-                                        class="h-8 w-8 flex items-center justify-center rounded-lg hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                        class="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
 
                                     <i data-lucide="corner-up-left"
                                        class="w-4 h-4 text-blue-600 dark:text-blue-300"></i>
@@ -254,43 +255,43 @@
 
                         <!-- Verbose -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="list" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="list" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                             </div>
-                            <div class="flex-1 flex rounded-lg bg-muted/50 p-1">
+                            <div class="flex-1 flex rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
                                 <button @click="settings.verbose=0"
-                                        :class="settings.verbose===0 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        :class="settings.verbose===0 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                         class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Minimum">Minimum</button>
                                 <button @click="settings.verbose=1"
-                                        :class="settings.verbose===1 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        :class="settings.verbose===1 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                         class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Standard">Standard</button>
                                 <button @click="settings.verbose=2"
-                                        :class="settings.verbose===2 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        :class="settings.verbose===2 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                         class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Maximum">Maximum</button>
                             </div>
                         </div>
 
                         <!-- Timeout -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="clock" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="clock" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                             </div>
                             <input x-model="settings.timeout"
                                    type="number"
                                    placeholder="Override timeout (ms)"
                                    title="Timeout"
-                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500"/>
                         </div>
 
                         <!-- Retries -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="repeat" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="repeat" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                             </div>
-                            <div class="flex rounded-lg bg-muted/50 p-1">
+                            <div class="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-1">
                                 <template x-for="i in 4" :key="i">
                                     <button @click="settings.retries=i-1"
-                                            :class="settings.retries===i-1 ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                            :class="settings.retries===i-1 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                             class="w-10 h-9 text-sm font-medium rounded-md transition-all duration-200" :title="i-1">
                                         <span x-text="i-1"></span>
                                     </button>
@@ -300,27 +301,27 @@
 
                         <!-- Priority -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="arrow-up" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="arrow-up" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                             </div>
                             <input x-model="settings.priority"
                                    type="number"
                                    placeholder="Override priority (default 1000)"
                                    title="Priority"
-                                   class="w-full bg-slate-100 dark:bg-slate-900 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-400"/>
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500"/>
                         </div>
 
                         <!-- Manual / Auto Execution -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="zap" class="w-4 h-4 text-muted-foreground"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="zap" class="w-4 h-4 text-slate-400 dark:text-slate-500"></i>
                             </div>
-                            <div class="flex bg-muted/50 rounded-lg p-1">
+                            <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                                 <button @click="settings.manual='Y'"
-                                        :class="settings.manual=='Y' ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        :class="settings.manual=='Y' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                         class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Manual">Manual</button>
                                 <button @click="settings.manual='N'"
-                                        :class="settings.manual=='N' ? 'bg-slate-200 dark:bg-slate-900 text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                                        :class="settings.manual=='N' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
                                         class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200" title="Auto">Auto</button>
                             </div>
                         </div>
@@ -330,21 +331,21 @@
 
             <!-- ERROR -->
             <template x-if="error">
-                <div class="bg-red-100 text-red-700 p-3 rounded-xl text-sm" x-text="error"></div>
+                <div class="bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-3 rounded-xl text-sm mt-4" x-text="error"></div>
             </template>
+        </div>
 
-            <!-- FOOTER -->
-            <div class="flex justify-end gap-4 pt-6">
-                <button @click="close()"
-                        class="px-6 py-2 h-10 rounded-lg !text-slate-700 bg-slate-200 hover:bg-slate-300">
-                    Close
-                </button>
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button @click="close()"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                Close
+            </button>
 
-                <button @click="submit()"
-                        class="px-6 py-2 h-10 rounded-lg bg-blue-600 !text-white hover:bg-blue-700 shadow">
-                    ▶ Run
-                </button>
-            </div>
+            <button @click="submit()"
+                    class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition flex items-center gap-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i> Run
+            </button>
         </div>
     </div>
 </div>

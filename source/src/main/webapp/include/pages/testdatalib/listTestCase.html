@@ -1,38 +1,133 @@
-<!-- Test Case List-->
-<div data-backdrop="static" class="modal fade center" id="testCaseListModal" tabindex="-1" role="dialog" aria-labelledby="testCaseListModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md" style="width:900px">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="testCaseListModalLabel">List of test cases affected by this entry</h4>
-            </div>
-            <div class="modal-body marginLeft5">                 
-                <div id="testCaseListPanel">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div>
-                                <div class="list-group" id="testCaseListGroup">
-                                    <a class="list-group-item text-center active ListItem" data-remote="true" href="#" id="ListTitle">
-                                        <b><span class="pull-left" id="groupTitle">Test cases affected by this entry</span></b>
-                                        <b><span class="pull-right" id="totalTestCases"></span></b>
-                                    </a>                                      
-                                </div>  
-                            </div>
-                        </div>
-                    </div>  
+<!-- Test Case List Modal - Alpine.js/Tailwind -->
+<div x-data="{ open: false, isFullscreen: false }"
+     x-show="open"
+     x-cloak
+     @testcaselist-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+     @testcaselist-modal-close.window="open = false"
+     x-init="$watch('open', val => { if (!val) { $('#testCaseListModal').trigger('hidden.bs.modal'); } })"
+     class="crb_modal"
+     id="testCaseListModal">
 
-                </div>   
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[900px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                    <i data-lucide="list" class="w-5 h-5 text-indigo-500"></i>
+                </div>
+                <div>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="testCaseListModalLabel">List of test cases affected by this entry</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Test cases using this data library entry</p>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button id="closeButton" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>                
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
             </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <div id="testCaseListPanel">
+                <!-- Total count badge -->
+                <div class="flex items-center justify-between mb-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+                    <span class="text-sm font-semibold text-indigo-700 dark:text-indigo-300" id="groupTitle">Test cases affected by this entry</span>
+                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400" id="totalTestCases"></span>
+                </div>
+                <!-- Dynamic list populated by JS -->
+                <div class="space-y-1" id="testCaseListGroup">
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" id="closeButton"
+                    onclick="window.dispatchEvent(new CustomEvent('testcaselist-modal-close'))"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Close</button>
         </div>
     </div>
 </div>
-<!--end <!-- Test Case List--> 
 
-
-
-
-
+<style>
+/* Style for dynamically generated list items from TestDataLibList.js / AppServiceList.js */
+#testCaseListModal #testCaseListGroup .ListItem {
+    display: block;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #334155;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: white;
+    transition: all 0.15s;
+    cursor: pointer;
+    margin-bottom: 0.25rem;
+}
+.dark #testCaseListModal #testCaseListGroup .ListItem {
+    color: #cbd5e1;
+    background: #1e293b;
+    border-color: #334155;
+}
+#testCaseListModal #testCaseListGroup .ListItem:hover {
+    background: #f0f9ff;
+    border-color: #93c5fd;
+}
+.dark #testCaseListModal #testCaseListGroup .ListItem:hover {
+    background: #0f172a;
+    border-color: #38bdf8;
+}
+#testCaseListModal #testCaseListGroup .ListItem.active,
+#testCaseListModal #testCaseListGroup #ListTitle {
+    display: none; /* Hide the original Bootstrap title row, we use our own */
+}
+#testCaseListModal #testCaseListGroup .list-group-submenu {
+    padding-left: 1rem;
+    margin-bottom: 0.25rem;
+}
+#testCaseListModal #testCaseListGroup .sub-item {
+    display: block;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem;
+    height: auto !important;
+    border: 1px solid #f1f5f9;
+    border-radius: 0.375rem;
+    margin-bottom: 0.125rem;
+    background: #fafbfc;
+}
+.dark #testCaseListModal #testCaseListGroup .sub-item {
+    background: #0f172a;
+    border-color: #1e293b;
+}
+#testCaseListModal #testCaseListGroup .sub-item a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+#testCaseListModal #testCaseListGroup .sub-item a:hover {
+    text-decoration: underline;
+}
+#testCaseListModal .pull-left { float: none !important; display: inline; }
+#testCaseListModal .pull-right { float: none !important; display: inline; margin-left: 0.5rem; color: #94a3b8; font-size: 0.75rem; }
+#testCaseListModal .menu-ico-collapse { margin-left: 0.5rem; }
+</style>

@@ -1,115 +1,379 @@
-<div class="modal fade center"  id="modalStepOptions" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Options</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+<!-- Step Options Modal - Alpine.js/Tailwind -->
+<div x-data="{ open: false, isFullscreen: false }"
+     x-show="open"
+     x-cloak
+     @modalstepoptions-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+     @modalstepoptions-close.window="open = false"
+     class="crb_modal"
+     id="modalStepOptions">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[900px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                    <i data-lucide="settings-2" class="w-5 h-5 text-orange-500"></i>
+                </div>
+                <div>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100">Override Step Option Values</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Configure step execution, loop, condition &amp; overrides</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="row" id="stepHiddenRow">
-                    <div class="col-sm-12 col-md-12">
-                        <div class="input-group marginBottom10">
-                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup">
-                                <span class='glyphicon glyphicon-step-forward pull-left'></span> Force execution even if fatal event triggered</span>
-                            <input type="text" class="form-control" disabled style="border: 0px;" aria-describedby="timeoutGroup">
-                            <span class="input-group-addon"><input type="checkbox" id="stepForceExe"  aria-label="..."></span>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+            <!-- ===================== EXECUTION SETTINGS ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-sky-500"></i>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Execution</span>
+                </div>
+
+                <div class="flex gap-3">
+                    <!-- Force Execution -->
+                    <div style="width: 160px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="forceExeField">Force Execution</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="stepForceExe">
                         </div>
                     </div>
-                    <div>
-                        <div class="col-sm-12 marginTop20">
-                            <div class="panel panel-default">
-                                <div class="pill40 light-primary pull-left">
-                                    <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
-                                </div>
-                                <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
-                                    Loop
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-12">
-                            <div class="col-lg-3 col-md-6 col-sm-12 form-group">
-                                <label>Step Loop</label>
-                                <select class="form-control input-sm" id="stepLoop"></select>
-                            </div>
-                        </div>
-                        <div class="col-sm-12 conditions">
-                            <div class="col-lg-3 col-md-6 col-sm-12 form-group">
-                                <label>Step Condition Operation</label>
-                                <select class="form-control input-sm" id="stepConditionOperator"></select>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 form-group v1">
-                                <label class="conditionVal1Label">Step Condition Parameter</label>
-                                <input class="form-control input-sm" id="stepConditionVal1">
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 form-group v2">
-                                <label class="conditionVal2Label">Step Condition Parameter</label>
-                                <input class="form-control input-sm" id="stepConditionVal2">
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-12 form-group v3">
-                                <label class="conditionVal3Label">Step Condition Parameter</label>
-                                <input class="form-control input-sm" id="stepConditionVal3">
-                            </div>
-                            <div class="col-lg-9 form-group v4">
-                                <label class="conditionVal4Label">stepconditionval4</label>
-                                <select class="form-control input-sm" id="stepconditionval4"></select>
-                            </div>
-                        </div>
+                    <!-- Loop -->
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="loopField">Loop</label>
+                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepLoop"></select>
                     </div>
                 </div>
-                <div class="row" id="EditScriptPanel">
-                    <div class="col-sm-12 marginTop20">
-                        <div class="panel panel-default">
-                            <div class="pill40 light-primary pull-left">
-                                <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
-                            </div>
-                            <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
-                                Condition Parameters
-                            </div>
+            </div>
+
+            <!-- ===================== CONDITION SECTION ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="git-branch" class="w-4 h-4 text-green-500"></i>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Condition</span>
+                </div>
+
+                <div class="conditions">
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Condition Operator</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepConditionOperator"></select>
                         </div>
                     </div>
-                    <div class="form-horizontal" id="overrideStepConditionParameter">
-                        <div class="list-group marginTop10">
-                            <div class="col-sm-12">
-                                <div class="col-sm-12 col-md-6">
-                                    <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-time pull-left'></span> Timeout</span>
-                                        <input type="text" class="form-control" id="timeoutStepConditionVal" aria-describedby="timeoutGroup" placeholder="in ms (ex: 2000)">
-                                        <span class="input-group-addon"><input type="checkbox" id="timeoutStepConditionAct"  aria-label="..."></span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-picture pull-left'></span> Min Similarity</span>
-                                        <input type="text" class="form-control" id="minSimilarityStepConditionVal" aria-describedby="timeoutGroup" placeholder="from 0.0 to 1.0 (ex: 0.7)">
-                                        <span class="input-group-addon"><input type="checkbox" id="minSimilarityStepConditionAct"  aria-label="..."></span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-text-color pull-left'></span> Highlight</span>
-                                        <input type="text" class="form-control" id="highlightStepConditionVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 2)">
-                                        <span class="input-group-addon"><input type="checkbox" id="highlightStepConditionAct"  aria-label="..."></span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-text-background pull-left'></span> TypeDelay</span>
-                                        <input type="text" class="form-control" id="typeDelayStepConditionVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 0.3)">
-                                        <span class="input-group-addon"><input type="checkbox" id="typeDelayStepConditionAct"  aria-label="..."></span>
-                                    </div>
-                                </div>
+
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1 v1">
+                            <label class="conditionVal1Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 1</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepConditionVal1">
+                        </div>
+                        <div class="flex-1 v2">
+                            <label class="conditionVal2Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 2</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepConditionVal2">
+                        </div>
+                        <div class="flex-1 v3">
+                            <label class="conditionVal3Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 3</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepConditionVal3">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mb-3 v4">
+                        <div class="flex-1">
+                            <label class="conditionVal4Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 4</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="stepconditionval4"></select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 v5">
+                        <div style="width: 160px; flex-shrink: 0;">
+                            <label class="conditionVal5Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 5</label>
+                            <div class="flex items-center h-10">
+                                <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="stepconditionval5" name="stepconditionval5">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id='optionStepSave'>OK</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+            <!-- ===================== CONDITION PARAMETERS ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-purple-500"></i>
+                    <span id="overrideStepConditionParameter" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Condition Parameters</span>
+                </div>
+
+                <!-- Timeout + Min Similarity -->
+                <div class="flex gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Timeout</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="timeoutStepConditionVal" placeholder="in ms (ex: 2000)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="timeoutStepConditionAct">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Min Similarity</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="minSimilarityStepConditionVal" placeholder="0.0 to 1.0 (ex: 0.7)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="minSimilarityStepConditionAct">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlight + TypeDelay -->
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Highlight</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="highlightStepConditionVal" placeholder="in s (ex: 2)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="highlightStepConditionAct">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">TypeDelay</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="typeDelayStepConditionVal" placeholder="in s (ex: 0.3)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="typeDelayStepConditionAct">
+                        </div>
+                    </div>
+                </div>
             </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('modalstepoptions-close'))"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    name="buttonClose">Close</button>
+            <button type="button" id="optionStepSave"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition"
+                    name="buttonSave">OK</button>
         </div>
     </div>
 </div>
+
+<script>
+/**
+ * displayStepOptionsModal — Moved from step.js for Alpine.js integration.
+ * Called by step.js $('#stepPlus').click().
+ * Populates the modal form, binds the save handler, then opens the modal via Alpine event.
+ */
+function displayStepOptionsModal(step, htmlElement) {
+
+    var user = getUser();
+    $("#modalStepOptions").find("h5").text("Override Step Option Values");
+
+    $("#stepLoop").val("");
+    $("#stepConditionOperator").val("");
+    $("#stepConditionVal1").val("");
+    $("#stepConditionVal2").val("");
+    $("#stepConditionVal3").val("");
+    $("#stepForceExe").prop("checked", false);
+    $("#timeoutStepConditionVal").val("");
+    $("#timeoutStepConditionAct").prop("checked", false);
+    $("#highlightStepConditionVal").val("");
+    $("#highlightStepConditionAct").prop("checked", false);
+    $("#minSimilarityStepConditionVal").val("");
+    $("#minSimilarityStepConditionAct").prop("checked", false);
+    $("#typeDelayStepConditionVal").val("");
+    $("#typeDelayStepConditionAct").prop("checked", false);
+
+
+//FATAL
+    if (step.isExecutionForced) {
+        $("#stepForceExe").prop("checked", true);
+    }
+//END OF FATAL
+
+//LOOP
+    $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, false).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
+    $("#stepLoop").val(step.loop);
+//END OF LOOP
+
+//CONDITION
+    $("#stepConditionOperator").empty();
+    for (var key in conditionNewUIList) {
+        $("#stepConditionOperator").append($("<option></option>").text(conditionNewUIList[key].label[user.language]).val(conditionNewUIList[key].value));
+    }
+    $("#stepConditionOperator").val(step.conditionOperator);
+    $("#stepConditionVal1").val(step.conditionValue1);
+    $("#stepConditionVal2").val(step.conditionValue2);
+    $("#stepConditionVal3").val(step.conditionValue3);
+    setPlaceholderCondition($("#stepConditionOperator"));
+    if (conditionNewUIList[step.conditionOperator].type ==="combo") {
+        appendActionsForConditionCombobox($("#stepconditionval4"), step.conditionOperator);
+        if (conditionNewUIList[step.conditionOperator].level ==="step"){
+            $("#stepconditionval4").val(step.conditionValue1);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="action"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="control"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2+"-"+step.conditionValue3);
+        }
+    }
+
+//END OF CONDITION
+
+    $("#stepConditionOperator").off("change");
+    $("#stepConditionOperator").on("change", function () {
+        setModif(true);
+        setPlaceholderCondition($(this));
+        appendActionsForConditionCombobox($("#stepconditionval4"), $(this).val());
+    });
+    $("#stepConditionVal1").off("change");
+    $("#stepConditionVal1").on("change", function () {
+        setModif(true);
+    });
+    $("#stepConditionVal2").off("change");
+    $("#stepConditionVal2").on("change", function () {
+        setModif(true);
+    });
+    $("#stepConditionVal3").off("change");
+    $("#stepConditionVal3").on("change", function () {
+        setModif(true);
+    });
+    $("#stepLoop").off("change");
+    $("#stepLoop").on("change", function () {
+        setModif(true);
+    });
+    $("#stepForceExe").off("change");
+    $("#stepForceExe").on("change", function () {
+        setModif(true);
+    });
+
+    setOptionModal(step.conditionOptions, "StepCondition");
+
+
+
+    $("#timeoutStepConditionAct").off("change");
+    $("#timeoutStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutStepConditionVal").off("change");
+    $("#timeoutStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityStepConditionAct").off("change");
+    $("#minSimilarityStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityStepConditionVal").off("change");
+    $("#minSimilarityStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightStepConditionAct").off("change");
+    $("#highlightStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightStepConditionVal").off("change");
+    $("#highlightStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayStepConditionAct").off("change");
+    $("#typeDelayStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayStepConditionVal").off("change");
+    $("#typeDelayStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+
+
+    //EVENT ON SAVE
+    $("#optionStepSave").off("click");
+    $("#optionStepSave").click(function () {
+
+        step.isExecutionForced = $("#stepForceExe").is(':checked');
+        step.conditionOperator = $("#stepConditionOperator").val();
+        step.conditionValue1 = $("#stepConditionVal1").val();
+        step.conditionValue2 = $("#stepConditionVal2").val();
+        step.conditionValue3 = $("#stepConditionVal3").val();
+        if (conditionNewUIList[step.conditionOperator].type === "combo") {
+            step.conditionValue1 = $("#stepconditionval4 option:selected").attr("stepId");
+            step.conditionValue2 = $("#stepconditionval4 option:selected").attr("actionId") === undefined ? "":$("#stepconditionval4 option:selected").attr("actionId");
+            step.conditionValue3 = $("#stepconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#stepconditionval4 option:selected").attr("controlId");
+        }
+        step.loop = $("#stepLoop").val();
+
+
+        let newConditionOpts = [];
+        newConditionOpts.push({
+            "act": $("#timeoutStepConditionAct").prop("checked"),
+            "value": $("#timeoutStepConditionVal").val(),
+            "option": "timeout"
+        });
+        newConditionOpts.push({
+            "act": $("#minSimilarityStepConditionAct").prop("checked"),
+            "value": $("#minSimilarityStepConditionVal").val(),
+            "option": "minSimilarity"
+        });
+        newConditionOpts.push({
+            "act": $("#highlightStepConditionAct").prop("checked"),
+            "value": $("#highlightStepConditionVal").val(),
+            "option": "highlightElement"
+        });
+        newConditionOpts.push({
+            "act": $("#typeDelayStepConditionAct").prop("checked"),
+            "value": $("#typeDelayStepConditionVal").val(),
+            "option": "typeDelay"
+        });
+
+        if (JSON.stringify(step.conditionOptions) !== JSON.stringify(newConditionOpts)) {
+            step.conditionOptions = newConditionOpts;
+        }
+
+        //printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newOpts,"actionOption");
+        //printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newConditionOpts,"conditionOption");
+        //printLabelForCondition(secondRow,action.conditionOperator);
+        //printLabelForFatal(action.isFatal, $($(htmlElement)[0]).find(".secondRow"));
+
+        // Close modal via Alpine event
+        window.dispatchEvent(new CustomEvent('modalstepoptions-close'));
+    });
+
+    // Open modal via Alpine event
+    window.dispatchEvent(new CustomEvent('modalstepoptions-open', { detail: {} }));
+};
+</script>

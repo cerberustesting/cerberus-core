@@ -1,33 +1,207 @@
-<!-- Lib -->
-<div data-backdrop="static" class="modal fade center" id="addStepModal" tabindex="-1" role="dialog" aria-labelledby="addStepModal" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
-        <div class="modal-content">
-            <div class="modal-header card">
-                <span class="fa fa-tag fa-fw"></span>
-                <label id="modalTitle">Add Step</label>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="form-group form-group-sm col-xs-12">
-                        <label class="control-label" for="description" name="descriptionField">Description</label>
-                        <input class="form-control input-sm" name="description" id="description" type="text">
-                    </div>
-                </div>
-                <div id="importDetail" style="display: none;">
-                </div>
-                <h3 class="modal-subtitle marginTop20">Import from Library</h3>
-                <div class="just-padding row">
-                    <input class="form-control input-sm" name="search" id="search" type="text" placeholder="Search">
-                    <div class="list-group list-group-root well" id="lib" style="max-height: 500px; overflow-y: scroll;">
+<!-- Add Step Modal - Alpine.js/Tailwind -->
+<div x-data="addStepModal()"
+     x-show="open"
+     x-cloak
+     @addstepmodal-open.window="handleOpen($event.detail)"
+     @addstepmodal-close.window="open = false"
+     class="crb_modal"
+     id="addStepModal">
 
-                    </div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[600px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+                    <i data-lucide="plus-circle" class="w-5 h-5 text-sky-500"></i>
+                </div>
+                <div>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" name="addStepField">Add Step</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Create a new step or import from library</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" name="buttonAdd" id="addStepConfirm">Add</button>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
             </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
+                <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all crb-autocomplete-variable"
+                       name="description" id="description" type="text" placeholder="Enter step description...">
+            </div>
+
+            <!-- Import Detail (populated dynamically by JS) -->
+            <div id="importDetail" style="display: none;" class="mb-3 p-3 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50/50 dark:bg-sky-900/20 space-y-2"></div>
+
+            <!-- Import from Library -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="library" class="w-4 h-4 text-sky-500"></i>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="importField">Import from Library</span>
+                </div>
+                <input class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all mb-3"
+                       name="search" id="search" type="text" placeholder="Search library steps...">
+                <div class="list-group list-group-root" id="lib" style="max-height: 400px; overflow-y: auto;"
+                     ></div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    name="buttonClose">Close</button>
+            <button type="button" id="addStepConfirm"
+                    @click="$nextTick(() => { open = false })"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition"
+                    name="buttonAdd">Add</button>
         </div>
     </div>
 </div>
+
+<script>
+function addStepModal() {
+    return {
+        open: false,
+        isFullscreen: false,
+        handleOpen(detail) {
+            this.open = true;
+            this.$nextTick(function() {
+                if (window.lucide) lucide.createIcons();
+                $('#addStepModal').trigger('shown.bs.modal');
+            });
+        },
+        init() {
+            this.$watch('open', function(val) {
+                if (!val) { $('#addStepModal').trigger('hidden.bs.modal'); }
+            });
+        }
+    };
+}
+</script>
+
+<style>
+/* Add Step Modal — scoped styles for dynamically generated content */
+#addStepModal #lib details {
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 0.375rem;
+    overflow: hidden;
+}
+.dark #addStepModal #lib details {
+    border-color: #334155;
+}
+#addStepModal #lib details summary {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #334155;
+    background: #f8fafc;
+    transition: background 0.15s;
+    list-style: none;
+}
+.dark #addStepModal #lib details summary {
+    color: #cbd5e1;
+    background: #1e293b;
+}
+#addStepModal #lib details summary:hover {
+    background: #f1f5f9;
+}
+.dark #addStepModal #lib details summary:hover {
+    background: #334155;
+}
+#addStepModal #lib details[open] > summary {
+    border-bottom: 1px solid #e2e8f0;
+}
+.dark #addStepModal #lib details[open] > summary {
+    border-bottom-color: #334155;
+}
+#addStepModal #lib details details {
+    border: none;
+    border-left: 2px solid #e2e8f0;
+    border-radius: 0;
+    margin: 0.25rem 0 0.25rem 0.75rem;
+}
+.dark #addStepModal #lib details details {
+    border-left-color: #475569;
+}
+#addStepModal #lib details details summary {
+    background: transparent;
+    font-size: 0.75rem;
+    font-weight: 400;
+    padding: 0.375rem 0.75rem;
+}
+#addStepModal #lib .list-group-item {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #334155;
+    text-decoration: none;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    background: transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+}
+.dark #addStepModal #lib .list-group-item {
+    color: #cbd5e1;
+    border-bottom-color: #1e293b;
+}
+#addStepModal #lib .list-group-item:hover {
+    background: #eff6ff;
+    color: #0369a1;
+}
+.dark #addStepModal #lib .list-group-item:hover {
+    background: #0f172a;
+    color: #38bdf8;
+}
+#addStepModal #lib .list-group-item.selected {
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 500;
+}
+.dark #addStepModal #lib .list-group-item.selected {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+#addStepModal #lib .list-group-item .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.375rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: white;
+    background: #3b82f6;
+    margin-left: 0.5rem;
+}
+</style>

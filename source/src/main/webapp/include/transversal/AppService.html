@@ -71,7 +71,7 @@
                             <input type="text" class="w-full h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500" name="service" id="service">
                             <input type="text" name="originalService" id="originalService" style="display:none;"/>
                         </div>
-                        <div class="flex-1" x-data="crbDropdown({id:'srvType', hiddenInput:'type', preselectEvent:'srv-type-preselect', loader: crbLoaders.invariant('SRVTYPE')})" @click.stop>
+                        <div class="flex-1" x-data="crbDropdown({id:'srvType', hiddenInput:'type', preselectEvent:'srv-type-preselect', loader: crbLoaders.invariant('SRVTYPE'), onSelect: function(item) { updateMethod_and_refreshDisplayOnTypeChange(); }})" @click.stop>
                             <label for="type" name="typeField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Type</label>
                             <div class="flex items-center gap-2">
                                 <div class="relative flex-1">
@@ -185,7 +185,7 @@
                             </div>
                             <div class="flex gap-3 items-end mb-4">
                                 <!-- Method -->
-                                <div class="flex-1" x-data="crbDropdown({id:'method', hiddenInput:'method', preselectEvent:'method-preselect', filterEvent:'method-filter', loader: crbLoaders.invariant('SRVMETHOD')})" @click.stop>
+                                <div class="flex-1" x-data="crbDropdown({id:'method', hiddenInput:'method', preselectEvent:'method-preselect', filterEvent:'method-filter', loader: crbLoaders.invariant('SRVMETHOD'), onSelect: function(item) { refreshDisplayOnTypeChange(); }})" @click.stop>
                                     <label for="method" name="methodField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Method</label>
                                     <input type="hidden" id="method" name="method">
                                     <div class="relative w-full">
@@ -219,7 +219,7 @@
                                     </div>
                                 </div>
                                 <!-- Body Type -->
-                                <div class="flex-1" x-data="crbDropdown({id:'bodyType', hiddenInput:'bodyType', preselectEvent:'bodytype-preselect', loader: crbLoaders.invariant('SRVBODYTYPE')})" @click.stop>
+                                <div class="flex-1" x-data="crbDropdown({id:'bodyType', hiddenInput:'bodyType', preselectEvent:'bodytype-preselect', loader: crbLoaders.invariant('SRVBODYTYPE'), onSelect: function(item) { refreshDisplayOnTypeChange(); }})" @click.stop>
                                     <label for="bodyType" name="bodyTypeField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Body Type</label>
                                     <input type="hidden" id="bodyType" name="bodyType">
                                     <div class="relative w-full">
@@ -450,7 +450,7 @@
                         <!-- TAB 7: Authorization -->
                         <div x-show="showEditTab === 'auth'" x-cloak id="tabsEdit-7">
                             <div class="mb-4" id="authTypeSection">
-                                <div class="max-w-md" x-data="crbDropdown({id:'authType', hiddenInput:'authType', preselectEvent:'authtype-preselect', loader: crbLoaders.invariant('AUTHTYPE')})" @click.stop>
+                                <div class="max-w-md" x-data="crbDropdown({id:'authType', hiddenInput:'authType', preselectEvent:'authtype-preselect', loader: crbLoaders.invariant('AUTHTYPE'), onSelect: function(item) { refreshAuthorDisplayOnAnyChange(); }})" @click.stop>
                                     <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="authType" name="authTypeField">Authorization Type</label>
                                     <input type="hidden" id="authType" name="authType">
                                     <div class="relative w-full">
@@ -988,7 +988,6 @@ function prepareAppServiceModal() {
     $("#editSoapLibraryModal #type").off("change");
     $("#editSoapLibraryModal #type").change(function () {
         updateMethod_and_refreshDisplayOnTypeChange();
-//        refreshDisplayOnTypeChange();
     });
 
     $("#editSoapLibraryModal #isAvroEnable").off("change");
@@ -1748,30 +1747,32 @@ function updateMethod_and_refreshDisplayOnTypeChange() {
     let lMethod = $('#editSoapLibraryModal #method').prop("value");
     let lType = $('#editSoapLibraryModal #type').prop("value");
 
+    var newMethod = null;
     if (lType === "SOAP") {
         if (lMethod !== "") {
-            $('#editSoapLibraryModal #method').prop("value", "");
+            newMethod = "";
         }
     } else if (lType === "FTP") {
         if ((lMethod !== "GET") && (lMethod !== "POST")) {
-            $('#editSoapLibraryModal #method').prop("value", "GET");
+            newMethod = "GET";
         }
-
     } else if (lType === "KAFKA") {
         if ((lMethod !== "PRODUCE") && (lMethod !== "SEARCH")) {
-            $('#editSoapLibraryModal #method').prop("value", "SEARCH");
+            newMethod = "SEARCH";
         }
-
     } else if (lType === "MONGODB") {
         if ((lMethod !== "FIND") && (lMethod !== "UPDATEONE")) {
-            $('#editSoapLibraryModal #method').prop("value", "FIND");
+            newMethod = "FIND";
         }
-
     } else {
         if ((lMethod !== "GET") && (lMethod !== "POST") && (lMethod !== "DELETE") && (lMethod !== "PUT") && (lMethod !== "PATCH")) {
-            $('#editSoapLibraryModal #method').prop("value", "GET");
+            newMethod = "GET";
         }
-
+    }
+    // Update hidden input AND crbDropdown label for method
+    if (newMethod !== null) {
+        $('#editSoapLibraryModal #method').prop("value", newMethod);
+        window.dispatchEvent(new CustomEvent('method-preselect', {detail: newMethod}));
     }
     refreshDisplayOnTypeChange();
 }

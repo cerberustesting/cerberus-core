@@ -624,7 +624,9 @@ function initModalDataLib() {
     // crbDropdown loaders handle these now (no more displayInvariantList / displayAppServiceList)
 
 
-    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
+    var tcListTitle = doc.getDocLabel("page_testdatalib_m_gettestcases", "title");
+    if (!tcListTitle || tcListTitle.indexOf("Missing doc") !== -1) tcListTitle = "List of Test Cases";
+    $("#testCaseListModalLabel").text(tcListTitle);
     // TestDataLib content
     $("[name='lbl_tdlname']").html(doc.getDocOnline("testdatalib", "name"));
     $("[name='lbl_type']").html(doc.getDocOnline("testdatalib", "type"));

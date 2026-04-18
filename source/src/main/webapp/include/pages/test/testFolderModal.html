@@ -1,0 +1,266 @@
+<!--Test Folder Modal - Alpine.js/Tailwind refactored (replaces addTest.html + editTest.html) -->
+<div
+        x-data="testFolderModal()"
+        x-init="init()"
+        x-show="open"
+        x-cloak
+        @test-folder-modal-open.window="handleOpen($event.detail)"
+        @test-folder-modal-close.window="open = false"
+        class="crb_modal"
+        id="testFolderModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-lg rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="folder-plus" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100"
+                        x-text="mode === 'ADD' ? 'Create Test Folder' : 'Edit Test Folder'" name="modalTitleField"></h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Manage test folder properties</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="testFolderMessagesArea">
+            <div class="alert" id="testFolderMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="testFolderAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="testFolderModalForm" name="testFolderModalForm" role="form">
+
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3 space-y-4">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i data-lucide="tag" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Properties</span>
+                    </div>
+
+                    <!-- Test Name -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="testFolderName" name="testField">Test</label>
+                        <input type="text"
+                               class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                               name="test" id="testFolderName" maxlength="45"
+                               @input="if (mode === 'EDIT') checkRenameWarning()">
+                        <input type="hidden" name="originalTest" id="testFolderOriginalTest">
+                    </div>
+
+                    <!-- Is Active -->
+                    <div class="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 transition-all"
+                         :class="isActive ? 'bg-green-50 dark:bg-green-900/10 border-green-300 dark:border-green-700' : ''">
+                        <div class="flex items-center gap-3">
+                            <div class="h-9 w-9 rounded-lg flex items-center justify-center transition-colors"
+                                 :class="isActive ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-100 dark:bg-slate-800'">
+                                <i :data-lucide="isActive ? 'check-circle' : 'circle'" class="w-4 h-4 transition-colors"
+                                   :class="isActive ? 'text-green-600' : 'text-slate-400'"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium" :class="isActive ? 'text-green-700 dark:text-green-400' : 'text-slate-700 dark:text-slate-300'" name="activeField">Is Active</span>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 !mb-0">Enable or disable this test folder</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="isActive = !isActive; $nextTick(() => { if(window.lucide) lucide.createIcons({nodes: $el.closest('.rounded-lg').querySelectorAll('[data-lucide]')}) })"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                :class="isActive ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600'">
+                            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  :class="isActive ? 'translate-x-5' : 'translate-x-0'"></span>
+                        </button>
+                        <select name="isActive" id="testFolderIsActive" class="hidden">
+                            <option value="Y">Y</option>
+                            <option value="N">N</option>
+                        </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="testFolderDescription" name="descriptionField">Description</label>
+                        <textarea class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                                  name="description" id="testFolderDescription" rows="3" maxlength="300"></textarea>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" @click="save()"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition"
+                    x-text="mode === 'ADD' ? 'Create' : 'Save'" name="buttonSave"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+     * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This file is part of Cerberus.
+     *
+     * Cerberus is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * Cerberus is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+     */
+
+    function testFolderModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+            mode: 'ADD',
+            isActive: true,
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            handleOpen: function(detail) {
+                var self = this;
+                this.mode = detail.mode || 'ADD';
+                this.open = true;
+
+                clearResponseMessage($('#testFolderModal'));
+
+                if (this.mode === 'EDIT' && detail.test) {
+                    // Load test data
+                    $.getJSON("ReadTest", "test=" + encodeURIComponent(detail.test), function(data) {
+                        var obj = data["contentTable"];
+                        $('#testFolderName').val(obj.test);
+                        $('#testFolderOriginalTest').val(obj.test);
+                        $('#testFolderDescription').val(obj.description);
+                        self.isActive = (obj.isActive === 'Y' || obj.isActive === true);
+                        $('#testFolderIsActive').val(self.isActive ? 'Y' : 'N');
+
+                        if (!(data["hasPermissions"])) {
+                            $('#testFolderName').prop("readonly", true);
+                            $('#testFolderDescription').prop("readonly", true);
+                        }
+                    });
+                } else {
+                    // ADD mode — clear form
+                    $('#testFolderName').val('').prop("readonly", false);
+                    $('#testFolderOriginalTest').val('');
+                    $('#testFolderDescription').val('').prop("readonly", false);
+                    this.isActive = true;
+                    $('#testFolderIsActive').val('Y');
+                }
+
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            checkRenameWarning: function() {
+                var original = $('#testFolderOriginalTest').val();
+                var current = $('#testFolderName').val();
+                if (original && original !== current) {
+                    var localMessage = new Message("WARNING", "If you rename that test, it will lose the corresponding execution history of all corresponding test cases.");
+                    showMessage(localMessage, $('#testFolderModal'));
+                } else {
+                    clearResponseMessage($('#testFolderModal'));
+                }
+            },
+
+            save: function() {
+                clearResponseMessage($('#testFolderModal'));
+
+                var testName = $('#testFolderName').val();
+
+                // Validation
+                if (!testName || testName.trim() === '') {
+                    var localMessage = new Message("danger", "Please specify the name of the test!");
+                    showMessage(localMessage, $('#testFolderModal'));
+                    return;
+                }
+
+                if (testName.indexOf('&') !== -1) {
+                    var localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
+                    showMessage(localMessage, $('#testFolderModal'));
+                    return;
+                }
+
+                // Sync isActive hidden select
+                $('#testFolderIsActive').val(this.isActive ? 'Y' : 'N');
+
+                var self = this;
+                var formData = $('#testFolderModalForm').serialize();
+
+                if (this.mode === 'ADD') {
+                    // Create
+                    showLoaderInModal('#testFolderModal');
+                    $.post("CreateTest", formData, function(data) {
+                        hideLoaderInModal('#testFolderModal');
+                        if (getAlertType(data.messageType) === "success") {
+                            self.open = false;
+                            var oTable = $("#testTable").dataTable();
+                            oTable.fnDraw(false);
+                            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+                        } else {
+                            showMessage(data, $('#testFolderModal'));
+                        }
+                    }, "json").fail(handleErrorAjaxAfterTimeout);
+                } else {
+                    // Update
+                    showLoaderInModal('#testFolderModal');
+                    $.post("UpdateTest", formData, function(data) {
+                        hideLoaderInModal('#testFolderModal');
+                        if (getAlertType(data.messageType) === "success") {
+                            self.open = false;
+                            var oTable = $("#testTable").dataTable();
+                            oTable.fnDraw(false);
+                            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+                        } else {
+                            showMessage(data, $('#testFolderModal'));
+                        }
+                    }, "json").fail(handleErrorAjaxAfterTimeout);
+                }
+            }
+        };
+    }
+</script>

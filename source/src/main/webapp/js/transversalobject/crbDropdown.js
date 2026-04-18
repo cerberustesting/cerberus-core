@@ -28,9 +28,20 @@ function crbDropdown(config) {
         selectedLabel: '',
         search: '',
         pos: { top: 0, left: 0, width: 0 },
+        _inputEl: null, // cached reference to the hidden input
 
         init: function() {
             var self = this;
+
+            // Cache the hidden input reference NOW while $el is the real component root
+            var form = this.$el.closest('form');
+            if (form) {
+                this._inputEl = form.querySelector('[name="' + this.hiddenInput + '"]');
+            }
+            if (!this._inputEl) {
+                this._inputEl = document.getElementById(this.hiddenInput);
+            }
+
             if (config.loader) {
                 config.loader(function(items) { self.allItems = items; self.items = items; });
             }
@@ -72,9 +83,8 @@ function crbDropdown(config) {
                 if (searchList[i].value === value) { match = searchList[i]; break; }
             }
             this.selectedLabel = match ? match.label : (value || '');
-            var form = this.$el.closest('form');
-            var input = form ? form.querySelector('[name="' + this.hiddenInput + '"]') : document.getElementById(this.hiddenInput);
-            if (input) input.value = value || '';
+            // Use cached input reference
+            if (this._inputEl) this._inputEl.value = value || '';
         },
 
         toggle: function() {
@@ -106,11 +116,10 @@ function crbDropdown(config) {
             this.selectedLabel = item.label;
             this.isOpen = false;
             this.search = '';
-            var form = this.$el.closest('form');
-            var input = form ? form.querySelector('[name="' + this.hiddenInput + '"]') : document.getElementById(this.hiddenInput);
-            if (input) {
-                input.value = item.value;
-                $(input).trigger('change');
+            // Use cached input reference (not $el.closest which fails in teleported context)
+            if (this._inputEl) {
+                this._inputEl.value = item.value;
+                $(this._inputEl).trigger('change');
             }
             if (config.onSelect) {
                 config.onSelect(item);
