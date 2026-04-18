@@ -182,13 +182,11 @@ function loadQueueStatusWebSocket(sockets) {
 
         socket.onmessage = function (e) {
             var data = JSON.parse(e.data);
-//            hideLoader("#currentlyRunning");
             console.info("ws onmessage");
             let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
             console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
             lastReceivedPush = new Date();
             lastReceivedData = data;
-//            console.info(data);
             data.active = true;
             window.dispatchEvent(
                     new CustomEvent("queue-stats-updated", {detail: data})
@@ -197,7 +195,6 @@ function loadQueueStatusWebSocket(sockets) {
 
         socket.onclose = function (e) {
             console.info("ws onclose");
-//            showLoader("#currentlyRunning", "Connection closed.");
             lastReceivedData.active = false;
             window.dispatchEvent(
                     new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
@@ -208,8 +205,6 @@ function loadQueueStatusWebSocket(sockets) {
 
         socket.onerror = function (e) {
             console.info("ws onerror");
-//            showLoader("#tableMonitor", "Connection error on server please refresh page.");
-//            showLoader("#progressMonitor", "Connection error on server please refresh page.");
             lastReceivedData.active = false;
             window.dispatchEvent(
                     new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
@@ -222,39 +217,6 @@ function loadQueueStatusWebSocket(sockets) {
         sockets.push(socket);
 
     }
-
-
-//    var parser = document.createElement('a');
-//    parser.href = window.location.href;
-//
-//    var protocol = "ws:";
-//    if (parser.protocol === "https:") {
-//        protocol = "wss:";
-//    }
-//    var path = parser.pathname.split("Homepage")[0];
-//    var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
-//    console.info("Open Socket to : " + new_uri);
-//    var socket = new WebSocket(new_uri);
-
-//    socket.onopen = function (e) {
-//    }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-//    socket.onmessage = function (e) {
-//        var data = JSON.parse(e.data);
-////        console.info("received data from socket");
-////        console.info(data);
-//        //       updatePageQueueStatus(data);
-////        updatePage(data, steps);
-//        window.dispatchEvent(
-//                new CustomEvent("queue-stats-updated", {detail: data})
-//                );
-//    }; //on récupère les messages provenant du serveur websocket
-//    socket.onclose = function (e) {
-//    }; //on est informé lors de la fermeture de la connexion vers le serveur
-//    socket.onerror = function (e) {
-//    }; //on traite les cas d'erreur*/
-//
-//    // Remain in memory
-//    sockets.push(socket);
 
 }
 
@@ -430,17 +392,17 @@ function updatePageQueueStatus(data) {
 
 function loadExeCurrentlyRunning() {
 
-    $.ajax({
-        url: "api/executions/running",
-        method: "GET",
-        async: true,
-        dataType: 'json',
-        success: function (data) {
+//    $.ajax({
+//        url: "api/executions/running",
+//        method: "GET",
+//        async: true,
+//        dataType: 'json',
+//        success: function (data) {
 
 //            updatePageQueueStatus(data);
 //console.info(data);
 //            var data = JSON.parse(e.data);
-            lastReceivedData = data;
+//            lastReceivedData = data;
             
             sockets = [];
             loadQueueStatusWebSocket(sockets);
@@ -471,8 +433,8 @@ function loadExeCurrentlyRunning() {
             );
 
 
-        }
-    });
+//        }
+//    });
 }
 
 
@@ -880,7 +842,7 @@ function renderCampaignGrid(container, tagList1, nextRuns) {
         const nextRun = nextRuns.find(n =>
             tags.some(t => t.campaign === n.tag)
         );
-        grid.append(renderCampaignCard(name, tags, nextRun ? `${nextRun.nextRunLabel}` : null));
+        grid.append(renderCampaignCard(name, tags, nextRun ? `${nextRun.nextRunLabel}` : null, nextRun ? `${nextRun.durationMs}` : null));
     });
     container.append(grid);
 }
@@ -892,7 +854,7 @@ function renderCampaignGrid(container, tagList1, nextRuns) {
  * @param nextRun
  * @returns {*|jQuery|HTMLElement}
  */
-function renderCampaignCard(campaignName, tagExecutions, nextRun) {
+function renderCampaignCard(campaignName, tagExecutions, nextRun, runId) {
     const stats = computeCampaignStats(tagExecutions);
     return $(`<div class="crb_card_tag">
                 <div class="flex justify-between items-start mb-8 gap-4">
@@ -907,7 +869,7 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun) {
                             </span>
                         </div>
                         <!-- Ligne 2 : next run -->
-                        ${nextRun ? `<div class="pl-6 text-xs text-gray-500 truncate"> ${renderNextRunBadge(nextRun)}</div>` : ""}
+                        ${nextRun ? `<div class="pl-6 text-xs text-gray-500 truncate"> ${renderNextRunBadge(nextRun, runId )}</div>` : ""}
                     </div>
                 
                     <!-- Droite : badge succès -->
@@ -958,8 +920,8 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun) {
  * @param label
  * @returns {string}
  */
-function renderNextRunBadge(label) {
-    return `<span class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700
+function renderNextRunBadge(label, id) {
+    return `<span id="futurTag${id}" class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700
                      dark:bg-blue-900/40 dark:text-blue-400 whitespace-nowrap">▶ ${label}</span>`;
 }
 
@@ -1314,9 +1276,9 @@ function updateNextFireTime() {
     let nbAlreadyTriggered = 0;
     for (var s = 0; s < futureCampaignRunTime.length; s++) {
         if ((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) > 0) {
-            $("#futurTag" + s).text("will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
+            $("#futurTag" + futureCampaignRunTimeDurationToTrigger[s]).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
         } else {
-            $("#futurTag" + s).text("already triggered");
+            $("#futurTag" + futureCampaignRunTimeDurationToTrigger[s]).text("already triggered");
             nbAlreadyTriggered++;
         }
     }

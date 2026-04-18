@@ -16,8 +16,12 @@
                 <button
                     @click="tab = key"
                     class="inline-block px-2 py-1 font-thin"
-                    :class="tab === key ? ('text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl') : 'text-gray-400!'"
-                    >
+                    :class="{
+                    'text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl': tab === key,
+                    'text-gray-400!': tab !== key,
+                    'blink': key === 'ongoing' && tabs[tab]?.value > 0
+                    }" 
+                    x-init="console.log(tabs[tab]?.value, key)"
                     <span x-text="data.tab"></span>
                 </button>
             </template>
@@ -173,8 +177,6 @@
                     const data = event.detail;
                     if (!this.tabs.ongoing)
                         return;
-                    
-//                    console.info(event);
 
                     // label
                     this.tabs.ongoing.active = (data?.active);
@@ -192,6 +194,15 @@
                     // liste des exécutions en cours
                     this.tabs.ongoing.runningList = data.runningExecutionsList || [];
                 });
+
+                // Now that the eventlistener is loaded we force the dispatch of the event that may be already sent (for ex for the 1st event received on opening the ws).
+                if (this.tabs.ongoing) {
+                    if (lastReceivedData) {
+                        window.dispatchEvent(
+                                new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                                );
+                    }
+                }
 
                 this.$nextTick(() => {
                     if (window.lucide) {
