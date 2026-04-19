@@ -21,7 +21,6 @@
                     'text-gray-400!': tab !== key,
                     'blink': key === 'ongoing' && tabs[tab]?.value > 0
                     }" 
-                    x-init="console.log(tabs[tab]?.value, key)"
                     <span x-text="data.tab"></span>
                 </button>
             </template>
@@ -53,7 +52,7 @@
                             <!-- Barre -->
                             <div class="w-20 bg-gray-200 h-2 rounded relative">
                                 <div class="bg-blue-500 h-2 rounded transition-all duration-500"
-                                     :style="'width:' + ((tabs[tab].value / tabs[tab].globalLimit) * 100) + '%'">
+                                     :style="'width:' + ((tabs[tab]?.value / tabs[tab]?.globalLimit) * 100) + '%'">
                                 </div>
                             </div>
 
@@ -64,10 +63,10 @@
                     <!-- 🟢 Droite : Diff -->
                     <div x-show="tabs[tab]?.diff !== undefined">
                         <div class="flex items-center space-x-1 text-sm font-semibold"
-                             :class="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).color">
-                            <i :data-lucide="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).icon"
+                             :class="getDiffIconAndColor(tabs[tab]?.diff, tabs[tab]?.diffPositive).color">
+                            <i :data-lucide="getDiffIconAndColor(tabs[tab]?.diff, tabs[tab]?.diffPositive).icon"
                                class="w-4 h-4"></i>
-                            <span x-text="computeDiffPercent(tabs[tab].currentValue, tabs[tab].previousValue)"></span>
+                            <span x-text="computeDiffPercent(tabs[tab]?.currentValue, tabs[tab]?.previousValue)"></span>
                         </div>
                     </div>
                     <div x-show="tab === 'ongoing' && tabs[tab]?.value" class="flex items-center space-x-1 text-sm font-semibold">

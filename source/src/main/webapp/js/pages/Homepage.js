@@ -24,6 +24,7 @@ var nbTagLoaded = 0;
 var nbTagLoadedTarget = 0;
 var futureCampaignRunTime = [];
 var futureCampaignRunTimeDurationToTrigger = [];
+var futureCampaigns = [];
 var idTimeout;
 
 var lastReceivedPush = new Date();
@@ -403,34 +404,34 @@ function loadExeCurrentlyRunning() {
 //console.info(data);
 //            var data = JSON.parse(e.data);
 //            lastReceivedData = data;
-            
-            sockets = [];
-            loadQueueStatusWebSocket(sockets);
 
-            // Trigger automatic reopen of ws only after 2 sec delay
-            wait(2000, function reOpenWSTimings() {
+    sockets = [];
+    loadQueueStatusWebSocket(sockets);
+
+    // Trigger automatic reopen of ws only after 2 sec delay
+    wait(2000, function reOpenWSTimings() {
 //                console.info("is socket still open ?");
-                if ((!wsOpen) & (!wsStartOpenning)) {
-                    if (wsOpen) {
+        if ((!wsOpen) & (!wsStartOpenning)) {
+            if (wsOpen) {
 //                        console.info("   Yes 2");
-                        lastReceivedData.active = true;
-                        window.dispatchEvent(
-                                new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
-                                );
+                lastReceivedData.active = true;
+                window.dispatchEvent(
+                        new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                        );
 //                        refreshMonitorTable(lastReceivedData);
-                    } else if (!wsStartOpenning) {
-//                        console.info("   No");
-                        loadQueueStatusWebSocket();
-                    }
+            } else if (!wsStartOpenning) {
+                console.info("Retry to open socket following error/close...");
+                loadQueueStatusWebSocket();
+            }
 //                } else {
 //                    console.info("   Yes");
-                }
-                // Loop on refresh reopen ws
-                reopenWSTimeout = setTimeout(() => {
-                    reOpenWSTimings();
-                }, reopenWSTimeoutPeriod);
-            }
-            );
+        }
+        // Loop on refresh reopen ws
+        reopenWSTimeout = setTimeout(() => {
+            reOpenWSTimings();
+        }, reopenWSTimeoutPeriod);
+    }
+    );
 
 
 //        }
@@ -780,6 +781,7 @@ function generateTagReport(data, tag, rowId, tagObj) {
 function loadLastTagResultList() {
 
     // Empty previous saved scheduled campaign timings and stop timer in case it was created.
+    futureCampaigns = [];
     futureCampaignRunTime = [];
     futureCampaignRunTimeDurationToTrigger = [];
     clearTimeout(idTimeout);
@@ -837,12 +839,13 @@ function refreshTagList(tagList1, reportArea) {
  */
 function renderCampaignGrid(container, tagList1, nextRuns) {
     const grid = $(`<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-6"></div>`);
+//    console.info(nextRuns);
     tagList1.campaigns.forEach(name => {
         const tags = tagList1.tagLists[name] || [];
         const nextRun = nextRuns.find(n =>
-            tags.some(t => t.campaign === n.tag)
+            tags.some(t => t.campaign === n.campaign)
         );
-        grid.append(renderCampaignCard(name, tags, nextRun ? `${nextRun.nextRunLabel}` : null, nextRun ? `${nextRun.durationMs}` : null));
+        grid.append(renderCampaignCard(name, tags, nextRun ? `${nextRun.nextRunLabel}` : null, nextRun ? `${nextRun.campaign}` : null));
     });
     container.append(grid);
 }
@@ -869,7 +872,7 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun, runId) {
                             </span>
                         </div>
                         <!-- Ligne 2 : next run -->
-                        ${nextRun ? `<div class="pl-6 text-xs text-gray-500 truncate"> ${renderNextRunBadge(nextRun, runId )}</div>` : ""}
+                        ${nextRun ? `<div class="pl-6 text-xs text-gray-500 truncate"> ${renderNextRunBadge(nextRun, runId)}</div>` : ""}
                     </div>
                 
                     <!-- Droite : badge succès -->
@@ -921,7 +924,7 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun, runId) {
  * @returns {string}
  */
 function renderNextRunBadge(label, id) {
-    return `<span id="futurTag${id}" class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700
+    return `<span id="futurTag_${toSafeId(id)}" class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700
                      dark:bg-blue-900/40 dark:text-blue-400 whitespace-nowrap">▶ ${label}</span>`;
 }
 
@@ -1222,19 +1225,7 @@ function readLastTagExec(searchString, reportArea) {
 function readNextTagScheduled() {
 
     const result = [];
-
-    let nbExe = getParameter(
-            "cerberus_homepage_nbdisplayedscheduledtag",
-            getUser().defaultSystem,
-            true
-            );
-
-    let limit = nbExe?.value;
-    if (!(limit >= 0 && limit <= 50)) {
-        limit = 5;
-    }
-
-    nbTagLoadedTargetScheduled = limit;
+    let campaignScheduled = {};
 
     $.ajax({
         type: "GET",
@@ -1244,27 +1235,32 @@ function readNextTagScheduled() {
         success: function (data) {
 
             const triggers = data.schedulerTriggers || [];
-            const max = Math.min(limit, triggers.length);
+            const max = Math.min(triggers.length);
 
             for (let i = 0; i < max; i++) {
                 const t = triggers[i];
 
-                result.push({
-                    tag: t.triggerName,
-                    nextRunLabel:
-                            "will trigger in " +
-                            getHumanReadableDuration(
-                                    Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
-                                    ),
-                    nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
-                    durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
-                    user: t.triggerUserCreated
-                });
+                if (!campaignScheduled.hasOwnProperty(t.triggerName)) {
 
-                futureCampaignRunTime.push(new Date());
-                futureCampaignRunTimeDurationToTrigger.push(
-                        t.triggerNextFiretimeDurationToTriggerInMs
-                        );
+                    campaignScheduled[t.triggerName] = "";
+                    result.push({
+                        campaign: t.triggerName,
+                        nextRunLabel:
+                                "will trigger in " +
+                                getHumanReadableDuration(
+                                        Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
+                                        ),
+                        nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
+                        durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
+                        user: t.triggerUserCreated
+                    });
+
+                    futureCampaignRunTime.push(new Date());
+                    futureCampaigns.push(t.triggerName);
+                    futureCampaignRunTimeDurationToTrigger.push(
+                            t.triggerNextFiretimeDurationToTriggerInMs
+                            );
+                }
             }
         }
     });
@@ -1274,11 +1270,11 @@ function readNextTagScheduled() {
 
 function updateNextFireTime() {
     let nbAlreadyTriggered = 0;
-    for (var s = 0; s < futureCampaignRunTime.length; s++) {
+    for (var s = 0; s < futureCampaigns.length; s++) {
         if ((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) > 0) {
-            $("#futurTag" + futureCampaignRunTimeDurationToTrigger[s]).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
+            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
         } else {
-            $("#futurTag" + futureCampaignRunTimeDurationToTrigger[s]).text("already triggered");
+            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("already triggered");
             nbAlreadyTriggered++;
         }
     }

@@ -3585,3 +3585,14 @@ function getAceTheme() {
         ? 'ace/theme/tomorrow_night'
         : 'ace/theme/chrome';
 }
+
+
+function toSafeId(str) {
+    return str
+        .normalize("NFD")                 // enlève les accents
+        .replace(/[\u0300-\u036f]/g, "")  // accents restants
+        .replace(/[^a-zA-Z0-9_-]/g, "_")  // remplace tout le reste
+        .replace(/^(\d)/, "_$1")          // évite de commencer par un chiffre
+        .replace(/_+/g, "_")              // évite les doublons _
+        .toLowerCase();
+}
