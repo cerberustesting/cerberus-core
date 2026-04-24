@@ -678,9 +678,9 @@
                                     <tr>
                                         <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300">Actions</th>
                                         <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Test Cases</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300">Activate</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 80px;" class="text-slate-600 dark:text-slate-300">Delay</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300" name="depActiveHeader">Activate</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 80px;" class="text-slate-600 dark:text-slate-300" name="depDelayHeader">Delay (Min)</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" name="depDescriptionHeader">Description</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
@@ -935,6 +935,10 @@ function initModalTestCase() {
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
     $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
+    // Dependency table headers
+    $("[name='depActiveHeader']").html(doc.getDocOnline("testcasedep", "Active"));
+    $("[name='depDelayHeader']").html(doc.getDocOnline("testcasedep", "DepDelay"));
+    $("[name='depDescriptionHeader']").html(doc.getDocOnline("testcasedep", "DepDescription"));
 
     // Alpine dropdowns handle their own data loading via crbLoaders
     // displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
