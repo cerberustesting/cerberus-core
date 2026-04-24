@@ -676,15 +676,16 @@
                             <table class="w-full text-sm text-left" id="depenencyTable">
                                 <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
                                     <tr>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300">Actions</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Test Cases</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 60px;" class="text-slate-600 dark:text-slate-300" name="depActiveHeader">Activate</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 80px;" class="text-slate-600 dark:text-slate-300" name="depDelayHeader">Delay (Min)</th>
-                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" name="depDescriptionHeader">Description</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Test Case</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Active</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Delay (Min)</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                <tbody id="depenencyTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
                             </table>
+                            <p id="depEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No dependencies</p>
                         </div>
                     </div>
                 </div>
@@ -935,10 +936,7 @@ function initModalTestCase() {
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
     $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
-    // Dependency table headers
-    $("[name='depActiveHeader']").html(doc.getDocOnline("testcasedep", "Active"));
-    $("[name='depDelayHeader']").html(doc.getDocOnline("testcasedep", "DepDelay"));
-    $("[name='depDescriptionHeader']").html(doc.getDocOnline("testcasedep", "DepDescription"));
+    // Dependency table headers - text is set directly in HTML (no doc keys exist for these)
 
     // Alpine dropdowns handle their own data loading via crbLoaders
     // displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
@@ -1016,30 +1014,41 @@ function initModalTestCase() {
 }
 
 function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description = "", delay = 0, type) {
-    let checked = "";
-    if (activate)
-        checked = "checked";
+    var checked = activate ? "checked" : "";
 
-    var inputStyle = 'style="width: 100%; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: white; color: #0f172a; transition: all 0.2s;"';
-    var checkStyle = 'style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;"';
-    var tdStyle = 'style="padding: 8px 12px; vertical-align: middle;"';
-    var btnStyle = 'style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; font-size: 12px; transition: all 0.2s;"';
-    var trashSvg = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+    // Hide empty state when adding a row
+    $("#depEmptyState").hide();
 
-    $("#depenencyTable").append(
-            '<tr role="row" id="' + getHtmlIdForTestCase(test, testCase) + '" test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '" style="transition: all 0.2s;">' +
-            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 50px;">' +
-            '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" ' + btnStyle + ' name="removeTestparameter" title="Remove" type="button" onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" onmouseleave="this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';">' +
-            trashSvg +
+    var tdStyle = 'padding: 10px 12px; vertical-align: middle;';
+    var inputStyle = 'width: 100%; height: 30px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: white; color: #0f172a;';
+    var escapedTest = test.replace(/'/g, "\\'");
+    var escapedTestCase = testCase.replace(/'/g, "\\'");
+
+    var row = '<tr role="row" id="' + getHtmlIdForTestCase(test, testCase) + '" test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
+        '<td style="' + tdStyle + ' width: 48px; text-align: center;">' +
+            '<button type="button" onclick="removeTestCaseDependency(\'' + escapedTest + '\',\'' + escapedTestCase + '\');" title="Remove" ' +
+                'style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; transition: all 0.15s;" ' +
+                'onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" ' +
+                'onmouseleave="this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';">' +
+                '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>' +
             '</button>' +
-            '</td>' +
-            '<td ' + tdStyle + ' style="padding: 8px 12px; font-size: 13px; color: #334155;">' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
-            '</td>' +
-            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 50px; text-align: center;"><input type="checkbox" name="activate" ' + checkStyle + ' ' + checked + '/></td>' +
-            '<td ' + tdStyle + ' style="padding: 8px 12px; width: 80px;"><input name="depDelay" value="' + delay + '" ' + inputStyle + '/></td>' +
-            '<td ' + tdStyle + ' style="padding: 8px 12px;"><input name="depDescription" value="' + description + '" ' + inputStyle + '/></td>' +
-            '</tr>'
-            );
+        '</td>' +
+        '<td style="' + tdStyle + ' font-size: 13px; color: #334155;">' +
+            '<div style="font-weight: 500;" title="' + test + ' - ' + testCaseTxt + '">' + test + ' - ' + testCaseTxt + '</div>' +
+            depTypeSelect(type) +
+        '</td>' +
+        '<td style="' + tdStyle + ' text-align: center;">' +
+            '<input type="checkbox" name="activate" ' + checked + ' style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;"/>' +
+        '</td>' +
+        '<td style="' + tdStyle + ' text-align: center;">' +
+            '<input name="depDelay" value="' + delay + '" style="' + inputStyle + ' text-align: center; max-width: 80px;"/>' +
+        '</td>' +
+        '<td style="' + tdStyle + '">' +
+            '<input name="depDescription" value="' + description + '" placeholder="Description..." style="' + inputStyle + '"/>' +
+        '</td>' +
+    '</tr>';
+
+    $("#depenencyTableBody").append(row);
 }
 
 function depTypeSelect(value) {
@@ -1065,6 +1074,10 @@ function getHtmlIdForTestCase(test, testCase) {
 
 function removeTestCaseDependency(test, testCase) {
     $('#' + getHtmlIdForTestCase(test, testCase)).remove();
+    // Show empty state if no more dependencies
+    if ($("#depenencyTableBody tr").length === 0) {
+        $("#depEmptyState").show();
+    }
 }
 
 
@@ -1373,7 +1386,7 @@ function confirmTestCaseModalHandler(mode) {
 
     // Getting Dependency data
     let testcaseDependencies = []
-    $("#depenencyTable").find("tr")
+    $("#depenencyTableBody").find("tr")
             .each((t, v) =>
                 testcaseDependencies.push(
                         {
@@ -2072,11 +2085,16 @@ function appendBuildRevListOnTestCase(system, editData) {
 }
 
 function appendTestCaseDepList(testCase) {
-    $("#depenencyTable").find("tr").remove();// clean the table
+    $("#depenencyTableBody").empty(); // only clean tbody rows, preserve thead
 
-    testCase.dependencies.forEach((dep) => {
-        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description, dep.dependencyTCDelay, dep.type);
-    });
+    if (testCase.dependencies && testCase.dependencies.length > 0) {
+        $("#depEmptyState").hide();
+        testCase.dependencies.forEach((dep) => {
+            addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description, dep.dependencyTCDelay, dep.type);
+        });
+    } else {
+        $("#depEmptyState").show();
+    }
 }
 
 
