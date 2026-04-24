@@ -19,8 +19,7 @@
          x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95"
-         @click.stop>
+         x-transition:leave-end="opacity-0 scale-95">
 
         <!-- HEADER -->
         <div class="flex items-center justify-between px-6 py-3 shrink-0">
@@ -165,7 +164,7 @@
                                  class="relative w-full">
 
                                 <button type="button"
-                                        @click="open = !open"
+                                        @click.stop="open = !open"
                                         id="editTestCaseSimpleCreationTestFolder"
                                         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
                                     <span x-text="selectedLabel()"></span>
@@ -174,9 +173,10 @@
 
                                 <!-- Dropdown -->
                                 <div x-show="open"
-                                     @click.away="open = false"
+                                     @keydown.escape.window="open = false"
                                      x-transition
-                                     class="absolute mt-1 w-full rounded-md border shadow-lg z-50 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden">
+                                     x-init="$watch('open', v => { if(v) { setTimeout(() => { document.addEventListener('mousedown', $data._outsideHandler = (e) => { if(!$el.parentElement.contains(e.target)) { open = false; document.removeEventListener('mousedown', $data._outsideHandler); } }); }, 10); } })"
+                                     class="absolute bottom-full mb-1 w-full rounded-md border shadow-lg z-50 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden">
 
                                     <div class="p-2 border-b border-slate-200 dark:border-slate-700">
                                         <input type="text" x-model="search" placeholder="Search or create..."
