@@ -692,27 +692,36 @@ public class RobotServerService implements IRobotServerService {
                         appiumDriver = new IOSDriver(url, finalCapabilities);
                     }
 
-                    //if preloadScript set, add webSocketUrl capability to enable bidi
-                    if(!StringUtil.isEmptyOrNull(execution.getRobotObj().getPreloadScript())) {
-                        finalCapabilities.setCapability("webSocketUrl", true);
-                    }
-
                     driver = appiumDriver == null ? new RemoteWebDriver(executor, finalCapabilities) : appiumDriver;
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
 
-                    //if webSocketUrl = true, and  capability to enable bidi
+                    // Init BiDi only if preload script is defined
                     BiDi biDiSession = null;
-                    Object ws = finalCapabilities.getCapability("webSocketUrl");
-                    if(ws != null && ParameterParserUtil.parseBooleanParam(ws.toString(), false)) {
-                        biDiSession = BiDiUtils.enableBiDi(driver);
-                    }
 
-                    //if preloadScript set and bidi not null, add preload script
-                    if(biDiSession != null && !StringUtil.isEmptyOrNull(execution.getRobotObj().getPreloadScript())) {
-                        String preloadJs = "function() {" + execution.getRobotObj().getPreloadScript() + "}";
-                        BiDiUtils.addPreloadScript(biDiSession, preloadJs);
-                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
+                    if (!StringUtil.isEmptyOrNull(execution.getRobotObj().getPreloadScript())) {
+
+                        // Get returned capabilities
+                        Object ws = ((RemoteWebDriver) driver).getCapabilities().getCapability("webSocketUrl");
+
+                        if (ws != null) {
+                            try {
+                                biDiSession = BiDiUtils.enableBiDi(driver);
+
+                                String preloadJs = "() => {" + execution.getRobotObj().getPreloadScript() + "}";
+
+                                BiDiUtils.addPreloadScript(biDiSession, preloadJs);
+
+                                execution.addExecutionLog(ExecutionLog.STATUS_INFO,"Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
+
+                            } catch (Exception e) {
+                                execution.addExecutionLog(ExecutionLog.STATUS_WARN,"Failed to enable BiDi or set preload script : " + e.getMessage()
+                                );
+                            }
+                        } else {
+                            execution.addExecutionLog(ExecutionLog.STATUS_WARN,"BiDi not available (no webSocketUrl capability)"
+                            );
+                        }
                     }
 
                     break;
