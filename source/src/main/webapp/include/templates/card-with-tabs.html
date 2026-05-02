@@ -19,7 +19,7 @@
                     :class="{
                     'text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl': tab === key,
                     'text-gray-400!': tab !== key,
-                    'blink': key === 'ongoing' && tabs[tab]?.value > 0
+                    'blink': key === 'ongoing' && tabs[key]?.value > 0
                     }" 
                     <span x-text="data.tab"></span>
                 </button>
