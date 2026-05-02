@@ -478,7 +478,7 @@ function loadReportingData(selectTag) {
                 $("#buttonSeeStatsCampaign").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + encodeURIComponent(data.tagObject.campaign));
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + encodeURIComponent(data.tagObject.campaign));
-                $("#buttonEditCampaign").attr("onclick", "editEntryClick('" + data.tagObject.campaign + "');");
+                $("#buttonEditCampaign").attr("onclick", "campaign_editEntryClick('" + data.tagObject.campaign + "');");
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");

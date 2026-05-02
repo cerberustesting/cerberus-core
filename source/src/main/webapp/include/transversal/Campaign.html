@@ -141,24 +141,273 @@
                             </div>
 
                             <div x-show="labelSubTab === 'labels'" id="tabsCreate-4">
-                                <div id="labelTestcampaignList">
-                                    <table id="labelTestcampaignsTable" class="table table-hover display" name="labelTestcampaignsTable"></table>
-                                    <div class="mb-5"></div>
+                                <!-- Alpine dropdown selectors for Labels -->
+                                <div class="flex items-end gap-2 mb-3" id="addLabelTestcampaign">
+                                    <div class="flex-1" x-data="crbDropdown({id:'campLabelSystem', loader: crbLoaders.invariant('SYSTEM'), onSelect: function(item) { window.dispatchEvent(new CustomEvent('camp-label-system-changed', {detail: item.value})); }})" @click.stop>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">System</label>
+                                        <div class="relative w-full">
+                                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <span x-text="selectedLabel || '-- System --'" class="truncate"></span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            </div>
+                                            <template x-teleport="body">
+                                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                     class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                     :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                        <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                    </div>
+                                                    <div class="max-h-52 overflow-auto">
+                                                        <template x-for="item in filtered()" :key="item.value">
+                                                            <button type="button" @click.stop="select(item)"
+                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                                <span x-text="item.label"></span>
+                                                            </button>
+                                                        </template>
+                                                        <template x-if="filtered().length === 0">
+                                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1" x-data="crbDropdown({id:'campLabelSelect', loader: crbLoaders.labels(''), onSelect: function(item) { document.getElementById('addLabelTestcampaignButton').disabled = false; }})" @click.stop
+                                         x-init="$nextTick(function() { window.addEventListener('camp-label-system-changed', function(e) { var self = Alpine.$data(document.getElementById('campLabelSelect-btn').closest('[x-data]')); crbLoaders.labels(e.detail)(function(items) { self.allItems = items; self.items = items; self.selectedValue = ''; self.selectedLabel = ''; }); }); })">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Label</label>
+                                        <div class="relative w-full">
+                                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <span x-text="selectedLabel || '-- Select Label --'" class="truncate"></span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            </div>
+                                            <template x-teleport="body">
+                                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                     class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                     :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                        <input x-model="search" type="text" placeholder="Search label..." @keydown.escape.stop="isOpen = false"
+                                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                    </div>
+                                                    <div class="max-h-52 overflow-auto">
+                                                        <template x-for="item in filtered()" :key="item.value">
+                                                            <button type="button" @click.stop="select(item)"
+                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                                <span class="inline-block px-2 py-0.5 rounded text-xs text-white mr-2" :style="'background-color:' + (item.color || '#8b8b8c')" x-text="item.label"></span>
+                                                                <span class="text-xs text-slate-400" x-text="'[' + item.system + ']'"></span>
+                                                            </button>
+                                                        </template>
+                                                        <template x-if="filtered().length === 0">
+                                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No labels found</div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="button" id="addLabelTestcampaignButton" disabled
+                                                class="px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition disabled:opacity-50 disabled:cursor-not-allowed h-10"
+                                                onclick="addLabelEntryClickAlpine()">Add</button>
+                                    </div>
+                                </div>
+                                <div id="labelTestcampaignList" class="rounded-lg border border-slate-200 dark:border-slate-700" style="overflow:visible;">
+                                    <table class="w-full text-sm text-left" id="labelTestcampaignsTable">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                            <tr>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Label ID</th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">System</th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Label</th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Type</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="labelTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                    </table>
+                                    <p id="labelEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No labels defined</p>
                                 </div>
                             </div>
                             <div x-show="labelSubTab === 'criterias'" id="tabsCreate-5">
-                                <div id="parameterTestcaseList">
-                                    <table id="parameterTestcaseTable" class="table table-hover display" name="parameterTestcaseTable"></table>
-                                    <div class="mb-5"></div>
+                                <!-- Alpine dropdown selectors for Criterias -->
+                                <div class="flex items-end gap-2 mb-3" id="addParameterTestcase">
+                                    <div class="flex-1" x-data="crbDropdown({id:'campCriteriaSelect', loader: crbLoaders.invariant('CAMPAIGN_TCCRITERIA'), onSelect: function(item) { window.dispatchEvent(new CustomEvent('camp-criteria-changed', {detail: item.value})); }})" @click.stop>
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Criteria</label>
+                                        <div class="relative w-full">
+                                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <span x-text="selectedLabel || '-- Criteria --'" class="truncate"></span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            </div>
+                                            <template x-teleport="body">
+                                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                     class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                     :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                        <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                    </div>
+                                                    <div class="max-h-52 overflow-auto">
+                                                        <template x-for="item in filtered()" :key="item.value">
+                                                            <button type="button" @click.stop="select(item)"
+                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                                <span x-text="item.label"></span>
+                                                            </button>
+                                                        </template>
+                                                        <template x-if="filtered().length === 0">
+                                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1" id="campCriteriaValueWrap" x-data="crbDropdown({id:'campCriteriaValue', preselectEvent:'camp-criteria-value-reload'})" @click.stop
+                                         x-init="$nextTick(function() { window.addEventListener('camp-criteria-changed', function(e) { window._campCriteriaReloadValue(e.detail); }); })">
+                                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value</label>
+                                        <div class="relative w-full">
+                                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                                <span x-text="selectedLabel || '-- Value --'" class="truncate"></span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            </div>
+                                            <template x-teleport="body">
+                                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                     class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                     :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                        <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                    </div>
+                                                    <div class="max-h-52 overflow-auto">
+                                                        <template x-for="item in filtered()" :key="item.value">
+                                                            <button type="button" @click.stop="select(item)"
+                                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                                <span x-text="item.label"></span>
+                                                            </button>
+                                                        </template>
+                                                        <template x-if="filtered().length === 0">
+                                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="button" id="addCriteriaTestcampaignButton"
+                                                class="px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition h-10"
+                                                onclick="addCriteriaEntryClickAlpine()">Add</button>
+                                    </div>
+                                </div>
+                                <div id="parameterTestcaseList" class="rounded-lg border border-slate-200 dark:border-slate-700" style="overflow:visible;">
+                                    <table class="w-full text-sm text-left" id="parameterTestcaseTable">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                            <tr>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Criteria</th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="criteriaTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                    </table>
+                                    <p id="criteriaEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No criteria defined</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- TAB: Environments, Countries & Robots -->
                         <div x-show="campTab === 'envs'" id="tabsCreate-3">
-                            <div id="parameterTestcampaignList">
-                                <table id="parameterTestcampaignsTable" class="table table-hover display" name="parameterTestcampaignsTable"></table>
-                                <div class="mb-5"></div>
+                            <!-- Alpine dropdown selectors for Parameters -->
+                            <div class="flex items-end gap-2 mb-3" id="addParameterTestcampaign">
+                                <div class="flex-1" x-data="crbDropdown({id:'campParamSelect', loader: crbLoaders.invariant('CAMPAIGN_PARAMETER'), onSelect: function(item) { window.dispatchEvent(new CustomEvent('camp-param-changed', {detail: item.value})); }})" @click.stop>
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Parameter</label>
+                                    <div class="relative w-full">
+                                        <div @click.stop="toggle()" :id="id + '-btn'"
+                                             class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                            <span x-text="selectedLabel || '-- Parameter --'" class="truncate"></span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                        </div>
+                                        <template x-teleport="body">
+                                            <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                 class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                 :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                    <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                           class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                </div>
+                                                <div class="max-h-52 overflow-auto">
+                                                    <template x-for="item in filtered()" :key="item.value">
+                                                        <button type="button" @click.stop="select(item)"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                            <span x-text="item.label"></span>
+                                                        </button>
+                                                    </template>
+                                                    <template x-if="filtered().length === 0">
+                                                        <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="flex-1" id="campParamValueWrap" x-data="crbDropdown({id:'campParamValue', preselectEvent:'camp-param-value-reload'})" @click.stop
+                                     x-init="$nextTick(function() { window.addEventListener('camp-param-changed', function(e) { window._campParamReloadValue(e.detail); }); })">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value</label>
+                                    <div class="relative w-full">
+                                        <div @click.stop="toggle()" :id="id + '-btn'"
+                                             class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                            <span x-text="selectedLabel || '-- Value --'" class="truncate"></span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                        </div>
+                                        <template x-teleport="body">
+                                            <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                                 class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                                 :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                                <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                    <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                           class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                                </div>
+                                                <div class="max-h-52 overflow-auto">
+                                                    <template x-for="item in filtered()" :key="item.value">
+                                                        <button type="button" @click.stop="select(item)"
+                                                                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                                :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                            <span x-text="item.label"></span>
+                                                        </button>
+                                                    </template>
+                                                    <template x-if="filtered().length === 0">
+                                                        <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="button" id="addParameterTestcampaignButton"
+                                            class="px-3 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition h-10"
+                                            onclick="addParameterEntryClickAlpine()">Add</button>
+                                </div>
+                            </div>
+                            <div id="parameterTestcampaignList" class="rounded-lg border border-slate-200 dark:border-slate-700" style="overflow:visible;">
+                                <table class="w-full text-sm text-left" id="parameterTestcampaignsTable">
+                                    <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                        <tr>
+                                            <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                            <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Parameter</th>
+                                            <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="parameterTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                </table>
+                                <p id="parameterEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No parameters defined</p>
                             </div>
                         </div>
 
@@ -230,12 +479,25 @@
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Build your own syntax at <a target="_blank" href="http://www.cronmaker.com/" class="text-sky-500 hover:underline">cronmaker.com</a></p>
                             </div>
                             <div id="listPanelEditScheduler">
-                                <table class="w-full text-sm" id="schedulerTable">
-                                    <tbody id="schedulerTableBody">
-                                    </tbody>
-                                </table>
-                                <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addScheduleEntry">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Schedule Entry
+                                <div class="rounded-lg border border-slate-200 dark:border-slate-700" style="overflow:visible;">
+                                    <table class="w-full text-sm text-left" id="schedulerTable">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                            <tr>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Cron Definition <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Cron expression defining the schedule.<br>Example: 0 0 12 ? * MON-FRI *</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Free text description of this schedule entry.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Active <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Whether this schedule entry is currently enabled or disabled.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Last Execution <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Date and time of the last execution triggered by this schedule.</span></span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="schedulerTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                    </table>
+                                    <p id="schedulerEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No scheduled entries</p>
+                                </div>
+                                <button type="button" id="addScheduleEntry"
+                                        class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer; margin-top: 20px;">
+                                    <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                    Add Schedule Entry
                                 </button>
                             </div>
                         </div>
@@ -243,12 +505,26 @@
                         <!-- TAB: Notifications -->
                         <div x-show="campTab === 'notifs'" id="tabsNotif">
                             <div id="listPanelEditExecutors">
-                                <table class="w-full text-sm" id="eventHookTable">
-                                    <tbody id="eventHookTableBody">
-                                    </tbody>
-                                </table>
-                                <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEventHook">
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Notification
+                                <div class="rounded-lg border border-slate-200 dark:border-slate-700" style="overflow:visible;">
+                                    <table class="w-full text-sm text-left" id="eventHookTable">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                            <tr>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Event Reference <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Campaign event that triggers this notification: CAMPAIGN_START, CAMPAIGN_END or CAMPAIGN_END_CIKO.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Free text description of this notification.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Active <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Whether this notification is currently enabled or disabled.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Hook Connector <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Notification channel type: EMAIL, SLACK, TEAMS, GOOGLE-CHAT or GENERIC.</span></span></th>
+                                                <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Hook Recipient <span class="crb-tooltip-wrap"><span class="crb-tooltip-icon">?</span><span class="crb-tooltip-bubble">Email address, webhook URL or user/channel to receive the notification.</span></span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="eventHookTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                                    </table>
+                                    <p id="notifEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No notifications</p>
+                                </div>
+                                <button type="button" id="addEventHook"
+                                        class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer; margin-top: 20px;">
+                                    <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                    Add Notification
                                 </button>
                             </div>
                         </div>
@@ -353,6 +629,8 @@
     // ===== MODAL LOGIC (merged from js/transversalobject/Campaign.js) =====
 
 function renderOptionsForCampaign_Label(tableId) {
+    // Select controls are now Alpine crbDropdown components in the HTML — no injection needed
+    return;
     var doc = new Doc();
     var data = getSelectInvariant("SYSTEM", false, false, "");
     $("#" + tableId + "_wrapper #addLabelTestcampaign").remove();
@@ -474,6 +752,8 @@ function camp_comboConfigLabel_formatSelection(label) {
 }
 
 function renderOptionsForCampaign_Parameter(id) {
+    // Select controls are now Alpine crbDropdown components in the HTML — no injection needed
+    return;
     var doc = new Doc();
     var data = getSelectInvariant("CAMPAIGN_PARAMETER", false, false);
     $("#" + id + "_wrapper #addParameterTestcampaign").remove();
@@ -504,6 +784,8 @@ function renderOptionsForCampaign_Parameter(id) {
 }
 
 function renderOptionsForCampaign_TestcaseCriterias(id) {
+    // Select controls are now Alpine crbDropdown components in the HTML — no injection needed
+    return;
     var doc = new Doc();
     var data = getSelectInvariant("CAMPAIGN_TCCRITERIA", false, false);
     $("#" + id + "_wrapper #addParameterTestcase").remove();
@@ -723,42 +1005,19 @@ function campaign_editEntryClick(param) {
         }
 
         /* LABEL */
-
-        var array = [];
-
+        $('#labelTableBody').empty();
         $.each(obj.labels, function (e) {
-            array.push(
-                    [obj.labels[e].campaign, obj.labels[e].campaignLabelID, obj.labels[e].LabelId, obj.labels[e].label.system, obj.labels[e].label.label, obj.labels[e].label.color, obj.labels[e].label.description, obj.labels[e].label.type]
-                    );
+            var lbl = obj.labels[e];
+            appendLabelRow(lbl.campaign, lbl.campaignLabelID, lbl.LabelId, lbl.label.system, lbl.label.label, lbl.label.color, lbl.label.description, lbl.label.type);
         });
-
-        if ($("#editTestcampaignModal #labelTestcampaignsTable_wrapper").length > 0) {
-            $("#editTestcampaignModal #labelTestcampaignsTable").DataTable().clear();
-            $("#editTestcampaignModal #labelTestcampaignsTable").DataTable().rows.add(array).draw();
-        } else {
-            //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("labelTestcampaignsTable", array, aoColumnsFunc_Label("labelTestcampaignsTable"), true);
-            createDataTableWithPermissions(configurations, null, "#labelTestcampaignList", undefined, true);
-        }
-        renderOptionsForCampaign_Label("labelTestcampaignsTable");
+        updateLabelEmptyState();
 
         /* PARAMETERS */
-
-        var array = [];
-
+        $('#parameterTableBody').empty();
         $.each(parameters, function (e) {
-            array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value]);
+            appendParameterRow(parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value);
         });
-
-        if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
-            $("#editTestcampaignModal #parameterTestcampaignsTable").DataTable().clear();
-            $("#editTestcampaignModal #parameterTestcampaignsTable").DataTable().rows.add(array).draw();
-        } else {
-            //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("parameterTestcampaignsTable", array, aoColumnsFunc_Parameter("parameterTestcampaignsTable"), true);
-            createDataTableWithPermissions(configurations, null, "#parameterTestcampaignList", undefined, true);
-        }
-        renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
+        updateParameterEmptyState();
         hideLoader("#testcampaignList");
 
         // Switch to description tab via Alpine
@@ -766,23 +1025,11 @@ function campaign_editEntryClick(param) {
         window.dispatchEvent(new CustomEvent('campaign-modal-open'));
 
         /* CRITERIAS */
-
-        var array = [];
-
+        $('#criteriaTableBody').empty();
         $.each(criterias, function (e) {
-            array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value]);
+            appendCriteriaRow(criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value);
         });
-
-        if ($("#editTestcampaignModal #parameterTestcaseTable_wrapper").length > 0) {
-            $("#editTestcampaignModal #parameterTestcaseTable").DataTable().clear();
-            $("#editTestcampaignModal #parameterTestcaseTable").DataTable().rows.add(array).draw();
-        } else {
-            //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("parameterTestcaseTable", array, aoColumnsFunc_Parameter("parameterTestcaseTable"), true);
-            createDataTableWithPermissions(configurations, null, "#parameterTestcaseTable", undefined, true);
-        }
-
-        renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable");
+        updateCriteriaEmptyState();
 
         /* SCHEDULER */
         var doc = new Doc();
@@ -850,23 +1097,22 @@ function campaign_editEntryModalSaveHandler() {
         table_events.push($(table1[i]).data("eventHook"));
     }
 
-    var labels = null;
-    if ($("#labelTestcampaignsTable_wrapper").length > 0) {
-        labels = $("#labelTestcampaignsTable").DataTable().data().toArray();
-    }
+    var labels = [];
+    $('#labelTableBody tr').each(function() {
+        var d = $(this).data('label');
+        if (d) labels.push([d.campaign, d.campaignLabelID, d.LabelId, d.system, d.label, d.color, d.description, d.type]);
+    });
 
-    var parameters = null;
-    if ($("#parameterTestcampaignsTable_wrapper").length > 0) {
-        parameters = $("#parameterTestcampaignsTable").DataTable().data().toArray();
-    }
+    var parameters = [];
+    $('#parameterTableBody tr').each(function() {
+        var d = $(this).data('param');
+        if (d) parameters.push([d.campaign, d.campaignparameterID, d.parameter, d.value]);
+    });
 
-    var criterias = null;
-    if ($("#parameterTestcaseTable_wrapper").length > 0) {
-        criterias = $("#parameterTestcaseTable").DataTable().data();
-        for (let i = 0; i < criterias.length; i++) {
-            parameters.push(criterias[i]);
-        }
-    }
+    $('#criteriaTableBody tr').each(function() {
+        var d = $(this).data('criteria');
+        if (d) parameters.push([d.campaign, d.campaignparameterID, d.parameter, d.value]);
+    });
 
 // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
@@ -950,34 +1196,16 @@ function campaign_addEntryClick() {
     $("#editTestcampaignModal #campaign").removeAttr("readonly");
 
     // LABEL
-    if ($("#labelTestcampaignsTable_wrapper").length > 0) {
-        $("#labelTestcampaignsTable").DataTable().clear().draw();
-    } else {
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsClientSide("labelTestcampaignsTable", null, aoColumnsFunc_Label("labelTestcampaignsTable"), true);
-        createDataTableWithPermissions(configurations, null, "#labelTestcampaignList", undefined, true);
-    }
-    renderOptionsForCampaign_Label("labelTestcampaignsTable");
+    $('#labelTableBody').empty();
+    updateLabelEmptyState();
 
     // PARAMETER
-    if ($("#parameterTestcampaignsTable_wrapper").length > 0) {
-        $("#parameterTestcampaignsTable").DataTable().clear().draw();
-    } else {
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsClientSide("parameterTestcampaignsTable", null, aoColumnsFunc_Parameter("parameterTestcampaignsTable"), true);
-        createDataTableWithPermissions(configurations, null, "#parameterTestcampaignList", undefined, true);
-    }
-    renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
+    $('#parameterTableBody').empty();
+    updateParameterEmptyState();
 
     // CRITERIA
-    if ($("#parameterTestcaseTable_wrapper").length > 0) {
-        $("#parameterTestcaseTable").DataTable().clear().draw();
-    } else {
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsClientSide("parameterTestcaseTable", null, aoColumnsFunc_Parameter("parameterTestcaseTable"), true);
-        createDataTableWithPermissions(configurations, null, "#parameterTestcaseList", undefined, true);
-    }
-    renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable");
+    $('#criteriaTableBody').empty();
+    updateCriteriaEmptyState();
 
     var elAdd = document.getElementById('editTestcampaignModal'); if (elAdd && elAdd._x_dataStack) elAdd._x_dataStack[0].campTab = 'description';
     window.dispatchEvent(new CustomEvent('campaign-modal-open'));
@@ -1022,29 +1250,22 @@ function campaign_addEntryModalSaveHandler() {
     }
 
 
-    var labels = null;
-    if ($("#labelTestcampaignsTable_wrapper").length > 0) {
-        labels = $("#labelTestcampaignsTable").DataTable().data().toArray();
-    }
-    for (var i = 0; i < labels.length; i++) {
-        labels[i][0] = data.campaign;
-    }
+    var labels = [];
+    $('#labelTableBody tr').each(function() {
+        var d = $(this).data('label');
+        if (d) labels.push([data.campaign, d.campaignLabelID, d.LabelId, d.system, d.label, d.color, d.description, d.type]);
+    });
 
-    var parameters = null;
-    if ($("#parameterTestcampaignsTable_wrapper").length > 0) {
-        parameters = $("#parameterTestcampaignsTable").DataTable().data().toArray();
-    }
+    var parameters = [];
+    $('#parameterTableBody tr').each(function() {
+        var d = $(this).data('param');
+        if (d) parameters.push([data.campaign, d.campaignparameterID, d.parameter, d.value]);
+    });
 
-    var criterias = null;
-    if ($("#parameterTestcaseTable").length > 0) {
-        criterias = $("#parameterTestcaseTable").DataTable().data();
-        for (let i = 0; i < criterias.length; i++) {
-            parameters.push(criterias[i]);
-        }
-    }
-    for (var i = 0; i < parameters.length; i++) {
-        parameters[i][0] = data.campaign;
-    }
+    $('#criteriaTableBody tr').each(function() {
+        var d = $(this).data('criteria');
+        if (d) parameters.push([data.campaign, d.campaignparameterID, d.parameter, d.value]);
+    });
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
 
@@ -1242,6 +1463,157 @@ function findValueTableDataByCol(tableId, colIndex, value) {
     });
     return result;
 }
+
+/* ── Alpine-compatible Add functions ── */
+
+function addLabelEntryClickAlpine() {
+    var el = document.getElementById('campLabelSelect-btn');
+    if (!el) return;
+    var dd = Alpine.$data(el.closest('[x-data]'));
+    if (!dd || !dd.selectedValue) return;
+    var item = null;
+    for (var i = 0; i < dd.allItems.length; i++) {
+        if (String(dd.allItems[i].value) === String(dd.selectedValue)) { item = dd.allItems[i]; break; }
+    }
+    if (!item) return;
+    appendLabelRow($("#campaignKey").val(), 0, item.value, item.system, item.label, item.color, item.description, item.type);
+    updateLabelEmptyState();
+    dd.selectedValue = '';
+    dd.selectedLabel = '';
+    document.getElementById('addLabelTestcampaignButton').disabled = true;
+}
+
+function addParameterEntryClickAlpine() {
+    var elP = document.getElementById('campParamSelect-btn');
+    var elV = document.getElementById('campParamValue-btn');
+    if (!elP || !elV) return;
+    var ddP = Alpine.$data(elP.closest('[x-data]'));
+    var ddV = Alpine.$data(elV.closest('[x-data]'));
+    if (!ddP || !ddV || !ddP.selectedValue || !ddV.selectedValue) return;
+    appendParameterRow($("#campaignKey").val(), 0, ddP.selectedValue, ddV.selectedValue);
+    updateParameterEmptyState();
+    ddV.selectedValue = '';
+    ddV.selectedLabel = '';
+}
+
+function addCriteriaEntryClickAlpine() {
+    var elP = document.getElementById('campCriteriaSelect-btn');
+    var elV = document.getElementById('campCriteriaValue-btn');
+    if (!elP || !elV) return;
+    var ddP = Alpine.$data(elP.closest('[x-data]'));
+    var ddV = Alpine.$data(elV.closest('[x-data]'));
+    if (!ddP || !ddV || !ddP.selectedValue || !ddV.selectedValue) return;
+    appendCriteriaRow($("#campaignKey").val(), 0, ddP.selectedValue, ddV.selectedValue);
+    updateCriteriaEmptyState();
+    ddV.selectedValue = '';
+    ddV.selectedLabel = '';
+}
+
+/* ── Row append helpers ── */
+
+function appendLabelRow(campaign, campaignLabelID, labelId, system, label, color, description, type) {
+    var trashSvg = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+    var $tr = $('<tr class="transition-colors duration-200">')
+        .data('label', { campaign: campaign, campaignLabelID: campaignLabelID, LabelId: labelId, system: system, label: label, color: color, description: description, type: type })
+        .append('<td style="padding:8px 12px; width:48px;"><button type="button" class="crb-delete-row inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">' + trashSvg + '</button></td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + labelId + '</td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + system + '</td>')
+        .append('<td style="padding:8px 12px;"><span class="inline-block px-2 py-0.5 rounded text-xs text-white" style="background-color:' + (color || '#8b8b8c') + '">' + label + '</span></td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + type + '</td>');
+    $tr.find('.crb-delete-row').on('click', function() {
+        $tr.css({'background': '#fef2f2', 'opacity': '0.5'});
+        setTimeout(function() { $tr.remove(); updateLabelEmptyState(); }, 300);
+    });
+    $('#labelTableBody').append($tr);
+}
+
+function appendParameterRow(campaign, campaignparameterID, parameter, value) {
+    var trashSvg = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+    var $tr = $('<tr class="transition-colors duration-200">')
+        .data('param', { campaign: campaign, campaignparameterID: campaignparameterID, parameter: parameter, value: value })
+        .append('<td style="padding:8px 12px; width:48px;"><button type="button" class="crb-delete-row inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">' + trashSvg + '</button></td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + parameter + '</td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + value + '</td>');
+    $tr.find('.crb-delete-row').on('click', function() {
+        $tr.css({'background': '#fef2f2', 'opacity': '0.5'});
+        setTimeout(function() { $tr.remove(); updateParameterEmptyState(); }, 300);
+    });
+    $('#parameterTableBody').append($tr);
+}
+
+function appendCriteriaRow(campaign, campaignparameterID, parameter, value) {
+    var trashSvg = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+    var $tr = $('<tr class="transition-colors duration-200">')
+        .data('criteria', { campaign: campaign, campaignparameterID: campaignparameterID, parameter: parameter, value: value })
+        .append('<td style="padding:8px 12px; width:48px;"><button type="button" class="crb-delete-row inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">' + trashSvg + '</button></td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + parameter + '</td>')
+        .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + value + '</td>');
+    $tr.find('.crb-delete-row').on('click', function() {
+        $tr.css({'background': '#fef2f2', 'opacity': '0.5'});
+        setTimeout(function() { $tr.remove(); updateCriteriaEmptyState(); }, 300);
+    });
+    $('#criteriaTableBody').append($tr);
+}
+
+/* ── Empty state helpers ── */
+
+function updateLabelEmptyState() {
+    $('#labelEmptyState').toggle($('#labelTableBody tr').length === 0);
+}
+function updateParameterEmptyState() {
+    $('#parameterEmptyState').toggle($('#parameterTableBody tr').length === 0);
+}
+function updateCriteriaEmptyState() {
+    $('#criteriaEmptyState').toggle($('#criteriaTableBody tr').length === 0);
+}
+
+/* Dynamic value reload for Parameter dropdown (Environments tab) */
+window._campParamReloadValue = function(paramType) {
+    var elV = document.getElementById('campParamValue-btn');
+    if (!elV) return;
+    var ddV = Alpine.$data(elV.closest('[x-data]'));
+    ddV.selectedValue = '';
+    ddV.selectedLabel = '';
+    ddV.search = '';
+
+    var loaderFn;
+    if (paramType === 'ROBOT') {
+        loaderFn = crbLoaders.robots;
+    } else {
+        loaderFn = crbLoaders.invariant(paramType);
+    }
+    loaderFn(function(items) {
+        ddV.allItems = items;
+        ddV.items = items;
+    });
+};
+
+/* Dynamic value reload for Criteria dropdown (Test Case Criterias tab) */
+window._campCriteriaReloadValue = function(criteriaType) {
+    var elV = document.getElementById('campCriteriaValue-btn');
+    if (!elV) return;
+    var ddV = Alpine.$data(elV.closest('[x-data]'));
+    ddV.selectedValue = '';
+    ddV.selectedLabel = '';
+    ddV.search = '';
+
+    var loaderFn;
+    if (criteriaType === 'STATUS') {
+        loaderFn = crbLoaders.invariant('TCSTATUS');
+    } else if (criteriaType === 'TYPE') {
+        loaderFn = crbLoaders.invariant('TESTCASE_TYPE');
+    } else if (criteriaType === 'APPLICATION') {
+        loaderFn = crbLoaders.applicationsNoSystem;
+    } else if (criteriaType === 'TESTFOLDER') {
+        loaderFn = crbLoaders.folders;
+    } else {
+        loaderFn = crbLoaders.invariant(criteriaType);
+    }
+    loaderFn(function(items) {
+        ddV.allItems = items;
+        ddV.items = items;
+    });
+};
 
 function aoColumnsFunc_Label(tableId) {
     var doc = new Doc();
@@ -1506,6 +1878,7 @@ function getDuration(tag) {
 
 function loadSchedulerTable(name) {
     $('#schedulerTableBody tr').remove();
+    $('#schedulerEmptyState').show();
 
     if (name !== "") {
         name.scheduledEntries.forEach(function (obj, idx) {
@@ -1518,6 +1891,7 @@ function loadSchedulerTable(name) {
 
 function loadEventHookTable(name) {
     $('#eventHookTableBody tr').remove();
+    $('#notifEmptyState').show();
 
     if (name !== "") {
         name.eventHooks.forEach(function (obj, idx) {
@@ -1531,173 +1905,125 @@ function loadEventHookTable(name) {
 
 function appendSchedulerRow(scheduler) {
 
-    var activebool = true;
-    if (scheduler.isActive === "Y") {
-        activebool = true;
-    } else {
-        activebool = false;
-    }
+    var activebool = (scheduler.isActive === "Y");
+    var tdStyle = 'padding: 10px 12px; vertical-align: middle;';
+    var inputStyle = 'width: 100%; height: 30px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: white; color: #0f172a;';
 
-    var doc = new Doc();
-    var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>');
-    var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control").val(scheduler.cronDefinition);
-    loadCronList(cronInput);
-    var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control").val(scheduler.description);
-    var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
-    var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(getDate(scheduler.lastExecution));
-    var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrCreated);
-    var userModifInput = $("<input name=\"cronUserModifInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrModif);
-
-    var cron = $("<div class='form-group col-sm-10'></div>").append("<label for='cronDefinition'>" + doc.getDocOnline("scheduleentry", "cronDefinition") + "</label>").append(cronInput);
-    var active = $("<div class='form-group col-sm-2'></div>").append("<label for='cronActive'>" + doc.getDocOnline("scheduleentry", "active") + "</label>").append(activeInput);
-    var lastExec = $("<div class='form-group col-sm-4'></div>").append("<label for='cronLastExecInput'>" + doc.getDocOnline("scheduleentry", "lastexecution") + "</label>").append(lastExecInput);
-    var description = $("<div class='form-group col-sm-12'></div>").append("<label for='cronDescription'>" + doc.getDocOnline("scheduleentry", "description") + "</label>").append(descInput);
-    var userCreate = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserCreateInput'>" + doc.getDocOnline("transversal", "UsrCreated") + "</label>").append(userCreateInput);
-    var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserModifInput'>" + doc.getDocOnline("transversal", "UsrModif") + "</label>").append(userModifInput);
-
+    $("#schedulerEmptyState").hide();
 
     var table = $('#schedulerTableBody');
-    var row = $("<tr class='dataField'></tr>");
+    var row = $("<tr class='dataField'></tr>").css('transition', 'all 0.2s');
 
-    var drow1 = $("<div class='row'></div>").append(cron).append(active).append(description).append(lastExec).append(userCreate).append(userModif);
+    // Col 1: Delete button
+    var deleteBtn = $('<button type="button" style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; transition: all 0.15s;" onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" onmouseleave="if(!this.dataset.deleted){this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>');
+    var td1 = $("<td></td>").css({padding: '10px 12px', width: '48px', textAlign: 'center'}).append(deleteBtn);
 
-    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
-    var td2 = $("<td class='row form-group'></td>").append(drow1);
+    // Col 2: Cron definition
+    var cronInput = $("<input name='cronDefinition' maxlength='200'>").css({width: '100%', height: '30px', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '13px', background: 'white', color: '#0f172a'}).val(scheduler.cronDefinition);
+    loadCronList(cronInput);
+    var td2 = $("<td></td>").css({padding: '10px 12px'}).append(cronInput);
 
+    // Col 3: Description
+    var descInput = $("<input name='cronDescription' maxlength='200'>").css({width: '100%', height: '30px', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '13px', background: 'white', color: '#0f172a'}).val(scheduler.description);
+    var td3 = $("<td></td>").css({padding: '10px 12px'}).append(descInput);
+
+    // Col 4: Active
+    var activeInput = $("<input name='cronActive' type='checkbox'>").css({width: '16px', height: '16px', accentColor: '#3b82f6', cursor: 'pointer'}).prop("checked", activebool);
+    var td4 = $("<td></td>").css({padding: '10px 12px', textAlign: 'center'}).append(activeInput);
+
+    // Col 5: Last Execution
+    var lastExecInput = $("<input name='cronLastExecInput' readonly>").css({width: '100%', height: '30px', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '4px 8px', fontSize: '12px', background: '#f8fafc', color: '#64748b'}).val(getDate(scheduler.lastExecution));
+    var td5 = $("<td></td>").css({padding: '10px 12px'}).append(lastExecInput);
+
+    // Delete toggle
     deleteBtn.click(function () {
-        scheduler.toDelete = (scheduler.toDelete) ? false : true;
+        scheduler.toDelete = !scheduler.toDelete;
         if (scheduler.toDelete) {
-            row.addClass("danger");
+            row.css({background: '#fef2f2', opacity: '0.6'});
+            deleteBtn[0].dataset.deleted = 'true';
+            deleteBtn.css({background: '#dc2626', borderColor: '#dc2626', color: 'white'});
         } else {
-            row.removeClass("danger");
+            row.css({background: '', opacity: '1'});
+            delete deleteBtn[0].dataset.deleted;
+            deleteBtn.css({background: '#fef2f2', borderColor: '#fca5a5', color: '#dc2626'});
         }
     });
 
-    cronInput.change(function () {
-        scheduler.cronDefinition = $(this).val();
-    });
+    cronInput.change(function () { scheduler.cronDefinition = $(this).val(); });
+    descInput.change(function () { scheduler.description = $(this).val(); });
+    activeInput.change(function () { scheduler.isActive = $(this).prop("checked") ? "Y" : "N"; });
 
-    descInput.change(function () {
-        scheduler.description = $(this).val();
-    });
-
-    activeInput.change(function () {
-        if ($(this).prop("checked")) {
-            scheduler.isActive = "Y";
-        } else {
-            scheduler.isActive = "N";
-        }
-    });
-
-    row.append(td1);
-    row.append(td2);
+    row.append(td1).append(td2).append(td3).append(td4).append(td5);
     row.data("scheduler", scheduler);
     table.append(row);
 }
 
 function appendEventHookRow(eventHook) {
 
-    var doc = new Doc();
+    var selectStyle = {width: '100%', height: '30px', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '13px', background: 'white', color: '#0f172a'};
+    var inputStyle = {width: '100%', height: '30px', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '4px 8px', fontSize: '13px', background: 'white', color: '#0f172a'};
 
-    var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>');
-    var eventRefInput = $("<select></select>").addClass("form-control");
+    $("#notifEmptyState").hide();
+
+    var table = $('#eventHookTableBody');
+    var row = $("<tr></tr>").css('transition', 'all 0.2s');
+
+    // Col 1: Delete button
+    var deleteBtn = $('<button type="button" style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; transition: all 0.15s;" onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" onmouseleave="if(!this.dataset.deleted){this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>');
+    var td1 = $("<td></td>").css({padding: '10px 12px', width: '48px', textAlign: 'center'}).append(deleteBtn);
+
+    // Col 2: Event Reference
+    var eventRefInput = $("<select></select>").css(selectStyle);
     eventRefInput.append($("<option></option>").text("CAMPAIGN_START").val("CAMPAIGN_START"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END").val("CAMPAIGN_END"));
     eventRefInput.append($("<option></option>").text("CAMPAIGN_END_CIKO").val("CAMPAIGN_END_CIKO"));
     eventRefInput.val(eventHook.eventReference);
-    var activeInput = $("<input name=\"eventActive\" type='checkbox'>").addClass("form-control").prop("checked", eventHook.isActive);
-    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control").val(eventHook.description);
+    var td2 = $("<td></td>").css({padding: '10px 12px'}).append(eventRefInput);
+
+    // Col 3: Description
+    var descInput = $("<input name='eventDescription' maxlength='200'>").css(inputStyle).val(eventHook.description);
+    var td3 = $("<td></td>").css({padding: '10px 12px'}).append(descInput);
+
+    // Col 4: Active
+    var activeInput = $("<input name='eventActive' type='checkbox'>").css({width: '16px', height: '16px', accentColor: '#3b82f6', cursor: 'pointer'}).prop("checked", eventHook.isActive);
+    var td4 = $("<td></td>").css({padding: '10px 12px', textAlign: 'center'}).append(activeInput);
+
+    // Col 5: Hook Connector
     var hookConnectorInput = getSelectInvariant("EVENTCONNECTOR", false);
-    hookConnectorInput.val(eventHook.hookConnector);
-    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control").val(eventHook.hookRecipient);
-    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control").val(eventHook.hookChannel);
-    var userCreateInput = $("<input name=\"eventUserCreateInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrCreated);
-    var userModifInput = $("<input name=\"eventUserModifInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrModif);
+    hookConnectorInput.css(selectStyle).val(eventHook.hookConnector);
+    var td5 = $("<td></td>").css({padding: '10px 12px'}).append(hookConnectorInput);
 
-    var eventRef = $("<div class='form-group col-sm-4'></div>").append("<label for='eventReference'>" + doc.getDocOnline("eventhook", "EventReference") + "</label>").append(eventRefInput);
-    var description = $("<div class='form-group col-sm-6'></div>").append("<label for='eventDescription'>" + doc.getDocOnline("eventhook", "Description") + "</label>").append(descInput);
-    var active = $("<div class='form-group col-sm-2'></div>").append("<label for='eventActive'>" + doc.getDocOnline("eventhook", "IsActive") + "</label>").append(activeInput);
-    var hookConnector = $("<div class='form-group col-sm-3'></div>").append("<label for='hookConnector'>" + doc.getDocOnline("eventhook", "HookConnector") + "</label>").append(hookConnectorInput);
-    var hookRecipient = $("<div class='form-group col-sm-5'></div>").append("<label for='hookRecipient'>" + doc.getDocOnline("eventhook", "HookRecipient") + "</label>").append(hookRecipientInput);
-    var hookChannel = $("<div class='form-group col-sm-4'></div>").append("<label for='hookChannel'>" + doc.getDocOnline("eventhook", "HookChannel") + "</label>").append(hookChannelInput);
-    var userCreate = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserCreateInput'>" + doc.getDocOnline("eventhook", "UsrCreated") + "</label>").append(userCreateInput);
-    var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserModifInput'>" + doc.getDocOnline("eventhook", "UsrModif") + "</label>").append(userModifInput);
-    var logo = $("<span class='fa fa-fw col-sm-12' style='font-size:50px;'></span>");
-    logo.addClass(getClass(eventHook.hookConnector));
+    // Col 6: Recipient (+ hidden channel for Slack)
+    var hookRecipientInput = $("<input name='hookRecipient'>").css(inputStyle).val(eventHook.hookRecipient);
+    var hookChannelInput = $("<input name='hookChannel' placeholder='Channel...'>").css(Object.assign({}, inputStyle, {marginTop: '6px'})).val(eventHook.hookChannel);
+    if (eventHook.hookConnector !== "SLACK") hookChannelInput.hide();
+    var td6 = $("<td></td>").css({padding: '10px 12px'}).append(hookRecipientInput).append(hookChannelInput);
 
-    if (eventHook.hookConnector === "SLACK") {
-        hookChannel.show();
-        hookRecipient.removeClass("col-sm-5 col-sm-9");
-        hookRecipient.addClass("col-sm-5");
-    } else {
-        hookChannel.hide();
-        hookRecipient.removeClass("col-sm-5 col-sm-9");
-        hookRecipient.addClass("col-sm-9");
-    }
-
-//
-    var table = $('#eventHookTableBody');
-    var row = $("<tr></tr>");
-
-    var drow01 = $("<div class='row'></div>").append(deleteBtn);
-    var drow02 = $("<div class='row'></div>").append(logo);
-
-    var drow1 = $("<div class='row'></div>").append(eventRef).append(description).append(active);
-    var drow2 = $("<div class='row'></div>").append(hookConnector).append(hookRecipient).append(hookChannel);
-
-    var td1 = $("<td></td>").append(drow01).append(drow02);
-    var td2 = $("<td></td>").append(drow1).append(drow2);
-
+    // Delete toggle
     deleteBtn.click(function () {
-        eventHook.toDelete = (eventHook.toDelete) ? false : true;
+        eventHook.toDelete = !eventHook.toDelete;
         if (eventHook.toDelete) {
-            row.addClass("danger");
+            row.css({background: '#fef2f2', opacity: '0.6'});
+            deleteBtn[0].dataset.deleted = 'true';
+            deleteBtn.css({background: '#dc2626', borderColor: '#dc2626', color: 'white'});
         } else {
-            row.removeClass("danger");
+            row.css({background: '', opacity: '1'});
+            delete deleteBtn[0].dataset.deleted;
+            deleteBtn.css({background: '#fef2f2', borderColor: '#fca5a5', color: '#dc2626'});
         }
     });
 
     hookConnectorInput.change(function () {
         eventHook.hookConnector = $(this).val();
-
-        logo.removeClass("fa-slack fa-windows fa-at fa-external-link fa-google");
-        logo.addClass(getClass($(this).val()));
-        if ($(this).val() === "SLACK") {
-            hookChannel.show();
-            hookRecipient.removeClass("col-sm-5 col-sm-9");
-            hookRecipient.addClass("col-sm-5");
-        } else {
-            hookChannel.hide();
-            hookRecipient.removeClass("col-sm-5 col-sm-9");
-            hookRecipient.addClass("col-sm-9");
-        }
-
+        if ($(this).val() === "SLACK") { hookChannelInput.show(); } else { hookChannelInput.hide(); }
     });
+    eventRefInput.change(function () { eventHook.eventReference = $(this).val(); });
+    descInput.change(function () { eventHook.description = $(this).val(); });
+    hookRecipientInput.change(function () { eventHook.hookRecipient = $(this).val(); });
+    hookChannelInput.change(function () { eventHook.hookChannel = $(this).val(); });
+    activeInput.change(function () { eventHook.isActive = $(this).prop("checked"); });
 
-    eventRefInput.change(function () {
-        eventHook.eventReference = $(this).val();
-    });
-
-    descInput.change(function () {
-        eventHook.description = $(this).val();
-    });
-
-    hookRecipientInput.change(function () {
-        eventHook.hookRecipient = $(this).val();
-    });
-
-    hookChannelInput.change(function () {
-        eventHook.hookChannel = $(this).val();
-    });
-
-    activeInput.change(function () {
-        console.info($(this).prop("checked"));
-        console.info($(this).val());
-        eventHook.isActive = $(this).prop("checked");
-    });
-
-    row.append(td1);
-    row.append(td2);
+    row.append(td1).append(td2).append(td3).append(td4).append(td5).append(td6);
     row.data("eventHook", eventHook);
     table.append(row);
 }

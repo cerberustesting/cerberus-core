@@ -76,15 +76,16 @@ function crbDropdown(config) {
         },
 
         preselect: function(value) {
-            this.selectedValue = value || '';
+            var strValue = (value === null || value === undefined) ? '' : String(value);
+            this.selectedValue = strValue;
             var match = null;
             var searchList = this.allItems && this.allItems.length > 0 ? this.allItems : this.items;
             for (var i = 0; i < searchList.length; i++) {
-                if (searchList[i].value === value) { match = searchList[i]; break; }
+                if (String(searchList[i].value) === strValue) { match = searchList[i]; break; }
             }
-            this.selectedLabel = match ? match.label : (value || '');
+            this.selectedLabel = match ? match.label : (strValue || '');
             // Use cached input reference
-            if (this._inputEl) this._inputEl.value = value || '';
+            if (this._inputEl) this._inputEl.value = strValue;
         },
 
         toggle: function() {
@@ -182,5 +183,66 @@ window.crbLoaders = {
                 callback(items);
             })
             .fail(function() { callback([]); });
+    },
+
+    // Load labels (for campaign label selection) — loads ALL labels, filterable by system via filterEvent
+    labels: function(system) {
+        return function(callback) {
+            var url = 'ReadLabel?bStrictSystemFilter=Y&iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=300';
+            if (system) url += '&system=' + encodeURIComponent(system);
+            $.getJSON(url)
+                .then(function(data) {
+                    var items = (data.contentTable || []).map(function(obj) {
+                        return {
+                            value: String(obj.id),
+                            label: obj.label,
+                            color: obj.color || '#8b8b8c',
+                            description: obj.description || '',
+                            system: obj.system || '',
+                            type: obj.type || '',
+                            _raw: obj
+                        };
+                    });
+                    callback(items);
+                })
+                .fail(function() { callback([]); });
+        };
+    },
+
+    // Load robots
+    robots: function(callback) {
+        $.getJSON('ReadRobot')
+            .then(function(data) {
+                var items = (data.contentTable || []).map(function(r) {
+                    return { value: r.robot, label: r.robot };
+                });
+                callback(items);
+            })
+            .fail(function() { callback([]); });
+    },
+
+    // Load applications without system filter
+    applicationsNoSystem: function(callback) {
+        $.getJSON('ReadApplication', 'q=1')
+            .then(function(data) {
+                var items = (data.contentTable || []).map(function(app) {
+                    return { value: app.application, label: app.application };
+                });
+                callback(items);
+            })
+            .fail(function() { callback([]); });
+    },
+
+    // Load test folders (for criteria)
+    folders: function(callback) {
+        fetch('ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=300')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var items = data.contentTable.map(function(obj) {
+                    return { value: obj.test, label: obj.test };
+                }).sort(function(a, b) { return a.label.localeCompare(b.label); });
+                callback(items);
+            })
+            .catch(function() { callback([]); });
     }
 };
