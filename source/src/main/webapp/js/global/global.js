@@ -2738,20 +2738,20 @@ function getDateMedium(date) {
 
 function getHumanReadableDuration(seconds, maxUnits = Infinity) {
     const units = [
-        { label: 'y', value: 365 * 24 * 60 * 60 },
-        { label: 'mo', value: 30 * 24 * 60 * 60 }, // mois approx
-        { label: 'd', value: 24 * 60 * 60 },
-        { label: 'h', value: 60 * 60 },
-        { label: 'm', value: 60 },
-        { label: 's', value: 1 }
+        {label: 'y', value: 365 * 24 * 60 * 60},
+        {label: 'mo', value: 30 * 24 * 60 * 60}, // mois approx
+        {label: 'd', value: 24 * 60 * 60},
+        {label: 'h', value: 60 * 60},
+        {label: 'm', value: 60},
+        {label: 's', value: 1}
     ];
 
     let remaining = seconds;
     const result = [];
 
     for (const unit of units) {
-        if (result.length >= maxUnits) break;
-
+        if (result.length >= maxUnits)
+            break;
         const qty = Math.floor(remaining / unit.value);
         if (qty > 0) {
             result.push(qty + unit.label);
@@ -2760,67 +2760,6 @@ function getHumanReadableDuration(seconds, maxUnits = Infinity) {
     }
 
     return result.length > 0 ? result.join(' ') : '0s';
-}
-
-function getHumanReadableDuration1(durInSec, nbUnits = 2) {
-    console.info("start : " + durInSec + " - " + nbUnits);
-    let dur = durInSec;
-    let unit = "s";
-    let cnt1 = 0;
-    let cnt2 = 0;
-    if (dur >= 60) {
-        dur = dur / 60;
-        unit = "min";
-    } else {
-        return Math.round(dur) + " " + unit;
-    }
-    if (durInSec > 432000000) {
-        return "unknown";
-    }
-    if (dur >= 60) {
-        dur = dur / 60;
-        unit = "h";
-    } else {
-        cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60);
-        if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + Math.round(cnt2) + " s";
-        } else {
-            return cnt1 + " " + unit;
-        }
-    }
-    if (dur >= 24) {
-        dur = dur / 24;
-        unit = "d";
-    } else {
-        cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60 * 60);
-        if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
-        } else {
-            return cnt1 + " " + unit;
-        }
-    }
-    if (dur >= 365) {
-        dur = dur / 365;
-        unit = "y";
-    } else {
-        cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
-        if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
-        } else {
-            return cnt1 + " " + unit;
-        }
-    }
-
-    cnt1 = Math.floor(dur);
-    cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
-    if ((cnt2 > 0) && (nbUnits > 1)) {
-        return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
-    } else {
-        return cnt1 + " " + unit;
-}
 }
 
 function getTextPlurial(nb, textSingle, textPlusial) {

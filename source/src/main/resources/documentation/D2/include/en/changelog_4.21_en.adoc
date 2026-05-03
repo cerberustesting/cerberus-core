@@ -4,11 +4,18 @@
 
 *Improvements / New features*
 [square]
+* Major UI improvements using Tailwind & Alpine. All modal on all pages changed for better User Experience.
+* Major Menu structure change. Most day to day screens are now all under 'Maintain' menu entry. Application and environment configuration moved to "Setting"
+* First AI use cases integration using Anthropic.
 * GetFormJS property is now available for all application type. (when not GUI, the js is executed on server side)
 * Integration with the new proxy dependency of cerberus-robot-proxy (MITMPROXY).
 * Integration with latest Cerberus robot extension including video recording and automatic link to real time execution for SaaS users.
 * On engine messages, element links are no longer displayed when using image recognition.
 * When using image recognition, message now report when multiple elements were detected.
+* Campaign now save and display last execution timestamp. Campaign can then be sorted by latest execution.
+* Added support for clearField action for GUI and FAT applications
+* Added support for property row number for mongodb service (limiting request duration and size)
+* 
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
