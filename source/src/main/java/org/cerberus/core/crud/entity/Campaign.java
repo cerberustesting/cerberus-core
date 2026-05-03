@@ -48,6 +48,7 @@ public class Campaign implements Serializable {
     private String group1;
     private String group2;
     private String group3;
+    private Timestamp DateLastExecuted;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -235,6 +236,14 @@ public class Campaign implements Serializable {
 
     public void setCampaign(String campaign) {
         this.campaign = campaign;
+    }
+
+    public Timestamp getDateLastExecuted() {
+        return DateLastExecuted;
+    }
+
+    public void setDateLastExecuted(Timestamp DateLastExecuted) {
+        this.DateLastExecuted = DateLastExecuted;
     }
 
     public String getLongDescription() {

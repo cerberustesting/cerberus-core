@@ -359,6 +359,7 @@ public class TagService implements ITagService {
                         reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
             }
             Answer ans = tagDAO.create(newTag);
+            campaignService.updateLastExecuted(campaign);
             // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isEmptyOrNull(campaign)) {
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_START, newTag, null, null, null);

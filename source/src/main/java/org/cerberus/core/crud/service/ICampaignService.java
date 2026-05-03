@@ -94,6 +94,12 @@ public interface ICampaignService {
     Answer delete(Campaign object);
 
     /**
+     * @param campaign
+     * @return {@link AnswerItem}
+     */
+    Answer updateLastExecuted(String campaign);
+
+    /**
      *
      * @param answerItem
      * @return

@@ -401,6 +401,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('campaign','Priority','','fr','Priorité','','')");
         b.append(",('campaign','ManualExecution','','en','Manual execution','','')");
         b.append(",('campaign','ManualExecution','','fr','Exécution manuelle','','')");
+        b.append(",('campaign','DateLastExecuted','','en','Last executed','','')");
+        b.append(",('campaign','DateLastExecuted','','fr','Dernière Execution','','')");
         b.append(",('comboApplicationType','APK','','en','Android Application','','')");
         b.append(",('comboApplicationType','APK','','fr','Application Android','','')");
         b.append(",('comboApplicationType','APK','','fa','برنامه کاربردی اندروید','','')");

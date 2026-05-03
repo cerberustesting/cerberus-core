@@ -94,6 +94,12 @@ public interface ICampaignDAO {
     Answer delete(Campaign object);
 
     /**
+     * @param campaign
+     * @return {@link AnswerItem}
+     */
+    Answer updateLastExecuted(String campaign);
+
+    /**
      *
      * @param fromDate
      * @param toDate

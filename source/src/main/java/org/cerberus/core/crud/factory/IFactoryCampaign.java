@@ -57,6 +57,6 @@ public interface IFactoryCampaign {
     Campaign create(Integer campaignID, String campaign,
             String CIScoreThreshold,
             String tag, String verbose, String screenshot, String video, String PageSource, String RobotLog, String ConsoleLog, String Timeout, String Retries, String Priority, String ManualExecution,
-            String description, String longDescription, String group1, String group2, String group3,
+            String description, String longDescription, String group1, String group2, String group3, Timestamp DateLastExecuted,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

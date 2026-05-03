@@ -187,7 +187,7 @@ public class CampaignDAO implements ICampaignDAO {
         query.append("SELECT * FROM campaign cpg WHERE campaignid = ?");
 
         LOG.debug("SQL : {}", query);
-        
+
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setInt(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -239,7 +239,7 @@ public class CampaignDAO implements ICampaignDAO {
         query.append(" order by ").append(columnName).append(" asc");
 
         LOG.debug("SQL : {}", query);
-        
+
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
@@ -294,7 +294,7 @@ public class CampaignDAO implements ICampaignDAO {
                 .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug("SQL : {}", query);
-        
+
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
@@ -382,13 +382,35 @@ public class CampaignDAO implements ICampaignDAO {
         final String query = "DELETE FROM campaign WHERE campaignID = ? ";
 
         LOG.debug("SQL : {}", query);
-        
+
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getCampaignID());
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer updateLastExecuted(String campaign) {
+        MessageEvent msg;
+        final String query = "UPDATE campaign cpg SET DateLastExecuted = NOW() WHERE campaign = ? ";
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            int i = 1;
+            preStat.setString(i++, campaign);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -422,11 +444,12 @@ public class CampaignDAO implements ICampaignDAO {
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("cpg.DateModif");
         Timestamp dateCreated = rs.getTimestamp("cpg.DateCreated");
+        Timestamp dateLastExecuted = rs.getTimestamp("cpg.DateLastExecuted");
 
         return factoryCampaign.create(campID, camp,
                 cIScoreThreshold,
                 tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
-                desc, longDesc, group1, group2, group3,
+                desc, longDesc, group1, group2, group3, dateLastExecuted,
                 usrCreated, dateCreated, usrModif, dateModif);
     }
 

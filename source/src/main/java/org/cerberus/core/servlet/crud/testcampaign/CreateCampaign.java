@@ -133,7 +133,7 @@ public class CreateCampaign extends HttpServlet {
             Campaign camp = factoryCampaign.create(0, campaignName,
                     cIScoreThreshold,
                     tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
-                    desc, longDesc, group1, group2, group3,
+                    desc, longDesc, group1, group2, group3, null,
                     request.getRemoteUser(), null, null, null);
 
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

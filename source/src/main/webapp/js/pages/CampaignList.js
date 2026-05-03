@@ -42,19 +42,23 @@ function initPage() {
     // Pre load eventconnector invariant.
     getSelectInvariant("EVENTCONNECTOR", false);
 
-    $('#testcampaignsTable').on('draw.dt', function() {
+    $('#testcampaignsTable').on('draw.dt', function () {
         $(this).find('tbody tr').addClass('group');
-        if (window.lucide) lucide.createIcons();
+        if (window.lucide)
+            lucide.createIcons();
     });
 
     // Redraw datatables inside modal when switching tabs via Alpine
 
 
-    $(document).on('click', '#editTestcampaignModal [x-data] button', function() {
-        setTimeout(function() {
-            if ($("#parameterTestcampaignsTable_wrapper").length > 0) $("#parameterTestcampaignsTable").DataTable().columns.adjust().draw();
-            if ($("#labelTestcampaignsTable_wrapper").length > 0) $("#labelTestcampaignsTable").DataTable().columns.adjust().draw();
-            if ($("#parameterTestcaseTable_wrapper").length > 0) $("#parameterTestcaseTable").DataTable().columns.adjust().draw();
+    $(document).on('click', '#editTestcampaignModal [x-data] button', function () {
+        setTimeout(function () {
+            if ($("#parameterTestcampaignsTable_wrapper").length > 0)
+                $("#parameterTestcampaignsTable").DataTable().columns.adjust().draw();
+            if ($("#labelTestcampaignsTable_wrapper").length > 0)
+                $("#labelTestcampaignsTable").DataTable().columns.adjust().draw();
+            if ($("#parameterTestcaseTable_wrapper").length > 0)
+                $("#parameterTestcaseTable").DataTable().columns.adjust().draw();
         }, 100);
     });
 
@@ -118,7 +122,8 @@ function renderOptionsForCampaign(data) {
             var $wrapper = $("#testcampaignsTable_buttonWrapper");
             if ($wrapper.length) {
                 $wrapper.append(contentToAdd);
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide)
+                    lucide.createIcons();
             } else {
                 console.warn("Wrapper #testcampaignsTable_buttonWrapper introuvable, insertion avant length");
                 $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before("<div id='testcampaignsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
@@ -176,10 +181,10 @@ function aoColumnsFunc(tableId) {
                 var row = "row_" + (meta ? meta.row : 0);
 
                 const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
-                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
-                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+                        "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                        "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false, href = null }) {
+                function actionButton( { id, name, title, onClick, icon, extraClass = "", disabled = false, href = null }) {
                     if (href) {
                         return `<a id="${id}" name="${name}" class="${baseBtnClass} ${extraClass}" title="${title}" href="${href}">
                             ${icon}</a>`;
@@ -265,12 +270,14 @@ function aoColumnsFunc(tableId) {
         {
             "data": "description",
             "sName": "description",
+            "like": true,
             "sWidth": "180px",
             "title": doc.getDocOnline("page_testcampaign", "description_col")
         },
         {
             "data": "longDescription",
             "visible": false,
+            "like": true,
             "sName": "longDescription",
             "sWidth": "180px",
             "title": doc.getDocOnline("campaign", "longDescription")
@@ -381,6 +388,18 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("campaign", "ManualExecution")
         },
         {
+            "data": "DateLastExecuted",
+            "sName": "DateLastExecuted",
+            "sWidth": "110px",
+            "like": true,
+            "defaultContent": "",
+            "title": doc.getDocOnline("campaign", "DateLastExecuted"),
+            "mRender": function (data, type, oObj) {
+                let res = getHumanReadableDuration((new Date().getTime() - new Date(oObj["DateLastExecuted"]).getTime()) / 1000);
+                return res == "unknown" ? "" : res;
+            }
+        },
+        {
             "data": "UsrCreated",
             "visible": false,
             "sName": "UsrCreated",
@@ -411,6 +430,7 @@ function aoColumnsFunc(tableId) {
         {
             "data": "DateModif",
             "visible": false,
+            "like": true,
             "sName": "DateModif",
             "sWidth": "110px",
             "defaultContent": "",
