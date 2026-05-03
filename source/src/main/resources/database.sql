@@ -6827,3 +6827,6 @@ UPDATE `parameter` SET `param`='cerberus_testdatalib_sql_fetchmax' WHERE `param`
 -- 1938
 ALTER TABLE campaign ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER Group3;
 
+-- 1939
+TRUNCATE TABLE testcasehisto;
+

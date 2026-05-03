@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -30,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.cerberus.core.crud.dao.ITestCaseHistoDAO;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseHisto;
+import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseHistoService;
+import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
@@ -47,6 +51,10 @@ public class TestCaseHistoService implements ITestCaseHistoService {
 
     @Autowired
     private ITestCaseHistoDAO testCaseHistoDao;
+    @Autowired
+    private ITestCaseService testCaseService;
+    @Autowired
+    private IParameterService parameterService;
 
     @Override
     public TestCaseHisto readByKey(String test, String testCase, int version) throws CerberusException {
@@ -59,7 +67,7 @@ public class TestCaseHistoService implements ITestCaseHistoService {
     }
 
     @Override
-    public List<TestCaseHisto> readByDate(Date from, Date to) throws CerberusException{
+    public List<TestCaseHisto> readByDate(Date from, Date to) throws CerberusException {
         return this.convert(testCaseHistoDao.readByDate(from, to));
     }
 
@@ -67,8 +75,20 @@ public class TestCaseHistoService implements ITestCaseHistoService {
     public Answer create(TestCaseHisto testCaseHisto) {
         return testCaseHistoDao.create(testCaseHisto);
     }
-    
-    
+
+    @Override
+    public Answer create(TestCase testcase, Timestamp dateVersion, int version, String usrCreated, String desc) {
+        return this.create(TestCaseHisto.builder()
+                .test(testcase.getTest())
+                .testCase(testcase.getTestcase())
+                .version(version)
+                .usrCreated(usrCreated)
+                .testCaseContent(testcase.toJsonV001(parameterService.getParameterStringCerberusURLByKey(), null))
+                .description(desc)
+                .dateVersion(dateVersion)
+                .build());
+    }
+
     @Override
     public TestCaseHisto convert(AnswerItem<TestCaseHisto> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -95,8 +115,5 @@ public class TestCaseHistoService implements ITestCaseHistoService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-
-    
-    
 
 }

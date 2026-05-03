@@ -252,6 +252,15 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
+    public String getParameterStringCerberusURLByKey() {
+        String cerberusUrl = this.getParameterStringByKey("cerberus_gui_url", "", "");
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
+            cerberusUrl = this.getParameterStringByKey("cerberus_url", "", "");
+        }
+        return cerberusUrl;
+    }
+
+    @Override
     public List<Parameter> findAllParameter() throws CerberusException {
         return parameterDao.findAllParameter();
     }

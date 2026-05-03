@@ -32,7 +32,7 @@
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
-<!--        <script type="text/javascript" src="dependencies/Ace-1.38.0/ext-language_tools.js"></script>-->
+        <!--        <script type="text/javascript" src="dependencies/Ace-1.38.0/ext-language_tools.js"></script>-->
         <script type="text/javascript" src="js/pages/TestCaseScript.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css?v=${appVersion}">
@@ -53,17 +53,17 @@
 
             <div class="flex gap-3">
                 <button id="backToTestCaseListButton" type="button"
-                    onclick="window.location.href='TestCaseList.jsp'"
-                    class="inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
-                           hover:bg-gray-200 dark:hover:bg-gray-700
-                           focus-visible:outline-none focus-visible:ring-2
-                           focus-visible:ring-sky-500 focus-visible:ring-offset-2">
+                        onclick="window.location.href = 'TestCaseList.jsp'"
+                        class="inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
+                        hover:bg-gray-200 dark:hover:bg-gray-700
+                        focus-visible:outline-none focus-visible:ring-2
+                        focus-visible:ring-sky-500 focus-visible:ring-offset-2">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                        <path d="m12 19-7-7 7-7"></path>
-                        <path d="M19 12H5"></path>
+                    <path d="m12 19-7-7 7-7"></path>
+                    <path d="M19 12H5"></path>
                     </svg>
                 </button>
 
@@ -86,7 +86,19 @@
                                         </div>
                                     </div>
 
-                                    <select id="testCaseSelect" style="display:none;"></select>
+
+                                    <div class="row">
+                                        <div class="testTestCase col-lg-11 col-xs-10" style="margin-top:4px; margin-bottom: 4px;">
+                                            <select id="testCaseSelect" style="display:none;"></select>
+                                        </div>
+                                        <div class="testTestCase col-lg-1 col-xs-2 pull-right" style="margin-top:4px; margin-bottom: 4px;">
+                                            <span id="tcHVersion" data-toggle="tooltip" data-html="true" class="label label-primary marginRight5" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word;margin-left: 5px;display:none;">
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+
                                 </div>
                                 <div class="col-lg-7" style="padding: 0px;">
                                     <div id="TestCaseButton" style="display:none;">
@@ -132,20 +144,20 @@
                             <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
                                 <!-- Steps -->
                                 <button @click="setTab('steps')" id="editTabSteps"
-                                        :class="tab === 'steps' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                         :class="tab === 'steps' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="users" class="w-4 h-4"></i>Steps
                                 </button>
                                 <!-- Properties -->
                                 <button @click="setTab('properties')"  id="editTabProperties"
-                                        :class="tab === 'properties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                         :class="tab === 'properties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Properties
                                 </button>
                                 <!-- Inherited Properties -->
                                 <button @click="setTab('inheritedproperties')" id="editTabInheritedProperties"
-                                        :class="tab === 'inheritedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                                         :class="tab === 'inheritedproperties' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                         class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
                                     <i data-lucide="lock" class="w-4 h-4"></i>Inherited Properties
                                 </button>
                             </div>

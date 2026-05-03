@@ -183,7 +183,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
 
         AnswerItem<TestCase> answerTestCase;
-        answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps);
+        answerTestCase = testCaseService.findTestCaseByKeyWithDependencies(test, testCase, withSteps, true);
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
             TestCase tc = answerTestCase.getItem();
             if (withSteps) {

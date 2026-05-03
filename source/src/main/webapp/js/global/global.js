@@ -1435,12 +1435,12 @@ async function crbConfirmDelete(options) {
         if (confirmed && typeof options.preConfirm === 'function') {
             try {
                 var data = await options.preConfirm();
-                return { isConfirmed: true, value: data };
+                return {isConfirmed: true, value: data};
             } catch (e) {
-                return { isConfirmed: false, value: null };
+                return {isConfirmed: false, value: null};
             }
         }
-        return { isConfirmed: confirmed, value: confirmed };
+        return {isConfirmed: confirmed, value: confirmed};
     }
 
     return Swal.fire({
@@ -1455,12 +1455,16 @@ async function crbConfirmDelete(options) {
         background: 'var(--crb-new-bg)',
         color: 'var(--crb-black-color)',
         showLoaderOnConfirm: true,
-        allowOutsideClick: function() { return !Swal.isLoading(); },
+        allowOutsideClick: function () {
+            return !Swal.isLoading();
+        },
         customClass: {
             popup: 'crb-swal-popup',
             cancelButton: 'crb-swal-cancel'
         },
-        preConfirm: options.preConfirm || function() { return true; }
+        preConfirm: options.preConfirm || function () {
+            return true;
+        }
     });
 }
 
@@ -2731,12 +2735,40 @@ function getDateMedium(date) {
     }
 }
 
-function getHumanReadableDuration(durInSec, nbUnits = 2) {
+
+function getHumanReadableDuration(seconds, maxUnits = Infinity) {
+    const units = [
+        { label: 'y', value: 365 * 24 * 60 * 60 },
+        { label: 'mo', value: 30 * 24 * 60 * 60 }, // mois approx
+        { label: 'd', value: 24 * 60 * 60 },
+        { label: 'h', value: 60 * 60 },
+        { label: 'm', value: 60 },
+        { label: 's', value: 1 }
+    ];
+
+    let remaining = seconds;
+    const result = [];
+
+    for (const unit of units) {
+        if (result.length >= maxUnits) break;
+
+        const qty = Math.floor(remaining / unit.value);
+        if (qty > 0) {
+            result.push(qty + unit.label);
+            remaining %= unit.value;
+        }
+    }
+
+    return result.length > 0 ? result.join(' ') : '0s';
+}
+
+function getHumanReadableDuration1(durInSec, nbUnits = 2) {
+    console.info("start : " + durInSec + " - " + nbUnits);
     let dur = durInSec;
     let unit = "s";
     let cnt1 = 0;
     let cnt2 = 0;
-    if (dur > 60) {
+    if (dur >= 60) {
         dur = dur / 60;
         unit = "min";
     } else {
@@ -2757,7 +2789,7 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
             return cnt1 + " " + unit;
         }
     }
-    if (dur > 24) {
+    if (dur >= 24) {
         dur = dur / 24;
         unit = "d";
     } else {
@@ -2769,6 +2801,19 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
             return cnt1 + " " + unit;
         }
     }
+    if (dur >= 365) {
+        dur = dur / 365;
+        unit = "y";
+    } else {
+        cnt1 = Math.floor(dur);
+        cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
+        if ((cnt2 > 0) && (nbUnits > 1)) {
+            return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
+        } else {
+            return cnt1 + " " + unit;
+        }
+    }
+
     cnt1 = Math.floor(dur);
     cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
     if ((cnt2 > 0) && (nbUnits > 1)) {
@@ -3582,17 +3627,17 @@ function setTheme(theme) {
  */
 function getAceTheme() {
     return document.documentElement.classList.contains('dark')
-        ? 'ace/theme/tomorrow_night'
-        : 'ace/theme/chrome';
+            ? 'ace/theme/tomorrow_night'
+            : 'ace/theme/chrome';
 }
 
 
 function toSafeId(str) {
     return str
-        .normalize("NFD")                 // enlève les accents
-        .replace(/[\u0300-\u036f]/g, "")  // accents restants
-        .replace(/[^a-zA-Z0-9_-]/g, "_")  // remplace tout le reste
-        .replace(/^(\d)/, "_$1")          // évite de commencer par un chiffre
-        .replace(/_+/g, "_")              // évite les doublons _
-        .toLowerCase();
+            .normalize("NFD")                 // enlève les accents
+            .replace(/[\u0300-\u036f]/g, "")  // accents restants
+            .replace(/[^a-zA-Z0-9_-]/g, "_")  // remplace tout le reste
+            .replace(/^(\d)/, "_$1")          // évite de commencer par un chiffre
+            .replace(/_+/g, "_")              // évite les doublons _
+            .toLowerCase();
 }

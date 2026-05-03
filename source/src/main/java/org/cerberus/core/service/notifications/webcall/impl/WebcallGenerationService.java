@@ -125,10 +125,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     @Override
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String originalTest, String originalTestcase, String eventReference, JSONObject ceberusEventMessage) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
 
         JSONObject body = new JSONObject();
         switch (eventReference) {
