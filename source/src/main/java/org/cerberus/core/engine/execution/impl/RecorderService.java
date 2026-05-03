@@ -117,14 +117,14 @@ public class RecorderService implements IRecorderService {
             doScreenshot = actionExecution.getActionResultMessage().isDoScreenshot();
             doScreenshotAfter = actionExecution.isDoScreenshotAfter();
             getPageSource = actionExecution.getActionResultMessage().isGetPageSource();
-            applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getApplicationType();
             returnCode = actionExecution.getReturnCode();
         } else {
             myExecution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = controlExecution.getControlResultMessage().isDoScreenshot();
             doScreenshotAfter = controlExecution.isDoScreenshotAfter();
             getPageSource = controlExecution.getControlResultMessage().isGetPageSource();
-            applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationType();
             returnCode = controlExecution.getReturnCode();
             controlNumber = controlExecution.getControlId();
         }
@@ -216,14 +216,14 @@ public class RecorderService implements IRecorderService {
             doScreenshot = actionExecution.getActionResultMessage().isDoScreenshot();
             doScreenshotBefore = actionExecution.isDoScreenshotBefore();
             getPageSource = actionExecution.getActionResultMessage().isGetPageSource();
-            applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getApplicationType();
             returnCode = actionExecution.getReturnCode();
         } else {
             myExecution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = controlExecution.getControlResultMessage().isDoScreenshot();
             doScreenshotBefore = controlExecution.isDoScreenshotBefore();
             getPageSource = controlExecution.getControlResultMessage().isGetPageSource();
-            applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationType();
             returnCode = controlExecution.getReturnCode();
             controlNumber = controlExecution.getControlId();
         }
@@ -386,7 +386,7 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(actionExecution.getSequence());
         String controlString = (control < 0) ? null : String.valueOf(control);
         long runId = execution.getId();
-        String applicationType = execution.getAppTypeEngine();
+        String applicationType = execution.getApplicationType();
 
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";

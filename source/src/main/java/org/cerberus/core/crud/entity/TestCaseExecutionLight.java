@@ -58,6 +58,7 @@ public class TestCaseExecutionLight {
     private long start;
     private long end;
 
+    private String applicationType;
     private boolean isMuted;
     private boolean isUsefull;
     private boolean isFalseNegative;

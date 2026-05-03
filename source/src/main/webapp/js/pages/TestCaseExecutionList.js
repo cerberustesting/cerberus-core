@@ -265,6 +265,13 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
+            "data": "applicationType",
+            "sName": "exe.applicationType",
+            "title": doc.getDocOnline("page_executiondetail", "applicationType"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "url",
             "visible": false,
             "sName": "exe.url",

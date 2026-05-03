@@ -36,7 +36,7 @@
                     <div class="flex items-center space-x-1 text-2xl font-bold">
 
                         <!-- Valeur -->
-                        <span x-text="tabs[tab]?.value ?? ''"></span>
+                        <span x-text="formatnumberKM(tabs[tab]?.value ?? '')"></span>
                         <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">/</span>
                         <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit" x-text="tabs[tab]?.globalLimit ?? ''"></span>
                         <span class='text-sm font-semibold' x-show="tab === 'ongoing' && tabs[tab]?.queueSize" x-text="tabs[tab]?.queueSize ? '('+tabs[tab].queueSize+')' : ''"></span>

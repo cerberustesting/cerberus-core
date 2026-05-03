@@ -1026,7 +1026,7 @@ public class PropertyService implements IPropertyService {
 
         // Try to evaluate Command script
         try {
-            if (tCExecution.getAppTypeEngine().equals(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationType().equals(Application.TYPE_APK)) {
                 String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
@@ -1036,7 +1036,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setValue(value);
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND).resolveDescription("VALUE", value));
 
-            } else if (tCExecution.getAppTypeEngine().equals(Application.TYPE_IPA)) {
+            } else if (tCExecution.getApplicationType().equals(Application.TYPE_IPA)) {
                 String message = iosAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
@@ -1048,7 +1048,7 @@ public class PropertyService implements IPropertyService {
 
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
-                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getAppTypeEngine()));
+                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationType()));
                 res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
@@ -1074,7 +1074,7 @@ public class PropertyService implements IPropertyService {
                 identifier = identifierService.convertStringToIdentifier(script);
             }
 
-            if (tCExecution.getAppTypeEngine().equals(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationType().equals(Application.TYPE_APK)) {
                 String message = androidAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
@@ -1083,7 +1083,7 @@ public class PropertyService implements IPropertyService {
                 }
                 testCaseExecutionData.setValue(value);
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION).resolveDescription("VALUE", value));
-            } else if (tCExecution.getAppTypeEngine().equals(Application.TYPE_IPA)) {
+            } else if (tCExecution.getApplicationType().equals(Application.TYPE_IPA)) {
                 String message = iosAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
@@ -1094,7 +1094,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION).resolveDescription("VALUE", value));
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
-                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getAppTypeEngine()));
+                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationType()));
                 res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
@@ -1333,9 +1333,9 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        if (tCExecution.getAppTypeEngine().equals(Application.TYPE_APK)
-                || tCExecution.getAppTypeEngine().equals(Application.TYPE_IPA)
-                || tCExecution.getAppTypeEngine().equals(Application.TYPE_GUI)) {
+        if (tCExecution.getApplicationType().equals(Application.TYPE_APK)
+                || tCExecution.getApplicationType().equals(Application.TYPE_IPA)
+                || tCExecution.getApplicationType().equals(Application.TYPE_GUI)) {
 
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
@@ -1387,7 +1387,7 @@ public class PropertyService implements IPropertyService {
 
         } else {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
-            res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getAppTypeEngine()));
+            res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationType()));
             res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
 
         }
@@ -1403,7 +1403,7 @@ public class PropertyService implements IPropertyService {
             executionData.setPropertyResultMessage(mes);
         } else {
 
-            if (execution.getAppTypeEngine().equals(Application.TYPE_GUI)
+            if (execution.getApplicationType().equals(Application.TYPE_GUI)
                     || execution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
                 try {
                     valueFromJS = this.webdriverService.getValueFromJS(execution.getSession(), script);

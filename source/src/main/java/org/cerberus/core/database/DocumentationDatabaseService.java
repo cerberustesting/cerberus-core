@@ -1955,6 +1955,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','application','','fa','برنامه','',NULL)");
         b.append(",('page_executiondetail','application','','ru','Приложение','',NULL)");
         b.append(",('page_executiondetail','application','','fr','Application','',NULL)");
+        b.append(",('page_executiondetail','applicationType','','en','Application Type','',NULL)");
+        b.append(",('page_executiondetail','applicationType','','fr','Type d\\'Application','',NULL)");
         b.append(",('page_executiondetail','browser','','en','Browser','',NULL)");
         b.append(",('page_executiondetail','browser','','fa','مرورگر','',NULL)");
         b.append(",('page_executiondetail','browser','','fr','Navigateur','',NULL)");

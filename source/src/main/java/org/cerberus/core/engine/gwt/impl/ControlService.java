@@ -744,9 +744,9 @@ public class ControlService implements IControlService {
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
-            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
@@ -773,7 +773,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_SRV)) {
 
                 if (execution.getLastServiceCalled() != null) {
                     String responseBody = execution.getLastServiceCalled().getResponseHTTPBody();
@@ -818,7 +818,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
                     AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementPresent(execution.getSession(), identifier.getLocator(), "");
@@ -834,7 +834,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
-                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                     return mes;
 
                 }
@@ -842,7 +842,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
-                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                 return mes;
             }
         } else {
@@ -856,9 +856,9 @@ public class ControlService implements IControlService {
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
-            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
@@ -883,7 +883,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
                     AnswerItem<JSONObject> answer = sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
@@ -899,12 +899,12 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
-                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                     return mes;
 
                 }
 
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_SRV)) {
 
                 if (execution.getLastServiceCalled() != null) {
 
@@ -954,7 +954,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
-                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                 return mes;
             }
         } else {
@@ -966,8 +966,8 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementInElement on: '{}' is child of '{}'", element, childElement);
 
         MessageEvent mes;
-        if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
+        if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)) {
 
             if (!StringUtil.isEmptyOrNULLString(element) && !StringUtil.isEmptyOrNULLString(childElement)) {
                 try {
@@ -997,7 +997,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -1006,9 +1006,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementVisible on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
-            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
@@ -1036,7 +1036,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
@@ -1053,7 +1053,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
-                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                     return mes;
 
                 }
@@ -1061,7 +1061,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
-                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE_NULL);
@@ -1073,9 +1073,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementNotVisible on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(elementPath)) {
-            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
@@ -1106,7 +1106,7 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+            } else if (execution.getApplicationType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
                 Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                 if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
@@ -1123,7 +1123,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
                     mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
                     mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE);
-                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                     return mes;
 
                 }
@@ -1131,7 +1131,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE);
-                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE_NULL);
@@ -1143,9 +1143,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementChecked on: {}", html);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(html)) {
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(html);
@@ -1161,7 +1161,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTCHECKED);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CHECKED_NULL);
@@ -1173,9 +1173,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementNotChecked on: {}", html);
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(html)) {
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(html);
@@ -1191,7 +1191,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCHECKED);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCHECKED_NULL);
@@ -1204,10 +1204,10 @@ public class ControlService implements IControlService {
         MessageEvent mes;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+        if (!tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         } else if (tCExecution.getLastServiceCalled() != null) {
             // Check if element on the given xpath is equal to the given expected element
             String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
@@ -1231,10 +1231,10 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+        if (!tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         } else if (tCExecution.getLastServiceCalled() != null) {
             //Check if element on the given xpath is different from the given different element
             if (AppService.RESPONSEHTTPBODYCONTENTTYPE_XML.equals(tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType())) {
@@ -1255,14 +1255,14 @@ public class ControlService implements IControlService {
 
     @Override
     public MessageEvent verifyElementXXX(String control, TestCaseExecution tCExecution, String path, String expected, String isCaseSensitive) {
-        LOG.debug("Control: verifyElementXXX ({}) on {} element against value: {} AppType: {}", control, path, expected, tCExecution.getAppTypeEngine());
+        LOG.debug("Control: verifyElementXXX ({}) on {} element against value: {} AppType: {}", control, path, expected, tCExecution.getApplicationType());
 
         MessageEvent mes;
         // Get value from the path element according to the application type
         String actual;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getAppTypeEngine();
+            String applicationType = tCExecution.getApplicationType();
 
             switch (applicationType) {
 
@@ -1340,7 +1340,7 @@ public class ControlService implements IControlService {
                 default:
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                     mes.resolveDescription("CONTROL", control);
-                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
                     return mes;
 
             }
@@ -1499,7 +1499,7 @@ public class ControlService implements IControlService {
         try {
 
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getAppTypeEngine();
+            String applicationType = tCExecution.getApplicationType();
             // Get value from the path element according to the application type
             if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)
@@ -1545,7 +1545,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTMATCHREGEX);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
                 return mes;
             }
             LOG.debug("Control: VerifyElementMatchRegex element: {} has value: {}", path, StringUtil.sanitize(pathContent));
@@ -1656,7 +1656,7 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyTextInDialog against value: {}", value);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationType())) {
             try {
                 String str = this.webdriverService.getAlertText(tCExecution.getSession());
                 LOG.debug("Control: verifyTextInAlertPopup has value: {}", str);
@@ -1682,7 +1682,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -1691,9 +1691,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyTextInPage on : {}", regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())
-                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getAppTypeEngine())
-                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationType())) {
 
             String pageSource;
             try {
@@ -1714,12 +1714,12 @@ public class ControlService implements IControlService {
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
             }
-        } else if (Application.TYPE_FAT.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        } else if (Application.TYPE_FAT.equalsIgnoreCase(tCExecution.getApplicationType())) {
             mes = sikuliService.doSikuliVerifyTextInPage(tCExecution.getSession(), regex);
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -1727,9 +1727,9 @@ public class ControlService implements IControlService {
     private MessageEvent verifyTextNotInPage(TestCaseExecution tCExecution, String regex) {
         LOG.debug("Control: VerifyTextNotInPage on: {}", regex);
         MessageEvent mes;
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())
-                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getAppTypeEngine())
-                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationType())) {
 
             String pageSource;
             try {
@@ -1755,7 +1755,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -1764,7 +1764,7 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyUrl on: {}", value1);
 
         MessageEvent mes;
-        if (Application.TYPE_GUI.equalsIgnoreCase(execution.getAppTypeEngine())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(execution.getApplicationType())) {
 
             // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
             //  already have that control but value1 is specified by user and could miss it.
@@ -1817,7 +1817,7 @@ public class ControlService implements IControlService {
                     default:
                         mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                         mes.resolveDescription("CONTROL", control);
-                        mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                        mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                         return mes;
                 }
 
@@ -1842,7 +1842,7 @@ public class ControlService implements IControlService {
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                             mes.resolveDescription("CONTROL", control);
-                            mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                            mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                             return mes;
                     }
                 } else {
@@ -1866,7 +1866,7 @@ public class ControlService implements IControlService {
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                             mes.resolveDescription("CONTROL", control);
-                            mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                            mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
                             return mes;
                     }
                 }
@@ -1909,7 +1909,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", control);
-            mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", execution.getApplicationType());
         }
         return mes;
     }
@@ -1918,7 +1918,7 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyTitle on: {}", title);
 
         MessageEvent mes;
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationType())) {
 
             // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium
             //  already have that control but value1 is specified by user and could miss it.
@@ -1956,7 +1956,7 @@ public class ControlService implements IControlService {
                 default:
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                     mes.resolveDescription("CONTROL", control);
-                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
                     return mes;
             }
 
@@ -1981,7 +1981,7 @@ public class ControlService implements IControlService {
                     default:
                         mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                         mes.resolveDescription("CONTROL", control);
-                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
                         return mes;
                 }
             } else {
@@ -2005,7 +2005,7 @@ public class ControlService implements IControlService {
                     default:
                         mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                         mes.resolveDescription("CONTROL", control);
-                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                        mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
                         return mes;
                 }
             }
@@ -2015,7 +2015,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", control);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -2023,7 +2023,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyXmlTreeStructure(TestCaseExecution tCExecution, String controlProperty, String controlValue) {
         LOG.debug("Control: verifyXmlTreeStructure on: {}", controlProperty);
         MessageEvent mes;
-        if (Application.TYPE_SRV.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
+        if (Application.TYPE_SRV.equalsIgnoreCase(tCExecution.getApplicationType())) {
 
             try {
                 if (tCExecution.getLastServiceCalled() != null) {
@@ -2051,7 +2051,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE);
-            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
         }
         return mes;
     }
@@ -2061,8 +2061,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)) {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
@@ -2076,7 +2076,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CLICKABLE_NULL);
@@ -2089,8 +2089,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isEmptyOrNULLString(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)) {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
@@ -2104,7 +2104,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationType());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
@@ -2120,10 +2120,10 @@ public class ControlService implements IControlService {
 
     private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String cropValues) {
         MessageEvent message;
-        if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+        if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_FAT)) {
             List<TestCaseExecutionFile> file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId(), cropValues, "Screenshot", "screenshot");
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
@@ -2131,15 +2131,15 @@ public class ControlService implements IControlService {
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_TAKESCREENSHOT);
-        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine());
+        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationType());
         return message;
     }
 
     private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+        if (tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationType().equalsIgnoreCase(Application.TYPE_IPA)) {
             TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId());
             if (file != null) {
                 List<TestCaseExecutionFile> fileList = new ArrayList<>();
@@ -2151,7 +2151,7 @@ public class ControlService implements IControlService {
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_TAKESCREENSHOT);
-        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine());
+        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationType());
         return message;
     }
 

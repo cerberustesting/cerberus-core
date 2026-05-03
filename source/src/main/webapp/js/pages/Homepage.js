@@ -1672,20 +1672,21 @@ function mapApplication(api) {
             diff: (system.totalApplications || 0) - (systemPrev.totalApplications || 0),
             diffPositive: true
         },
-        byTypeSystem: {
-            tab: "Per Type",
-            label: "Applications par Type",
-            value: (() => {
-                const map = api.system?.totalApplicationsByType;
-                if (!map || typeof map !== "object" || Object.keys(map).length === 0) {
-                    return "Aucun type";
-                }
-                return Object.entries(map)
-                        .filter(([type, count]) => type && count != null)
-                        .map(([type, count]) => type + ':' + count)
-                        .join(", ");
-            })()
-        },
+// Until a better display is implemented.
+//        byTypeSystem: {
+//            tab: "Per Type",
+//            label: "Applications par Type",
+//            value: (() => {
+//                const map = api.system?.totalApplicationsByType;
+//                if (!map || typeof map !== "object" || Object.keys(map).length === 0) {
+//                    return "Aucun type";
+//                }
+//                return Object.entries(map)
+//                        .filter(([type, count]) => type && count != null)
+//                        .map(([type, count]) => type + ':' + count)
+//                        .join(", ");
+//            })()
+//        },
         total: {
             value: global.totalApplications || 0,
             tab: "Total",

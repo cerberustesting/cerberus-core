@@ -217,7 +217,7 @@ public class ExecutionStartService implements IExecutionStartService {
             execution.setApplication(execution.getTestCaseObj().getApplication());
             execution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(execution.getTestCaseObj().getApplication())));
             // Setting Application Type to value coming from Application.
-            execution.setAppTypeEngine(execution.getApplicationObj().getType());
+            execution.setApplicationType(execution.getApplicationObj().getType());
             // Setting System from queue.
             execution.getTestCaseExecutionQueue().setSystem(execution.getApplicationObj().getSystem());
             LOG.debug("Application Information Loaded - {}-{}", execution.getApplicationObj().getApplication(), execution.getApplicationObj().getDescription());
@@ -564,7 +564,7 @@ public class ExecutionStartService implements IExecutionStartService {
         }
 
         // For GUI application, check if Browser is supported.
-        if (!execution.getManualExecution().equals("Y") && execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if (!execution.getManualExecution().equals("Y") && execution.getApplicationType().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
                 myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", execution.getBrowser()));
             } catch (CerberusException ex) {

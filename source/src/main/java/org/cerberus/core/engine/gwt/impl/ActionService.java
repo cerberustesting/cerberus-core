@@ -762,7 +762,7 @@ public class ActionService implements IActionService {
                 actionExecution.addFileList(recorderService.recordContent(execution, actionExecution, 0, null, content, appSrv.getResponseHTTPBodyContentType()));
 
                 // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
-                execution.setAppTypeEngine(Application.TYPE_SRV);
+                execution.setApplicationType(Application.TYPE_SRV);
 
                 return ans.getResultMessage();
 
@@ -2048,7 +2048,7 @@ public class ActionService implements IActionService {
             actionexe.addFileList(recorderService.recordNetworkTrafficContent(exe, actionexe, 0, null, appSrv, true));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
-            exe.setAppTypeEngine(Application.TYPE_SRV);
+            exe.setApplicationType(Application.TYPE_SRV);
 
             if (!exe.getNetworkTrafficIndexList().isEmpty()) {
                 // Message will include the index and request nb when the content start.
@@ -2131,7 +2131,7 @@ public class ActionService implements IActionService {
             actionexe.addFileList(recorderService.recordConsoleContent(exe, actionexe, 0, null, consoleRecap, true));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
-            exe.setAppTypeEngine(Application.TYPE_SRV);
+            exe.setApplicationType(Application.TYPE_SRV);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONSOLECONTENT);
             return message;
@@ -2164,7 +2164,7 @@ public class ActionService implements IActionService {
             actionexe.addFileList(recorderService.recordContent(exe, actionexe, 0, null, textContent, appSrv.getResponseHTTPBodyContentType()));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
-            exe.setAppTypeEngine(Application.TYPE_SRV);
+            exe.setApplicationType(Application.TYPE_SRV);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONTENT);
             message.resolveDescription("TYPE", appSrv.getResponseHTTPBodyContentType());
@@ -2198,7 +2198,7 @@ public class ActionService implements IActionService {
             actionexe.addFileList(recorderService.recordServiceCallContent(exe, actionexe, exe.getLastServiceCalled()));
 
             // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
-            exe.setAppTypeEngine(Application.TYPE_SRV);
+            exe.setApplicationType(Application.TYPE_SRV);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETSERVICECALLCONTENT);
             return message;

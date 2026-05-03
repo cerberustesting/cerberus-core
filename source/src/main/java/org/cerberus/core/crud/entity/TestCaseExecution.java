@@ -131,7 +131,7 @@ public class TestCaseExecution {
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
     // App Type that is used by the engine to interpret the context. By defaut it is linked to the Type of the application but it can be temporary switch to a different type.
-    private String appTypeEngine;
+    private String applicationType;
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
@@ -408,6 +408,7 @@ public class TestCaseExecution {
             result.put("falseNegative", this.isFalseNegative());
             result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
             result.put("application", this.getApplication());
+            result.put("applicationType", this.getApplicationType());
             result.put("robot", this.getRobot());
             result.put("robotExecutor", this.getRobotExecutor());
             result.put("robotHost", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));

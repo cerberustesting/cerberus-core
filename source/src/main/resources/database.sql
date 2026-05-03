@@ -6830,3 +6830,8 @@ ALTER TABLE campaign ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01
 -- 1939
 TRUNCATE TABLE testcasehisto;
 
+-- 1940
+ALTER TABLE testcaseexecution ADD ApplicationType varchar(10) NOT NULL DEFAULT '' AFTER Application;
+
+-- 1941
+UPDATE testcaseexecution exe JOIN application app ON app.Application = exe.Application SET exe.applicationtype = app.type;

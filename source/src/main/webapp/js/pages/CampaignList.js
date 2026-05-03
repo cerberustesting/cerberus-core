@@ -395,9 +395,8 @@ function aoColumnsFunc(tableId) {
             "defaultContent": "",
             "title": doc.getDocOnline("campaign", "DateLastExecuted"),
             "mRender": function (data, type, oObj) {
-                let res = getHumanReadableDuration((new Date().getTime() - new Date(oObj["DateLastExecuted"]).getTime()) / 1000);
-                return res == "unknown" ? "" : res;
-            }
+                return getDate(oObj["DateLastExecuted"]);
+                }
         },
         {
             "data": "UsrCreated",

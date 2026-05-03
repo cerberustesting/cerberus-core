@@ -1563,10 +1563,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
         /*
          * All controls of the actions are done. We now put back the
-         * AppTypeEngine value to the one from the application. and also put
+         * ApplicationType value to the one from the application. and also put
          * back the last service called content and format.
          */
-        execution.setAppTypeEngine(execution.getApplicationObj().getType());
+        execution.setApplicationType(execution.getApplicationObj().getType());
         if (execution.getLastServiceCalled() != null) {
             execution.getLastServiceCalled().setResponseHTTPBody(execution.getOriginalLastServiceCalled());
             execution.getLastServiceCalled().setResponseHTTPBodyContentType(execution.getOriginalLastServiceCalledContent());
