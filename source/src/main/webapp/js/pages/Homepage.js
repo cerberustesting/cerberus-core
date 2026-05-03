@@ -876,9 +876,11 @@ function renderCampaignCard(campaignName, tagExecutions, nextRun, runId) {
                     </div>
                 
                     <!-- Droite : badge succès -->
+                    <!-- TODO : A corriger quand KPi pertinent
                     <div class="flex-shrink-0">
                         ${renderSuccessBadge(stats.successRate)}
                     </div>
+                     -->
                 </div>
                 <!-- Content row -->
                 <div class="flex flex-col md:flex-row md:items-center gap-4 overflow-x-auto no-scrollbar relative">
@@ -929,9 +931,10 @@ function renderNextRunBadge(label, id) {
 }
 
 function computeCampaignStats(tags) {
-    const executions = tags.length;
+    const executions = tags.reduce((acc, obj) => acc + (obj.nbExeUsefull || 0), 0);
 
-    const ok = tags.filter(t => t.ciResult === "OK").length;
+    const ok = tags.reduce((acc, obj) => acc + (obj.nbOK || 0), 0);
+    
     const ko = executions - ok;
 
     return {
@@ -1000,22 +1003,25 @@ function renderExecutionDots(results, obj = []) {
                         ${exec.nbPE > 0 ? "<div class='px-2 py-1 rounded bg-blue-500/80 text-white'>PE: " + exec.nbPE + "</div>" : ""}
                         ${exec.nbNA > 0 ? "<div class='px-2 py-1 rounded bg-gray-500/80 text-white'>NA: " + exec.nbNA + "</div>" : ""}
                         ${exec.nbWE > 0 ? "<div class='px-2 py-1 rounded bg-purple-500/80 text-white'>WE: " + exec.nbWE + "</div>" : ""}
+                        ${exec.nbQE > 0 ? "<div class='px-2 py-1 rounded bg-purple-500/80 text-white'>QE: " + exec.nbQE + "</div>" : ""}
                     </div>
                 </div>
             `;
 
                 const encodedTag = encodeURIComponent(exec.tag || "");
                 return `
+                <a href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}'> 
                 <span class="execution-dot w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-xl cursor-pointer
                     ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK')
                         ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
                         : status === "OK"
                         ? "bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400"
                         : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400"}"
-                    data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}"
-                    onclick="window.location.href='./ReportingExecutionByTag.jsp?Tag=${encodedTag}'">
+                    data-tooltip="${tooltipContent.replace(/"/g, '&quot;')}">
                     ${(exec.ciResult !== 'KO' && exec.ciResult !== 'OK') ? "<span class='spin'>⧗</span>" : status === "OK" ? "✓" : "✕"}
                 </span>
+                </a>
+
             `;
             })
             .join("");
