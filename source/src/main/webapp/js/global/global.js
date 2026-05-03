@@ -2737,6 +2737,10 @@ function getDateMedium(date) {
 
 
 function getHumanReadableDuration(seconds, maxUnits = Infinity) {
+    if (seconds > 432000000) {
+        return "unknown";
+    }
+    
     const units = [
         {label: 'y', value: 365 * 24 * 60 * 60},
         {label: 'mo', value: 30 * 24 * 60 * 60}, // mois approx
