@@ -293,7 +293,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT(270, "FA", "Failed to move mouse over because could not find element '%ELEMENT%'! %MESSAGE%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVER_OFFSETFORMAT(270, "FA", "Failed to move mouse over with offset because offset '%OFFSET%' does not respect the correct format xoffset,yoffset (ex: -50,50)!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEMOVE(270, "FA", "Failed to move mouse with coord '%COORD%' because '%ERROR%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_WAIT_NO_SUCH_ELEMENT(271, "FA", "Failed to wait because could not find element '%ELEMENT%'! %MESSAGE", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_WAIT_NO_SUCH_ELEMENT(271, "FA", "Failed to wait because could not find element '%ELEMENT%'! %MESSAGE%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT_ERRATUM_MISSING_SEPARATOR(271, "FA", "Failed to wait because syntax error on erratum value (separator '%SEPARATOR%' is missing) !", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT_ERRATUM_ELEMENT_NOT_FOUND(271, "FA", "Failed to wait because Erratum could not match the element on new page ! That can happen if page is too different from the original one.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_NO_SUCH_ELEMENT(272, "FA", "Failed to keyPress key because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
