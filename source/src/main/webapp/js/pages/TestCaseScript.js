@@ -176,9 +176,9 @@ $.when($.getScript("js/global/global.js")
                     console.info(testcaseObject);
                     $("#tcHVersion").text(testcaseObject.version);
                     if (testcaseObject.dateModif >= testcaseObject.dateCreated) {
-                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrModif + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateModif).getTime()) / 1000,2) + " ago</b>");
+                        $("#tcHVersion").attr("data-original-title", "<b>" + testcaseObject.usrModif + "</b> created <b>" + getDate(new Date(testcaseObject.dateModif).getTime()) + "</b> (" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateModif).getTime()) / 1000, 2) + " ago)");
                     } else {
-                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrCreated + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateCreated).getTime()) / 1000,2) + " ago</b>");
+                        $("#tcHVersion").attr("data-original-title", "<b>" + testcaseObject.usrCreated + "</b> created <b>" + getDate(new Date(testcaseObject.dateModif).getTime()) + "</b> (" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateCreated).getTime()) / 1000, 2) + " ago");
                     }
                     $("#tcHVersion").show();
 
