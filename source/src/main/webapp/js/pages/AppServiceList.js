@@ -43,6 +43,25 @@ function initPage() {
     });
 
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
+    
+    
+    // Colleection can be filtered from URL
+    var collectionUrl = GetURLParameter("collection");
+    var searchArray = [];
+    var searchObject = {param: "col", values: "val"};
+    if ((collectionUrl !== null) && (collectionUrl !== 'ALL')) {
+        searchObject = {param: "collection", values: collectionUrl};
+        searchArray.push(searchObject);
+    }
+    if (searchArray.length > 0) {
+        applyFiltersOnMultipleColumns("soapLibrarysTable", searchArray, false);
+    }
+   
+    // Directly open the service when URL include service parameter on query string.
+    var appServiceUrl = GetURLParameter("service");
+    if ((appServiceUrl !== null) && (appServiceUrl !== 'ALL')) {
+        openModalAppService(appServiceUrl, "EDIT", undefined) 
+    }
 }
 
 function displayPageLabel() {
