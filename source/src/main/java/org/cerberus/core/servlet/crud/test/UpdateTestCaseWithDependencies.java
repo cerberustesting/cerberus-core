@@ -58,6 +58,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -154,17 +156,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             } else { // Test Case exist and we can update it so Global update start here
 
-                // Save histo entry
-                this.testCaseHistoService.create(TestCaseHisto.builder()
-                        .test(testcase.getTest())
-                        .testCase(testcase.getTestcase())
-                        .version(testcase.getVersion())
-                        .usrCreated(testcase.getUsrModif())
-//                        .testCaseContent(testcase.toJsonV001("", null))
-                        .testCaseContent(new JSONObject())
-                        .description("")
-                        .build());
-
                 // TestcaseCountryProperties Update
                 List<TestCaseCountryProperties> testcaseCountryPropertiesFromPage = getTestCaseCountryPropertiesFromParameter(testcase, properties);
                 testCaseCountryPropertiesService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, testcaseCountryPropertiesFromPage);
@@ -224,6 +215,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 testcase.setVersion(testcase.getVersion() + 1);
 
                 testCaseService.update(testcase.getTest(), testcase.getTestcase(), testcase);
+
+                // Save histo entry
+                this.testCaseHistoService.create(testCaseService.convert(testCaseService.findTestCaseByKeyWithDependencies(testcase.getTest(), testcase.getTestcase(), true, false)),
+                         Timestamp.from(Instant.now()), testcase.getVersion(), request.getUserPrincipal().getName(), "");
 
                 //Adding Log entry.
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

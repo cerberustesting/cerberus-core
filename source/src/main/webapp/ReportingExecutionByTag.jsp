@@ -39,10 +39,7 @@
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Campaign.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
+
         <title id="pageTitle">Campaign Report</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -50,10 +47,7 @@
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html" %>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
-            <%@ include file="include/transversalobject/TestCase.html" %>
-            <%@ include file="include/transversalobject/Campaign.html" %>
-            <%@ include file="include/transversalobject/Application.html" %>
+
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html" %>
 
             <h1 class="page-title-line" id="title">Campaign Report</h1>

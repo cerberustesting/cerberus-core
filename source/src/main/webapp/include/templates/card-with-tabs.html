@@ -14,91 +14,112 @@
         <div class="flex space-x-3 text-xs mb-4 overflow-x-auto no-scrollbar whitespace-nowrap pr-2 border-t border-gray-200 dark:border-gray-800">
             <template x-for="(data, key) in tabs" :key="key">
                 <button
-                        @click="tab = key"
-                        class="inline-block px-2 py-1 font-thin"
-                        :class="tab === key ? ('text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl') : 'text-gray-400!'"
-                >
+                    @click="tab = key"
+                    class="inline-block px-2 py-1 font-thin"
+                    :class="{
+                    'text-blue-600! bg-blue-100/50 dark:text-blue-400! dark:bg-blue-900/50 rounded-xl': tab === key,
+                    'text-gray-400!': tab !== key,
+                    'blink': key === 'ongoing' && tabs[key]?.value > 0
+                    }" 
                     <span x-text="data.tab"></span>
                 </button>
             </template>
         </div>
 
         <!-- Valeur + barre + bouton + diff -->
-        <div class="flex items-center justify-between">
+        <div class="relative">
+            <div>
+                <div class="flex items-center justify-between">
 
-            <!-- 🔵 Gauche : valeur + barre + bouton -->
-            <div class="flex items-center space-x-4 text-2xl font-bold">
 
-                <!-- Valeur -->
-                <span x-text="tabs[tab]?.value ?? ''"></span>
-                <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">/</span>
-                <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit" x-text="tabs[tab]?.globalLimit ?? ''"></span>
+                    <!-- 🔵 Gauche : valeur + barre + bouton -->
+                    <div class="flex items-center space-x-1 text-2xl font-bold">
 
-                <!-- Barre uniquement pour ongoing -->
-                <div x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">
-                    <div class="flex items-center space-x-2">
+                        <!-- Valeur -->
+                        <span x-text="formatnumberKM(tabs[tab]?.value ?? '')"></span>
+                        <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit">/</span>
+                        <span x-show="tab === 'ongoing' && tabs[tab]?.globalLimit" x-text="tabs[tab]?.globalLimit ?? ''"></span>
+                        <span class='text-sm font-semibold' x-show="tab === 'ongoing' && tabs[tab]?.queueSize" x-text="tabs[tab]?.queueSize ? '('+tabs[tab].queueSize+')' : ''"></span>
+                    </div>
 
-                        <!-- Barre -->
-                        <div class="w-20 bg-gray-200 h-2 rounded relative">
-                            <div class="bg-orange-500 h-2 rounded transition-all duration-500"
-                                 :style="'width:' + ((tabs[tab].value / tabs[tab].globalLimit) * 100) + '%'">
+
+
+
+                    <!-- Barre uniquement pour ongoing -->
+                    <div x-show="tab === 'ongoing' && tabs[tab]?.value">
+                        <div class="flex items-center space-x-2">
+
+                            <!-- Barre -->
+                            <div class="w-20 bg-gray-200 h-2 rounded relative">
+                                <div class="bg-blue-500 h-2 rounded transition-all duration-500"
+                                     :style="'width:' + ((tabs[tab]?.value / tabs[tab]?.globalLimit) * 100) + '%'">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- 🟢 Droite : Diff -->
+                    <div x-show="tabs[tab]?.diff !== undefined">
+                        <div class="flex items-center space-x-1 text-sm font-semibold"
+                             :class="getDiffIconAndColor(tabs[tab]?.diff, tabs[tab]?.diffPositive).color">
+                            <i :data-lucide="getDiffIconAndColor(tabs[tab]?.diff, tabs[tab]?.diffPositive).icon"
+                               class="w-4 h-4"></i>
+                            <span x-text="computeDiffPercent(tabs[tab]?.currentValue, tabs[tab]?.previousValue)"></span>
+                        </div>
+                    </div>
+                    <div x-show="tab === 'ongoing' && tabs[tab]?.value" class="flex items-center space-x-1 text-sm font-semibold">
+                        <!-- Bouton hover -->
+                        <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <button class="text-gray-500 hover:text-orange-500 transition"
+                                    x-init="$nextTick(() => window.lucide && lucide.createIcons())">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                            </button>
+
+                            <div x-show="open"
+                                 class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900
+                                 border border-gray-200 dark:border-gray-700
+                                 rounded-xl shadow-xl p-3 text-xs space-y-2
+                                 transition-all duration-200 z-50"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 translate-y-1"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 translate-y-1">
+
+                                <template x-for="exec in tabs[tab]?.runningList ?? []" :key="exec.id">
+                                    <a :href="'./TestCaseExecution.jsp?executionId=' + exec.id"
+                                       class="block text-xs text-blue-500 hover:underline truncate">
+                                        <span x-text="exec.test"></span> -
+                                        <span x-text="exec.testcase"></span> -
+                                        <span x-text="exec.environment"></span>
+                                    </a>
+                                </template>
+
+                                <div x-show="!(tabs[tab]?.runningList?.length)" class="text-gray-400">
+                                    No running executions
+                                </div>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
-            </div>
-
-            <!-- 🟢 Droite : Diff -->
-            <div x-show="tabs[tab]?.diff !== undefined">
-                <div class="flex items-center space-x-1 text-sm font-semibold"
-                     :class="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).color">
-                    <i :data-lucide="getDiffIconAndColor(tabs[tab].diff, tabs[tab].diffPositive).icon"
-                       class="w-4 h-4"></i>
-                    <span x-text="computeDiffPercent(tabs[tab].currentValue, tabs[tab].previousValue)"></span>
-                </div>
-            </div>
-            <div x-show="tab === 'ongoing'" class="flex items-center space-x-1 text-sm font-semibold">
-                <!-- Bouton hover -->
-                <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                    <button class="text-gray-500 hover:text-orange-500 transition"
-                            x-init="$nextTick(() => window.lucide && lucide.createIcons())">
-                        <i data-lucide="list" class="w-4 h-4"></i>
-                    </button>
-
-                    <div x-show="open"
-                         class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900
-                                        border border-gray-200 dark:border-gray-700
-                                        rounded-xl shadow-xl p-3 text-xs space-y-2
-                                        transition-all duration-200 z-50"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-1">
-
-                        <template x-for="exec in tabs[tab]?.runningList ?? []" :key="exec.id">
-                            <a :href="'./TestCaseExecution.jsp?id=' + exec.id"
-                               class="block text-xs text-blue-500 hover:underline truncate">
-                                <span x-text="exec.test"></span> -
-                                <span x-text="exec.testcase"></span> -
-                                <span x-text="exec.environment"></span>
-                            </a>
-                        </template>
-
-                        <div x-show="!(tabs[tab]?.runningList?.length)" class="text-gray-400">
-                            No running executions
-                        </div>
-                    </div>
+                <div class="text-gray-500 text-sm mt-1 truncate"
+                     x-text="tabs[tab]?.label || ''">
                 </div>
             </div>
 
+            <div 
+                x-show="tab === 'ongoing' && !tabs[tab]?.active"
+                class="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+
+                <span class="text-black-500">No Data</span>
+
+            </div>                
         </div>
 
-        <div class="text-gray-500 text-sm mt-1 truncate"
-             x-text="tabs[tab]?.label || ''"></div>
 
     </div>
 </template>
@@ -145,7 +166,7 @@
                 this.tab = keys.length ? keys[0] : '';
                 for (let key in this.tabs) {
                     if (this.tabs[key]?.diff !== undefined) {
-                        const { icon, color } = getDiffIconAndColor(this.tabs[key].diff);
+                        const {icon, color} = getDiffIconAndColor(this.tabs[key].diff);
                         this.tabs[key].diffIcon = icon;
                         this.tabs[key].diffColor = color;
                     }
@@ -153,8 +174,14 @@
 
                 window.addEventListener("queue-stats-updated", (event) => {
                     const data = event.detail;
+                    if (!this.tabs.ongoing)
+                        return;
 
-                    if (!this.tabs.ongoing) return;
+                    // label
+                    this.tabs.ongoing.active = (data?.active);
+
+                    // label
+                    this.tabs.ongoing.label = (data.queueStats?.running || 0) > 0 ? "Currently Executing" : "No execution running";
 
                     // compteur principal
                     this.tabs.ongoing.value = data.queueStats?.running || 0;
@@ -167,6 +194,15 @@
                     this.tabs.ongoing.runningList = data.runningExecutionsList || [];
                 });
 
+                // Now that the eventlistener is loaded we force the dispatch of the event that may be already sent (for ex for the 1st event received on opening the ws).
+                if (this.tabs.ongoing) {
+                    if (lastReceivedData) {
+                        window.dispatchEvent(
+                                new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
+                                );
+                    }
+                }
+
                 this.$nextTick(() => {
                     if (window.lucide) {
                         lucide.createIcons()
@@ -177,21 +213,26 @@
     }
 
     function getDiffIconAndColor(diff, diffPositive = true) {
-        if (diff > 0) return diffPositive ? { icon: 'trending-up', color: 'text-green-500' }
-            : { icon: 'trending-up', color: 'text-red-500' };
-        if (diff < 0) return diffPositive ? { icon: 'trending-down', color: 'text-red-500' }
-            : { icon: 'trending-down', color: 'text-green-500' };
-        return { icon: 'minus', color: 'text-orange-500' };
+        if (diff > 0)
+            return diffPositive ? {icon: 'trending-up', color: 'text-green-500'}
+            : {icon: 'trending-up', color: 'text-red-500'};
+        if (diff < 0)
+            return diffPositive ? {icon: 'trending-down', color: 'text-red-500'}
+            : {icon: 'trending-down', color: 'text-green-500'};
+        return {icon: 'minus', color: 'text-orange-500'};
     }
 
     function computeDiffPercent(currentValue, previousValue) {
-        if (previousValue === 0) return "—"; // éviter division par zéro
+        if (previousValue === 0)
+            return "—"; // éviter division par zéro
         return ((currentValue - previousValue) / previousValue * 100).toFixed(1) + "%";
     }
 
     function formatTokens(value) {
-        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + "M";
-        if (value >= 1_000)     return (value / 1_000).toFixed(1) + "K";
+        if (value >= 1_000_000)
+            return (value / 1_000_000).toFixed(1) + "M";
+        if (value >= 1_000)
+            return (value / 1_000).toFixed(1) + "K";
         return value.toString();
     }
 

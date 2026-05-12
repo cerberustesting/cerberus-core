@@ -171,8 +171,18 @@ $.when($.getScript("js/global/global.js")
                         }
                     });
 
-                    description = data.contentTable[0].description;
+
                     testcaseObject = data.contentTable[0];
+                    console.info(testcaseObject);
+                    $("#tcHVersion").text(testcaseObject.version);
+                    if (testcaseObject.dateModif >= testcaseObject.dateCreated) {
+                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrModif + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateModif).getTime()) / 1000,2) + " ago</b>");
+                    } else {
+                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrCreated + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateCreated).getTime()) / 1000,2) + " ago</b>");
+                    }
+                    $("#tcHVersion").show();
+
+                    description = testcaseObject.description;
                     loadTestCaseInfo(testcaseObject);
                     stepsObject = testcaseObject.steps;
                     sortData(stepsObject);

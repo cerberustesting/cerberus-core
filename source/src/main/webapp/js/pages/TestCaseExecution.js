@@ -131,35 +131,40 @@ function harViewer() {
         },
 
         loadFromApi(file) {
-            if (this.loaded || this.loading || !file?.fileName) return;
+            if (this.loaded || this.loading || !file?.fileName)
+                return;
 
             this.loading = true;
 
             const url =
-                `./ReadTestCaseExecutionMedia` +
-                `?filename=${encodeURIComponent(file.fileName)}` +
-                `&filetype=${file.fileType || 'JSON'}` +
-                `&filedesc=${encodeURIComponent(file.fileDesc || '')}` +
-                `&auto=true&autoContentType=N`;
+                    `./ReadTestCaseExecutionMedia` +
+                    `?filename=${encodeURIComponent(file.fileName)}` +
+                    `&filetype=${file.fileType || 'JSON'}` +
+                    `&filedesc=${encodeURIComponent(file.fileDesc || '')}` +
+                    `&auto=true&autoContentType=N`;
 
             fetch(url)
-                .then(r => r.text())
-                .then(txt => this.load(JSON.parse(txt)))
-                .finally(() => this.loading = false);
+                    .then(r => r.text())
+                    .then(txt => this.load(JSON.parse(txt)))
+                    .finally(() => this.loading = false);
         },
 
         select(entry) {
             console.log(entry);
-            this.selected = entry; },
+            this.selected = entry;
+        },
 
         statusClass(status) {
-            if (status >= 500) return 'dark:bg-red-900 dark:text-red-300 bg-red-300 text-red-900';
-            if (status >= 400) return 'dark:bg-orange-900 dark:text-orange-300 bg-orange-300 text-orange-900';
+            if (status >= 500)
+                return 'dark:bg-red-900 dark:text-red-300 bg-red-300 text-red-900';
+            if (status >= 400)
+                return 'dark:bg-orange-900 dark:text-orange-300 bg-orange-300 text-orange-900';
             return 'dark:bg-green-900 dark:text-green-300 bg-green-300 text-green-900';
         },
 
         get filteredEntries() {
-            if (!this.har) return [];
+            if (!this.har)
+                return [];
 
             let entries = this.har.log.entries;
 
@@ -173,15 +178,17 @@ function harViewer() {
                 entries = entries.filter(e => {
                     const s = e.response.status;
                     return this.statusFilter === '2xx' ? s < 300 :
-                        this.statusFilter === '4xx' ? s >= 400 && s < 500 :
+                            this.statusFilter === '4xx' ? s >= 400 && s < 500 :
                             s >= 500;
                 });
             }
 
             // SORT IN-PLACE instead of creating a new array
             return entries.sort((a, b) => {
-                if (this.sortBy === 'time') return b.time - a.time;
-                if (this.sortBy === 'status') return b.response.status - a.response.status;
+                if (this.sortBy === 'time')
+                    return b.time - a.time;
+                if (this.sortBy === 'status')
+                    return b.response.status - a.response.status;
                 return b.response.content.size - a.response.content.size;
             });
         }
@@ -189,14 +196,15 @@ function harViewer() {
 }
 
 function highlightJson(json) {
-    if (!json) return '';
+    if (!json)
+        return '';
     return JSON.stringify(json, null, 2)
-    .replace(/(&)/g, '&amp;')
-    .replace(/(<)/g, '&lt;')
-    .replace(/(".*?")(?=\s*:)/g, '<span class="json-key">$1</span>')
-    .replace(/:\s*(".*?")/g, ': <span class="json-string">$1</span>')
-    .replace(/:\s*(\d+|\btrue\b|\bfalse\b|\bnull\b)/g,
-    ': <span class="json-value">$1</span>');
+            .replace(/(&)/g, '&amp;')
+            .replace(/(<)/g, '&lt;')
+            .replace(/(".*?")(?=\s*:)/g, '<span class="json-key">$1</span>')
+            .replace(/:\s*(".*?")/g, ': <span class="json-string">$1</span>')
+            .replace(/:\s*(\d+|\btrue\b|\bfalse\b|\bnull\b)/g,
+                    ': <span class="json-value">$1</span>');
 }
 
 //Store enrichHarFile link to load it into table
@@ -1259,8 +1267,8 @@ function update_thirdParty_Chart() {
 
     // Display unknown hosts in warning mode.
     $("#detailUnknownList").empty();
-    let entryUnknown =$('<li class="">');
-        //let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
+    let entryUnknown = $('<li class="">');
+    //let entryUnknown = $('<li class="list-group-item">').text("Unknown Hosts/Domains:");
     $("#detailUnknownList").append(entryUnknown);
     for (var key in unknownDomain) {
         let entryUnknown = $('<li class="">').text(unknownDomain[key]);
@@ -1713,6 +1721,18 @@ function setConfigPanel(data) {
     if (data.browser !== "") {
         $("#exBrowser").text(data.browser + " " + data.version);
         $("#exBrowserLogo").attr("src", "./images/browser-" + data.browser + ".png");
+    }
+    if ((data.remoteLiveUrl !== undefined) && (data.remoteLiveUrl !== "") && (data.controlStatus === "PE")) {
+        $("#liveUrlLink").attr("href", data.remoteLiveUrl);
+        $("#liveUrl").show();
+    } else {
+        $("#liveUrl").hide();
+    }
+    if ((data.remoteControlLiveUrl !== undefined) && (data.remoteControlLiveUrl !== "") && (data.controlStatus === "PE")) {
+        $("#liveControlUrlLink").attr("href", data.remoteControlLiveUrl);
+        $("#liveControlUrl").show();
+    } else {
+        $("#liveControlUrl").hide();
     }
     configPanel.find("input#version").val(data.version);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
@@ -3738,7 +3758,7 @@ function addFileLink(fileList, container, containerExe, manual, idStep) {
             } else {
                 container.append(linkBoxtxt);
             }
-        } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
+        } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF") || (fileList[i].fileType === "MP4")) {
 
             var linkBoxtxt = null;
 
@@ -3757,9 +3777,29 @@ function addFileLink(fileList, container, containerExe, manual, idStep) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
+            } else if (fileList[i].fileType === "MP4") {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc).click(function (f) {
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }))
             }
 
-            container.append(linkBoxtxt);
+            if (fileList[i].level === "") {
+                containerExe.append(linkBoxtxt);
+                if (fileList[i].fileType === "MP4") {
+                    console.info(fileList[i]);
+                    $("#videoUrlLink").attr("href", "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=MP4&filedesc=Video&auto=true&r=true");
+                    $("#videoUrl").show();
+                } else {
+                    $("#videoUrl").hide();
+                }
+
+
+            } else {
+                container.append(linkBoxtxt);
+            }
         }
     }
 
@@ -3896,10 +3936,10 @@ function getAIHeaderButtons() {
     var executionId = GetURLParameter("executionId");
     return [
         {
-            label: "Debug Execution "+executionId,
+            label: "Debug Execution " + executionId,
             onClick: () => {
                 document.dispatchEvent(new CustomEvent('open-debug-assistant', {
-                    detail: { subject: 'execution_debug_assistant', content: executionId }
+                    detail: {subject: 'execution_debug_assistant', content: executionId}
                 }));
             }
         }

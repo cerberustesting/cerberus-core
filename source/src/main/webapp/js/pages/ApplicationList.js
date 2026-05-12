@@ -39,6 +39,12 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication", "contentTable", aoColumnsFunc("applicationsTable"), [1, 'asc']);
     createDataTableWithPermissionsNew(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
+
+    // Add group class to rows for hover effects on action buttons + render Lucide icons
+    $('#applicationsTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
+    });
 }
 
 function displayPageLabel() {
@@ -124,38 +130,37 @@ function renderOptionsForApplication(data) {
     }
 }
 
-function deleteEntryHandlerClick() {
-    var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
-
-
-
-    var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#applicationsTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function deleteEntryClick(idApplication) {
+async function deleteEntryClick(idApplication) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_application", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", idApplication);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication, "", "", "");
+
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_application", "button_delete") || 'Delete Application',
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await $.post("DeleteApplication", {application: idApplication}, "json");
+                if (getAlertType(resp.messageType) !== "success") {
+                    Swal.showValidationMessage(resp.message || "Delete failed");
+                    return null;
+                }
+                return resp;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#applicationsTable").dataTable();
+        oTable.fnDraw(false);
+        showMessageMainPage(getAlertType(result.value.messageType), result.value.message, false);
+    }
 }
 
 function aoColumnsFunc(tableId) {
@@ -166,30 +171,62 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "70px",
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+            "sWidth": "110px",
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
 
-                var editApplication = '<button id="editApplication" onclick="openModalApplication(\'' + encodeURIComponent(obj["application"]) + '\', \'EDIT\', \'ApplicationList\');"\n\
-                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplication = '<button id="editApplication" onclick="openModalApplication(\'' + encodeURIComponent(obj["application"]) + '\', \'EDIT\', \'ApplicationList\');"\n\
-                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
-                                    name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var duplicateApplication = '<button id="duplicateApplication" onclick="openModalApplication(\'' + encodeURIComponent(obj["application"]) + '\', \'DUPLICATE\', \'ApplicationList\');"\n\
-                                    class="duplicateApplication btn btn-default btn-xs margin-right5" \n\
-                                    name="duplicateApplication" title="' + doc.getDocLabel("page_application", "button_duplicate") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var deleteApplication = '<button id="deleteApplication" onclick="deleteEntryClick(\'' + obj["application"] + '\');" \n\
-                                    class="deleteApplication btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteApplication" title="' + doc.getDocLabel("page_application", "button_delete") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-trash"></span></button>';
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editApplication + duplicateApplication + deleteApplication + '</div>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, extraClass = "" }) {
+                    return '<button id="' + id + '" name="' + name + '" type="button" ' +
+                        'class="' + baseBtnClass + ' ' + extraClass + '" ' +
+                        'title="' + title + '" onclick="' + onClick + '">' +
+                        icon + '</button>';
                 }
-                return '<div class="center btn-group width150">' + viewApplication + '</div>';
+
+                const icons = {
+                    edit: '<i data-lucide="pencil" class="w-4 h-4"></i>',
+                    view: '<i data-lucide="eye" class="w-4 h-4"></i>',
+                    duplicate: '<i data-lucide="copy" class="w-4 h-4"></i>',
+                    delete: '<i data-lucide="trash-2" class="w-4 h-4"></i>'
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: "editApp_" + row,
+                    name: "editApplication",
+                    title: doc.getDocLabel("page_application", "button_edit"),
+                    onClick: "openModalApplication('" + encodeURIComponent(obj["application"]) + "', 'EDIT', 'ApplicationList');",
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                if (hasPermissions) {
+                    // Duplicate
+                    buttons.push(actionButton({
+                        id: "dupApp_" + row,
+                        name: "duplicateApplication",
+                        title: doc.getDocLabel("page_application", "button_duplicate") || 'Duplicate',
+                        onClick: "openModalApplication('" + encodeURIComponent(obj["application"]) + "', 'DUPLICATE', 'ApplicationList');",
+                        icon: icons.duplicate
+                    }));
+
+                    // Delete
+                    buttons.push(actionButton({
+                        id: "delApp_" + row,
+                        name: "deleteApplication",
+                        title: doc.getDocLabel("page_application", "button_delete") || 'Delete',
+                        onClick: "deleteEntryClick('" + escapeHtml(obj["application"]) + "');",
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {

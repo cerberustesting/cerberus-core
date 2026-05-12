@@ -113,35 +113,49 @@ function renderOptionsForRobot(data) {
 }
 
 function deleteEntryHandlerClick() {
-    var robotID = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteRobot", {robotid: robotID}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#robotsTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
+    // Legacy — kept for backward compat but no longer called directly
 }
 
-function deleteEntryClick(entry, name) {
+async function deleteEntryClick(entry, name) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "message_delete");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("robot", "robot"));
     messageComplete = messageComplete.replace("%ENTRY%", name);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry, "", "", "");
+
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_robot", "button_delete"),
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await fetch("DeleteRobot", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "robotid=" + entry
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#robotsTable").dataTable();
+        oTable.fnDraw(false);
+        if (oTable.fnGetData().length === 1) {
+            oTable.fnPageChange('previous');
+        }
+        showMessageMainPage("success", result.value.message || "Robot deleted successfully", false);
+    }
 }
 
 function buttonCloseHandler(event) {
@@ -336,8 +350,8 @@ function aoColumnsFunc(tableId) {
             "sWidth": "50px",
             "title": doc.getDocOnline("robot", "version")},
         {
-            "data": "isActive",
-            "sName": "isActive",
+            "data": "active",
+            "sName": "active",
             "sWidth": "50px",
             "title": "Active",
             "orderable": true,

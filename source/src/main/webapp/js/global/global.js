@@ -1395,6 +1395,79 @@ function showModalConfirmation(handlerClickOk, handlerClickNo, title, message, h
     $('#confirmationModal').modal('show');
 }
 
+/**
+ * Modern confirmation dialog using SweetAlert2.
+ * Follows the project modal design system (sky-400 buttons, 1rem rounded, CSS vars).
+ *
+ * @param {Object} options
+ * @param {string} options.title     - Dialog title
+ * @param {string} options.html      - Message body (HTML allowed)
+ * @param {string} [options.confirmText] - Confirm button label (default: "Delete")
+ * @param {string} [options.cancelText]  - Cancel button label (default: "Cancel")
+ * @param {string} [options.icon]        - SweetAlert icon: 'warning','error','success','info','question'
+ * @param {string} [options.confirmColor]- Confirm button color (default: '#dc2626' red for deletes)
+ * @param {Function} options.preConfirm  - Async function called on confirm. Return data on success, or call Swal.showValidationMessage on error.
+ * @returns {Promise} Swal result
+ *
+ * Usage:
+ *   const result = await crbConfirmDelete({
+ *       title: 'Delete entry?',
+ *       html: 'Are you sure you want to delete <b>MyEntry</b>?',
+ *       preConfirm: async () => { ... }
+ *   });
+ *   if (result.isConfirmed && result.value) { ... }
+ */
+async function crbConfirmDelete(options) {
+    options = options || {};
+
+    // Inject custom CSS on first call (lazy)
+    if (!document.getElementById('crb-swal-styles')) {
+        var style = document.createElement('style');
+        style.id = 'crb-swal-styles';
+        style.textContent = '.crb-swal-popup{border-radius:1rem!important;border:1px solid var(--crb-border-color,#e2e8f0)!important;box-shadow:0 25px 50px -12px rgba(0,0,0,.25)!important;font-family:inherit!important}.crb-swal-popup .swal2-title{font-size:1.125rem!important;font-weight:600!important}.crb-swal-popup .swal2-html-container{font-size:.875rem!important}.crb-swal-popup .swal2-actions{gap:.5rem!important}.crb-swal-popup .swal2-confirm{border-radius:.375rem!important;font-size:.875rem!important;font-weight:500!important;padding:.5rem 1rem!important}.crb-swal-cancel{border-radius:.375rem!important;font-size:.875rem!important;font-weight:500!important;padding:.5rem 1rem!important;border:1px solid var(--crb-border-color,#cbd5e1)!important;color:var(--crb-black-color,#334155)!important;background:transparent!important}.crb-swal-cancel:hover{background:var(--crb-hover-bg,#f1f5f9)!important}';
+        document.head.appendChild(style);
+    }
+
+    // Fallback to native confirm if Swal is not available
+    if (typeof Swal === 'undefined') {
+        console.warn('crbConfirmDelete: SweetAlert2 not available, using native confirm()');
+        var confirmed = confirm((options.title || 'Confirm') + '\n\n' + (options.html || '').replace(/<[^>]*>/g, ''));
+        if (confirmed && typeof options.preConfirm === 'function') {
+            try {
+                var data = await options.preConfirm();
+                return {isConfirmed: true, value: data};
+            } catch (e) {
+                return {isConfirmed: false, value: null};
+            }
+        }
+        return {isConfirmed: confirmed, value: confirmed};
+    }
+
+    return Swal.fire({
+        title: options.title || 'Confirm Deletion',
+        html: options.html || 'Are you sure?',
+        icon: options.icon || 'warning',
+        showCancelButton: true,
+        confirmButtonText: options.confirmText || 'Delete',
+        cancelButtonText: options.cancelText || 'Cancel',
+        confirmButtonColor: options.confirmColor || '#dc2626',
+        cancelButtonColor: 'transparent',
+        background: 'var(--crb-new-bg)',
+        color: 'var(--crb-black-color)',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: function () {
+            return !Swal.isLoading();
+        },
+        customClass: {
+            popup: 'crb-swal-popup',
+            cancelButton: 'crb-swal-cancel'
+        },
+        preConfirm: options.preConfirm || function () {
+            return true;
+        }
+    });
+}
+
 function modalConfirmationIsVisible() {
     return $('#confirmationModal').is(":visible");
 }
@@ -2662,51 +2735,35 @@ function getDateMedium(date) {
     }
 }
 
-function getHumanReadableDuration(durInSec, nbUnits = 2) {
-    let dur = durInSec;
-    let unit = "s";
-    let cnt1 = 0;
-    let cnt2 = 0;
-    if (dur > 60) {
-        dur = dur / 60;
-        unit = "min";
-    } else {
-        return Math.round(dur) + " " + unit;
-    }
-    if (durInSec > 432000000) {
+
+function getHumanReadableDuration(seconds, maxUnits = Infinity) {
+    if (seconds > 432000000) {
         return "unknown";
     }
-    if (dur >= 60) {
-        dur = dur / 60;
-        unit = "h";
-    } else {
-        cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60);
-        if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + Math.round(cnt2) + " s";
-        } else {
-            return cnt1 + " " + unit;
+    
+    const units = [
+        {label: 'y', value: 365 * 24 * 60 * 60},
+        {label: 'mo', value: 30 * 24 * 60 * 60}, // mois approx
+        {label: 'd', value: 24 * 60 * 60},
+        {label: 'h', value: 60 * 60},
+        {label: 'm', value: 60},
+        {label: 's', value: 1}
+    ];
+
+    let remaining = seconds;
+    const result = [];
+
+    for (const unit of units) {
+        if (result.length >= maxUnits)
+            break;
+        const qty = Math.floor(remaining / unit.value);
+        if (qty > 0) {
+            result.push(qty + unit.label);
+            remaining %= unit.value;
         }
     }
-    if (dur > 24) {
-        dur = dur / 24;
-        unit = "d";
-    } else {
-        cnt1 = Math.floor(dur);
-        cnt2 = durInSec - (cnt1 * 60 * 60);
-        if ((cnt2 > 0) && (nbUnits > 1)) {
-            return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
-        } else {
-            return cnt1 + " " + unit;
-        }
-    }
-    cnt1 = Math.floor(dur);
-    cnt2 = durInSec - (cnt1 * 60 * 60 * 24);
-    if ((cnt2 > 0) && (nbUnits > 1)) {
-        return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
-    } else {
-        return cnt1 + " " + unit;
-}
+
+    return result.length > 0 ? result.join(' ') : '0s';
 }
 
 function getTextPlurial(nb, textSingle, textPlusial) {
@@ -3505,4 +3562,25 @@ function setTheme(theme) {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
     }
+}
+
+/**
+ * Returns the appropriate Ace editor theme based on the current dark/light mode.
+ * @returns {string} Ace theme path, e.g. "ace/theme/chrome" or "ace/theme/tomorrow_night"
+ */
+function getAceTheme() {
+    return document.documentElement.classList.contains('dark')
+            ? 'ace/theme/tomorrow_night'
+            : 'ace/theme/chrome';
+}
+
+
+function toSafeId(str) {
+    return str
+            .normalize("NFD")                 // enlève les accents
+            .replace(/[\u0300-\u036f]/g, "")  // accents restants
+            .replace(/[^a-zA-Z0-9_-]/g, "_")  // remplace tout le reste
+            .replace(/^(\d)/, "_$1")          // évite de commencer par un chiffre
+            .replace(/_+/g, "_")              // évite les doublons _
+            .toLowerCase();
 }

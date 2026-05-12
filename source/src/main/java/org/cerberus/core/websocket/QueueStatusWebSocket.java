@@ -33,6 +33,8 @@ import jakarta.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.cerberus.core.engine.entity.ExecutionUUID;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Component
 public class QueueStatusWebSocket extends TextWebSocketHandler {
@@ -45,6 +47,9 @@ public class QueueStatusWebSocket extends TextWebSocketHandler {
     private Lock mainLock;
     private Map<String, WebSocketSession> sessions;
     private Set<String> queueStatuss;
+
+    @Autowired
+    private ExecutionUUID executionUUIDObject;
 
     @PostConstruct
     public void init() {
@@ -65,6 +70,12 @@ public class QueueStatusWebSocket extends TextWebSocketHandler {
             }
             registeredSessions.add(session.getId());
             queueStatuss = registeredSessions;
+            QueueStatus queueS = QueueStatus.builder()
+                    .executionHashMap(executionUUIDObject.getExecutionUUIDList())
+                    .globalLimit(executionUUIDObject.getGlobalLimit())
+                    .running(executionUUIDObject.getRunning())
+                    .queueSize(executionUUIDObject.getQueueSize()).build();
+            session.sendMessage(new TextMessage(queueS.toJson(true).toString()));
         } finally {
             mainLock.unlock();
         }

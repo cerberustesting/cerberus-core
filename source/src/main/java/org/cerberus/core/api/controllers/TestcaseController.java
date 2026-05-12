@@ -183,7 +183,7 @@ public class TestcaseController {
         return ResponseWrapper.wrap(
                 this.testcaseMapper
                         .toDTO(
-                                this.testCaseService.findTestCaseByKeyWithDependencies(testFolderId, testcaseId, true).getItem()
+                                this.testCaseService.findTestCaseByKeyWithDependencies(testFolderId, testcaseId, true, false).getItem()
                         )
         );
     }

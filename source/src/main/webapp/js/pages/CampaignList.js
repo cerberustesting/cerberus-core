@@ -42,36 +42,30 @@ function initPage() {
     // Pre load eventconnector invariant.
     getSelectInvariant("EVENTCONNECTOR", false);
 
-    $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var target = $(e.target).attr("href"); // activated tab
-        if (target == "#tabsCreate-1") {
-        } else if (target == "#tabsCreate-3") {
-            $("#parameterTestcampaignsTable").DataTable().draw();
-        } else if (target == "#tabsCreate-4") {
-            $("#labelTestcampaignsTable").DataTable().draw();
-        } else if (target == "#tabsCreate-5") {
-            $("#parameterTestcaseTable").DataTable().draw();
-        }
+    $('#testcampaignsTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide)
+            lucide.createIcons();
     });
 
-    $('#addTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var target = $(e.target).attr("href"); // activated tab
-        if (target == "#tabsCreate-11") {
-        } else if (target == "#tabsCreate-13") {
-            $("#addModalParameterTestcampaignsTable").DataTable().draw();
-        } else if (target == "#tabsCreate-14") {
-            $("#addModalLabelTestcampaignsTable").DataTable().draw();
-        } else if (target == "#tabsCreate-5") {
-            $("#parameterTestcaseTable").DataTable().draw();
-        }
+    // Redraw datatables inside modal when switching tabs via Alpine
+
+
+    $(document).on('click', '#editTestcampaignModal [x-data] button', function () {
+        setTimeout(function () {
+            if ($("#parameterTestcampaignsTable_wrapper").length > 0)
+                $("#parameterTestcampaignsTable").DataTable().columns.adjust().draw();
+            if ($("#labelTestcampaignsTable_wrapper").length > 0)
+                $("#labelTestcampaignsTable").DataTable().columns.adjust().draw();
+            if ($("#parameterTestcaseTable_wrapper").length > 0)
+                $("#parameterTestcaseTable").DataTable().columns.adjust().draw();
+        }, 100);
     });
 
-    $("#viewTestcampaignModal").on('shown.bs.modal', function (e) {
-        $("#viewTestcampaignsTable").DataTable().columns.adjust();
-    })
+
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc(), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc("testcampaignsTable"), [1, 'asc']);
     createDataTableWithPermissionsNew(configurations, renderOptionsForCampaign, "#testcampaignList", undefined, true);
 }
 
@@ -127,38 +121,50 @@ function renderOptionsForCampaign(data) {
 
             var $wrapper = $("#testcampaignsTable_buttonWrapper");
             if ($wrapper.length) {
-                // Ajoute le bouton au **début** du wrapper
                 $wrapper.append(contentToAdd);
-                if (window.lucide) lucide.createIcons();
+                if (window.lucide)
+                    lucide.createIcons();
             } else {
-                // fallback si le wrapper n’existe pas encore
                 console.warn("Wrapper #testcampaignsTable_buttonWrapper introuvable, insertion avant length");
                 $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before("<div id='testcampaignsTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
             }
-            $('#testcampaignList #createTestcampaignButton').click(addEntryClick);
+            $('#testcampaignList #createTestcampaignButton').click(campaign_addEntryClick);
         }
     }
 }
 
-function removeEntryClick(key) {
+async function removeEntryClick(key) {
     var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var id = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteCampaign?key=" + encodeURIComponent(key),
-            async: true,
-            method: "GET",
-            success: function (data) {
-                hideLoaderInModal('#removeTestampaignModal');
-                var oTable = $("#testcampaignsTable").dataTable();
-                oTable.fnDraw(false);
-                $('#removeTestcampaignModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
-        $('#confirmationModal').modal('hide');
-    }, undefined, doc.getDocLabel("page_testcampaign", "title_remove"), doc.getDocLabel("page_testcampaign", "message_remove").replace("%NAME%", key), key, undefined, undefined, undefined);
+    var messageComplete = doc.getDocLabel("page_testcampaign", "message_remove").replace("%NAME%", key);
+
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_testcampaign", "title_remove"),
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await fetch("DeleteCampaign?key=" + encodeURIComponent(key), {
+                    method: "GET"
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#testcampaignsTable").dataTable();
+        oTable.fnDraw(false);
+        showMessage(result.value);
+    }
 }
 
 function aoColumnsFunc(tableId) {
@@ -170,32 +176,89 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "170px",
             "title": doc.getDocOnline("page_testcampaign", "button_col"),
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
 
-                var editTestcampaign = '<button id="editTestcampaign" onclick="editEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
-                                        class="editCampaign btn btn-default btn-xs margin-right5" \n\
-                                        name="editTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-                var removeTestcampaign = '<button id="removeTestcampaign" onclick="removeEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
-                                        class="removeTestcampaign btn btn-default btn-xs margin-right25" \n\
-                                        name="removeTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
-                var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
-                                        class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
-                                        name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_testcaselist") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-list"></span></button>';
-                var viewStatcampaign = '<button id="viewStatcampaign" onclick="viewStatEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
-                                        class="viewStatcampaign btn btn-default btn-xs margin-right5" \n\
-                                        name="viewStatcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_taglist") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-stats"></span></button>';
-                var Runcampaign = '<a id="runcampaign" class="btn btn-primary btn-xs margin-right5"\n\
-                                    href="./RunTests.jsp?campaign=' + encodeURIComponent(obj["campaign"]) + '" title="' + doc.getDocLabel("page_testcampaign", "button_run") + '" >\n\
-                                    <span class="glyphicon glyphicon-play"></span>\n\
-                                    </a>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                        "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                        "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + viewStatcampaign + Runcampaign + '</div>';
+                function actionButton( { id, name, title, onClick, icon, extraClass = "", disabled = false, href = null }) {
+                    if (href) {
+                        return `<a id="${id}" name="${name}" class="${baseBtnClass} ${extraClass}" title="${title}" href="${href}">
+                            ${icon}</a>`;
+                    }
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `<button id="${id}" name="${name}" type="button"
+                        class="${baseBtnClass} ${extraClass} ${disabledClass}"
+                        title="${title}"
+                        ${disabled ? "disabled" : `onclick="${onClick}"`}>
+                        ${icon}
+                    </button>`;
+                }
 
+                const icons = {
+                    edit: '<i data-lucide="pencil" class="w-4 h-4"></i>',
+                    view: '<i data-lucide="eye" class="w-4 h-4"></i>',
+                    delete: '<i data-lucide="trash-2" class="w-4 h-4"></i>',
+                    list: '<i data-lucide="list" class="w-4 h-4"></i>',
+                    stats: '<i data-lucide="bar-chart-3" class="w-4 h-4"></i>',
+                    play: '<i data-lucide="play" class="w-4 h-4"></i>'
+                };
+
+                let buttons = [];
+
+                // Edit
+                buttons.push(actionButton({
+                    id: "editTestcampaign_" + row,
+                    name: "editTestcampaign",
+                    title: doc.getDocLabel("page_testcampaign", "button_edit"),
+                    onClick: "campaign_editEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: "removeTestcampaign_" + row,
+                        name: "removeTestcampaign",
+                        title: doc.getDocLabel("page_testcampaign", "button_remove"),
+                        onClick: "removeEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // View TestCases
+                buttons.push(actionButton({
+                    id: "viewTestcampaign_" + row,
+                    name: "viewTestcampaign",
+                    title: doc.getDocLabel("page_testcampaign", "button_testcaselist"),
+                    onClick: "campaign_viewEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    icon: icons.list
+                }));
+
+                // View Stats
+                buttons.push(actionButton({
+                    id: "viewStatcampaign_" + row,
+                    name: "viewStatcampaign",
+                    title: doc.getDocLabel("page_testcampaign", "button_taglist"),
+                    onClick: "campaign_viewStatEntryClick('" + escapeHtml(obj["campaign"]) + "');",
+                    icon: icons.stats
+                }));
+
+                // Run
+                buttons.push(actionButton({
+                    id: "runcampaign_" + row,
+                    name: "runcampaign",
+                    title: doc.getDocLabel("page_testcampaign", "button_run"),
+                    href: "./RunTests.jsp?campaign=" + encodeURIComponent(obj["campaign"]),
+                    icon: icons.play,
+                    extraClass: "group-hover:!text-green-500"
+                }));
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {
@@ -207,12 +270,14 @@ function aoColumnsFunc(tableId) {
         {
             "data": "description",
             "sName": "description",
+            "like": true,
             "sWidth": "180px",
             "title": doc.getDocOnline("page_testcampaign", "description_col")
         },
         {
             "data": "longDescription",
             "visible": false,
+            "like": true,
             "sName": "longDescription",
             "sWidth": "180px",
             "title": doc.getDocOnline("campaign", "longDescription")
@@ -323,6 +388,17 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("campaign", "ManualExecution")
         },
         {
+            "data": "DateLastExecuted",
+            "sName": "DateLastExecuted",
+            "sWidth": "110px",
+            "like": true,
+            "defaultContent": "",
+            "title": doc.getDocOnline("campaign", "DateLastExecuted"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["DateLastExecuted"]);
+                }
+        },
+        {
             "data": "UsrCreated",
             "visible": false,
             "sName": "UsrCreated",
@@ -353,6 +429,7 @@ function aoColumnsFunc(tableId) {
         {
             "data": "DateModif",
             "visible": false,
+            "like": true,
             "sName": "DateModif",
             "sWidth": "110px",
             "defaultContent": "",

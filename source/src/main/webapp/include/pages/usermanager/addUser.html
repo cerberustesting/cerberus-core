@@ -1,106 +1,141 @@
-<!--Add user page-->
-<div data-backdrop="static" class="modal fade center" id="addUserModal" role="dialog"
-     aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addUserModalLabel" name="addUserField">Add User</h4>
+<!--Add User - Alpine.js/Tailwind refactored -->
+<div x-data="addUserModal()"
+     x-show="open"
+     x-cloak
+     @adduser-modal-open.window="handleOpen($event.detail)"
+     @adduser-modal-close.window="open = false"
+     class="crb_modal"
+     id="addUserModal">
+
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[750px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="user-plus" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="addUserModalLabel" name="addUserField">Add User</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Create a new user account</p>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
 
-                <!--add form-->
-                <form id="addUserModalForm" name="addUserModalForm" title="Add User" role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
-                                    <span class="glyphicon glyphicon-trash alert-right alert-close pull-right"></span>
-                                </button>
+        <!-- TABS -->
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 mx-6 mb-2 rounded-lg shadow-sm h-10" style="width: calc(100% - 3rem);">
+                <button type="button" @click="tab = 'info'" :class="tab === 'info' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab1Text" name="tabInformations">Informations</button>
+                <button type="button" @click="tab = 'systems'" :class="tab === 'systems' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab2Text" name="tabSystem">Systems</button>
+                <button type="button" @click="tab = 'roles'" :class="tab === 'roles' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab3Text" name="tabGroup">Roles</button>
+            </div>
+
+            <!-- BODY -->
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+                <form id="addUserModalForm" name="addUserModalForm" role="form">
+                    <div id="DialogMessagesArea" class="mb-3">
+                        <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert" aria-hidden="true"><span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span></button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" id="id" readonly>
+
+                    <!-- Login (always visible) -->
+                    <div class="mb-3">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="login" name="loginField">Login</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="login" id="login">
+                    </div>
+
+                    <!-- TAB: Informations -->
+                    <div x-show="tab === 'info'" id="tabsCreate-11">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="nameField">Name</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="name" id="name">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="teamField">Team</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="team" id="team"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="defaultSystemField">Default System</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="defaultSystem" id="defaultSystem"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="requestField">Request</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="request" id="request">
+                                    <option value="Y">Y</option>
+                                    <option value="N">N</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="emailField">Email</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="email" id="email">
                             </div>
                         </div>
-                        <input type="hidden" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly></input>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="login" name="loginField">Login</label>
-                                <input type="text" class="form-control" name="login" id="login" aria-describedby="basic-addon1"></input>
-                            </div>
-                        </div>
-                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsCreate-11" id="createTab1Text" name="tabInformations">Informations</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-12" id="createTab2Text" name="tabSystem">Systems</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-13" id="createTab3Text" name="tabGroup">Roles</a></li>
-                        </ul>
+                    </div>
 
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-11">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="name" name="nameField">Name</label>
-                                        <input type="text" class="form-control" name="name" id="name" aria-describedby="basic-addon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="team" name="teamField">Team</label>
-                                        <select style="width:100%;" class="form-control" name="team" id="team" aria-describedby="basic-addon1">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="defaultSystem" name="defaultSystemField">Default System</label>
-                                        <select style="width:100%;" class="form-control" name="defaultSystem" id="defaultSystem" aria-describedby="basic-addon1">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="request" name="requestField">Request</label>
-                                        <select style="width:100%;" class="form-control" name="request" id="request" aria-describedby="basic-addon1">
-                                            <option value="Y">Y</option>
-                                            <option value="N">N</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="email" name="emailField">Email</label>
-                                        <input type="text" class="form-control" name="email" id="email" aria-describedby="basic-addon1"></input>
-                                    </div>
-                                </div>
+                    <!-- TAB: Systems -->
+                    <div x-show="tab === 'systems'" id="tabsCreate-12">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemsField">Systems</label>
+                            <div class="flex gap-2 mb-2">
+                                <button type="button" class="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" id="addcheckall">Check All</button>
+                                <button type="button" class="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" id="adduncheckall">Uncheck All</button>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-12">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="systems" name="systemsField">Systems</label>
-                                        <button type="button" class="btn btn-default glyphicon glyphicon-check" id="addcheckall">Check All</button>
-                                        <button type="button" class="btn btn-default glyphicon glyphicon-unchecked" id="adduncheckall">Uncheck All</button>
-                                        <select style="width:100%;" class="form-control" multiple="multiple" name="systems" id="systems" aria-describedby="basic-addon1" size=15>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-13">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="groups" name="groupsField">Roles</label>
-                                        <select style="width:100%;" class="form-control" multiple="multiple" name="groups" id="groups" aria-describedby="basic-addon1" size=12>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                            <select class="hidden" multiple name="systems" id="systems"></select>
+                            <div id="systemsCheckboxList" class="border rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 max-h-[320px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Roles -->
+                    <div x-show="tab === 'roles'" id="tabsCreate-13">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="groupsField">Roles</label>
+                            <select class="hidden" multiple name="groups" id="groups"></select>
+                            <div id="groupsCheckboxList" class="border rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 max-h-[320px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700"></div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addUserButton" class="btn btn-primary" name="buttonAdd">Save</button>
+
+            <!-- FOOTER -->
+            <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+                <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+                <button type="button" id="addUserButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonAdd">Save</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function addUserModal() {
+    return {
+        open: false, isFullscreen: false, tab: 'info',
+        handleOpen: function(detail) { this.open = true; this.tab = 'info'; this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }); },
+        init: function() {
+            this.$watch('open', function(val) { if (!val && typeof addEntryModalCloseHandler === 'function') addEntryModalCloseHandler(); });
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+        }
+    };
+}
+</script>

@@ -28,6 +28,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  * Map la table Service
@@ -53,5 +57,26 @@ public class TestCaseHisto {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
+
+    private static final Logger LOG = LogManager.getLogger(TestCaseHisto.class);
+
+    public JSONObject toJson() {
+        JSONObject testCaseHistoJson = new JSONObject();
+        try {
+            testCaseHistoJson.put("test", this.getTest());
+            testCaseHistoJson.put("testcase", this.getTestCase());
+            testCaseHistoJson.put("version", this.getVersion());
+            testCaseHistoJson.put("dateVersion", this.getDateVersion());
+            testCaseHistoJson.put("description", this.getDescription());
+            testCaseHistoJson.put("dateCreated", this.getDateCreated());
+            testCaseHistoJson.put("usrCreated", this.getUsrCreated());
+            testCaseHistoJson.put("dateModif", this.getDateModif());
+            testCaseHistoJson.put("usrModif", this.getUsrModif());
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseHistoJson;
+    }
 
 }

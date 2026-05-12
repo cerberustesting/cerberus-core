@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.Part;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +66,11 @@ import org.cerberus.core.util.servlet.ServletUtil;
  * @author cte
  */
 @WebServlet(name = "UpdateAppService", urlPatterns = {"/UpdateAppService"})
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 10 * 1024 * 1024,
+        maxRequestSize = 20 * 1024 * 1024
+)
 public class UpdateAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateAppService.class);

@@ -1,198 +1,160 @@
-<!--Edit user page-->
-<div data-backdrop="static" class="modal fade center" id="editUserModal" role="dialog"
-     aria-labelledby="editUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editUserModalLabel" name="editUserField">Edit User</h4>
+<!--Edit User - Alpine.js/Tailwind refactored -->
+<div x-data="editUserModal()"
+     x-show="open"
+     x-cloak
+     @edituser-modal-open.window="handleOpen($event.detail)"
+     @edituser-modal-close.window="open = false"
+     class="crb_modal"
+     id="editUserModal">
+
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[800px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="user-cog" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editUserModalLabel" name="editUserField">Edit User</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Manage user profile and permissions</p>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
 
-                <!--edit form-->
-                <form id="editUserModalForm" name="editUserModalForm" title="Edit User" role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
-                                    <span class="glyphicon glyphicon-trash alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
+        <!-- TABS -->
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 mx-6 mb-2 rounded-lg shadow-sm h-10" style="width: calc(100% - 3rem);">
+                <button type="button" @click="tab = 'info'" :class="tab === 'info' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab1Text" name="tabInformations">Informations</button>
+                <button type="button" @click="tab = 'systems'" :class="tab === 'systems' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab2Text" name="tabSystem">Systems</button>
+                <button type="button" @click="tab = 'roles'" :class="tab === 'roles' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab3Text" name="tabGroups">Roles</button>
+                <button type="button" @click="tab = 'advanced'" :class="tab === 'advanced' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab4Text" name="tabAdvanced">Advanced</button>
+                <button type="button" @click="tab = 'traca'" :class="tab === 'traca' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap" id="createTab5Text" name="tabTraca">Traceability</button>
+            </div>
+
+            <!-- BODY -->
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+                <form id="editUserModalForm" name="editUserModalForm" role="form">
+                    <div id="DialogMessagesArea" class="mb-3">
+                        <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert" aria-hidden="true"><span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span></button>
                         </div>
-                        <input type="hidden" class="form-control" name="id" id="id" aria-describedby="basic-editon1" readonly></input>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="login" name="loginField">Login</label>
-                                <input type="text" class="form-control" name="login" id="login" aria-describedby="basic-editon1"></input>
+                    </div>
+                    <input type="hidden" name="id" id="id" readonly>
+
+                    <div class="mb-3">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="loginField">Login</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="login" id="login">
+                    </div>
+
+                    <!-- TAB: Informations -->
+                    <div x-show="tab === 'info'" id="tabsCreate-1">
+                        <div class="space-y-3">
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="nameField">Name</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="name" id="name"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="teamField">Team</label><select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="team" id="team"></select></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="emailField">Email</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="email" id="email"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="defaultSystemField">Default System</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" name="defaultSystem" id="defaultSystem"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="requestField">Request</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="request" id="request">
+                                    <option value="Y">Y</option><option value="N">N</option>
+                                </select>
                             </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="apiKeyField">API Key</label>
+                                <div class="flex gap-2">
+                                    <input type="text" class="flex-1 h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all" name="apiKey" id="apiKey">
+                                    <button type="button" id="setAPIKey" class="px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Set New Key</button>
+                                    <button type="button" id="copyAPIKey" class="px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Copy</button>
+                                </div>
+                            </div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="commentField">Comment</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="comment" id="comment"></div>
                         </div>
-                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabInformations">Informations</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabSystem">Systems</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabGroups">Roles</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-4" id="createTab4Text" name="tabAdvanced">Advanced</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-5" id="createTab5Text" name="tabTraca">Traceability</a></li>
-                        </ul>
+                    </div>
 
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-1">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="name" name="nameField">Name</label>
-                                        <input type="text" class="form-control" name="name" id="name" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="team" name="teamField">Team</label>
-                                        <select style="width:100%;" class="form-control" name="team" id="team" aria-describedby="basic-editon1">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="email" name="emailField">Email</label>
-                                        <input type="text" class="form-control" name="email" id="email" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="defaultSystem" name="defaultSystemField">Default System</label>
-                                        <input type="text" class="form-control"  name="defaultSystem" id="defaultSystem" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="request" name="requestField">Request</label>
-                                        <select style="width:100%;" class="form-control" name="request" id="request" aria-describedby="basic-editon1">
-                                            <option value="Y">Y</option>
-                                            <option value="N">N</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="apiKey" name="apiKeyField">API Key</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" name="apiKey" id="apiKey" aria-describedby="basic-editon1">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="setAPIKey">Set New Key</button>
-                                                <button class="btn btn-default" type="button" id="copyAPIKey">Copy</button>
-                                            </span>
-                                        </div>                                        
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="comment" name="commentField">Comment</label>
-                                        <input type="text" class="form-control"  name="comment" id="comment" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
+                    <!-- TAB: Systems -->
+                    <div x-show="tab === 'systems'" id="tabsCreate-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemsField">Systems</label>
+                            <div class="flex gap-2 mb-2">
+                                <button type="button" class="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" id="editcheckall">Check All</button>
+                                <button type="button" class="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" id="edituncheckall">Uncheck All</button>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-2">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="systems" name="systemsField">Systems</label>
-                                        <button type="button" class="btn btn-default glyphicon glyphicon-check" id="editcheckall">Check All</button>
-                                        <button type="button" class="btn btn-default glyphicon glyphicon-unchecked" id="edituncheckall">Uncheck All</button>
-                                        <select style="width:100%;" class="form-control" multiple="multiple" name="systems" id="systems" aria-describedby="basic-editon1" size=15>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                            <select class="hidden" multiple name="systems" id="systems"></select>
+                            <div id="systemsCheckboxList" class="border rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 max-h-[320px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700"></div>
+                        </div>
+                    </div>
 
-                            <div class="center tab-pane fade marginTop25" id="tabsCreate-3">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="groups" name="groupsField">Roles</label>
-                                        <select style="width:100%;" class="form-control" multiple="multiple" name="groups" id="groups" aria-describedby="basic-editon1" size=12>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- TAB: Roles -->
+                    <div x-show="tab === 'roles'" id="tabsCreate-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="groupsField">Roles</label>
+                            <select class="hidden" multiple name="groups" id="groups"></select>
+                            <div id="groupsCheckboxList" class="border rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 max-h-[320px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700"></div>
+                        </div>
+                    </div>
 
-                            <div class="center marginTop25 tab-pane fade" id="tabsCreate-4">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="attribute01" name="att01Field">Attribute 1</label>
-                                        <input type="text" class="form-control" name="attribute01" id="attribute01" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="attribute02" name="att02Field">Attribute 2</label>
-                                        <input type="text" class="form-control" name="attribute02" id="attribute02" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="attribute03" name="att03Field">Attribute 3</label>
-                                        <input type="text" class="form-control" name="attribute03" id="attribute03" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="attribute04" name="att04Field">Attribute 4</label>
-                                        <input type="text" class="form-control" name="attribute04" id="attribute04" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="attribute05" name="att05Field">Attribute 5</label>
-                                        <input type="text" class="form-control" name="attribute05" id="attribute05" aria-describedby="basic-editon1"></input>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- TAB: Advanced -->
+                    <div x-show="tab === 'advanced'" id="tabsCreate-4">
+                        <div class="space-y-3">
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="att01Field">Attribute 1</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="attribute01" id="attribute01"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="att02Field">Attribute 2</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="attribute02" id="attribute02"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="att03Field">Attribute 3</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="attribute03" id="attribute03"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="att04Field">Attribute 4</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="attribute04" id="attribute04"></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="att05Field">Attribute 5</label><input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="attribute05" id="attribute05"></div>
+                        </div>
+                    </div>
 
-
-                            <div class="center marginTop25 tab-pane fade in" id="tabsCreate-5">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_created" for="created">Created</label>
-                                                <div>
-                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_creator" for="creator">Creator</label>
-                                                <div>
-                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div> 
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
-                                                <div>
-                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                            <div class="form-group col-sm-6">
-                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
-                                                <div>
-                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
-                                                </div>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                </div>  
-                            </div>   
-
-
-
+                    <!-- TAB: Traceability -->
+                    <div x-show="tab === 'traca'" id="tabsCreate-5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_created">Created</label><input id="datecreated" name="datecreated" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" readonly></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_creator">Creator</label><input id="usrcreated" name="usrcreated" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" readonly></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModified">Last Modified</label><input id="datemodif" name="datemodif" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" readonly></div>
+                            <div><label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModifier">Last Modifier</label><input id="usrmodif" name="usrmodif" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400" readonly></div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editUserButton" class="btn btn-primary" name="buttonEdit">Save</button>
+
+            <!-- FOOTER -->
+            <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+                <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+                <button type="button" id="editUserButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonEdit">Save</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function editUserModal() {
+    return {
+        open: false, isFullscreen: false, tab: 'info',
+        handleOpen: function(detail) { this.open = true; this.tab = 'info'; this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }); },
+        init: function() {
+            this.$watch('open', function(val) { if (!val && typeof editEntryModalCloseHandler === 'function') editEntryModalCloseHandler(); });
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+        }
+    };
+}
+</script>

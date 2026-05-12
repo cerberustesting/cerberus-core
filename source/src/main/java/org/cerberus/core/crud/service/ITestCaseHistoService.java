@@ -19,8 +19,10 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseHisto;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -67,7 +69,17 @@ public interface ITestCaseHistoService {
      */
     Answer create(TestCaseHisto object);
 
-    
+    /**
+     *
+     * @param testcase
+     * @param dateVersion
+     * @param version
+     * @param usrCreated
+     * @param desc
+     * @return
+     */
+    Answer create(TestCase testcase, Timestamp dateVersion, int version, String usrCreated, String desc);
+
     /**
      * @param answerItem
      * @return
@@ -88,5 +100,4 @@ public interface ITestCaseHistoService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    
 }

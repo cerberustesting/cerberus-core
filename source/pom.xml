@@ -347,6 +347,17 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>2.2.21</version>
         </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/com.iabgpp/iabgpp-core -->
+        <dependency>
+            <groupId>com.iabgpp</groupId>
+            <artifactId>iabgpp-encoder</artifactId>
+            <version>3.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.iabgpp</groupId>
+            <artifactId>iabgpp-extras-jackson</artifactId>
+            <version>3.2.5</version>
+        </dependency>
 
         <!-- MCP 1.0.0 : Feb 23, 2026 - Usage : AI
         https://mvnrepository.com/artifact/io.modelcontextprotocol.sdk/mcp -->

@@ -130,6 +130,14 @@
                                     aria-label="Configuration">
                                     <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
                                 </button>
+                                <button
+                                    id="refreshTags"
+                                    type="button"
+                                    class="text-gray-500 hover:text-blue-600 transition"
+                                    onclick="stopPropagation(event); loadLastTagResultList();"
+                                    aria-label="Configuration">
+                                    <i data-lucide="refresh-ccw" class="w-4 h-4"></i>
+                                </button>
                             </div>
 
                             <!-- Zone configuration (hidden par défaut) -->

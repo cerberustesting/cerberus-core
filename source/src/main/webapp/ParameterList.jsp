@@ -29,7 +29,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Parameter</title>
         <script type="text/javascript" src="js/pages/ParameterList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Parameter.js?v=${appVersion}"></script>
+
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -37,7 +37,7 @@
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/Parameter.html"%>
+
 
             <h1 class="page-title-line" id="title">Parameters</h1>
 

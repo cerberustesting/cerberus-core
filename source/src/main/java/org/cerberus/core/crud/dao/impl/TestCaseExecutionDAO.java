@@ -80,13 +80,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         final StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, ");
-        query.append("  environmentData, country, browser, application, robothost, ");
+        query.append("  environmentData, country, browser, application, applicationtype, robothost, ");
         query.append("  url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, ");
         query.append("  executor, screensize, conditionOperator, conditionVal1Init, conditionVal2Init, ");
         query.append("  conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, ");
         query.append("  manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, TestCaseIsMuted, `system`, robotdecli, ");
         query.append("  robot, robotexecutor, RobotProvider, RobotProviderSessionId, RobotSessionId, UsrCreated) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", tCExecution.getId());
@@ -105,6 +105,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(i++, tCExecution.getCountry());
             preStat.setString(i++, tCExecution.getBrowser());
             preStat.setString(i++, tCExecution.getApplicationObj().getApplication());
+            preStat.setString(i++, tCExecution.getApplicationType());
             preStat.setString(i++, tCExecution.getRobotHost());
             preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(tCExecution.getUrl(), 350), tCExecution.getSecrets()));
             preStat.setString(i++, tCExecution.getRobotPort());
@@ -1349,7 +1350,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         final StringBuilder query = new StringBuilder()
                 .append("SELECT exe.id, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
-                .append(", exe.Application, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
+                .append(", exe.Application, exe.ApplicationType, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
                 .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
                 .append("FROM testcaseexecution exe ")
                 .append("LEFT OUTER JOIN tag ON tag.tag=exe.tag ")
@@ -1386,6 +1387,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean falseNegative = resultSet.getBoolean("exe.FalseNegative");
         String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
         String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
+        String applicationType = ParameterParserUtil.parseStringParam(resultSet.getString("exe.applicationType"), "");
         String url = ParameterParserUtil.parseStringParam(resultSet.getString("exe.url"), "");
         String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), "");
         String status = ParameterParserUtil.parseStringParam(resultSet.getString("exe.status"), "");
@@ -1429,6 +1431,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         result.setRobotProviderSessionID(robotProviderSessionId);
         result.setFalseNegative(falseNegative);
         result.setTestCaseIsMuted(testCaseIsMuted);
+        result.setApplicationType(applicationType);
 
         return result;
     }
@@ -1531,6 +1534,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String description = ParameterParserUtil.parseStringParam(resultSet.getString("exe.description"), "");
 
         String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
+        String applicationType = ParameterParserUtil.parseStringParam(resultSet.getString("exe.applicationType"), "");
         String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
         String environmentData = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environmentData"), "");
         String country = ParameterParserUtil.parseStringParam(resultSet.getString("exe.country"), "");
@@ -1550,7 +1554,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return TestCaseExecutionLight.builder()
                 .id(id)
                 .system(system)
-                .test(test).testCase(testcase).description(description)
+                .test(test).testCase(testcase).description(description).applicationType(applicationType)
                 .application(application).environment(environment).environmentData(environmentData)
                 .country(country).robot(robot).tag(tag).campaign(campaign)
                 .start(start).end(end)

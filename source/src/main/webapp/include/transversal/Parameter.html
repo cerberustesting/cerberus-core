@@ -1,0 +1,255 @@
+<!-- Parameter Modal - Alpine.js/Tailwind refactored -->
+<div
+        x-data="parameterModal()"
+        x-show="open"
+        x-cloak
+        @parameter-modal-open.window="handleOpen($event.detail)"
+        @parameter-modal-close.window="open = false"
+        class="crb_modal"
+        id="editParameterModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="editParameterModalLabel" name="editParameterField">Edit Parameter</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Configure system parameters</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editParameterModalForm" name="editParameterModalForm" role="form">
+
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3 space-y-4">
+
+                    <!-- Parameter (readonly) -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="parameter" name="parameterField">Parameter</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" name="parameter" id="parameter" readonly>
+                    </div>
+
+                    <!-- Cerberus Value -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="cerberusValue" name="cerberusField">Cerberus Value</label>
+                        <textarea class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="cerberusValue" id="cerberusValue" rows="3"></textarea>
+                    </div>
+
+                    <!-- System Value -->
+                    <div id="systemValuePanel">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="systemValue" name="systemField">System Value</label>
+                        <textarea class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="systemValue" id="systemValue" rows="3"></textarea>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="descriptionField">Description</label>
+                        <p class="text-sm text-slate-700 dark:text-slate-300" name="description" id="description"></p>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="editParameterButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+     * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This file is part of Cerberus.
+     *
+     * Cerberus is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * Cerberus is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+     */
+
+    // ===== ALPINE COMPONENT =====
+    function parameterModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    // ===== MODAL LOGIC (merged from js/transversalobject/Parameter.js) =====
+
+    function openModalParameter(parameter, system) {
+        // We only load the Labels and bind the events once for performance optimisations.
+        if ($('#editParameterModal').data("initLabel") === undefined) {
+            initModalParameter(system);
+            $('#editParameterModal').data("initLabel", true);
+        }
+        editParameterClick(parameter, system);
+    }
+
+    function initModalParameter(system) {
+        var doc = new Doc();
+        $("#title").html(doc.getDocLabel("page_parameter", "allParameters"));
+        $("[name='editParameterField']").html(doc.getDocLabel("page_parameter", "editparameter_field"));
+        $("[name='parameterField']").html(doc.getDocLabel("page_parameter", "parameter_field"));
+        $("[name='cerberusField']").html(doc.getDocLabel("page_parameter", "cerberus_field"));
+        $("[name='descriptionField']").html(doc.getDocLabel("page_parameter", "description_field"));
+        $("[name='buttonClose']").html(doc.getDocLabel("page_parameter", "close_btn"));
+        $("[name='buttonAdd']").html(doc.getDocLabel("page_parameter", "save_btn"));
+
+        $("#editParameterButton").off("click");
+        $("#editParameterButton").click(function () {
+            confirmParameterModalHandler(system);
+        });
+    }
+
+    function editParameterClick(parameter, system) {
+        clearResponseMessage($('#editParameterModal'));
+
+        $('#saveParameterButton').attr('class', 'btn btn-primary');
+        $('#saveParameterButton').removeProp('hidden');
+        $('#cancelParameterButton').attr('class', 'btn btn-primary');
+        $('#cancelParameterButton').removeProp('hidden');
+
+        feedParameterModal(parameter, system, "editParameterModal");
+    }
+
+    function confirmParameterModalHandler(system) {
+        clearResponseMessage($('#editParameterModal'));
+        var formEdit = $('#editParameterModal #editParameterModalForm');
+
+        var sa = formEdit.serializeArray();
+        var data = {}
+        for (var i in sa) {
+            data[sa[i].name] = sa[i].value;
+        }
+        showLoaderInModal('#editParameterModal');
+        $.ajax({
+            url: "UpdateParameter",
+            async: true,
+            method: "POST",
+            data: {id: data.parameter,
+                value: data.cerberusValue,
+                system1Value: data.systemValue,
+                system1: system},
+            success: function (data) {
+                data = JSON.parse(data);
+                hideLoaderInModal('#editParameterModal');
+                if (getAlertType(data.messageType) === 'success') {
+                    var oTable = $("#parametersTable").dataTable();
+                    oTable.fnDraw(false);
+                    window.dispatchEvent(new CustomEvent('parameter-modal-close'));
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#editParameterModal'));
+                }
+            },
+            error: showUnexpectedError
+        });
+    }
+
+    function feedParameterModal(param, system, modalId) {
+        clearResponseMessageMainPage();
+        var doc = new Doc();
+
+        var jqxhr = $.getJSON("ReadParameter", "system1=" + system + "&param=" + param);
+        $.when(jqxhr).then(function (data) {
+            var obj = data["contentTable"];
+
+            var formEdit = $('#editParameterModal');
+
+            formEdit.find("#parameter").prop("value", obj["param"]);
+            formEdit.find("#cerberusValue").prop("value", obj["value"]);
+            formEdit.find("#systemValue").prop("value", obj["system1value"]);
+            formEdit.find("#description").html(obj["description"]);
+
+            $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field") + " (" + system + ")");
+
+            if (data.isSecured) {
+                var localMessage = new Message("WARNING", "This parameter contain secure data. Original data is hidden.");
+                showMessage(localMessage, $('#editParameterModal'));
+            }
+
+            $("#cerberusValue").off("change");
+            if (!(data["hasPermissions"] && obj["hasPermissionsUpdate"])) {
+                formEdit.find("#cerberusValue").prop("readonly", "readonly");
+                $('#editParameterButton').hide();
+            } else {
+                formEdit.find("#cerberusValue").removeAttr("readonly");
+                formEdit.find("#editParameterButton").show();
+                $('#editParameterButton').attr('disabled', false);
+            }
+            if (data.isSystemManaged) {
+                $("#systemValuePanel").show();
+            } else {
+                $("#systemValuePanel").hide();
+            }
+
+            window.dispatchEvent(new CustomEvent('parameter-modal-open', { detail: {} }));
+        });
+    }
+</script>

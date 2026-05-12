@@ -256,6 +256,32 @@ public interface IRecorderService {
     TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution);
 
     /**
+     *
+     * @param execution
+     * @param base64
+     * @return
+     */
+    TestCaseExecutionFile recordExecutionVideo (TestCaseExecution execution, String base64);
+
+    /**
+     *
+     * @param execution
+     * @param action
+     * @param base64
+     * @return
+     */
+    TestCaseExecutionFile recordExecutionScreenshotDebug(TestCaseExecution execution, TestCaseStepActionExecution action, String base64);
+
+    /**
+     *
+     * @param execution
+     * @param control
+     * @param base64
+     * @return
+     */
+    TestCaseExecutionFile recordExecutionScreenshotDebug(TestCaseExecution execution, TestCaseStepActionControlExecution control, String base64);
+
+    /**
      * @param exeID
      * @return
      */

@@ -128,6 +128,12 @@ public interface IParameterService {
 
     /**
      *
+     * @return
+     */
+    String getParameterStringCerberusURLByKey();
+    
+    /**
+     *
      * @return @throws CerberusException
      */
     List<Parameter> findAllParameter() throws CerberusException;

@@ -29,8 +29,6 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Service Library</title>
         <script type="text/javascript" src="js/pages/AppServiceList.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/Application.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -40,12 +38,10 @@
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/utils/modal-confirmation.html" %>
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
-            <%@ include file="include/transversalobject/AppService.html" %>
-            <%@ include file="include/transversalobject/Application.html" %>
 
             <h1 class="page-title-line" id="title">Service Library</h1>
 
-            <div class="crb_card">
+            <div class="">
                 <div id="soapLibraryList">
                     <table id="soapLibrarysTable" class="table table-hover display"
                            name="soapLibrarysTable"></table>
@@ -55,7 +51,6 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>
         </main>
     </body>
 </html>

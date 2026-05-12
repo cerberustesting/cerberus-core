@@ -1,0 +1,2209 @@
+<!--Edit test page - Alpine.js/Tailwind refactored -->
+<div
+        x-data="testCaseHeaderModal()"
+        x-init="init()"
+        x-show="open"
+        x-cloak
+        @testcase-header-modal-open.window="handleOpen($event.detail)"
+        @testcase-header-modal-close.window="open = false"
+        class="crb_modal"
+        id="editTestCaseModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="settings" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" name="editTestCaseField">Edit Test Case</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Manage test case definition, settings and traceability</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 mx-6 mt-2 mb-2 rounded-lg shrink-0">
+            <template x-for="tab in tabs" :key="tab.id">
+                <button @click="showTab = tab.id"
+                        :class="showTab === tab.id
+                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-2 py-1.5 rounded-md transition-colors duration-200 text-xs"
+                        x-text="tab.label">
+                </button>
+            </template>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <template x-if="errorMessage">
+                <div class="bg-red-100 text-red-800 p-2 rounded-lg flex justify-between items-center mb-2 text-sm">
+                    <strong x-text="errorMessage"></strong>
+                    <button @click="errorMessage=''" class="ml-2 text-red-600 hover:text-red-800">&times;</button>
+                </div>
+            </template>
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editTestCaseModalForm" name="editTestCaseModalForm" role="form">
+
+                <!-- Hidden fields -->
+                <input type="hidden" name="test" id="test"/>
+                <input type="hidden" name="originalTest" id="originalTest"/>
+                <input type="hidden" name="originalTestCase" id="originalTestCase"/>
+                <input type="hidden" name="newTest" id="newTest"/>
+                <input type="hidden" name="priority" id="priority"/>
+                <input type="hidden" name="status" id="status"/>
+                <input type="hidden" name="type" id="type"/>
+                <input type="hidden" name="application" id="application"/>
+
+                <!-- ========== TAB: DEFINITION ========== -->
+                <div x-show="showTab === 'definition'" class="space-y-3" id="tabTCDefinition">
+
+                    <!-- Row 1: Test Folder + Testcase ID + Priority -->
+                    <div class="flex gap-3 items-end">
+                        <!-- Test Folder -->
+                        <div class="flex-1" x-data="crbDropdown({id:'testFolder', preselectEvent:'testfolder-preselect', loader: crbLoaders.tests})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="testField">Test Folder</label>
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                          :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Testcase ID -->
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="testCase" name="testCaseField" id="testId">Testcase ID</label>
+                            <input type="text" name="testCase" id="testCase"
+                                   class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                        </div>
+
+                        <!-- Priority -->
+                        <div style="width: 220px; flex-shrink: 0;" x-data="crbDropdown({id:'priority', hiddenInput:'priority', preselectEvent:'priority-preselect', loader: crbLoaders.invariant('PRIORITY')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="priorityField">Priority</label>
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                          :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 1.5: Muted Toggle -->
+                    <div id="isMuted" class="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 transition-all"
+                         :class="isMutedActive ? 'bg-amber-50 dark:bg-amber-900/10 border-amber-300 dark:border-amber-700' : ''"
+                         x-data="{ isMutedActive: false }"
+                         @muted-preselect.window="isMutedActive = ($event.detail === true || $event.detail === 'true')">
+                        <div class="flex items-center gap-3">
+                            <div class="h-9 w-9 rounded-lg flex items-center justify-center transition-colors"
+                                 :class="isMutedActive ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-slate-100 dark:bg-slate-800'">
+                                <i :data-lucide="isMutedActive ? 'bell-off' : 'bell'" class="w-4 h-4 transition-colors"
+                                   :class="isMutedActive ? 'text-amber-600' : 'text-slate-400'"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium" :class="isMutedActive ? 'text-amber-700 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300'">Muted (Silent)</span>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 !mb-0">When muted, this test case is ignored in notifications without changing its priority</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="isMutedActive = !isMutedActive; $nextTick(() => { if(window.lucide) lucide.createIcons({nodes: $el.closest('#isMuted').querySelectorAll('[data-lucide]')}) })"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                :class="isMutedActive ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-600'">
+                            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                  :class="isMutedActive ? 'translate-x-5' : 'translate-x-0'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Row 2: Application + Status + Type -->
+                    <div class="flex gap-3 items-end">
+                        <!-- Application -->
+                        <div class="flex-1" x-data="crbDropdown({id:'tcApplication', hiddenInput:'application', preselectEvent:'tc-application-preselect', loader: crbLoaders.applications})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="applicationField">Application</label>
+                            <div class="flex gap-1">
+                                <div class="relative flex-1">
+                                    <div @click.stop="toggle()" :id="id + '-btn'"
+                                         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                        <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                    <template x-teleport="body">
+                                        <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                             class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                              :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                            <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                       class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                            </div>
+                                            <div class="max-h-52 overflow-auto">
+                                                <template x-for="item in filtered()" :key="item.value">
+                                                    <button type="button" @click.stop="select(item)"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                            :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                        <span x-text="item.label"></span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="filtered().length === 0">
+                                                    <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                                <button type="button" id="editApplication"
+                                        class="h-10 w-10 shrink-0 rounded-md border border-slate-300 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="flex-1" x-data="crbDropdown({id:'status', hiddenInput:'status', preselectEvent:'status-preselect', loader: crbLoaders.invariant('TCSTATUS')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="statusField">Status</label>
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                          :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Type -->
+                        <div class="flex-1" x-data="crbDropdown({id:'tcType', hiddenInput:'type', preselectEvent:'tc-type-preselect', loader: crbLoaders.invariant('TESTCASE_TYPE')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                          :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Short Description -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="testCaseDescriptionField">Short Description</label>
+                        <input type="text" name="description" id="description"
+                               class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"/>
+                    </div>
+
+                    <!-- Row 4: Detailed Description (TinyMCE) -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="detailedDescription" name="detailedDescriptionField">Detailed Description</label>
+                        <textarea id="detailedDescription" name="detailedDescription" class="form-control wysiwyg w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200" style="height: 160px"></textarea>
+                    </div>
+
+                    <!-- Row 5: Origin + Ref Origin -->
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="origin" name="originField">Origin</label>
+                            <input type="text" name="origin" id="origin" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"/>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="refOrigin" name="refOriginField">Ref Origin</label>
+                            <input type="text" name="refOrigin" id="refOrigin" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: EXECUTION SETTINGS ========== -->
+                <div x-show="showTab === 'settings'" class="space-y-4" id="tabTCSettings">
+
+                    <!-- Section: Activation -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="toggle-right" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="isActiveField">Activation</span>
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+                            <!-- Toggle: Active -->
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition" style="min-width: 140px;"
+                                 onclick="var cb = this.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); var t = this.querySelector('.crb-toggle'); t.style.background = cb.checked ? '#3b82f6' : '#cbd5e1'; t.querySelector('.crb-knob').style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';">
+                                <div style="width: 36px; height: 20px; flex-shrink: 0;">
+                                    <input type="checkbox" id="isActive" name="isActive" value="1" style="display:none;">
+                                    <div class="crb-toggle" style="width: 36px; height: 20px; border-radius: 10px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;">
+                                        <div class="crb-knob" style="width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); position: relative; top: 2px; left: 2px; transition: transform 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Active</span>
+                            </div>
+                            <!-- Toggle: Active QA -->
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition" style="min-width: 140px;"
+                                 onclick="var cb = this.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); var t = this.querySelector('.crb-toggle'); t.style.background = cb.checked ? '#3b82f6' : '#cbd5e1'; t.querySelector('.crb-knob').style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';">
+                                <div style="width: 36px; height: 20px; flex-shrink: 0;">
+                                    <input type="checkbox" id="isActiveQA" name="isActiveQA" value="1" style="display:none;">
+                                    <div class="crb-toggle" style="width: 36px; height: 20px; border-radius: 10px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;">
+                                        <div class="crb-knob" style="width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); position: relative; top: 2px; left: 2px; transition: transform 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700 dark:text-slate-300" name="isActiveQAField">Active QA</span>
+                            </div>
+                            <!-- Toggle: Active UAT -->
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition" style="min-width: 140px;"
+                                 onclick="var cb = this.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); var t = this.querySelector('.crb-toggle'); t.style.background = cb.checked ? '#3b82f6' : '#cbd5e1'; t.querySelector('.crb-knob').style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';">
+                                <div style="width: 36px; height: 20px; flex-shrink: 0;">
+                                    <input type="checkbox" id="isActiveUAT" name="isActiveUAT" value="1" style="display:none;">
+                                    <div class="crb-toggle" style="width: 36px; height: 20px; border-radius: 10px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;">
+                                        <div class="crb-knob" style="width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); position: relative; top: 2px; left: 2px; transition: transform 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700 dark:text-slate-300" name="isActiveUATField">Active UAT</span>
+                            </div>
+                            <!-- Toggle: Active Prod -->
+                            <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition" style="min-width: 140px;"
+                                 onclick="var cb = this.querySelector('input'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); var t = this.querySelector('.crb-toggle'); t.style.background = cb.checked ? '#3b82f6' : '#cbd5e1'; t.querySelector('.crb-knob').style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';">
+                                <div style="width: 36px; height: 20px; flex-shrink: 0;">
+                                    <input type="checkbox" id="isActivePROD" name="isActivePROD" value="1" style="display:none;">
+                                    <div class="crb-toggle" style="width: 36px; height: 20px; border-radius: 10px; background: #cbd5e1; transition: background 0.2s; pointer-events: none;">
+                                        <div class="crb-knob" style="width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); position: relative; top: 2px; left: 2px; transition: transform 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-slate-700 dark:text-slate-300" name="isActivePRODField">Active Prod</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Countries -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="globe" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="countriesLabel">Countries</span>
+                        </div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <label class="flex items-center gap-2 px-3 py-1.5 rounded-md border border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 transition text-sm text-blue-700 dark:text-blue-300 font-medium">
+                                <input type="checkbox" id="select_all" style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;">
+                                Select ALL
+                            </label>
+                        </div>
+                        <div id="countries" name="countries" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Section: Version Activation -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="git-branch" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="versionActivation">Version Activation</span>
+                        </div>
+                        <!-- From / To -->
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="fromMajor" name="fromMajorField">From Major</label>
+                                <select name="fromMajor" id="fromMajor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="fromMinor" name="fromMinorField">From Minor</label>
+                                <select name="fromMinor" id="fromMinor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="toMajor" name="toMajorField">To Major</label>
+                                <select name="toMajor" id="toMajor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="toMinor" name="toMinorField">To Minor</label>
+                                <select name="toMinor" id="toMinor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                        </div>
+                        <!-- Target -->
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="targetMajor" name="targetMajorField">Target Major</label>
+                                <select name="targetMajor" id="targetMajor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="targetMinor" name="targetMinorField">Target Minor</label>
+                                <select name="targetMinor" id="targetMinor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1"></div>
+                            <div class="flex-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Activation Conditions -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="filter" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="activationConditions">Activation Conditions</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="conditionOperator" name="conditionOperatorField">Operator</label>
+                                <select name="conditionOperator" id="conditionOperator" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"></select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="conditionVal1" name="ConditionVal1Field">Value 1</label>
+                                <input type="text" name="conditionValue1" id="conditionVal1" class="w-full h-10 border rounded-md px-3 py-2 text-sm crb-autocomplete-variable dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="conditionVal2" name="ConditionVal2Field">Value 2</label>
+                                <input type="text" name="conditionValue2" id="conditionVal2" class="w-full h-10 border rounded-md px-3 py-2 text-sm crb-autocomplete-variable dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="conditionVal3" name="ConditionVal3Field">Value 3</label>
+                                <input type="text" name="conditionValue3" id="conditionVal3" class="w-full h-10 border rounded-md px-3 py-2 text-sm crb-autocomplete-variable dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Robot Constraints -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="bot" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="robotConstraints">Robot Constraints</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="userAgent" name="userAgentField">User Agent</label>
+                                <input type="text" name="userAgent" id="userAgent" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="screenSize" name="screenSizeField">Screen Size</label>
+                                <input type="text" name="screenSize" id="screenSize" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: LABEL ========== -->
+                <div x-show="showTab === 'label'" class="space-y-4" id="tabTCLabel">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="tag" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" id="labelField" name="labelField">Labels from system :</span>
+                        </div>
+                        <!-- Sub-tabs -->
+                        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-4">
+                            <button type="button" @click="labelTab = 'stickers'"
+                                    :class="labelTab === 'stickers' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'"
+                                    class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm transition-all" id="editLTab1Text" name="tabLabelS">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                Stickers
+                            </button>
+                            <button type="button" @click="labelTab = 'requirements'"
+                                    :class="labelTab === 'requirements' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'"
+                                    class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm transition-all" id="editLTab2Text" name="tabLabelR">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H2v7l6.29 6.29c.94.94 2.48.94 3.42 0l4.58-4.58c.94-.94.94-2.48 0-3.42L9 5z"/><path d="M6 9h.01"/></svg>
+                                Requirements
+                            </button>
+                            <button type="button" @click="labelTab = 'batteries'"
+                                    :class="labelTab === 'batteries' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'"
+                                    class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm transition-all" id="editLTab3Text" name="tabLabelB">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                                Batteries
+                            </button>
+                        </div>
+                        <!-- Label Lists -->
+                        <div x-show="labelTab === 'stickers'" id="tabsLEdit-1"
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
+                            <div class="form-group" id="labelList"><div id="selectLabelS" class="list-group"></div></div>
+                        </div>
+                        <div x-show="labelTab === 'requirements'" id="tabsLEdit-2"
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
+                            <div class="form-group" id="labelList"><div id="selectLabelR" class="list-group"></div></div>
+                        </div>
+                        <div x-show="labelTab === 'batteries'" id="tabsLEdit-3"
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
+                            <div class="form-group" id="labelList"><div id="selectLabelB" class="list-group"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: BUG REPORT ========== -->
+                <div x-show="showTab === 'bugreport'" class="space-y-4" id="tabTCBugReport">
+
+                    <!-- Section: Bug Table -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="bug" class="w-4 h-4 text-red-500"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Bug Tracker</span>
+                            </div>
+                            <button type="button" id="addBug"
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Bug
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                            <table class="w-full text-sm text-left" id="bugTable">
+                                <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                    <tr>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="actHeader">Active</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="bugidHeader">Bug ID</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300" name="descHeader">Description</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="linkHeader">Bug Link</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="dateCloseHeader">Closure Date</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300" name="dateCreateHeader">Creation Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bugTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section: Comment -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="message-square" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="commentField">Comment</span>
+                        </div>
+                        <input type="text" name="comment" id="comment" placeholder="Add a comment..."
+                               class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:placeholder-slate-500 bg-white border-slate-300 text-slate-900 placeholder-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"/>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: DEPENDENCY ========== -->
+                <div x-show="showTab === 'dependency'" class="space-y-4 hideFeatureTCDependencies" id="tabTCDependency">
+
+                    <!-- Section: Add Dependency -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="link" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Add Dependency</span>
+                        </div>
+                        <input type="hidden" id="selectTest" name="selectTest">
+                        <input type="hidden" id="selectTestCase" name="selectTestCase">
+                        <div class="flex gap-3 items-end flex-wrap">
+                            <!-- Dropdown: Select a Test -->
+                            <div class="flex-1" style="min-width: 150px;" x-data="crbDropdown({id:'depTest', hiddenInput:'selectTest', loader: crbLoaders.tests, onSelect: function(item) { window.dispatchEvent(new CustomEvent('dep-test-changed', {detail: item.value})); }})" @click.stop>
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="selectTestField">Select a Test</label>
+                                <div class="relative w-full">
+                                    <div @click.stop="toggle()" :id="id + '-btn'"
+                                         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                        <span x-text="selectedLabel || '-- Select a Test --'" class="truncate"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                    <template x-teleport="body">
+                                        <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                             class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                              :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                            <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                       class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                            </div>
+                                            <div class="max-h-52 overflow-auto">
+                                                <template x-for="item in filtered()" :key="item.value">
+                                                    <button type="button" @click.stop="select(item)"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                            :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                        <span x-text="item.label"></span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="filtered().length === 0">
+                                                    <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <!-- Dropdown: Test Cases -->
+                            <div class="flex-1" style="min-width: 200px; flex-grow: 2;" x-data="crbDropdown({id:'depTestCase', hiddenInput:'selectTestCase', preselectEvent:'dep-testcase-preselect'})" @click.stop
+                                 x-init="$nextTick(function() { window.addEventListener('dep-test-changed', function(e) { var self2 = $data; self2.selectedValue = ''; self2.selectedLabel = ''; self2.items = []; self2.search = ''; var testVal = e.detail; if (!testVal) return; fetch('ReadTestCase?test=' + encodeURIComponent(testVal) + '&iSortCol_0=0&sSortDir_0=asc&iDisplayLength=1000').then(function(r){return r.json();}).then(function(data){ self2.items = data.contentTable.map(function(tc){ return {value: tc.testcase, label: tc.testcase + ' - ' + tc.description + ' [' + tc.application + ']'}; }).sort(function(a,b){return a.label.localeCompare(b.label);}); }); }); })">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="selectTestCaseField">Test Cases</label>
+                                <div class="relative w-full">
+                                    <div @click.stop="toggle()" :id="id + '-btn'"
+                                         class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
+                                        <span x-text="selectedLabel || '-- Select a Test Case --'" class="truncate"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                    <template x-teleport="body">
+                                        <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                             class="crb-dropdown-panel fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                              :style="{ top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px' }">
+                                            <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                                <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                       class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                            </div>
+                                            <div class="max-h-52 overflow-auto">
+                                                <template x-for="item in filtered()" :key="item.value">
+                                                    <button type="button" @click.stop="select(item)"
+                                                            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                            :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                        <span x-text="item.label"></span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="filtered().length === 0">
+                                                    <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <!-- Button: Add test case -->
+                            <button type="button" id="addTestCaseDependencyButton" name="buttonAddDependency"
+                                    class="flex items-center gap-1.5 h-10 px-4 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition whitespace-nowrap" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add test case
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section: Dependencies List -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="list" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300" name="lbl_testcasesDependencyList">Dependencies</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                            <table class="w-full text-sm text-left" id="depenencyTable">
+                                <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                    <tr>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 48px;" class="text-slate-600 dark:text-slate-300"></th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Test Case</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Active</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;" class="text-slate-600 dark:text-slate-300">Delay (Min)</th>
+                                        <th style="padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;" class="text-slate-600 dark:text-slate-300">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="depenencyTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+                            </table>
+                            <p id="depEmptyState" class="text-center text-xs text-slate-400 dark:text-slate-500 italic py-3">No dependencies</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== TAB: TRACEABILITY ========== -->
+                <div x-show="showTab === 'traceability'" class="space-y-4" id="tabTCTraceability">
+                    <div id="listPanelTraca">
+
+                        <!-- Section: People -->
+                        <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">People</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="implementer" name="implementerField">Implementer</label>
+                                    <input name="implementer" id="implementer" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="executor" name="executorField">Executor</label>
+                                    <input name="executor" id="executor" class="w-full h-10 border rounded-md px-3 py-2 text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900 transition-all"/>
+                                </div>
+                                <div style="width: 120px; flex-shrink: 0;">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="version" name="versionField">Version</label>
+                                    <input name="version" id="version" readonly="readonly" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-300 text-slate-500"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Audit Trail -->
+                        <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Audit Trail</span>
+                            </div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_datecreated" for="datecreated">Date Created</label>
+                                    <input id="datecreated" name="datecreated" readonly="readonly" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-300 text-slate-500"/>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_usrcreated" for="usrcreated">User Created</label>
+                                    <input id="usrcreated" name="usrcreated" readonly="readonly" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-300 text-slate-500"/>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_datemodif" for="datemodif">Date Modified</label>
+                                    <input id="datemodif" name="datemodif" readonly="readonly" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-300 text-slate-500"/>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_usrmodif" for="usrmodif">User Modified</label>
+                                    <input id="usrmodif" name="usrmodif" readonly="readonly" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-400 border-slate-300 text-slate-500"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="editTestCaseButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Save</button>
+            <button type="button" id="duplicateTestCaseButton" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Duplicate</button>
+            <button type="button" id="addTestCaseButton" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Create</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== MODAL CONTROLLER =====
+    function testCaseHeaderModal() {
+        return {
+            open: false, isFullscreen: false, showTab: 'definition', labelTab: 'stickers', errorMessage: '',
+            tabs: [
+                { id: 'definition', label: 'Definition' }, { id: 'settings', label: 'Settings' },
+                { id: 'label', label: 'Label' }, { id: 'bugreport', label: 'Bug Report' },
+                { id: 'dependency', label: 'Dependency' }, { id: 'traceability', label: 'Traceability' }
+            ],
+            handleOpen: function(detail) {
+                this.open = true;
+                if (detail && detail.tab) {
+                    var tabMap = { 'tabTCDefinition':'definition','tabTCSettings':'settings','tabTCLabel':'label','tabTCBugReport':'bugreport','tabTCDependency':'dependency','tabTCTraceability':'traceability' };
+                    this.showTab = tabMap[detail.tab] || detail.tab || 'definition';
+                } else { this.showTab = 'definition'; }
+                var self = this;
+                this.$nextTick(function() {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                    // Sync toggle visuals after data is loaded
+                    setTimeout(function() {
+                        document.querySelectorAll('#tabTCSettings .crb-toggle').forEach(function(toggle) {
+                            var wrapper = toggle.closest('[onclick]');
+                            if (!wrapper) return;
+                            var cb = wrapper.querySelector('input[type="checkbox"]');
+                            if (!cb) return;
+                            toggle.style.background = cb.checked ? '#3b82f6' : '#cbd5e1';
+                            var knob = toggle.querySelector('.crb-knob');
+                            if (knob) knob.style.transform = cb.checked ? 'translateX(16px)' : 'translateX(0)';
+                        });
+                    }, 500);
+                });
+            },
+            init: function() {
+                var self = this;
+                window.addEventListener('testcase-header-modal-close', function() { self.open = false; });
+            }
+        }
+    }
+
+    // ===== GENERIC DROPDOWN COMPONENT =====
+
+
+    // ===== LEGACY TESTCASE LOGIC (merged from TestCase.js) =====
+var curMode = "";
+var bugTrackerUrl = "";
+var checkEmptyDescription = false;
+var isInTutorial = false;
+var curOpenTab = null;
+
+/***
+ * Open the modal with testcase information.
+ * @param {String} test - id of the test to open the modal
+ * @param {String} testcase - id of the testcase to open the modal
+ * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @param {String} tab - name of the tab to activate
+ * @returns {null}
+ */
+function openModalTestCase(test, testcase, mode, tab) {
+    curMode = mode;
+
+    checkEmptyDescription = getParameterBoolean("cerberus_testcasepage_controlemptybugdescription", getUser().defaultSystem, true);
+
+    // We only load the Labels and bind the events once for performance optimisations.
+    if ($('#editTestCaseModal').data("initLabel") === undefined) {
+        initModalTestCase();
+        $('#editTestCaseModal').data("initLabel", true);
+    }
+    // Init the Saved data to false.
+    $('#editTestCaseModal').data("Saved", false);
+    $('#editTestCaseModal').data("testcase", undefined);
+
+    // Tab switching is now handled by Alpine.js via the event detail
+    curOpenTab = (!isEmpty(tab)) ? tab : null;
+
+    if (mode === "EDIT") {
+        editTestCaseClick(test, testcase);
+    } else if (mode === "DUPLICATE") {
+        duplicateTestCaseClick(test, testcase);
+    } else {
+        addTestCaseClick(test, "ADD");
+    }
+    if (GetURLParameter("tutorielId") !== null) {
+        isInTutorial = true;
+    }
+    $('#editTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
+    clearResponseMessage($('#editTestCaseModal'));
+
+}
+
+function initModalTestCase() {
+    var doc = new Doc();
+
+    tinymce.init({
+        selector: ".wysiwyg",
+        menubar: true,
+        statusbar: false,
+        toolbar: true,
+        resize: true,
+        height: 300,
+        skin: 'oxide-dark'
+    });
+
+    var availableUsers = getUserArray(true);
+    $("#editTestCaseModal input#executor").autocomplete({
+        source: availableUsers,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    });
+    $("#editTestCaseModal input#implementer").autocomplete({
+        source: availableUsers,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    });
+
+    $("[name='testField']").html(doc.getDocOnline("test", "Test"));
+    $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
+    $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
+    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
+    $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
+    $("[name='isActiveQAField']").html(doc.getDocOnline("testcase", "IsActiveQA"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActiveUATField']").html(doc.getDocOnline("testcase", "IsActiveUAT"));
+    $("[name='isActivePRODField']").html(doc.getDocOnline("testcase", "IsActivePROD"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='detailedDescriptionField']").html(doc.getDocOnline("testcase", "detailedDescription"));
+    $("[name='testCaseDescriptionField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
+    $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
+    $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+    $("[name='executorField']").html(doc.getDocOnline("testcase", "Executor"));
+    $("[name='typeField']").html(doc.getDocOnline("invariant", "TESTCASE_TYPE"));
+    $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
+    $("[name='countriesLabel']").html(doc.getDocOnline("testcase", "countriesLabel"));
+    $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
+    $("[name='isActiveField']").html(doc.getDocOnline("testcase", "IsActive"));
+    $("[name='fromMajorField']").html(doc.getDocOnline("testcase", "FromMajor"));
+    $("[name='fromMinorField']").html(doc.getDocOnline("testcase", "FromMinor"));
+    $("[name='toMajorField']").html(doc.getDocOnline("testcase", "ToMajor"));
+    $("[name='toMinorField']").html(doc.getDocOnline("testcase", "ToMinor"));
+    $("[name='targetMajorField']").html(doc.getDocOnline("testcase", "TargetMajor"));
+    $("[name='targetMinorField']").html(doc.getDocOnline("testcase", "TargetMinor"));
+    $("[name='conditionOperatorField']").html(doc.getDocOnline("testcase", "conditionOperator"));
+    $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
+    $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
+    $("[name='conditionVal3Field']").html(doc.getDocOnline("testcase", "ConditionVal3"));
+    $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
+    $("[name='versionActivation']").html(doc.getDocOnline("testcase", "versionActivation"));
+    $("[name='activationConditions']").html(doc.getDocOnline("testcase", "activationConditions"));
+    $("[name='robotConstraints']").html(doc.getDocOnline("testcase", "robotConstraints"));
+    $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
+    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    $("[name='testField']").html(doc.getDocLabel("test", "Test"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
+    $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+    $("[name='originField']").html(doc.getDocLabel("testcase", "Origin"));
+    $("[name='refOriginField']").html(doc.getDocLabel("testcase", "RefOrigin"));
+    //TABs
+    $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
+    $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
+    $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
+    $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
+    // Traceability
+    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
+    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
+    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
+    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+    $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
+    // Dependency table headers - text is set directly in HTML (no doc keys exist for these)
+
+    // Alpine dropdowns handle their own data loading via crbLoaders
+    // displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    // displayInvariantList("status", "TCSTATUS", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    // displayInvariantList("priority", "PRIORITY", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
+
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
+
+    var availableOrigin = getInvariantArray("EXTERNALPROVIDER", false);
+    $('#editTestCaseModal').find("#origin").autocomplete({
+        source: availableOrigin,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
+    var availableUserAgent = getInvariantArray("USERAGENT", false);
+    $('#editTestCaseModal').find("#userAgent").autocomplete({
+        source: availableUserAgent,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
+    var availableScreenSize = getInvariantArray("SCREENSIZE", false);
+    $('#editTestCaseModal').find("#screenSize").autocomplete({
+        source: availableScreenSize,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
+    $("#select_all").change(function () {  //"select all" change
+        $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+    });
+
+    $("#addTestCaseDependencyButton").off("click").click(function () {
+        var test = $("#selectTest").val();
+        var testCase = $("#selectTestCase").val();
+        // For crbDropdown, get the label from the depTestCase dropdown button text
+        var testCaseBtnEl = document.getElementById('depTestCase-btn');
+        var testCaseTxt = testCaseBtnEl ? testCaseBtnEl.textContent.trim() : testCase;
+
+        if (!test || !testCase) {
+            showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
+        } else if ($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
+            showMessage(new Message("KO", 'Test case is already added'), $('#editTestCaseModal'));
+        } else {
+            addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "", 0, "TCEXEEND");
+        }
+    })
+
+}
+
+function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description = "", delay = 0, type) {
+    var checked = activate ? "checked" : "";
+
+    // Hide empty state when adding a row
+    $("#depEmptyState").hide();
+
+    var tdStyle = 'padding: 10px 12px; vertical-align: middle;';
+    var inputStyle = 'width: 100%; height: 30px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: white; color: #0f172a;';
+    var escapedTest = test.replace(/'/g, "\\'");
+    var escapedTestCase = testCase.replace(/'/g, "\\'");
+
+    var row = '<tr role="row" id="' + getHtmlIdForTestCase(test, testCase) + '" test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
+        '<td style="' + tdStyle + ' width: 48px; text-align: center;">' +
+            '<button type="button" onclick="removeTestCaseDependency(\'' + escapedTest + '\',\'' + escapedTestCase + '\');" title="Remove" ' +
+                'style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; cursor: pointer; transition: all 0.15s;" ' +
+                'onmouseenter="this.style.background=\'#fecaca\';this.style.borderColor=\'#f87171\';" ' +
+                'onmouseleave="this.style.background=\'#fef2f2\';this.style.borderColor=\'#fca5a5\';">' +
+                '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>' +
+            '</button>' +
+        '</td>' +
+        '<td style="' + tdStyle + ' font-size: 13px; color: #334155;">' +
+            '<div style="font-weight: 500;" title="' + test + ' - ' + testCaseTxt + '">' + test + ' - ' + testCaseTxt + '</div>' +
+            depTypeSelect(type) +
+        '</td>' +
+        '<td style="' + tdStyle + ' text-align: center;">' +
+            '<input type="checkbox" name="activate" ' + checked + ' style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;"/>' +
+        '</td>' +
+        '<td style="' + tdStyle + ' text-align: center;">' +
+            '<input name="depDelay" value="' + delay + '" style="' + inputStyle + ' text-align: center; max-width: 80px;"/>' +
+        '</td>' +
+        '<td style="' + tdStyle + '">' +
+            '<input name="depDescription" value="' + description + '" placeholder="Description..." style="' + inputStyle + '"/>' +
+        '</td>' +
+    '</tr>';
+
+    $("#depenencyTableBody").append(row);
+}
+
+function depTypeSelect(value) {
+    let descOK = "Execution ends OK";
+    let desc = "Execution ends in any status";
+    let selectedOK = "selected='selected'";
+    let selected = "selected='selected'";
+    if (value === "TCEXEENDOK") {
+        selected = "";
+    } else {
+        selectedOK = "";
+    }
+    return "<select type='text' name='type' style='width: 100%; height: 32px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 12px; background: white; color: #334155; cursor: pointer;'>" +
+            "<option value='TCEXEEND' " + selected + ">" + desc + "</option>" +
+            "<option value='TCEXEENDOK' " + selectedOK + ">" + descOK + "</option>" +
+            "</select>";
+
+}
+
+function getHtmlIdForTestCase(test, testCase) {
+    return (test + '-' + testCase).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_').replace(/\)/g, '_').replace(/\(/g, '_').replace(/\//g, '_');
+}
+
+function removeTestCaseDependency(test, testCase) {
+    $('#' + getHtmlIdForTestCase(test, testCase)).remove();
+    // Show empty state if no more dependencies
+    if ($("#depenencyTableBody tr").length === 0) {
+        $("#depEmptyState").show();
+    }
+}
+
+
+/***
+ * Open the modal with testcase information.
+ * @param {String} test - type selected
+ * @param {String} testCase - type selected
+ * @returns {null}
+ */
+function editTestCaseClick(test, testCase) {
+
+    $("#editTestCaseButton").off("click");
+    $("#editTestCaseButton").click(function () {
+        confirmTestCaseModalHandler("EDIT");
+    });
+
+    $('#editTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#duplicateTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+    $("#originalTest").prop("value", test);
+    $("#originalTestCase").prop("value", testCase);
+    $("#editTestCaseModalForm #testCase").prop("value", testCase);
+
+    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(test, "editTestCaseModalForm");
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey(test, testCase);
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+    $('#editTestCaseModalForm input[name="testCase"]').change(function () {
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey(test, testCase);
+    });
+    feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
+}
+
+function displayWarningOnChangeTestCaseKey(test, testCase) {
+    // Compare with original value in order to display the warning message.
+    let old1 = $("#originalTest").val();
+    let old2 = $("#originalTestCase").val();
+    let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+    let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
+
+    if ((old1 !== new1) || (old2 !== new2)) {
+        var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+        clearResponseMessage($('#editTestCaseModal'));
+    }
+}
+
+/***
+ * Open the modal with testcase information.
+ * @param {String} test - type selected
+ * @param {String} testCase - type selected
+ * @returns {null}
+ */
+function duplicateTestCaseClick(test, testCase) {
+
+    $("#duplicateTestCaseButton").off("click");
+    $("#duplicateTestCaseButton").click(function () {
+        confirmTestCaseModalHandler("DUPLICATE");
+    });
+
+    $('#duplicateTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#addTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+    // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
+
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(test, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+
+    feedTestCaseModal(test, testCase, "editTestCaseModal", "DUPLICATE");
+}
+
+/***
+ * Open the modal in order to create a new testcase.
+ * @param {String} defaultTest - optionaly define the test context to pick for creating the new testcase.
+ * @returns {null}
+ */
+function addTestCaseClick(defaultTest) {
+
+    $("#addTestCaseButton").off("click");
+    $("#addTestCaseButton").click(function () {
+        confirmTestCaseModalHandler("ADD");
+    });
+
+    $('#addTestCaseButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+    $('#duplicateTestCaseButton').attr('class', 'hidden').attr('hidden', 'hidden');
+
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
+
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(defaultTest, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+
+    feedNewTestCaseModal("editTestCaseModal", defaultTest);
+}
+
+/***
+ * Feed the testcase field inside modalForm modal with a new occurence value
+ * for the given test. used when create or duplicate a new testcase.
+ * @param {String} test - test used to calculate the new testcase value.
+ * @param {String} modalForm - modal name where the testcase will be filled.
+ * @returns {null}
+ */
+function feedTestCaseField(test, modalForm) {
+//    console.info("feed Test Case. " + test + " mode : " + curMode);
+    var trigNewTestCase = true;
+// Predefine the testcase value.
+    if (curMode !== "EDIT") {
+        trigNewTestCase = true;
+        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+        test = new1;
+
+    } else {
+        trigNewTestCase = false;
+        let old1 = $("#originalTest").val();
+        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+        if (test !== new1) {
+            test = new1;
+            trigNewTestCase = true;
+        } else {
+
+            trigNewTestCase = false;
+        }
+
+    }
+
+    if (trigNewTestCase) {
+        $.ajax({
+            url: "ReadTestCase",
+            method: "GET",
+            data: {test: encodeURIComponent(test), getMaxTC: true},
+            dataType: "json",
+            success: function (data) {
+                $('#' + modalForm + ' [name="testCase"]').val(data.nextAvailableTestcaseId);
+            },
+            error: showUnexpectedError
+        });
+    }
+
+}
+
+/***
+ * Function that support the modal confirmation. Will call servlet to comit the transaction.
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @returns {null}
+ */
+function confirmTestCaseModalHandler(mode) {
+    clearResponseMessage($('#editTestCaseModal'));
+
+    var formEdit = $('#editTestCaseModalForm');
+
+    var nameElement = formEdit.find('[name="application"]');
+    var nameElementEmpty = nameElement.prop("value") === '';
+
+    var testElement = formEdit.find("#test");
+    var testElementInvalid = testElement.prop("value").search("&");
+    var testElementEmpty = testElement.prop("value") === '';
+
+    var testIdElement = formEdit.find("#testCase");
+    var testIdElementInvalid = testIdElement.prop("value").search("&");
+    var testIdElementEmpty = testIdElement.prop("value") === '';
+
+    var bugIdElement = formEdit.find("#editTCBugReport");
+    var bugIdEmptyDesc = false;
+    var bugIdDuplicated = false;
+    var bugIdDuplicatedList = [];
+    var table1 = $("#bugTableBody tr");
+    var listBugId = "/";
+    for (var i = 0; i < table1.length; i++) {
+        var bug = $(table1[i]).data("bug");
+        if (isEmpty(bug.desc)) {
+            bugIdEmptyDesc = true;
+        }
+        if (listBugId.indexOf("/" + bug.id + "/") >= 0) {
+            bugIdDuplicated = true;
+            bugIdDuplicatedList.push(bug.id);
+        }
+        listBugId += bug.id + "/";
+    }
+
+    var localMessage = new Message("danger", "Unexpected Error!");
+    if (nameElementEmpty) {
+        localMessage = new Message("danger", "Please specify the name of the application!");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (testElementInvalid !== -1) {
+        localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
+        // only the Test label will be put in red
+        testElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (testIdElementInvalid !== -1) {
+        localMessage = new Message("danger", "The testcase id cannot contain the symbol : &");
+        // only the TestId label will be put in red
+        testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (testElementEmpty) {
+        localMessage = new Message("danger", "Please specify the name of the test folder!");
+        testElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (testIdElementEmpty) {
+        localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+        testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdDuplicated) {
+        localMessage = new Message("danger", "Duplicate BugID on Bug Report Tab! " + bugIdDuplicatedList.length + " duplicate entry(ies) : " + bugIdDuplicatedList.toString());
+        bugIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else if (bugIdEmptyDesc && checkEmptyDescription) {
+        localMessage = new Message("danger", "At least one BugID Description is empty on Bug Report Tab!");
+        bugIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+        testIdElement.parents("div.form-group").removeClass("has-error");
+        testElement.parents("div.form-group").removeClass("has-error");
+        bugIdElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    // verify if all mandatory fields are not empty and valid
+    if (nameElementEmpty || testElementInvalid !== -1 || testIdElementInvalid !== -1 || testElementEmpty || testIdElementEmpty || bugIdDuplicated || (bugIdEmptyDesc && checkEmptyDescription))
+        return;
+
+    tinyMCE.triggerSave();
+
+    showLoaderInModal('#editTestCaseModal');
+
+    // Enable the test combo before submit the form.
+    if (mode === 'EDIT') {
+        formEdit.find("#test").removeAttr("disabled");
+    }
+    // Calculate servlet name to call.
+    var myServlet = "UpdateTestCase";
+    if ((mode === "ADD") || (mode === "DUPLICATE")) {
+        myServlet = "CreateTestCase";
+    }
+
+    // Getting Data from Country List
+    var countries = $("#countries input");
+    var table_country = [];
+    for (var i = 0; i < countries.length; i++) {
+        if (countries[i].checked === true) {
+            var countryValue = {
+                value: $(countries[i]).attr("name"),
+                toDelete: false
+            }
+        } else {
+            countryValue = {
+                value: $(countries[i]).attr("name"),
+                toDelete: true
+            }
+        }
+        table_country.push(countryValue)
+    }
+
+    // Getting Data from Label List
+    var table_label = [];
+    var table2 = $('#selectLabelS').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+    var table2 = $('#selectLabelR').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+    var table2 = $('#selectLabelB').treeview('getSelected', {levels: 20, silent: true});
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+            labelId: table2[i].id,
+            toDelete: false
+        };
+        table_label.push(newLabel1);
+    }
+    let isMutedEl = document.querySelector('#isMuted');
+    let dataIsMuted = isMutedEl ? (isMutedEl._x_dataStack && isMutedEl._x_dataStack[0] ? isMutedEl._x_dataStack[0].isMutedActive : false) : false;
+
+
+    // Getting Dependency data
+    let testcaseDependencies = []
+    $("#depenencyTableBody").find("tr")
+            .each((t, v) =>
+                testcaseDependencies.push(
+                        {
+                            id: $(v).attr("testcaseid"),
+                            test: $(v).attr("test"),
+                            testcase: $(v).attr("testcase"),
+                            description: $(v).find("[name='depDescription']").val(),
+                            depDelay: $(v).find("[name='depDelay']").val(),
+                            type: $(v).find("[name='type']").val(),
+                            isActive: $(v).find("[name='activate']").is(":checked")
+                        }
+                )
+            )
+
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+//    console.info(data);
+    data.isActive = (data.isActive === "1") ? true : false;
+    data.isActivePROD = (data.isActivePROD === "1") ? true : false;
+    data.isActiveQA = (data.isActiveQA === "1") ? true : false;
+    data.isActiveUAT = (data.isActiveUAT === "1") ? true : false;
+//    console.info(data);
+
+    showLoaderInModal('#editTestCaseModal');
+
+    // Getting Data from Bug table body.
+    var table1 = $("#bugTableBody tr");
+    var table_bug = [];
+
+    for (var i = 0; i < table1.length; i++) {
+        var bug = $(table1[i]).data("bug")
+        if (bug.toDelete !== true) {
+            var DataObj1 = {};
+            DataObj1.id = bug.id;
+            DataObj1.desc = bug.desc;
+            DataObj1.act = bug.act;
+            DataObj1.url = bug.url;
+            DataObj1.dateCreated = bug.dateCreated;
+            DataObj1.dateClosed = bug.dateClosed;
+            table_bug.push(DataObj1);
+        }
+    }
+
+    $.ajax({
+        url: myServlet,
+        async: true,
+        method: "POST",
+        data: {
+            test: data.test,
+            testcase: data.testCase,
+            originalTest: data.originalTest,
+            originalTestcase: data.originalTestCase,
+            isActive: data.isActive,
+            isActivePROD: data.isActivePROD,
+            isActiveQA: data.isActiveQA,
+            isActiveUAT: data.isActiveUAT,
+            application: data.application,
+            detailedDescription: data.detailedDescription,
+            bugs: JSON.stringify(table_bug),
+            comment: data.comment,
+            fromMinor: data.fromMinor,
+            fromMajor: data.fromMajor,
+            type: data.type,
+            implementer: data.implementer,
+            executor: data.executor,
+            origin: data.origin,
+            priority: data.priority,
+            project: data.project,
+            refOrigin: data.refOrigin,
+            description: data.description,
+            status: data.status,
+            targetMinor: data.targetMinor,
+            targetMajor: data.targetMajor,
+            conditionOperator: data.conditionOperator,
+            conditionValue1: data.conditionValue1,
+            conditionValue2: data.conditionValue2,
+            conditionValue3: data.conditionValue3,
+            ticket: data.ticket,
+            toMinor: data.toMinor,
+            toMajor: data.toMajor,
+            userAgent: data.userAgent,
+            screenSize: data.screenSize,
+            isMuted: dataIsMuted,
+            labels: JSON.stringify(table_label),
+            countries: JSON.stringify(table_country),
+            dependencies: JSON.stringify(testcaseDependencies)},
+        success: function (dataMessage) {
+            hideLoaderInModal('#editTestCaseModal');
+            if (getAlertType(dataMessage.messageType) === "success") {
+                if (isInTutorial) {
+                    $('#confirmationModal').modal('hide');
+                    window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' ')) + "&tutorielId=" + GetURLParameter("tutorielId") + "&startStep=10";
+                } else {
+                    if (((mode === "ADD") || (mode === "DUPLICATE"))) {
+                        var doc = new Doc();
+                        // If we created a testcase, We propose the user to go and edit testcase directly.
+                        showModalConfirmation(function () {
+                            $('#confirmationModal').modal('hide');
+                            // Due to already encoded format of data.test, we need to decode it first and then encode it again.
+                            window.location.href = "TestCaseScript.jsp?test=" + encodeURIComponent(decodeURIComponent(data.test).replace(/\+/g, ' ')) + "&testcase=" + encodeURIComponent(decodeURIComponent(data.testCase).replace(/\+/g, ' '));
+                        }, function () {
+                        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcaselist", "ask_edit_testcase"), "", "", "", "");
+                    }
+                }
+                var oTable = $("#testCaseTable").dataTable();
+                oTable.fnDraw(false);
+                $('#editTestCaseModal').data("Saved", true);
+                $('#editTestCaseModal').data("testcase", data);
+                $('#editTestCaseModal').data("bug", table_bug);
+                $('#editTestCaseModal').data("appURL", bugTrackerUrl);
+                window.dispatchEvent(new CustomEvent('testcase-header-modal-close'));
+                showMessage(dataMessage);
+            } else {
+                showMessage(dataMessage, $('#editTestCaseModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+}
+
+/***
+ * Feed the TestCase modal with all the data from the TestCase.
+ * @param {String} modalId - Id of the modal to feed.
+ * @param {String} defaultTest - default test to selected.
+ * @returns {null}
+ */
+function feedNewTestCaseModal(modalId, defaultTest) {
+    clearResponseMessageMainPage();
+
+    var formEdit = $('#' + modalId);
+
+    $("#addBug").off("click");
+    $("#addBug").click(function () {
+        addNewBugRow("bugTableBody", undefined);
+    });
+
+    appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
+
+    feedTestCaseData(undefined, modalId, "ADD", true, defaultTest);
+    // Labels
+    loadLabel(undefined, undefined, "#selectLabel");
+    //Application Combo
+    appendApplicationList(undefined, undefined, modalId);
+
+    window.dispatchEvent(new CustomEvent('testcase-header-modal-open', { detail: { tab: curOpenTab } }));
+}
+
+/***
+ * Feed the TestCase modal with all the data from the TestCase.
+ * @param {String} test - type selected
+ * @param {String} testCase - type selected
+ * @param {String} modalId - type selected
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @returns {null}
+ */
+function feedTestCaseModal(test, testCase, modalId, mode) {
+    clearResponseMessageMainPage();
+
+    var formEdit = $('#' + modalId);
+
+
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
+    $.when(jqxhr).then(function (data) {
+
+        var testCase = data.contentTable[0];
+        var testperm = data["hasPermissionsUpdate"];
+
+        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
+
+        $.when(appInfo).then(function (appData) {
+            var currentSys = getUser().defaultSystem;
+            var t = appData.contentTable;
+            let bugTrackerUrl = t.bugTrackerUrl;
+
+            feedTestCaseData(testCase, modalId, mode, testperm, undefined, bugTrackerUrl);
+
+            $("#addBug").off("click");
+            $("#addBug").click(function () {
+                addNewBugRow("bugTableBody", bugTrackerUrl);
+            });
+
+            // Loading build and revision various combos.
+            appendBuildRevListOnTestCase(t.system, testCase);
+            // Title of the label list.
+            $("#labelField").html("Labels from system : " + t.system);
+            // Loading the label list from aplication of the testcase.
+            loadLabel(testCase.labels, t.system, "#selectLabel", undefined, testCase.test, testCase.testcase);
+            // Loading application combo from the system of the current application.
+            appendApplicationList(testCase.application, t.system, modalId);
+
+        });
+
+        window.dispatchEvent(new CustomEvent('testcase-header-modal-open', { detail: { tab: curOpenTab } }));
+    });
+
+    // Dependency dropdowns are now handled by crbDropdown in TestCase.html
+    // No need to call fillTestAndTestCaseSelect or select2
+
+
+}
+
+
+
+function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases) {
+    var doc = new Doc();
+    var system = getSys();
+    var url1 = "";
+    if (allTestCases) {
+        url1 = getUser().systemQuery;
+    } else {
+        url1 = getUser().defaultSystemsQuery;
+    }
+    if (test !== null && test !== undefined) {
+        $.ajax({
+            url: "ReadTestCase?test=" + encodeURIComponent(test) + url1,
+            async: true,
+            success: function (data) {
+                data.contentTable.sort(function (a, b) {
+                    var aa = a.testcase.toLowerCase();
+                    var bb = b.testcase.toLowerCase();
+                    if (aa > bb) {
+                        return 1;
+                    } else if (aa < bb) {
+                        return -1;
+                    }
+                    return 0;
+                });
+                $(selectorTestCaseSelect).find('option').remove()
+
+                $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description + " [" + data.contentTable[i].application + "]</option>")
+                }
+                if (testcase !== null) {
+                    $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
+                    window.document.title = "TestCase - " + testcase;
+                }
+
+                $(selectorTestCaseSelect).select2({width: '100%'});
+            }
+        });
+    }
+
+}
+
+/**
+ * Fill Test and Testcase select,
+ * @param test   auto select this test
+ * @param testcase  auto select this testcase
+ */
+function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase, allTestCases) {
+    var doc = new Doc();
+    var system = getSys();
+    $.ajax({
+        url: "ReadTest",
+        async: true,
+        success: function (data) {
+            data.contentTable.sort(function (a, b) {
+                var aa = a.test.toLowerCase();
+                var bb = b.test.toLowerCase();
+                if (aa > bb) {
+                    return 1;
+                } else if (aa < bb) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            $(selectorTestSelect).find("option").remove();
+            $(selectorTestSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
+            for (var i = 0; i < data.contentTable.length; i++) {
+                $(selectorTestSelect).append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
+            }
+
+            if (test !== null) {
+                $(selectorTestSelect + " option[value='" + test + "']").prop('selected', true);
+            }
+
+            $(selectorTestSelect).select2({width: "100%"}).next().css("margin-bottom", "7px");
+        }
+    });
+    fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases)
+//    if (selectorTestCaseSelect !== undefined) {
+//        fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases);
+//    }
+}
+
+
+function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest, bugTrackerUrl) {
+
+    var formEdit = $('#' + modalId);
+    var doc = new Doc();
+
+//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+
+    var observer = new MutationObserver(function (mutations, me) {
+        var detailedDescription = tinyMCE.get('detailedDescription');
+        if (detailedDescription !== null) {
+            if (isEmpty(testCase)) {
+                tinyMCE.get('detailedDescription').setContent("");
+            } else {
+                tinyMCE.get('detailedDescription').setContent(testCase.detailedDescription);
+            }
+
+            me.disconnect();
+        }
+        return;
+    });
+
+    // start observing
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
+
+    // Data Feed.
+    if (mode === "EDIT") {
+        $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_edit"));
+        appendTestList(testCase.test);
+        formEdit.find("#testCase").prop("value", testCase.testcase);
+        window.dispatchEvent(new CustomEvent('status-preselect', { detail: testCase.status }));
+        formEdit.find("#usrcreated").prop("value", testCase.usrCreated);
+        formEdit.find("#datecreated").prop("value", getDate(testCase.dateCreated));
+        formEdit.find("#usrmodif").prop("value", testCase.usrModif);
+        formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif));
+    } else { // DUPLICATE or ADD
+        formEdit.find("#usrcreated").prop("value", "");
+        formEdit.find("#datecreated").prop("value", "");
+        formEdit.find("#usrmodif").prop("value", "");
+        formEdit.find("#datemodif").prop("value", "");
+        formEdit.find("#isActivePROD").prop("checked", false);
+        // First status will be auto-selected once dropdown items load
+        if (mode === "ADD") {
+            $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
+            appendTestList(defaultTest);
+            feedTestCaseField(defaultTest, "editTestCaseModalForm");  // Calculate corresponding testcase value.
+        } else { // DUPLICATE
+            $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_duplicate"));
+            appendTestList(testCase.test);
+            feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
+        }
+    }
+    if (isEmpty(testCase)) {
+        formEdit.find("#originalTest").prop("value", "");
+        formEdit.find("#originalTestCase").prop("value", "");
+        formEdit.find("#implementer").prop("value", "");
+        formEdit.find("#executor").prop("value", "");
+        formEdit.find('[name="type"]').val("AUTOMATED");
+        formEdit.find("#priority option:nth(0)").attr("selected", "selected");
+        formEdit.find("#isActiveQA").prop("checked", true);
+        formEdit.find("#isActiveUAT").prop("checked", true);
+        formEdit.find("#userAgent").prop("value", "");
+        formEdit.find("#screenSize").prop("value", "");
+        formEdit.find("#description").prop("value", "");
+        formEdit.find("#isActive").prop("checked", true);
+        $('#bugTableBody tr').remove();
+        formEdit.find("#conditionOperator").prop("value", "always");
+        formEdit.find("#conditionVal1").prop("value", "");
+        formEdit.find("#conditionVal2").prop("value", "");
+        formEdit.find("#conditionVal3").prop("value", "");
+        formEdit.find("#comment").prop("value", "");
+        formEdit.find("#origin").prop("value", "");
+        formEdit.find("#refOrigin").prop("value", "");
+        window.dispatchEvent(new CustomEvent('muted-preselect', { detail: false }));
+    } else {
+        formEdit.find("#test").prop("value", testCase.test);
+        formEdit.find("#originalTest").prop("value", testCase.test);
+        formEdit.find("#originalTestCase").prop("value", testCase.testcase);
+        formEdit.find("#newTest").prop("value", testCase.test);
+        formEdit.find("#implementer").prop("value", testCase.implementer);
+        formEdit.find("#executor").prop("value", testCase.executor);
+        formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
+        window.dispatchEvent(new CustomEvent('tc-type-preselect', { detail: testCase.type }));
+        window.dispatchEvent(new CustomEvent('priority-preselect', { detail: testCase.priority }));
+        formEdit.find("#isActiveQA").prop("checked", testCase.isActiveQA);
+        formEdit.find("#isActiveUAT").prop("checked", testCase.isActiveUAT);
+        formEdit.find("#isActivePROD").prop("checked", testCase.isActivePROD);
+        formEdit.find("#userAgent").prop("value", testCase.userAgent);
+        formEdit.find("#screenSize").prop("value", testCase.screenSize);
+        formEdit.find("#description").prop("value", testCase.description);
+        formEdit.find("#isActive").prop("checked", testCase.isActive);
+        formEdit.find("#origin").prop("value", testCase.origine);
+        formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
+        window.dispatchEvent(new CustomEvent('muted-preselect', { detail: testCase.isMuted }));
+
+        $('#bugTableBody tr').remove();
+        // Sorting Bug list.
+        testCase.bugs.sort(function (a, b) {
+            if (a.act === b.act) {
+                if (a.id === b.id) {
+                    if (b.dateCreated < a.dateCreated)
+                        return 1;
+                    else
+                        return -1;
+                } else {
+                    if (a.id > b.id)
+                        return 1;
+                    else
+                        return -1;
+                }
+            }
+            if (a.act === false)
+                return 1;
+            else
+                return -1;
+        });
+        $.each(testCase.bugs, function (idx, obj) {
+            obj.toDelete = false;
+            if (isEmpty(obj.act)) {
+                obj.act = true;
+            }
+            if (isEmpty(obj.dateCreated)) {
+                obj.dateCreated = new Date('1970-01-01');
+            }
+            if (isEmpty(obj.dateClosed)) {
+                obj.dateClosed = new Date('1970-01-01');
+            }
+
+            appendbugRow(obj, "bugTableBody", bugTrackerUrl);
+        });
+
+        formEdit.find("#conditionOperator").prop("value", testCase.conditionOperator);
+        formEdit.find("#conditionVal1").prop("value", testCase.conditionValue1);
+        formEdit.find("#conditionVal2").prop("value", testCase.conditionValue2);
+        formEdit.find("#conditionVal3").prop("value", testCase.conditionValue3);
+        formEdit.find("#comment").prop("value", testCase.comment);
+        formEdit.find("#version").prop("value", testCase.version);
+        appendTestCaseDepList(testCase);
+    }
+
+    // Authorities
+
+    //We define here the rule that enable or nt the fields depending on if user has the credentials to edit.
+    var doBlockAllFields = false;
+    if (mode === "EDIT") {
+        doBlockAllFields = !(hasPermissionsUpdate);
+    } else { // DUPLICATE or ADD
+        doBlockAllFields = false;
+    }
+
+    if (doBlockAllFields) { // If readonly, we only readonly all fields
+        //test case info
+        formEdit.find("#test").prop("disabled", "disabled");
+        formEdit.find("#testCase").prop("readonly", "readonly");
+        formEdit.find("#implementer").prop("readonly", "readonly");
+        formEdit.find('[name="application"]').prop("disabled", "disabled");
+        formEdit.find("#status").prop("disabled", "disabled");
+        formEdit.find('[name="type"]').prop("disabled", "disabled");
+        formEdit.find("#priority").prop("disabled", "disabled");
+        formEdit.find("#isActiveQA").prop("readonly", "readonly");
+        formEdit.find("#isActiveUAT").prop("readonly", "readonly");
+        formEdit.find("#isActivePROD").prop("readonly", "readonly");
+        formEdit.find("#userAgent").prop("disabled", "disabled");
+        formEdit.find("#screenSize").prop("disabled", "disabled");
+        formEdit.find("#description").prop("readonly", "readonly");
+        if (tinyMCE.get('detailedDescription').getBody() !== null)
+            tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', false);
+        formEdit.find("#isActive").prop("readonly", "readonly");
+        formEdit.find("#fromMajor").prop("disabled", "disabled");
+        formEdit.find("#fromMinor").prop("disabled", "disabled");
+        formEdit.find("#toMajor").prop("disabled", "disabled");
+        formEdit.find("#toMinor").prop("disabled", "disabled");
+        formEdit.find("#targetMajor").prop("disabled", "disabled");
+        formEdit.find("#targetMinor").prop("disabled", "disabled");
+        formEdit.find("#conditionOperator").prop("disabled", "disabled");
+        formEdit.find("#conditionVal1").prop("disabled", "disabled");
+        formEdit.find("#conditionVal2").prop("disabled", "disabled");
+        formEdit.find("#conditionVal3").prop("disabled", "disabled");
+        formEdit.find("#comment").prop("readonly", "readonly");
+        formEdit.find("#addBug").prop("disabled", "disabled");
+        formEdit.find("#addTestCaseDependencyButton").prop("disabled", "disabled");
+        formEdit.find("#executor").prop("readonly", "readonly");
+        formEdit.find("#origin").prop("readonly", "readonly");
+        formEdit.find("#refOrigin").prop("readonly", "readonly");
+//        formEdit.find("#bugId").prop("readonly", "readonly");
+        // feed the country list.
+        appendTestCaseCountries(testCase, true);
+        // Save button is hidden.
+        $('#editTestCaseButton').attr('class', '');
+        $('#editTestCaseButton').attr('hidden', 'hidden');
+    } else {
+        //test case info
+        formEdit.find("#test").removeAttr("disabled");
+        formEdit.find("#testCase").removeAttr("readonly");
+        formEdit.find("#isActive").removeProp("readonly");
+//        formEdit.find("#bugId").removeProp("readonly");
+        formEdit.find("#implementer").removeProp("readonly");
+        formEdit.find('[name="application"]').removeProp("disabled");
+        formEdit.find("#status").removeProp("disabled");
+        formEdit.find('[name="type"]').removeProp("disabled");
+        formEdit.find("#priority").removeProp("disabled");
+        formEdit.find("#isActiveQA").removeProp("readonly");
+        formEdit.find("#isActiveUAT").removeProp("readonly");
+        formEdit.find("#isActivePROD").removeProp("readonly");
+        formEdit.find("#userAgent").removeProp("disabled");
+        formEdit.find("#screenSize").removeProp("disabled");
+        formEdit.find("#description").removeProp("readonly");
+        if (tinyMCE.get('detailedDescription').getBody() !== null)
+            tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', true);
+        formEdit.find("#isActive").removeProp("readonly");
+        formEdit.find("#fromMajor").removeProp("disabled");
+        formEdit.find("#fromMinor").removeProp("disabled");
+        formEdit.find("#toMajor").removeProp("disabled");
+        formEdit.find("#toMinor").removeProp("disabled");
+        formEdit.find("#targetMajor").removeProp("disabled");
+        formEdit.find("#targetMinor").removeProp("disabled");
+        formEdit.find("#conditionOperator").removeProp("disabled");
+        formEdit.find("#conditionVal1").removeProp("disabled");
+        formEdit.find("#conditionVal2").removeProp("disabled");
+        formEdit.find("#conditionVal3").removeProp("disabled");
+        formEdit.find("#comment").removeProp("readonly");
+        formEdit.find("#addBug").removeProp("disabled");
+        formEdit.find("#addTestCaseDependencyButton").removeProp("disabled");
+        formEdit.find("#executor").removeProp("disabled");
+        formEdit.find("#origin").removeProp("readonly");
+        formEdit.find("#refOrigin").removeProp("readonly");
+        // feed the country list.
+        appendTestCaseCountries(testCase, false);
+    }
+
+}
+
+function appendbugRow(obj, tablebody, bugTrackerUrl) {
+    var table = $("#" + tablebody);
+
+    var newbugTrackerUrl = "";
+    if (!isEmpty(obj.url)) {
+        newbugTrackerUrl = obj.url;
+    } else {
+        if (!isEmpty(bugTrackerUrl)) {
+            if (!isEmpty(obj.id)) {
+                newbugTrackerUrl = bugTrackerUrl.replace(/%BUGID%/g, obj.id);
+            }
+        }
+    }
+
+    var isDark = document.documentElement.classList.contains('dark');
+    var inputClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 transition-all focus:outline-none focus:ring-1 focus:ring-blue-500";
+    var readonlyClasses = "w-full h-8 border rounded px-2 py-1 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400";
+    var hoverBg = isDark ? '#1e293b' : '#f8fafc';
+
+    var row = $("<tr></tr>").css({ "transition": "all 0.2s" })
+        .on("mouseenter", function() { if (!obj.toDelete) $(this).css("background", hoverBg); })
+        .on("mouseleave", function() { if (!obj.toDelete) $(this).css("background", ""); });
+    var deleteBtn = $("<button type='button'></button>")
+        .css({ "padding": "4px 8px", "border-radius": "6px", "border": "1px solid #fca5a5", "background": "#fef2f2", "color": "#dc2626", "cursor": "pointer", "display": "flex", "alignItems": "center", "gap": "4px", "fontSize": "12px", "transition": "all 0.2s" })
+        .html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>')
+        .on("mouseenter", function() { $(this).css({ "background": "#fecaca", "borderColor": "#f87171" }); })
+        .on("mouseleave", function() { if (!obj.toDelete) $(this).css({ "background": "#fef2f2", "borderColor": "#fca5a5" }); });
+    var actInput = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", obj.act);
+    var bugidInput = $("<input maxlength='30'>").addClass(inputClasses).val(obj.id);
+    var bugdescInput = $("<input maxlength='100'>").addClass(inputClasses).val(obj.desc);
+    var dateCreatedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateCreated));
+    var dateClosedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateClosed));
+    if (newbugTrackerUrl !== "") {
+        var buglinkText = $("<a></a>").text(obj.id).css({ "color": "#3b82f6", "textDecoration": "underline", "fontSize": "13px" });
+        buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
+    } else {
+        var buglinkText = $("<div></div>").text(obj.id).css({ "fontSize": "13px", "color": "#64748b" });
+    }
+
+    var tdStyle = { "padding": "8px 12px", "verticalAlign": "middle" };
+    var deleteData = $("<td></td>").css(tdStyle).append(deleteBtn);
+    var actData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(actInput);
+    var bugidData = $("<td></td>").css(tdStyle).append(bugidInput);
+    var bugdescData = $("<td></td>").css(tdStyle).append(bugdescInput);
+    var buglinkData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(buglinkText);
+    var dateCreatedData = $("<td></td>").css(tdStyle).append(dateCreatedInput);
+    var dateClosedData = $("<td></td>").css(tdStyle).append(dateClosedInput);
+
+    deleteBtn.click(function () {
+        obj.toDelete = (obj.toDelete) ? false : true;
+
+        if (obj.toDelete) {
+            row.css({ "background": "#fef2f2", "opacity": "0.6" });
+            row.find("input").css({ "textDecoration": "line-through", "color": "#94a3b8" });
+            deleteBtn.css({ "background": "#dc2626", "borderColor": "#dc2626", "color": "white" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 15l3-3m0 0l3-3m-3 3l-3-3m3 3l3 3"/><circle cx="12" cy="12" r="10"/></svg>');
+        } else {
+            row.css({ "background": "", "opacity": "1" });
+            row.find("input").css({ "textDecoration": "none", "color": "#0f172a" });
+            deleteBtn.css({ "background": "#fef2f2", "borderColor": "#fca5a5", "color": "#dc2626" });
+            deleteBtn.html('<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>');
+        }
+    });
+
+    actInput.click(function () {
+        obj.act = (obj.act) ? false : true;
+
+        if ((obj.act) === false) {
+            obj.dateClosed = new Date();
+            dateClosedInput.val(obj.dateClosed.toLocaleString());
+        }
+    });
+
+    bugidInput.change(function () {
+        obj.id = $(this).val();
+        var newbugTrackerUrl = "";
+        if (obj.id !== "" && bugTrackerUrl) {
+            newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
+        }
+        buglinkText.prop("href", newbugTrackerUrl).text(obj.id);
+    });
+    bugdescInput.change(function () {
+        obj.desc = $(this).val();
+    });
+
+    row.append(deleteData).append(actData).append(bugidData).append(bugdescData).append(buglinkData).append(dateClosedData).append(dateCreatedData);
+    row.data("bug", obj);
+    table.append(row);
+}
+
+function addNewBugRow(dataTableBody, bugTrackerUrl) {
+    var nbRows = $("#" + dataTableBody + " tr").size() + 1;
+    var newBugData = {
+        id: "BUGID" + nbRows,
+        desc: "",
+        url: "",
+        act: true,
+        dateCreated: new Date(),
+        dateClosed: new Date('1970-01-01'),
+        toDelete: false
+    };
+    appendbugRow(newBugData, dataTableBody, bugTrackerUrl);
+}
+
+
+/***
+ * Feed Build and Revision combo on the testcase modal.
+ * @param {String} system - system of the testcase.
+ * @param {String} editData - testcase data that will be used to feed the values of all combos.
+ * @returns {null}
+ */
+function appendBuildRevListOnTestCase(system, editData) {
+
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
+    $.when(jqxhr).then(function (data) {
+        var fromMajor = $("[name=fromMajor]");
+        var toMajor = $("[name=toMajor]");
+        var targetMajor = $("[name=targetMajor]");
+
+        fromMajor.empty();
+        toMajor.empty();
+        targetMajor.empty();
+
+        fromMajor.append($('<option></option>').text("-----").val(""));
+        toMajor.append($('<option></option>').text("-----").val(""));
+        targetMajor.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetMajor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+        }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editTestCaseModal');
+
+            formEdit.find("#fromMajor").prop("value", editData.fromMajor);
+            formEdit.find("#toMajor").prop("value", editData.toMajor);
+            formEdit.find("#targetMajor").prop("value", editData.targetMajor);
+        }
+
+    });
+
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
+    $.when(jqxhr).then(function (data) {
+        var fromMinor = $("[name=fromMinor]");
+        var toMinor = $("[name=toMinor]");
+        var targetMinor = $("[name=targetMinor]");
+
+        fromMinor.empty();
+        toMinor.empty();
+        targetMinor.empty();
+
+        fromMinor.append($('<option></option>').text("-----").val(""));
+        toMinor.append($('<option></option>').text("-----").val(""));
+        targetMinor.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetMinor.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+        }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editTestCaseModal');
+
+            formEdit.find("[name=fromMinor]").prop("value", editData.fromMinor);
+            formEdit.find("[name=toMinor]").prop("value", editData.toMinor);
+            formEdit.find("[name=targetMinor]").prop("value", editData.targetMinor);
+        }
+    });
+}
+
+function appendTestCaseDepList(testCase) {
+    $("#depenencyTableBody").empty(); // only clean tbody rows, preserve thead
+
+    if (testCase.dependencies && testCase.dependencies.length > 0) {
+        $("#depEmptyState").hide();
+        testCase.dependencies.forEach((dep) => {
+            addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description, dep.dependencyTCDelay, dep.type);
+        });
+    } else {
+        $("#depEmptyState").show();
+    }
+}
+
+
+function appendTestCaseCountries(testCase, isReadOnly) {
+    $("#countries label").remove();
+    var countries = $("[name=countries]");
+
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+    $.when(jqxhr).then(function (data) {
+        for (var index = 0; index < data.length; index++) {
+            var country = data[index].value;
+
+            countries.append('<label class="checkbox-inline">\n\
+                                <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
+                                </label>');
+        }
+        $("[class='countrycb']").off("click").click(function () {
+            //uncheck "select all", if one of the listed checkbox item is unchecked
+            if (false == $(this).prop("checked")) { //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($("[class='countrycb']:checked").length == $("[class='countrycb']").length) {
+                $("#select_all").prop('checked', true);
+            }
+        });
+
+        if (!(testCase === undefined)) {
+            // Init the values from the object value.
+            for (var myCountry in testCase.countries) {
+                $("#countries [name='" + testCase.countries[myCountry].value + "']").prop("checked", "checked");
+            }
+        }
+        if (testCase === undefined) {
+            $("#countries input").attr('checked', true);
+            $("#select_all").attr('checked', true);
+        }
+
+        if (isReadOnly) {
+            $("#countries input").attr('disabled', true);
+            $("#select_all").attr('disabled', true);
+        }
+    });
+}
+
+/***
+ * Build the list of label and flag them from the testcase values..
+ * @param {String} labels - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
+ * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
+ * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
+ * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
+ * @param {String} test - Test Folder to Select.
+ * @param {String} testCase - Test ID to Select.
+ * @returns {null}
+ */
+function loadLabel(labels, mySystem, myLabelDiv, labelSize, test, testCase) {
+
+    if (isEmpty(labelSize)) {
+        labelSize = "2";
+    }
+    var labelDiv = myLabelDiv;
+    var targetSystem = mySystem;
+    if (isEmpty(targetSystem)) {
+        targetSystem = getUser().defaultSystem;
+    }
+
+    var jqxhr = $.get("ReadLabel?system=" + targetSystem + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test) + "&testCaseSelect=" + encodeURI(testCase), "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        //DRAW LABEL LIST
+        if (messageType === "success") {
+
+            //DRAW LABEL TREE
+
+            $(labelDiv + 'S').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'B').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
+            $(labelDiv + 'R').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
+
+            $(labelDiv + 'S').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'B').treeview('expandAll', {levels: 20, silent: true});
+            $(labelDiv + 'R').treeview('expandAll', {levels: 20, silent: true});
+
+        } else {
+            showMessageMainPage(messageType, data.message, true);
+        }
+
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendApplicationList(defautValue, mySystem, modalId) {
+    // Dispatch preselect event to Alpine application dropdown
+    window.dispatchEvent(new CustomEvent('tc-application-preselect', { detail: defautValue }));
+
+    // Rebind edit application button
+    $('#' + modalId + " #editApplication").off("click");
+    $('#' + modalId + " #editApplication").click(function () {
+        openModalApplication($("#editTestCaseModalForm [name='application']").val(), "EDIT");
+    });
+}
+
+function appendTestList(defautValue) {
+    // Dispatch event to the Alpine.js test folder dropdown in TestCase.html
+    window.dispatchEvent(new CustomEvent('testfolder-preselect', { detail: defautValue }));
+}
+
+function toggleIsMuted() {
+    // Legacy stub — isMuted is now controlled by Alpine.js toggle in the Definition tab
+}
+
+</script>

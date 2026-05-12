@@ -21,11 +21,13 @@
         <!-- Dropdown list -->
         <template x-teleport="body">
             <div x-show="open"
-                 @click.outside="open = false"
+                 @click.outside="close()"
+                 @keydown.escape.window="close()"
                  x-transition
-                 class="single-select-dropdown absolute rounded-md border shadow-lg z-50
+                 class="single-select-dropdown fixed rounded-md border shadow-lg
                   dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300
                   bg-white border-slate-300 text-slate-900"
+                 style="z-index: 99999;"
                  :style="{ top: `${top}px`, left: `${left}px`, minWidth: `${width}px` }">
 
                 <div class="bg-white dark:bg-slate-800 max-h-64 overflow-hidden rounded">
@@ -44,9 +46,10 @@
                             <button type="button"
                                     @click.stop="selectItem(item)"
                                     :id="id + '-' + item"
-                                    class="w-full flex gap-2 px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    :class="isSelected(item) ? 'bg-blue-50 dark:bg-slate-600 font-medium' : ''"
+                                    class="w-full flex gap-2 px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200">
                                 <svg x-show="isSelected(item)" xmlns="http://www.w3.org/2000/svg"
-                                     class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"
+                                     class="h-4 w-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24"
                                      stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                                 </svg>
@@ -104,6 +107,9 @@
              * - Sets initial dropdown position
              * - Listens for `refresh-items` events to reload items
              */
+            _scrollParents: [],
+            _scrollHandler: null,
+
             async init() {
                 const tpl = document.getElementById('single-select-dropdown-template').content.cloneNode(true);
                 this.$el.appendChild(tpl);
@@ -115,6 +121,11 @@
                 }
 
                 this.updatePosition();
+
+                // Build a reusable scroll handler
+                this._scrollHandler = () => {
+                    if (this.open) this.updatePosition();
+                };
 
                 // Listen for external requests to refresh the dropdown items
                 this.$el.addEventListener(this.id+'-refresh-items', async e => {
@@ -130,6 +141,15 @@
                 this.$watch('selectedValue', value => {
                     if (this.getItemValue(this.selected) !== value) {
                         this.setSelected(value);
+                    }
+                });
+
+                // Watch open state to attach/detach scroll listeners
+                this.$watch('open', (isOpen) => {
+                    if (isOpen) {
+                        this._attachScrollListeners();
+                    } else {
+                        this._detachScrollListeners();
                     }
                 });
             },
@@ -167,19 +187,54 @@
              */
             toggle() {
                 this.open = !this.open;
-                this.updatePosition();
+                if (this.open) this.updatePosition();
             },
 
             /**
-             * Update the dropdown position relative to the main button.
+             * Close the dropdown.
+             */
+            close() {
+                this.open = false;
+            },
+
+            /**
+             * Update the dropdown position using fixed coordinates (viewport-relative).
+             * Works correctly inside fixed modals.
              */
             updatePosition() {
                 const btn = document.getElementById(this.id + '-mainbutton');
                 if (!btn) return;
                 const rect = btn.getBoundingClientRect();
-                this.top = rect.bottom + window.scrollY + 5;
-                this.left = rect.left + window.scrollX;
+                this.top = rect.bottom + 4;
+                this.left = rect.left;
                 this.width = rect.width;
+            },
+
+            /**
+             * Find all scrollable ancestors and attach scroll listeners.
+             */
+            _attachScrollListeners() {
+                this._detachScrollListeners();
+                let el = document.getElementById(this.id + '-mainbutton');
+                while (el) {
+                    el = el.parentElement;
+                    if (el && (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth)) {
+                        el.addEventListener('scroll', this._scrollHandler, { passive: true });
+                        this._scrollParents.push(el);
+                    }
+                }
+                window.addEventListener('scroll', this._scrollHandler, { passive: true });
+                window.addEventListener('resize', this._scrollHandler, { passive: true });
+            },
+
+            /**
+             * Remove scroll listeners from all parents.
+             */
+            _detachScrollListeners() {
+                this._scrollParents.forEach(el => el.removeEventListener('scroll', this._scrollHandler));
+                this._scrollParents = [];
+                window.removeEventListener('scroll', this._scrollHandler);
+                window.removeEventListener('resize', this._scrollHandler);
             },
 
             /**

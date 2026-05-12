@@ -252,6 +252,15 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
+    public String getParameterStringCerberusURLByKey() {
+        String cerberusUrl = this.getParameterStringByKey("cerberus_gui_url", "", "");
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
+            cerberusUrl = this.getParameterStringByKey("cerberus_url", "", "");
+        }
+        return cerberusUrl;
+    }
+
+    @Override
     public List<Parameter> findAllParameter() throws CerberusException {
         return parameterDao.findAllParameter();
     }
@@ -483,7 +492,8 @@ public class ParameterService implements IParameterService {
             case "cerberus_proxy_nonproxyhosts":
             case "cerberus_proxy_port":
             case "cerberus_propertyexternalsql_timeout":
-            case "cerberus_testdatalib_fetchmax":
+            case Parameter.VALUE_cerberus_testdatalib_sql_fetchmax:
+            case Parameter.VALUE_cerberus_testdatalib_mongodb_fetchmax:
             case "cerberus_notification_disableenvironment_body":
             case "cerberus_notification_disableenvironment_cc":
             case "cerberus_notification_disableenvironment_subject":

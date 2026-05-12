@@ -96,6 +96,7 @@ import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.websocket.ExecutionMonitor;
 import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -295,9 +296,19 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     // Start video
                     try {
-                        if (Video.recordVideo(execution.getVideo())) {
+                        LOG.debug("Starting Video ? {}", execution.getVideo());
+                        if (execution.getVideo() >= 1) {
+
+                            //Sikuli
+                            LOG.debug("Starting Sikuli Video.");
+                            if (execution.getSession().isSikuliAvailable()) {
+                                sikuliService.doSikuliActionStartVideo(execution.getSession(), execution.getId());
+                            }
+
+                            // Appium
                             videoRecorder = VideoRecorder.getInstance(execution, recorderService);
                             videoRecorder.beginRecordVideo();
+
                         }
                     } catch (UnsupportedOperationException ex) {
                         LOG.info(ex.getMessage()); // log only message that application type is not supported
@@ -1552,10 +1563,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
         /*
          * All controls of the actions are done. We now put back the
-         * AppTypeEngine value to the one from the application. and also put
+         * ApplicationType value to the one from the application. and also put
          * back the last service called content and format.
          */
-        execution.setAppTypeEngine(execution.getApplicationObj().getType());
+        execution.setApplicationType(execution.getApplicationObj().getType());
         if (execution.getLastServiceCalled() != null) {
             execution.getLastServiceCalled().setResponseHTTPBody(execution.getOriginalLastServiceCalled());
             execution.getLastServiceCalled().setResponseHTTPBodyContentType(execution.getOriginalLastServiceCalledContent());
@@ -1612,26 +1623,38 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseExecution stopExecutionRobotAndProxy(TestCaseExecution execution) {
 
-        switch (execution.getApplicationObj().getType()) {
-            case Application.TYPE_GUI:
-            case Application.TYPE_APK:
-            case Application.TYPE_IPA:
-                try {
+        // Stopping Selenium / Appium.
+        String typ = execution.getApplicationObj().getType();
+        if (Application.TYPE_GUI.equals(typ) || Application.TYPE_APK.equals(typ) || Application.TYPE_IPA.equals(typ)) {
+            try {
                 this.robotServerService.stopServer(execution);
                 LOG.debug("Stop server for execution {}", execution.getId());
             } catch (WebDriverException exception) {
                 LOG.warn("Selenium/Appium didn't manage to close connection for execution {}", execution.getId(), exception);
             }
-            break;
-            case Application.TYPE_FAT:
-                LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
-                if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
-                    this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
-                }
-                LOG.debug("Ask Sikuli to clean execution {}", execution.getId());
-                this.sikuliService.doSikuliEndExecution(execution.getSession());
-                break;
-            default:
+        }
+
+        // Stopping Image reco extention.
+        if (Application.TYPE_FAT.equals(typ)) {
+            LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
+            if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
+                this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
+            }
+        }
+        // Stopping Image reco extention and collect Video when available.
+        if (Application.TYPE_GUI.equals(typ) || Application.TYPE_FAT.equals(typ)) {
+            LOG.debug("Ask Sikuli to clean execution {} with status {}", execution.getId(), execution.getControlStatus());
+            AnswerItem<JSONObject> actionResult;
+            if ((execution.getVideo() >= 2)
+                    || ((execution.getVideo() == 1) && !TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()))) {
+                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), true);
+            } else {
+                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), false);
+
+            }
+
+            // Record Video
+            execution.addFileList(recorderService.recordExecutionVideo(execution, StringUtil.convertAnswerJSONToString(actionResult, "videoDebug")));
         }
 
         // Stopping remote proxy.

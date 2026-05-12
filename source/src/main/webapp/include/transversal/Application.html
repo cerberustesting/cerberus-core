@@ -1,0 +1,821 @@
+<!-- Application Modal - Alpine.js/Tailwind refactored -->
+<div
+        x-data="applicationModal()"
+        x-show="open"
+        x-cloak
+        @application-modal-open.window="handleOpen($event.detail)"
+        @application-modal-close.window="open = false"
+        class="crb_modal"
+        id="editApplicationModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[950px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="app-window" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="editApplicationModalLabel" name="editApplicationField">Application</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Configure application settings, environments & integrations</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Application Name (always visible, inside form for serialization) -->
+        <form id="editApplicationModalForm" name="editApplicationModalForm" role="form" style="display:contents;">
+        <div class="px-6 pt-3 pb-2 shrink-0">
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="application" name="applicationField">Application</label>
+                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="application" id="application" onkeydown="return app_keyispressed(event, 'edit');">
+                    <input type="text" name="originalApplication" id="originalApplication" style="display:none;"/>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="descriptionField">Description</label>
+                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="description" id="description" maxlength="200">
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex flex-col flex-1 min-h-0">
+            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 mx-6 mb-2 rounded-lg shadow-sm h-10" style="width: calc(100% - 3rem);">
+                <template x-for="t in [
+                    {id:'definition', label:'Definition', name:'tabsAppEdit1'},
+                    {id:'environment', label:'Environment', name:'tabsAppEdit2'},
+                    {id:'bugtracker', label:'Bug Tracker', name:'tabsAppEdit4'},
+                    {id:'object', label:'Object', name:'tabsAppEdit3'},
+                    {id:'deployment', label:'Deployment', name:'tabsAppEdit5'}
+                ]" :key="t.id">
+                    <button type="button" @click="activeTab = t.id"
+                            :class="activeTab === t.id
+                                ? 'bg-slate-50 font-semibold dark:bg-slate-900'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap"
+                            :name="t.name"
+                            x-text="t.label">
+                    </button>
+                </template>
+            </div>
+
+            <!-- BODY -->
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+                <!-- Messages area -->
+                <div id="DialogMessagesArea" class="mb-3">
+                    <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                        <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                            <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: Definition -->
+                <div x-show="activeTab === 'definition'" x-transition id="tabsEditApp-1">
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="type" name="typeField">Type</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="type" name="type"></select>
+                        </div>
+                        <div class="flex items-end pb-0.5" style="width: 50px;">
+                            <img id="AppLogo" class="h-9 rounded" src="./images/logoapp-NONE.png">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="system" name="systemField">System</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="system" name="system"></select>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="subsystem" name="subsystemField">Sub System</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="subsystem" id="subsystem" maxlength="200">
+                        </div>
+                        <div style="width: 100px; flex-shrink: 0;">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="poolSize" name="poolSizeField">Pool Size</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="poolSize" id="poolSize">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: Environment -->
+                <div x-show="activeTab === 'environment'" x-transition id="tabsEditApp-2">
+                    <div id="listPanelEnvironment">
+                        <table class="w-full text-sm" id="EnvironmentTable">
+                            <tbody id="environmentTableBody">
+                            </tbody>
+                        </table>
+                        <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEnvironment">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Environment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: Bug Tracker -->
+                <div x-show="activeTab === 'bugtracker'" x-transition id="tabsEditApp-4">
+                    <!-- Connector card -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-3">
+                        <div class="flex gap-3 mb-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackerconnector" name="bugtrackerconnectorField">Bug Tracker Connector</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="bugtrackerconnector" name="bugtrackerconnector"></select>
+                            </div>
+                            <div class="flex items-end pb-0.5" style="width: 50px;">
+                                <img style="height:36px; border: 0;" id="TrackerLogo" src="">
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div id="btP1" class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackerparam1" name="bugtrackerparam1Field">Parameter1</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="bugtrackerparam1" name="bugtrackerparam1">
+                            </div>
+                            <div id="btP2" class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackerparam2" name="bugtrackerparam2Field">Parameter2</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="bugtrackerparam2" name="bugtrackerparam2">
+                            </div>
+                            <div id="btP3" class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackerparam3" name="bugtrackerparam3Field">Parameter3</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="bugtrackerparam3" name="bugtrackerparam3">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- URL card -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="mb-3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackerurl" name="bugtrackerurlField">Bug Tracker URL</label>
+                            <textarea id="bugtrackerurl" name="bugtrackerurl" rows="2" maxlength="5000"
+                                      class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="bugtrackernewurl" name="bugtrackernewurlField">Bug Tracker New URL</label>
+                            <textarea id="bugtrackernewurl" name="bugtrackernewurl" rows="2" maxlength="5000"
+                                      class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: Object -->
+                <div x-show="activeTab === 'object'" x-transition id="tabsEditApp-3">
+                    <div id="modalAppObjectList">
+                        <table id="modalAppObjectsTable" class="table table-hover display" name="modalAppObjectsTable"></table>
+                        <div class="mb-4"></div>
+                    </div>
+                </div>
+
+                <!-- TAB: Deployment -->
+                <div x-show="activeTab === 'deployment'" x-transition id="tabsEditApp-5">
+                    <div class="mb-3">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="repourl" name="repourlField">Repo URL</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="repourl" id="repourl" maxlength="150">
+                    </div>
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="deploytype" name="deploytypeField">Deploy Type</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="deploytype" name="deploytype"></select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="mavengroupid" id="mavengroupid" maxlength="50">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+                <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+                <button type="button" id="editApplicationButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonEdit">Save</button>
+                <button type="button" id="addApplicationButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonAdd">Add</button>
+                <button type="button" id="duplicateApplicationButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonDuplicate">Duplicate</button>
+            </div>
+        </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    /*
+     * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This file is part of Cerberus.
+     *
+     * Cerberus is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * Cerberus is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+     */
+
+    var nbRow = 0;
+
+    // ===== ALPINE COMPONENT =====
+    function applicationModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+            activeTab: 'definition',
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.activeTab = 'definition';
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                    hideLegacyButtons();
+                    setTimeout(hideLegacyButtons, 300);
+                    setTimeout(hideLegacyButtons, 800);
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    function hideLegacyButtons() {
+        var m = document.getElementById('editApplicationModal');
+        if (!m) return;
+        ['resetFilterButton','restoreFilterButton','saveTableConfigurationButton','showHideColumnsButton'].forEach(function(id) {
+            m.querySelectorAll('#' + id).forEach(function(el) { el.style.display = 'none'; });
+        });
+    }
+
+    // ===== MODAL LOGIC (merged from js/transversalobject/Application.js) =====
+
+    function openModalApplication(application, mode, page) {
+
+        if ($('#editApplicationModal').data("initLabel") === undefined) {
+            if (page === "applicationObject") {
+                initModalApplication(application, mode, "application");
+            } else {
+                initModalApplication(application, mode, "testCaseScript");
+            }
+            $('#editApplicationModal').data("initLabel", true);
+        }
+
+        // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+        $('#editApplicationModalForm input[name="application"]').off("change");
+        if (mode === "EDIT") {
+            $('#editApplicationModalForm input[name="application"]').change(function () {
+                displayWarningOnChangeApplicationKey();
+            });
+        }
+
+        var doc = new Doc();
+        if (mode === "EDIT") {
+            editApplicationClick(application);
+            $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_edit"));
+        } else if (mode === "ADD") {
+            $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_create"));
+            addApplicationClick(application);
+        } else if (mode === "DUPLICATE") {
+            $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_create"));
+            duplicateApplicationClick(application);
+        }
+    }
+
+    function initModalApplication(application, mode, page) {
+        var doc = new Doc();
+        $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+        $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
+        $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
+        $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
+        $("[name='addEntryField']").html(doc.getDocLabel("page_applicationObject", "button_create"));
+        $("[name='confirmationField']").html(doc.getDocLabel("page_applicationObject", "button_delete"));
+        $("[name='editEntryField']").html(doc.getDocLabel("page_applicationObject", "button_edit"));
+        $("[name='objectField']").html(doc.getDocOnline("page_applicationObject", "Object"));
+        $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
+        $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
+
+        $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
+        $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
+
+        displayInvariantList("system", "SYSTEM", false, undefined, undefined, undefined, undefined, "editApplicationModal");
+        displayInvariantList("type", "APPLITYPE", false, undefined, undefined, undefined, undefined, "editApplicationModal");
+        displayDeployTypeList("deploytype");
+        displayInvariantList("bugtrackerconnector", "BUGTRACKERCONNECTOR", false, undefined, undefined, undefined, undefined, "editApplicationModal");
+
+        $("#editApplicationModalForm #type").off("change");
+        $("#editApplicationModalForm #type").change(function () {
+            $("#editApplicationModalForm #AppLogo").attr("src", "./images/logoapp-" + $(this).val() + ".png");
+        });
+
+        $("#editApplicationButton").off("click");
+        $("#editApplicationButton").click(function () {
+            confirmApplicationModalHandler("EDIT");
+        });
+        $("#addApplicationButton").off("click");
+        $("#addApplicationButton").click(function () {
+            confirmApplicationModalHandler("ADD");
+        });
+        $("#duplicateApplicationButton").off("click");
+        $("#duplicateApplicationButton").click(function () {
+            confirmApplicationModalHandler("DUPLICATE");
+        });
+        $("#bugtrackerconnector").off("change");
+        $("#bugtrackerconnector").change(function () {
+            updateBugTrackerConnector();
+        });
+
+        // Adding rows in edit Modal.
+        $("#addEnvironment").off("click");
+        $("#addEnvironment").click(addNewEnvironmentRow);
+
+        // Load the select needed in localStorage cache.
+        getSelectInvariant("ENVIRONMENT", true);
+        getSelectInvariant("COUNTRY", true);
+
+        // Redraw applicationObjects DataTable when Object tab is clicked
+        $(document).off('click.appObjectTab').on('click.appObjectTab', '#editApplicationModal button[name="tabsAppEdit3"]', function () {
+            setTimeout(function () {
+                if ($("#editApplicationModal #modalAppObjectsTable_wrapper").length > 0) {
+                    $("#editApplicationModal #modalAppObjectsTable").DataTable().draw();
+                }
+            }, 100);
+        });
+    }
+
+    function editApplicationClick(application) {
+        clearResponseMessage($('#editApplicationModal'));
+        $('#editApplicationButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#duplicateApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#addApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        feedApplicationModal(application, "EDIT");
+    }
+
+    function duplicateApplicationClick(application) {
+        clearResponseMessage($('#editApplicationModal'));
+        $('#duplicateApplicationButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#addApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        feedApplicationModal(application, "DUPLICATE");
+    }
+
+    function addApplicationClick(application) {
+        clearResponseMessage($('#editApplicationModal'));
+        $('#addApplicationButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        $('#duplicateApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        feedApplicationModal(application, "ADD");
+    }
+
+    function editEntryModalCloseHandler() {
+        $('#editApplicationModal #editApplicationModalForm')[0].reset();
+        $(this).find('div.has-error').removeClass("has-error");
+        clearResponseMessage($('#editApplicationModal'));
+    }
+
+    function confirmApplicationModalHandler(mode) {
+        clearResponseMessage($('#editApplicationModal'));
+        var formEdit = $('#editApplicationModal #editApplicationModalForm');
+
+        var myServlet = "UpdateApplication";
+        if ((mode === "ADD") || (mode === "DUPLICATE")) {
+            myServlet = "CreateApplication";
+        }
+
+        var table1 = $("#environmentTableBody tr");
+        var table_environment = [];
+        for (var i = 0; i < table1.length; i++) {
+            table_environment.push($(table1[i]).data("environment"));
+        }
+
+        var data = convertSerialToJSONObject(formEdit.serialize());
+
+        showLoaderInModal('#editApplicationModal');
+        $.ajax({
+            url: myServlet,
+            async: true,
+            method: "POST",
+            data: {application: data.application,
+                originalApplication: data.originalApplication,
+                description: data.description,
+                sort: data.sort,
+                type: data.type,
+                system: data.system,
+                poolSize: data.poolSize,
+                subsystem: data.subsystem,
+                repourl: data.repourl,
+                bugtrackerconnector: data.bugtrackerconnector,
+                bugtrackerparam1: data.bugtrackerparam1,
+                bugtrackerparam2: data.bugtrackerparam2,
+                bugtrackerparam3: data.bugtrackerparam3,
+                bugtrackerurl: data.bugtrackerurl,
+                bugtrackernewurl: data.bugtrackernewurl,
+                deploytype: data.deploytype,
+                mavengroupid: data.mavengroupid,
+                environmentList: JSON.stringify(table_environment)},
+            success: function (data) {
+                hideLoaderInModal('#editApplicationModal');
+                if (getAlertType(data.messageType) === "success") {
+                    var oTable = $("#applicationsTable").dataTable();
+                    oTable.fnDraw(false);
+                    window.dispatchEvent(new CustomEvent('application-modal-close'));
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#editApplicationModal'));
+                }
+            },
+            error: showUnexpectedError
+        });
+    }
+
+    function feedApplicationModal(application, mode, system) {
+        clearResponseMessageMainPage();
+
+        var formEdit = $('#editApplicationModal');
+
+        if (mode === "DUPLICATE" || mode === "EDIT") {
+            var jqxhr = $.getJSON("ReadApplication", "application=" + application);
+            $.when(jqxhr).then(function (data) {
+                if (data.messageType === "OK") {
+                    var appObj = data.contentTable;
+                    var hasPermissions = data.hasPermissions;
+                    feedApplicationModalData(appObj, mode, hasPermissions);
+                    window.dispatchEvent(new CustomEvent('application-modal-open', { detail: {} }));
+                } else {
+                    showUnexpectedError();
+                }
+            });
+        } else {
+            var appObj1 = {};
+            appObj1.application = "";
+            appObj1.description = "";
+            appObj1.type = "NONE";
+            appObj1.system = getUser().defaultSystem;
+            appObj1.subsystem = "";
+            appObj1.poolSize = 10;
+            appObj1.repourl = "";
+            appObj1.bugTrackerUrl = "";
+            appObj1.bugTrackerConnector = "";
+            appObj1.bugTrackerParam1 = "";
+            appObj1.bugTrackerParam2 = "";
+            appObj1.bugTrackerParam3 = "";
+            appObj1.bugTrackerNewUrl = "";
+            appObj1.deploytype = "NONE";
+            appObj1.mavengroupid = "";
+            var hasPermissions = true;
+            feedApplicationModalData(appObj1, mode, hasPermissions);
+            window.dispatchEvent(new CustomEvent('application-modal-open', { detail: {} }));
+        }
+    }
+
+    function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
+        var formEdit = $('#editApplicationModal');
+
+        formEdit.find("#originalApplication").prop("value", application["application"]);
+        formEdit.find("#application").prop("value", application["application"]);
+        formEdit.find("#description").prop("value", application["description"]);
+        formEdit.find("#type").prop("value", application["type"]);
+        formEdit.find("#AppLogo").attr("src", "./images/logoapp-" + application["type"] + ".png");
+        formEdit.find("#system").prop("value", application["system"]);
+        formEdit.find("#subsystem").prop("value", application["subsystem"]);
+        formEdit.find("#poolSize").prop("value", application["poolSize"]);
+        formEdit.find("#repourl").prop("value", application["repoUrl"]);
+        formEdit.find("#bugtrackerurl").prop("value", application["bugTrackerUrl"]);
+        formEdit.find("#bugtrackerconnector").prop("value", application["bugTrackerConnector"]);
+        formEdit.find("#bugtrackerparam1").prop("value", application["bugTrackerParam1"]);
+        formEdit.find("#bugtrackerparam2").prop("value", application["bugTrackerParam2"]);
+        formEdit.find("#bugtrackerparam3").prop("value", application["bugTrackerParam3"]);
+        formEdit.find("#bugtrackernewurl").prop("value", application["bugTrackerNewUrl"]);
+        formEdit.find("#deploytype").prop("value", application["deploytype"]);
+        formEdit.find("#mavengroupid").prop("value", application["mavengroupid"]);
+
+        if (!hasPermissionsUpdate) {
+            formEdit.find("#application").prop("readonly", "readonly");
+            formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#type").prop("disabled", "disabled");
+            formEdit.find("#system").prop("disabled", "disabled");
+            formEdit.find("#subsystem").prop("readonly", "readonly");
+            formEdit.find("#poolSize").prop("readonly", "readonly");
+            formEdit.find("#repourl").prop("readonly", "readonly");
+            formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
+            formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");
+            formEdit.find("#deploytype").prop("disabled", "disabled");
+            formEdit.find("#mavengroupid").prop("readonly", "readonly");
+            $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
+        }
+
+        if ($("#editApplicationModal #modalAppObjectsTable_wrapper").length > 0) {
+            var oTable = $("#editApplicationModal #modalAppObjectsTable").dataTable();
+            oTable.fnSettings().sAjaxSource = "ReadApplicationObject?application=" + encodeURIComponent(application.application);
+            oTable.fnDraw();
+        } else {
+            var configurations = new TableConfigurationsServerSide("modalAppObjectsTable", "ReadApplicationObject?application=" + encodeURIComponent(application.application), "contentTable", aoColumnsFunc_object("modalAppObjectsTable"), [1, 'asc']);
+            var table = createDataTableWithPermissions(configurations, function (data) {
+                renderOptionsForModalAppObject(application.application, data);
+            }, "#modalAppObjectList", undefined, true);
+        }
+
+        if (mode !== "ADD") {
+            loadEnvironmentTable(application.system, application.application);
+        } else {
+            $('#environmentTableBody tr').remove();
+        }
+        updateBugTrackerConnector();
+        refreshPopoverDocumentation("editApplicationModalForm");
+    }
+
+    function updateBugTrackerConnector() {
+        let connector = $('#editApplicationModal #bugtrackerconnector').val();
+        if (connector === 'REDIRECT') {
+            $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png");
+            $('#editApplicationModal #btP1').hide();
+            $('#editApplicationModal #btP2').hide();
+            $('#editApplicationModal #btP3').hide();
+        } else if (connector === 'JIRA') {
+            $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png");
+            $('#editApplicationModal #TrackerLogo').show();
+            $('#editApplicationModal #btP1').show();
+            $('#editApplicationModal #btP2').show();
+            $('#editApplicationModal #btP3').hide();
+            $("[name='bugtrackerparam1Field']").html("Project Code");
+            $("[name='bugtrackerparam2Field']").html("Ticket Type");
+            $('#editApplicationModal #bugtrackerparam2').autocomplete({
+                source: ["Bug", "Task", "Story", "Epic"],
+                minLength: 0,
+                messages: { noResults: '', results: function () { return ''; } }
+            }).on("focus", function () { $(this).autocomplete("search", ""); });
+        } else if (connector === 'GITHUB') {
+            $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png");
+            $('#editApplicationModal #TrackerLogo').show();
+            $('#editApplicationModal #btP1').show();
+            $('#editApplicationModal #btP2').show();
+            $('#editApplicationModal #btP3').hide();
+            $("[name='bugtrackerparam1Field']").html("organisation/repo");
+            $("[name='bugtrackerparam2Field']").html("Label");
+            $('#editApplicationModal #bugtrackerparam2').autocomplete({
+                source: ["bug","cerberus"], minLength: 0,
+                messages: { noResults: '', results: function () { return ''; } }
+            }).on("focus", function () { $(this).autocomplete("search", ""); });
+        } else if (connector === 'GITLAB') {
+            $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITLAB.png");
+            $('#editApplicationModal #TrackerLogo').show();
+            $('#editApplicationModal #btP1').show();
+            $('#editApplicationModal #btP2').show();
+            $('#editApplicationModal #btP3').hide();
+            $("[name='bugtrackerparam1Field']").html("organisation/repo");
+            $("[name='bugtrackerparam2Field']").html("Label");
+            $('#editApplicationModal #bugtrackerparam2').autocomplete({
+                source: ["bug","cerberus"], minLength: 0,
+                messages: { noResults: '', results: function () { return ''; } }
+            }).on("focus", function () { $(this).autocomplete("search", ""); });
+        } else if (connector === 'AZUREDEVOPS') {
+            $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-AZUREDEVOPS.png");
+            $('#editApplicationModal #TrackerLogo').show();
+            $('#editApplicationModal #btP1').show();
+            $('#editApplicationModal #btP2').hide();
+            $('#editApplicationModal #btP3').hide();
+            $("[name='bugtrackerparam1Field']").html("organisation/project");
+            $("[name='bugtrackerparam2Field']").html("Label");
+            $('#editApplicationModal #bugtrackerparam2').autocomplete({
+                source: [""], minLength: 0,
+                messages: { noResults: '', results: function () { return ''; } }
+            }).on("focus", function () { $(this).autocomplete("search", ""); });
+        } else {
+            $('#editApplicationModal #TrackerLogo').attr("src", "");
+            $('#editApplicationModal #TrackerLogo').hide();
+            $('#editApplicationModal #btP1').hide();
+            $('#editApplicationModal #btP2').hide();
+            $('#editApplicationModal #btP3').hide();
+            $('#editApplicationModal #bugtrackerparam2').autocomplete({
+                source: [""], minLength: 0,
+                messages: { noResults: '', results: function () { return ''; } }
+            }).on("focus", function () { $(this).autocomplete("search", ""); });
+        }
+    }
+
+    function renderOptionsForModalAppObject(id, data) {
+        var doc = new Doc();
+        if ($("#modalCreateAppObjButton").length === 0) {
+            var contentToAdd = "<div class='mb-3'><a href='ApplicationObjectList.jsp?application=" + id + "' target='_blank'><button id='modalCreateAppObjButton' type='button' class='px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-300 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5'>" +
+                "<i data-lucide='external-link' class='w-3.5 h-3.5'></i> " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
+            $("#modalAppObjectsTable_wrapper div#modalAppObjectsTable_length").before(contentToAdd);
+            if (window.lucide) lucide.createIcons();
+        }
+    }
+
+    function loadEnvironmentTable(selectSystem, selectApplication) {
+        $('#environmentTableBody tr').remove();
+        var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&application=" + selectApplication + "&iSortCol_0=3");
+        $.when(jqxhr).then(function (result) {
+            $.each(result["contentTable"], function (idx, obj) {
+                obj.toDelete = false;
+                appendEnvironmentRow(obj);
+            });
+            refreshPopoverDocumentation("editApplicationModalForm");
+        }).fail(handleErrorAjaxAfterTimeout);
+    }
+
+    function appendEnvironmentRow(env) {
+        nbRow++;
+        var doc = new Doc();
+        var n = nbRow;
+
+        var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
+        var selectCountry = getSelectInvariant("COUNTRY", false);
+        var ipInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: doc.getDocLabel("countryenvironmentparameters", "IP") || "Host"}).val(env.ip);
+        var urlInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: doc.getDocLabel("countryenvironmentparameters", "URL") || "/"}).val(env.url);
+        var poolSizeInput = $('<input class="form-control">').attr({maxlength: 10, placeholder: "0"}).val(env.poolSize);
+        var var1Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 1"}).val(env.var1);
+        var var2Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 2"}).val(env.var2);
+        var secret1Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Secret 1"}).val(env.secret1);
+        var domainInput = $('<input class="form-control">').attr({maxlength: 150, placeholder: "Domain"}).val(env.domain);
+        var urlLoginInput = $('<input class="form-control">').attr({maxlength: 300, placeholder: "URL Login"}).val(env.urlLogin);
+        var var3Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 3"}).val(env.var3);
+        var var4Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Variable 4"}).val(env.var4);
+        var secret2Input = $('<input class="form-control">').attr({maxlength: 200, placeholder: "Secret 2"}).val(env.secret2);
+        var mobileActivity = $('<input class="form-control">').attr({maxlength: 254, placeholder: "Mobile Activity"}).val(env.mobileActivity);
+        var mobilePackage = $('<input class="form-control">').attr({maxlength: 254, placeholder: "Mobile Package"}).val(env.mobilePackage);
+        var activeInput = $('<input type="checkbox" class="env-check">').prop("checked", env.isActive);
+
+        function F(labelText, input) {
+            var w = $('<div></div>');
+            w.append($('<span class="env-label"></span>').text(labelText));
+            w.append(input);
+            return w;
+        }
+
+        var table = $("#environmentTableBody");
+        var card = $('<tr></tr>');
+        var cardTd = $('<td></td>');
+        var cardDiv = $('<div class="env-card"></div>');
+
+        var row1 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 44px 28px; margin-bottom:6px;"></div>');
+        row1.append(F("Environment", selectEnvironment.val(env.environment)));
+        row1.append(F("Country", selectCountry.val(env.country)));
+        var actWrap = $('<div style="text-align:center;"></div>');
+        actWrap.append($('<span class="env-label">Active</span>'));
+        actWrap.append($('<div style="display:flex;align-items:center;justify-content:center;height:30px;"></div>').append(activeInput));
+        row1.append(actWrap);
+        var deleteBtn = $('<button type="button" class="env-btn env-btn-del" title="Delete"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>');
+        row1.append($('<div style="display:flex;align-items:end;"></div>').append(deleteBtn));
+        cardDiv.append(row1);
+
+        var row2 = $('<div class="env-grid" style="grid-template-columns: 5fr 3fr 60px; margin-bottom:6px;"></div>');
+        row2.append(F("Host", ipInput));
+        row2.append(F("Context Root", urlInput));
+        row2.append(F("Pool", poolSizeInput));
+        cardDiv.append(row2);
+
+        var row3 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 1fr 28px;"></div>');
+        row3.append(F("Variable 1", var1Input));
+        row3.append(F("Variable 2", var2Input));
+        row3.append(F("Secret 1", secret1Input));
+        var expandBtn = $('<button type="button" class="env-btn env-btn-expand" data-toggle="collapse" data-target="#envX' + n + '" title="More"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button>');
+        row3.append($('<div style="display:flex;align-items:end;"></div>').append(expandBtn));
+        cardDiv.append(row3);
+
+        var extra = $('<div class="collapse" id="envX' + n + '"></div>');
+        var inner = $('<div class="env-separator"></div>');
+
+        var er1 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:6px;"></div>');
+        er1.append(F("URL Login", urlLoginInput));
+        er1.append(F("Domain", domainInput));
+        inner.append(er1);
+
+        var er2 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:6px;"></div>');
+        er2.append(F("Variable 3", var3Input));
+        er2.append(F("Variable 4", var4Input));
+        er2.append(F("Secret 2", secret2Input));
+        inner.append(er2);
+
+        var er3 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr;"></div>');
+        er3.append(F("Mobile Activity", mobileActivity));
+        er3.append(F("Mobile Package", mobilePackage));
+        inner.append(er3);
+
+        extra.append(inner);
+        cardDiv.append(extra);
+
+        cardTd.append(cardDiv);
+        card.append(cardTd);
+
+        deleteBtn.click(function () {
+            env.toDelete = !env.toDelete;
+            cardDiv.toggleClass("env-deleted", env.toDelete);
+        });
+        selectEnvironment.change(function () { env.environment = $(this).val(); });
+        selectCountry.change(function () { env.country = $(this).val(); });
+        activeInput.change(function () { env.isActive = $(this).prop("checked"); });
+        ipInput.change(function () { env.ip = $(this).val(); });
+        domainInput.change(function () { env.domain = $(this).val(); });
+        urlInput.change(function () { env.url = $(this).val(); });
+        urlLoginInput.change(function () { env.urlLogin = $(this).val(); });
+        var1Input.change(function () { env.var1 = $(this).val(); });
+        var2Input.change(function () { env.var2 = $(this).val(); });
+        var3Input.change(function () { env.var3 = $(this).val(); });
+        var4Input.change(function () { env.var4 = $(this).val(); });
+        secret1Input.change(function () { env.secret1 = $(this).val(); });
+        secret2Input.change(function () { env.secret2 = $(this).val(); });
+        poolSizeInput.change(function () { env.poolSize = $(this).val(); });
+        mobileActivity.change(function () { env.mobileActivity = $(this).val(); });
+        mobilePackage.change(function () { env.mobilePackage = $(this).val(); });
+
+        env.environment = selectEnvironment.prop("value");
+        env.country = selectCountry.prop("value");
+        card.data("environment", env);
+        table.append(card);
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function addNewEnvironmentRow() {
+        var newEnvironment = {
+            environment: "",
+            country: "",
+            isActive: true,
+            ip: "",
+            domain: "",
+            url: "",
+            urlLogin: "",
+            var1: "",
+            var2: "",
+            var3: "",
+            var4: "",
+            secret1: "",
+            secret2: "",
+            poolSize: 10,
+            mobileActivity: "",
+            mobilePackage: "",
+            toDelete: false
+        };
+        appendEnvironmentRow(newEnvironment);
+        refreshPopoverDocumentation("editApplicationModalForm");
+    }
+
+    function displayWarningOnChangeApplicationKey() {
+        let old1 = $("#originalApplication").val();
+        let new1 = $('#editApplicationModal input[name="application"]').val();
+        if (old1 !== new1) {
+            var localMessage = new Message("WARNING", "If you rename that application, All the corresponding execution historic will stay on old application name.");
+            showMessage(localMessage, $('#editApplicationModal'));
+        } else {
+            clearResponseMessage($('#editApplicationModal'));
+        }
+    }
+
+    function aoColumnsFunc_object(tableId) {
+        var doc = new Doc();
+        var aoColumns = [
+            { "data": "application", "sName": "application", "visible": false, "title": doc.getDocOnline("application", "Application") },
+            { "data": "object", "sName": "object", "title": doc.getDocOnline("applicationObject", "Object") },
+            { "data": "value", "sName": "value", "title": doc.getDocOnline("applicationObject", "Value") },
+            { "data": "screenshotFilename", "sName": "screenshotFilename", "title": doc.getDocOnline("applicationObject", "ScreenshotFileName") },
+            { "data": "usrCreated", "sName": "usrCreated", "visible": false, "title": doc.getDocOnline("transversal", "UsrCreated") },
+            { "data": "dateCreated", "like": true, "visible": false, "sName": "dateCreated", "title": doc.getDocOnline("transversal", "DateCreated"), "mRender": function (data, type, oObj) { return getDate(oObj["dateCreated"]); } },
+            { "data": "usrModif", "visible": false, "sName": "usrModif", "title": doc.getDocOnline("transversal", "UsrModif") },
+            { "data": "dateModif", "like": true, "visible": false, "sName": "dateModif", "title": doc.getDocOnline("transversal", "DateModif"), "mRender": function (data, type, oObj) { return getDate(oObj["dateModif"]); } }
+        ];
+        return aoColumns;
+    }
+
+    function app_keyispressed(e, modalName) {
+        var idname = $('#' + modalName + 'ApplicationModal #application').val();
+        var toto = "|\"|'|&|";
+        var charval = "|" + e.key + "|";
+        if (toto.indexOf(charval) !== -1) {
+            var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed for application names.");
+            showMessage(localMessage, $('#' + modalName + 'ApplicationModal'), false, 1000);
+            return false;
+        }
+        return true;
+    }
+</script>

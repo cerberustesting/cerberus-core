@@ -94,7 +94,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
         AndroidDriver driver = null;
         try {
-            String applicationType = testCaseExecution.getAppTypeEngine();
+            String applicationType = testCaseExecution.getApplicationType();
 
             Session session = testCaseExecution.getSession();
             if (applicationType.equals(Application.TYPE_APK)) {

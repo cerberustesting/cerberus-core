@@ -110,6 +110,8 @@ public class TestCase {
     @EqualsAndHashCode.Exclude
     private List<TestCaseStep> steps;
     @EqualsAndHashCode.Exclude
+    private List<TestCaseHisto> histos;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseLabel> testCaseLabels;
     @EqualsAndHashCode.Exclude
     private List<Label> labels;
@@ -246,6 +248,14 @@ public class TestCase {
                 }
             }
             testCaseJson.put("steps", stepsJson);
+
+            JSONArray histosJson = new JSONArray();
+            if (this.getHistos()!= null) {
+                for (TestCaseHisto histo : this.getHistos()) {
+                    histosJson.put(histo.toJson());
+                }
+            }
+            testCaseJson.put("histos", histosJson);
 
             JSONArray countriesJson = new JSONArray();
             if (this.getInvariantCountries() != null) {

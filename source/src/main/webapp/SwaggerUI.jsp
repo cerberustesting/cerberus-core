@@ -45,8 +45,7 @@
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/pages/test/editTest.html" %>
-            <%@ include file="include/pages/test/addTest.html" %>
+            <%@ include file="include/pages/test/testFolderModal.html" %>
 
             <h1 class="page-title-line" id="title">Swagger API</h1>
             <div class="crb_card">

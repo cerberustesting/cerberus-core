@@ -21,14 +21,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
-        $("#editEntryButton").click(editEntryModalSaveHandler);
-        $("#addEntryButton").click(addEntryModalSaveHandler);
-
-        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
-        $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
-
         var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
         var table = createDataTableWithPermissionsNew(config, renderOptionsForTest, "#testList", undefined, true);
+
+        $('#testTable').on('draw.dt', function() {
+            $(this).find('tbody tr').addClass('group');
+            if (window.lucide) lucide.createIcons();
+        });
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
@@ -40,50 +39,41 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     var doc = new Doc();
 
-    //displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    displayInvariantList("isActive", "TESTACTIVE", false);
-    displayInvariantList("Automated", "TESTAUTOMATED", false);
-
+    displayInvariantList("testFolderIsActive", "TESTACTIVE", false);
 }
 
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("test", "Test"));
     $("#title").html(doc.getDocLabel("test", "Test"));
-    $("#testListLabel").html(doc.getDocLabel("page_test", "table_testlist"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_test", "btn_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_test", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_test", "btn_edit"));
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='activeField']").html(doc.getDocOnline("test", "isActive"));
-    $("[name='automatedField']").html(doc.getDocOnline("test", "Automated"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "description"));
 }
 
 function renderOptionsForTest(data) {
     var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
 
     if (data["hasPermissions"]) {
         if ($("#createTestButton").length === 0) {
             var contentToAdd = "";
-            // Bouton Create
             contentToAdd += `
             <button id='createTestButton' type='button'
                 class='bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-lg h-10 w-auto'>
-                <span class='glyphicon glyphicon-plus-sign'></span>
+                <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>${doc.getDocLabel("page_test", "btn_create")}</span>
             </button>
             `;
 
             var $wrapper = $("#testTable_buttonWrapper");
             if ($wrapper.length) {
-                // Ajoute le bouton au **début** du wrapper
                 $wrapper.append(contentToAdd);
             } else {
-                // fallback si le wrapper n’existe pas encore
                 console.warn("Wrapper #testTable_buttonWrapper introuvable, insertion avant length");
                 $("#testTable_wrapper div#testTable_length").before("<div id='testTable_buttonWrapper' class='flex w-full gap-2'>" + contentToAdd + "</div>");
             }
@@ -92,127 +82,36 @@ function renderOptionsForTest(data) {
     }
 }
 
-function deleteEntryHandlerClick() {
-    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteTest", {test: test}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#testTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function deleteEntryClick(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_test", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
-}
-
-function addEntryModalSaveHandler() {
-    clearResponseMessage($('#addEntryModal'));
-    var formAdd = $("#addEntryModal #addEntryModalForm");
-
-    var nameElement = formAdd.find("#test");
-    var nameElementEmpty = nameElement.prop("value") === '';
-
-    // if the Test field contains '&'
-    var nameElementInvalid = nameElement.prop("value").search("&");
-
-    if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the test!");
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else if (nameElementInvalid != -1) {
-        var localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else {
-        nameElement.parents("div.form-group").removeClass("has-error");
-    }
-
-    // verif if all mendatory fields are not empty
-    if (nameElementEmpty || nameElementInvalid != -1)
-        return;
-
-    showLoaderInModal('#addEntryModal');
-    createEntry("CreateTest", formAdd, "#testTable");
+    crbConfirmDelete({
+        title: doc.getDocLabel("page_test", "button_delete"),
+        html: messageComplete,
+        preConfirm: function() {
+            return $.post("DeleteTest", {test: entry}, "json").then(function (data) {
+                var messageType = getAlertType(data.messageType);
+                if (messageType === "success") {
+                    var oTable = $("#testTable").dataTable();
+                    oTable.fnDraw(false);
+                }
+                showMessageMainPage(messageType, data.message, false);
+                return data;
+            }).fail(handleErrorAjaxAfterTimeout);
+        }
+    });
 }
 
 function addEntryClick() {
     clearResponseMessageMainPage();
-    $('#addEntryModal').modal('show');
-}
-
-function editEntryModalSaveHandler() {
-    clearResponseMessage($('#editEntryModal'));
-    var formEdit = $('#editEntryModalForm');
-
-    showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateTest", formEdit, "#testTable");
+    window.dispatchEvent(new CustomEvent('test-folder-modal-open', { detail: { mode: 'ADD' } }));
 }
 
 function editEntryClick(test) {
     clearResponseMessageMainPage();
-
-    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#editEntryModalForm input[name="test"]').off("change");
-    $('#editEntryModalForm input[name="test"]').change(function () {
-        // Compare with original value in order to display the warning message.
-        displayWarningOnChangeTestKey();
-    });
-
-
-    var jqxhr = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
-    $.when(jqxhr).then(function (data) {
-        var obj = data["contentTable"];
-
-        var formEdit = $('#editEntryModal');
-
-        formEdit.find("#test").prop("value", obj.test);
-        formEdit.find("#originalTest").prop("value", obj.test);
-        formEdit.find("#isActive").prop("value", obj.isActive);
-        formEdit.find("#description").prop("value", obj.description);
-        formEdit.find("#automated").prop("value", obj.automated);
-
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-            formEdit.find("#test").prop("readonly", "readonly");
-            formEdit.find("#isActive").prop("disabled", "disabled");
-            formEdit.find("#description").prop("readonly", "readonly");
-            formEdit.find("#automated").prop("disabled", "disabled");
-
-            $('#editEntryButton').attr('class', '');
-            $('#editEntryButton').attr('hidden', 'hidden');
-        }
-
-        formEdit.modal('show');
-    });
-}
-
-function displayWarningOnChangeTestKey() {
-    // Compare with original value in order to display the warning message.
-    let old1 = $("#originalTest").val();
-    let new1 = $('#editEntryModal input[name="test"]').val();
-    if (old1 !== new1) {
-        var localMessage = new Message("WARNING", "If you rename that test, it will loose the corresponding execution historic of all corresponding test cases.");
-        showMessage(localMessage, $('#editEntryModal'));
-    } else {
-        clearResponseMessage($('#editEntryModal'));
-    }
+    window.dispatchEvent(new CustomEvent('test-folder-modal-open', { detail: { mode: 'EDIT', test: test } }));
 }
 
 function aoColumnsFunc() {
@@ -225,29 +124,64 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
-            "mRender": function (data, type, obj) {
-                var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '" title="' + doc.getDocLabel("page_test", "btn_tclist") + '" >\n\
-                                    <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </a>';
-                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right25" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\');" \n\
-                                class="deleteEntry btn btn-default btn-xs margin-right25" \n\
-                                name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-trash"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = data["hasPermissions"];
+                var row = "row_" + (meta ? meta.row : 0);
 
-                if (data["hasPermissions"]) {
-                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
-                } else {
-                    return '<div class="center btn-group width150">' + viewEntry + testCaseLink + '</div>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, name, title, onClick, icon, href, extraClass = "" }) {
+                    if (href) {
+                        return `<a id="${id}" name="${name}" title="${title}" href="${href}" class="${baseBtnClass} ${extraClass}">${icon}</a>`;
+                    }
+                    return `<button id="${id}" name="${name}" type="button" class="${baseBtnClass} ${extraClass}" title="${title}" onclick="${onClick}">${icon}</button>`;
                 }
+
+                const icons = {
+                    edit: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    view: `<i data-lucide="eye" class="w-4 h-4"></i>`,
+                    delete: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    list: `<i data-lucide="external-link" class="w-4 h-4"></i>`
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: `editEntry_${row}`,
+                    name: "editEntry",
+                    title: hasPermissions ? doc.getDocLabel("page_test", "btn_edit") : doc.getDocLabel("page_test", "btn_edit"),
+                    onClick: `editEntryClick('${escapeHtml(obj["test"])}')`,
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                // Delete
+                if (hasPermissions) {
+                    buttons.push(actionButton({
+                        id: `deleteEntry_${row}`,
+                        name: "deleteEntry",
+                        title: doc.getDocLabel("page_test", "button_delete"),
+                        onClick: `deleteEntryClick('${escapeHtml(obj["test"])}')`,
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // Test Cases link
+                buttons.push(actionButton({
+                    id: `tcLink_${row}`,
+                    name: "testCaseLink",
+                    title: doc.getDocLabel("page_test", "btn_tclist"),
+                    href: `./TestCaseList.jsp?test=${encodeURIComponent(obj["test"])}`,
+                    icon: icons.list,
+                    extraClass: "group-hover:!text-blue-500"
+                }));
+
+                var html = `<div class="flex items-center gap-1">${buttons.join('')}</div>`;
+                setTimeout(function() { if (window.lucide) lucide.createIcons(); }, 50);
+                return html;
             }
         },
         {
@@ -273,7 +207,6 @@ function aoColumnsFunc() {
                 if (data) {
                     return '<input type="checkbox" checked disabled />';
                 } else {
-//                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
                     return '<input type="checkbox" disabled />';
                 }
             }

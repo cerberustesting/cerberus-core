@@ -29,7 +29,6 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/ImpactAnalysis.js?v=${appVersion}"></script>
-        <script type="text/javascript" src="js/transversalobject/TestCase.js?v=${appVersion}"></script>
         <title id="pageTitle">Impact Analysis</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -38,64 +37,33 @@
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/TestCase.html"%>
 
             <h1 class="page-title-line" id="title">Impact Analysis</h1>
 
-            <div class="row">
-                <div class="col-lg-12" id="FiltersPanel">
-                    <div class="crb_card">
-                        <div>
-                            <label class="input-group">
-                                <input class="form-control input-md" id="searchQ" name="searchQ" placeholder="Type any references here .... (xpath, variable, property,...)" onkeydown="searchKeyDown()">
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default input-md" id="btnEmpty" onclick="emptySearch()" name="btnEmpty">X</button>
-                                    <button type="button" class="btn btn-default input-md" id="btnSearch" onclick="loadAllTables()" name="btnLoad">Search</button>
-                                </span>
-                            </label>
-                        </div>
+            <!-- Test Cases Table (createDataTableWithPermissionsNew generates the header block) -->
+            <div class="" id="tcList">
+                <table id="tcTable" class="table table-hover display" name="tcTable"></table>
+            </div>
+
+            <!-- Hidden tabs (kept for potential future use) -->
+            <div style="display:none">
+                <div id="tabDataLib">
+                    <div id="dlList">
+                        <table id="dlTable" class="table table-hover display" name="dlTable"></table>
+                    </div>
+                </div>
+                <div id="tabApplications">
+                    <div id="appList">
+                        <table id="appTable" class="table table-hover display" name="appTable"></table>
+                    </div>
+                </div>
+                <div id="tabServices">
+                    <div id="srvList">
+                        <table id="srvTable" class="table table-hover display" name="srvTable"></table>
                     </div>
                 </div>
             </div>
 
-            <ul id="tabsIA" class="nav nav-tabs" data-tabs="tabs">
-                <li class="active"><a data-toggle="tab" href="#tabTestCases" id="headerTabTestCases" name="tabTC">Test Cases</a>
-                </li>
-                <li style="display: none"><a data-toggle="tab" href="#tabDataLib" id="headerTabDataLib" name="tabDL">Data Libraries</a></li>
-                <li style="display: none"><a data-toggle="tab" href="#tabApplications" id="headerTabApplications" name="tabAPP">Applications</a></li>
-                <li style="display: none"><a data-toggle="tab" href="#tabServices" id="headerTabServices" name="tabSRV">Service Libraries</a></li>
-            </ul>
-
-            <div class="tab-content">
-                <div class="center tab-pane fade in active" id="tabTestCases">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="tcList">
-                            <table id="tcTable" class="table table-hover display" name="tcTable"></table>
-                        </div>
-                    </div>
-                </div>
-                <div class="center tab-pane fade in" id="tabDataLib">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="dlList">
-                            <table id="dlTable" class="table table-hover display" name="dlTable"></table>
-                        </div>
-                    </div>
-                </div>
-                <div class="center tab-pane fade in" id="tabApplications">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="appList">
-                            <table id="appTable" class="table table-hover display" name="appTable"></table>
-                        </div>
-                    </div>
-                </div>
-                <div class="center tab-pane fade in" id="tabServices">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="srvList">
-                            <table id="srvTable" class="table table-hover display" name="srvTable"></table>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

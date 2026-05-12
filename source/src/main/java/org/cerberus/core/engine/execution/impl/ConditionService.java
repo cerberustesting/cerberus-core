@@ -449,7 +449,7 @@ public class ConditionService implements IConditionService {
                     try {
 
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null).getResultMessage();
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
@@ -461,7 +461,7 @@ public class ConditionService implements IConditionService {
                         }
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator()).getResultMessage();
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
@@ -490,7 +490,7 @@ public class ConditionService implements IConditionService {
                 case Application.TYPE_FAT:
 
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null).getResultMessage();
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
@@ -503,7 +503,7 @@ public class ConditionService implements IConditionService {
                         }
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator()).getResultMessage();
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
@@ -609,7 +609,7 @@ public class ConditionService implements IConditionService {
                 case Application.TYPE_IPA:
                     try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null).getResultMessage();
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
@@ -621,7 +621,7 @@ public class ConditionService implements IConditionService {
                         }
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator()).getResultMessage();
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
@@ -649,7 +649,7 @@ public class ConditionService implements IConditionService {
 
                 case Application.TYPE_FAT:
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null).getResultMessage();
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;
@@ -662,7 +662,7 @@ public class ConditionService implements IConditionService {
                         }
 
                     } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator()).getResultMessage();
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;

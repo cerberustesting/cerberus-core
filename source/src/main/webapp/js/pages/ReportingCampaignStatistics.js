@@ -356,7 +356,7 @@ function aoColumnsFunc(tableId) {
                                         title="${doc.getDocLabel("page_campaignstatistics", "buttonDetailByCountryEnv")}"
                                         type="button">
                                         <span class="glyphicon glyphicon-zoom-in"></span></a>`;
-                const viewStatCampaign = `<button id="viewStatcampaign" onclick="viewStatEntryClick('${obj.campaign}');"
+                const viewStatCampaign = `<button id="viewStatcampaign" onclick="campaign_viewStatEntryClick('${obj.campaign}');"
                                                     class="viewStatcampaign btn btn-default btn-xs margin-right5"
                                                     name="viewStatcampaign" title="${doc.getDocLabel("page_testcampaign", "button_taglist")}" type="button">
                                                     <span class="glyphicon glyphicon-stats"></span></button>`;

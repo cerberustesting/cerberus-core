@@ -1,194 +1,540 @@
-<div class="modal fade center"  id="modalOptions" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Options</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+<!-- Action/Control Options Modal - Alpine.js/Tailwind -->
+<div x-data="{ open: false, isFullscreen: false }"
+     x-show="open"
+     x-cloak
+     @modaloptions-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+     @modaloptions-close.window="open = false"
+     class="crb_modal"
+     id="modalOptions">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[900px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <i data-lucide="settings" class="w-5 h-5 text-amber-500"></i>
+                </div>
+                <div>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100">Override Option Values</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Configure action parameters, conditions &amp; overrides</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-12" id="EditScriptPanel">
-                        <div class="panel panel-default">
-                            <div class="pill40 light-primary pull-left">
-                                <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
-                            </div>
-                            <div class="panel-heading bold" id="overrideActionParameterLabel">
-                                Parameters
-                            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+            <!-- ===================== PARAMETERS SECTION ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4" id="overrideActionParameter">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-sky-500"></i>
+                    <span id="overrideActionParameterLabel" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Parameters</span>
+                </div>
+
+                <!-- Screenshot Before + Screenshot After + Stop on Failure -->
+                <div class="flex gap-3 mb-3">
+                    <div style="width: 160px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Screenshot Before</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="screenshotBCheckbox">
                         </div>
-                        <div class="form-horizontal" id="overrideActionParameter">
-                            <div class="list-group marginTop10">
-                                <div class="col-sm-12">
+                    </div>
+                    <div style="width: 160px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Screenshot After</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="screenshotACheckbox">
+                        </div>
+                    </div>
+                    <div style="width: 160px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Stop on Failure</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-red-500 focus:ring-red-400" id="fatalCheckbox">
+                        </div>
+                    </div>
+                </div>
 
-                                    <div class="col-sm-6 col-md-6 col-sm-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup"><span class='glyphicon glyphicon-camera pull-left'></span> Screenshot Before</span>
-                                            <input type="text" class="form-control" disabled style="border: 0px;" aria-describedby="timeoutGroup">
-                                            <span class="input-group-addon"><input type="checkbox" id="screenshotBCheckbox"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-sm-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup"><span class='glyphicon glyphicon-camera pull-left'></span> Screenshot After</span>
-                                            <input type="text" class="form-control" disabled style="border: 0px;" aria-describedby="timeoutGroup">
-                                            <span class="input-group-addon"><input type="checkbox" id="screenshotACheckbox"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-sm-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-pause pull-left'></span> Wait Before (ms)</span>
-                                            <input type="text" class="form-control" id="waitBVal" aria-describedby="timeoutGroup" placeholder="in ms (ex: 2000)">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 col-md-6 col-sm-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-pause pull-left'></span> Wait After (ms)</span>
-                                            <input type="text" class="form-control" id="waitAVal" aria-describedby="timeoutGroup" placeholder="in ms (ex: 2000)">
-                                        </div>
-                                    </div>
+                <!-- Wait Before + Wait After -->
+                <div class="flex gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Wait Before (ms)</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="waitBVal" placeholder="in ms (ex: 2000)">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Wait After (ms)</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="waitAVal" placeholder="in ms (ex: 2000)">
+                    </div>
+                </div>
 
-                                    <div class="col-sm-12 col-md-12 marginTop20">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup"><span class='glyphicon glyphicon-step-forward pull-left'></span> Stop the execution if it fail</span>
-                                            <input type="text" class="form-control" disabled style="border: 0px;" aria-describedby="timeoutGroup">
-                                            <span class="input-group-addon"><input type="checkbox" id="fatalCheckbox"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-time pull-left'></span> Timeout</span>
-                                            <input type="text" class="form-control" id="timeoutVal" aria-describedby="timeoutGroup" placeholder="in ms (ex: 2000)">
-                                            <span class="input-group-addon"><input type="checkbox" id="timeoutAct"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="minSimilarityGroup"><span class='glyphicon glyphicon-picture pull-left'></span> Min Similarity</span>
-                                            <input type="text" class="form-control" id="minSimilarityVal" aria-describedby="timeoutGroup" placeholder="from 0.0 to 1.0 (ex: 0.7)">
-                                            <span class="input-group-addon"><input type="checkbox" id="minSimilarityAct"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="highlightGroup"><span class='glyphicon glyphicon-text-color pull-left'></span> Highlight</span>
-                                            <input type="text" class="form-control" id="highlightVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 2)">
-                                            <span class="input-group-addon"><input type="checkbox" id="highlightAct"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="input-group marginBottom10">
-                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="typeDelayGroup"><span class='glyphicon glyphicon-text-background pull-left'></span> TypeDelay</span>
-                                            <input type="text" class="form-control" id="typeDelayVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 0.3)">
-                                            <span class="input-group-addon"><input type="checkbox" id="typeDelayAct"  aria-label="..."></span>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Timeout + Min Similarity -->
+                <div class="flex gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Timeout</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="timeoutVal" placeholder="in ms (ex: 2000)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="timeoutAct">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Min Similarity</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="minSimilarityVal" placeholder="0.0 to 1.0 (ex: 0.7)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="minSimilarityAct">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlight + TypeDelay -->
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Highlight</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="highlightVal" placeholder="in s (ex: 2)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="highlightAct">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">TypeDelay</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="typeDelayVal" placeholder="in s (ex: 0.3)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="typeDelayAct">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== CONDITION SECTION ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="git-branch" class="w-4 h-4 text-green-500"></i>
+                    <span id="conditionParameterLabel" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Condition</span>
+                </div>
+
+                <div class="conditions">
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1" id="conditionSelectContainer">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Condition Operator</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="conditionSelect"></select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mb-3">
+                        <div class="flex-1 v1">
+                            <label class="conditionVal1Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 1</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="actionconditionval1">
+                        </div>
+                        <div class="flex-1 v2">
+                            <label class="conditionVal2Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 2</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="actionconditionval2">
+                        </div>
+                        <div class="flex-1 v3">
+                            <label class="conditionVal3Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 3</label>
+                            <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body" data-placement="top"
+                                   type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="actionconditionval3">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mb-3 v4">
+                        <div class="flex-1">
+                            <label class="conditionVal4Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 4</label>
+                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="actionconditionval4"></select>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 v5">
+                        <div style="width: 160px; flex-shrink: 0;">
+                            <label class="conditionVal5Label block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Value 5</label>
+                            <div class="flex items-center h-10">
+                                <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="actionconditionval5" name="actionconditionval5">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="well well-sm marginTop25">
-                    <div class="row">
-                        <div class="col-xs-12" id="EditScriptPanel">
-                            <div class="panel panel-default">
-                                <div class="pill40 light-primary pull-left">
-                                    <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
-                                </div>
-                                <div class="panel-heading bold" id="conditionParameterLabel">
-                                    Condition
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-sm-12 conditions">
-                                    <div class="col-lg-3 form-group" id="conditionSelectContainer">
-                                        <label>Condition Operator</label>
-                                        <select class="form-control input-sm" id="conditionSelect"></select>
-                                    </div>
-                                    <div class="col-lg-3 form-group v1">
-                                        <label class="conditionVal1Label">actionconditionval1</label>
-                                        <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
-                                               data-placement="top" type="text" class="form-control input-sm" id="actionconditionval1"/>
-                                    </div>
-                                    <div class="col-lg-3 form-group v2">
-                                        <label class="conditionVal2Label">actionconditionval2</label>
-                                        <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
-                                               data-placement="top" type="text" class="form-control input-sm" id="actionconditionval2"/>
-                                    </div>
-                                    <div class="col-lg-3 form-group v3">
-                                        <label class="conditionVal3Label">actionconditionval3</label>
-                                        <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
-                                               data-placement="top" type="text" class="form-control input-sm" id="actionconditionval3"/>
-                                    </div>
-                                    <div class="col-lg-9 form-group v4">
-                                        <label class="conditionVal4Label">actionconditionval4</label>
-                                        <select class="form-control input-sm" id="actionconditionval4"></select>
-                                    </div>
-                                    <div class="col-lg-6 form-group v5">
-                                        <label class="conditionVal5Label">actionconditionval5</label>
-                                        <input class="form-control input-sm" id="actionconditionval5" name="actionconditionval5" type="checkbox">
-                                    </div>
-                                </div>
-                            </div>
+            </div>
+
+            <!-- ===================== CONDITION PARAMETERS SECTION ===================== -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-4" id="overrideConditionParameter">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-purple-500"></i>
+                    <span id="overrideConditionParameterLabel" class="text-sm font-semibold text-slate-700 dark:text-slate-300">Condition Parameters</span>
+                </div>
+
+                <!-- Timeout + Min Similarity -->
+                <div class="flex gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Timeout</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="timeoutConditionVal" placeholder="in ms (ex: 2000)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="timeoutConditionAct">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12" id="EditScriptPanel">
-                            <div class="panel panel-default">
-                                <div class="pill40 light-primary pull-left">
-                                    <span class="card-img-top glyphicon glyphicon-edit"
-                                          style="font-size:15px;"></span>
-                                </div>
-                                <div class="panel-heading bold" id="overrideConditionParameterLabel">
-                                    Condition Parameters
-                                </div>
-                            </div>
-                            <div class="form-horizontal" id="overrideConditionParameter">
-                                <div class="list-group marginTop10">
-                                    <div class="col-sm-12">
-                                        <div class="col-sm-12 col-md-6">
-                                            <div class="input-group marginBottom10">
-                                                <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-time pull-left'></span> Timeout</span>
-                                                <input type="text" class="form-control" id="timeoutConditionVal" aria-describedby="timeoutGroup" placeholder="in ms (ex: 2000)">
-                                                <span class="input-group-addon"><input type="checkbox" id="timeoutConditionAct"  aria-label="..."></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <div class="input-group marginBottom10">
-                                                <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-picture pull-left'></span> Min Similarity</span>
-                                                <input type="text" class="form-control" id="minSimilarityConditionVal" aria-describedby="timeoutGroup" placeholder="from 0.0 to 1.0 (ex: 0.7)">
-                                                <span class="input-group-addon"><input type="checkbox" id="minSimilarityConditionAct"  aria-label="..."></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <div class="input-group marginBottom10">
-                                                <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-text-color pull-left'></span> Highlight</span>
-                                                <input type="text" class="form-control" id="highlightConditionVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 2)">
-                                                <span class="input-group-addon"><input type="checkbox" id="highlightConditionAct"  aria-label="..."></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <div class="input-group marginBottom10">
-                                                <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-text-background pull-left'></span> TypeDelay</span>
-                                                <input type="text" class="form-control" id="typeDelayConditionVal" aria-describedby="timeoutGroup" placeholder="in s (ex: 0.3)">
-                                                <span class="input-group-addon"><input type="checkbox" id="typeDelayConditionAct"  aria-label="..."></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Min Similarity</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="minSimilarityConditionVal" placeholder="0.0 to 1.0 (ex: 0.7)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="minSimilarityConditionAct">
                         </div>
                     </div>
                 </div>
-                <div id="firstRowOptions"></div>
-                <div id="secondRowOptions"></div>
+
+                <!-- Highlight + TypeDelay -->
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Highlight</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="highlightConditionVal" placeholder="in s (ex: 2)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="highlightConditionAct">
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">TypeDelay</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="typeDelayConditionVal" placeholder="in s (ex: 0.3)">
+                    </div>
+                    <div style="width: 55px; flex-shrink: 0;">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Active</label>
+                        <div class="flex items-center h-10">
+                            <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="typeDelayConditionAct">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id='optionsSave'>OK</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+
+            <!-- Dynamic content areas (used by JS to inject property rows) -->
+            <div id="firstRowOptions"></div>
+            <div id="secondRowOptions"></div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button"
+                    onclick="window.dispatchEvent(new CustomEvent('modaloptions-close'))"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    name="buttonClose">Close</button>
+            <button type="button" id="optionsSave"
+                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition"
+                    name="buttonSave">OK</button>
         </div>
     </div>
 </div>
+
+<script>
+/**
+ * displayOverrideOptionsModal — Moved from condition.js for Alpine.js integration.
+ * Called by action.js plusBtn.click() and control.js plusBtn.click().
+ * Populates the modal form, binds the save handler, then opens the modal via Alpine event.
+ */
+function displayOverrideOptionsModal(action, htmlElement) {
+
+    var user = getUser();
+    $("#modalOptions").find("h5").text("Override Option Values");
+
+    //INIT MODAL
+    initOptionModal("");
+    initOptionModal("Condition");
+    $("#fatalCheckbox").prop("checked", false);
+    $("#screenshotBCheckbox").prop("checked", false);
+    $("#screenshotACheckbox").prop("checked", false);
+    $("#conditionSelect").val("");
+    $("#actionconditionval1").val("");
+    $("#actionconditionval2").val("");
+    $("#actionconditionval3").val("");
+
+    //FEED FIELDS
+    //SCREENSHOT
+    if (action.doScreenshotBefore) {
+        $("#screenshotBCheckbox").prop("checked", true);
+    }
+    if (action.doScreenshotAfter) {
+        $("#screenshotACheckbox").prop("checked", true);
+    }
+    $("#waitBVal").val(action.waitBefore);
+    $("#waitAVal").val(action.waitAfter);
+    //OPTIONS
+    setOptionModal(action.options, "");
+    setOptionModal(action.conditionOptions, "Condition");
+
+    //FATAL
+    if (action.isFatal) {
+        $("#fatalCheckbox").prop("checked", true);
+    }
+
+    //CONDITION
+    $("#conditionSelect").empty();
+    for (var key in conditionNewUIList) {
+        $("#conditionSelect").append($("<option></option>").text(conditionNewUIList[key].label[user.language]).val(conditionNewUIList[key].value));
+    }
+
+    $("#conditionSelect").val(action.conditionOperator);
+    $("#actionconditionval1").val(action.conditionValue1);
+    $("#actionconditionval2").val(action.conditionValue2);
+    $("#actionconditionval3").val(action.conditionValue3);
+    setPlaceholderCondition($("#conditionSelect"));
+
+    if (conditionNewUIList[action.conditionOperator].type ==="combo") {
+        appendActionsForConditionCombobox($("#actionconditionval4"), action.conditionOperator);
+        if (conditionNewUIList[action.conditionOperator].level ==="step"){
+            $("#actionconditionval4").val(action.conditionValue1);
+        }
+        if (conditionNewUIList[action.conditionOperator].level ==="action"){
+            $("#actionconditionval4").val(action.conditionValue1+"-"+action.conditionValue2);
+        }
+        if (conditionNewUIList[action.conditionOperator].level ==="control"){
+            $("#actionconditionval4").val(action.conditionValue1+"-"+action.conditionValue2+"-"+action.conditionValue3);
+        }
+    }
+    if (conditionNewUIList[action.conditionOperator].field5 != undefined) {
+        let checked = action.conditionValue2=="false"?false:true;
+        $("#actionconditionval5").prop("checked", checked);
+    }
+
+
+    $("#conditionSelect").off("change");
+    $("#conditionSelect").on("change", function () {
+        setModif(true);
+        setPlaceholderCondition($(this));
+        appendActionsForConditionCombobox($("#actionconditionval4"), $(this).val());
+    });
+    $("#actionconditionval1").off("change");
+    $("#actionconditionval1").on("change", function () {
+        setModif(true);
+    });
+    $("#actionconditionval2").off("change");
+    $("#actionconditionval2").on("change", function () {
+        setModif(true);
+    });
+    $("#actionconditionval3").off("change");
+    $("#actionconditionval3").on("change", function () {
+        setModif(true);
+    });
+    $("#actionconditionval4").off("change");
+    $("#actionconditionval4").on("change", function () {
+        setModif(true);
+    });
+    $("#screenshotBCheckbox").off("change");
+    $("#screenshotBCheckbox").on("change", function () {
+        setModif(true);
+    });
+    $("#screenshotACheckbox").off("change");
+    $("#screenshotACheckbox").on("change", function () {
+        setModif(true);
+    });
+    $("#waitBVal").off("change");
+    $("#waitBVal").on("change", function () {
+        setModif(true);
+    });
+    $("#waitAVal").off("change");
+    $("#waitAVal").on("change", function () {
+        setModif(true);
+    });
+    $("#fatalCheckbox").off("change");
+    $("#fatalCheckbox").on("change", function () {
+        setModif(true);
+    });
+
+
+    $("#timeoutAct").off("change");
+    $("#timeoutAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutVal").off("change");
+    $("#timeoutVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityAct").off("change");
+    $("#minSimilarityAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityVal").off("change");
+    $("#minSimilarityVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightAct").off("change");
+    $("#highlightAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightVal").off("change");
+    $("#highlightVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayAct").off("change");
+    $("#typeDelayAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayVal").off("change");
+    $("#typeDelayVal").on("change", function () {
+        setModif(true);
+    });
+
+
+    $("#timeoutConditionAct").off("change");
+    $("#timeoutConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutConditionVal").off("change");
+    $("#timeoutConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityConditionAct").off("change");
+    $("#minSimilarityConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityConditionVal").off("change");
+    $("#minSimilarityConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightConditionAct").off("change");
+    $("#highlightConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightConditionVal").off("change");
+    $("#highlightConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayConditionAct").off("change");
+    $("#typeDelayConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayConditionVal").off("change");
+    $("#typeDelayConditionVal").on("change", function () {
+        setModif(true);
+    });
+
+
+    //EVENT ON SAVE
+    $("#optionsSave").off("click");
+    $("#optionsSave").click(function () {
+
+        action.isFatal = $("#fatalCheckbox").is(':checked');
+
+        action.doScreenshotBefore = $("#screenshotBCheckbox").is(':checked');
+        action.doScreenshotAfter = $("#screenshotACheckbox").is(':checked');
+        action.waitBefore = $("#waitBVal").val();
+        action.waitAfter = $("#waitAVal").val();
+
+        action.conditionOperator = $("#conditionSelectContainer").find('select').val();
+        action.conditionValue1 = $("#actionconditionval1").val();
+        action.conditionValue2 = $("#actionconditionval2").val();
+        action.conditionValue3 = $("#actionconditionval3").val();
+
+        if (conditionNewUIList[action.conditionOperator].type === "combo") {
+            action.conditionValue1 = $("#actionconditionval4 option:selected").attr("stepId");
+            action.conditionValue2 = $("#actionconditionval4 option:selected").attr("actionId") === undefined ? "":$("#actionconditionval4 option:selected").attr("actionId");
+            action.conditionValue3 = $("#actionconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#actionconditionval4 option:selected").attr("controlId");
+        }
+        console.log(conditionNewUIList[action.conditionOperator].field5);
+        if (conditionNewUIList[action.conditionOperator].field5 != undefined) {
+            action.conditionValue2 = $("#actionconditionval5").is(':checked').toString();
+        }
+
+        let newOpts = [];
+        newOpts.push({
+            "act": $("#timeoutAct").prop("checked"),
+            "value": $("#timeoutVal").val(),
+            "option": "timeout"
+        });
+        newOpts.push({
+            "act": $("#minSimilarityAct").prop("checked"),
+            "value": $("#minSimilarityVal").val(),
+            "option": "minSimilarity"
+        });
+        newOpts.push({
+            "act": $("#highlightAct").prop("checked"),
+            "value": $("#highlightVal").val(),
+            "option": "highlightElement"
+        });
+        newOpts.push({
+            "act": $("#typeDelayAct").prop("checked"),
+            "value": $("#typeDelayVal").val(),
+            "option": "typeDelay"
+        });
+
+        if (JSON.stringify(action.options) !== JSON.stringify(newOpts)) {
+            action.options = newOpts;
+        }
+
+        let newConditionOpts = [];
+        newConditionOpts.push({
+            "act": $("#timeoutConditionAct").prop("checked"),
+            "value": $("#timeoutConditionVal").val(),
+            "option": "timeout"
+        });
+        newConditionOpts.push({
+            "act": $("#minSimilarityConditionAct").prop("checked"),
+            "value": $("#minSimilarityConditionVal").val(),
+            "option": "minSimilarity"
+        });
+        newConditionOpts.push({
+            "act": $("#highlightConditionAct").prop("checked"),
+            "value": $("#highlightConditionVal").val(),
+            "option": "highlightElement"
+        });
+        newConditionOpts.push({
+            "act": $("#typeDelayConditionAct").prop("checked"),
+            "value": $("#typeDelayConditionVal").val(),
+            "option": "typeDelay"
+        });
+
+        if (JSON.stringify(action.conditionOptions) !== JSON.stringify(newConditionOpts)) {
+            action.conditionOptions = newConditionOpts;
+            setModif(true);
+        }
+
+        printLabelForOptions($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), newOpts, newConditionOpts, "optionLabel");
+        printLabelForCondition($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
+        printLabel($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.isFatal, "actionFatalLabel", "labelOrange", "Stop Execution on Failure")
+
+        // Close modal via Alpine event
+        window.dispatchEvent(new CustomEvent('modaloptions-close'));
+    });
+
+    // Open modal via Alpine event
+    window.dispatchEvent(new CustomEvent('modaloptions-open', { detail: {} }));
+}
+</script>

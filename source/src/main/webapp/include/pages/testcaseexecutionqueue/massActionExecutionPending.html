@@ -1,79 +1,166 @@
-<!--Mass Action on a Build Content List -->
-<div data-backdrop="static" class="modal fade center" id="massActionExeQModal" tabindex="-1" role="dialog" aria-labelledby="massActionBrpModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="massActionBrpModalLabel" name="massActionBrpField">Massively operate on selected executions in queue</h4>
-            </div>
-            <div class="modal-body">
+<!--Mass Action on Execution Queue - Alpine.js/Tailwind refactored -->
+<div x-data="{ open: false, massTab: 'state' }"
+     x-show="open"
+     x-cloak
+     @massaction-modal-open.window="open = true; massTab = 'state'"
+     @massaction-modal-close.window="open = false"
+     class="crb_modal"
+     id="massActionExeQModal">
 
-                <!--add form-->
-                <form id="massActionExeQModalForm" name="massActionBrpModalForm"  title="Massive Update" role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card w-full max-w-[700px] rounded-2xl"
+         style="max-height: calc(100vh - 4rem); margin: 2rem 1rem;"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="massActionBrpModalLabel" name="massActionBrpField">Mass Action</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Operate on selected executions in queue</p>
+                </div>
+            </div>
+            <button @click="open = false"
+                    class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 mx-6 mb-2 rounded-lg shrink-0">
+            <template x-for="t in [
+                {id:'state', label:'Set State', name:'tabState'},
+                {id:'duplicate', label:'Duplicate', name:'tabStateDup'},
+                {id:'force', label:'Force State', name:'tabStateForce'},
+                {id:'modify', label:'Modify', name:'tabChange'}
+            ]" :key="t.id">
+                <button type="button" @click="massTab = t.id"
+                        :class="massTab === t.id
+                            ? 'bg-white dark:bg-slate-900 font-semibold shadow-sm text-slate-900 dark:text-slate-100'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="flex-1 flex items-center justify-center px-2 py-1.5 rounded-md transition-colors duration-200 text-xs"
+                        :name="t.name"
+                        x-text="t.label">
+                </button>
+            </template>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <form id="massActionExeQModalForm" name="massActionBrpModalForm" title="Massive Update" role="form">
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+                <!-- Messages area -->
+                <div id="DialogMessagesArea" class="mb-3">
+                    <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                        <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                            <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: Set State -->
+                <div x-show="massTab === 'state'" class="space-y-3">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Change Queue State</span>
                         </div>
-                        <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabState">Set state</a></li>
-                            <li><a data-toggle="tab" href="#tabsMass-4" id="massTab4Text" name="tabStateDup">Duplicate Execution</a></li>
-                            <li><a data-toggle="tab" href="#tabsMass-3" id="massTab3Text" name="tabStateForce">Force State</a></li>
-                            <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabChange">Modify</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsMass-1">
-                                <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonSubmit" class="btn btn-primary" name="buttonStateSubmit">move to QUEUED</button>
-                                    </div>
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonCancel" class="btn btn-primary" name="buttonStateCancel">move to CANCELLED</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-4">
-                                <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy to QUEUED</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-3">
-                                <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonErrorForce" class="btn btn-primary" name="buttonStateErrorForce">Force to ERROR</button>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonCancelForce" class="btn btn-primary" name="buttonStateCancelForce">Force to CANCELLED</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-2">
-                                <div class="row">
-                                    <div class="form-group col-xs-4">
-                                        <label for="priority" name="priorityField">Priority</label>
-                                        <input type="text" class="form-control" name="priority" id="priority" aria-describedby="basic-editon1" />
-                                    </div>
-                                    <div class="form-group col-xs-4">
-                                        <button type="button" id="massActionExeQButtonPrio" class="btn btn-primary" name="buttonChangePrio">Change Priority</button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="flex gap-3 flex-wrap">
+                            <button type="button" id="massActionExeQButtonSubmit"
+                                    class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition flex items-center gap-2"
+                                    name="buttonStateSubmit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                                Move to QUEUED
+                            </button>
+                            <button type="button" id="massActionExeQButtonCancel"
+                                    class="px-4 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-700 transition flex items-center gap-2"
+                                    name="buttonStateCancel">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                Move to CANCELLED
+                            </button>
                         </div>
                     </div>
-                </form>
+                </div>
+
+                <!-- TAB: Duplicate -->
+                <div x-show="massTab === 'duplicate'" class="space-y-3">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Duplicate Execution</span>
+                        </div>
+                        <button type="button" id="massActionExeQButtonCopy"
+                                class="px-4 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-700 transition flex items-center gap-2"
+                                name="buttonStateCopy">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy to QUEUED
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: Force State -->
+                <div x-show="massTab === 'force'" class="space-y-3">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Force State Change</span>
+                        </div>
+                        <div class="flex gap-3 flex-wrap">
+                            <button type="button" id="massActionExeQButtonErrorForce"
+                                    class="px-4 py-2 rounded-md bg-orange-600 text-white text-sm hover:bg-orange-700 transition flex items-center gap-2"
+                                    name="buttonStateErrorForce">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                                Force to ERROR
+                            </button>
+                            <button type="button" id="massActionExeQButtonCancelForce"
+                                    class="px-4 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-700 transition flex items-center gap-2"
+                                    name="buttonStateCancelForce">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                Force to CANCELLED
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: Modify -->
+                <div x-show="massTab === 'modify'" class="space-y-3">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Modify Parameters</span>
+                        </div>
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="priority" name="priorityField">Priority</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="priority" id="priority"/>
+                            </div>
+                            <button type="button" id="massActionExeQButtonPrio"
+                                    class="px-4 py-2.5 rounded-md bg-purple-600 text-white text-sm hover:bg-purple-700 transition flex items-center gap-2 shrink-0"
+                                    name="buttonChangePrio">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                                Change Priority
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-            </div>
+        </form>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
         </div>
     </div>
 </div>

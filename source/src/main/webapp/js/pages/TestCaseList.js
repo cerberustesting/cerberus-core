@@ -253,37 +253,44 @@ function deleteEntryClick(test, testCase) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, "Delete", messageComplete, test, testCase, "", "");
+
+    crbConfirmDelete({
+        title: 'Delete',
+        html: messageComplete,
+        preConfirm: async () => {
+            try {
+                const resp = await fetch("DeleteTestCase", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase)
+                });
+                const data = await resp.json();
+                if (getAlertType(data.messageType) !== "success") {
+                    Swal.showValidationMessage(data.message || "Delete failed");
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    }).then(function(result) {
+        if (result.isConfirmed && result.value) {
+            var oTable = $("#testCaseTable").dataTable();
+            oTable.fnDraw(false);
+            if (oTable.fnGetData().length === 1) {
+                oTable.fnPageChange('previous');
+            }
+            showMessageMainPage("success", result.value.message, false);
+        }
+    });
 }
 
 /*
- * Function called when confirmation button pressed
- * @returns {undefined}
+ * Legacy — kept for backward compat but no longer called directly
  */
-function deleteEntryHandlerClick() {
-    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteTestCase", {test: test, testCase: testCase}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#testCaseTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-
-    }).fail(handleErrorAjaxAfterTimeout);
-}
+function deleteEntryHandlerClick() {}
 
 function selectAll() {
     if ($(this).prop("checked"))
@@ -1015,8 +1022,7 @@ function aoColumnsFunc(countries, tableId) {
                     title: doc.getDocLabel("page_testcaselist", "btn_delete"),
                     onClick: `deleteEntryClick('${obj.test}','${obj.testcase}')`,
                     icon: icons.delete,
-                    extraClass: "group-hover:!text-red-500",
-                    disabled: !hasDelete
+                    extraClass: "group-hover:!text-red-500"
                 }));
 
                 // Run

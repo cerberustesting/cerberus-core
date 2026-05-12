@@ -118,6 +118,8 @@ public class TestCaseExecution {
     private String seleniumIPUser;
     private String seleniumIPPassword;
     private String seleniumPort;
+    private String remoteLiveUrl;
+    private String remoteControlLiveUrl;
     private Integer pageSource;
     private Integer robotLog;
     private Integer consoleLog;
@@ -129,7 +131,7 @@ public class TestCaseExecution {
     private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
     // App Type that is used by the engine to interpret the context. By defaut it is linked to the Type of the application but it can be temporary switch to a different type.
-    private String appTypeEngine;
+    private String applicationType;
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
@@ -406,10 +408,13 @@ public class TestCaseExecution {
             result.put("falseNegative", this.isFalseNegative());
             result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
             result.put("application", this.getApplication());
+            result.put("applicationType", this.getApplicationType());
             result.put("robot", this.getRobot());
             result.put("robotExecutor", this.getRobotExecutor());
             result.put("robotHost", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));
             result.put("robotPort", this.getRobotPort());
+            result.put("remoteLiveUrl", this.getRemoteLiveUrl());
+            result.put("remoteControlLiveUrl", this.getRemoteControlLiveUrl());
             result.put("url", StringUtil.secureFromSecrets(this.getUrl(), this.getSecrets()));
             result.put("tag", this.getTag());
             result.put("verbose", this.getVerbose());

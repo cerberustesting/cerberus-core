@@ -44,8 +44,6 @@
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
-            <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
             <jsp:include page="include/templates/datepicker.html"/>
             <jsp:include page="include/templates/selectMultipleDropdown.html"/>

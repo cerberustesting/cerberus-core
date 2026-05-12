@@ -67,15 +67,10 @@ function initPage() {
     $("#addEnvButton").click(addEntryModalSaveHandler);
     $("#editEnvButton").click(editEntryModalSaveHandler);
 
-    //clear the modals fields when closed
-    $('#addEnvModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    $('#editEnvModal').on('hidden.bs.modal', editEntryModalCloseHandler);
-    $('#eventEnableModal').on('hidden.bs.modal', eventEnableModalCloseHandler);
+    // Note: addEntryModalCloseHandler and editEntryModalCloseHandler are called explicitly before opening
     $("#eventEnablePreviewNotificationButton").click(eventEnablePreview);
     $("#eventEnableButton").click(eventEnableModalConfirmHandler);
-    $('#eventDisableModal').on('hidden.bs.modal', eventDisableModalCloseHandler);
     $("#eventDisableButton").click(eventDisableModalConfirmHandler);
-    $('#eventNewChainModal').on('hidden.bs.modal', eventNewChainModalCloseHandler);
     $("#eventNewChainPreviewNotificationButton").click(eventNewChainPreview);
     $("#eventNewChainButton").click(eventNewChainModalConfirmHandler);
 
@@ -84,6 +79,11 @@ function initPage() {
     $("#addDependencies").click(addNewDependenciesRow);
     $("#addDeployType").click(addNewDeployTypeRow);
 
+    // Add group class to rows for hover effects on action buttons + render Lucide icons
+    $('#environmentsTable').on('draw.dt', function() {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) lucide.createIcons();
+    });
 }
 
 function displayPageLabel() {
@@ -197,7 +197,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList", undefined, true);
+    var table = createDataTableWithPermissionsNew(configurations, renderOptionsForEnv, "#environmentList", undefined, true);
 
     var searchArray = [];
     var searchObject = {param: "col", values: "val"};
@@ -239,14 +239,24 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
 function renderOptionsForEnv(data) {
     var doc = new Doc();
-    //check if user has permissions to perform the add operations
     if (data["hasPermissions"]) {
         if ($("#createEnvButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
+            var contentToAdd = `
+            <button id='createEnvButton' type='button'
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_environment", "button_create") + `</span>
+            </button>
+            `;
 
-            $("#environmentsTable_wrapper div#environmentsTable_length").before(contentToAdd);
-            $('#environmentList #createEnvButton').click(addEntryClick);
+            var $wrapper = $("#environmentsTable_buttonWrapper");
+            if ($wrapper.length) {
+                $wrapper.prepend(contentToAdd);
+                if (window.lucide) lucide.createIcons();
+            } else {
+                $("#environmentsTable_wrapper div#environmentsTable_length").before("<div id='environmentsTable_buttonWrapper'>" + contentToAdd + "</div>");
+            }
+            $('#createEnvButton').off('click').on('click', addEntryClick);
         }
     }
 }
@@ -277,39 +287,39 @@ function appendBuildList(selectName, level, defaultValue) {
     });
 }
 
-function deleteEntryHandlerClick() {
-    var system = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var country = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var environment = $('#confirmationModal').find('#hiddenField3').prop("value");
-    var jqxhr = $.post("DeleteCountryEnvParam", {system: system, country: country, environment: environment}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(false);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function deleteEntryClick(system, country, environment) {
+async function deleteEntryClick(system, country, environment) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_environment", "message_delete");
     messageComplete = messageComplete.replace("%SYSTEM%", system);
     messageComplete = messageComplete.replace("%COUNTRY%", country);
     messageComplete = messageComplete.replace("%ENVIRONMENT%", environment);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
+
+    const result = await crbConfirmDelete({
+        title: doc.getDocLabel("page_environment", "button_delete") || 'Delete Environment',
+        html: messageComplete,
+        confirmText: doc.getDocLabel("page_global", "btn_delete") || 'Delete',
+        cancelText: doc.getDocLabel("page_global", "buttonClose") || 'Cancel',
+        preConfirm: async () => {
+            try {
+                const resp = await $.post("DeleteCountryEnvParam", {system: system, country: country, environment: environment}, "json");
+                if (getAlertType(resp.messageType) !== "success") {
+                    Swal.showValidationMessage(resp.message || "Delete failed");
+                    return null;
+                }
+                return resp;
+            } catch (e) {
+                Swal.showValidationMessage("Unexpected error");
+                return null;
+            }
+        }
+    });
+
+    if (result.isConfirmed && result.value) {
+        var oTable = $("#environmentsTable").dataTable();
+        oTable.fnDraw(false);
+        showMessageMainPage(getAlertType(result.value.messageType), result.value.message, false);
+    }
 }
 
 function addEntryModalSaveHandler() {
@@ -327,7 +337,7 @@ function addEntryModalSaveHandler() {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
             showMessage(data);
-            $('#addEnvModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('add-env-modal-close'));
         } else {
             showMessage(data, $('#addEnvModal'));
         }
@@ -359,7 +369,7 @@ function addEntryClick() {
     formAdd.find("#maintenanceStr").val("01:00:00");
     formAdd.find("#maintenanceEnd").val("01:00:00");
 
-    $('#addEnvModal').modal('show');
+    window.dispatchEvent(new CustomEvent('add-env-modal-open'));
 }
 
 function editEntryModalSaveHandler() {
@@ -425,7 +435,7 @@ function editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#environmentsTable").dataTable();
                 oTable.fnDraw(false);
-                $('#editEnvModal').modal('hide');
+                window.dispatchEvent(new CustomEvent('edit-env-modal-close'));
                 showMessage(data);
             } else {
                 showMessage(data, $('#editEnvModal'));
@@ -506,7 +516,7 @@ function editEntryClick(system, country, environment) {
         });
 
 
-        formEdit.modal('show');
+        window.dispatchEvent(new CustomEvent('edit-env-modal-open'));
     });
 
     var table = loadChangeTable(system, country, environment);
@@ -927,7 +937,7 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find("#notifBody div").remove();
     $('#installInstructionsTableBody tr').remove();
 
-    formEvent.modal('show');
+    window.dispatchEvent(new CustomEvent('event-enable-modal-open'));
 }
 
 function eventEnablePreview() {
@@ -959,15 +969,11 @@ function eventEnablePreview() {
 }
 
 function eventEnableModalCloseHandler() {
-    // reset form values
-    $('#eventEnableModal #eventEnableModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventEnableModal #eventEnableModalForm')[0];
+    if (form) form.reset();
+    $('#eventEnableModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventEnableModal'));
-    // Clean old html data
-    $('#notifBody div').remove();
-    console.debug("Closed.");
+    $('#eventEnableModal #notifBody div').remove();
 }
 
 function eventEnableModalConfirmHandler() {
@@ -987,7 +993,7 @@ function eventEnableModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventEnableModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-enable-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventEnableModal'));
@@ -1081,20 +1087,16 @@ function eventDisableClick(system, country, environment) {
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
         formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
-        formEvent.modal('show');
+        window.dispatchEvent(new CustomEvent('event-disable-modal-open'));
     });
 }
 
 function eventDisableModalCloseHandler() {
-    // reset form values
-    $('#eventDisableModal #eventDisableModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventDisableModal #eventDisableModalForm')[0];
+    if (form) form.reset();
+    $('#eventDisableModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventDisableModal'));
-    // Clean old html data
-    $('#notifBody div').remove();
-    console.debug("Closed.");
+    $('#eventDisableModal #notifBody div').remove();
 }
 
 function eventDisableModalConfirmHandler() {
@@ -1111,7 +1113,7 @@ function eventDisableModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventDisableModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-disable-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventDisableModal'));
@@ -1128,7 +1130,7 @@ function eventNewChainClick(system, country, environment) {
 
     $("#eventNewChainButton").prop("disabled", "disabled");
 
-    formEvent.modal('show');
+    window.dispatchEvent(new CustomEvent('event-newchain-modal-open'));
 }
 
 function eventNewChainPreview() {
@@ -1155,19 +1157,15 @@ function eventNewChainPreview() {
 }
 
 function eventNewChainModalCloseHandler() {
-    // reset form values
-    $('#eventNewChainModal #eventNewChainModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
+    var form = $('#eventNewChainModal #eventNewChainModalForm')[0];
+    if (form) form.reset();
+    $('#eventNewChainModal').find('div.has-error').removeClass("has-error");
     clearResponseMessage($('#eventNewChainModal'));
-    // Clean old html data
     var formEvent = $('#eventNewChainModal');
     formEvent.find("#notifTo").prop("value", '');
     formEvent.find("#notifCc").prop("value", '');
     formEvent.find("#notifSubject").prop("value", '');
     formEvent.find("#notifBody div").remove();
-    console.debug("Closed.");
 }
 
 function eventNewChainModalConfirmHandler() {
@@ -1186,7 +1184,7 @@ function eventNewChainModalConfirmHandler() {
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(false);
-            $('#eventNewChainModal').modal('hide');
+            window.dispatchEvent(new CustomEvent('event-newchain-modal-close'));
             showMessage(data);
         } else {
             showMessage(data, $('#eventNewChainModal'));
@@ -1201,53 +1199,87 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
-            "sWidth": "160px",
+            "sWidth": "180px",
             "bSearchable": false,
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+            "mRender": function (data, type, obj, meta) {
+                var hasPermissions = ($("#" + tableId).attr("hasPermissions") === "true");
+                var row = "row_" + (meta ? meta.row : 0);
 
-                var editEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
-                                class="editEnv btn btn-default btn-xs margin-right5" \n\
-                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
-                                class="editEnv btn btn-default btn-xs margin-right5" \n\
-                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEnv = '<button id="deleteEnv" onclick="deleteEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
-                                class="deleteEnv btn btn-default btn-xs margin-right25" \n\
-                                name="deleteEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-trash"></span></button>';
-                var disableEnv = '<button id="disableEnv" onclick="eventDisableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
-                                class="disableEnv btn btn-default btn-xs margin-right5" \n\
-                                name="disableEnv" title="' + doc.getDocLabel("page_environment", "button_disable") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-remove-circle"></span></button>';
-                var enableEnv = '<button id="enableEnv" onclick="eventEnableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\');;" \n\
-                                class="enableEnv btn btn-default btn-xs margin-right5" \n\
-                                name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_enable") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-ok-circle"></span></button>';
-                var newChainEnv = '<button id="newChainEnv" onclick="eventNewChainClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
-                                class="newChainEnv btn btn-default btn-xs margin-right5" \n\
-                                name="newChainEnv" title="' + doc.getDocLabel("page_environment", "button_newChain") + '" type="button">\n\
-                                NC</button>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                var returnString = '<div class="center btn-group width160">';
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    returnString += editEnv + deleteEnv;
-                } else {
-                    returnString += viewEnv;
+                function actionButton({ id, name, title, onClick, icon, extraClass = "" }) {
+                    return '<button id="' + id + '" name="' + name + '" type="button" ' +
+                        'class="' + baseBtnClass + ' ' + extraClass + '" ' +
+                        'title="' + title + '" onclick="' + onClick + '">' +
+                        icon + '</button>';
                 }
+
+                const icons = {
+                    edit: '<i data-lucide="pencil" class="w-4 h-4"></i>',
+                    view: '<i data-lucide="eye" class="w-4 h-4"></i>',
+                    delete: '<i data-lucide="trash-2" class="w-4 h-4"></i>',
+                    disable: '<i data-lucide="power-off" class="w-4 h-4"></i>',
+                    enable: '<i data-lucide="power" class="w-4 h-4"></i>',
+                    chain: '<i data-lucide="link" class="w-4 h-4"></i>'
+                };
+
+                let buttons = [];
+
+                // Edit / View
+                buttons.push(actionButton({
+                    id: "editEnv_" + row,
+                    name: "editEnv",
+                    title: doc.getDocLabel("page_environment", hasPermissions ? "button_edit" : "button_view"),
+                    onClick: "editEntryClick('" + escapeHtml(obj["system"]) + "','" + escapeHtml(obj["country"]) + "','" + escapeHtml(obj["environment"]) + "');",
+                    icon: hasPermissions ? icons.edit : icons.view
+                }));
+
+                if (hasPermissions) {
+                    // Delete
+                    buttons.push(actionButton({
+                        id: "delEnv_" + row,
+                        name: "deleteEnv",
+                        title: doc.getDocLabel("page_environment", "button_delete"),
+                        onClick: "deleteEntryClick('" + escapeHtml(obj["system"]) + "','" + escapeHtml(obj["country"]) + "','" + escapeHtml(obj["environment"]) + "');",
+                        icon: icons.delete,
+                        extraClass: "group-hover:!text-red-500"
+                    }));
+                }
+
+                // Enable / Disable
                 if (obj["active"]) {
+                    buttons.push(actionButton({
+                        id: "disableEnv_" + row,
+                        name: "disableEnv",
+                        title: doc.getDocLabel("page_environment", "button_disable"),
+                        onClick: "eventDisableClick('" + escapeHtml(obj["system"]) + "','" + escapeHtml(obj["country"]) + "','" + escapeHtml(obj["environment"]) + "');",
+                        icon: icons.disable,
+                        extraClass: "group-hover:!text-amber-500"
+                    }));
                     if (obj["chain"] === "Y") {
-                        returnString += disableEnv + newChainEnv;
-                    } else {
-                        returnString += disableEnv;
+                        buttons.push(actionButton({
+                            id: "newChainEnv_" + row,
+                            name: "newChainEnv",
+                            title: doc.getDocLabel("page_environment", "button_newChain"),
+                            onClick: "eventNewChainClick('" + escapeHtml(obj["system"]) + "','" + escapeHtml(obj["country"]) + "','" + escapeHtml(obj["environment"]) + "');",
+                            icon: icons.chain,
+                            extraClass: "group-hover:!text-blue-500"
+                        }));
                     }
                 } else {
-                    returnString += enableEnv;
+                    buttons.push(actionButton({
+                        id: "enableEnv_" + row,
+                        name: "enableEnv",
+                        title: doc.getDocLabel("page_environment", "button_enable"),
+                        onClick: "eventEnableClick('" + escapeHtml(obj["system"]) + "','" + escapeHtml(obj["country"]) + "','" + escapeHtml(obj["environment"]) + "','" + escapeHtml(obj["build"]) + "','" + escapeHtml(obj["revision"]) + "');",
+                        icon: icons.enable,
+                        extraClass: "group-hover:!text-green-500"
+                    }));
                 }
-                returnString += '</div>';
-                return returnString;
+
+                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
             }
         },
         {

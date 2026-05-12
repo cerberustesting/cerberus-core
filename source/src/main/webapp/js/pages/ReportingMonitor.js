@@ -447,16 +447,16 @@ function openSocketAndBuildTable() {
 
         socket.onclose = function (e) {
             console.info("ws onclose");
-            showLoader("#tableMonitor", "Connection closed from server please refresh page.");
-            showLoader("#progressMonitor", "Connection closed from server please refresh page.");
+            showLoader("#tableMonitor", "Connection closed from server.");
+            showLoader("#progressMonitor", "Connection closed from server.");
             wsOpen = false;
             wsStartOpenning = false;
         }; //on est informé lors de la fermeture de la connexion vers le serveur
 
         socket.onerror = function (e) {
             console.info("ws onerror");
-            showLoader("#tableMonitor", "Connection error on server please refresh page.");
-            showLoader("#progressMonitor", "Connection error on server please refresh page.");
+            showLoader("#tableMonitor", "Connection error on server.");
+            showLoader("#progressMonitor", "Connection error on server.");
             wsOpen = false;
             wsStartOpenning = false;
         }; //on traite les cas d'erreur*/
@@ -524,7 +524,7 @@ function refreshMonitorTable(dataFromWs) {
         exeId = item.getAttribute("data-exeid");
         fn = item.getAttribute("data-fn");
         id = item.getAttribute("id");
-        console.info(item);
+//        console.info(item);
         indexPreviousValues[id] = exeId + fn;
 
     });
@@ -829,7 +829,7 @@ function refreshMonitorTable(dataFromWs) {
         let col = Object.keys(columns);
 //        console.info(i);
 //        console.info(col[i]);
-        let cel = $("<td style='text-align: center;max-width : 120px'></td>").attr("id", "H" + col[i]);
+        let cel = $("<td style='text-align: center; max-width : 120px; vertical-align: top'></td>").attr("id", "H" + col[i]);
         cel.append(columns[col[i]].label);
         row.append(cel);
     }
@@ -841,7 +841,7 @@ function refreshMonitorTable(dataFromWs) {
         let col = Object.keys(columns);
 //        console.info(i);
 //        console.info(col[i]);
-        let cel = $("<td style='text-align: center'></td>").attr("id", col[i]);
+        let cel = $("<td style='text-align: center; vertical-align: top'></td>").attr("id", col[i]);
         row.append(cel);
     }
     monTable.append(row);

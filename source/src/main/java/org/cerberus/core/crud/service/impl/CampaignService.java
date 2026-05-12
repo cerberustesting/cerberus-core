@@ -113,6 +113,11 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
+    public Answer updateLastExecuted(String campaign) {
+        return campaignDAO.updateLastExecuted(campaign);
+    }
+
+    @Override
     public Campaign convert(AnswerItem<Campaign> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item

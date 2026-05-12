@@ -1,94 +1,446 @@
-<!--Add an label -->
-<div data-backdrop="static" class="modal fade center" id="addLabelModal" role="dialog" aria-labelledby="addLabelModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addLabelModalLabel" name="createLabelField">Create Label</h4>
-            </div>
-            <div class="modal-body">
+<!--Add a label - Alpine.js/Tailwind refactored -->
+<div x-data="addLabelModal()"
+     x-show="open"
+     x-cloak
+     @addlabel-modal-open.window="handleOpen($event.detail)"
+     @addlabel-modal-close.window="open = false"
+     class="crb_modal"
+     id="addLabelModal">
 
-                <!--add form-->
-                <form id="addLabelModalForm" name="addLabelModalForm"  title="Add Aplication" role="form">
-                    <div class="container-fluid center">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[700px] rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="tag" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="addLabelModalLabel" name="createLabelField">Create Label</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Define label properties and categorization</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 min-h-0">
+            <form id="addLabelModalForm" name="addLabelModalForm" role="form">
+
+                <!-- Messages area -->
+                <div id="DialogMessagesArea" class="mb-3">
+                    <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                        <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                            <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 1: System + Type -->
+                <div class="flex gap-3 mb-3">
+                    <!-- System dropdown -->
+                    <div class="flex-1" x-data="labelDropdown({id:'add_system_dd', hiddenInput:'add_system', preselectEvent:'add-label-system-preselect', loader: labelLoaders.invariant('SYSTEM')})" @click.stop>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemField">System</label>
+                        <input type="hidden" id="add_system" name="system">
+                        <div class="relative w-full">
+                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                                <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                            <template x-teleport="body">
+                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                     class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                     style="z-index: 99999;" :style="posStyle()">
+                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                        <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                    </div>
+                                    <div class="max-h-52 overflow-auto">
+                                        <template x-for="item in filtered()" :key="item.value">
+                                            <button type="button" @click.stop="select(item)"
+                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                <span x-text="item.label"></span>
+                                            </button>
+                                        </template>
+                                        <template x-if="filtered().length === 0">
+                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Type dropdown -->
+                    <div class="flex-1" x-data="labelDropdown({id:'add_type_dd', hiddenInput:'add_type', preselectEvent:'add-label-type-preselect', loader: labelLoaders.invariant('LABELTYPE')})" @click.stop>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
+                        <input type="hidden" id="add_type" name="type">
+                        <div class="relative w-full">
+                            <div @click.stop="toggle()" :id="id + '-btn'"
+                                 class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                                <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                            <template x-teleport="body">
+                                <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                     class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                     style="z-index: 99999;" :style="posStyle()">
+                                    <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                        <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                               class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                    </div>
+                                    <div class="max-h-52 overflow-auto">
+                                        <template x-for="item in filtered()" :key="item.value">
+                                            <button type="button" @click.stop="select(item)"
+                                                    class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                    :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                <span x-text="item.label"></span>
+                                            </button>
+                                        </template>
+                                        <template x-if="filtered().length === 0">
+                                            <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Label -->
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="label" name="labelField">Label</label>
+                    <input type="text" name="label" id="label" maxlength="100"
+                           class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                </div>
+
+                <!-- Row 3: Color -->
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="color" name="colorField">Color</label>
+                    <div name="colorDiv" class="input-group colorpicker-component">
+                        <input type="text" name="color" id="color" maxlength="45"
+                               class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" style="border-radius: 0.375rem 0 0 0.375rem;">
+                        <span class="input-group-addon" style="border-radius: 0 0.375rem 0.375rem 0; border-color: #cbd5e1;"><i></i></span>
+                    </div>
+                </div>
+
+                <!-- Row 4: Parent Label (select2 with inline clear) -->
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="parentLabel" name="parentLabelField">Parent Label</label>
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1">
+                            <select type="text" name="parentLabel" id="parentLabel" maxlength="100"
+                                    class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 transition-all">
+                            </select>
+                        </div>
+                        <button type="button" class="crb-clear-parent h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition" style="display:none;" title="Clear parent">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 5: Description -->
+                <div class="mb-3">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="descriptionField">Description</label>
+                    <textarea name="description" id="description" maxlength="250" rows="3"
+                              class="w-full border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all resize-y"></textarea>
+                </div>
+
+                <!-- Requirement Panel -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-800/50" id="panelReq">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="clipboard-check" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Requirement Details</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <!-- ReqType -->
+                        <div class="flex-1" x-data="labelDropdown({id:'add_reqtype_dd', hiddenInput:'add_reqtype', loader: labelLoaders.invariant('REQUIREMENTTYPE')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="reqtypeField">Requirement Type</label>
+                            <input type="hidden" id="add_reqtype" name="reqtype">
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                         style="z-index: 99999;" :style="posStyle()">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="System" name="systemField">System</label>
-                                <select class="form-control"  id="system" name="system">
-                                </select>
-                            </div>
-                            <div class="form-group col-sm-6">
-                                <label for="type" name="typeField">Type</label>
-                                <select class="form-control"  id="type" name="type">
-                                </select>
+                        <!-- ReqStatus -->
+                        <div class="flex-1" x-data="labelDropdown({id:'add_reqstatus_dd', hiddenInput:'add_reqstatus', loader: labelLoaders.invariant('REQUIREMENTSTATUS')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="reqstatusField">Status</label>
+                            <input type="hidden" id="add_reqstatus" name="reqstatus">
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                         style="z-index: 99999;" :style="posStyle()">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-sm-12">
-                                <label for="label" name="labelField">Label</label>
-                                <input type="text" class="form-control" name="label" id="label" aria-describedby="basic-addon1" maxlength="100">
-                            </div>
-                        </div>
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active">
-                                <div class="row">
-                                    <div class="form-group col-sm-12">
-                                        <label for="color" name="colorField">Color</label>
-                                        <div name="colorDiv" class="input-group colorpicker-component">
-                                            <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
-                                            <span class="input-group-addon"><i></i></span>
+                        <!-- ReqCriticity -->
+                        <div class="flex-1" x-data="labelDropdown({id:'add_reqcrit_dd', hiddenInput:'add_reqcriticity', loader: labelLoaders.invariant('REQUIREMENTCRITICITY')})" @click.stop>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="reqcriticityField">Criticity</label>
+                            <input type="hidden" id="add_reqcriticity" name="reqcriticity">
+                            <div class="relative w-full">
+                                <div @click.stop="toggle()" :id="id + '-btn'"
+                                     class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                                    <span x-text="selectedLabel || '-- Select --'" class="truncate"></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
+                                <template x-teleport="body">
+                                    <div x-show="isOpen" @click.away="isOpen = false" x-transition
+                                         class="fixed rounded-md border shadow-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 max-h-64 overflow-hidden"
+                                         style="z-index: 99999;" :style="posStyle()">
+                                        <div class="p-2 border-b dark:border-slate-700 border-slate-200">
+                                            <input x-model="search" type="text" placeholder="Search..." @keydown.escape.stop="isOpen = false"
+                                                   class="w-full text-sm border rounded px-2 py-1 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300 bg-white border-slate-300 text-slate-900">
+                                        </div>
+                                        <div class="max-h-52 overflow-auto">
+                                            <template x-for="item in filtered()" :key="item.value">
+                                                <button type="button" @click.stop="select(item)"
+                                                        class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
+                                                        :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
+                                                    <span x-text="item.label"></span>
+                                                </button>
+                                            </template>
+                                            <template x-if="filtered().length === 0">
+                                                <div class="px-3 py-2 text-sm text-slate-400 italic">No results</div>
+                                            </template>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-12">
-                                        <label for="parentLabel" name="parentLabelField">Parent Label</label>
-                                        <select type="text" class="form-control" name="parentLabel" id="parentLabel" aria-describedby="basic-addon1" maxlength="100"></select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <textarea type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="250"></textarea>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default" id="panelReq" style="padding:10px;background-color: #fafafa;">
-                                    <div class="row">
-                                        <div class="form-group col-sm-4">
-                                            <label for="reqtype" name="reqtypeField">Requirement Type</label>
-                                            <select class="form-control"  id="reqtype" name="reqtype">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <label for="reqstatus" name="reqstatusField">Status</label>
-                                            <select class="form-control"  id="reqstatus" name="reqstatus">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-sm-4">
-                                            <label for="reqcriticity" name="reqcriticityField">Criticity</label>
-                                            <select class="form-control"  id="reqcriticity" name="reqcriticity">
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+                                </template>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addLabelButton" class="btn btn-primary" name="buttonAdd">Save</button>
-            </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
+            <button type="button" id="addLabelButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonAdd">Save</button>
         </div>
     </div>
 </div>
+
+<script>
+    function addLabelModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+            handleOpen: function(detail) {
+                this.open = true;
+                this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+            },
+            init: function() {
+                var self = this;
+                this.$watch('open', function(val) {
+                    if (!val && typeof addEntryModalCloseHandler === 'function') {
+                        addEntryModalCloseHandler();
+                    }
+                });
+                this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+            }
+        };
+    }
+</script>
+
+<!-- Shared labelDropdown component + loaders (used by both add and edit label modals) -->
+<script>
+    function labelDropdown(config) {
+        return {
+            id: config.id || 'dropdown',
+            hiddenInput: config.hiddenInput || config.id,
+            isOpen: false,
+            items: [],
+            selectedValue: '',
+            selectedLabel: '',
+            search: '',
+            pos: { top: 0, left: 0, width: 0, bottom: 0 },
+            openUp: false,
+
+            init: function() {
+                var self = this;
+                if (config.loader) {
+                    config.loader(function(items) { self.items = items; });
+                }
+                if (config.preselectEvent) {
+                    window.addEventListener(config.preselectEvent, function(e) {
+                        self.preselect(e.detail);
+                    });
+                }
+                window.addEventListener('label-dropdown-close-all', function(e) {
+                    if (e.detail !== self.id) self.isOpen = false;
+                });
+                document.addEventListener('click', function(e) {
+                    if (!self.isOpen) return;
+                    var btn = document.getElementById(self.id + '-btn');
+                    if (btn && btn.contains(e.target)) return;
+                    if (e.target.closest && e.target.closest('[x-show="isOpen"]')) return;
+                    self.isOpen = false;
+                }, true);
+            },
+
+            preselect: function(value) {
+                this.selectedValue = value || '';
+                var match = null;
+                for (var i = 0; i < this.items.length; i++) {
+                    if (this.items[i].value === value) { match = this.items[i]; break; }
+                }
+                this.selectedLabel = match ? match.label : (value || '');
+                var input = document.getElementById(this.hiddenInput);
+                if (input) input.value = value || '';
+            },
+
+            toggle: function() {
+                this.isOpen = !this.isOpen;
+                if (this.isOpen) {
+                    window.dispatchEvent(new CustomEvent('label-dropdown-close-all', { detail: this.id }));
+                    this.updatePosition();
+                }
+            },
+
+            updatePosition: function() {
+                var btn = document.getElementById(this.id + '-btn');
+                if (!btn) return;
+                var rect = btn.getBoundingClientRect();
+                var dropdownHeight = 260;
+                var spaceBelow = window.innerHeight - rect.bottom;
+                if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+                    this.openUp = true;
+                    this.pos.bottom = window.innerHeight - rect.top + 4;
+                } else {
+                    this.openUp = false;
+                    this.pos.top = rect.bottom + 4;
+                }
+                this.pos.left = rect.left;
+                this.pos.width = Math.max(rect.width, 200);
+            },
+
+            posStyle: function() {
+                var base = 'z-index: 99999; left: ' + this.pos.left + 'px; width: ' + this.pos.width + 'px;';
+                if (this.openUp) {
+                    return base + ' bottom: ' + this.pos.bottom + 'px; top: auto;';
+                }
+                return base + ' top: ' + this.pos.top + 'px;';
+            },
+
+            filtered: function() {
+                var q = this.search.toLowerCase();
+                if (!q) return this.items;
+                return this.items.filter(function(i) { return i.label.toLowerCase().indexOf(q) !== -1; });
+            },
+
+            select: function(item) {
+                this.selectedValue = item.value;
+                this.selectedLabel = item.label;
+                this.isOpen = false;
+                this.search = '';
+                var input = document.getElementById(this.hiddenInput);
+                if (input) {
+                    input.value = item.value;
+                    $(input).trigger('change');
+                }
+                if (config.onSelect) config.onSelect(item);
+            }
+        };
+    }
+
+    var labelLoaders = {
+        invariant: function(idName) {
+            return function(callback) {
+                var cacheKey = 'INVARIANT_' + idName;
+                var cached = sessionStorage.getItem(cacheKey);
+                if (cached) {
+                    var list = JSON.parse(cached);
+                    callback(list.map(function(el) {
+                        return { value: el.value, label: el.value + (el.description ? ' - ' + el.description : '') };
+                    }));
+                    return;
+                }
+                $.ajax({
+                    url: 'FindInvariantByID',
+                    data: { idName: idName },
+                    success: function(data) {
+                        sessionStorage.setItem(cacheKey, JSON.stringify(data));
+                        callback(data.map(function(el) {
+                            return { value: el.value, label: el.value + (el.description ? ' - ' + el.description : '') };
+                        }));
+                    },
+                    error: function() { callback([]); }
+                });
+            };
+        }
+    };
+</script>

@@ -114,7 +114,8 @@ public class ServiceService implements IServiceService {
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
     @Override
-    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePathParam, String manualOperation, TestCaseExecution execution, int timeoutMs) {
+    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePathParam, String manualOperation,
+            TestCaseExecution execution, int timeoutMs, int rowLimit) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;
         String decodedRequestExtra1;
@@ -517,7 +518,7 @@ public class ServiceService implements IServiceService {
                                  * Call MONGODB and store it into the execution.
                                  */
                                 result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, decodedRequestExtra1, appService.getMethod(),
-                                        appService.getOperation(), timeoutMs, system, execution);
+                                        appService.getOperation(), timeoutMs, system, execution, rowLimit);
                                 message = result.getResultMessage();
                                 message.resolveDescription("SERVICENAME", service);
                                 break;
@@ -892,7 +893,7 @@ public class ServiceService implements IServiceService {
         // We can now start the call with all data prepared.
         try {
 
-            ans = this.callService(service, kafkaNb, kafkaTime, null, "", "", "", execution, timeout);
+            ans = this.callService(service, kafkaNb, kafkaTime, null, "", "", "", execution, timeout, 0);
 
         } catch (Exception e) {
             LOG.error(e, e);

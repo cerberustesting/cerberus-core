@@ -1845,3 +1845,83 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
         opacity: 0
     }
 }
+
+/* ── Pure CSS Tooltips (no Bootstrap / no JS) ── */
+.crb-tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+.crb-tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #94a3b8;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: help;
+    line-height: 1;
+    transition: background .15s;
+}
+.crb-tooltip-icon:hover {
+    background: #3b82f6;
+}
+.crb-tooltip-bubble {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    max-width: 300px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #f1f5f9;
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    line-height: 1.45;
+    white-space: normal;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity .15s, visibility .15s;
+}
+.crb-tooltip-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: #1e293b;
+}
+.crb-tooltip-wrap:hover .crb-tooltip-bubble {
+    visibility: visible;
+    opacity: 1;
+}
+/* Dark mode */
+:root.dark .crb-tooltip-icon {
+    background: #64748b;
+    color: #e2e8f0;
+}
+:root.dark .crb-tooltip-icon:hover {
+    background: #3b82f6;
+}
+:root.dark .crb-tooltip-bubble {
+    background: #0f172a;
+    color: #e2e8f0;
+    box-shadow: 0 4px 14px rgba(0,0,0,.5);
+}
+:root.dark .crb-tooltip-bubble::after {
+    border-bottom-color: #0f172a;
+}

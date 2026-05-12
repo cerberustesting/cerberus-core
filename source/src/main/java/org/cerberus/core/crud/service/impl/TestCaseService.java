@@ -180,7 +180,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps) throws CerberusException {
+    public AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps, boolean withHisto) throws CerberusException {
 
         HashMap<String, TestCaseCountry> testCaseCountries;
         HashMap<String, Invariant> countryInvariants;
@@ -201,6 +201,9 @@ public class TestCaseService implements ITestCaseService {
             if (withSteps) {
                 answerTestCase.getItem().setSteps(testCaseStepService.readByTestTestCaseStepsWithDependencies(test, testCase).getDataList());
                 answerTestCase.getItem().setTestCaseInheritedProperties(testCaseCountryPropertiesService.findDistinctInheritedPropertiesOfTestCase(answerTestCase.getItem(), countryInvariants));
+            }
+            if (withHisto) {
+                answerTestCase.getItem().setHistos(testCaseHistoService.readByTestCase(test, testCase).getDataList());
             }
         }
         return answerTestCase;
@@ -885,7 +888,7 @@ public class TestCaseService implements ITestCaseService {
             this.testCaseLabelService.createList(newTestcase.getTestCaseLabels());
         }
 
-        return this.findTestCaseByKeyWithDependencies(newTestcase.getTest(), newTestcase.getTestcase(), true).getItem();
+        return this.findTestCaseByKeyWithDependencies(newTestcase.getTest(), newTestcase.getTestcase(), true, true).getItem();
     }
 
     @Override
@@ -901,7 +904,7 @@ public class TestCaseService implements ITestCaseService {
 
         TestCase oldTestcaseVersion = new TestCase();
         try {
-            oldTestcaseVersion = this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true).getItem();
+            oldTestcaseVersion = this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true, false).getItem();
             if (oldTestcaseVersion == null) {
                 throw new EntityNotFoundException(TestCase.class, "testcaseFolderId", newTestcaseVersion.getTest(), "testcaseId", newTestcaseVersion.getTestcase());
             }
@@ -981,7 +984,7 @@ public class TestCaseService implements ITestCaseService {
                     newTestcaseVersion.getTestCaseLabels()
             );
         }
-        return this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true).getItem();
+        return this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true, true).getItem();
     }
 
     @Override

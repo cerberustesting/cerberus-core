@@ -1,0 +1,452 @@
+<!-- EventHook Modal - Alpine.js/Tailwind refactored -->
+<div
+        x-data="eventHookModal()"
+        x-show="open"
+        x-cloak
+        @eventhook-modal-open.window="handleOpen($event.detail)"
+        @eventhook-modal-close.window="open = false"
+        class="crb_modal"
+        id="editEventHookModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="webhook" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0" id="editEntryModalEventHook" name="editEventHookField">Event Hook</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Manage event hook notifications</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="px-6 shrink-0" id="DialogMessagesArea">
+            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <form id="editEventHookModalForm" name="editEventHookModalForm" role="form">
+
+                <!-- Tabs -->
+                <div class="w-full mt-3" x-data>
+                    <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm h-10">
+                        <button type="button"
+                                @click="activeTab = 'config'"
+                                :class="activeTab === 'config' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            <i data-lucide="settings" class="w-4 h-4"></i>
+                            <span name="tabEH1">Event Hook</span>
+                        </button>
+                        <button type="button"
+                                @click="activeTab = 'traceability'"
+                                :class="activeTab === 'traceability' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                                class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            <span name="tabsEH25">Traceability</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Configuration -->
+                <div x-show="activeTab === 'config'" x-transition class="mt-4 space-y-4">
+
+                    <!-- Event & Active -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="zap" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Event</span>
+                        </div>
+                        <input type="text" name="id" id="id" style="display: none;">
+
+                        <div class="flex gap-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="eventReference" name="eventReferenceField">Event Reference</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="eventReference" id="eventReference"></select>
+                            </div>
+                            <div class="w-24 flex flex-col items-center">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="isActive" name="isActiveField">Active</label>
+                                <div class="flex items-center h-10">
+                                    <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" name="isActive" id="isActive">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 mt-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="objectKey1" name="objectKey1Field">Object Key 1</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="objectKey1" id="objectKey1" maxlength="150">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="objectKey2" name="objectKey2Field">Object Key 2</label>
+                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="objectKey2" id="objectKey2" maxlength="150">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connector -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="plug" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Connector</span>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="hookConnector" name="hookConnectorField">Connector</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="hookConnector" id="hookConnector"></select>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="hookRecipient" name="hookRecipientField">Recipient</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="hookRecipient" id="hookRecipient" maxlength="500">
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="hookChannel" name="hookChannelField">Channel</label>
+                            <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="hookChannel" id="hookChannel" maxlength="150">
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="description" name="descriptionField">Description</label>
+                        <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all" name="description" id="description" maxlength="500">
+                    </div>
+                </div>
+
+                <!-- Tab 2: Traceability -->
+                <div x-show="activeTab === 'traceability'" x-transition class="mt-4">
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Traceability</span>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_created" for="datecreated">Created</label>
+                                <input id="datecreated" name="datecreated" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" readonly="readonly" />
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_creator" for="usrcreated">Creator</label>
+                                <input id="usrcreated" name="usrcreated" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" readonly="readonly" />
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-3">
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModified" for="datemodif">Last Modified</label>
+                                <input id="datemodif" name="datemodif" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" readonly="readonly" />
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbl_lastModifier" for="usrmodif">Last Modifier</label>
+                                <input id="usrmodif" name="usrmodif" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300" readonly="readonly" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" id="editEventHookButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
+            <button type="button" id="duplicateEventHookButton" name="buttonDuplicate" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Duplicate</button>
+            <button type="button" id="addEventHookButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Add</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*
+     * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+     * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+     *
+     * This file is part of Cerberus.
+     *
+     * Cerberus is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * Cerberus is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+     */
+
+    // ===== ALPINE COMPONENT =====
+    function eventHookModal() {
+        return {
+            open: false,
+            isFullscreen: false,
+            activeTab: 'config',
+
+            handleOpen: function(detail) {
+                this.open = true;
+                this.activeTab = 'config';
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            },
+
+            init: function() {
+                this.$nextTick(function() {
+                    if (window.lucide) lucide.createIcons();
+                });
+            }
+        };
+    }
+
+    // ===== MODAL LOGIC (merged from js/transversalobject/EventHook.js) =====
+
+    function openModalEventHook(hookid, mode) {
+        // We only load the Labels and bind the events once for performance optimisations.
+        if ($('#editEventHookModal').data("initLabel") === undefined) {
+            initModalEventHook();
+            $('#editEventHookModal').data("initLabel", true);
+        }
+        editEventHookClick(hookid, mode);
+    }
+
+    function initModalEventHook() {
+
+        var doc = new Doc();
+        $("#title").html(doc.getDocLabel("page_eventhook", "title"));
+
+        $("[name='tabEH1']").html(doc.getDocLabel("page_eventhook", "title"));
+        $("[name='tabsEH25']").html(doc.getDocLabel("page_global", "traca"));
+
+        $("[name='eventReferenceField']").html(doc.getDocOnline("page_eventhook", "eventReference"));
+        $("[name='isActiveField']").html(doc.getDocOnline("page_eventhook", "isActive"));
+        $("[name='objectKey1Field']").html(doc.getDocOnline("page_eventhook", "objectKey1"));
+        $("[name='objectKey2Field']").html(doc.getDocOnline("page_eventhook", "objectKey2"));
+        $("[name='hookConnectorField']").html(doc.getDocOnline("page_eventhook", "hookConnector"));
+        $("[name='hookRecipientField']").html(doc.getDocOnline("page_eventhook", "hookRecipient"));
+        $("[name='hookChannelField']").html(doc.getDocOnline("page_eventhook", "hookChannel"));
+        $("[name='descriptionField']").html(doc.getDocOnline("page_eventhook", "description"));
+
+        $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
+        $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
+        $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
+        $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+
+        $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+        $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
+        $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+        $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "buttonDuplicate"));
+
+        $("#editEventHookButton").off("click");
+        $("#editEventHookButton").click(function () {
+            confirmEventHookModalHandler("EDIT");
+        });
+        $("#addEventHookButton").off("click");
+        $("#addEventHookButton").click(function () {
+            confirmEventHookModalHandler("ADD");
+        });
+        $("#duplicateEventHookButton").off("click");
+        $("#duplicateEventHookButton").click(function () {
+            confirmEventHookModalHandler("DUPLICATE");
+        });
+    }
+
+    function editEventHookClick(eventid, mode) {
+
+        clearResponseMessage($('#editEventHookModal'));
+
+        // Hide all action buttons first
+        $('#editEventHookButton').hide();
+        $('#addEventHookButton').hide();
+        $('#duplicateEventHookButton').hide();
+
+        var doc = new Doc();
+        if (mode === "EDIT") {
+            $('#editEventHookButton').show();
+            $("[name='editEventHookField']").html(doc.getDocLabel("page_global", "buttonEdit") + " " + doc.getDocLabel("page_eventhook", "title"));
+        } else if (mode === "ADD") {
+            $('#addEventHookButton').show();
+            $("[name='editEventHookField']").html(doc.getDocLabel("page_global", "buttonAdd") + " " + doc.getDocLabel("page_eventhook", "title"));
+        } else if (mode === "DUPLICATE") {
+            $('#duplicateEventHookButton').show();
+            $("[name='editEventHookField']").html(doc.getDocLabel("page_global", "buttonDuplicate") + " " + doc.getDocLabel("page_eventhook", "title"));
+        }
+
+        feedEventHookModal(eventid, "editEventHookModal", mode);
+    }
+
+    function confirmEventHookModalHandler(mode) {
+        clearResponseMessage($('#editEventHookModal'));
+
+        var eventHookID = $('#id').val();
+
+        var formEdit = $('#editEventHookModal #editEventHookModalForm');
+
+        showLoaderInModal('#editEventHookModal');
+
+        // Calculate servlet name to call.
+        var myServlet = "UpdateEventHook";
+        if ((mode === "ADD") || (mode === "DUPLICATE")) {
+            myServlet = "CreateEventHook";
+        }
+
+        // Get the header data from the form.
+        var data = convertSerialToJSONObject(formEdit.serialize());
+
+        data.isActive = (data.isActive === "on");
+        $.ajax({
+            url: myServlet,
+            async: true,
+            method: "POST",
+            data: {
+                description: data.description,
+                eventReference: data.eventReference,
+                hookChannel: data.hookChannel,
+                hookConnector: data.hookConnector,
+                hookRecipient: data.hookRecipient,
+                id: data.id,
+                isActive: data.isActive,
+                objectKey1: data.objectKey1,
+                objectKey2: data.objectKey2
+            },
+            success: function (data) {
+
+                if (getAlertType(data.messageType) === "success") {
+                    var oTable = $("#eventHooksTable").dataTable();
+                    oTable.fnDraw(false);
+                    $('#editEventHookModal').data("Saved", true);
+                    window.dispatchEvent(new CustomEvent('eventhook-modal-close'));
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#editEventHookModal'));
+                }
+
+                hideLoaderInModal('#editEventHookModal');
+            },
+            error: function (data) {
+                data.message = showUnexpectedError();
+                showMessage(data, $('#editEventHookModal'));
+                hideLoaderInModal('#editEventHookModal');
+            }
+        });
+    }
+
+    function feedEventHookModal(eventid, modalId, mode) {
+        clearResponseMessageMainPage();
+        var formEdit = $('#' + modalId);
+
+        if (mode === "DUPLICATE" || mode === "EDIT") {
+            $.ajax({
+                url: "ReadEventHook",
+                async: true,
+                method: "POST",
+                data: {
+                    id: eventid
+                },
+                success: function (data) {
+                    if (data.messageType === "OK") {
+
+                        // Feed the data to the screen and manage authorities.
+                        var eventHook = data.contentTable;
+                        feedEventHookModalData(eventHook, modalId, mode, eventHook.hasPermissions);
+
+                        window.dispatchEvent(new CustomEvent('eventhook-modal-open', { detail: {} }));
+                    } else {
+                        showUnexpectedError();
+                    }
+                    refreshPopoverDocumentation("editEventHookModal");
+                },
+                error: showUnexpectedError
+            });
+
+        } else {
+            var eventHookObj = {};
+            var hasPermissions = true;
+            eventHookObj.description = "";
+            eventHookObj.eventReference = "CAMPAIGN_END";
+            eventHookObj.hasPermissionsUpdate = true;
+            eventHookObj.hookChannel = "";
+            eventHookObj.hookConnector = "EMAIL";
+            eventHookObj.hookRecipient = "";
+            eventHookObj.id = 0;
+            eventHookObj.isActive = true;
+            eventHookObj.objectKey1 = "";
+            eventHookObj.objectKey2 = "";
+
+            feedEventHookModalData(eventHookObj, modalId, mode, hasPermissions);
+            window.dispatchEvent(new CustomEvent('eventhook-modal-open', { detail: {} }));
+        }
+    }
+
+    function feedEventHookModalData(eventhookid, modalId, mode, hasPermissionsUpdate) {
+        var formEdit = $('#' + modalId);
+        var doc = new Doc();
+
+        // Data Feed.
+        if (mode === "EDIT") {
+            formEdit.find("#id").prop("value", eventhookid.id);
+            formEdit.find("#usrcreated").prop("value", eventhookid.usrCreated);
+            formEdit.find("#datecreated").prop("value", getDate(eventhookid.dateCreated));
+            formEdit.find("#usrmodif").prop("value", eventhookid.usrModif);
+            formEdit.find("#datemodif").prop("value", getDate(eventhookid.dateModif));
+        } else { // DUPLICATE or ADD
+            formEdit.find("#usrcreated").prop("value", "");
+            formEdit.find("#datecreated").prop("value", "");
+            formEdit.find("#usrmodif").prop("value", "");
+            formEdit.find("#datemodif").prop("value", "");
+            if (mode === "ADD") {
+                formEdit.find("#id").prop("value", eventhookid.id);
+            } else { // DUPLICATE
+                formEdit.find("#id").prop("value", eventhookid.id);
+            }
+        }
+
+        formEdit.find("#isActive").prop("checked", eventhookid.isActive);
+
+        formEdit.find("#eventReference").val(eventhookid.eventReference);
+        formEdit.find("#hookConnector").val(eventhookid.hookConnector);
+
+        formEdit.find("#hookChannel").val(eventhookid.hookChannel);
+        formEdit.find("#hookRecipient").prop("value", eventhookid.hookRecipient);
+        formEdit.find("#objectKey1").prop("value", eventhookid.objectKey1);
+        formEdit.find("#objectKey2").prop("value", eventhookid.objectKey2);
+        formEdit.find("#description").prop("value", eventhookid.description);
+    }
+</script>

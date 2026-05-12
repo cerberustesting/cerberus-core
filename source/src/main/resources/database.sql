@@ -6808,3 +6808,30 @@ ALTER TABLE appservice ADD ServiceRequestExtra1 MEDIUMTEXT NULL AFTER `ServiceRe
 -- 1933
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
     VALUES ('PROXYTYPE', 'MITMPROXY', 400, 'Mitm Proxy with Network Traffic analysis and control.');
+
+-- 1934
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
+  VALUES ('FILETYPE', 'MP4', '25000', '', '');
+
+-- 1935
+ALTER TABLE `robot`
+    ADD COLUMN `preloadScript` TEXT NULL DEFAULT NULL AFTER `IsAcceptInsecureCerts`;
+
+-- 1936
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_testdatalib_mongodb_fetchmax', '10000', 'Maximum number of fetched records that Cerberus will perform when retrieving a data from a Mongodg service Data Library.');
+
+-- 1937
+UPDATE `parameter` SET `param`='cerberus_testdatalib_sql_fetchmax' WHERE `param`='cerberus_testdatalib_fetchmax';
+
+-- 1938
+ALTER TABLE campaign ADD DateLastExecuted timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER Group3;
+
+-- 1939
+TRUNCATE TABLE testcasehisto;
+
+-- 1940
+ALTER TABLE testcaseexecution ADD ApplicationType varchar(10) NOT NULL DEFAULT '' AFTER Application;
+
+-- 1941
+UPDATE testcaseexecution exe JOIN application app ON app.Application = exe.Application SET exe.applicationtype = app.type;

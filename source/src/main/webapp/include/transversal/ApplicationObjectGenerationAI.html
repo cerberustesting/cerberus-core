@@ -99,7 +99,6 @@
                                         try {
                                             const r = await fetch('ReadApplication');
                                             const d = await r.json();
-                                            console.log(d);
                                             return d.contentTable.map(a => a.application);
                                         } catch (e) {
                                             console.error('Failed to load applications :', e);
@@ -274,7 +273,7 @@
                 </div>
 
                 <!-- INPUT -->
-                <div class="border-t border-slate-200 dark:border-slate-700 p-4 flex-shrink-0">
+                <div class="p-4 flex-shrink-0">
                     <div class="flex items-end gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 focus-within:border-blue-500 transition">
 
                         <textarea rows="1" x-model="chatInput"

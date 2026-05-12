@@ -93,8 +93,8 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
     public Answer create(TestCaseHisto testcasehisto) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasehisto (test, testcase, version, description, testCaseContent, UsrCreated) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?)");
+        query.append("INSERT INTO testcasehisto (test, testcase, version, description, testCaseContent, DateVersion, UsrCreated) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         LOG.debug("SQL : " + query);
@@ -111,7 +111,8 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
                 preStat.setString(i++, testcasehisto.getTestCase());
                 preStat.setInt(i++, testcasehisto.getVersion());
                 preStat.setString(i++, testcasehisto.getDescription());
-                preStat.setString(i++, testcasehisto.getTestCaseContent().toString());
+                preStat.setString(i++, testcasehisto.getTestCaseContent().toString(1));
+                preStat.setTimestamp(i++, testcasehisto.getDateVersion());
                 preStat.setString(i++, testcasehisto.getUsrCreated());
 
                 preStat.executeUpdate();
@@ -162,7 +163,11 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
         String usrModif = resultSet.getString("tch.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tch.DateModif");
 
-        return TestCaseHisto.builder().test(test).testCase(testcase).version(version).description(description).dateCreated(dateCreated).dateModif(dateModif).dateVersion(dateVersion).usrCreated(usrCreated).usrModif(usrModif).build();
+        return TestCaseHisto.builder()
+                .test(test).testCase(testcase).version(version)
+                .description(description)
+                .dateCreated(dateCreated).dateModif(dateModif).dateVersion(dateVersion).usrCreated(usrCreated).usrModif(usrModif)
+                .build();
     }
 
     @Override
@@ -232,26 +237,31 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
         AnswerList<TestCaseHisto> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseHisto> testList = new ArrayList<>();
+        List<TestCaseHisto> testHistoList = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT teh.* FROM testcasehisto teh ");
-        query.append("WHERE teh.test = ? and teh.testcase = ? ");
+        query.append("SELECT tch.* FROM testcasehisto tch ");
+        query.append("WHERE tch.test = ? and tch.testcase = ? ");
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.test : {}", test);
+        LOG.debug("SQL.param.testcase : {}", testcase);
 
         // FIXME create a generic RequestDbUtils method to manage limit and DATA_OPERATION_WARNING_PARTIAL_RESULT constraint
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, test);
-                preStat.setString(1, testcase);
+                int i = 1;
+                preStat.setString(i++, test);
+                preStat.setString(i++, testcase);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        testList.add(this.loadFromResultSet(resultSet));
+                        testHistoList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -262,18 +272,18 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
-                    if (testList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    if (testHistoList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(testList, nrTotalRows);
-                    } else if (testList.size() <= 0) {
+                        response = new AnswerList<>(testHistoList, nrTotalRows);
+                    } else if (testHistoList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(testList, nrTotalRows);
+                        response = new AnswerList<>(testHistoList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(testList, nrTotalRows);
+                        response = new AnswerList<>(testHistoList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
