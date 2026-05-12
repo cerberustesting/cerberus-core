@@ -175,7 +175,7 @@ public class MongodbService implements IMongodbService {
                         maxFetch = maxSecurityFetch;
                     }
 
-                    try (MongoCursor<Document> cursor = collection.find(BasicDBObject.parse(requestString)).limit(maxFetch)
+                    try (MongoCursor<Document> cursor = collection.find(Document.parse(requestString)).limit(maxFetch)
                             .iterator()) {
                         int i = 0;
                         while (cursor.hasNext() && i < 5) {
@@ -195,7 +195,7 @@ public class MongodbService implements IMongodbService {
 
                 case AppService.METHOD_MONGODBUPDATEONE:
                     if ((StringUtil.isNotEmptyOrNULLString(requestString)) && (StringUtil.isNotEmptyOrNULLString(requestExtra1String))) {
-                        UpdateResult resultUpdate = collection.updateOne(BasicDBObject.parse(requestString), BasicDBObject.parse(requestExtra1String));
+                        UpdateResult resultUpdate = collection.updateOne(Document.parse(requestString), Document.parse(requestExtra1String));
                         LOG.debug("Results updated.");
 //                        mongoDBResultArray.put(new JSONObject(resultUpdate.getUpsertedId()));
 //                        LOG.debug(mongoDBResultArray);
