@@ -430,6 +430,11 @@
     color: #FFFFFF;
 }
 
+.list-group-item-danger {
+    color: #a94442 !important;
+    background-color: #f2dede !important;
+}
+
 .list-group-item-secondary {
     background-color: #dfe4ea;
 }
