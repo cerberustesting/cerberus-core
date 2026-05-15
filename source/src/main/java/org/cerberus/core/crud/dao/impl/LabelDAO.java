@@ -77,8 +77,7 @@ public class LabelDAO implements ILabelDAO {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.label : " + id);
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             //prepare and execute query
             preStat.setInt(1, id);
             try (ResultSet resultSet = preStat.executeQuery();) {
@@ -184,9 +183,7 @@ public class LabelDAO implements ILabelDAO {
             LOG.debug("SQL.param.system : " + system);
             LOG.debug("SQL.param.type : " + type);
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isEmptyOrNull(searchTerm)) {
@@ -220,8 +217,7 @@ public class LabelDAO implements ILabelDAO {
                 }
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
 
                 //gets the data
                 while (resultSet.next()) {
@@ -283,12 +279,9 @@ public class LabelDAO implements ILabelDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
 
                 //gets the data
                 while (resultSet.next()) {
@@ -345,8 +338,7 @@ public class LabelDAO implements ILabelDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("Label : " + label.toString());
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, label.getSystem());
@@ -388,9 +380,9 @@ public class LabelDAO implements ILabelDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + object.getId());
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getId());
 
             preStat.executeUpdate();
@@ -418,8 +410,7 @@ public class LabelDAO implements ILabelDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getLabel());
@@ -434,6 +425,36 @@ public class LabelDAO implements ILabelDAO {
             preStat.setString(i++, object.getRequirementStatus());
             preStat.setString(i++, object.getRequirementCriticity());
             preStat.setInt(i++, object.getId());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+        } catch (Exception e) {
+            LOG.warn("Unable to update label: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            response.setResultMessage(msg);
+        }
+
+        return response;
+    }
+
+    @Override
+    public Answer updateParentToRoot(Integer labelId, String usrModif) {
+        Answer response = new Answer();
+        MessageEvent msg = null;
+        final String query = "UPDATE label SET `parentLabelid` = 0, `usrModif` = ?, `dateModif` = NOW()"
+                + "  WHERE `parentLabelid` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            int i = 1;
+            preStat.setString(i++, usrModif);
+            preStat.setInt(i++, labelId);
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -538,9 +559,7 @@ public class LabelDAO implements ILabelDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (systems != null && !systems.isEmpty()) {
@@ -570,8 +589,7 @@ public class LabelDAO implements ILabelDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
 
                 //gets the data
                 while (resultSet.next()) {

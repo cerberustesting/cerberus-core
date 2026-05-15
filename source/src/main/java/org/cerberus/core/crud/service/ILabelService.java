@@ -153,6 +153,14 @@ public interface ILabelService {
 
     /**
      *
+     * @param labelId
+     * @param usrModif
+     * @return
+     */
+    Answer updateParentToRoot(Integer labelId, String usrModif);
+
+    /**
+     *
      * @param answerItem
      * @return
      * @throws CerberusException

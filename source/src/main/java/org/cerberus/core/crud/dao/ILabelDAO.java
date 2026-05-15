@@ -87,6 +87,14 @@ public interface ILabelDAO {
     Answer update(Label object);
 
     /**
+     *
+     * @param labelId
+     * @param usrModif
+     * @return
+     */
+    Answer updateParentToRoot(Integer labelId, String usrModif);
+
+    /**
      * Uses data of ResultSet to create object {@link Label}
      *
      * @param rs ResultSet relative to select from table Label

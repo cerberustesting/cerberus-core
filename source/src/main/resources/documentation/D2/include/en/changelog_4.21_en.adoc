@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed issue when delete a label that is parent to other label. That was Causing an error on opening the corresponding testcases. fixed #2609
 
 *Improvements / New features*
 [square]

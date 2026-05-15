@@ -182,7 +182,7 @@ public class Label {
             float[] hsb = Color.RGBtoHSB(red, green, blue, null);
             float brightness = hsb[2];
 
-            LOG.debug("is the Color Dark ? " + colorCode + " : " + (brightness < 0.5));
+//            LOG.debug("is the Color Dark ? " + colorCode + " : " + (brightness < 0.5));
             return (brightness < 0.5);
         } catch (Exception e) {
             LOG.warn("Could not guess if color " + colorCode + " is Dark.", e);
