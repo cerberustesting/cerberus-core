@@ -96,7 +96,7 @@
                     <!-- Row 1: Test Folder + Testcase ID + Priority -->
                     <div class="flex gap-3 items-end">
                         <!-- Test Folder -->
-                        <div class="flex-1" x-data="crbDropdown({id:'testFolder', preselectEvent:'testfolder-preselect', loader: crbLoaders.tests})" @click.stop>
+                        <div class="flex-1" x-data="crbDropdown({id:'testFolder', preselectEvent:'testfolder-preselect', loader: crbLoaders.tests, onSelect: function(item) { document.getElementById('test').value = item.value; window.dispatchEvent(new CustomEvent('testfolder-changed', {detail: item.value})); }})" @click.stop>
                             <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="testField">Test Folder</label>
                             <div class="relative w-full">
                                 <div @click.stop="toggle()" :id="id + '-btn'"
@@ -1103,12 +1103,11 @@ function editTestCaseClick(test, testCase) {
     $("#editTestCaseModalForm #testCase").prop("value", testCase);
 
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(test, "editTestCaseModalForm");
-        // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
     $('#editTestCaseModalForm input[name="testCase"]').change(function () {
         // Compare with original value in order to display the warning message.
@@ -1121,7 +1120,8 @@ function displayWarningOnChangeTestCaseKey(test, testCase) {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalTest").val();
     let old2 = $("#originalTestCase").val();
-    let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+    var ddWarning = document.getElementById('testFolder-btn');
+    let new1 = ddWarning ? Alpine.$data(ddWarning.closest('[x-data]')).selectedValue : $('#test').val();
     let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
 
     if ((old1 !== new1) || (old2 !== new2)) {
@@ -1156,10 +1156,13 @@ function duplicateTestCaseClick(test, testCase) {
 //    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    if (window._tcTestFolderChangeHandler) {
+        window.removeEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
+    }
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(test, "editTestCaseModalForm");
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedTestCaseModal(test, testCase, "editTestCaseModal", "DUPLICATE");
@@ -1186,11 +1189,14 @@ function addTestCaseClick(defaultTest) {
 //        feedTestCaseField(null, "editTestCaseModalForm");
 //    });
 
-    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    // In Add TestCase form, if we change the test, we don't display any warning.
+    if (window._tcTestFolderChangeHandler) {
+        window.removeEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
+    }
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(defaultTest, "editTestCaseModalForm");
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedNewTestCaseModal("editTestCaseModal", defaultTest);
@@ -1204,18 +1210,20 @@ function addTestCaseClick(defaultTest) {
  * @returns {null}
  */
 function feedTestCaseField(test, modalForm) {
-//    console.info("feed Test Case. " + test + " mode : " + curMode);
     var trigNewTestCase = true;
 // Predefine the testcase value.
     if (curMode !== "EDIT") {
         trigNewTestCase = true;
-        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
-        test = new1;
+        // Read from the Alpine crbDropdown via the hidden input (not a <select>)
+        var ddEl = document.getElementById('testFolder-btn');
+        var new1 = ddEl ? Alpine.$data(ddEl.closest('[x-data]')).selectedValue : $('#test').val();
+        if (new1) test = new1;
 
     } else {
         trigNewTestCase = false;
         let old1 = $("#originalTest").val();
-        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+        var ddEl2 = document.getElementById('testFolder-btn');
+        var new1 = ddEl2 ? Alpine.$data(ddEl2.closest('[x-data]')).selectedValue : $('#test').val();
         if (test !== new1) {
             test = new1;
             trigNewTestCase = true;
@@ -1230,7 +1238,7 @@ function feedTestCaseField(test, modalForm) {
         $.ajax({
             url: "ReadTestCase",
             method: "GET",
-            data: {test: encodeURIComponent(test), getMaxTC: true},
+            data: {test: test, getMaxTC: true},
             dataType: "json",
             success: function (data) {
                 $('#' + modalForm + ' [name="testCase"]').val(data.nextAvailableTestcaseId);
@@ -1729,6 +1737,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_duplicate"));
             appendTestList(testCase.test);
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
+            // Pre-select the same status as the source test case
+            window.dispatchEvent(new CustomEvent('status-preselect', { detail: testCase.status }));
         }
     }
     if (isEmpty(testCase)) {

@@ -1,0 +1,141 @@
+<!-- TestCaseScript V2 — Step List Sidebar -->
+<!-- Tailwind + Cerberus design tokens -->
+
+<div class="flex flex-col rounded-2xl v2-step-sidebar" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+
+    <!-- Sidebar Header -->
+    <div class="flex items-center justify-between px-4 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+        <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--crb-dark-color)">Steps</span>
+        <span class="text-xs font-medium" style="color: var(--crb-grey-color)"
+              x-text="steps.filter(s => !s.toDelete).length + ' / ' + steps.length"></span>
+    </div>
+
+    <!-- Step List -->
+    <ul class="v2-step-list flex-1 overflow-y-auto overflow-x-visible p-2 space-y-0.5 list-none m-0" id="v2StepList">
+        <template x-for="(step, idx) in steps" :key="step._uid">
+            <li class="v2-fade-in v2-step-item flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all duration-150"
+                :class="{
+                    'v2-step-item--active': activeStepIndex === idx,
+                    'v2-step-item--deleted': step.toDelete
+                }"
+                @click="selectStep(idx)"
+                draggable="true"
+                @dragstart="onStepDragStart($event, idx)"
+                @dragover.prevent="onStepDragOver($event, idx)"
+                @drop="onStepDrop($event, idx)"
+                @dragend="onStepDragEnd()">
+
+                <!-- Number badge -->
+                <div class="v2-step-badge shrink-0"
+                     :class="activeStepIndex === idx ? 'v2-step-badge--active' : ''"
+                     x-text="idx + 1"></div>
+
+                <!-- Content -->
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-medium truncate" style="color: var(--crb-dark-color)"
+                         x-text="step.description || 'Untitled step'"></div>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <span class="text-[10px]" style="color: var(--crb-grey-color)"
+                              x-text="(step.actions ? step.actions.filter(a => !a.toDelete).length : 0) + ' act.'"></span>
+                        <template x-if="step.isUsingLibraryStep">
+                            <a class="v2-step-lib-badge v2-step-lib-badge--linked"
+                               :href="'./TestCaseScript.jsp?test=' + encodeURIComponent(step.libraryStepTest) + '&testcase=' + encodeURIComponent(step.libraryStepTestCase) + '&stepId=' + step.libraryStepStepId"
+                               target="_blank"
+                               @click.stop
+                               :data-tip="'Open library: ' + step.libraryStepTestCase"
+                               data-tip-pos="bottom">
+                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                <span x-text="step.libraryStepTestCase || 'Linked'"></span>
+                                <svg class="w-2 h-2 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </template>
+                        <template x-if="step.isLibraryStep && !step.isUsingLibraryStep">
+                            <span class="v2-step-lib-badge v2-step-lib-badge--source" data-tip="This step is a library" data-tip-pos="bottom">
+                                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                Lib
+                            </span>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Context menu — always visible -->
+                <div class="relative shrink-0" x-data="{ open: false, _menuId: Math.random() }"
+                     @click.stop
+                     @v2-step-menu-open.window="if ($event.detail !== _menuId) open = false">
+                    <button @click="open = !open; if(open) $dispatch('v2-step-menu-open', _menuId)"
+                            class="v2-step-menu-btn"
+                            :class="open ? 'v2-step-menu-btn--open' : ''">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                    </button>
+                    <!-- Dropdown — positioned fixed via JS to avoid clipping -->
+                    <div x-show="open" x-cloak x-transition.opacity.duration.100ms
+                         @click.outside="open = false"
+                         class="v2-step-menu-dropdown"
+                         :style="'position: fixed; z-index: 9999; top: ' + ($el.previousElementSibling.getBoundingClientRect().bottom + 4) + 'px; left: ' + ($el.previousElementSibling.getBoundingClientRect().right - 192) + 'px'">
+                        <button class="v2-step-menu-item" @click="copyStep(idx); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy Step
+                            <kbd class="v2-step-menu-kbd">Ctrl+C</kbd>
+                        </button>
+                        <button class="v2-step-menu-item" @click="pasteAfterStep(idx); open=false" :disabled="clipboardType !== 'step'">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                            Paste Step
+                            <kbd class="v2-step-menu-kbd">Ctrl+V</kbd>
+                        </button>
+                        <div class="v2-step-menu-sep"></div>
+                        <button class="v2-step-menu-item" @click="duplicateStep(idx); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+                            Duplicate
+                        </button>
+                        <template x-if="step.isUsingLibraryStep">
+                            <button class="v2-step-menu-item v2-step-menu-item--danger" @click="unlinkLibraryStep(idx); open=false">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.84 12.25l1.72-1.71h-.02a5.004 5.004 0 00-.12-7.07 5.006 5.006 0 00-6.95 0l-1.72 1.71M5.17 11.75l-1.71 1.71a5.004 5.004 0 00.12 7.07 5.006 5.006 0 006.95 0l1.71-1.71M8 2v3M2 8h3M16 22v-3M22 16h-3"/></svg>
+                                Unlink Library
+                            </button>
+                        </template>
+                        <template x-if="!step.isUsingLibraryStep">
+                            <button class="v2-step-menu-item" @click="toggleStepLibrary(idx); open=false">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                <span x-text="step.isLibraryStep ? 'Remove Library' : 'Mark as Library'"></span>
+                            </button>
+                        </template>
+                        <button class="v2-step-menu-item" @click="openStepOptions(idx); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Options
+                        </button>
+                        <div class="v2-step-menu-sep"></div>
+                        <button class="v2-step-menu-item v2-step-menu-item--danger" @click="toggleDeleteStep(idx); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                            <span x-text="step.toDelete ? 'Restore' : 'Delete'"></span>
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </template>
+
+        <!-- Empty state -->
+        <template x-if="steps.length === 0">
+            <li class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background: var(--crb-grey-lighter-color)">
+                    <svg class="w-6 h-6" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--crb-dark-color)">No steps yet</div>
+                <div class="text-xs mt-1 max-w-[200px]" style="color: var(--crb-grey-color)">Create your first step to start building your script.</div>
+            </li>
+        </template>
+    </ul>
+
+    <!-- Footer: Add + Search -->
+    <div class="px-3 py-3 shrink-0 flex gap-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+        <button @click="addNewStep()" :disabled="!canUpdate"
+                class="v2-step-footer-btn v2-step-footer-btn--primary flex-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg>
+            Add Step
+        </button>
+        <button @click="searchLibraryStep()" :disabled="!canUpdate"
+                class="v2-step-footer-btn v2-step-footer-btn--secondary flex-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            Search Lib
+        </button>
+    </div>
+</div>

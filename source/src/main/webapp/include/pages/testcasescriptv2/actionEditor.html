@@ -1,0 +1,598 @@
+<!-- TestCaseScript V2 — Action & Verification Editor -->
+
+<div class="v2-editor-panel flex flex-col rounded-2xl"
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+
+    <!-- ═══ STEP HEADER ═══ -->
+    <template x-if="activeStep">
+        <div class="flex items-center gap-3 px-5 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold shrink-0"
+                 style="background: var(--crb-blue-color); color: white"
+                 x-text="activeStepIndex + 1"></div>
+            <input type="text" class="v2-input-ghost flex-1 text-sm font-semibold"
+                   :value="activeStep.description"
+                   @input="updateStepDescription($event.target.value)"
+                   placeholder="Describe this step..."
+                   :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+            <template x-if="activeStep.isUsingLibraryStep">
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button @click="window.dispatchEvent(new CustomEvent('step-modal-open', { detail: { test: activeStep.libraryStepTest, testcase: activeStep.libraryStepTestCase, stepId: activeStep.libraryStepStepId }}))"
+                            class="v2-btn-colored shrink-0" style="background: var(--crb-purple-light-color); color: var(--crb-purple-color)"
+                            data-tip="Edit library step in modal">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <a class="v2-library-link"
+                       :href="'./TestCaseScript.jsp?test=' + encodeURIComponent(activeStep.libraryStepTest) + '&testcase=' + encodeURIComponent(activeStep.libraryStepTestCase) + '&stepId=' + activeStep.libraryStepStepId"
+                       target="_blank"
+                       @click.stop
+                       data-tip="Open library in new tab">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        <span x-text="activeStep.libraryStepTestCase || 'Library'"></span>
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                    <button @click="unlinkLibraryStep(activeStepIndex)" :disabled="!canUpdate"
+                            class="v2-unlink-btn shrink-0" data-tip="Detach from library and copy actions locally">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.84 12.25l1.72-1.71h-.02a5.004 5.004 0 00-.12-7.07 5.006 5.006 0 00-6.95 0l-1.72 1.71M5.17 11.75l-1.71 1.71a5.004 5.004 0 00.12 7.07 5.006 5.006 0 006.95 0l1.71-1.71M8 2v3M2 8h3M16 22v-3M22 16h-3"/></svg>
+                        Unlink
+                    </button>
+                </div>
+            </template>
+
+            <button @click="openStepOptions(activeStepIndex)" :disabled="!canUpdate"
+                    class="v2-btn-icon shrink-0" data-tip="Step options (condition, loop, ...)">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+        </div>
+    </template>
+
+
+    <!-- ═══ ACTION LIST ═══ -->
+    <div class="v2-action-scroll flex-1" id="v2ActionList">
+        <template x-if="activeStep && activeStep.actions">
+            <div class="p-4 space-y-3">
+                <template x-for="(action, aIdx) in activeStep.actions" :key="action._uid">
+                    <div class="v2-fade-in" x-data="{ showOpt: false }">
+
+                        <!-- ══ ACTION CARD ══ -->
+                        <div class="v2-action-card rounded-xl transition-all duration-200"
+                             :class="action.toDelete ? 'v2-action-card--deleted' : ''"
+                             :id="'v2-action-' + aIdx"
+                             @dragover.prevent="onActionDragOver($event, aIdx)"
+                             @drop="onActionDrop($event, aIdx)">
+
+                            <!-- Row 1: Drag + Sort + Description + Badges + Buttons -->
+                            <div class="flex items-center gap-2 px-3 py-2.5">
+                                <div class="v2-drag-handle shrink-0" data-tip="Drag to reorder"
+                                     draggable="true"
+                                     @dragstart="onActionDragStart($event, aIdx)"
+                                     @dragend="onActionDragEnd()">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                                </div>
+                                <span class="v2-badge-action shrink-0" x-text="aIdx + 1"></span>
+                                <input type="text" class="v2-input-ghost flex-1 min-w-0 text-[13px] font-medium"
+                                       :value="action.description"
+                                       @input="updateActionField(aIdx, 'description', $event.target.value)"
+                                       placeholder="Describe this action..."
+                                       :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                <template x-if="action.conditionOperator && action.conditionOperator !== 'always'">
+                                    <span class="v2-tag" style="background: var(--crb-purple-light-color); color: var(--crb-purple-color)" data-tip="Conditional execution">IF</span>
+                                </template>
+                                <template x-if="action.isFatal === false || action.isFatal === 'false'">
+                                    <span class="v2-tag" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)" data-tip="Non-fatal: test continues on failure">Soft</span>
+                                </template>
+                                <div class="flex items-center gap-1 shrink-0 ml-1">
+                                    <button @click="insertActionAfter(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                            class="v2-btn-colored" style="background: var(--crb-blue-light-color); color: var(--crb-blue-color)"
+                                            data-tip="Insert action after"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg></button>
+                                    <button @click="addControl(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                            class="v2-btn-colored" style="background: var(--crb-green-light-color); color: var(--crb-green-color)"
+                                            data-tip="Add verification"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg></button>
+                                    <button @click="copyAction(aIdx)"
+                                            class="v2-btn-colored" style="background: var(--crb-blue-light-color); color: var(--crb-blue-color)"
+                                            data-tip="Copy action"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button>
+                                    <button @click="toggleDeleteAction(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                            class="v2-btn-colored" style="background: var(--crb-red-light-color); color: var(--crb-red-color)"
+                                            :data-tip="action.toDelete ? 'Restore action' : 'Delete action'"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+                                    <button @click="openActionOptions(aIdx)" :disabled="!canUpdate"
+                                            class="v2-btn-colored" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)"
+                                            data-tip="Action options (screenshot, wait, ...)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Action type + value fields — HORIZONTAL layout -->
+                            <div class="px-3 pb-3 pl-[52px]">
+                                <div class="flex gap-2 items-end flex-wrap">
+                                    <!-- Action type dropdown -->
+                                    <div class="min-w-[200px] flex-1" x-data="{ ddOpen: false, ddSearch: '' }" @click.outside="ddOpen = false">
+                                        <label class="v2-field-label v2-field-label--action">Action</label>
+                                        <div class="relative">
+                                            <button type="button" @click="ddOpen = !ddOpen"
+                                                    class="v2-dd-trigger w-full"
+                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                <span class="truncate flex-1 text-left" x-text="getActionLabel(action.action) || 'Select...'"></span>
+                                                <svg class="w-4 h-4 ml-1 shrink-0 transition-transform duration-200" :class="ddOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                            </button>
+                                            <div x-show="ddOpen" x-transition.opacity.duration.150ms x-cloak
+                                                 class="v2-dd-panel absolute left-0 top-full mt-1 w-[360px] z-50">
+                                                <div class="v2-dd-search-box">
+                                                    <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                                    <input type="text" x-model="ddSearch" placeholder="Search actions..."
+                                                           class="v2-dd-search-input" @click.stop
+                                                           @keydown.escape="ddOpen = false; ddSearch = ''">
+                                                </div>
+                                                <div class="v2-dd-list">
+                                                    <template x-for="group in actionGroups" :key="group.name">
+                                                        <div x-show="group.options.some(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase()))">
+                                                            <div class="v2-dd-group-header">
+                                                                <img :src="group.picto" class="w-4 h-4 opacity-60" x-show="group.picto" onerror="this.style.display='none'">
+                                                                <span x-text="group.label"></span>
+                                                            </div>
+                                                            <template x-for="opt in group.options.filter(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase()))" :key="opt.value">
+                                                                <button type="button"
+                                                                        @click.stop="updateActionField(aIdx, 'action', opt.value); showOpt = false; ddOpen = false; ddSearch = ''"
+                                                                        class="v2-dd-item"
+                                                                        :class="opt.value === action.action ? 'v2-dd-item--selected' : ''">
+                                                                    <svg x-show="opt.value === action.action" class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                                    <span x-text="opt.label"></span>
+                                                                </button>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    <div x-show="!actionGroups.some(g => g.options.some(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase())))"
+                                                         class="v2-dd-empty">No results</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Value 1 -->
+                                    <template x-if="getActionPlaceholder(action.action, 'field1') && !isFieldOptional(action.action, 'field1')">
+                                        <div class="flex-1 min-w-[140px] relative">
+                                            <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field1')"></label>
+                                            <div class="v2-ac-input-wrap">
+                                                <input type="text" class="v2-field-input" style="flex:1"
+                                                       :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                       @focus="acOnFocus(action.action, 'field1', false, action.value1, aIdx)"
+                                                       @blur="acOnBlur()"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value1', $event.target.value); }"
+                                                       :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                                       autocomplete="off">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field1', false))">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value1"
+                                                            @click="_openFieldEditModal(action.action, 'field1', false, action.value1)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
+                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v);">
+                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <!-- Value 2 -->
+                                    <template x-if="getActionPlaceholder(action.action, 'field2') && !isFieldOptional(action.action, 'field2')">
+                                        <div class="flex-1 min-w-[120px] relative">
+                                            <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field2')"></label>
+                                            <div class="v2-ac-input-wrap">
+                                                <input type="text" class="v2-field-input" style="flex:1"
+                                                       :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                       @focus="acOnFocus(action.action, 'field2', false, action.value2, aIdx)"
+                                                       @blur="acOnBlur()"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value2', $event.target.value); }"
+                                                       :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                                       autocomplete="off">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field2', false))">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value2"
+                                                            @click="_openFieldEditModal(action.action, 'field2', false, action.value2)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field2' && !_acActiveField.isControl" x-cloak>
+                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v);">
+                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <!-- Value 3 -->
+                                    <template x-if="getActionPlaceholder(action.action, 'field3') && !isFieldOptional(action.action, 'field3')">
+                                        <div class="flex-1 min-w-[120px] relative">
+                                            <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field3')"></label>
+                                            <div class="v2-ac-input-wrap">
+                                                <input type="text" class="v2-field-input" style="flex:1"
+                                                       :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                       @focus="acOnFocus(action.action, 'field3', false, action.value3, aIdx)"
+                                                       @blur="acOnBlur()"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value3', $event.target.value); }"
+                                                       :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                                       autocomplete="off">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field3', false))">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value3"
+                                                            @click="_openFieldEditModal(action.action, 'field3', false, action.value3)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
+                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v);">
+                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- OPT toggle + optional fields (below, in a row too) -->
+                                <template x-if="hasOptionalActionFields(action.action)">
+                                    <div class="mt-2">
+                                        <button @click="showOpt = !showOpt" type="button"
+                                                class="v2-opt-toggle">
+                                            <svg class="w-3 h-3 transition-transform duration-200" :style="showOpt ? 'transform: rotate(90deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                            <span>Options</span>
+                                        </button>
+                                        <div x-show="showOpt" x-transition.duration.200ms class="mt-2 pl-1 flex gap-2 flex-wrap" style="border-left: 2px solid var(--crb-grey-light-color)">
+                                            <template x-if="isFieldOptional(action.action, 'field1') && getActionPlaceholder(action.action, 'field1')">
+                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                    <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
+                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                           :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                           @focus="acOnFocus(action.action, 'field1', false, action.value1, aIdx)"
+                                                           @blur="acOnBlur()" autocomplete="off"
+                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
+                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v);">
+                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template x-if="isFieldOptional(action.action, 'field2') && getActionPlaceholder(action.action, 'field2')">
+                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                    <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
+                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                           :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                           @focus="acOnFocus(action.action, 'field2', false, action.value2, aIdx)"
+                                                           @blur="acOnBlur()" autocomplete="off"
+                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field2' && !_acActiveField.isControl" x-cloak>
+                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v);">
+                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <template x-if="isFieldOptional(action.action, 'field3') && getActionPlaceholder(action.action, 'field3')">
+                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                    <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
+                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                           :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                           @focus="acOnFocus(action.action, 'field3', false, action.value3, aIdx)"
+                                                           @blur="acOnBlur()" autocomplete="off"
+                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
+                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v);">
+                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+
+                        <!-- ══ CONTROLS / VERIFICATIONS ══ -->
+                        <template x-if="action.controls && action.controls.length > 0">
+                            <div class="mt-2 ml-10" x-data="{ ctrlExpanded: true }"
+                                 :style="action.toDelete ? 'opacity: 0.35; pointer-events: none;' : ''">
+                                <!-- Collapsible header -->
+                                <button type="button" @click="ctrlExpanded = !ctrlExpanded"
+                                        class="v2-ctrl-section-toggle w-full"
+                                        :class="action.toDelete ? 'v2-ctrl-section-toggle--deleted' : ''">
+                                    <svg class="w-3.5 h-3.5 shrink-0 transition-transform duration-200" :class="(ctrlExpanded && !action.toDelete) ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    <span class="v2-ctrl-section-label" :class="action.toDelete ? 'v2-ctrl-section-label--deleted' : ''">Verify</span>
+                                    <span class="v2-ctrl-section-badge" :class="action.toDelete ? 'v2-ctrl-section-badge--deleted' : ''" x-text="action.controls.length"></span>
+                                    <span class="flex-1"></span>
+                                    <span x-show="!ctrlExpanded && !action.toDelete" class="text-[10px] opacity-60" style="color: var(--crb-grey-color)">click to expand</span>
+                                </button>
+                                <!-- Controls list (collapsible) -->
+                                <div x-show="ctrlExpanded && !action.toDelete" x-transition.duration.200ms class="space-y-2 mt-2">
+                                <template x-for="(ctrl, cIdx) in action.controls" :key="ctrl._uid">
+                                    <div class="v2-fade-in" x-data="{ showCtrlOpt: false }">
+                                        <div class="v2-control-card rounded-xl transition-all duration-200"
+                                             :class="ctrl.toDelete ? 'v2-control-card--deleted' : ''"
+                                             :data-ctrl-id="aIdx + '-' + cIdx"
+                                             @dragover.prevent="onControlDragOver($event, aIdx, cIdx)"
+                                             @drop="onControlDrop($event, aIdx, cIdx)">
+
+                                            <!-- Control header -->
+                                            <div class="flex items-center gap-2 px-3 py-2">
+                                                <div class="v2-drag-handle-sm shrink-0"
+                                                     draggable="true"
+                                                     @dragstart="onControlDragStart($event, aIdx, cIdx)"
+                                                     @dragend="onControlDragEnd()">
+                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                                                </div>
+                                                <span class="v2-badge-control shrink-0" x-text="(aIdx+1) + '.' + (cIdx+1)"></span>
+                                                <i data-lucide="shield-check" class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-green-color)"></i>
+                                                <input type="text" class="v2-input-ghost flex-1 min-w-0 text-xs font-medium"
+                                                       :value="ctrl.description"
+                                                       @input="updateControlField(aIdx, cIdx, 'description', $event.target.value)"
+                                                       placeholder="Describe this verification..."
+                                                       :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                <template x-if="ctrl.isFatal === false || ctrl.isFatal === 'false'">
+                                                    <span class="v2-tag v2-tag--sm" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)" data-tip="Non-fatal: test continues on failure">Soft</span>
+                                                </template>
+                                                <div class="flex items-center gap-1 shrink-0 ml-1">
+                                                    <button @click="addControl(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                                            class="v2-btn-colored-sm" style="background: var(--crb-green-light-color); color: var(--crb-green-color)"
+                                                            data-tip="Add verification"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg></button>
+                                                    <button @click="toggleDeleteControl(aIdx, cIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
+                                                            class="v2-btn-colored-sm" style="background: var(--crb-red-light-color); color: var(--crb-red-color)"
+                                                            :data-tip="ctrl.toDelete ? 'Restore verification' : 'Delete verification'"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+                                                    <button @click="openControlOptions(aIdx, cIdx)"
+                                                            class="v2-btn-colored-sm" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)"
+                                                            data-tip="Verification options"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Control type — categorized searchable dropdown -->
+                                            <div class="px-3 pb-2 pl-[44px]">
+                                                <div x-data="{ ddOpen: false, ddSearch: '' }" class="relative w-full" @click.outside="ddOpen = false">
+                                                    <button type="button" @click="ddOpen = !ddOpen; if(ddOpen) $nextTick(() => $refs['cSearch'+aIdx+cIdx] && $refs['cSearch'+aIdx+cIdx].focus())"
+                                                            class="v2-dd-trigger v2-dd-trigger--sm w-full"
+                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                        <span class="truncate flex-1 text-left" x-text="getControlLabel(ctrl.control) || 'Select verification...'"></span>
+                                                        <svg class="w-3.5 h-3.5 ml-2 shrink-0 transition-transform duration-200" :class="ddOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                                    </button>
+                                                    <div x-show="ddOpen" x-transition.opacity.duration.150ms x-cloak
+                                                         class="v2-dd-panel absolute left-0 top-full mt-1 w-full z-50">
+                                                        <div class="v2-dd-search-box">
+                                                            <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                                            <input type="text" x-model="ddSearch" placeholder="Search verifications..."
+                                                                   :x-ref="'cSearch'+aIdx+cIdx"
+                                                                   class="v2-dd-search-input" @click.stop
+                                                                   @keydown.escape="ddOpen = false; ddSearch = ''">
+                                                        </div>
+                                                        <div class="v2-dd-list">
+                                                            <template x-for="group in controlGroups" :key="group.name">
+                                                                <div x-show="group.options.some(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase()))">
+                                                                    <div class="v2-dd-group-header">
+                                                                        <span x-text="group.label"></span>
+                                                                    </div>
+                                                                    <template x-for="opt in group.options.filter(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase()))" :key="opt.value">
+                                                                        <button type="button"
+                                                                                @click.stop="updateControlField(aIdx, cIdx, 'control', opt.value); showCtrlOpt = false; ddOpen = false; ddSearch = ''"
+                                                                                class="v2-dd-item v2-dd-item--green"
+                                                                                :class="opt.value === ctrl.control ? 'v2-dd-item--selected-green' : ''">
+                                                                            <svg x-show="opt.value === ctrl.control" class="w-3 h-3 shrink-0" style="color: var(--crb-green-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                                            <span x-text="opt.label"></span>
+                                                                        </button>
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+                                                            <div x-show="!controlGroups.some(g => g.options.some(o => !ddSearch || o.label.toLowerCase().includes(ddSearch.toLowerCase())))"
+                                                                 class="v2-dd-empty">No results</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Control fields — horizontal -->
+                                            <div class="px-3 pb-3 pl-[44px]">
+                                                <!-- Required fields row -->
+                                                <div class="flex gap-2 items-end flex-wrap">
+                                                    <template x-if="getControlPlaceholder(ctrl.control, 'field1') && !isControlFieldOptional(ctrl.control, 'field1')">
+                                                        <div class="flex-1 min-w-[120px] relative">
+                                                            <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field1')"></label>
+                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                   :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                                   @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
+                                                                   @blur="acOnBlur()" autocomplete="off"
+                                                                   :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
+                                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v);">
+                                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="getControlPlaceholder(ctrl.control, 'field2') && !isControlFieldOptional(ctrl.control, 'field2')">
+                                                        <div class="flex-1 min-w-[120px] relative">
+                                                            <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field2')"></label>
+                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                   :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                                   @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
+                                                                   @blur="acOnBlur()" autocomplete="off"
+                                                                   :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
+                                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v);">
+                                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="getControlPlaceholder(ctrl.control, 'field3') && !isControlFieldOptional(ctrl.control, 'field3')">
+                                                        <div class="flex-1 min-w-[120px] relative">
+                                                            <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field3')"></label>
+                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                   :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                                   @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
+                                                                   @blur="acOnBlur()" autocomplete="off"
+                                                                   :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                            <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
+                                                                <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                    <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v);">
+                                                                        <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                        <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+
+                                                <!-- OPT toggle for controls -->
+                                                <template x-if="hasOptionalControlFields(ctrl.control)">
+                                                    <div class="mt-2">
+                                                        <button @click="showCtrlOpt = !showCtrlOpt" type="button" class="v2-opt-toggle">
+                                                            <svg class="w-3 h-3 transition-transform duration-200" :style="showCtrlOpt ? 'transform: rotate(90deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                                            <span>Options</span>
+                                                        </button>
+                                                        <div x-show="showCtrlOpt" x-transition.duration.200ms class="mt-2 pl-1 flex gap-2 flex-wrap" style="border-left: 2px solid var(--crb-grey-light-color)">
+                                                            <template x-if="isControlFieldOptional(ctrl.control, 'field1') && getControlPlaceholder(ctrl.control, 'field1')">
+                                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                                    <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
+                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                           :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                                           @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
+                                                                           @blur="acOnBlur()" autocomplete="off"
+                                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
+                                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v);">
+                                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                            <template x-if="isControlFieldOptional(ctrl.control, 'field2') && getControlPlaceholder(ctrl.control, 'field2')">
+                                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                                    <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
+                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                           :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                                           @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
+                                                                           @blur="acOnBlur()" autocomplete="off"
+                                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
+                                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v);">
+                                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                            <template x-if="isControlFieldOptional(ctrl.control, 'field3') && getControlPlaceholder(ctrl.control, 'field3')">
+                                                                <div class="flex-1 min-w-[120px] pl-3 relative">
+                                                                    <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
+                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                           :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                                           @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
+                                                                           @blur="acOnBlur()" autocomplete="off"
+                                                                           :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
+                                                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v);">
+                                                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </template>
+                                </div><!-- /collapsible -->
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Empty states -->
+        <template x-if="!activeStep">
+            <div class="flex flex-col items-center justify-center py-24 text-center px-8">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3" style="background: var(--crb-grey-lighter-color)">
+                    <i data-lucide="mouse-pointer-click" class="w-6 h-6" style="color: var(--crb-grey-color)"></i>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--crb-dark-color)">Select a step</div>
+                <div class="text-xs mt-1 leading-relaxed" style="color: var(--crb-grey-color)">Click a step in the sidebar to edit.</div>
+            </div>
+        </template>
+        <template x-if="activeStep && activeStep.actions && activeStep.actions.length === 0">
+            <div class="flex flex-col items-center justify-center flex-1 text-center px-8 py-16 mb-4">
+                <div class="v2-empty-icon-ring">
+                    <div class="v2-empty-icon-inner">
+                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="color: var(--crb-blue-color)">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-sm font-semibold mt-4" style="color: var(--crb-dark-color)">No actions yet</div>
+                <div class="text-xs mt-1.5 leading-relaxed max-w-[240px]" style="color: var(--crb-grey-color)">
+                    Actions define what this step does: clicks, navigations, inputs, and more.
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- ═══ BOTTOM TOOLBAR ═══ -->
+    <template x-if="activeStep && canUpdate && !activeStep.isUsingLibraryStep">
+        <div class="flex items-center gap-2 px-4 py-3 shrink-0" style="border-top: 1px solid var(--crb-grey-light-color)">
+            <button @click="addAction()"
+                    class="v2-add-action-btn flex-1">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg>
+                Add Action
+            </button>
+            <button x-show="clipboardType === 'action'" x-transition.opacity.duration.200ms
+                    @click="pasteAction()"
+                    class="v2-paste-btn" data-tip="Paste action from clipboard">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                Paste Action
+            </button>
+        </div>
+    </template>
+</div>

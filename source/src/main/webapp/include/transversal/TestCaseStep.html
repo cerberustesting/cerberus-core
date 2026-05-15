@@ -1,0 +1,392 @@
+<!-- Transversal Step Edit Modal -->
+<link rel="stylesheet" type="text/css" href="css/pages/TestCaseScriptV2.css">
+
+<div x-data="crbStepModal()" x-show="open" x-cloak
+     @step-modal-open.window="doOpen($event.detail)"
+     @step-modal-close.window="doClose()"
+     class="crb_modal" id="editStepModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]" @click="doClose()"></div>
+
+    <!-- Modal Card -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-4xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center"
+                     style="background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent)">
+                    <svg class="w-5 h-5" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0">Edit Step</h2>
+                    <p class="text-xs text-slate-500 !mb-0" x-text="test + ' / ' + testcase + ' — Step ' + stepId"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <!-- Save state badge -->
+                <template x-if="saveState === 'dirty'">
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">Unsaved</span>
+                </template>
+                <template x-if="saveState === 'saving'">
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium animate-pulse">Saving...</span>
+                </template>
+                <template x-if="saveState === 'saved'">
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Saved ✓</span>
+                </template>
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <svg x-show="!isFullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7"/></svg>
+                    <svg x-show="isFullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7"/></svg>
+                </button>
+                <button @click="doClose()"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <template x-if="loading">
+            <div class="flex-1 flex items-center justify-center py-20">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-8 h-8 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+                    <span class="text-sm text-slate-400">Loading step...</span>
+                </div>
+            </div>
+        </template>
+
+        <!-- BODY -->
+        <template x-if="!loading && step">
+            <div class="flex-1 overflow-y-auto min-h-0 px-6 py-4">
+
+                <!-- Step description -->
+                <div class="mb-4">
+                    <input type="text" class="w-full h-10 px-3 py-2 rounded-lg text-sm font-semibold"
+                           style="border: 1px solid var(--crb-grey-light-color); background: var(--crb-new-bg)"
+                           :value="step.description"
+                           @input="updateStepDesc($event.target.value)"
+                           placeholder="Step description..."
+                           :disabled="!canUpdate">
+                </div>
+
+                <!-- Actions list -->
+                <div class="space-y-3">
+                    <template x-for="(action, aIdx) in step.actions" :key="action._uid">
+                        <div>
+                            <!-- ACTION CARD -->
+                            <div class="v2-action-card rounded-xl transition-all"
+                                 :class="action.toDelete ? 'opacity-40' : ''">
+
+                                <!-- Action header row -->
+                                <div class="flex items-center gap-2 px-3 py-2.5">
+                                    <!-- Sort buttons -->
+                                    <div class="flex flex-col shrink-0">
+                                        <button @click="moveAction(aIdx, -1)" class="text-slate-300 hover:text-slate-600 transition" :disabled="aIdx===0 || !canUpdate">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg>
+                                        </button>
+                                        <button @click="moveAction(aIdx, 1)" class="text-slate-300 hover:text-slate-600 transition" :disabled="aIdx===step.actions.length-1 || !canUpdate">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="v2-badge-action shrink-0" x-text="aIdx + 1"></span>
+                                    <input type="text" class="v2-input-ghost flex-1 min-w-0 text-[13px] font-medium"
+                                           :value="action.description"
+                                           @input="updateActionField(aIdx, 'description', $event.target.value)"
+                                           placeholder="Describe this action..."
+                                           :disabled="!canUpdate">
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button @click="addControl(aIdx)" :disabled="!canUpdate"
+                                                class="v2-btn-colored" style="background: var(--crb-green-light-color); color: var(--crb-green-color)"
+                                                data-tip="Add verification">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </button>
+                                        <button @click="toggleDeleteAction(aIdx)" :disabled="!canUpdate"
+                                                class="v2-btn-colored" :style="action.toDelete ? 'background:var(--crb-green-light-color);color:var(--crb-green-color)' : 'background:var(--crb-red-light-color);color:var(--crb-red-color)'"
+                                                :data-tip="action.toDelete ? 'Restore' : 'Delete'">
+                                            <svg x-show="!action.toDelete" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <svg x-show="action.toDelete" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Action fields -->
+                                <div class="px-3 pb-3 space-y-2">
+                                    <!-- Action type dropdown -->
+                                    <div>
+                                        <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Action</label>
+                                        <select class="v2-prop-field-select text-sm"
+                                                :value="action.action"
+                                                @change="updateActionField(aIdx, 'action', $event.target.value)"
+                                                :disabled="!canUpdate">
+                                            <template x-for="group in actionGroups" :key="group.name">
+                                                <optgroup :label="group.label">
+                                                    <template x-for="opt in group.options" :key="opt.value">
+                                                        <option :value="opt.value" x-text="opt.label" :selected="opt.value === action.action"></option>
+                                                    </template>
+                                                </optgroup>
+                                            </template>
+                                        </select>
+                                    </div>
+                                    <!-- Value fields in a row -->
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 1</label>
+                                            <input type="text" class="v2-prop-field-input text-xs"
+                                                   :value="action.value1"
+                                                   @change="updateActionField(aIdx, 'value1', $event.target.value)"
+                                                   placeholder="Element / Value..."
+                                                   :disabled="!canUpdate">
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 2</label>
+                                            <input type="text" class="v2-prop-field-input text-xs"
+                                                   :value="action.value2"
+                                                   @change="updateActionField(aIdx, 'value2', $event.target.value)"
+                                                   placeholder="Property..."
+                                                   :disabled="!canUpdate">
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 3</label>
+                                            <input type="text" class="v2-prop-field-input text-xs"
+                                                   :value="action.value3"
+                                                   @change="updateActionField(aIdx, 'value3', $event.target.value)"
+                                                   placeholder="Extra..."
+                                                   :disabled="!canUpdate">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CONTROLS (verifications) -->
+                                <template x-if="action.controls && action.controls.length > 0">
+                                    <div class="border-t" style="border-color: var(--crb-grey-light-color)">
+                                        <template x-for="(ctrl, cIdx) in action.controls" :key="ctrl._uid">
+                                            <div class="flex gap-2 px-3 py-2 items-start"
+                                                 :class="ctrl.toDelete ? 'opacity-40' : ''"
+                                                 style="border-bottom: 1px solid color-mix(in srgb, var(--crb-grey-light-color) 50%, transparent)">
+                                                <!-- Sort -->
+                                                <div class="flex flex-col shrink-0 mt-1">
+                                                    <button @click="moveControl(aIdx, cIdx, -1)" class="text-slate-300 hover:text-slate-600" :disabled="cIdx===0">
+                                                        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg>
+                                                    </button>
+                                                    <button @click="moveControl(aIdx, cIdx, 1)" class="text-slate-300 hover:text-slate-600" :disabled="cIdx===action.controls.length-1">
+                                                        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                                                    </button>
+                                                </div>
+                                                <span class="v2-badge-control shrink-0 mt-1" x-text="'V' + (cIdx+1)"></span>
+                                                <div class="flex-1 min-w-0">
+                                                    <input type="text" class="v2-input-ghost w-full text-[12px]"
+                                                           :value="ctrl.description"
+                                                           @input="updateControlField(aIdx, cIdx, 'description', $event.target.value)"
+                                                           placeholder="Verification description..."
+                                                           :disabled="!canUpdate">
+                                                    <select class="v2-prop-field-select text-xs" style="margin-top: 10px"
+                                                            :value="ctrl.control"
+                                                            @change="updateControlField(aIdx, cIdx, 'control', $event.target.value)"
+                                                            :disabled="!canUpdate">
+                                                        <template x-for="cg in controlGroups" :key="cg.name">
+                                                            <optgroup :label="cg.label">
+                                                                <template x-for="co in cg.options" :key="co.value">
+                                                                    <option :value="co.value" x-text="co.label" :selected="co.value === ctrl.control"></option>
+                                                                </template>
+                                                            </optgroup>
+                                                        </template>
+                                                    </select>
+                                                    <div class="grid grid-cols-3 gap-1.5" style="margin-top: 10px">
+                                                        <input type="text" class="v2-prop-field-input text-[11px]"
+                                                               :value="ctrl.value1" @change="updateControlField(aIdx, cIdx, 'value1', $event.target.value)"
+                                                               placeholder="Element..." :disabled="!canUpdate">
+                                                        <input type="text" class="v2-prop-field-input text-[11px]"
+                                                               :value="ctrl.value2" @change="updateControlField(aIdx, cIdx, 'value2', $event.target.value)"
+                                                               placeholder="Expected..." :disabled="!canUpdate">
+                                                        <input type="text" class="v2-prop-field-input text-[11px]"
+                                                               :value="ctrl.value3" @change="updateControlField(aIdx, cIdx, 'value3', $event.target.value)"
+                                                               placeholder="Extra..." :disabled="!canUpdate">
+                                                    </div>
+                                                </div>
+                                                <button @click="toggleDeleteControl(aIdx, cIdx)" :disabled="!canUpdate"
+                                                        class="shrink-0 mt-1 w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-red-500 transition">
+                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div><!-- /action-card -->
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Add action button -->
+                <div class="mt-4 flex justify-center" x-show="canUpdate">
+                    <button @click="addAction()"
+                            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition"
+                            style="background: var(--crb-blue-light-color); color: var(--crb-blue-color)">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>
+                        Add Action
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <!-- No step found -->
+        <template x-if="!loading && !step">
+            <div class="flex-1 flex items-center justify-center py-20">
+                <span class="text-sm text-slate-400">Step not found</span>
+            </div>
+        </template>
+
+        <!-- FOOTER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <p class="text-xs text-slate-400 !mb-0" x-text="step ? (step.actions||[]).length + ' action(s)' : ''"></p>
+            <div class="flex items-center gap-2">
+                <button @click="doClose()" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Cancel</button>
+                <button @click="save()" :disabled="saveState === 'saving' || !canUpdate"
+                        class="px-5 py-2 rounded-lg text-sm font-medium text-white transition"
+                        :style="saveState === 'dirty' ? 'background: var(--crb-blue-color)' : 'background: var(--crb-grey-color)'"
+                        x-text="saveState === 'saving' ? 'Saving...' : 'Save'"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var _smUid = 0;
+function smUid() { return '__sm_' + (++_smUid); }
+
+function crbStepModal() {
+    return {
+        open: false, isFullscreen: false, loading: true, saveState: '',
+        test: '', testcase: '', stepId: -1, step: null,
+        allSteps: [], allProperties: [], tcVersion: 0, canUpdate: true,
+        actionGroups: [], controlGroups: [],
+
+        doOpen(detail) {
+            this.test = detail.test; this.testcase = detail.testcase; this.stepId = detail.stepId;
+            this.open = true; this.loading = true; this.saveState = '';
+            this._buildGroups(); this._loadTestCase();
+        },
+        doClose() {
+            if (this.saveState === 'dirty' && !confirm('Unsaved changes will be lost. Close anyway?')) return;
+            this.open = false;
+            window.dispatchEvent(new CustomEvent('step-modal-closed'));
+        },
+
+        _buildGroups() {
+            this.actionGroups = []; this.controlGroups = [];
+            if (typeof actionOptList === 'undefined' || typeof actionOptGroupList === 'undefined') return;
+            var user = typeof getUser === 'function' ? getUser() : { language: 'en' };
+            var gMeta = {};
+            actionOptGroupList.forEach(function(g) {
+                var m = g.picto ? g.picto.match(/src=['"]([^'"]+)['"]/) : null;
+                gMeta[g.name] = { label: g.label ? (g.label[user.language] || g.label['en'] || g.name) : g.name, picto: m ? m[1] : null };
+            });
+            var ag = {};
+            for (var k in actionOptList) {
+                if (k === 'unknown') continue;
+                var it = actionOptList[k], gn = it.group || 'Other';
+                if (!ag[gn]) { var meta = gMeta[gn] || {}; ag[gn] = { name: gn, label: meta.label || gn, picto: meta.picto, options: [] }; }
+                ag[gn].options.push({ value: k, label: it.label ? (it.label[user.language] || it.label['en'] || k) : k });
+            }
+            this.actionGroups = Object.values(ag);
+            if (typeof convertToGui === 'undefined') return;
+            var cg = {};
+            for (var ck in convertToGui) {
+                if (ck === 'unknown') continue;
+                var ci = convertToGui[ck], cgn = ci.control || 'Other';
+                if (!cg[cgn]) cg[cgn] = { name: cgn, label: cgn, options: [] };
+                cg[cgn].options.push({ value: ck, label: ck.replace(/([A-Z])/g, ' $1').replace(/^./, function(s){return s.toUpperCase();}).trim() });
+            }
+            this.controlGroups = Object.values(cg);
+        },
+
+        _loadTestCase() {
+            var self = this;
+            $.ajax({
+                url: 'ReadTestCase', data: { test: self.test, testCase: self.testcase, withSteps: true }, dataType: 'json',
+                success: function(data) {
+                    if (data.messageType === 'KO') { self.loading = false; alert(data.message); return; }
+                    var tc = data.contentTable[0];
+                    self.canUpdate = data.hasPermissionsUpdate;
+                    self.tcVersion = tc.version || 0;
+                    var stepsRaw = (tc.steps || []).sort(function(a,b){ return a.sort - b.sort; });
+                    self.allSteps = stepsRaw.map(function(s){ return self._normalizeStep(s); });
+                    self.allProperties = (tc.properties && tc.properties.testCaseProperties) ? tc.properties.testCaseProperties : [];
+                    self.step = self.allSteps.find(function(s){ return s.stepId == self.stepId; }) || self.allSteps[0] || null;
+                    self.loading = false;
+                },
+                error: function() { self.loading = false; alert('Error loading test case'); }
+            });
+        },
+
+        _normalizeStep(s) { s._uid = smUid(); s.toDelete = false; if (!s.actions) s.actions = []; s.actions.sort(function(a,b){return a.sort-b.sort;}); var self=this; s.actions = s.actions.map(function(a){return self._normalizeAction(a);}); return s; },
+        _normalizeAction(a) { a._uid = smUid(); a.toDelete = false; if (!a.controls) a.controls = []; if (!a.options) a.options = []; if (!a.conditionOptions) a.conditionOptions = []; a.controls.sort(function(x,y){return x.sort-y.sort;}); var self=this; a.controls = a.controls.map(function(c){return self._normalizeControl(c);}); return a; },
+        _normalizeControl(c) { c._uid = smUid(); c.toDelete = false; if (!c.options) c.options = []; if (!c.conditionOptions) c.conditionOptions = []; return c; },
+
+        markDirty() { this.saveState = 'dirty'; },
+        updateStepDesc(val) { this.step.description = val; this.markDirty(); },
+        updateActionField(aIdx, field, val) { this.step.actions[aIdx][field] = val; this.markDirty(); },
+        updateControlField(aIdx, cIdx, field, val) { this.step.actions[aIdx].controls[cIdx][field] = val; this.markDirty(); },
+        toggleDeleteAction(aIdx) { this.step.actions[aIdx].toDelete = !this.step.actions[aIdx].toDelete; this.markDirty(); },
+        toggleDeleteControl(aIdx, cIdx) { this.step.actions[aIdx].controls[cIdx].toDelete = !this.step.actions[aIdx].controls[cIdx].toDelete; this.markDirty(); },
+
+        addAction() {
+            this.step.actions.push(this._normalizeAction({ actionId:-1, sort:this.step.actions.length+1, description:'', action:'doNothing', value1:'', value2:'', value3:'', isFatal:true, conditionOperator:'always', conditionValue1:'', conditionValue2:'', conditionValue3:'', conditionOptions:[], options:[], controls:[] }));
+            this.markDirty();
+        },
+        addControl(aIdx) {
+            this.step.actions[aIdx].controls.push(this._normalizeControl({ controlId:-1, sort:this.step.actions[aIdx].controls.length+1, description:'', control:'verifyStringEqual', value1:'', value2:'', value3:'', isFatal:true, conditionOperator:'always', conditionValue1:'', conditionValue2:'', conditionValue3:'', conditionOptions:[], options:[] }));
+            this.markDirty();
+        },
+        moveAction(aIdx, dir) { var a=this.step.actions, n=aIdx+dir; if(n<0||n>=a.length)return; var t=a[aIdx]; a[aIdx]=a[n]; a[n]=t; this.markDirty(); },
+        moveControl(aIdx, cIdx, dir) { var a=this.step.actions[aIdx].controls, n=cIdx+dir; if(n<0||n>=a.length)return; var t=a[cIdx]; a[cIdx]=a[n]; a[n]=t; this.markDirty(); },
+
+        getActionLabel(val) { for(var g of this.actionGroups){var o=g.options.find(function(x){return x.value===val;}); if(o)return o.label;} return val||''; },
+        getControlLabel(val) { for(var g of this.controlGroups){var o=g.options.find(function(x){return x.value===val;}); if(o)return o.label;} return val||''; },
+
+        save() {
+            if (this.saveState === 'saving') return;
+            this.saveState = 'saving';
+            var self = this;
+            var propArr = self.allProperties.map(function(p) {
+                return { toDelete:p.toDelete||false, property:p.property, description:p.description||'', type:p.type||'text', database:p.database||'', value1:p.value1||'', value2:p.value2||'', value3:p.value3||'value', countries:(p.countries||[]).map(function(c){return typeof c==='object'?c:{value:c};}), nature:p.nature||'STATIC', length:String(p.length||'0'), rowLimit:p.rowLimit||0, cacheExpire:p.cacheExpire||0, rank:p.rank||0, retryNb:p.retryNb||0, retryPeriod:p.retryPeriod||0 };
+            });
+            var payload = { informationInitialTest:self.test, informationInitialTestCase:self.testcase, informationTest:self.test, informationTestCase:self.testcase, steps:self._buildStepPayload(), properties:propArr };
+            $.ajax({
+                url:'UpdateTestCaseWithDependencies', method:'POST', contentType:'application/json; charset=utf-8', dataType:'json', data:JSON.stringify(payload),
+                success: function() {
+                    self.saveState = 'saved';
+                    window.dispatchEvent(new CustomEvent('step-modal-saved', { detail:{test:self.test, testcase:self.testcase, stepId:self.stepId} }));
+                    self.open = false;
+                },
+                error: function(jqXHR,ts,err) { self.saveState='dirty'; alert('Save error: '+(err||ts)); }
+            });
+        },
+
+        _buildStepPayload() {
+            var self = this;
+            return self.allSteps.map(function(step, i) {
+                var sj = { toDelete:step.toDelete, test:step.test||self.test, testcase:step.testcase||self.testcase, stepId:step.stepId, sort:i+1, description:step.description, isUsingLibraryStep:step.isUsingLibraryStep||false, libraryStepTest:step.libraryStepTest||'', libraryStepTestCase:step.libraryStepTestCase||'', libraryStepStepId:step.libraryStepStepId||-1, isLibraryStep:step.isLibraryStep||false, loop:step.loop||'onceIfConditionTrue', conditionOperator:step.conditionOperator||'always', conditionValue1:step.conditionValue1||'', conditionValue2:step.conditionValue2||'', conditionValue3:step.conditionValue3||'', conditionOptions:step.conditionOptions||[], isExecutionForced:step.isExecutionForced||false, actions:[] };
+                (step.actions||[]).forEach(function(action,j) {
+                    var aj = { toDelete:action.toDelete, test:self.test, testcase:self.testcase, stepId:step.stepId, actionId:action.actionId, sort:j+1, description:action.description, action:action.action, object:action.value1||'', property:action.value2||'', value3:action.value3||'', options:action.options||[], isFatal:action.isFatal!==false, conditionOperator:action.conditionOperator||'always', conditionValue1:action.conditionValue1||'', conditionValue2:action.conditionValue2||'', conditionValue3:action.conditionValue3||'', conditionOptions:action.conditionOptions||[], screenshotFileName:action.screenshotFileName||'', doScreenshotBefore:action.doScreenshotBefore||false, doScreenshotAfter:action.doScreenshotAfter||false, waitBefore:action.waitBefore||0, waitAfter:action.waitAfter||0, controls:[] };
+                    (action.controls||[]).forEach(function(ctrl,k) {
+                        aj.controls.push({ toDelete:ctrl.toDelete, test:self.test, testcase:self.testcase, stepId:step.stepId, actionId:action.actionId, controlId:ctrl.controlId, sort:k+1, description:ctrl.description, control:ctrl.control, value1:ctrl.value1||'', value2:ctrl.value2||'', value3:ctrl.value3||'', options:ctrl.options||[], isFatal:ctrl.isFatal!==false, conditionOperator:ctrl.conditionOperator||'always', conditionValue1:ctrl.conditionValue1||'', conditionValue2:ctrl.conditionValue2||'', conditionValue3:ctrl.conditionValue3||'', conditionOptions:ctrl.conditionOptions||[], screenshotFileName:ctrl.screenshotFileName||'', doScreenshotBefore:ctrl.doScreenshotBefore||false, doScreenshotAfter:ctrl.doScreenshotAfter||false, waitBefore:ctrl.waitBefore||0, waitAfter:ctrl.waitAfter||0 });
+                    });
+                    sj.actions.push(aj);
+                });
+                return sj;
+            });
+        }
+    };
+}
+</script>

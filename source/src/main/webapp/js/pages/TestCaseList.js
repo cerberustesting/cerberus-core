@@ -985,14 +985,33 @@ function aoColumnsFunc(countries, tableId) {
 
                 let buttons = [];
 
-                // Edit / View
+                // Edit Script (pencil icon) — navigate to script page
+                buttons.push(actionButton({
+                    id: `testcase_action_editscript_${row}`,
+                    name: "editScriptTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
+                    onClick: `
+                        (function(event) {
+                            const url = './TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}';
+                            if (event.ctrlKey || event.metaKey) {
+                                window.open(url, '_blank');
+                            } else {
+                                window.location.href = url;
+                            }
+                        })(event)
+                    `,
+                    extraClass: "group-hover:!text-blue-500",
+                    icon: icons.edit
+                }));
+
+                // Edit Header (paper icon) — open header modal
                 buttons.push(actionButton({
                     id:`testcase_action_editheader_${row}`,
                     name: "editTestcase",
                     title: hasUpdate ? doc.getDocLabel("page_testcaselist", "btn_edit")
                         : doc.getDocLabel("page_testcaselist", "btn_view"),
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','${hasUpdate ? 'EDIT' : 'VIEW'}')`,
-                    icon: icons.edit,
+                    icon: icons.script,
                     disabled: !hasUpdate
                 }));
 
@@ -1004,16 +1023,6 @@ function aoColumnsFunc(countries, tableId) {
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','DUPLICATE')`,
                     icon: icons.duplicate
                 }));
-
-                // Export
-                //buttons.push(actionButton({
-                //    id: `testcase_action_export_${row}`,
-                //    name: "exportTestcase",
-                //    title: doc.getDocLabel("page_testcaselist", "btn_export"),
-                //    onClick: `window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
-                //    icon: icons.export,
-                //    disabled: !hasUpdate
-                //}));
 
                 // Delete
                 buttons.push(actionButton({
@@ -1042,25 +1051,6 @@ function aoColumnsFunc(countries, tableId) {
                     `,
                     extraClass: "group-hover:!text-green-500",
                     icon: icons.run
-                }));
-
-                // Edit Script
-                buttons.push(actionButton({
-                    id: `testcase_action_editscript_${row}`,
-                    name: "editScriptTestcase",
-                    title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
-                    onClick: `
-                        (function(event) {
-                            const url = './TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}';
-                            if (event.ctrlKey || event.metaKey) {
-                                window.open(url, '_blank');
-                            } else {
-                                window.location.href = url;
-                            }
-                        })(event)
-                    `,
-                    extraClass: "group-hover:!text-blue-500",
-                    icon: icons.script
                 }));
 
                 return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;

@@ -1,0 +1,275 @@
+<!-- TestCaseScript V2 — Header Bar -->
+<!-- Uses Tailwind + Cerberus design tokens (crb_card, crb_input) -->
+
+<div class="sticky top-0 z-40 mb-4 p-3 rounded-2xl" id="v2Header" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+    <div class="flex items-center gap-2 flex-wrap">
+
+        <!-- Back -->
+        <button onclick="window.location.href='TestCaseList.jsp'"
+                class="inline-flex items-center justify-center h-8 w-8 rounded-lg transition-colors
+                       hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-sky-500 shrink-0">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Test / Testcase switcher -->
+        <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                <!-- TEST FOLDER DROPDOWN -->
+                <div class="relative" x-data="{ tdOpen: false, tdSearch: '' }" @click.outside="tdOpen = false">
+                    <button @click="tdOpen = !tdOpen; if(tdOpen){ tdSearch=''; $nextTick(()=>$refs.testSearchInput.focus()); }"
+                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            style="max-width: 220px">
+                        <span class="truncate" x-text="testInfo.test || '-'"></span>
+                        <svg class="w-3 h-3 opacity-40 shrink-0 transition-transform" :style="tdOpen ? 'transform:rotate(180deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div x-show="tdOpen" x-cloak x-transition.opacity.duration.150ms
+                         class="absolute left-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
+                         style="min-width: 300px; max-height: 360px; background: white; border-color: var(--crb-grey-light-color)">
+                        <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color)">
+                            <div style="display:flex; align-items:center; gap:6px; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--crb-grey-light-color); background: var(--crb-new-bg)">
+                                <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <input type="text" x-model="tdSearch" x-ref="testSearchInput" placeholder="Search folders..."
+                                       @keydown.escape="tdOpen = false; tdSearch = ''"
+                                       style="border:none; outline:none; background:transparent; font-size:13px; width:100%; color: var(--crb-text-color)">
+                            </div>
+                        </div>
+                        <div style="max-height: 280px; overflow-y: auto; padding: 4px">
+                            <template x-for="f in testFolders.filter(f => !tdSearch || f.test.toLowerCase().includes(tdSearch.toLowerCase()) || f.description.toLowerCase().includes(tdSearch.toLowerCase()))" :key="f.test">
+                                <button @click="switchToTest(f.test); tdOpen = false; tdSearch = ''"
+                                        class="flex items-center gap-2 w-full text-left transition-colors"
+                                        :style="f.test === testInfo.test ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); font-weight:600' : ''"
+                                        style="padding: 6px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none"
+                                        @mouseenter="$el.style.background = f.test === testInfo.test ? 'color-mix(in srgb, var(--crb-blue-color) 15%, transparent)' : 'var(--crb-new-bg)'"
+                                        @mouseleave="$el.style.background = f.test === testInfo.test ? 'color-mix(in srgb, var(--crb-blue-color) 10%, transparent)' : 'transparent'">
+                                    <svg x-show="f.test === testInfo.test" class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+                                    <span class="truncate" x-text="f.test"></span>
+                                    <span class="truncate text-[11px] opacity-50" x-text="f.description" style="margin-left:auto; max-width: 120px"></span>
+                                </button>
+                            </template>
+                            <div x-show="testFolders.filter(f => !tdSearch || f.test.toLowerCase().includes(tdSearch.toLowerCase())).length === 0"
+                                 style="padding: 12px; text-align:center; font-size: 12px; color: var(--crb-grey-color)">No results</div>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="text-slate-400">/</span>
+
+                <!-- TESTCASE DROPDOWN -->
+                <div class="relative" x-data="{ tcOpen: false, tcSearch: '' }" @click.outside="tcOpen = false">
+                    <button @click="tcOpen = !tcOpen; if(tcOpen){ tcSearch=''; _loadTestCasesForFolder(testInfo.test); $nextTick(()=>$refs.tcSearchInput.focus()); }"
+                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            style="max-width: 280px">
+                        <span class="truncate" x-text="testInfo.testcase || '-'"></span>
+                        <svg class="w-3 h-3 opacity-40 shrink-0 transition-transform" :style="tcOpen ? 'transform:rotate(180deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div x-show="tcOpen" x-cloak x-transition.opacity.duration.150ms
+                         class="absolute left-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
+                         style="min-width: 380px; max-height: 360px; background: white; border-color: var(--crb-grey-light-color)">
+                        <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color)">
+                            <div style="display:flex; align-items:center; gap:6px; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--crb-grey-light-color); background: var(--crb-new-bg)">
+                                <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <input type="text" x-model="tcSearch" x-ref="tcSearchInput" placeholder="Search test cases..."
+                                       @keydown.escape="tcOpen = false; tcSearch = ''"
+                                       style="border:none; outline:none; background:transparent; font-size:13px; width:100%; color: var(--crb-text-color)">
+                            </div>
+                        </div>
+                        <div style="max-height: 280px; overflow-y: auto; padding: 4px">
+                            <template x-for="tc in testCases.filter(tc => !tcSearch || tc.testcase.toLowerCase().includes(tcSearch.toLowerCase()) || tc.description.toLowerCase().includes(tcSearch.toLowerCase()))" :key="tc.testcase">
+                                <button @click="switchToTestCase(testInfo.test, tc.testcase); tcOpen = false; tcSearch = ''"
+                                        class="flex items-center gap-2 w-full text-left transition-colors"
+                                        :style="tc.testcase === testInfo.testcase ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); font-weight:600' : ''"
+                                        style="padding: 6px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none"
+                                        @mouseenter="$el.style.background = tc.testcase === testInfo.testcase ? 'color-mix(in srgb, var(--crb-blue-color) 15%, transparent)' : 'var(--crb-new-bg)'"
+                                        @mouseleave="$el.style.background = tc.testcase === testInfo.testcase ? 'color-mix(in srgb, var(--crb-blue-color) 10%, transparent)' : 'transparent'">
+                                    <svg x-show="tc.testcase === testInfo.testcase" class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+                                    <span class="truncate" x-text="tc.testcase"></span>
+                                    <span class="truncate text-[11px] opacity-50" x-text="tc.description" style="margin-left: 4px; max-width: 140px"></span>
+                                    <span class="text-[10px] shrink-0 opacity-40" x-text="'[' + tc.application + ']'" style="margin-left:auto"></span>
+                                </button>
+                            </template>
+                            <div x-show="testCases.filter(tc => !tcSearch || tc.testcase.toLowerCase().includes(tcSearch.toLowerCase())).length === 0"
+                                 style="padding: 12px; text-align:center; font-size: 12px; color: var(--crb-grey-color)">No results</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version badge -->
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 ml-1 rounded-md
+                            bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400
+                            text-[10px] font-semibold"
+                      x-text="'v' + testInfo.version"
+                      :data-tip="testInfo.usrModif ? ('Last modified by ' + testInfo.usrModif) : ''"
+                      data-tip-pos="bottom"></span>
+                <!-- App badge -->
+                <template x-if="testInfo.application">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 ml-1 rounded-md
+                                bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400
+                                text-[10px] font-semibold shrink-0">
+                        <img x-show="testInfo.appType"
+                             :src="'./images/logoapp-' + testInfo.appType + '.png'"
+                             @error="$el.style.display='none'"
+                             class="h-3.5 w-3.5 object-contain" alt="">
+                        <span x-text="testInfo.application"></span>
+                    </span>
+                </template>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-lg"
+                      x-text="testInfo.description || 'No description'"></span>
+                <template x-if="testInfo.usrModif">
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">
+                        <span class="opacity-40">|</span>
+                        Modified by <strong class="text-slate-500 dark:text-slate-400" x-text="testInfo.usrModif"></strong>
+                    </span>
+                </template>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+        <!-- Status -->
+        <div class="shrink-0 relative" x-data="{ statusOpen: false }" @click.outside="statusOpen = false">
+            <button @click="statusOpen = !statusOpen" class="v2-status-badge"
+                    :style="'color:' + _statusColor(testInfo.status)"
+                    data-tip="Test case status" data-tip-pos="bottom">
+                <span class="v2-status-dot" :style="'background:' + _statusColor(testInfo.status)"></span>
+                <span x-text="testInfo.status || '...'"></span>
+                <svg class="w-3 h-3 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div x-show="statusOpen" x-cloak x-transition
+                 class="absolute left-0 top-full mt-1 rounded-xl border border-slate-200 dark:border-slate-700
+                        bg-white dark:bg-slate-800 shadow-xl p-1 z-50" style="min-width: 200px">
+                <template x-for="s in testInfo.statusList" :key="s">
+                    <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs transition-colors
+                                   hover:bg-slate-100 dark:hover:bg-slate-700"
+                            :class="s === testInfo.status ? 'font-bold bg-slate-50 dark:bg-slate-700/50' : 'text-slate-600 dark:text-slate-300'"
+                            @click="updateStatus(s); statusOpen = false"
+                            style="white-space: nowrap">
+                        <span class="v2-status-dot" :style="'background:' + _statusColor(s)"></span>
+                        <span x-text="s" class="flex-1 text-left"></span>
+                        <svg x-show="s === testInfo.status" class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                </template>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+        <!-- Undo -->
+        <button @click="undo()" :disabled="undoStack.length === 0"
+                class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       text-slate-500 hover:text-sky-500 hover:border-sky-300
+                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                title="Undo (Ctrl+Z)">
+            <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <!-- Redo -->
+        <button @click="redo()" :disabled="redoStack.length === 0"
+                class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-700
+                       text-slate-500 hover:text-sky-500 hover:border-sky-300
+                       transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                title="Redo (Ctrl+Y)">
+            <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+        <!-- Auto-save toggle + Save status — same line -->
+        <div class="inline-flex items-center gap-2 shrink-0">
+            <div class="v2-toggle" :class="autoSaveEnabled ? 'v2-toggle--on' : ''"
+                 @click="autoSaveEnabled = !autoSaveEnabled" title="Toggle auto-save">
+                <div class="v2-toggle__dot"></div>
+            </div>
+            <span class="text-[11px] text-slate-400 dark:text-slate-500 select-none"
+                  x-text="autoSaveEnabled ? 'Auto' : 'Manual'"></span>
+
+            <!-- Save status (hidden when no state) -->
+            <template x-if="saveState !== ''">
+                <div class="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-md"
+                     :class="{
+                        'text-emerald-500': saveState === 'saved',
+                        'text-amber-500 bg-amber-50 dark:bg-amber-900/20': saveState === 'dirty',
+                        'text-sky-500': saveState === 'saving'
+                     }">
+                    <span class="w-1.5 h-1.5 rounded-full bg-current"
+                          :class="saveState === 'saving' ? 'v2-pulse' : ''"></span>
+                    <span x-text="saveState === 'saving' ? 'Saving...'
+                                 : saveState === 'saved'  ? 'Saved'
+                                 : saveState === 'dirty'  ? 'Unsaved'
+                                 : ''"></span>
+                </div>
+            </template>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+        <!-- Save button -->
+        <button @click="save()" :disabled="!canUpdate || saveState === 'saving'"
+                class="v2-header-action-btn shrink-0"
+                :class="saveState === 'dirty' ? 'v2-save-nudge' : ''"
+                style="background: var(--crb-blue-color)"
+                data-tip="Save (Ctrl+S)">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save
+        </button>
+
+        <!-- Run button -->
+        <button @click="runTestCase()"
+                class="v2-header-action-btn shrink-0" style="background: var(--crb-green-color, #10b981)"
+                data-tip="Run test case">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run
+        </button>
+
+        <!-- Re-run button -->
+        <button @click="reRunTestCase()" :disabled="!testInfo.lastRunId"
+                class="v2-header-rerun-btn shrink-0"
+                data-tip="Re-run with last config">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </button>
+
+        <!-- More actions -->
+        <div x-data="{ moreOpen: false }" class="relative shrink-0">
+            <button @click="moreOpen = !moreOpen" @click.outside="moreOpen = false"
+                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-700
+                           text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+            <div x-show="moreOpen" x-cloak x-transition
+                 class="absolute right-0 top-full mt-1 w-52 rounded-xl border border-slate-200 dark:border-slate-700
+                        bg-white dark:bg-slate-800 shadow-lg p-1 z-50">
+                <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                               hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        @click="editHeader(); moreOpen = false">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Edit Header
+                </button>
+                <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                               hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        @click="saveAs(); moreOpen = false">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Save As (Duplicate)
+                </button>
+                <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
+                <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                               hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        @click="seeLastExec(); moreOpen = false">
+                    <i data-lucide="history" class="w-3.5 h-3.5"></i> Last Execution
+                </button>
+                <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                               hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        @click="seeLogs(); moreOpen = false">
+                    <i data-lucide="scroll-text" class="w-3.5 h-3.5"></i> Logs
+                </button>
+                <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
+                <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-red-500
+                               hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        @click="deleteTestCase(); moreOpen = false" :disabled="!hasPermissionsDelete">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Test Case
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

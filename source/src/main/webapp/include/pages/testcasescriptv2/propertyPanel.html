@@ -1,0 +1,338 @@
+<!-- TestCaseScript V2 — Property Panel (Split 70/30) -->
+
+<div class="v2-prop-split">
+
+    <!-- ═══ LEFT: Local Properties ═══ -->
+    <div class="v2-prop-split-left">
+        <div class="flex flex-col rounded-2xl" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+
+            <!-- Header (same as step sidebar) -->
+            <div class="flex items-center justify-between px-4 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--crb-dark-color)">Properties</span>
+                <span class="text-xs font-medium" style="color: var(--crb-grey-color)" x-text="localPropertiesCount"></span>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="v2-prop-toolbar">
+                <div class="v2-prop-search-wrap">
+                    <svg class="v2-prop-search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" class="v2-prop-search-input" placeholder="Search..." x-model="propertySearch">
+                </div>
+                <div class="v2-prop-filters">
+                    <button @click="propertyFilter = 'all'" class="v2-prop-filter-pill" :class="propertyFilter === 'all' ? 'v2-prop-filter-pill--active' : ''">All</button>
+                    <button @click="propertyFilter = 'unused'" class="v2-prop-filter-pill" :class="propertyFilter === 'unused' ? 'v2-prop-filter-pill--active v2-prop-filter-pill--amber' : ''">Unused <span x-text="unusedPropertiesCount"></span></button>
+                </div>
+                <select class="v2-prop-type-filter" x-model="propertyFilter">
+                    <option value="" disabled selected>Type...</option><option value="all">All types</option>
+                    <option value="type:text">text</option><option value="type:getFromDataLib">getFromDataLib</option><option value="type:getFromSql">getFromSql</option>
+                    <option value="type:getFromHtml">getFromHtml</option><option value="type:getFromHtmlVisible">getFromHtmlVisible</option>
+                    <option value="type:getFromJS">getFromJS</option><option value="type:getFromGroovy">getFromGroovy</option>
+                    <option value="type:getAttributeFromHtml">getAttributeFromHtml</option><option value="type:getFromCookie">getFromCookie</option>
+                    <option value="type:getDifferencesFromXml">getDifferencesFromXml</option><option value="type:getFromJson">getFromJson</option>
+                    <option value="type:getFromXml">getFromXml</option><option value="type:getRawFromJson">getRawFromJson</option>
+                    <option value="type:getFromCommand">getFromCommand</option><option value="type:getFromElasticSearch">getFromElasticSearch</option>
+                    <option value="type:getFromNetworkTraffic">getFromNetworkTraffic</option><option value="type:getFromConsoleLog">getFromConsoleLog</option>
+                </select>
+            </div>
+            <!-- Card list -->
+            <div class="v2-prop-list">
+        <template x-for="(prop, pIdx) in filteredLocalProperties" :key="prop._uid || pIdx">
+            <div class="v2-prop-card" x-data="{ expanded: false }"
+                 :class="{
+                     'v2-prop-card--deleted': prop.toDelete,
+                     'v2-prop-card--expanded': expanded
+                 }">
+
+                <!-- Card Header (always visible) -->
+                <div class="v2-prop-card-header">
+                    <!-- Expand toggle -->
+                    <button class="v2-prop-expand-btn" @click="expanded = !expanded" :class="expanded ? 'v2-prop-expand-btn--open' : ''">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <!-- Name -->
+                    <span class="v2-prop-name" x-text="prop.property"
+                          @click="expanded = !expanded" style="cursor:pointer"></span>
+
+                    <!-- Type badge (subtle) -->
+                    <span class="v2-prop-type-badge"
+                          :style="'background:' + _propTypeColor(prop.type) + '12; color:' + _propTypeColor(prop.type) + '; border-color:' + _propTypeColor(prop.type) + '30'"
+                          x-text="prop.type"></span>
+
+                    <!-- Override indicator (subtle icon only) -->
+                    <template x-if="prop._overridesInherited">
+                        <span class="v2-prop-override-icon" title="Overrides inherited"
+                              @click="propertyFilter = 'inherited'; propertySearch = prop.property">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                        </span>
+                    </template>
+
+                    <!-- Value preview -->
+                    <span class="v2-prop-value-preview" x-text="(prop.value1 || '').substring(0, 50) + ((prop.value1 || '').length > 50 ? '...' : '')"
+                          :title="prop.value1 || ''"></span>
+
+                    <div class="flex-1"></div>
+
+                    <!-- Countries inline tags -->
+                    <template x-if="prop.countries && prop.countries.length > 0">
+                        <div class="v2-prop-country-inline">
+                            <template x-for="c in (prop.countries || []).slice(0, 6)" :key="typeof c === 'object' ? c.value : c">
+                                <span class="v2-prop-country-chip" x-text="typeof c === 'object' ? c.value : c"></span>
+                            </template>
+                            <template x-if="(prop.countries || []).length > 6">
+                                <span class="v2-prop-country-chip v2-prop-country-chip--more" x-text="'+' + ((prop.countries || []).length - 6)"></span>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Action buttons -->
+                    <div class="v2-prop-card-actions">
+                        <template x-if="!prop._isInherited && !prop.toDelete">
+                            <button @click="openPropertyEditor(pIdx)" class="v2-prop-action-btn" data-tip="Edit property" :disabled="!canUpdate">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                        </template>
+                        <button @click="copyProperty(pIdx)" class="v2-prop-action-btn" data-tip="Copy property">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+                        </button>
+                        <template x-if="!prop._isInherited">
+                            <button class="v2-prop-action-btn" :data-tip="'%property.' + prop.property + '%'"
+                                    @click.stop="navigator.clipboard.writeText('%property.' + prop.property + '%'); $el.classList.add('v2-prop-copy-syntax--copied'); setTimeout(()=>$el.classList.remove('v2-prop-copy-syntax--copied'), 1200)">
+                                <span style="font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1">%</span>
+                            </button>
+                        </template>
+                        <template x-if="prop._isInherited">
+                            <button @click="overrideInheritedProperty(pIdx)" class="v2-prop-action-btn v2-prop-action-btn--purple" data-tip="Override to local">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14" stroke-linecap="round"/></svg>
+                            </button>
+                        </template>
+                        <template x-if="!prop._isInherited">
+                            <button @click="toggleDeleteProperty(pIdx)" :disabled="!canUpdate"
+                                    class="v2-prop-action-btn"
+                                    :class="prop.toDelete ? 'v2-prop-action-btn--green' : 'v2-prop-action-btn--red'"
+                                    :data-tip="prop.toDelete ? 'Restore' : 'Delete'">
+                                <template x-if="!prop.toDelete">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                                </template>
+                                <template x-if="prop.toDelete">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.69 3L3 13"/></svg>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Inherited source info -->
+                <template x-if="prop._isInherited && (prop.fromTest || prop.fromTestcase)">
+                    <div class="v2-prop-inherited-source">
+                        <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        <span>From: <strong x-text="(prop.fromTest || '?') + ' > ' + (prop.fromTestcase || '?')"></strong></span>
+                    </div>
+                </template>
+
+                <!-- ═══ Inline Expand Panel ═══ -->
+                <div x-show="expanded && !prop._isInherited && !prop.toDelete" x-transition.duration.200ms class="v2-prop-expand-body">
+                    <!-- Row 1: Name + Type -->
+                    <div class="v2-prop-modal-row">
+                        <div class="v2-prop-field" style="flex:2">
+                            <label class="v2-prop-field-label">Name</label>
+                            <input type="text" class="v2-prop-field-input v2-prop-field-input--name" :value="prop.property" @input="$event.target.value = _sanitizePropName($event.target.value)" @change="updatePropertyField(pIdx, 'property', _sanitizePropName($event.target.value))" :disabled="!canUpdate" placeholder="MY_PROPERTY">
+                        </div>
+                        <div class="v2-prop-field" style="flex:1">
+                            <label class="v2-prop-field-label">Type</label>
+                            <select class="v2-prop-field-select" :value="prop.type" @change="updatePropertyField(pIdx, 'type', $event.target.value)" :disabled="!canUpdate">
+                                <option value="text">text</option><option value="getFromDataLib">getFromDataLib</option><option value="getFromSql">getFromSql</option><option value="getFromHtml">getFromHtml</option><option value="getFromHtmlVisible">getFromHtmlVisible</option><option value="getFromJS">getFromJS</option><option value="getFromGroovy">getFromGroovy</option><option value="getAttributeFromHtml">getAttributeFromHtml</option><option value="getFromCookie">getFromCookie</option><option value="getDifferencesFromXml">getDifferencesFromXml</option><option value="getFromJson">getFromJson</option><option value="getFromXml">getFromXml</option><option value="getRawFromJson">getRawFromJson</option><option value="getFromCommand">getFromCommand</option><option value="getFromElasticSearch">getFromElasticSearch</option><option value="getFromNetworkTraffic">getFromNetworkTraffic</option><option value="getFromConsoleLog">getFromConsoleLog</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic fields: textarea fields (value1, value2) — full width -->
+                    <template x-for="fieldKey in Object.keys(_getPropertyFields(prop.type)).filter(k => (k === 'value1' || k === 'value2'))" :key="'big-'+fieldKey">
+                        <div class="v2-prop-field">
+                            <div style="display:flex;align-items:center;justify-content:space-between">
+                                <label class="v2-prop-field-label" x-text="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || fieldKey"></label>
+                                <template x-if="prop.type === 'getFromDataLib' && fieldKey === 'value1'">
+                                    <button @click="openModalDataLib(prop.value1)" class="v2-prop-action-btn" style="width:22px;height:22px" title="Open DataLib">
+                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </button>
+                                </template>
+                            </div>
+                            <template x-if="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) && fieldKey === 'value1'">
+                                <div class="v2-prop-code-header">
+                                    <span class="v2-prop-code-dot v2-prop-code-dot--red"></span>
+                                    <span class="v2-prop-code-dot v2-prop-code-dot--yellow"></span>
+                                    <span class="v2-prop-code-dot v2-prop-code-dot--green"></span>
+                                    <span class="v2-prop-code-lang" x-text="prop.type.replace('getFrom','')"></span>
+                                </div>
+                            </template>
+                            <textarea class="v2-prop-field-textarea"
+                                      :class="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) ? 'v2-prop-field-textarea--code' : ''"
+                                      :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
+                                      :rows="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) ? 5 : 2"
+                                      :placeholder="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || 'Value...'"
+                                      :disabled="!canUpdate"></textarea>
+                        </div>
+                    </template>
+
+                    <!-- Dynamic fields: small fields (select/input) — grouped in a flex row -->
+                    <div class="v2-prop-modal-row" style="flex-wrap:wrap">
+                        <template x-for="fieldKey in Object.keys(_getPropertyFields(prop.type)).filter(k => k !== 'value1' && k !== 'value2' && !['helperInformation','helperMessages'].includes(k) && typeof _getPropertyFields(prop.type)[k] === 'object' && _getPropertyFields(prop.type)[k].label)" :key="'sm-'+fieldKey">
+                            <div class="v2-prop-field" style="flex:1 1 30%;min-width:120px">
+                                <label class="v2-prop-field-label" x-text="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || fieldKey"></label>
+                                <!-- Select if options exist -->
+                                <template x-if="_getPropertyFields(prop.type)[fieldKey].options">
+                                    <select class="v2-prop-field-select" :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)" :disabled="!canUpdate">
+                                        <template x-for="opt in _getPropertyFields(prop.type)[fieldKey].options" :key="opt.value">
+                                            <option :value="opt.value" x-text="(opt.label || {}).en || opt.value" :selected="prop[fieldKey] === opt.value"></option>
+                                        </template>
+                                    </select>
+                                </template>
+                                <!-- Input if no options -->
+                                <template x-if="!_getPropertyFields(prop.type)[fieldKey].options">
+                                    <input type="text" class="v2-prop-field-input"
+                                           :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
+                                           :placeholder="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || ''"
+                                           :disabled="!canUpdate">
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="v2-prop-expand-footer">
+                        <span class="v2-prop-hint" style="margin:0;flex:1">
+                            <code class="v2-prop-hint-code v2-prop-hint-code--copy" x-text="'%property.' + prop.property + '%'"
+                                  @click="navigator.clipboard.writeText('%property.' + prop.property + '%')" title="Click to copy syntax"></code>
+                        </span>
+                        <button @click="openPropertyEditor(pIdx)" class="v2-prop-btn-secondary" style="height:28px;font-size:11px">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Full editor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Empty state -->
+        <template x-if="filteredLocalProperties.length === 0">
+            <div class="v2-prop-empty">
+                <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <div class="v2-prop-empty-title">No local properties</div>
+                <div class="v2-prop-empty-sub" x-text="propertySearch ? 'Try adjusting your search.' : 'Add a property to get started.'"></div>
+            </div>
+        </template>
+            </div><!-- /v2-prop-list -->
+
+            <!-- Footer (same as step sidebar) -->
+            <div class="px-3 py-3 shrink-0 flex gap-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                <template x-if="clipboardType === 'property'">
+                    <button @click="pasteProperty()" class="v2-step-footer-btn v2-step-footer-btn--secondary flex-1">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                        Paste
+                    </button>
+                </template>
+                <button @click="addProperty()" :disabled="!canUpdate" class="v2-step-footer-btn v2-step-footer-btn--primary flex-1">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg>
+                    Add Property
+                </button>
+            </div>
+        </div><!-- /local panel -->
+    </div><!-- /split-left -->
+
+    <!-- ═══ RIGHT: Inherited Properties (30%) ═══ -->
+    <div class="v2-prop-split-right">
+        <div class="flex flex-col rounded-2xl v2-prop-inherited-sidebar" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: visible">
+
+            <!-- Header (same as step sidebar) -->
+            <div class="flex items-center justify-between px-4 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--crb-dark-color)">Inherited</span>
+                <span class="text-xs font-medium" style="color: var(--crb-grey-color)" x-text="inheritedPropertiesCount"></span>
+            </div>
+
+            <!-- Search bar -->
+            <div class="px-3 py-2 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                <div class="v2-prop-search-wrap">
+                    <svg class="v2-prop-search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" class="v2-prop-search-input" placeholder="Search inherited..." x-model="inheritedSearch">
+                </div>
+            </div>
+
+            <!-- Inherited list -->
+            <div class="v2-prop-inh-list flex-1 overflow-y-auto">
+                <template x-for="(prop, iPIdx) in filteredInheritedProperties" :key="prop._uid || ('inh-'+iPIdx)">
+                    <div class="v2-prop-inh-card" :class="prop._hasLocalOverride ? 'v2-prop-inh-card--overridden' : ''">
+
+                        <!-- Card header: name + type -->
+                        <div class="v2-prop-inh-card-top">
+                            <span class="v2-prop-inh-name" x-text="prop.property"></span>
+                            <span class="v2-prop-type-badge" :style="'background:' + _propTypeColor(prop.type) + '15; color:' + _propTypeColor(prop.type)" x-text="prop.type" style="font-size:9px;padding:1px 6px"></span>
+                            <template x-if="prop._hasLocalOverride">
+                                <span class="v2-prop-inh-badge-overridden">Overridden</span>
+                            </template>
+                        </div>
+
+                        <!-- Value preview -->
+                        <div class="v2-prop-inh-card-val" x-text="(prop.value1 || '-').substring(0, 60) + ((prop.value1 || '').length > 60 ? '...' : '')"></div>
+
+                        <!-- Details row: countries + database -->
+                        <div class="v2-prop-inh-details">
+                            <template x-if="prop.countries && prop.countries.length > 0">
+                                <div class="v2-prop-inh-countries">
+                                    <template x-for="c in (prop.countries || []).slice(0, 5)">
+                                        <span class="v2-prop-country-chip v2-prop-country-chip--sm" x-text="typeof c === 'object' ? c.value : c"></span>
+                                    </template>
+                                    <template x-if="(prop.countries || []).length > 5">
+                                        <span class="v2-prop-country-chip v2-prop-country-chip--sm" x-text="'+' + ((prop.countries || []).length - 5)"></span>
+                                    </template>
+                                </div>
+                            </template>
+                            <template x-if="prop.database">
+                                <span class="v2-prop-inh-detail-tag">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                                    <span x-text="prop.database"></span>
+                                </span>
+                            </template>
+                        </div>
+
+
+                        <!-- Action buttons -->
+                        <div class="v2-prop-inh-actions v2-prop-inh-actions--visible">
+                            <!-- Edit (opens modal) -->
+                            <button @click="openPropertyEditor(filteredLocalProperties.length + iPIdx)"
+                                    class="v2-prop-action-btn" data-tip="View / Edit" data-tip-pos="bottom-start">
+                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <!-- Duplicate to local -->
+                            <template x-if="!prop._hasLocalOverride">
+                                <button @click="overrideInheritedProperty(filteredLocalProperties.length + iPIdx)"
+                                        class="v2-prop-action-btn v2-prop-action-btn--blue" data-tip="Duplicate to local" data-tip-pos="bottom-start">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M12 11v6m-3-3h6" stroke-linecap="round"/></svg>
+                                </button>
+                            </template>
+                            <!-- Go to source -->
+                            <template x-if="prop.fromTest && prop.fromTestcase">
+                                <a :href="'TestCaseScriptV2.jsp?test=' + encodeURIComponent(prop.fromTest) + '&testcase=' + encodeURIComponent(prop.fromTestcase)"
+                                   target="_blank" class="v2-prop-action-btn" data-tip="Open source" data-tip-pos="bottom-start">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                </a>
+                            </template>
+                        </div>
+
+                    </div>
+                </template>
+
+                <!-- Empty state -->
+                <template x-if="filteredInheritedProperties.length === 0">
+                    <div class="v2-prop-inh-empty">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        <span>No inherited properties</span>
+                        <span style="font-size:10px;color:#94a3b8">Properties from library steps will appear here</span>
+                    </div>
+                </template>
+            </div>
+
+        </div><!-- /v2-prop-panel--inherited -->
+    </div><!-- /split-right -->
+
+    </div><!-- /split -->
+
+</div>

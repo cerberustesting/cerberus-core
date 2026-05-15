@@ -1,0 +1,367 @@
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Transversal Property Edit Modal                                   -->
+<!-- Reusable from any page: TestCaseScriptV2, future pages, etc.      -->
+<!--                                                                   -->
+<!-- API — open via custom event:                                      -->
+<!--   window.dispatchEvent(new CustomEvent('property-modal-open', {   -->
+<!--       detail: { property, countries, canUpdate, onField, onCountryToggle, onSelectAll, onDeselectAll, onClose, getPropertyFields, openDataLib } -->
+<!--   }));                                                            -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+<div x-data="crbPropertyModal()" x-show="open" x-cloak
+     @property-modal-open.window="doOpen($event.detail)"
+     @property-modal-close.window="doClose()"
+     class="crb_modal" id="editPropertyModal">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]" @click="doClose()"></div>
+
+    <!-- Modal Card — same DNA as AppService.html -->
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-3xl rounded-2xl'"
+         :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- ═══ HEADER ═══ -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center"
+                     style="background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent)">
+                    <svg class="w-5 h-5" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0">Edit Property</h2>
+                    <p class="text-xs text-slate-500 !mb-0" x-text="prop.property ? prop.property : 'Configure property'"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="isFullscreen = !isFullscreen"
+                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <svg x-show="!isFullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7"/></svg>
+                    <svg x-show="isFullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7"/></svg>
+                </button>
+                <button @click="doClose()"
+                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══ SCROLLABLE BODY ═══ -->
+        <div class="flex-1 overflow-y-auto min-h-0 px-6 py-5 space-y-4" x-data="{ advancedOpen: false }">
+
+            <!-- Row 1: Name + Description -->
+            <div class="v2-prop-modal-row">
+                <div class="v2-prop-field" style="flex:2">
+                    <label class="v2-prop-field-label">Property Name</label>
+                    <input type="text" class="v2-prop-field-input v2-prop-field-input--name"
+                           :value="prop.property"
+                           @input="$event.target.value = sanitizeName($event.target.value)"
+                           @change="onField('property', sanitizeName($event.target.value))"
+                           placeholder="MY_PROPERTY"
+                           :disabled="!editable">
+                </div>
+                <div class="v2-prop-field" style="flex:3">
+                    <label class="v2-prop-field-label">Description</label>
+                    <input type="text" class="v2-prop-field-input"
+                           :value="prop.description"
+                           @change="onField('description', $event.target.value)"
+                           placeholder="Optional description..."
+                           :disabled="!editable">
+                </div>
+            </div>
+
+            <!-- Row 2: Type -->
+            <div class="v2-prop-modal-row">
+                <div class="v2-prop-field" style="flex:1">
+                    <label class="v2-prop-field-label">Type</label>
+                    <select class="v2-prop-field-select"
+                            :value="prop.type"
+                            @change="onField('type', $event.target.value)"
+                            :disabled="!editable">
+                        <template x-for="t in propertyTypes" :key="t">
+                            <option :value="t" x-text="t" :selected="t === prop.type"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 3: Database (conditional) -->
+            <template x-if="getFields(prop.type).database">
+                <div class="v2-prop-modal-row">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label" x-text="(getFields(prop.type).database.label || {}).en || 'Database'"></label>
+                        <input type="text" class="v2-prop-field-input"
+                               :value="prop.database"
+                               @change="onField('database', $event.target.value)"
+                               placeholder="Database name..."
+                               :disabled="!editable">
+                    </div>
+                </div>
+            </template>
+
+            <!-- Row 4: Value 1 — type-aware editor -->
+            <template x-if="getFields(prop.type).value1">
+                <div class="v2-prop-modal-row">
+                    <div class="v2-prop-field" style="flex:1">
+                        <div style="display:flex;align-items:center;justify-content:space-between">
+                            <label class="v2-prop-field-label" x-text="(getFields(prop.type).value1.label || {}).en || 'Value'"></label>
+                            <template x-if="prop.type === 'getFromDataLib'">
+                                <button @click="_cbOpenDataLib && _cbOpenDataLib(prop.value1)" class="v2-prop-action-btn" style="width:24px;height:24px" data-tip="Open DataLib editor">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </button>
+                            </template>
+                        </div>
+                        <template x-if="isCodeType()">
+                            <div class="v2-prop-code-header">
+                                <span class="v2-prop-code-dot v2-prop-code-dot--red"></span>
+                                <span class="v2-prop-code-dot v2-prop-code-dot--yellow"></span>
+                                <span class="v2-prop-code-dot v2-prop-code-dot--green"></span>
+                                <span class="v2-prop-code-lang" x-text="prop.type.replace('getFrom','')"></span>
+                            </div>
+                        </template>
+                        <textarea class="v2-prop-field-textarea"
+                                  :class="isCodeType() ? 'v2-prop-field-textarea--code' : ''"
+                                  :value="prop.value1"
+                                  @change="onField('value1', $event.target.value)"
+                                  :placeholder="isCodeType() ? '// Write your code here...' : 'Value...'"
+                                  :rows="isCodeType() ? 8 : 3"
+                                  :disabled="!editable"></textarea>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Row 5: Value 2 (conditional) -->
+            <template x-if="getFields(prop.type).value2">
+                <div class="v2-prop-modal-row">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label" x-text="(getFields(prop.type).value2.label || {}).en || 'Value 2'"></label>
+                        <input type="text" class="v2-prop-field-input"
+                               :value="prop.value2"
+                               @change="onField('value2', $event.target.value)"
+                               :disabled="!editable">
+                    </div>
+                </div>
+            </template>
+
+            <!-- Row 6: Value 3 (conditional — dropdown if options exist) -->
+            <template x-if="getFields(prop.type).value3">
+                <div class="v2-prop-modal-row">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label" x-text="(getFields(prop.type).value3.label || {}).en || 'Sub-type'"></label>
+                        <template x-if="getFields(prop.type).value3.options">
+                            <select class="v2-prop-field-select"
+                                    :value="prop.value3"
+                                    @change="onField('value3', $event.target.value)"
+                                    :disabled="!editable">
+                                <template x-for="opt in getFields(prop.type).value3.options" :key="opt.value">
+                                    <option :value="opt.value" x-text="opt.label.en" :selected="opt.value === prop.value3"></option>
+                                </template>
+                            </select>
+                        </template>
+                        <template x-if="!getFields(prop.type).value3.options">
+                            <input type="text" class="v2-prop-field-input"
+                                   :value="prop.value3"
+                                   @change="onField('value3', $event.target.value)"
+                                   :disabled="!editable">
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Row 7: Nature + Length + RowLimit + Rank (conditional per type) -->
+            <div class="v2-prop-modal-row">
+                <template x-if="getFields(prop.type).nature">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label">Nature</label>
+                        <select class="v2-prop-field-select"
+                                :value="prop.nature"
+                                @change="onField('nature', $event.target.value)"
+                                :disabled="!editable">
+                            <template x-for="opt in (getFields(prop.type).nature.options || [{value:'STATIC',label:{en:'Static'}},{value:'RANDOM',label:{en:'Random'}},{value:'RANDOMNEW',label:{en:'Random & New'}}])" :key="opt.value">
+                                <option :value="opt.value" x-text="opt.label.en" :selected="opt.value === prop.nature"></option>
+                            </template>
+                        </select>
+                    </div>
+                </template>
+                <template x-if="getFields(prop.type).length">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label">Length</label>
+                        <input type="text" class="v2-prop-field-input"
+                               :value="prop.length"
+                               @change="onField('length', $event.target.value)"
+                               placeholder="0" :disabled="!editable">
+                    </div>
+                </template>
+                <template x-if="getFields(prop.type).rowLimit">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label">Row Limit</label>
+                        <input type="number" class="v2-prop-field-input"
+                               :value="prop.rowLimit"
+                               @change="onField('rowLimit', parseInt($event.target.value) || 0)"
+                               placeholder="0" :disabled="!editable">
+                    </div>
+                </template>
+                <template x-if="getFields(prop.type).rank">
+                    <div class="v2-prop-field" style="flex:1">
+                        <label class="v2-prop-field-label">Rank</label>
+                        <input type="number" class="v2-prop-field-input"
+                               :value="prop.rank"
+                               @change="onField('rank', parseInt($event.target.value) || 0)"
+                               placeholder="0" :disabled="!editable">
+                    </div>
+                </template>
+            </div>
+
+            <!-- Countries -->
+            <div class="v2-prop-modal-section">
+                <div class="v2-prop-modal-section-header">
+                    <span class="v2-prop-field-label" style="margin-bottom:0">Countries</span>
+                    <div class="v2-prop-country-btns">
+                        <button @click="_cbSelectAll && _cbSelectAll()" class="v2-prop-country-toggle-btn" :disabled="!editable">All</button>
+                        <button @click="_cbDeselectAll && _cbDeselectAll()" class="v2-prop-country-toggle-btn" :disabled="!editable">None</button>
+                    </div>
+                </div>
+                <div class="v2-prop-country-tags">
+                    <template x-for="c in countries" :key="c">
+                        <button class="v2-prop-country-tag"
+                                :class="(prop.countries || []).includes(c) ? 'v2-prop-country-tag--active' : ''"
+                                @click="_cbCountryToggle && _cbCountryToggle(c)"
+                                :disabled="!editable"
+                                x-text="c"></button>
+                    </template>
+                    <template x-if="countries.length === 0">
+                        <span class="v2-prop-country-empty">No countries configured on this test case</span>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Advanced settings toggle -->
+            <button @click="advancedOpen = !advancedOpen" class="v2-prop-advanced-toggle" type="button">
+                <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="advancedOpen ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                Advanced Settings
+            </button>
+            <div x-show="advancedOpen" x-transition.duration.200ms class="v2-prop-modal-row" style="margin-top:4px">
+                <div class="v2-prop-field" style="flex:1">
+                    <label class="v2-prop-field-label">Cache Expire (s)</label>
+                    <input type="number" class="v2-prop-field-input"
+                           :value="prop.cacheExpire"
+                           @change="onField('cacheExpire', parseInt($event.target.value) || 0)"
+                           placeholder="0" :disabled="!editable">
+                </div>
+                <div class="v2-prop-field" style="flex:1">
+                    <label class="v2-prop-field-label">Retry Count</label>
+                    <input type="number" class="v2-prop-field-input"
+                           :value="prop.retryNb"
+                           @change="onField('retryNb', parseInt($event.target.value) || 0)"
+                           placeholder="0" :disabled="!editable">
+                </div>
+                <div class="v2-prop-field" style="flex:1">
+                    <label class="v2-prop-field-label">Retry Period (ms)</label>
+                    <input type="number" class="v2-prop-field-input"
+                           :value="prop.retryPeriod"
+                           @change="onField('retryPeriod', parseInt($event.target.value) || 0)"
+                           placeholder="0" :disabled="!editable">
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="v2-prop-hint" style="margin:0">
+                <span>Syntax: <code class="v2-prop-hint-code" x-text="'%property.' + (prop.property || 'NAME') + '%'"
+                                    @click="navigator.clipboard && navigator.clipboard.writeText('%property.' + prop.property + '%')"
+                                    style="cursor:pointer" data-tip="Click to copy"></code></span>
+            </div>
+            <button @click="doClose()" class="v2-prop-btn-primary" style="padding:6px 20px">Done</button>
+        </div>
+
+    </div><!-- end modal card -->
+</div><!-- end modal wrapper -->
+
+<script>
+function crbPropertyModal() {
+    return {
+        open: false,
+        isFullscreen: false,
+        prop: {},           // live reference to the property object
+        countries: [],
+        editable: true,
+
+        // Callbacks — set by the caller via event detail
+        _cbOnField: null,       // (fieldKey, value) → void
+        _cbCountryToggle: null, // (country) → void
+        _cbSelectAll: null,     // () → void
+        _cbDeselectAll: null,   // () → void
+        _cbOnClose: null,       // () → void
+        _cbOpenDataLib: null,   // (value) → void
+
+        propertyTypes: [
+            'text','getFromDataLib','getFromSql','getFromHtml','getFromHtmlVisible',
+            'getFromJS','getFromGroovy','getAttributeFromHtml','getFromCookie',
+            'getDifferencesFromXml','getFromJson','getFromXml','getRawFromJson',
+            'getFromCommand','getFromElasticSearch','getFromNetworkTraffic','getFromConsoleLog'
+        ],
+
+        /**
+         * Open the modal.
+         * @param {Object} detail — event detail object with:
+         *   - property {Object}         live property reference
+         *   - countries {string[]}      available countries
+         *   - canUpdate {boolean}       edit or read-only
+         *   - onField {Function}        (key, val) callback for every field change
+         *   - onCountryToggle {Function}  (country) toggle callback
+         *   - onSelectAll {Function}    select all countries
+         *   - onDeselectAll {Function}  deselect all countries
+         *   - onClose {Function}        called on modal close
+         *   - openDataLib {Function}    open DataLib modal
+         */
+        doOpen(detail) {
+            this.prop = detail.property;      // live reference — mutations reflect upstream
+            this.countries = detail.countries || [];
+            this.editable = detail.canUpdate !== false;
+            this._cbOnField = detail.onField || null;
+            this._cbCountryToggle = detail.onCountryToggle || null;
+            this._cbSelectAll = detail.onSelectAll || null;
+            this._cbDeselectAll = detail.onDeselectAll || null;
+            this._cbOnClose = detail.onClose || null;
+            this._cbOpenDataLib = detail.openDataLib || null;
+            this.open = true;
+        },
+
+        doClose() {
+            this.open = false;
+            if (this._cbOnClose) this._cbOnClose();
+        },
+
+        /** Called on any field change — proxies to the caller's callback */
+        onField(key, val) {
+            // Update local prop (live ref)
+            this.prop[key] = val;
+            // Notify caller
+            if (this._cbOnField) this._cbOnField(key, val);
+        },
+
+        sanitizeName(val) {
+            return (val || '').replace(/[.\s()%]/g, '');
+        },
+
+        getFields(type) {
+            if (typeof newPropertyPlaceholder === 'undefined') return { value1: { label: { en: 'Value' } } };
+            var fields = newPropertyPlaceholder[type];
+            if (!fields) return { value1: { label: { en: 'Value' } } };
+            return fields;
+        },
+
+        isCodeType() {
+            return ['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(this.prop.type);
+        }
+    };
+}
+</script>
