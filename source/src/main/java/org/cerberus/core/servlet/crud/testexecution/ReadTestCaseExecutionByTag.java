@@ -126,7 +126,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList<>(), "UTF-8");
-            boolean fullList = ParameterParserUtil.parseBooleanParam(request.getParameter("fullList"), false);
+            String fullList = ParameterParserUtil.parseStringParam(request.getParameter("fullList"), "hideOKFlaky");
             boolean fullListDefined = request.getQueryString().contains("fullList=");
 
             JSONObject jsonResponse = new JSONObject();
@@ -308,7 +308,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return countryList;
     }
 
-    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList, boolean fullList, boolean fullListDefined) {
+    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList, String fullList, boolean fullListDefined) {
         JSONObject testCaseExecutionTable = new JSONObject();
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<>();
         LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<>();
@@ -586,16 +586,15 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             if (!fullListDefined) { // If nb of exe is low, we force them to be displayed
                 if (ttc.size() < parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_reportbytag_nblinestotriggerautohide_int, "", 50)) {
                     LOG.debug("Not defined and size lower than target. " + ttc.size() + " param : " + parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_reportbytag_nblinestotriggerautohide_int, "", 50));
-                    fullList = true;
+                    fullList = "ALL";
                 }
             }
 
-            if (fullList) {
+            if ("ALL".equals(fullList)) {
                 testCaseExecutionTable.put("tableContent", ttc.values());
                 testCaseExecutionTable.put("iTotalRecords", ttc.size());
                 testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
-                testCaseExecutionTable.put("fullList", fullList);
-            } else {
+            } else if ("hideOK".equals(fullList)) {
                 LinkedHashMap<String, JSONObject> newttc = new LinkedHashMap<>();
                 for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                     String key = entry.getKey();
@@ -610,8 +609,22 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 testCaseExecutionTable.put("tableContent", newttc.values());
                 testCaseExecutionTable.put("iTotalRecords", newttc.size());
                 testCaseExecutionTable.put("iTotalDisplayRecords", newttc.size());
-                testCaseExecutionTable.put("fullList", fullList);
+            } else { // hideOKFlaky
+                LinkedHashMap<String, JSONObject> newttc = new LinkedHashMap<>();
+                for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
+                    String key = entry.getKey();
+                    JSONObject val = entry.getValue();
+                    if ((val.getInt("NbExeUsefullToHide") != val.getInt("NbExeUsefull")) // One of the execution of the test case has a status <> QU and OK
+                            || (val.getJSONArray("bugs").length() > 0) // At least 1 bug has been assigned to the testcase.
+                            ) {
+                        newttc.put(key, val);
+                    }
+                }
+                testCaseExecutionTable.put("tableContent", newttc.values());
+                testCaseExecutionTable.put("iTotalRecords", newttc.size());
+                testCaseExecutionTable.put("iTotalDisplayRecords", newttc.size());
             }
+            testCaseExecutionTable.put("fullList", fullList);
 
         } catch (JSONException ex) {
             LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);

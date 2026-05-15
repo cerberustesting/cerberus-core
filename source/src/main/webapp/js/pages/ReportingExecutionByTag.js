@@ -20,8 +20,8 @@
 /* global handleErrorAjaxAfterTimeout */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "PA", "CA"];
-// Define if execution detail must automaticly hide OK records.
-var isRefreshAutoHide = true;
+// Define if execution detail must automaticly hide : OK&Flaky (hideOKFlaky) OK&NonFlaky (hideOK) or show (ALL) records.
+var sRefreshAutoHide = "hideOKFlaky";
 var isRefreshAutoHideManualDefined = false;
 
 var displayFolder = 'false';
@@ -411,7 +411,7 @@ function loadReportingData(selectTag) {
 
     var fullL = "";
     if (isRefreshAutoHideManualDefined) {
-        fullL = "fullList=" + !isRefreshAutoHide;
+        fullL = "fullList=" + sRefreshAutoHide;
     }
 
     var param = "?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
@@ -420,7 +420,7 @@ function loadReportingData(selectTag) {
     var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
     $.when(jqxhr).then(function (data) {
 
-        isRefreshAutoHide = !data.table.fullList;
+        sRefreshAutoHide = data.table.fullList;
 
         if (data.hasOwnProperty('tagObject')) {
 
@@ -1791,19 +1791,27 @@ function renderOptionsForExeList(selectTag) {
 
 //        var contentHeaderToAdd = "<div class='marginBottom10' id='refreshButtons'>";
         var contentHeaderToAdd = "<div class='btn-group marginRight10 pull-right' id='refreshButtons'>";
-        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-sm marginLeft20' onclick='isRefreshAutoHide=false;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
-        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-sm marginLeft20' onclick='isRefreshAutoHide=true;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
-        if (isRefreshAutoHide) {
-            contentHeaderToAdd += buttonrefresh;
-        } else {
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"ALL\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        var buttonrefreshHideOK = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"hideOK\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
+        var buttonrefreshHideOKFlaky = "<button id='refresh' type='button' title='Refresh (auto hiding OK&Flaky testcases)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"hideOKFlaky\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK&Flaky testcases)</button>";
+        if (sRefreshAutoHide==="ALL") {
             contentHeaderToAdd += buttonrefreshAll;
+        } else if (sRefreshAutoHide==="hideOK") {
+            contentHeaderToAdd += buttonrefreshHideOK;
+        } else{
+            contentHeaderToAdd += buttonrefreshHideOKFlaky;
         }
         contentHeaderToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentHeaderToAdd += "<div class='dropdown-menu'>";
-        if (isRefreshAutoHide) {
+        if (sRefreshAutoHide==="ALL") {
+            contentHeaderToAdd += buttonrefreshHideOK;
+            contentHeaderToAdd += buttonrefreshHideOKFlaky;
+        } else if (sRefreshAutoHide==="hideOK") {
             contentHeaderToAdd += buttonrefreshAll;
-        } else {
-            contentHeaderToAdd += buttonrefresh;
+            contentHeaderToAdd += buttonrefreshHideOKFlaky;
+        } else{
+            contentHeaderToAdd += buttonrefreshAll;
+            contentHeaderToAdd += buttonrefreshHideOK;
         }
         contentHeaderToAdd += "</div>";
         $(".refreshButtonsHeader #refreshButtons").remove();
@@ -1812,12 +1820,15 @@ function renderOptionsForExeList(selectTag) {
 
 
         var contentHeaderSimpleToAdd = "<div class='marginRight10 pull-right' id='refreshButton'>";
-        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
-        var buttonrefresh = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
-        if (isRefreshAutoHide) {
-            contentHeaderSimpleToAdd += buttonrefresh;
-        } else {
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"ALL\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        var buttonrefreshHideOK = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"hideOK\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        var buttonrefreshHideOKFlaky = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"hideOKFlaky\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        if (sRefreshAutoHide==="ALL") {
             contentHeaderSimpleToAdd += buttonrefreshAll;
+        } else if (sRefreshAutoHide==="hideOK") {
+            contentHeaderSimpleToAdd += buttonrefreshHideOK;
+        } else{
+            contentHeaderSimpleToAdd += buttonrefreshHideOKFlaky;
         }
         contentHeaderSimpleToAdd += "</div>";
         $(".refreshButtonHeader #refreshButton").remove();

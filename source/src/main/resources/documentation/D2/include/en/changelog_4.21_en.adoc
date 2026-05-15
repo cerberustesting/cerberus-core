@@ -15,7 +15,7 @@
 * Campaign now save and display last execution timestamp. Campaign can then be sorted by latest execution.
 * Added support for clearField action for GUI and FAT applications
 * Added support for property row number for mongodb service (limiting request duration and size)
-* 
+* Added filter option on report by tag page in order to hide OK & flaky executions #2614
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
