@@ -7,7 +7,7 @@
 * Major UI improvements using Tailwind & Alpine. All modal on all pages changed for better User Experience.
 * Major Menu structure change. Most day to day screens are now all under 'Maintain' menu entry. Application and environment configuration moved to "Setting"
 * First AI use cases integration using Anthropic.
-* GetFormJS property is now available for all application type. (when not GUI, the js is executed on server side)
+* GetFromJS property is now available for all application type. (when not GUI, the js is executed on server side)
 * Integration with the new proxy dependency of cerberus-robot-proxy (MITMPROXY).
 * Integration with latest Cerberus robot extension including video recording and automatic link to real time execution for SaaS users.
 * On engine messages, element links are no longer displayed when using image recognition.
