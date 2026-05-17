@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.service.bug.gitlab.IGitlabService;
+import org.cerberus.core.service.bug.glpi.IGlpiService;
 import org.cerberus.core.util.StringUtil;
 
 /**
@@ -60,6 +61,8 @@ public class BugService implements IBugService {
     private IAzureDevopsService azureDevopsService;
     @Autowired
     private IGithubService githubService;
+    @Autowired
+    private IGlpiService glpiService;
     @Autowired
     private IGitlabService gitlabService;
     @Autowired
@@ -130,6 +133,10 @@ public class BugService implements IBugService {
                                     break;
                                 case Application.BUGTRACKER_AZUREDEVOPS:
                                     newBugCreated = azureDevopsService.createAzureDevopsWorkItem(tc, execution, currentAppli.getBugTrackerParam1());
+
+                                    break;
+                                case Application.BUGTRACKER_GLPI:
+                                    newBugCreated = glpiService.createGlpiIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
                                 default:

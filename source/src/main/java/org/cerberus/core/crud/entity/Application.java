@@ -90,6 +90,7 @@ public class Application {
     public static final String BUGTRACKER_GITHUB = "GITHUB";
     public static final String BUGTRACKER_GITLAB = "GITLAB";
     public static final String BUGTRACKER_AZUREDEVOPS = "AZUREDEVOPS";
+    public static final String BUGTRACKER_GLPI = "GLPI";
 
     public boolean hasSameKey(Application obj) {
         if (obj == null) {
