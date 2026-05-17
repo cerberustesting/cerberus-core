@@ -543,6 +543,16 @@
                                 <i data-lucide="bug" class="w-4 h-4 text-red-500"></i>
                                 <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Bug Tracker</span>
                             </div>
+                            <button type="button" id="addBugExternalLink" title=""
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Bug Going to Application Bug Tracker
+                            </button>
+                            <button type="button" id="addBugConnector" title=""
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Bug Using Connector
+                            </button>
                             <button type="button" id="addBug"
                                     class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
                                 <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
@@ -815,9 +825,10 @@ var curOpenTab = null;
  * @param {String} testcase - id of the testcase to open the modal
  * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
  * @param {String} tab - name of the tab to activate
+ * @param {Integer} executionId - Optional execution Id in order to buig the bug tab.
  * @returns {null}
  */
-function openModalTestCase(test, testcase, mode, tab) {
+function openModalTestCase(test, testcase, mode, tab, executionId = 0) {
     curMode = mode;
 
     checkEmptyDescription = getParameterBoolean("cerberus_testcasepage_controlemptybugdescription", getUser().defaultSystem, true);
@@ -835,7 +846,7 @@ function openModalTestCase(test, testcase, mode, tab) {
     curOpenTab = (!isEmpty(tab)) ? tab : null;
 
     if (mode === "EDIT") {
-        editTestCaseClick(test, testcase);
+        editTestCaseClick(test, testcase, executionId);
     } else if (mode === "DUPLICATE") {
         duplicateTestCaseClick(test, testcase);
     } else {
@@ -1085,9 +1096,10 @@ function removeTestCaseDependency(test, testCase) {
  * Open the modal with testcase information.
  * @param {String} test - type selected
  * @param {String} testCase - type selected
+ * @param {Integer} executionId - Optional execution Id in order to buig the bug tab.
  * @returns {null}
  */
-function editTestCaseClick(test, testCase) {
+function editTestCaseClick(test, testCase, executionId = 0) {
 
     $("#editTestCaseButton").off("click");
     $("#editTestCaseButton").click(function () {
@@ -1113,7 +1125,7 @@ function editTestCaseClick(test, testCase) {
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
     });
-    feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
+    feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT", executionId);
 }
 
 function displayWarningOnChangeTestCaseKey(test, testCase) {
@@ -1532,6 +1544,8 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     $("#addBug").click(function () {
         addNewBugRow("bugTableBody", undefined);
     });
+    $("#addBugExternalLink").hide();
+    $("#addBugConnector").hide();
 
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
@@ -1550,9 +1564,10 @@ function feedNewTestCaseModal(modalId, defaultTest) {
  * @param {String} testCase - type selected
  * @param {String} modalId - type selected
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @param {String} exeId - optional execution id in order to contextualise the bug tab.
  * @returns {null}
  */
-function feedTestCaseModal(test, testCase, modalId, mode) {
+function feedTestCaseModal(test, testCase, modalId, mode, exeId = 0) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
@@ -1577,6 +1592,73 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             $("#addBug").click(function () {
                 addNewBugRow("bugTableBody", bugTrackerUrl);
             });
+
+            $("#addBugExternalLink").show();
+            if (!isEmpty(t.bugTrackerNewUrl)) {
+                if (exeId==0) {
+                    $("#addBugExternalLink").hide();
+                } else {
+                    $("#addBugExternalLink").attr("title", "From execution " + exeId);
+                
+                    $("#addBugExternalLink").off("click");
+                    $("#addBugExternalLink").click(function () {
+//                        console.info("Going to bug Tracker");
+//                        console.info(t);
+                        // TODO get the execution id from the context.
+                        testCase.id=exeId;
+                        var newBugURL = getNewBugExternalLink(testCase, t.bugTrackerNewUrl);
+                        if (!isEmpty(newBugURL)) {
+                            window.open(newBugURL, '_blank');
+                        } else {
+                            console.info("No 'New Bug' URL Specified.");
+                        }
+                    });
+                }
+            } else {
+                console.info("No Bugtracker URL");
+                $("#addBugExternalLink").text("No Bugtraker page defined !!");
+                $("#addBugExternalLink").attr("title","Configure New Bug URL from application screen (Bug Tracker Tab) !!");
+                $("#addBugExternalLink").attr("disabled", true);
+            }
+
+            $("#addBugConnector").show();
+            if (t.bugTrackerConnector !== "NONE") {
+                if (exeId==0) {
+                    $("#addBugConnector").hide();
+                } else {
+                    $("#addBugConnector").html("<svg width=\"14\" height=\"14\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"2.5\" viewBox=\"0 0 24 24\"><path d=\"M12 5v14m-7-7h14\"/></svg> Open a new bug using " + t.bugTrackerConnector + " connector");
+                    $("#addBugConnector").attr("title", "From execution " + exeId);
+                    $("#addBugConnector").removeAttr("disabled");
+                        
+                    $("#addBugConnector").off("click");
+                    $("#addBugConnector").click(function () {
+                        $('#addBugConnector').attr('disabled', true);
+                        $.ajax({
+                            url: "api/executions/" + exeId + "/createBug",
+                            async: true,
+                            method: "POST",
+                            success: function (bugCreated) {
+                                try {
+                                    let bugCreatedJ = JSON.parse(bugCreated);
+//                                    console.info(bugCreatedJ);
+                                    if (bugCreatedJ.bug) {
+//                                        console.info(bugCreatedJ.bug);
+                                        appendbugRow(bugCreatedJ.bug, "bugTableBody", bugTrackerUrl);
+                                    }
+                                    showMessageMainPage(getAlertHttpType(bugCreatedJ.statusCode), bugCreatedJ.message, false, 30000);
+                                } catch (e) {
+                                }
+                                $("#addBugConnector").removeAttr('disabled');
+                            }
+                        });
+                    });
+                }
+            } else {
+                console.info("No Bugtracker Connector !!");
+                $("#addBugConnector").text("No Bugtraker connector defined !!");
+                $("#addBugConnector").attr("title","Configure Connector from application screen (Bug Tracker Tab) !!");
+                $("#addBugConnector").attr("disabled", true);
+            }
 
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(t.system, testCase);
@@ -2061,6 +2143,30 @@ function addNewBugRow(dataTableBody, bugTrackerUrl) {
         toDelete: false
     };
     appendbugRow(newBugData, dataTableBody, bugTrackerUrl);
+}
+
+function getNewBugExternalLink(exe, appBugTrackerNewUrl){
+    if (!isEmpty(appBugTrackerNewUrl)) {
+        try {
+            appBugTrackerNewUrl = appBugTrackerNewUrl.replace(/%EXEID%/g, parseString(exe.id,'0'))
+                    .replace(/%EXEDATE%/g, parseString(new Date(exe.start).toLocaleString(),''))
+                    .replace(/%TEST%/g, parseString(exe.test,''))
+                    .replace(/%TESTCASE%/g, parseString(exe.testcase,''))
+                    .replace(/%TESTCASEDESC%/g, parseString(exe.description,''))
+                    .replace(/%COUNTRY%/g, parseString(exe.country,''))
+                    .replace(/%ENV%/g, parseString(exe.environment,''))
+                    .replace(/%BUILD%/g, parseString(exe.build,''))
+                    .replace(/%REV%/g, parseString(exe.revision,''))
+                    .replace(/%BROWSER%/g, parseString(exe.browser,''))
+                    .replace(/%BROWSERFULLVERSION%/g, parseString(exe.browser,'') + ' ' + parseString(exe.version,'') + ' ' + parseString(exe.platform,''));
+            console.info(appBugTrackerNewUrl);
+        } catch (e) {
+            console.warn(e);
+        }
+        return encodeURI(appBugTrackerNewUrl) ;
+    } else {
+        return null;
+    }
 }
 
 

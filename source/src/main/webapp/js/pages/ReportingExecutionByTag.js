@@ -1088,8 +1088,14 @@ function loadBugReportByStatusTable(data, selectTag) {
         }
 
 // add a panel for the total
-
-        $("#BugReportTable").append(data.nbBugs + " bugs<br>" + data.nbTOCLEAN + " TestCases / Bugs to Clean<br>" + data.nbPENDING + " TestCases / Bugs Still Running<br>" + data.nbTOREPORT + " TestCases / Bugs To report<br>");
+        let bugSummary = data.nbBugs + " bugs<br><br>";
+        if (data.nbTOCLEAN > 0)
+            bugSummary += "<b>" + data.nbTOCLEAN + " TestCases / Bugs to Clean</b><br>";
+        if (data.nbPENDING > 0)
+            bugSummary += "<b>" + data.nbPENDING + " TestCases / Bugs Still Running</b><br>";
+        if (data.nbTOREPORT > 0)
+            bugSummary += "<b>" + data.nbTOREPORT + " TestCases / Bugs To report</b><br>";
+        $("#BugReportTable").append(bugSummary);
 
     } else {
 
@@ -1683,8 +1689,8 @@ function generateTooltip(data) {
     return htmlRes;
 }
 
-function openModalTestCase_FromRepTag_withBug(element, test, testcase, mode) {
-    openModalTestCase(test, testcase, mode, "tabTCBugReport");
+function openModalTestCase_FromRepTag_withBug(element, test, testcase, mode, exeId = 0) {
+    openModalTestCase(test, testcase, mode, "tabTCBugReport", exeId);
     $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
 
@@ -1794,22 +1800,22 @@ function renderOptionsForExeList(selectTag) {
         var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"ALL\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
         var buttonrefreshHideOK = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"hideOK\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
         var buttonrefreshHideOKFlaky = "<button id='refresh' type='button' title='Refresh (auto hiding OK&Flaky testcases)' class='btn btn-default btn-sm marginLeft20' onclick='sRefreshAutoHide=\"hideOKFlaky\";isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK&Flaky testcases)</button>";
-        if (sRefreshAutoHide==="ALL") {
+        if (sRefreshAutoHide === "ALL") {
             contentHeaderToAdd += buttonrefreshAll;
-        } else if (sRefreshAutoHide==="hideOK") {
+        } else if (sRefreshAutoHide === "hideOK") {
             contentHeaderToAdd += buttonrefreshHideOK;
-        } else{
+        } else {
             contentHeaderToAdd += buttonrefreshHideOKFlaky;
         }
         contentHeaderToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentHeaderToAdd += "<div class='dropdown-menu'>";
-        if (sRefreshAutoHide==="ALL") {
+        if (sRefreshAutoHide === "ALL") {
             contentHeaderToAdd += buttonrefreshHideOK;
             contentHeaderToAdd += buttonrefreshHideOKFlaky;
-        } else if (sRefreshAutoHide==="hideOK") {
+        } else if (sRefreshAutoHide === "hideOK") {
             contentHeaderToAdd += buttonrefreshAll;
             contentHeaderToAdd += buttonrefreshHideOKFlaky;
-        } else{
+        } else {
             contentHeaderToAdd += buttonrefreshAll;
             contentHeaderToAdd += buttonrefreshHideOK;
         }
@@ -1823,11 +1829,11 @@ function renderOptionsForExeList(selectTag) {
         var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"ALL\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         var buttonrefreshHideOK = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"hideOK\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         var buttonrefreshHideOKFlaky = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='sRefreshAutoHide=\"hideOKFlaky\";loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
-        if (sRefreshAutoHide==="ALL") {
+        if (sRefreshAutoHide === "ALL") {
             contentHeaderSimpleToAdd += buttonrefreshAll;
-        } else if (sRefreshAutoHide==="hideOK") {
+        } else if (sRefreshAutoHide === "hideOK") {
             contentHeaderSimpleToAdd += buttonrefreshHideOK;
-        } else{
+        } else {
             contentHeaderSimpleToAdd += buttonrefreshHideOKFlaky;
         }
         contentHeaderSimpleToAdd += "</div>";
@@ -2219,16 +2225,29 @@ function aoColumnsFunc(Columns, durationMax) {
                 "data": "bugs",
                 "bSearchable": false,
                 "mRender": function (data, type, obj) {
-                    let renderBug = "";
-                    let bugList = getBugIdList(data, obj.AppBugURL);
-                    let editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag_withBug(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
-                                class="editEntry btn btn-block btn-default btn-xs margin-right5" \n\
-                                name="editEntry" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                    if ((obj.NbExeUsefullHasBug > 0) || (bugList !== "")) {
-                        return editEntry + bugList;
+//                    console.info("-------------------");
+                    if (type === "display") {
+                        let renderBug = "";
+                        let editEntry = "";
+                        if ((obj.NbExeUsefullHasBug > 0)) {
+//                            console.info(obj);
+//                            console.info(obj.execTab);
+                            for (const key in obj.execTab) {
+                                if ((!['OK', 'QE', 'PE', 'QU'].includes(obj.execTab[key].ControlStatus)))
+                                    editEntry += getOpenBugButton(obj.test, obj.testCase, obj.execTab[key].ID, key + '(' + obj.execTab[key].ID + ')');
+//                                console.log(key, obj.execTab[key].ID);
+                            }
+                        }
+                        let bugList = getBugIdList(data, obj.AppBugURL);
+                        if ((obj.NbExeUsefullHasBug > 0) || (bugList !== "")) {
+//                            console.info(editEntry + bugList);
+                            return editEntry + bugList;
+                        }
+                    } else {
+//                        console.info(type);
+//                        console.info(data.length);
                     }
-                    return "";
+                    return data.length;
                 },
                 "sName": "tec.bugs",
                 "sClass": "bugid",
@@ -2259,6 +2278,13 @@ function aoColumnsFunc(Columns, durationMax) {
     aoColumns.push(col);
 
     return aoColumns;
+}
+
+function getOpenBugButton(test, testCase, exeId, desc) {
+    return '<button id="editEntry" onclick="openModalTestCase_FromRepTag_withBug(this,\'' + escapeHtml(test) + '\',\'' + escapeHtml(testCase) + '\',\'EDIT\', ' + exeId + ');"\n\
+                                class="editEntry btn btn-block btn-default btn-xs margin-right5" \n\
+                                name="editEntry" type="button" title="' + desc + '">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button>';
 }
 
 function renderDependency(id) {

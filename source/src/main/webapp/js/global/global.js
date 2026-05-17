@@ -2660,6 +2660,9 @@ function isEmpty(val) {
     return (val === undefined || val === null || val.length <= 0) ? true : false;
 }
 
+function parseString(str, defaultValue){
+    return (str === undefined || str === null) ? defaultValue : str;
+}
 /**
  * Method that return true if val is null, undefined, empty or = ALL
  * @param {String} val value to test

@@ -669,19 +669,8 @@ function updatePage(data, steps) {
                     $("#bugs").append(link);
 
                     // Adding a button to create a new bug redirecting to Bugtracked URL.
-                    var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                    var newBugURL = getNewBugExternalLink(data, dataApp.contentTable.bugTrackerNewUrl);
                     if (!isEmpty(newBugURL)) {
-                        newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
-                        newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
-                        newBugURL = newBugURL.replace(/%TEST%/g, data.test);
-                        newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
-                        newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
-                        newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
-                        newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
-                        newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
-                        newBugURL = newBugURL.replace(/%REV%/g, data.revision);
-                        newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
-                        newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
                         link = $('<a target="_blank">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text(" Open a new bug From Application Bug Tracker").prepend($(" <span class='glyphicon glyphicon-new-window'></span>")));
                     } else {
                         link = $('<a>').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
@@ -713,8 +702,6 @@ function updatePage(data, steps) {
 
                                     }
                                     $("#addBugFromExternal").removeAttr('disabled');
-
-
                                 }
                             });
                         });
@@ -724,7 +711,7 @@ function updatePage(data, steps) {
                     link = $('<a>').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Manually Assign a bug to Test Case"));
                     $("#bugButtons").append(link);
                     $("#editTcHeaderBug").unbind("click").click(function () {
-                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
+                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport", data.id);
                     });
 
 
