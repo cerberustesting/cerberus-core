@@ -2242,7 +2242,7 @@
         }
         var sortInput = $("<input " + roAttr + "maxlength='4' placeholder='Sort'>").addClass(inputClasses).val(content.sort);
         var keyInput = $("<input " + roAttr + "maxlength='255' placeholder='Key'>").addClass(inputClasses + " crb-autocomplete-variable").val(content.key);
-        var valueInput = $("<textarea " + roAttr + "rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-variable").css({"resize": "none", "minHeight": "32px"}).val(content.value);
+        var valueInput = $("<textarea " + roAttr + "rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-variable").css({"minHeight": "32px"}).val(content.value);
         var descriptionInput = $("<input " + roAttr + "maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
 
         if (content.isInherited) {
@@ -2356,7 +2356,7 @@
         var activeSelect = $("<input type='checkbox'>").css({"width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer"}).prop("checked", content.isActive);
         var sortInput = $("<input maxlength='4' placeholder='Sort'>").addClass(inputClasses).val(content.sort);
         var keyInput = $("<input maxlength='255' placeholder='Key'>").addClass(inputClasses + " crb-autocomplete-header").val(content.key);
-        var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-headervalue").css({"resize": "none", "minHeight": "32px"}).val(content.value);
+        var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses + " crb-autocomplete-headervalue").css({"minHeight": "32px"}).val(content.value);
         var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
         var table = $("#headerTableBody");
         var isDark = document.documentElement.classList.contains('dark');
@@ -2459,7 +2459,7 @@
 
         var activeSelect = $("<input type='checkbox'>").css({"width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer"}).prop("checked", content.isActive);
         var keyInput = $("<input maxlength='255' placeholder='Key'>").addClass(inputClasses).val(content.key);
-        var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses).css({"resize": "none", "minHeight": "32px"}).val(content.value);
+        var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass(inputClasses).css({"minHeight": "32px"}).val(content.value);
         var descriptionInput = $("<input maxlength='200' placeholder='Description'>").addClass(inputClasses).val(content.description);
         var table = $("#callPropTableBody");
         var isDark = document.documentElement.classList.contains('dark');
