@@ -1042,10 +1042,10 @@ function aoColumnsFunc(countries, tableId) {
                     onClick: `
                         window.dispatchEvent(new CustomEvent('open-execution', {
                             detail: {
-                                application: '${data.application}',
-                                test: '${obj.test}',
-                                testcase: '${obj.testcase}',
-                                description: '${data.description}'
+                                application: '${escapeQuote(data.application)}',
+                                test: '${escapeQuote(obj.test)}',
+                                testcase: '${escapeQuote(obj.testcase)}',
+                                description: '${escapeQuote(data.description)}'
                             }
                         }))
                     `,

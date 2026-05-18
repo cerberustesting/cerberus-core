@@ -2583,6 +2583,11 @@ function escapeHtml(unsafe) {
             .replace(/'/g, "\\'");
 }
 
+function escapeQuote(unsafe) {
+    return unsafe
+            .replace(/'/g, "\\'");
+}
+
 function getShortenString(bigString) {
     if (bigString.length > 300) {
         return bigString.substring(0, 300) + "... (TOO LONG TO DISPLAY !! Please check Action or Property detail)";
