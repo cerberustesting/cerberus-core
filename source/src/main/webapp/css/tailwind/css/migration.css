@@ -130,6 +130,7 @@
 .env-card .env-btn-del:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
 .env-card .env-btn-expand { color: #94a3b8; }
 .env-card .env-btn-expand:hover { color: #38bdf8; background: rgba(56,189,248,0.08); }
+.crb-rotate-180 { transform: rotate(180deg); transition: transform 0.2s ease; }
 
 /* --- Campaign add-row controls --- */
 .crb_modal #addLabelTestcampaign,
