@@ -141,13 +141,33 @@ function aoColumnsFunc_TestCases(tableId) {
                         </button>`;
                 }
 
+                function actionButtonLink({id, name, title, link, icon, extraClass = ""}) {
+                    return `
+                        <a href="${link}">
+                            <button id="${id}" name="${name}" type="button"
+                            class="${baseBtnClass} ${extraClass}"
+                            title="${title}">
+                            ${icon}
+                        </button></a>`;
+                }
+
                 const icons = {
                     edit: '<i data-lucide="pencil" class="w-4 h-4"></i>',
                     view: '<i data-lucide="eye" class="w-4 h-4"></i>',
-                    script: '<i data-lucide="code" class="w-4 h-4"></i>'
+                    script: '<i data-lucide="file-text" class="w-4 h-4"></i>'
                 };
 
                 let buttons = [];
+
+                // Open Script
+                buttons.push(actionButtonLink({
+                    id: "openScript_" + row,
+                    name: "openScript",
+                    title: doc.getDocLabel("page_impactAnalysis", "OpenScript"),
+                    link: targetUrl,
+                    icon: icons.script,
+                    extraClass: "group-hover:!text-sky-500"
+                }));
 
                 // Edit / View header
                 buttons.push(actionButton({
@@ -158,17 +178,7 @@ function aoColumnsFunc_TestCases(tableId) {
                     icon: obj.hasPermissions ? icons.edit : icons.view
                 }));
 
-                // Open Script
-                buttons.push(actionButton({
-                    id: "openScript_" + row,
-                    name: "openScript",
-                    title: doc.getDocLabel("page_impactAnalysis", "OpenScript"),
-                    onClick: "window.open('" + targetUrl + "');",
-                    icon: icons.script,
-                    extraClass: "group-hover:!text-sky-500"
-                }));
-
-                return '<div class="flex items-center gap-0.5">' + buttons.join('') + '</div>';
+                return '<div class="flex items-center justify-center">' + buttons.join('') + '</div>';
             }
         },
         {
@@ -183,7 +193,33 @@ function aoColumnsFunc_TestCases(tableId) {
             "like": false,
             "sWidth": "80px",
             "sName": "test",
-            "title": doc.getDocOnline("test", "Test")
+            "title": doc.getDocOnline("test", "Test"),
+            "mRender": function (data, type, oObj, full) {
+
+                if (!data) {
+                    return '';
+                }
+
+                // Exemple : mémorisation sur la première ligne
+                if (full.row === 0) {
+                    testAutomaticModal = oObj.test;
+                }
+
+                return `
+                    <button
+                        type="button"
+                        onclick="filterOnField(this)"
+                        class="inline-flex items-center px-3 py-1
+                            border border-slate-300 dark:border-slate-600 rounded-xl
+                            text-sm font-medium text-slate-700 dark:text-slate-200
+                            hover:border-blue-500 hover:text-blue-600
+                            transition cursor-pointer bg-transparent"
+                        title="Open test ${oObj.test}"
+                    >
+                        ${oObj.test}
+                    </button>
+                `;
+            }
         },
         {
             "data": "testcase",

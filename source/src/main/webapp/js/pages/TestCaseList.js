@@ -973,6 +973,21 @@ function aoColumnsFunc(countries, tableId) {
                 </button>
             `;
                 }
+                function actionButtonLink({ id, name, title, link, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `
+                <a href="${link}">
+                    <button
+                        id="${id}" name="${name}"
+                        type="button" 
+                        class="${baseBtnClass} ${extraClass} ${disabledClass}" 
+                        title="${title}" 
+                    >
+                        ${icon}
+                    </button>
+                </a>
+            `;
+                }
 
                 const icons = {
                     edit: `<i data-lucide="${hasUpdate ? 'pencil' : 'eye'}" class="w-4 h-4"></i>`,
@@ -986,22 +1001,13 @@ function aoColumnsFunc(countries, tableId) {
                 let buttons = [];
 
                 // Edit Script (pencil icon) — navigate to script page
-                buttons.push(actionButton({
+                buttons.push(actionButtonLink({
                     id: `testcase_action_editscript_${row}`,
                     name: "editScriptTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
-                    onClick: `
-                        (function(event) {
-                            const url = './TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}';
-                            if (event.ctrlKey || event.metaKey) {
-                                window.open(url, '_blank');
-                            } else {
-                                window.location.href = url;
-                            }
-                        })(event)
-                    `,
+                    link: `TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}`,
                     extraClass: "group-hover:!text-blue-500",
-                    icon: icons.edit
+                    icon: icons.script
                 }));
 
                 // Edit Header (paper icon) — open header modal
@@ -1011,7 +1017,7 @@ function aoColumnsFunc(countries, tableId) {
                     title: hasUpdate ? doc.getDocLabel("page_testcaselist", "btn_edit")
                         : doc.getDocLabel("page_testcaselist", "btn_view"),
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','${hasUpdate ? 'EDIT' : 'VIEW'}')`,
-                    icon: icons.script,
+                    icon: icons.edit,
                     disabled: !hasUpdate
                 }));
 
