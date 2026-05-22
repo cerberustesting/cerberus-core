@@ -35,7 +35,6 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 @Component
 public class TestCaseExecutionWebSocket extends TextWebSocketHandler {
 
@@ -50,7 +49,6 @@ public class TestCaseExecutionWebSocket extends TextWebSocketHandler {
     private Lock mainLock;
     private Map<String, WebSocketSession> sessions;
     private Map<Long, Set<String>> executions;
-
 
     @PostConstruct
     public void init() {
@@ -145,9 +143,9 @@ public class TestCaseExecutionWebSocket extends TextWebSocketHandler {
                 LOG.debug("registeredSessionIds " + registeredSessionIds.toString());
                 registeredSessions = Maps.filterKeys(sessions, Predicates.in(registeredSessionIds)).values();
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             LOG.warn("Exception " + ex.toString());
-        }finally {
+        } finally {
             mainLock.unlock();
         }
 
@@ -196,7 +194,11 @@ public class TestCaseExecutionWebSocket extends TextWebSocketHandler {
             try {
                 registeredSession.close();
             } catch (Exception e) {
-                LOG.warn("Unable to close session " + registeredSession.getId() + " for execution " + execution.getId() + " due to " + e.getMessage());
+                if ((execution != null) && (registeredSession != null)) {
+                    LOG.warn("Unable to close session " + registeredSession.getId() + " for execution " + execution.getId() + " due to " + e.getMessage(), e);
+                } else {
+                    LOG.warn("Unable to close session due to " + e.getMessage(), e);
+                }
             }
         }
     }
