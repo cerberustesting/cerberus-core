@@ -2241,6 +2241,9 @@ function aoColumnsFunc(Columns, durationMax) {
                         let bugList = getBugIdList(data, obj.AppBugURL);
                         if ((obj.NbExeUsefullHasBug > 0) || (bugList !== "")) {
 //                            console.info(editEntry + bugList);
+                            if (editEntry === "") {
+                                editEntry = getOpenBugButton(obj.test, obj.testCase, '', '');
+                            }
                             return editEntry + bugList;
                         }
                     } else {
