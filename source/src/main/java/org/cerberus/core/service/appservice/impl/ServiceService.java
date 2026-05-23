@@ -146,8 +146,10 @@ public class ServiceService implements IServiceService {
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
 
             }
-            execution.addSecret(appService.getAuthPassword());
-            execution.setCurrentApplication(appService.getApplication());
+            if (appService != null) {
+                execution.addSecret(appService.getAuthPassword());
+                execution.setCurrentApplication(appService.getApplication());
+            }
 
             String servicePath;
 
