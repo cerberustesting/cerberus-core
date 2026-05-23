@@ -184,9 +184,11 @@ public final class XmlUtil {
             }
 
             NamedNodeMap attributes = node.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attribute = attributes.item(i);
-                storeAttribute((Attr) attribute);
+            if (attributes != null) {
+                for (int i = 0; i < attributes.getLength(); i++) {
+                    Node attribute = attributes.item(i);
+                    storeAttribute((Attr) attribute);
+                }
             }
 
             if (!attributesOnly) {
