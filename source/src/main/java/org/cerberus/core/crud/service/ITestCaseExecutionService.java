@@ -29,6 +29,7 @@ import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.crud.entity.stats.ApplicationStats;
 import org.cerberus.core.crud.entity.stats.TestCaseExecutionStats;
+import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -336,8 +337,7 @@ public interface ITestCaseExecutionService {
 
     /**
      *
-     * @return 
-     * @throws org.cerberus.core.exception.CerberusException 
+     * @return @throws org.cerberus.core.exception.CerberusException
      */
     public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException;
 
@@ -352,7 +352,6 @@ public interface ITestCaseExecutionService {
      */
     public JSONArray getLastByCriteria(String test, String testCase, String tag, Integer numberOfExecution) throws CerberusException;
 
-
     /**
      *
      * @param fromDate
@@ -362,4 +361,12 @@ public interface ITestCaseExecutionService {
      */
     AnswerItem<TestCaseExecutionStats> readTestCaseExecutionStats(String fromDate, String toDate, List<String> systems);
 
+    /**
+     * Calculate the final status and final description depending on all FA and
+     * KO event that happend during the execution.
+     *
+     * @param messageList
+     * @return
+     */
+    public MessageGeneral getResultMessageAgregated(List<MessageGeneral> messageList);
 }

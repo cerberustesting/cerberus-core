@@ -2419,6 +2419,23 @@ function Step(json, steps, id) {
     this.actions = [];
     this.setActions(json.testCaseStepActionExecutionList, id);
 
+
+    // Claculate nb of failed actions and controls on that step
+    let nbActionsKO = 0;
+    let nbControlsKO = 0;
+    for (var i = 0, max = json.testCaseStepActionExecutionList.length; i < max; i++) {
+        var itemA = json.testCaseStepActionExecutionList[i];
+        if (!(["OK", "PE"].includes(itemA.returnCode))) {
+            nbActionsKO++;
+        }
+        for (var j = 0, maxC = itemA.testCaseStepActionControlExecutionList.length; j < maxC; j++) {
+            var itemC = itemA.testCaseStepActionControlExecutionList[j];
+            if (!(["OK", "PE"].includes(itemC.returnCode))) {
+                nbControlsKO++;
+            }
+        }
+    }
+    
     this.steps = steps;
     this.toDelete = false;
 
@@ -2435,7 +2452,7 @@ function Step(json, steps, id) {
     } else {
         var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormat + ")";
     }
-    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
+    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc + " " + nbActionsKO + " " + nbControlsKO);
 
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
 
@@ -2470,6 +2487,15 @@ function Step(json, steps, id) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
                 .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
         stepLabelContainer.append(labelOptions[0]);
+    }
+
+    if (nbActionsKO > 0) {
+        var actionLabelNb = $('<span class="label label-primary optionLabel labelARed pull-right"></span>').text(nbActionsKO);
+        this.textArea.append(actionLabelNb)
+    }
+    if (nbControlsKO > 0) {
+        var controlLabelNb = $('<span class="label label-primary optionLabel labelCRed pull-right"></span>').text(nbControlsKO);
+        this.textArea.append(controlLabelNb)
     }
 
 

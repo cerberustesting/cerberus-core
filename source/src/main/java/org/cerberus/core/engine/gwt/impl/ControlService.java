@@ -112,15 +112,15 @@ public class ControlService implements IControlService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the control result.
                 controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
-                controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 controlExecution.setEnd(new Date().getTime());
                 LOG.debug("Control interrupted due to decode 'Description' Error.");
                 return controlExecution;
             }
         } catch (CerberusEventException cex) {
             controlExecution.setControlResultMessage(cex.getMessageError());
-            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             return controlExecution;
         }
 
@@ -146,8 +146,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value1' Error.");
                     return controlExecution;
@@ -170,8 +170,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value2' Error.");
                     return controlExecution;
@@ -194,8 +194,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value3' Error.");
                     return controlExecution;
@@ -204,7 +204,7 @@ public class ControlService implements IControlService {
             }
         } catch (CerberusEventException cex) {
             controlExecution.setControlResultMessage(cex.getMessageError());
-            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             return controlExecution;
         }
 
@@ -461,7 +461,7 @@ public class ControlService implements IControlService {
          * transformed to OK.
          */
         if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-            controlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+            execution.setResultMessageFinal(res);
         }
 
         /*
@@ -470,7 +470,7 @@ public class ControlService implements IControlService {
          * but refresh the Execution status.
          */
         if (res.isStopTest() && controlExecution.getFatal().equals("Y")) {
-            controlExecution.setStopExecution(true);
+            execution.setStopExecution(true);
         }
 
         controlExecution.setEnd(new Date().getTime());
@@ -1411,6 +1411,8 @@ public class ControlService implements IControlService {
                     return mes;
                 }
                 mes = checkNumericVerifyElement(control, value1, value2);
+                mes.resolveDescription("ELEMENTVALUETRANS", actualCleaned);
+                mes.resolveDescription("VALUETRANS", expectedCleaned);
                 break;
         }
         mes.resolveDescription("ELEMENT", path);

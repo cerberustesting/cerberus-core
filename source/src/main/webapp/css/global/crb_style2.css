@@ -520,6 +520,20 @@
     border-color: var(--crb-dark-color);
 }
 
+.labelARed {
+    /*color: var(--crb-red-color);*/
+    border-width: 2px;
+    background-color: var(--crb-red-color);
+    border-color: var(--crb-blue-color);
+}
+.labelCRed {
+    /*color: var(--crb-red-color);*/
+    border-width: 2px;
+    background-color: var(--crb-red-color);
+    border-color: var(--crb-green-color);
+}
+
+
 /* OK */
 .panelOK {
     border-color: var(--crb-green-color);

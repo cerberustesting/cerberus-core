@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.cerberus.core.engine.entity.ExecutionLog;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageGeneralEnum;
 
 /**
  * @author bcivel
@@ -170,6 +172,11 @@ public class TestCaseExecution {
 
     // Others
     private MessageGeneral resultMessage;
+    // Defined if execution needs to stop
+    private boolean stopExecution;
+    // contain all event messages collected during the execution. It will be used at the end of the execution in order to get the final status and message.
+    private List<MessageGeneral> resultMessageList;
+
     private String executionUUID;
     private Selenium selenium;
     private Session session;
@@ -253,6 +260,30 @@ public class TestCaseExecution {
             this.setControlMessage(resultMessage.getDescription());
             this.setControlStatus(resultMessage.getCodeString());
         }
+    }
+
+    public void setResultMessageFinal(MessageGeneral resultMessage) {
+//        LOG.debug("-------- Execution Result Message");
+//        LOG.debug("  {} - {}", resultMessage.getCodeString(), resultMessage.getDescription());
+//        LOG.debug("  {} - {}", resultMessage.getSource().getCodeString(), resultMessage.getSource().getDescription());
+        if (!"PE".equals(resultMessage.getCodeString())) {
+            resultMessageList.add(new MessageGeneral(resultMessage.getCodeString(), resultMessage.getDescription()));
+        }
+//        LOG.debug(" --> {} - {}", resultMessageList);
+
+    }
+
+    public void setResultMessageFinal(MessageEvent eventMessage) {
+//        LOG.debug("-------- Execution Result Message (Event)");
+//        LOG.debug("  {} - {} - {}", eventMessage.getCodeString(), eventMessage.getDescription(), eventMessage.isStopTest());
+//        LOG.debug("  {} - {}", eventMessage.getMessage().getCodeString(), eventMessage.getMessage().getDescription());
+        if (!"PE".equals(eventMessage.getMessage().getCodeString())) {
+            resultMessageList.add(new MessageGeneral(eventMessage.getMessage().getCodeString(), eventMessage.getDescription()));
+        } else if ((!eventMessage.isStopTest()) && (!"OK".equals(eventMessage.getCodeString()))){
+            // Trapping the case when event failed but it was ignored. We store the Result message anyway.
+            resultMessageList.add(new MessageGeneral("OK", eventMessage.getDescription()));
+        }
+//        LOG.debug(" --> {}", resultMessageList);
     }
 
     public void addExecutionLog(String status, String message) {
