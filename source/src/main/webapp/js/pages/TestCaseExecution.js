@@ -2425,12 +2425,12 @@ function Step(json, steps, id) {
     let nbControlsKO = 0;
     for (var i = 0, max = json.testCaseStepActionExecutionList.length; i < max; i++) {
         var itemA = json.testCaseStepActionExecutionList[i];
-        if (!(["OK", "PE"].includes(itemA.returnCode))) {
+        if (!(["OK", "PE", "NE"].includes(itemA.returnCode))) {
             nbActionsKO++;
         }
         for (var j = 0, maxC = itemA.testCaseStepActionControlExecutionList.length; j < maxC; j++) {
             var itemC = itemA.testCaseStepActionControlExecutionList[j];
-            if (!(["OK", "PE"].includes(itemC.returnCode))) {
+            if (!(["OK", "PE", "NE"].includes(itemC.returnCode))) {
                 nbControlsKO++;
             }
         }
