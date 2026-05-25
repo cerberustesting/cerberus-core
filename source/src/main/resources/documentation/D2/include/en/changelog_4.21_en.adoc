@@ -17,6 +17,7 @@
 * Added support for property row number for mongodb service (limiting request duration and size)
 * Added filter option on report by tag page in order to hide OK & flaky executions #2614
 * Improved Bug management. Bug can now be created from testcase modal via external link of server to server connector.
+* Execution engine now report the detailed message of the status (coming from associated control or action failed)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
