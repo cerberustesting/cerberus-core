@@ -26,7 +26,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         if (campaign !== null && campaign !== "" && campaign !== undefined) {
             initDetailedPage();
             if (fromDate && toDate) {
-              //  renderPicker('fromPicker', fromDate);
+                //  renderPicker('fromPicker', fromDate);
                 //renderPicker('toPicker', toDate);
                 getStatisticsByEnvCountry();
             }
@@ -150,7 +150,7 @@ function setSelectOptions(selectId, options, param) {
     let select = $(selectId);
     if (select.val() === null) {
         let selectOptions = select.html("");
-        $.each(options, function(index, value) {
+        $.each(options, function (index, value) {
             selectOptions += `<option value="${value}">${value}</option>`;
         });
         select.html(selectOptions);
@@ -166,7 +166,7 @@ function setSystemSelectOptions() {
     let user = JSON.parse(sessionStorage.getItem('user'));
     let systems = user.system;
     let options = $("#systemSelect").html("");
-    $.each(systems, function(index, value) {
+    $.each(systems, function (index, value) {
         options += `<option value="${value}">${value}</option>`;
     })
     $('#systemSelect').html(options);
@@ -177,28 +177,28 @@ function setApplicationSelectOptions(systems) {
     let systemsQ = "";
     $("#applicationSelect").html("");
     $('#applicationSelect').multiselect('refresh');
-    $.each(systems, function(index, value) {
-        systemsQ +=  "&system=" + encodeURI(systems[index]);
+    $.each(systems, function (index, value) {
+        systemsQ += "&system=" + encodeURI(systems[index]);
     });
     $.ajax
-        ({
-            url: "ReadApplication?"+systemsQ,
-            async: true,
-            dataType: "json",
-            method: 'GET',
-            data: {
-                system: encodeURI(systems),
-            },
-            success: function(data) {
-                let result = data.contentTable;
-                let options = $("#applicationSelect").html();
-                $.each(result, function(index, value) {
-                    options += `<option value="${result[index].application}">${result[index].application}</option>`;
-                })
-                $('#applicationSelect').html(options);
-                $("#applicationSelect").multiselect('rebuild');
-            }
-        });
+            ({
+                url: "ReadApplication?" + systemsQ,
+                async: true,
+                dataType: "json",
+                method: 'GET',
+                data: {
+                    system: encodeURI(systems),
+                },
+                success: function (data) {
+                    let result = data.contentTable;
+                    let options = $("#applicationSelect").html();
+                    $.each(result, function (index, value) {
+                        options += `<option value="${result[index].application}">${result[index].application}</option>`;
+                    })
+                    $('#applicationSelect').html(options);
+                    $("#applicationSelect").multiselect('rebuild');
+                }
+            });
 }
 
 function initGlobalPage() {
@@ -215,10 +215,10 @@ function initGlobalPage() {
     $('#group1Select').next('div').find('button').prop('disabled', true);
     $('#loadButton').prop('disabled', true);
 
-    $('#loadButton').click(function()
-        {
-            getStatistics();
-        }
+    $('#loadButton').click(function ()
+    {
+        getStatistics();
+    }
     );
 }
 
@@ -236,18 +236,18 @@ function initDetailedPage() {
     let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [1, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticDetailList", undefined, undefined, undefined, undefined);
 
-    $('#loadDetailButton').click(function()
-        {
-            getStatisticsByEnvCountry();
-        }
+    $('#loadDetailButton').click(function ()
+    {
+        getStatisticsByEnvCountry();
+    }
     );
 }
 
 function getStatistics(form) {
     // Convert array of objects or strings to CSV string
     const toCsv = arr => arr
-        .map(i => typeof i === 'string' ? i : (i.value || i.id || i.label || i.name || ''))
-        .join(',');
+                .map(i => typeof i === 'string' ? i : (i.value || i.id || i.label || i.name || ''))
+                .join(',');
 
     $.ajax({
         url: "api/campaignexecutions/statistics",
@@ -260,14 +260,14 @@ function getStatistics(form) {
             from: encodeURIComponent(form.from),
             to: encodeURIComponent(form.to)
         }),
-        beforeSend: function() {
+        beforeSend: function () {
             setLoadingStatus($("#tagStatisticList"));
         },
-        success: function(data) {
+        success: function (data) {
             updateDatatable($("#tagStatisticTable"), data);
             removeLoadingStatus($("#tagStatisticList"));
         },
-        error: function(jqXHR) {
+        error: function (jqXHR) {
             removeLoadingStatus($("#tagStatisticList"));
             showMessageMainPage("danger", jqXHR.responseText, false);
         }
@@ -279,44 +279,44 @@ function getStatisticsByEnvCountry() {
     let environments = prepareFilterList($('#environmentSelect').val());
     let countries = prepareFilterList($('#countrySelect').val());
     const fromInput = document.querySelector('#fromPicker input');
-    const toInput   = document.querySelector('#toPicker input');
+    const toInput = document.querySelector('#toPicker input');
 
     const from = fromInput && fromInput.value
-        ? new Date(fromInput.value.replace(' ', 'T')).toISOString()
-        : '';
+            ? new Date(fromInput.value.replace(' ', 'T')).toISOString()
+            : '';
 
     const to = toInput && toInput.value
-        ? new Date(toInput.value.replace(' ', 'T')).toISOString()
-        : '';
+            ? new Date(toInput.value.replace(' ', 'T')).toISOString()
+            : '';
 
     $.ajax
-    ({
-        url: "api/campaignexecutions/statistics/" + GetURLParameter("campaign"),
-        async: true,
-        method: 'GET',
-        data: {
-            environments: encodeURI(environments),
-            countries: encodeURI(countries),
-            from: encodeURIComponent(from),
-            to: encodeURIComponent(to)
-        },
-        beforeSend: function() {
-            setLoadingStatus($("#tagStatisticDetailList"));
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            removeLoadingStatus($("#tagStatisticDetailList"));
-            let response = JSON.parse(jqXHR.responseText);
-            clearDatatable($("#tagStatisticDetailTable"));
-            showMessageMainPage("danger", response.message, false);
-        },
-        success: function(data) {
-            updateDatatable($("#tagStatisticDetailTable"), data);
-            removeLoadingStatus($("#tagStatisticDetailList"));
-            setSelectOptions("#environmentSelect", data.environments, "selectAll");
-            setSelectOptions("#countrySelect", data.countries, "selectAll");
-            InsertURLInHistory('ReportingCampaignStatistics.jsp?campaign=' + encodeURIComponent(campaign) + '&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&environments=' + encodeURI(environments) + '&countries=' + encodeURI(countries));
-        }
-    });
+            ({
+                url: "api/campaignexecutions/statistics/" + GetURLParameter("campaign"),
+                async: true,
+                method: 'GET',
+                data: {
+                    environments: encodeURI(environments),
+                    countries: encodeURI(countries),
+                    from: encodeURIComponent(from),
+                    to: encodeURIComponent(to)
+                },
+                beforeSend: function () {
+                    setLoadingStatus($("#tagStatisticDetailList"));
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    removeLoadingStatus($("#tagStatisticDetailList"));
+                    let response = JSON.parse(jqXHR.responseText);
+                    clearDatatable($("#tagStatisticDetailTable"));
+                    showMessageMainPage("danger", response.message, false);
+                },
+                success: function (data) {
+                    updateDatatable($("#tagStatisticDetailTable"), data);
+                    removeLoadingStatus($("#tagStatisticDetailList"));
+                    setSelectOptions("#environmentSelect", data.environments, "selectAll");
+                    setSelectOptions("#countrySelect", data.countries, "selectAll");
+                    InsertURLInHistory('ReportingCampaignStatistics.jsp?campaign=' + encodeURIComponent(campaign) + '&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&environments=' + encodeURI(environments) + '&countries=' + encodeURI(countries));
+                }
+            });
 }
 
 function displayPageLabel() {
@@ -345,10 +345,10 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "orderable": false,
             "searchable": false,
-            "width": "50px",
+            "width": "70px",
             "render": function (data, type, obj) {
                 const fromValue = document.querySelector('#fromPicker input')?.value || '';
-                const toValue   = document.querySelector('#toPicker input')?.value || '';
+                const toValue = document.querySelector('#toPicker input')?.value || '';
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${encodeURIComponent(fromValue)}&to=${encodeURIComponent(toValue)}"
                                         target="_blank"
@@ -401,6 +401,13 @@ function aoColumnsFunc(tableId) {
             "type": "datetime",
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
+            "mRender": function (data, type, obj) {
+                if (type === 'display') {
+                    return new Date(data).toLocaleString();
+                } else {
+                    return data;
+                }
+            }
         },
         {
             "data": "maxDateEnd",
@@ -409,6 +416,13 @@ function aoColumnsFunc(tableId) {
             "type": "datetime",
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
+            "mRender": function (data, type, obj) {
+                if (type === 'display') {
+                    return new Date(data).toLocaleString();
+                } else {
+                    return data;
+                }
+            }
         },
         {
             "data": "avgOK",
@@ -471,12 +485,12 @@ function aoColumnsDetailFunc(tableId) {
             "title": doc.getDocLabel("page_campaignstatistics", "environment_col")
         },
         {
-          "data": "country",
-          "name": "country",
-          "searchable": true,
-          "width": "90px",
-          "className": "center",
-          "title": doc.getDocLabel("page_campaignstatistics", "country_col")
+            "data": "country",
+            "name": "country",
+            "searchable": true,
+            "width": "90px",
+            "className": "center",
+            "title": doc.getDocLabel("page_campaignstatistics", "country_col")
         },
         {
             "data": "systemList",
@@ -508,6 +522,13 @@ function aoColumnsDetailFunc(tableId) {
             "searchable": false,
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
+            "mRender": function (data, type, obj) {
+                if (type === 'display') {
+                    return new Date(data).toLocaleString();
+                } else {
+                    return data;
+                }
+            }
         },
         {
             "data": "avgOK",
