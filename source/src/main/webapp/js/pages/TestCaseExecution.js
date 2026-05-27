@@ -1628,6 +1628,10 @@ function triggerTestCaseExecutionQueueandSee(queueId, tag) {
     });
 }
 
+function rgbToHex(rgb) {
+    var parts = rgb.match(/\d+/g);
+    return '#' + parts.map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+}
 
 function setConfigPanel(data) {
 
@@ -1642,7 +1646,7 @@ function setConfigPanel(data) {
 
     var favicon = new Favico({
         animation: 'slide',
-        bgColor: getExeStatusRowColor(data.controlStatus)
+        bgColor: rgbToHex(getExeStatusRowColor(data.controlStatus))
 //        textColor: "green"
     });
     favicon.badge(data.controlStatus);
