@@ -156,6 +156,8 @@ public class AppService {
     public static final String METHOD_KAFKASEARCH = "SEARCH";
     public static final String METHOD_MONGODBFIND = "FIND";
     public static final String METHOD_MONGODBUPDATEONE = "UPDATEONE";
+    public static final String METHOD_MONGODBINSERTONE = "INSERTONE";
+    public static final String METHOD_MONGODBREPLACEONE = "REPLACEONE";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";

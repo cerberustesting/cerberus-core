@@ -10,7 +10,8 @@
     <div class="absolute inset-0 bg-slate-900/60" @click="close()"></div>
 
     <!-- Modal Card -->
-    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card w-full max-w-4xl rounded-2xl"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card w-full max-w-4xl rounded-2xl"
          style="max-height: calc(100vh - 4rem); margin: 2rem 1rem;"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
@@ -32,7 +33,11 @@
                 </div>
             </div>
             <div class="flex items-center gap-1">
-                <button @click="close()"
+                <button @click="isFullscreen = !isFullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
+                </button>
+                <button @click="open = false"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
@@ -77,6 +82,7 @@
 
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+            <button type="button" @click="close()" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Cancel</button>
             <button type="button" @click="remove()"
                     class="px-4 py-2 rounded-md border border-red-300 dark:border-red-600 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                 <span class="flex items-center gap-1.5">
@@ -99,7 +105,7 @@
 <script>
     function massLabelModal() {
         return {
-            open: false,
+            open: false, isFullscreen: false,
 
             openModal() {
                 this.open = true;

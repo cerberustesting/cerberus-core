@@ -1668,13 +1668,21 @@
             if (newValueMethod === "FIND") {
                 $("#editSoapLibraryModal #srvRequestDiv").show();
                 $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
-            } else {
+            } else if (newValueMethod === "UPDATEONE") {
                 $("#editSoapLibraryModal #srvRequestDiv").show();
                 $("#editSoapLibraryModal #srvRequestExtra1Div").show();
+            } else if (newValueMethod === "REPLACEONE") {
+                $("#editSoapLibraryModal #srvRequestDiv").show();
+                $("#editSoapLibraryModal #srvRequestExtra1Div").show();
+                $("#editSoapLibraryModal #srvRequestExtra1").parent().parent().find("label").html("MongoDB Document");
+            } else if (newValueMethod === "INSERTONE") {
+                $("#editSoapLibraryModal #srvRequestDiv").hide();
+                $("#editSoapLibraryModal #srvRequestExtra1Div").show();
+                $("#editSoapLibraryModal #srvRequestExtra1").parent().parent().find("label").html("MongoDB Document");
             }
 
             $('#editSoapLibraryModal #method').prop("disabled", false);
-            window.dispatchEvent(new CustomEvent('method-filter', {detail: ['FIND', 'UPDATEONE']}));
+            window.dispatchEvent(new CustomEvent('method-filter', {detail: ['FIND', 'UPDATEONE', 'REPLACEONE', 'INSERTONE']}));
             $('#editSoapLibraryModal #bodyType').parent().hide();
             $('#editSoapLibraryModal #addContent').prop("disabled", true);
             $('#editSoapLibraryModal #addHeader').prop("disabled", true);
@@ -1761,7 +1769,7 @@
                 newMethod = "SEARCH";
             }
         } else if (lType === "MONGODB") {
-            if ((lMethod !== "FIND") && (lMethod !== "UPDATEONE")) {
+            if ((lMethod !== "FIND") && (lMethod !== "UPDATEONE") && (lMethod !== "REPLACEONE") && (lMethod !== "INSERTONE")) {
                 newMethod = "FIND";
             }
         } else {

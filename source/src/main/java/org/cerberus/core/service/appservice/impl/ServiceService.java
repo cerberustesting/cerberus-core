@@ -516,6 +516,8 @@ public class ServiceService implements IServiceService {
 
                             case AppService.METHOD_MONGODBFIND:
                             case AppService.METHOD_MONGODBUPDATEONE:
+                            case AppService.METHOD_MONGODBREPLACEONE:
+                            case AppService.METHOD_MONGODBINSERTONE:
                                 /**
                                  * Call MONGODB and store it into the execution.
                                  */

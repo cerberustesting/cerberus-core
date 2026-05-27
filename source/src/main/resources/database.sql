@@ -6835,3 +6835,9 @@ ALTER TABLE testcaseexecution ADD ApplicationType varchar(10) NOT NULL DEFAULT '
 
 -- 1941
 UPDATE testcaseexecution exe JOIN application app ON app.Application = exe.Application SET exe.applicationtype = app.type;
+
+-- 1942
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES ('SRVMETHOD', 'INSERTONE', 950 , 'Insert a MongoDB Document')
+        ,('SRVMETHOD', 'REPLACEONE', 900 , 'Replace a MongoDB Document');
+
