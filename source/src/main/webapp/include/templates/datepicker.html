@@ -1,20 +1,33 @@
 <template id="tpl-datetimepicker">
     <div class="relative w-full">
 
-        <!-- Bouton principal -->
-        <button type="button"
-                @click="toggle()"
-                :id="id + '-mainbutton'"
-                class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
+        <!-- Champ principal + bouton d'ouverture -->
+        <div class="flex h-10 items-center justify-between w-full rounded-md border px-3 py-2 text-sm
                    dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700
                    bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all">
-            <span x-text="formattedValue" class="pointer-events-none"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 pointer-events-none"
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </button>
+            <input type="text"
+                   :id="id + '-input'"
+                   x-model="displayValue"
+                   @focus="onInputFocus()"
+                   @input="onUserInput()"
+                   @blur="commitInput()"
+                   @keydown.enter.prevent="commitInput()"
+                   @keydown.escape.prevent="cancelInput()"
+                   class="w-full bg-transparent outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                   :placeholder="datePlaceholder"
+                   autocomplete="off">
 
+            <button type="button"
+                    @click="toggle()"
+                    :id="id + '-mainbutton'"
+                    class="ml-2 flex shrink-0 items-center justify-center rounded p-1 hover:bg-slate-100 dark:hover:bg-slate-700"
+                    tabindex="-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
 
         <!-- Picker -->
         <div x-ref="pickerContent"
@@ -32,9 +45,9 @@
 
             <!-- Header avec navigation < > -->
             <div class="flex items-center justify-between mb-2">
-                <button :id="parent.id + '-previous'" @click="previous()" class="p-2 hover:bg-gray-100 rounded-lg">&lt;</button>
+                <button type="button" :id="parent.id + '-previous'" @click="previous()" class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg">&lt;</button>
                 <div class="font-bold" x-text="headerText"></div>
-                <button :id="parent.id + '-next'" @click="next()" class="p-2 hover:bg-gray-100 rounded-lg">&gt;</button>
+                <button type="button" :id="parent.id + '-next'" @click="next()" class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg">&gt;</button>
             </div>
 
             <!-- Contenu principal selon tab -->
@@ -45,7 +58,7 @@
                         <template x-for="year in years" :key="year">
                             <button type="button"
                                     @click.stop="selectedYear = year; goToTab('months')"
-                                    :class="{'bg-blue-500 text-white': year === selectedYear, 'hover:bg-gray-100': year !== selectedYear}"
+                                    :class="{'bg-blue-500 text-white': year === selectedYear, 'hover:bg-gray-100 dark:hover:bg-slate-700': year !== selectedYear}"
                                     class="flex aspect-square items-center justify-center rounded-lg text-sm transition"
                                     x-text="year">
                             </button>
@@ -60,7 +73,7 @@
                             <button type="button"
                                     :id="parent.id + '-month-' + index"
                                     @click.stop="selectedMonth = index; goToTab('days')"
-                                    :class="{'bg-blue-500 text-white': index===selectedMonth, 'hover:bg-gray-100': index!==selectedMonth}"
+                                    :class="{'bg-blue-500 text-white': index===selectedMonth, 'hover:bg-gray-100 dark:hover:bg-slate-700': index!==selectedMonth}"
                                     class="aspect-square flex items-center justify-center rounded-lg text-sm transition"
                                     x-text="month"></button>
                         </template>
@@ -72,24 +85,24 @@
                     <div>
                         <!-- Weekdays header -->
                         <div class="grid grid-cols-7 gap-1 mb-2">
-                            <template x-for="d in weekDays">
+                            <template x-for="d in weekDays" :key="d">
                                 <div class="text-center text-xs font-medium text-gray-500 py-2" x-text="d"></div>
                             </template>
                         </div>
 
                         <!-- Calendar days -->
                         <div class="grid grid-cols-7 gap-1">
-                            <template x-for="day in calendarDays" :key="day.day+'-'+day.isCurrentMonth">
+                            <template x-for="day in calendarDays" :key="day.key">
                                 <button type="button"
-                                        :id="parent.id + '-day-' + day.day+'-'+day.isCurrentMonth"
+                                        :id="parent.id + '-day-' + day.key"
                                         @click="selectDate(day)"
                                         x-text="day.day"
                                         :class="{
-                            'text-gray-400': !day.isCurrentMonth,
-                            'bg-blue-500 text-white': day.isSelected,
-                            'bg-blue-100 text-blue-600': day.isToday && !day.isSelected,
-                            'hover:bg-gray-100': day.isCurrentMonth && !day.isSelected
-                        }"
+                                            'text-gray-400': !day.isCurrentMonth,
+                                            'bg-blue-500 text-white': day.isSelected,
+                                            'bg-blue-100 text-blue-600': day.isToday && !day.isSelected,
+                                            'hover:bg-gray-100 dark:hover:bg-slate-700': !day.isSelected
+                                        }"
                                         class="aspect-square rounded-lg text-sm flex items-center justify-center transition"></button>
                             </template>
                         </div>
@@ -99,12 +112,12 @@
                 <!-- Heures -->
                 <template x-if="activeTab==='hours'">
                     <div class="flex gap-2">
-                        <select x-model="selectedHour" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10">
+                        <select x-model="selectedHour" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10 dark:bg-slate-800 dark:border-slate-600">
                             <template x-for="h in hours" :key="h">
                                 <option :value="h" x-text="h"></option>
                             </template>
                         </select>
-                        <select x-model="selectedMinute" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10">
+                        <select x-model="selectedMinute" @change="updateValue(false)" class="w-full border rounded px-2 py-1 text-sm h-10 dark:bg-slate-800 dark:border-slate-600">
                             <template x-for="m in minutes" :key="m">
                                 <option :value="m" x-text="m"></option>
                             </template>
@@ -115,6 +128,7 @@
         </div>
     </div>
 </template>
+
 <script>
     function dateTimePicker(config = {}) {
         return {
@@ -122,51 +136,92 @@
             open: false,
             model: config.model,
             modelField: config.modelField,
-            value: new Date(),
+            value: null,
+            displayValue: '',
             pickerEl: null,
             buttonEl: null,
+            inputEl: null,
+            cloneState: null,
             onChange: config.onChange || null,
             boundOutsideClick: null,
 
             init() {
+                this.value = this.resolveInitialValue();
+                this.displayValue = this.formattedValue;
                 this.clonePicker();
+
                 this.boundOutsideClick = (e) => {
-                    if (!this.pickerEl.contains(e.target) && e.target !== this.buttonEl) {
-                        this.open = false;
-                        this.pickerEl.style.display = 'none';
-                        document.removeEventListener('click', this.boundOutsideClick);
+                    if (!this.pickerEl) return;
+
+                    const clickedInPicker = this.pickerEl.contains(e.target);
+                    const clickedButton = this.buttonEl && this.buttonEl.contains(e.target);
+                    const clickedInput = this.inputEl && this.inputEl.contains(e.target);
+
+                    if (!clickedInPicker && !clickedButton && !clickedInput) {
+                        this.closePicker();
                     }
                 };
             },
 
+            resolveInitialValue() {
+                const rawValue = this.model && this.modelField ? this.model[this.modelField] : config.value;
+
+                if (rawValue instanceof Date && !isNaN(rawValue.getTime())) {
+                    return rawValue;
+                }
+
+                if (typeof rawValue === 'string' && rawValue.trim() !== '') {
+                    const isoDate = new Date(rawValue);
+                    if (!isNaN(isoDate.getTime())) {
+                        return isoDate;
+                    }
+
+                    const parsedDate = this.parseDateTime(rawValue);
+                    if (parsedDate) {
+                        return parsedDate;
+                    }
+                }
+
+                return new Date();
+            },
+
             toggle() {
                 if (!this.pickerEl) return;
-                this.open = !this.open;
+                this.open ? this.closePicker() : this.openPicker();
+            },
 
-                if (this.open) {
-                    this.updatePosition();
-                    this.pickerEl.style.display = 'block';
-                    document.addEventListener('click', this.boundOutsideClick);
-                } else {
-                    document.removeEventListener('click', this.boundOutsideClick);
+            openPicker() {
+                if (!this.pickerEl) return;
+
+                this.syncCloneFromValue();
+                this.updatePosition();
+                this.open = true;
+                this.pickerEl.style.display = 'block';
+                document.addEventListener('click', this.boundOutsideClick);
+            },
+
+            closePicker() {
+                this.open = false;
+                if (this.pickerEl) {
                     this.pickerEl.style.display = 'none';
                 }
+                document.removeEventListener('click', this.boundOutsideClick);
             },
 
             updateFromClone(newValue, close) {
+                if (!(newValue instanceof Date) || isNaN(newValue.getTime())) return;
+
                 this.value = newValue;
+                this.displayValue = this.formattedValue;
 
                 if (this.model && this.modelField) {
                     this.model[this.modelField] = newValue.toISOString();
                 }
 
-                // fermer
-                if(close) {
-                    this.open = false;
-                    if (this.pickerEl) this.pickerEl.style.display = 'none';
+                if (close) {
+                    this.closePicker();
                 }
 
-                // callback externe
                 if (this.onChange) {
                     this.onChange(newValue.toISOString());
                 }
@@ -176,20 +231,20 @@
                 const tpl = document.querySelector('#tpl-datetimepicker');
                 if (!tpl) return;
 
-                // Injecter seulement le bouton inline
+                // Injecter seulement le champ inline.
                 const clone = tpl.content.cloneNode(true);
                 clone.querySelector('[x-ref="pickerContent"]')?.remove();
                 this.$el.appendChild(clone);
                 Alpine.initTree(this.$el);
 
-                this.buttonEl = this.$el.querySelector('button');
+                this.buttonEl = this.$el.querySelector(`#${CSS.escape(this.id + '-mainbutton')}`);
+                this.inputEl = this.$el.querySelector(`#${CSS.escape(this.id + '-input')}`);
 
-                // Créer le picker cloné dans le body
+                // Créer le picker cloné dans le body.
                 this.$nextTick(() => {
                     const pickerContent = tpl.content.querySelector('[x-ref="pickerContent"]');
                     if (!pickerContent) return;
 
-                    // Wrapper pour le picker cloné
                     this.pickerEl = document.createElement('div');
                     this.pickerEl.style.position = 'absolute';
                     this.pickerEl.style.display = 'none';
@@ -197,150 +252,389 @@
                     document.body.appendChild(this.pickerEl);
 
                     const pickerClone = pickerContent.cloneNode(true);
-                    pickerClone.setAttribute('x-data', `dateTimePickerClone_${config.id}()`);
+                    const cloneComponentName = `dateTimePickerClone_${this.safeComponentName(this.id)}`;
+                    pickerClone.setAttribute('x-data', `${cloneComponentName}()`);
                     this.pickerEl.appendChild(pickerClone);
 
-                    // x-data spécifique au picker cloné
-                    Alpine.data(`dateTimePickerClone_${config.id}`, () => ({
+                    Alpine.data(cloneComponentName, () => ({
                         parent: this,
 
-                        // Valeurs initiales
                         value: new Date(),
                         selectedYear: (new Date()).getFullYear(),
                         startYear: (new Date()).getFullYear() - 10,
                         endYear: (new Date()).getFullYear() + 10,
                         selectedMonth: (new Date()).getMonth(),
                         selectedDate: (new Date()).getDate(),
-                        selectedHour: (new Date()).getHours().toString().padStart(2,'0'),
-                        selectedMinute: (new Date()).getMinutes().toString().padStart(2,'0'),
+                        selectedHour: (new Date()).getHours().toString().padStart(2, '0'),
+                        selectedMinute: (new Date()).getMinutes().toString().padStart(2, '0'),
 
-                        activeTab: 'days', // onglet par défaut
-                        monthNames: ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'],
+                        activeTab: 'days',
+                        monthNames: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
 
-                        // Liste des années (-10/+10)
+                        init() {
+                            this.parent.cloneState = this;
+                            this.syncFromParent();
+                        },
+
+                        syncFromParent() {
+                            const date = this.parent.value instanceof Date && !isNaN(this.parent.value.getTime())
+                                ? this.parent.value
+                                : new Date();
+
+                            this.value = new Date(date.getTime());
+                            this.selectedYear = date.getFullYear();
+                            this.selectedMonth = date.getMonth();
+                            this.selectedDate = date.getDate();
+                            this.selectedHour = date.getHours().toString().padStart(2, '0');
+                            this.selectedMinute = date.getMinutes().toString().padStart(2, '0');
+                            this.startYear = this.selectedYear - 10;
+                            this.endYear = this.selectedYear + 10;
+                        },
+
                         get years() {
                             const arr = [];
-                            for(let y=this.startYear; y<=this.endYear; y++) arr.push(y);
+                            for (let y = this.startYear; y <= this.endYear; y++) arr.push(y);
                             return arr;
                         },
 
                         get weekDays() {
-                            return ['L','M','M','J','V','S','D'];
+                            return ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
                         },
 
                         get calendarDays() {
                             const first = new Date(this.selectedYear, this.selectedMonth, 1);
                             const last = new Date(this.selectedYear, this.selectedMonth + 1, 0);
                             const prevLast = new Date(this.selectedYear, this.selectedMonth, 0);
-                            const start = first.getDay() || 7; // si dimanche (0), on met 7
+                            const start = first.getDay() || 7;
 
                             const days = [];
                             const today = new Date();
 
-                            // jours du mois précédent
                             for (let i = start - 2; i >= 0; i--) {
-                                days.push({
-                                    day: prevLast.getDate() - i,
-                                    isCurrentMonth: false,
-                                    isToday: false,
-                                    isSelected: false
-                                });
+                                const date = new Date(this.selectedYear, this.selectedMonth - 1, prevLast.getDate() - i);
+                                days.push(this.buildDayObject(date, false, today));
                             }
 
-                            // jours du mois courant
                             for (let i = 1; i <= last.getDate(); i++) {
-                                days.push({
-                                    day: i,
-                                    isCurrentMonth: true,
-                                    isToday:
-                                        i === today.getDate() &&
-                                        this.selectedMonth === today.getMonth() &&
-                                        this.selectedYear === today.getFullYear(),
-                                    isSelected: i === this.selectedDate
-                                });
+                                const date = new Date(this.selectedYear, this.selectedMonth, i);
+                                days.push(this.buildDayObject(date, true, today));
+                            }
+
+                            // Complète la grille jusqu'à 42 cases pour éviter les sauts de hauteur.
+                            while (days.length < 42) {
+                                const nextDayIndex = days.length - (start - 1) - last.getDate() + 1;
+                                const date = new Date(this.selectedYear, this.selectedMonth + 1, nextDayIndex);
+                                days.push(this.buildDayObject(date, false, today));
                             }
 
                             return days;
                         },
 
+                        buildDayObject(date, isCurrentMonth, today) {
+                            return {
+                                key: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+                                day: date.getDate(),
+                                month: date.getMonth(),
+                                year: date.getFullYear(),
+                                isCurrentMonth,
+                                isToday:
+                                    date.getDate() === today.getDate() &&
+                                    date.getMonth() === today.getMonth() &&
+                                    date.getFullYear() === today.getFullYear(),
+                                isSelected:
+                                    date.getDate() === this.selectedDate &&
+                                    date.getMonth() === this.selectedMonth &&
+                                    date.getFullYear() === this.selectedYear
+                            };
+                        },
 
-                        get hours() { return Array.from({length:24}, (_,i)=>i.toString().padStart(2,'0')); },
-                        get minutes() { return Array.from({length:60}, (_,i)=>i.toString().padStart(2,'0')); },
+                        get hours() {
+                            return Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+                        },
 
-                        // Texte du header selon tab
+                        get minutes() {
+                            return Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+                        },
+
                         get headerText() {
-                            switch(this.activeTab){
+                            switch (this.activeTab) {
                                 case 'years': return `${this.startYear} - ${this.endYear}`;
                                 case 'months': return this.selectedYear;
                                 case 'days': return `${this.monthNames[this.selectedMonth]} ${this.selectedYear}`;
                                 case 'hours': return 'Heure';
+                                default: return '';
                             }
                         },
 
-                        // Changer d'onglet
-                        goToTab(tab){
+                        goToTab(tab) {
                             this.activeTab = tab;
                             this.updateValue(false);
                         },
 
-                        // Navigation < >
-                        previous(){
-                            if(this.activeTab==='years') {
-                                    this.startYear -= 20;
-                                    this.endYear -= 20;
+                        previous() {
+                            if (this.activeTab === 'years') {
+                                this.startYear -= 20;
+                                this.endYear -= 20;
                             }
-                            if(this.activeTab==='months'){ this.selectedYear--; }
-                            if(this.activeTab==='days'){ this.selectedMonth--; if(this.selectedMonth<0){this.selectedMonth=11; this.selectedYear--;}}
+                            if (this.activeTab === 'months') {
+                                this.selectedYear--;
+                                this.updateValue(false);
+                            }
+                            if (this.activeTab === 'days') {
+                                this.selectedMonth--;
+                                if (this.selectedMonth < 0) {
+                                    this.selectedMonth = 11;
+                                    this.selectedYear--;
+                                }
+                                this.fixSelectedDateForMonth();
+                                this.updateValue(false);
+                            }
                         },
 
-                        next(){
-                            if(this.activeTab==='years') {
+                        next() {
+                            if (this.activeTab === 'years') {
                                 this.startYear += 20;
                                 this.endYear += 20;
                             }
-                            if(this.activeTab==='months'){ this.selectedYear++; }
-                            if(this.activeTab==='days'){ this.selectedMonth++; if(this.selectedMonth>11){this.selectedMonth=0; this.selectedYear++;}}
+                            if (this.activeTab === 'months') {
+                                this.selectedYear++;
+                                this.updateValue(false);
+                            }
+                            if (this.activeTab === 'days') {
+                                this.selectedMonth++;
+                                if (this.selectedMonth > 11) {
+                                    this.selectedMonth = 0;
+                                    this.selectedYear++;
+                                }
+                                this.fixSelectedDateForMonth();
+                                this.updateValue(false);
+                            }
                         },
 
-                        // Sélection d’un jour
-                        selectDate(day){
+                        fixSelectedDateForMonth() {
+                            const lastDay = new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+                            if (this.selectedDate > lastDay) {
+                                this.selectedDate = lastDay;
+                            }
+                        },
+
+                        selectDate(day) {
+                            this.selectedYear = day.year;
+                            this.selectedMonth = day.month;
                             this.selectedDate = day.day;
                             this.updateValue(false);
                         },
 
-                        // Mise à jour du bouton et propagation au parent
-                        updateValue(close){
-                            const newValue = new Date(this.selectedYear, this.selectedMonth, this.selectedDate, +this.selectedHour, +this.selectedMinute);
+                        updateValue(close) {
+                            const newValue = new Date(
+                                this.selectedYear,
+                                this.selectedMonth,
+                                this.selectedDate,
+                                +this.selectedHour,
+                                +this.selectedMinute
+                            );
+
                             this.value = newValue;
-                            if(this.parent && typeof this.parent.updateFromClone==='function'){
+
+                            if (this.parent && typeof this.parent.updateFromClone === 'function') {
                                 this.parent.updateFromClone(newValue, close);
                             }
-                        },
-
-                        // Affichage formaté sur le bouton
-                        get formattedValue(){
-                            const pad = n=>n.toString().padStart(2,'0');
-                            return `${pad(this.value.getDate())}/${pad(this.value.getMonth()+1)}/${this.value.getFullYear()} ${pad(this.value.getHours())}:${pad(this.value.getMinutes())}`;
                         }
                     }));
-
 
                     Alpine.initTree(this.pickerEl);
                 });
             },
 
+            syncCloneFromValue() {
+                if (this.cloneState && typeof this.cloneState.syncFromParent === 'function') {
+                    this.cloneState.syncFromParent();
+                }
+            },
+
+            safeComponentName(value) {
+                return String(value || 'datepicker').replace(/[^a-zA-Z0-9_]/g, '_');
+            },
+
             updatePosition() {
-                if (!this.buttonEl || !this.pickerEl) return;
-                const rect = this.buttonEl.getBoundingClientRect();
+                if (!this.inputEl || !this.pickerEl) return;
+
+                const rect = this.inputEl.parentElement.getBoundingClientRect();
                 this.pickerEl.style.top = `${rect.bottom + window.scrollY + 5}px`;
                 this.pickerEl.style.left = `${rect.left + window.scrollX}px`;
                 this.pickerEl.style.minWidth = `${Math.max(rect.width, 320)}px`;
             },
 
+            onInputFocus() {
+                if (!this.pickerEl || this.open) return;
+
+                this.open = true;
+                this.updatePosition();
+                this.pickerEl.style.display = 'block';
+                document.addEventListener('click', this.boundOutsideClick);
+                this.displayValue = this.displayValue || this.formattedValue;
+            },
+
+            onUserInput() {
+                // On laisse l'utilisateur saisir librement.
+                // La validation est faite au blur ou avec Entrée.
+            },
+
+            commitInput() {
+                const parsed = this.parseDateTime(this.displayValue);
+
+                if (!parsed) {
+                    this.displayValue = this.formattedValue;
+                    return;
+                }
+
+                this.value = parsed;
+                this.displayValue = this.formattedValue;
+                this.syncCloneFromValue();
+
+                if (this.model && this.modelField) {
+                    this.model[this.modelField] = parsed.toISOString();
+                }
+
+                if (this.onChange) {
+                    this.onChange(parsed.toISOString());
+                }
+            },
+
+            cancelInput() {
+                this.displayValue = this.formattedValue;
+                if (this.inputEl) {
+                    this.inputEl.blur();
+                }
+            },
+
+            get locale() {
+                return config.locale || navigator.language || 'fr-FR';
+            },
+
+            get datePlaceholder() {
+                const order = this.getLocaleDateOrder().join('-');
+
+                if (order === 'month-day-year') return 'MM-dd-yyyy HH:mm';
+                if (order === 'year-month-day') return 'yyyy-MM-dd HH:mm';
+                return 'dd/MM/yyyy HH:mm';
+            },
+
+            getLocaleDateOrder() {
+                const parts = new Intl.DateTimeFormat(this.locale).formatToParts(new Date(2000, 10, 22));
+
+                return parts
+                    .filter(part => ['day', 'month', 'year'].includes(part.type))
+                    .map(part => part.type);
+            },
+
+            formatDateTime(date) {
+                if (!(date instanceof Date) || isNaN(date.getTime())) return '';
+
+                const datePart = new Intl.DateTimeFormat(this.locale, {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).format(date);
+
+                const timePart = new Intl.DateTimeFormat(this.locale, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(date);
+
+                return `${datePart} ${timePart}`;
+            },
+
+            parseDateTime(input) {
+                if (!input || typeof input !== 'string') return null;
+
+                const raw = input.trim();
+                if (raw === '') return null;
+
+                // Format ISO ou proche ISO : 2026-05-27, 2026/05/27, avec heure optionnelle.
+                const isoMatch = raw.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[ T,]+(\d{1,2})(?::|h|H)(\d{1,2}))?$/);
+                if (isoMatch) {
+                    return this.buildDate(
+                        +isoMatch[1],
+                        +isoMatch[2],
+                        +isoMatch[3],
+                        isoMatch[4] !== undefined ? +isoMatch[4] : this.value.getHours(),
+                        isoMatch[5] !== undefined ? +isoMatch[5] : this.value.getMinutes()
+                    );
+                }
+
+                // Formats locaux : 27/05/2026, 27-05-2026, 05-27-2026, 27.05.2026, heure optionnelle.
+                const localMatch = raw.match(/^(\d{1,2})[/.\-\s](\d{1,2})[/.\-\s](\d{2,4})(?:[ ,T]+(\d{1,2})(?::|h|H)(\d{1,2}))?$/);
+                if (!localMatch) return null;
+
+                let first = +localMatch[1];
+                let second = +localMatch[2];
+                let year = +localMatch[3];
+
+                if (year < 100) {
+                    year += year >= 70 ? 1900 : 2000;
+                }
+
+                const hour = localMatch[4] !== undefined ? +localMatch[4] : this.value.getHours();
+                const minute = localMatch[5] !== undefined ? +localMatch[5] : this.value.getMinutes();
+
+                const order = this.getLocaleDateOrder();
+                let day;
+                let month;
+
+                // Cas non ambigu : 27/05/2026 => le premier nombre est forcément le jour.
+                if (first > 12) {
+                    day = first;
+                    month = second;
+                }
+                // Cas non ambigu : 05/27/2026 => le second nombre est forcément le jour.
+                else if (second > 12) {
+                    month = first;
+                    day = second;
+                }
+                // Cas ambigu : 05/06/2026 => interprétation selon la locale du navigateur.
+                else if (order[0] === 'month') {
+                    month = first;
+                    day = second;
+                } else {
+                    day = first;
+                    month = second;
+                }
+
+                return this.buildDate(year, month, day, hour, minute);
+            },
+
+            buildDate(year, month, day, hour = 0, minute = 0) {
+                if (
+                    year < 1000 ||
+                    month < 1 || month > 12 ||
+                    day < 1 || day > 31 ||
+                    hour < 0 || hour > 23 ||
+                    minute < 0 || minute > 59
+                ) {
+                    return null;
+                }
+
+                const date = new Date(year, month - 1, day, hour, minute);
+
+                // Bloque les dates impossibles : 31/02, 30/02, etc.
+                if (
+                    date.getFullYear() !== year ||
+                    date.getMonth() !== month - 1 ||
+                    date.getDate() !== day ||
+                    date.getHours() !== hour ||
+                    date.getMinutes() !== minute
+                ) {
+                    return null;
+                }
+
+                return date;
+            },
+
             get formattedValue() {
-                const pad = n => n.toString().padStart(2,'0');
-                return `${pad(this.value.getDate())}/${pad(this.value.getMonth()+1)}/${this.value.getFullYear()} ${pad(this.value.getHours())}:${pad(this.value.getMinutes())}`;
+                return this.formatDateTime(this.value);
             }
-        }
+        };
     }
 </script>
