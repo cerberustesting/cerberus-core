@@ -899,6 +899,21 @@ function filterOnField(element) {
     $("#testCaseTable").dataTable().fnFilter(newTest, colIndex);
 }
 
+function filterOnStatus(element) {
+    var newStatus = $(element).get(0).textContent.trim();
+    var table = $("#testCaseTable").dataTable();
+
+    var domColIndex = $(element).closest('td').index();
+
+    var logicalColIndex = table.fnSettings().oApi._fnVisibleToColumnIndex(
+        table.fnSettings(),
+        domColIndex
+    );
+
+    table.fnFilter(newStatus, logicalColIndex);
+}
+
+
 function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
 
@@ -1196,13 +1211,13 @@ function aoColumnsFunc(countries, tableId) {
                 return `
                     <button
                         type="button"
-                        onclick="filterOnField(this)"
+                        onclick="filterOnStatus(this)"
                         class="inline-flex items-center px-3 py-1
                             border border-slate-300 dark:border-slate-600 rounded-xl
                             text-sm font-medium text-slate-700 dark:text-slate-200
                             hover:border-blue-500 hover:text-blue-600
                             transition cursor-pointer bg-transparent"
-                        title="Open test ${oObj.status}"
+                        title="Filter test ${oObj.status}"
                     >
                         ${oObj.status}
                     </button>
