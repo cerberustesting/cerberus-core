@@ -391,7 +391,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyDatabaseField.prop("readonly", !canUpdate);
     var propertyDatabaseContainer = $("<div class='input-group'></div>");
     var propertyDatabaseAddon = $("<span></span>").attr("id", "propertyDatabaseAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyDatabaseAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyDatabaseAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyDatabaseField.attr("aria-describedby", "propertyDatabaseAddon");
     propertyDatabaseContainer.append(propertyDatabaseAddon).append(propertyDatabaseField);
     propertyDatabaseContainer = $("<div class='database'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyDatabaseContainer);
@@ -402,7 +402,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue1Field.prop("readonly", !canUpdate);
     var propertyValue1Container = $("<div class='input-group'></div>");
     var propertyValue1Addon = $("<span></span>").attr("id", "propertyValue1Addon").addClass("input-group-addon togglefullscreen").attr('for', uniqfieldid + 'v1').attr("style", "font-weight: 700;");
-    propertyValue1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyValue1Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyValue1Field.attr("aria-describedby", "propertyValue1Addon");
     var editDatalibButton = $('<div data-toggle="tooltip" class="editDataLib input-group-addon" style="text-align:center"><span class="glyphicon glyphicon-pencil"></span></div>');
     propertyValue1Container.append(propertyValue1Addon).append(propertyValue1Field).append(editDatalibButton);
@@ -416,7 +416,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue1InputField.prop("readonly", !canUpdate);
     var propertyValue1InputContainer = $("<div class='input-group'></div>");
     var propertyValue1InputAddon = $("<span></span>").attr("id", "propertyValue1InputAddon").addClass("input-group-addon").attr('for', uniqfieldid + 'v1b').attr("style", "font-weight: 700;");
-    propertyValue1InputAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyValue1InputAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyValue1InputField.attr("aria-describedby", "propertyValue1InputAddon");
     propertyValue1InputContainer.append(propertyValue1InputAddon).append(propertyValue1InputField);
     propertyValue1InputContainer = $("<div class='valueInput1'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v1b').append(propertyValue1InputContainer);
@@ -427,7 +427,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue2Field.prop("readonly", !canUpdate);
     var propertyValue2Container = $("<div class='input-group'></div>");
     var propertyValue2Addon = $("<span></span>").attr("id", "propertyValue2Addon").addClass("input-group-addon").attr('for', uniqfieldid + 'v2').attr("style", "font-weight: 700;");
-    propertyValue2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyValue2Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyValue2Field.attr("aria-describedby", "propertyValue2Addon");
     propertyValue2Container.append(propertyValue2Addon).append(propertyValue2Field);
     propertyValue2Container = $("<div class='value2'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v2').append(propertyValue2Container);
@@ -437,7 +437,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyValue3Field.prop("readonly", !canUpdate);
     var propertyValue3Container = $("<div class='input-group'></div>");
     var propertyValue3Addon = $("<span></span>").attr("id", "propertyValue3Addon").addClass("input-group-addon").attr('for', uniqfieldid + 'v3').attr("style", "font-weight: 700;");
-    propertyValue3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyValue3Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyValue3Field.attr("aria-describedby", "propertyValue3Addon");
     propertyValue3Container.append(propertyValue3Addon).append(propertyValue3Field);
     propertyValue3Container = $("<div class='value3'></div>").addClass("col-lg-5 form-group marginBottom15").attr('id', uniqfieldid + 'v3').append(propertyValue3Container);
@@ -448,7 +448,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyLengthField.prop("readonly", !canUpdate);
     var propertyLengthContainer = $("<div class='input-group'></div>");
     var propertyLengthAddon = $("<span></span>").attr("id", "propertyLengthAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyLengthAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyLengthAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyLengthField.attr("aria-describedby", "propertyLengthAddon");
     propertyLengthContainer.append(propertyLengthAddon).append(propertyLengthField);
     propertyLengthContainer = $("<div class='length'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyLengthContainer);
@@ -459,7 +459,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRowLimitField.prop("readonly", !canUpdate);
     var propertyRowLimitContainer = $("<div class='input-group'></div>");
     var propertyRowLimitAddon = $("<span></span>").attr("id", "propertyRowLimitAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyRowLimitAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyRowLimitAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyRowLimitField.attr("aria-describedby", "propertyRowLimitAddon");
     propertyRowLimitContainer.append(propertyRowLimitAddon).append(propertyRowLimitField);
     propertyRowLimitContainer = $("<div class='rowLimit'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRowLimitContainer);
@@ -470,7 +470,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyCacheExpireField.prop("readonly", !canUpdate);
     var propertyCacheExpireContainer = $("<div class='input-group'></div>");
     var propertyCacheExpireAddon = $("<span></span>").attr("id", "propertyCacheExpireAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyCacheExpireAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyCacheExpireAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyCacheExpireField.attr("aria-describedby", "propertyCacheExpireAddon");
     propertyCacheExpireContainer.append(propertyCacheExpireAddon).append(propertyCacheExpireField);
     propertyCacheExpireContainer = $("<div class='cacheExpire'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyCacheExpireContainer);
@@ -480,7 +480,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyNatureField.prop("readonly", !canUpdate);
     var propertyNatureContainer = $("<div class='input-group'></div>");
     var propertyNatureAddon = $("<span></span>").attr("id", "propertyNatureAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyNatureAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyNatureAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyNatureField.attr("aria-describedby", "propertyNatureAddon");
     propertyNatureContainer.append(propertyNatureAddon).append(propertyNatureField);
     propertyNatureContainer = $("<div class='nature'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyNatureContainer);
@@ -491,7 +491,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRetryNbField.prop("readonly", !canUpdate);
     var propertyRetryNbContainer = $("<div class='input-group'></div>");
     var propertyRetryNbAddon = $("<span></span>").attr("id", "propertyRetryNbAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyRetryNbAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyRetryNbAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyRetryNbField.attr("aria-describedby", "propertyRetryNbAddon");
     propertyRetryNbContainer.append(propertyRetryNbAddon).append(propertyRetryNbField);
     propertyRetryNbContainer = $("<div class='retryNb'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRetryNbContainer);
@@ -502,7 +502,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRetryPeriodField.prop("readonly", !canUpdate);
     var propertyRetryPeriodContainer = $("<div class='input-group'></div>");
     var propertyRetryPeriodAddon = $("<span></span>").attr("id", "propertyRetryPeriodAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyRetryPeriodAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyRetryPeriodAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyRetryPeriodField.attr("aria-describedby", "propertyRetryPeriodAddon");
     propertyRetryPeriodContainer.append(propertyRetryPeriodAddon).append(propertyRetryPeriodField);
     propertyRetryPeriodContainer = $("<div class='retryPeriod'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRetryPeriodContainer);
@@ -513,7 +513,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     propertyRankField.prop("readonly", !canUpdate);
     var propertyRankContainer = $("<div class='input-group'></div>");
     var propertyRankAddon = $("<span></span>").attr("id", "propertyRankAddon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    propertyRankAddon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    propertyRankAddon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     propertyRankField.attr("aria-describedby", "propertyRankAddon");
     propertyRankContainer.append(propertyRankAddon).append(propertyRankField);
     propertyRankContainer = $("<div class='rank'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyRankContainer);
