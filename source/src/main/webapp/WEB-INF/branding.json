@@ -1,7 +1,7 @@
 {
     "appName": "Cerberus",
     "showAppName": true,
-    "favicon": "/images/favicon.ico.png",
+    "favicon": "images/favicon.ico.png",
     "logo": {
         "expanded": "images/Logo-cerberus_menu.png",
        "collapsed": "images/Logo-cerberus_menu.png"

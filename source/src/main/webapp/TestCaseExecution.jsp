@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="TestCaseExecution.jsp">
         <meta name="active-page" content="TestCaseExecution.jsp">
         <meta name="page" content="Test Case Execution">
-        <<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>

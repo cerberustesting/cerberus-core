@@ -140,7 +140,7 @@ Control.prototype.generateContent = function () {
     });
     var controlField1Container = $("<div class='input-group'></div>");
     var controlField1Addon = $("<span></span>").attr("id", "controlField1Addon").attr('for', uniqfieldid + 'v1').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
-    controlField1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    controlField1Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     controlValue1Field.attr("aria-describedby", "controlField1Addon");
     controlField1Container.append(controlField1Addon).append(controlValue1Field);
 //END OF VALUE1 FIELD
@@ -155,7 +155,7 @@ Control.prototype.generateContent = function () {
     });
     var controlField2Container = $("<div class='input-group'></div>");
     var controlField2Addon = $("<span></span>").attr("id", "controlField2Addon").attr('for', uniqfieldid + 'v2').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
-    controlField2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    controlField2Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     controlValue2Field.attr("aria-describedby", "controlField2Addon");
     controlField2Container.append(controlField2Addon).append(controlValue2Field);
 //END OF VALUE2 FIELD
@@ -170,7 +170,7 @@ Control.prototype.generateContent = function () {
     });
     var controlField3Container = $("<div class='input-group'></div>");
     var controlField3Addon = $("<span></span>").attr("id", "controlField3Addon").attr('for', uniqfieldid + 'v3').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
-    controlField3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    controlField3Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     controlValue3Field.attr("aria-describedby", "controlField3Addon");
     controlField3Container.append(controlField3Addon).append(controlValue3Field);
 //END OF VALUE3 FIELD
