@@ -2451,18 +2451,16 @@ function ReplaceURLParameters(sParam, sValue) {
 
 /**
  * Add an browser history entry only if different from the current one.
- * @param {string} sUrl Url to insert in the history.
+ * @param {string} sUrlToAdd Url to insert in the history.
  * @returns {void}
  */
-function InsertURLInHistory(sUrl) {
-    if (sUrl.substr(sUrl.length - 1) === "?") { // If the url ends by ?, we remove it.
-        sUrl = sUrl.substr(0, sUrl.length - 1);
-    }
-    var currentURL = window.location.href.replace(window.location.origin, "");
-    var currentURLtoTest = currentURL + "TOTO";
-    var sUrltoTest = sUrl + "TOTO";
-    if (currentURLtoTest.indexOf(sUrltoTest) === -1) {
+function InsertURLInHistory(sUrlToAdd) {
+    var sUrl = new URL(sUrlToAdd, window.location.href);
+    var currentURL = new URL(window.location.href);
+    if (sUrl.pathname !== currentURL.pathname) {
         window.history.pushState({}, '', sUrl);
+    } else if (sUrl.search !== currentURL.search) {
+        history.replaceState(null, '', sUrl);
     }
     return null;
 }

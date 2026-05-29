@@ -106,7 +106,7 @@
 <script>
     function massLabelModal() {
         return {
-            open: false, isFullscreen: false,
+            open: false, isFullscreen: false, labelSystem: getUser().defaultSystem,
 
             openModal() {
                 this.open = true;
