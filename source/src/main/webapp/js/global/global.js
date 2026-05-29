@@ -1649,11 +1649,12 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activateP
  * @param {type} lengthMenu - Length of the table default to [10, 25, 50, 100]
  * @returns {TableConfigurationsServerSide}
  */
-function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu) {
+function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu, deferLoading = false) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.ajaxSource = ajaxSource;
     this.ajaxProp = ajaxProp;
+    this.deferLoading = deferLoading;
 
     this.bDisplayRefreshButton = true;
     this.processing = true;
@@ -1735,6 +1736,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var domConf = 'ZRCB<"clear">lf<"pull-right"p>rti<"marginTop5">'; // Z allow to activate table resize
     if (!tableConfigurations.showColvis) {
         domConf = 'Zlf<"pull-right"p>rti<"marginTop5">';
+    }
+    if (tableConfigurations.deferLoading) {
+        configs["deferLoading"] = 0;
     }
     configs["dom"] = domConf;
     configs["stateDuration"] = tableConfigurations.stateDuration;
@@ -2665,7 +2669,7 @@ function isEmpty(val) {
     return (val === undefined || val === null || val.length <= 0) ? true : false;
 }
 
-function parseString(str, defaultValue){
+function parseString(str, defaultValue) {
     return (str === undefined || str === null) ? defaultValue : str;
 }
 /**
@@ -2748,7 +2752,7 @@ function getHumanReadableDuration(seconds, maxUnits = Infinity) {
     if (seconds > 432000000) {
         return "unknown";
     }
-    
+
     const units = [
         {label: 'y', value: 365 * 24 * 60 * 60},
         {label: 'mo', value: 30 * 24 * 60 * 60}, // mois approx
