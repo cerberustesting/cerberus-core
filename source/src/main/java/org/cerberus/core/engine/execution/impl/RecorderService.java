@@ -399,7 +399,6 @@ public class RecorderService implements IRecorderService {
         if (applicationType.equals(Application.TYPE_GUI)
                 || applicationType.equals(Application.TYPE_APK)
                 || applicationType.equals(Application.TYPE_IPA)) {
-
             newImage = this.webdriverService.takeScreenShotFile(execution.getSession(), cropValues);
             // If Sikuli is available we also take a full desktop screenshot
             if (execution.getSession().isSikuliAvailable()) {
