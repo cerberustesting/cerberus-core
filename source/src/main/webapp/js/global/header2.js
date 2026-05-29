@@ -322,7 +322,7 @@ function ChangeWorkspace(selectedWorkspaces) {
         console.error("Aucun utilisateur trouvé");
         return;
     }
-
+console.info(selectedWorkspaces);
     $.ajax({
         url: "UpdateMyUserSystem",
         type: "POST",
@@ -333,6 +333,7 @@ function ChangeWorkspace(selectedWorkspaces) {
         async: false,
         success: function () {
             user.defaultSystems = [...selectedWorkspaces];
+            user.defaultSystem = selectedWorkspaces[selectedWorkspaces.length - 1];
             user.defaultSystemsQuery = selectedWorkspaces.reduce(
                 (acc, s) => acc + '&system=' + encodeURIComponent(s),
                 ''

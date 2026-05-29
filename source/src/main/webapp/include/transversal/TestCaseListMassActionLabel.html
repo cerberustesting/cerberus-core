@@ -10,9 +10,8 @@
     <div class="absolute inset-0 bg-slate-900/60" @click="close()"></div>
 
     <!-- Modal Card -->
-    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl rounded-2xl'"
-         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card w-full max-w-4xl rounded-2xl"
-         style="max-height: calc(100vh - 4rem); margin: 2rem 1rem;"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'max-w-6xl max-h-6xl rounded-2xl'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 crb_card"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -29,7 +28,9 @@
                 </div>
                 <div>
                     <h2 class="!text-lg !font-semibold !mb-0 !mt-0">Label Management</h2>
-                    <p class="text-xs text-slate-500 !mb-0">Add or remove labels from selected test cases</p>
+                    <p  class="text-xs text-slate-500 !mb-0">
+                        <span x-text="'Add or remove '+ labelSystem +' labels from selected test cases'  "></span>
+                    </p>
                 </div>
             </div>
             <div class="flex items-center gap-1">
@@ -56,7 +57,7 @@
                         <i data-lucide="bookmark" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Stickers</span>
                     </div>
-                    <div id="selectLabelAddS" class="space-y-1 max-h-[300px] overflow-auto"></div>
+                    <div id="selectLabelAddS" class="space-y-1 max-h-[600px] overflow-auto"></div>
                 </div>
 
                 <!-- Requirements -->
@@ -65,7 +66,7 @@
                         <i data-lucide="clipboard-list" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Requirements</span>
                     </div>
-                    <div id="selectLabelAddR" class="space-y-1 max-h-[300px] overflow-auto"></div>
+                    <div id="selectLabelAddR" class="space-y-1 max-h-[600px] overflow-auto"></div>
                 </div>
 
                 <!-- Batteries -->
@@ -74,7 +75,7 @@
                         <i data-lucide="battery-charging" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Batteries</span>
                     </div>
-                    <div id="selectLabelAddB" class="space-y-1 max-h-[300px] overflow-auto"></div>
+                    <div id="selectLabelAddB" class="space-y-1 max-h-[600px] overflow-auto"></div>
                 </div>
 
             </div>
@@ -109,6 +110,7 @@
 
             openModal() {
                 this.open = true;
+                this.labelSystem = getUser().defaultSystem;
                 this.$nextTick(() => {
                     loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
                     if (window.lucide) lucide.createIcons();
