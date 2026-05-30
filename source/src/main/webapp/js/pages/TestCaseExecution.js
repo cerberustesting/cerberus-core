@@ -2439,7 +2439,7 @@ function Step(json, steps, id) {
             }
         }
     }
-    
+
     this.steps = steps;
     this.toDelete = false;
 
@@ -2447,7 +2447,7 @@ function Step(json, steps, id) {
     $(this.html).data("index", id);
     let timeElapsedFormat = "...";
     if (this.timeElapsed !== undefined && this.timeElapsed > 0) {
-        timeElapsedFormat = this.timeElapsed;
+        timeElapsedFormat = getHumanReadableDuration((this.timeElapsed), 1);
     }
     if (this.test === "Pre Testing") {
         var stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormat + ")";
@@ -2456,7 +2456,7 @@ function Step(json, steps, id) {
     } else {
         var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormat + ")";
     }
-    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc + " " + nbActionsKO + " " + nbControlsKO);
+    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
 
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
 
