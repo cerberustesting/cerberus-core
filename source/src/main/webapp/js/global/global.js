@@ -2579,10 +2579,9 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 }
 
 function escapeHtml(unsafe) {
-    return unsafe
-            .replace(/"/g, "&quot;")
-            .replace(/\\/g, '\\\\')
-            .replace(/'/g, "\\'");
+    const div = document.createElement('div');
+    div.textContent = unsafe;
+    return div.innerHTML;
 }
 
 function escapeQuote(unsafe) {

@@ -232,9 +232,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         if (testCaseExecution.getExecutor() != null) {
             result.put("Executor", JavaScriptUtils.javaScriptEscape(testCaseExecution.getExecutor()));
         }
-        result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
-        result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
-        result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
+        result.put("ControlStatus", testCaseExecution.getControlStatus());
+        result.put("ControlMessage", testCaseExecution.getControlMessage());
+        result.put("Status", testCaseExecution.getStatus());
         result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
         result.put("previousExeId", testCaseExecution.getPreviousExeId());
         result.put("firstExeStart", testCaseExecution.getFirstExeStart());

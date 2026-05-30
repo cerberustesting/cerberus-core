@@ -27,6 +27,12 @@ var configGantt = {};
 var sortCol = 1;
 var stepFocus = -1;
 var falseNegative = false;
+const thresholdStep1 = 60; // s
+const thresholdStep2 = 120; // s
+const thresholdAction1 = 5000; // ms
+const thresholdAction2 = 30000; // ms
+const thresholdControl1 = 5000; // ms
+const thresholdControl2 = 30000; // ms
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -2449,14 +2455,17 @@ function Step(json, steps, id) {
     if (this.timeElapsed !== undefined && this.timeElapsed > 0) {
         timeElapsedFormat = getHumanReadableDuration((this.timeElapsed), 1);
     }
+    let timeElapsedFormatWithColor = colorTiming(this.timeElapsed, timeElapsedFormat, thresholdStep2, thresholdStep1);
+
+    var stepDesc = "";
     if (this.test === "Pre Testing") {
-        var stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     } else if (this.test === "Post Testing") {
-        var stepDesc = "[POST]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[POST]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     } else {
-        var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     }
-    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
+    this.textArea = $("<div></div>").addClass("col-lg-10").html(stepDesc);
 
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
 
@@ -2493,13 +2502,13 @@ function Step(json, steps, id) {
         stepLabelContainer.append(labelOptions[0]);
     }
 
-    if (nbActionsKO > 0) {
-        var actionLabelNb = $('<span class="label label-primary optionLabel labelARed pull-right"></span>').text(nbActionsKO);
-        this.textArea.append(actionLabelNb)
-    }
     if (nbControlsKO > 0) {
         var controlLabelNb = $('<span class="label label-primary optionLabel labelCRed pull-right"></span>').text(nbControlsKO);
         this.textArea.append(controlLabelNb)
+    }
+    if (nbActionsKO > 0) {
+        var actionLabelNb = $('<span class="label label-primary optionLabel labelARed pull-right"></span>').text(nbActionsKO);
+        this.textArea.append(actionLabelNb)
     }
 
 
@@ -2884,7 +2893,7 @@ Action.prototype.draw = function (idMotherStep, id) {
         showSaveTestCaseExecutionButton();
     } else {
         elapsedTime.append("<br><br>");
-        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
+        elapsedTime.append(colorTiming(generateElapsed(this.endlong, this.startlong), generateCleanElapsed(this.endlong, this.startlong), thresholdAction2, thresholdAction1));
     }
 
     if (action.returnCode === "OK") {
@@ -2938,19 +2947,6 @@ Action.prototype.draw = function (idMotherStep, id) {
     addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
-
-function generateCleanElapsed(endlong, startlong) {
-    if (endlong !== 19700101010000000 && endlong !== 0) {
-        let e1 = convToDate(endlong) - convToDate(startlong);
-        if (e1 > 999) {
-            return ((convToDate(endlong) - convToDate(startlong)) / 1000).toFixed(2) + ' s';
-        } else {
-            return e1 + " ms";
-        }
-    } else {
-        return "...";
-    }
-}
 
 
 Action.prototype.setControls = function (controls, idMotherStep, idMotherAction) {
@@ -3467,7 +3463,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         showSaveTestCaseExecutionButton();
     } else {
         elapsedTime.append("<br><br>");
-        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
+        elapsedTime.append(colorTiming(generateElapsed(this.endlong, this.startlong), generateCleanElapsed(this.endlong, this.startlong), thresholdControl2, thresholdControl1));
     }
 
 
@@ -3963,4 +3959,30 @@ function getAIHeaderButtons() {
     ];
 }
 
-
+function colorTiming(duration, text, threshold1, threshold2) {
+    if (duration > threshold1) {
+        return  '<span style="color : red;"><b>' + text + '<b></span>';
+    } else if (duration > threshold2) {
+        return '<span style="color : orange;"><b>' + text + '<b></span>';
+    }
+    return text;
+}
+function generateCleanElapsed(endlong, startlong) {
+    if (endlong !== 19700101010000000 && endlong !== 0) {
+        let e1 = convToDate(endlong) - convToDate(startlong);
+        if (e1 > 999) {
+            return ((convToDate(endlong) - convToDate(startlong)) / 1000).toFixed(2) + ' s';
+        } else {
+            return e1 + " ms";
+        }
+    } else {
+        return "...";
+    }
+}
+function generateElapsed(endlong, startlong) {
+    if (endlong !== 19700101010000000 && endlong !== 0) {
+        return convToDate(endlong) - convToDate(startlong);
+    } else {
+        return 0;
+    }
+}

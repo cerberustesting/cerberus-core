@@ -1675,7 +1675,7 @@ function generateTooltip(data) {
     if (getDateShort(data.End) !== "") {
         htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.End) + ' <span class=\'' + getClassDuration(data.DurationMs) + '\'>(' + getHumanReadableDuration(data.DurationMs / 1000, 2) + ')</span></div>';
     }
-    htmlRes += '<div>' + ctrlmessage + '</div>';
+    htmlRes += '<div>' + escapeHtml(ctrlmessage)  + '</div>';
     if (data.isMuted) {
         htmlRes += '<div><span class=\'glyphicon glyphicon-volume-off\' aria-hidden=\'true\'></span> Muted!!</div>';
     }
