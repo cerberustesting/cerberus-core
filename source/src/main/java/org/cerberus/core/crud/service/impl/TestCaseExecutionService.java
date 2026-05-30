@@ -439,12 +439,15 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             }
         }
         if (!hash.isEmpty()) {
-            finalMessage += " -- followed by : ";
+            finalMessage += " -- followed by :";
             for (Map.Entry<String, Integer> entry : hash.entrySet()) {
                 Object key = entry.getKey();
                 Object val = entry.getValue();
-                finalMessage += "" + val + " " + key;
+                finalMessage += " " + val + " " + key + ",";
             }
+        }
+        if (finalMessage.endsWith(",")) {
+            finalMessage = StringUtil.removeLastChar(finalMessage);
         }
         String finalCode = messageList.get(0).getCodeString();
         if ("KO".equals(finalCode)) {
