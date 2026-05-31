@@ -607,9 +607,14 @@ function executionV2() {
         },
 
         reRun() {
-            // Open the execution modal
             window.dispatchEvent(new CustomEvent('open-execution', {
-                detail: { test: this.exe.test, testCase: this.exe.testcase || this.exe.testCase }
+                detail: {
+                    test: this.exe.test,
+                    testCase: this.exe.testcase || this.exe.testCase,
+                    application: this.exe.application || (this.testCaseObj && this.testCaseObj.application) || '',
+                    description: this.exe.description || '',
+                    tag: this.exe.tag || ''
+                }
             }));
         },
 
@@ -654,32 +659,48 @@ function executionV2() {
         // ═══ STEP MODAL ═══
         openStepModal(step) {
             if (!step) return;
-            try {
-                var stepData = {
+            window.dispatchEvent(new CustomEvent('step-modal-open', {
+                detail: {
                     test: step.test || this.exe.test,
                     testcase: step.testcase || this.exe.testcase || this.exe.testCase,
-                    stepId: step.step,
-                    index: step.index,
-                    sort: step.sort,
-                    description: step.description
-                };
-                console.info('[ExeV2] Opening step modal:', stepData);
-                // Try the standard Cerberus modal open pattern
-                if (typeof openModalTestCaseStep === 'function') {
-                    openModalTestCaseStep(stepData.test, stepData.testcase, stepData.stepId);
-                } else {
-                    // Fallback: open the script editor in a new tab focused on this step
-                    var url = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(stepData.test) 
-                            + '&testcase=' + encodeURIComponent(stepData.testcase)
-                            + '&stepFocus=' + stepData.sort;
-                    window.open(url, '_blank');
+                    stepId: step.step || step.stepId
                 }
-            } catch(e) {
-                console.warn('[ExeV2] openStepModal error:', e);
-                var url = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(this.exe.test) 
-                        + '&testcase=' + encodeURIComponent(this.exe.testcase || this.exe.testCase);
-                window.open(url, '_blank');
+            }));
+        },
+
+        openPropertyModal(prop) {
+            if (!prop) return;
+            var self = this;
+            // Clone the property for the modal (live editing)
+            var liveProp = JSON.parse(JSON.stringify(prop));
+            // Normalize countries to flat array if needed
+            if (liveProp.countries && liveProp.countries.length > 0 && typeof liveProp.countries[0] === 'object') {
+                liveProp.countries = liveProp.countries.map(function(c) { return c.value || c; });
             }
+            window.dispatchEvent(new CustomEvent('property-modal-open', {
+                detail: {
+                    property: liveProp,
+                    countries: self._getCountries(),
+                    canUpdate: true,
+                    onField: function(key, val) { liveProp[key] = val; },
+                    onCountryToggle: function(country) {
+                        var arr = liveProp.countries || [];
+                        var idx = arr.indexOf(country);
+                        if (idx >= 0) arr.splice(idx, 1); else arr.push(country);
+                        liveProp.countries = arr;
+                    },
+                    onSelectAll: function() {
+                        liveProp.countries = (self._getCountries() || []).slice();
+                    },
+                    onDeselectAll: function() {
+                        liveProp.countries = [];
+                    },
+                    onClose: function() {
+                        // The property modal has a "Done" button, not Save
+                        // So we do nothing special on close
+                    }
+                }
+            }));
         },
 
         // ═══ MEDIA ═══
@@ -777,27 +798,28 @@ function executionV2() {
         },
         reRunSame() {
             var self = this;
-            var url = 'RunTestCaseV2?test=' + encodeURIComponent(self.exe.test)
-                    + '&testCase=' + encodeURIComponent(self.exe.testcase || self.exe.testCase)
-                    + '&country=' + encodeURIComponent(self.exe.country || '')
-                    + '&environment=' + encodeURIComponent(self.exe.environment || '')
-                    + '&robot=' + encodeURIComponent(self.exe.robot || '')
-                    + '&robotDecli=' + encodeURIComponent(self.exe.robotDecli || '')
-                    + '&tag=' + encodeURIComponent(self.exe.tag || '')
-                    + '&manualExecution=' + encodeURIComponent(self.exe.manualExecution || 'N');
+            var queueId = self.exe.queueID || self.exe.queueId;
+            if (!queueId || queueId <= 0) {
+                // Fallback to Run modal if no queueId
+                self.reRun();
+                return;
+            }
             $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
+                url: 'CreateTestCaseExecutionQueue',
+                method: 'POST',
+                data: {
+                    id: queueId,
+                    actionState: 'toQUEUED',
+                    actionSave: 'save',
+                    tag: self.exe.tag || ''
+                },
                 success: function(data) {
-                    if (data && data.nbExe && data.nbExe > 0) {
-                        showMessageMainPage('success', 'Execution queued successfully!', true);
-                        // Refresh last executions
-                        setTimeout(function() {
-                            self._loadLastExecutions(self.exe.test, self.exe.testcase || self.exe.testCase);
-                        }, 3000);
+                    if (getAlertType(data.messageType) === 'success') {
+                        var newQueueId = data.testCaseExecutionQueueList[0].id;
+                        var url = './TestCaseExecutionV2.jsp?executionQueueId=' + encodeURIComponent(newQueueId);
+                        window.location.replace(url);
                     } else {
-                        showMessageMainPage('warning', data.message || 'Could not queue execution', true);
+                        showMessageMainPage(getAlertType(data.messageType), data.message || 'Could not queue execution', false, 60000);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -807,6 +829,18 @@ function executionV2() {
         },
 
         // ═══ HELPERS ═══
+        _getCountries() {
+            // Try to get countries from test case object
+            if (this.testCaseObj && this.testCaseObj.countries) {
+                return this.testCaseObj.countries.map(function(c) { return typeof c === 'object' ? (c.value || c.country) : c; });
+            }
+            // Fallback: get from execution
+            if (this.exe && this.exe.country) {
+                return [this.exe.country];
+            }
+            return [];
+        },
+
         _getStatusColor(status) {
             const map = {
                 'OK': 'green', 'KO': 'red', 'FA': 'amber', 'PE': 'blue',

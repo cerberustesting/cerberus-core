@@ -1,7 +1,6 @@
-<!-- TestCaseExecution V2 — Step List Sidebar -->
-<!-- Sticky sidebar showing all steps with status indicators -->
+<!-- TestCaseExecution V2 - Step List Sidebar -->
 
-<div class="v2-exe-step-sidebar rounded-xl p-3 v2-fade-in"
+<div class="flex flex-col rounded-2xl v2-step-sidebar v2-fade-in"
      style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
 
     <!-- Queue mode -->
@@ -18,21 +17,27 @@
 
     <!-- Execution mode -->
     <template x-if="mode === 'execution'">
-        <div>
+        <div class="flex flex-col" style="height: 100%">
+
+            <!-- Sidebar Header (like ScriptV2) -->
+            <div class="flex items-center justify-between px-4 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--crb-dark-color)">Steps</span>
+                <span class="text-xs font-medium" style="color: var(--crb-grey-color)"
+                      x-text="steps.length + ' steps'"></span>
+            </div>
+
             <!-- Pre-Testing Steps -->
             <template x-if="preSteps.length > 0">
-                <div class="mb-3">
+                <div class="px-2 pt-2">
                     <div class="v2-exe-step-section">
                         <i data-lucide="shield-check" class="w-3 h-3"></i>
                         <span>Pre Testing</span>
                         <span class="text-[10px] opacity-50" x-text="preSteps.length"></span>
                     </div>
-                    <ul class="space-y-1">
+                    <ul class="space-y-0.5 list-none m-0 p-0">
                         <template x-for="(step, idx) in preSteps" :key="step._uid">
-                            <li class="v2-exe-step-item rounded-lg px-2.5 py-2 cursor-pointer flex items-center gap-2"
-                                :class="{
-                                    'v2-exe-step-item--active': steps.indexOf(step) === activeStepIndex
-                                }"
+                            <li class="v2-fade-in v2-step-item flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all duration-150"
+                                :class="{ 'v2-step-item--active': steps.indexOf(step) === activeStepIndex }"
                                 @click="selectStep(steps.indexOf(step))">
                                 <!-- Status dot -->
                                 <span class="w-2.5 h-2.5 rounded-full shrink-0 transition-colors"
@@ -43,14 +48,21 @@
                                           'bg-blue-500 v2-exe-status-pulse': step.returnCode === 'PE',
                                           'bg-slate-300 dark:bg-slate-600': !step.returnCode || ['NE','NA','WE','CA','QU'].includes(step.returnCode)
                                       }"></span>
-                                <!-- Step badge -->
-                                <span class="v2-exe-step-badge"
-                                      :class="steps.indexOf(step) === activeStepIndex ? 'v2-exe-step-badge--active' : ''"
-                                      x-text="step.sort"></span>
-                                <!-- Description -->
-                                <span class="flex-1 text-[12px] truncate"
-                                      :class="steps.indexOf(step) === activeStepIndex ? 'font-semibold text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'"
-                                      x-text="step.description || 'Step ' + step.sort"></span>
+                                <!-- Number badge (using ScriptV2 classes) -->
+                                <div class="v2-step-badge shrink-0"
+                                     :class="steps.indexOf(step) === activeStepIndex ? 'v2-step-badge--active' : ''"
+                                     x-text="step.sort"></div>
+                                <!-- Content (2 lines like ScriptV2) -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs font-medium truncate" style="color: var(--crb-dark-color)"
+                                         x-text="step.description || 'Step ' + step.sort"></div>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <span class="text-[10px]" style="color: var(--crb-grey-color)"
+                                              x-text="(step.actions ? step.actions.length : 0) + ' act.'"></span>
+                                        <span class="text-[10px]" style="color: var(--crb-grey-color)"
+                                              x-text="formatDuration(step.start, step.end)"></span>
+                                    </div>
+                                </div>
                                 <!-- KO count badge -->
                                 <template x-if="step._nbActionsKO > 0 || step._nbControlsKO > 0">
                                     <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
@@ -63,20 +75,19 @@
             </template>
 
             <!-- Main Steps -->
-            <div class="mb-3">
-                <div class="v2-exe-step-section">
-                    <i data-lucide="layers" class="w-3 h-3"></i>
-                    <span>Steps</span>
-                    <span class="text-[10px] opacity-50" x-text="mainSteps.length"></span>
-                </div>
-                <ul class="space-y-1 v2-exe-step-list" style="max-height: calc(100vh - 340px); overflow-y: auto">
+            <div class="flex-1 overflow-y-auto overflow-x-visible px-2 py-2">
+                <template x-if="preSteps.length > 0 || postSteps.length > 0">
+                    <div class="v2-exe-step-section">
+                        <i data-lucide="layers" class="w-3 h-3"></i>
+                        <span>Steps</span>
+                        <span class="text-[10px] opacity-50" x-text="mainSteps.length"></span>
+                    </div>
+                </template>
+                <ul class="v2-step-list space-y-0.5 list-none m-0 p-0" style="max-height: calc(100vh - 340px); overflow-y: auto">
                     <template x-for="(step, idx) in mainSteps" :key="step._uid">
-                        <li class="v2-exe-step-item rounded-lg px-2.5 py-2 cursor-pointer flex items-center gap-2"
-                            :class="{
-                                'v2-exe-step-item--active': steps.indexOf(step) === activeStepIndex
-                            }"
+                        <li class="v2-fade-in v2-step-item flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all duration-150"
+                            :class="{ 'v2-step-item--active': steps.indexOf(step) === activeStepIndex }"
                             @click="selectStep(steps.indexOf(step))">
-                            <!-- Status dot -->
                             <span class="w-2.5 h-2.5 rounded-full shrink-0 transition-colors"
                                   :class="{
                                       'bg-green-500': step.returnCode === 'OK',
@@ -85,18 +96,19 @@
                                       'bg-blue-500 v2-exe-status-pulse': step.returnCode === 'PE',
                                       'bg-slate-300 dark:bg-slate-600': !step.returnCode || ['NE','NA','WE','CA','QU'].includes(step.returnCode)
                                   }"></span>
-                            <!-- Step badge -->
-                            <span class="v2-exe-step-badge"
-                                  :class="steps.indexOf(step) === activeStepIndex ? 'v2-exe-step-badge--active' : ''"
-                                  x-text="step.sort"></span>
-                            <!-- Description -->
-                            <span class="flex-1 text-[12px] truncate"
-                                  :class="steps.indexOf(step) === activeStepIndex ? 'font-semibold text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'"
-                                  x-text="step.description || 'Step ' + step.sort"></span>
-                            <!-- Duration -->
-                            <span class="text-[10px] text-slate-400 shrink-0"
-                                  x-text="formatDuration(step.start, step.end)"></span>
-                            <!-- KO count badge -->
+                            <div class="v2-step-badge shrink-0"
+                                 :class="steps.indexOf(step) === activeStepIndex ? 'v2-step-badge--active' : ''"
+                                 x-text="step.sort"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs font-medium truncate" style="color: var(--crb-dark-color)"
+                                     x-text="step.description || 'Step ' + step.sort"></div>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="text-[10px]" style="color: var(--crb-grey-color)"
+                                          x-text="(step.actions ? step.actions.length : 0) + ' act.'"></span>
+                                    <span class="text-[10px]" style="color: var(--crb-grey-color)"
+                                          x-text="formatDuration(step.start, step.end)"></span>
+                                </div>
+                            </div>
                             <template x-if="step._nbActionsKO > 0 || step._nbControlsKO > 0">
                                 <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                                       x-text="step._nbActionsKO + step._nbControlsKO"></span>
@@ -108,18 +120,16 @@
 
             <!-- Post-Testing Steps -->
             <template x-if="postSteps.length > 0">
-                <div>
+                <div class="px-2 pb-2">
                     <div class="v2-exe-step-section">
                         <i data-lucide="shield-off" class="w-3 h-3"></i>
                         <span>Post Testing</span>
                         <span class="text-[10px] opacity-50" x-text="postSteps.length"></span>
                     </div>
-                    <ul class="space-y-1">
+                    <ul class="space-y-0.5 list-none m-0 p-0">
                         <template x-for="(step, idx) in postSteps" :key="step._uid">
-                            <li class="v2-exe-step-item rounded-lg px-2.5 py-2 cursor-pointer flex items-center gap-2"
-                                :class="{
-                                    'v2-exe-step-item--active': steps.indexOf(step) === activeStepIndex
-                                }"
+                            <li class="v2-fade-in v2-step-item flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all duration-150"
+                                :class="{ 'v2-step-item--active': steps.indexOf(step) === activeStepIndex }"
                                 @click="selectStep(steps.indexOf(step))">
                                 <span class="w-2.5 h-2.5 rounded-full shrink-0 transition-colors"
                                       :class="{
@@ -129,12 +139,13 @@
                                           'bg-blue-500 v2-exe-status-pulse': step.returnCode === 'PE',
                                           'bg-slate-300 dark:bg-slate-600': !step.returnCode || ['NE','NA','WE','CA','QU'].includes(step.returnCode)
                                       }"></span>
-                                <span class="v2-exe-step-badge"
-                                      :class="steps.indexOf(step) === activeStepIndex ? 'v2-exe-step-badge--active' : ''"
-                                      x-text="step.sort"></span>
-                                <span class="flex-1 text-[12px] truncate"
-                                      :class="steps.indexOf(step) === activeStepIndex ? 'font-semibold text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'"
-                                      x-text="step.description || 'Step ' + step.sort"></span>
+                                <div class="v2-step-badge shrink-0"
+                                     :class="steps.indexOf(step) === activeStepIndex ? 'v2-step-badge--active' : ''"
+                                     x-text="step.sort"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs font-medium truncate" style="color: var(--crb-dark-color)"
+                                         x-text="step.description || 'Step ' + step.sort"></div>
+                                </div>
                                 <template x-if="step._nbActionsKO > 0 || step._nbControlsKO > 0">
                                     <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                                           x-text="step._nbActionsKO + step._nbControlsKO"></span>
@@ -147,11 +158,9 @@
 
             <!-- Empty state -->
             <template x-if="steps.length === 0 && mode === 'execution'">
-                <div class="flex flex-col items-center justify-center py-8 gap-3">
-                    <div class="v2-empty-icon-ring">
-                        <div class="v2-empty-icon-inner">
-                            <i data-lucide="list-tree" class="w-5 h-5" style="color: var(--crb-blue-color)"></i>
-                        </div>
+                <div class="flex flex-col items-center justify-center py-8 gap-3 flex-1">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--crb-grey-lighter-color)">
+                        <i data-lucide="list-tree" class="w-5 h-5" style="color: var(--crb-grey-color)"></i>
                     </div>
                     <span class="text-[12px] text-slate-400">No steps in this execution</span>
                 </div>

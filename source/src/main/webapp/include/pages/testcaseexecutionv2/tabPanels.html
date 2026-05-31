@@ -30,6 +30,11 @@
                         <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
                               :class="(prop.returnCode === 'OK' || !prop.returnCode) ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'"
                               x-text="prop.returnCode || 'OK'"></span>
+                        <button @click.stop="openPropertyModal(prop)"
+                                class="v2-exe-step-edit-btn"
+                                data-tip="Edit property" data-tip-pos="bottom">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </button>
                         <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform"
                              :style="prop._expanded ? 'transform:rotate(180deg)' : ''"
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>

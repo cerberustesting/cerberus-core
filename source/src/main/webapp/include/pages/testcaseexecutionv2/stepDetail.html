@@ -1,27 +1,33 @@
-<!-- TestCaseExecution V2 — Step Detail (Actions & Controls) -->
-<!-- Main content area showing actions and controls for the active step -->
+<!-- TestCaseExecution V2 - Step Detail (Actions & Controls) — Premium Design -->
 
-<div class="rounded-xl p-4 v2-fade-in" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+<div class="rounded-2xl p-4 v2-fade-in" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
 
-    <!-- No step selected -->
+    <!-- ══════════════════════════════════════════ -->
+    <!--  Empty State — No step selected            -->
+    <!-- ══════════════════════════════════════════ -->
     <template x-if="!activeStep">
-        <div class="flex flex-col items-center justify-center py-16 gap-3">
+        <div class="flex flex-col items-center justify-center py-20 gap-4">
             <div class="v2-empty-icon-ring">
                 <div class="v2-empty-icon-inner">
-                    <svg class="w-5 h-5" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122M5.98 11.964l-2.121 2.121"/></svg>
+                    <i data-lucide="mouse-pointer-click" class="w-6 h-6" style="color: var(--crb-blue-color)"></i>
                 </div>
             </div>
-            <span class="text-[13px] text-slate-400">Select a step to see its actions</span>
+            <div class="text-center">
+                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">No step selected</p>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Click a step on the left to see its actions and controls</p>
+            </div>
         </div>
     </template>
 
-    <!-- Active step detail -->
+    <!-- ══════════════════════════════════════════ -->
+    <!--  Active Step Detail                        -->
+    <!-- ══════════════════════════════════════════ -->
     <template x-if="activeStep">
         <div>
-            <!-- Step Header -->
+            <!-- ─── Step Header ─────────────────────── -->
             <div class="flex items-center gap-3 mb-4 pb-3" style="border-bottom: 1px solid var(--crb-grey-light-color)">
-                <!-- Status icon -->
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+                <!-- Status icon in colored square -->
+                <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
                       :class="{
                           'bg-green-100 dark:bg-green-900/20 text-green-600': activeStep.returnCode === 'OK',
                           'bg-red-100 dark:bg-red-900/20 text-red-600': activeStep.returnCode === 'KO',
@@ -29,31 +35,43 @@
                           'bg-blue-100 dark:bg-blue-900/20 text-blue-600': activeStep.returnCode === 'PE',
                           'bg-slate-100 dark:bg-slate-700 text-slate-500': !activeStep.returnCode || ['NE','NA','WE','CA','QU'].includes(activeStep.returnCode)
                       }">
-                    <svg class="w-4 h-4" :class="activeStep.returnCode === 'PE' ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <template x-if="activeStep.returnCode === 'OK'"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></template>
-                        <template x-if="activeStep.returnCode === 'KO'"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></template>
-                        <template x-if="activeStep.returnCode === 'FA'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></template>
-                        <template x-if="activeStep.returnCode === 'PE'"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></template>
-                        <template x-if="!activeStep.returnCode || ['NE','NA','WE','CA','QU'].includes(activeStep.returnCode)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></template>
-                    </svg>
+                    <i :data-lucide="_getStatusIcon(activeStep.returnCode)" class="w-4.5 h-4.5"
+                       :class="activeStep.returnCode === 'PE' ? 'animate-spin' : ''"></i>
                 </span>
-                <!-- Step info -->
+
+                <!-- Title + meta -->
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
                         <span class="text-sm font-bold text-slate-800 dark:text-slate-200"
                               x-text="'Step ' + activeStep.sort"></span>
-                        <span class="text-sm text-slate-600 dark:text-slate-400 truncate"
+                        <span class="text-sm text-slate-500 dark:text-slate-400 truncate"
                               x-text="activeStep.description || ''"></span>
                     </div>
-                    <div class="flex items-center gap-3 mt-0.5 text-[10px] text-slate-400">
-                        <span x-text="'Loop: ' + (activeStep.loop || '-')"></span>
+                    <div class="flex items-center gap-2.5 mt-1 flex-wrap">
+                        <!-- Duration badge -->
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium"
+                              style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)">
+                            <i data-lucide="timer" class="w-3 h-3"></i>
+                            <span x-text="formatDuration(activeStep.start, activeStep.end)"></span>
+                        </span>
+                        <!-- Loop badge -->
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium"
+                              style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)">
+                            <i data-lucide="repeat" class="w-3 h-3"></i>
+                            <span x-text="'Loop: ' + (activeStep.loop || '-')"></span>
+                        </span>
+                        <!-- Condition badge -->
                         <span x-show="activeStep.conditionOperator && activeStep.conditionOperator !== 'always'"
-                              x-text="'Condition: ' + activeStep.conditionOperator"></span>
-                        <span x-text="'Duration: ' + formatDuration(activeStep.start, activeStep.end)"></span>
+                              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium"
+                              style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); color: var(--crb-blue-color)">
+                            <i data-lucide="git-branch" class="w-3 h-3"></i>
+                            <span x-text="activeStep.conditionOperator"></span>
+                        </span>
                     </div>
                 </div>
+
                 <!-- Return code badge -->
-                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold shrink-0"
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0"
                       :class="{
                           'bg-green-100 dark:bg-green-900/20 text-green-700': activeStep.returnCode === 'OK',
                           'bg-red-100 dark:bg-red-900/20 text-red-700': activeStep.returnCode === 'KO',
@@ -62,36 +80,47 @@
                           'bg-slate-100 dark:bg-slate-700 text-slate-500': !activeStep.returnCode || ['NE','NA','WE','CA','QU'].includes(activeStep.returnCode)
                       }"
                       x-text="activeStep.returnCode || 'NE'"></span>
-                <!-- Edit step button -->
+
+                <!-- Edit button -->
                 <button @click.stop="openStepModal(activeStep)"
                         class="v2-exe-step-edit-btn"
                         data-tip="Edit this step" data-tip-pos="bottom">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                 </button>
             </div>
 
-            <!-- Return message (if exists) -->
+            <!-- ─── Return message alert ────────────── -->
             <template x-if="activeStep.returnMessage">
-                <div class="mb-4 px-3 py-2 rounded-lg text-[12px]"
+                <div class="mb-4 px-3.5 py-2.5 rounded-xl text-[12px] flex items-start gap-2 v2-fade-in"
                      :class="{
-                         'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800': activeStep.returnCode === 'KO',
-                         'bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800': activeStep.returnCode === 'FA',
-                         'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700': activeStep.returnCode !== 'KO' && activeStep.returnCode !== 'FA'
+                         'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400': activeStep.returnCode === 'KO',
+                         'bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400': activeStep.returnCode === 'FA',
+                         'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400': activeStep.returnCode !== 'KO' && activeStep.returnCode !== 'FA'
+                     }"
+                     :style="{
+                         'border': activeStep.returnCode === 'KO' ? '1px solid color-mix(in srgb, var(--crb-red-color) 20%, transparent)' :
+                                   activeStep.returnCode === 'FA' ? '1px solid color-mix(in srgb, #f59e0b 20%, transparent)' :
+                                   '1px solid var(--crb-grey-light-color)'
                      }">
-                    <span x-text="activeStep.returnMessage"></span>
+                    <i :data-lucide="activeStep.returnCode === 'KO' ? 'alert-circle' : activeStep.returnCode === 'FA' ? 'alert-triangle' : 'info'"
+                       class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    <span x-text="activeStep.returnMessage" class="leading-relaxed"></span>
                 </div>
             </template>
 
-            <!-- Actions list -->
-            <div class="space-y-2 v2-exe-detail-scroll" style="max-height: calc(100vh - 300px); overflow-y: auto">
+            <!-- ══════════════════════════════════════ -->
+            <!--  Actions List                          -->
+            <!-- ══════════════════════════════════════ -->
+            <div class="space-y-3 v2-exe-detail-scroll" style="max-height: calc(100vh - 300px); overflow-y: auto">
                 <template x-for="(action, aIdx) in activeStep.actions" :key="action._uid">
-                    <div class="v2-exe-action-card rounded-xl overflow-hidden v2-fade-in"
-                         :class="'v2-exe-action-card--' + (action.returnCode || 'ne').toLowerCase()">
+                    <div class="v2-action-card rounded-xl overflow-hidden v2-fade-in"
+                         :style="'border-left: 3px solid ' + ({'OK':'var(--crb-green-color)','KO':'var(--crb-red-color)','FA':'#f59e0b','PE':'var(--crb-blue-color)'}[action.returnCode] || 'var(--crb-grey-light-color)')">
 
-                        <!-- Action header (always visible) -->
-                        <div class="flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none"
-                             @click="toggleActionDetail(action)">
-                            <!-- Status icon -->
+                        <!-- ─── Action Header (always visible, clickable) ─── -->
+                        <div class="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer select-none transition-colors duration-150"
+                             @click="toggleActionDetail(action)"
+                             :style="'border-radius: 12px 12px 0 0'">
+                            <!-- Status indicator -->
                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-md shrink-0"
                                   :class="{
                                       'bg-green-100 dark:bg-green-900/20 text-green-600': action.returnCode === 'OK',
@@ -100,76 +129,82 @@
                                       'bg-blue-100 dark:bg-blue-900/20 text-blue-600': action.returnCode === 'PE',
                                       'bg-slate-100 dark:bg-slate-700 text-slate-400': !action.returnCode || ['NE','NA','WE','CA','QU'].includes(action.returnCode)
                                   }">
-                                <svg class="w-3 h-3" :class="action.returnCode === 'PE' ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <template x-if="action.returnCode === 'OK'"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></template>
-                                    <template x-if="action.returnCode === 'KO'"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></template>
-                                    <template x-if="action.returnCode === 'FA'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01"/></template>
-                                    <template x-if="action.returnCode === 'PE'"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></template>
-                                    <template x-if="!action.returnCode || ['NE','NA','WE','CA','QU'].includes(action.returnCode)"><circle cx="12" cy="12" r="1"/></template>
-                                </svg>
+                                <i :data-lucide="_getStatusIcon(action.returnCode)" class="w-3 h-3"
+                                   :class="action.returnCode === 'PE' ? 'animate-spin' : ''"></i>
                             </span>
-                            <!-- Action number -->
-                            <span class="v2-badge-action" x-text="'A' + (aIdx + 1)"></span>
-                            <!-- Action type -->
-                            <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300"
+
+                            <!-- Action badge -->
+                            <span class="v2-badge-action shrink-0" x-text="'A' + (aIdx + 1)"></span>
+
+                            <!-- Action name -->
+                            <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 shrink-0"
                                   x-text="action.action || 'Unknown'"></span>
+
                             <!-- Description -->
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 truncate flex-1"
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 truncate flex-1 min-w-0"
                                   x-text="action.description || ''"></span>
-                            <!-- Media thumbnails inline -->
+
+                            <!-- Inline screenshot thumbnails (max 2) -->
                             <template x-for="file in _getScreenshots(action.fileList).slice(0, 2)" :key="file.fileName">
                                 <img :src="getMediaUrl(file, 48, 32)"
                                      class="v2-exe-media-thumb"
                                      @click.stop="openLightbox(getMediaFullUrl(file))"
                                      loading="lazy">
                             </template>
+
                             <!-- Duration -->
-                            <span class="text-[10px] text-slate-400 shrink-0 font-mono"
+                            <span class="text-[10px] text-slate-400 shrink-0 font-mono tabular-nums"
                                   x-text="formatDuration(action.start, action.end)"></span>
+
                             <!-- Manual buttons -->
                             <template x-if="isManual">
                                 <div class="flex items-center gap-1.5 shrink-0" @click.stop>
                                     <button @click="setActionStatus(activeStepIndex, aIdx, 'OK')"
                                             class="v2-exe-manual-btn v2-exe-manual-btn--ok"
                                             :class="action.returnCode === 'OK' ? 'v2-exe-manual-btn--selected' : ''">
-                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                        <i data-lucide="check" class="w-3 h-3"></i>
                                         <span>OK</span>
                                     </button>
                                     <button @click="setActionStatus(activeStepIndex, aIdx, 'FA')"
                                             class="v2-exe-manual-btn v2-exe-manual-btn--fa"
                                             :class="action.returnCode === 'FA' ? 'v2-exe-manual-btn--selected' : ''">
-                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01"/></svg>
+                                        <i data-lucide="alert-triangle" class="w-3 h-3"></i>
                                         <span>FA</span>
                                     </button>
                                     <button @click="setActionStatus(activeStepIndex, aIdx, 'KO')"
                                             class="v2-exe-manual-btn v2-exe-manual-btn--ko"
                                             :class="action.returnCode === 'KO' ? 'v2-exe-manual-btn--selected' : ''">
-                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        <i data-lucide="x" class="w-3 h-3"></i>
                                         <span>KO</span>
                                     </button>
                                 </div>
                             </template>
-                            <!-- Expand chevron -->
+
+                            <!-- Chevron toggle -->
                             <svg class="w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-200"
                                  :style="action._expanded ? 'transform:rotate(180deg)' : ''"
                                  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
 
-                        <!-- ═══ SMART PREVIEW (always visible, no toggle needed) ═══ -->
+                        <!-- ═══════════════════════════════════════ -->
+                        <!--  SMART PREVIEW — Always visible        -->
+                        <!-- ═══════════════════════════════════════ -->
 
-                        <!-- Return message for KO/FA -->
-                        <template x-if="(action.returnCode === 'KO' || action.returnCode === 'FA') && action.returnMessage && !action._expanded">
-                            <div class="px-3 pb-2 text-[11px]"
+                        <!-- 1. Return message for KO/FA -->
+                        <template x-if="(action.returnCode === 'KO' || action.returnCode === 'FA') && action.returnMessage">
+                            <div class="mx-3 mb-2 px-3 py-2 rounded-lg text-[11px] flex items-start gap-2"
                                  :class="{
-                                     'text-red-600 dark:text-red-400': action.returnCode === 'KO',
-                                     'text-amber-600 dark:text-amber-400': action.returnCode === 'FA'
-                                 }">
-                                <span x-text="action.returnMessage"></span>
+                                     'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400': action.returnCode === 'KO',
+                                     'bg-amber-50 dark:bg-amber-900/10 text-amber-600 dark:text-amber-400': action.returnCode === 'FA'
+                                 }"
+                                 :style="action.returnCode === 'KO' ? 'border: 1px solid color-mix(in srgb, var(--crb-red-color) 15%, transparent)' : 'border: 1px solid color-mix(in srgb, #f59e0b 15%, transparent)'">
+                                <i :data-lucide="action.returnCode === 'KO' ? 'alert-circle' : 'alert-triangle'" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i>
+                                <span x-text="action.returnMessage" class="leading-relaxed"></span>
                             </div>
                         </template>
 
-                        <!-- Smart preview: Verify expected vs got -->
-                        <template x-if="_isVerifyAction(action) && !action._expanded">
+                        <!-- 2. Verify expected vs got (ALWAYS visible) -->
+                        <template x-if="_isVerifyAction(action)">
                             <div class="v2-exe-smart-preview">
                                 <div class="v2-exe-verify-summary">
                                     <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">
@@ -186,8 +221,8 @@
                             </div>
                         </template>
 
-                        <!-- Smart preview: Screenshot large -->
-                        <template x-if="_isScreenshotAction(action) && _getScreenshots(action.fileList).length > 0 && !action._expanded">
+                        <!-- 3. Screenshot large preview (ALWAYS visible) -->
+                        <template x-if="_isScreenshotAction(action) && _getScreenshots(action.fileList).length > 0">
                             <div class="v2-exe-smart-preview" style="text-align:center">
                                 <img :src="getMediaUrl(_getScreenshots(action.fileList)[0], 400, 250)"
                                      class="v2-exe-screenshot-preview"
@@ -196,35 +231,233 @@
                             </div>
                         </template>
 
-                        <!-- Smart preview: Service Request/Response -->
-                        <template x-if="_isServiceAction(action) && !action._expanded">
+                        <!-- 4. Service Request/Response JSON (ALWAYS visible) -->
+                        <template x-if="_isServiceAction(action)">
                             <div class="v2-exe-smart-preview">
                                 <template x-if="_getFileByDesc(action.fileList, 'Service Request')">
-                                    <div class="v2-exe-data-block v2-exe-data-block--request" x-data="{ content: '', loaded: false, expanded: false }" x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Request'), (txt) => { content = txt; loaded = true; })">
+                                    <div class="v2-exe-data-block v2-exe-data-block--request"
+                                         x-data="{ content: '', loaded: false, expanded: false }"
+                                         x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Request'), (txt) => { content = txt; loaded = true; })">
                                         <div class="v2-exe-data-label">
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                            <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
                                             Request
                                         </div>
-                                        <pre class="v2-exe-json-preview" :class="expanded ? 'v2-exe-json-preview--expanded' : ''" @click="expanded = !expanded" x-text="loaded ? content : 'Loading...'"></pre>
+                                        <pre class="v2-exe-json-preview"
+                                             :class="expanded ? 'v2-exe-json-preview--expanded' : ''"
+                                             @click="expanded = !expanded"
+                                             x-text="loaded ? content : 'Loading...'"></pre>
                                     </div>
                                 </template>
                                 <template x-if="_getFileByDesc(action.fileList, 'Service Response')">
-                                    <div class="v2-exe-data-block v2-exe-data-block--response" x-data="{ content: '', loaded: false, expanded: false }" x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Response'), (txt) => { content = txt; loaded = true; })">
+                                    <div class="v2-exe-data-block v2-exe-data-block--response"
+                                         x-data="{ content: '', loaded: false, expanded: false }"
+                                         x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Response'), (txt) => { content = txt; loaded = true; })">
                                         <div class="v2-exe-data-label">
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                            <i data-lucide="arrow-down-left" class="w-3 h-3"></i>
                                             Response
                                         </div>
-                                        <pre class="v2-exe-json-preview" :class="expanded ? 'v2-exe-json-preview--expanded' : ''" @click="expanded = !expanded" x-text="loaded ? content : 'Loading...'"></pre>
+                                        <pre class="v2-exe-json-preview"
+                                             :class="expanded ? 'v2-exe-json-preview--expanded' : ''"
+                                             @click="expanded = !expanded"
+                                             x-text="loaded ? content : 'Loading...'"></pre>
                                     </div>
                                 </template>
                             </div>
                         </template>
 
-                        <!-- ═══ EXPANDED TECHNICAL DETAIL (toggle) ═══ -->
+                        <!-- ═══════════════════════════════════════ -->
+                        <!--  Controls Section (indented)           -->
+                        <!-- ═══════════════════════════════════════ -->
+                        <template x-if="action.controls && action.controls.length > 0">
+                            <div class="px-3 pb-3 space-y-2" style="margin-left: 28px">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Verifications</span>
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)" x-text="action.controls.length"></span>
+                                    <div class="flex-1 h-px" style="background: var(--crb-grey-light-color)"></div>
+                                </div>
+
+                                <template x-for="(ctrl, cIdx) in action.controls" :key="ctrl._uid">
+                                    <div class="v2-control-card rounded-lg overflow-hidden"
+                                         :style="'border-left: 3px solid ' + ({'OK':'var(--crb-green-color)','KO':'var(--crb-red-color)','FA':'#f59e0b','PE':'var(--crb-blue-color)'}[ctrl.returnCode] || 'var(--crb-grey-light-color)')">
+
+                                        <!-- Control header -->
+                                        <div class="flex items-center gap-2 px-2.5 py-2 cursor-pointer select-none transition-colors duration-150"
+                                             @click="toggleControlDetail(ctrl)">
+                                            <!-- Status icon -->
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded shrink-0"
+                                                  :class="{
+                                                      'bg-green-100 dark:bg-green-900/20 text-green-600': ctrl.returnCode === 'OK',
+                                                      'bg-red-100 dark:bg-red-900/20 text-red-600': ctrl.returnCode === 'KO',
+                                                      'bg-amber-100 dark:bg-amber-900/20 text-amber-600': ctrl.returnCode === 'FA',
+                                                      'bg-blue-100 dark:bg-blue-900/20 text-blue-600': ctrl.returnCode === 'PE',
+                                                      'bg-slate-100 dark:bg-slate-700 text-slate-400': !ctrl.returnCode || ['NE','NA','WE'].includes(ctrl.returnCode)
+                                                  }">
+                                                <i :data-lucide="_getStatusIcon(ctrl.returnCode)" class="w-2.5 h-2.5"
+                                                   :class="ctrl.returnCode === 'PE' ? 'animate-spin' : ''"></i>
+                                            </span>
+
+                                            <!-- Control badge -->
+                                            <span class="v2-badge-control shrink-0" x-text="'C' + (cIdx + 1)"></span>
+
+                                            <!-- Control type -->
+                                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400"
+                                                  x-text="ctrl.controlType || ctrl.control || 'Verify'"></span>
+
+                                            <!-- Description -->
+                                            <span class="text-[10px] text-slate-400 truncate flex-1 min-w-0"
+                                                  x-text="ctrl.description || ''"></span>
+
+                                            <!-- Fatal badge -->
+                                            <template x-if="ctrl.fatal === 'Y'">
+                                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-red-50 dark:bg-red-900/20 text-red-500"
+                                                      style="border: 1px solid color-mix(in srgb, var(--crb-red-color) 15%, transparent)">FATAL</span>
+                                            </template>
+
+                                            <!-- Return code mini badge -->
+                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0"
+                                                  :class="{
+                                                      'bg-green-100 text-green-700': ctrl.returnCode === 'OK',
+                                                      'bg-red-100 text-red-700': ctrl.returnCode === 'KO',
+                                                      'bg-amber-100 text-amber-700': ctrl.returnCode === 'FA',
+                                                      'bg-blue-100 text-blue-700': ctrl.returnCode === 'PE',
+                                                      'bg-slate-100 text-slate-500': !ctrl.returnCode || ['NE','NA','WE'].includes(ctrl.returnCode)
+                                                  }"
+                                                  x-text="ctrl.returnCode || 'NE'"></span>
+
+                                            <!-- Manual buttons for control -->
+                                            <template x-if="isManual">
+                                                <div class="flex items-center gap-1 shrink-0" @click.stop>
+                                                    <button @click="setControlStatus(activeStepIndex, aIdx, cIdx, 'OK')"
+                                                            class="v2-exe-manual-btn v2-exe-manual-btn--ok v2-exe-manual-btn--sm"
+                                                            :class="ctrl.returnCode === 'OK' ? 'v2-exe-manual-btn--selected' : ''">
+                                                        <i data-lucide="check" class="w-2.5 h-2.5"></i>
+                                                        <span>OK</span>
+                                                    </button>
+                                                    <button @click="setControlStatus(activeStepIndex, aIdx, cIdx, 'KO')"
+                                                            class="v2-exe-manual-btn v2-exe-manual-btn--ko v2-exe-manual-btn--sm"
+                                                            :class="ctrl.returnCode === 'KO' ? 'v2-exe-manual-btn--selected' : ''">
+                                                        <i data-lucide="x" class="w-2.5 h-2.5"></i>
+                                                        <span>KO</span>
+                                                    </button>
+                                                </div>
+                                            </template>
+
+                                            <!-- Chevron -->
+                                            <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform duration-200"
+                                                 :style="ctrl._expanded ? 'transform:rotate(180deg)' : ''"
+                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                                        </div>
+
+                                        <!-- Control smart preview: verify expected vs got — ALL statuses -->
+                                        <template x-if="_isVerifyControl(ctrl)">
+                                            <div class="v2-exe-smart-preview" style="padding-top:0; margin-top: -2px">
+                                                <div class="v2-exe-verify-summary" style="font-size:10px">
+                                                    <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
+                                                        <div style="display:flex;align-items:flex-start;gap:6px">
+                                                            <span class="v2-exe-verify-label v2-exe-verify-label--expected">Expected</span>
+                                                            <span class="v2-exe-verify-value" x-text="ctrl.value2 || ctrl.value2Init || '-'"></span>
+                                                        </div>
+                                                        <div style="display:flex;align-items:flex-start;gap:6px">
+                                                            <span class="v2-exe-verify-label" :class="ctrl.returnCode === 'OK' ? 'v2-exe-verify-label--got' : 'v2-exe-verify-label--got-fail'">Got</span>
+                                                            <span class="v2-exe-verify-value" x-text="ctrl.value1 || ctrl.value1Init || '-'"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <!-- Control return message (non-verify controls) -->
+                                        <template x-if="(ctrl.returnCode === 'KO' || ctrl.returnCode === 'FA') && ctrl.returnMessage && !_isVerifyControl(ctrl)">
+                                            <div class="mx-2.5 mb-2 px-2.5 py-1.5 rounded-lg text-[10px] flex items-start gap-1.5"
+                                                 :class="ctrl.returnCode === 'KO' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'"
+                                                 :style="ctrl.returnCode === 'KO' ? 'border: 1px solid color-mix(in srgb, var(--crb-red-color) 12%, transparent)' : 'border: 1px solid color-mix(in srgb, #f59e0b 12%, transparent)'">
+                                                <i :data-lucide="ctrl.returnCode === 'KO' ? 'alert-circle' : 'alert-triangle'" class="w-3 h-3 shrink-0 mt-0.5"></i>
+                                                <span x-text="ctrl.returnMessage"></span>
+                                            </div>
+                                        </template>
+
+                                        <!-- Control expanded technical detail -->
+                                        <div x-show="ctrl._expanded" x-collapse>
+                                            <div class="px-2.5 pb-2.5 space-y-1.5" style="border-top: 1px solid var(--crb-grey-light-color)">
+                                                <div class="grid grid-cols-2 gap-1.5 mt-1.5">
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Control</span>
+                                                        <span class="v2-exe-info-value" x-text="ctrl.controlType || ctrl.control"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Fatal</span>
+                                                        <span class="v2-exe-info-value" x-text="ctrl.fatal"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Value 1</span>
+                                                        <span class="v2-exe-info-value font-mono text-[10px]" x-text="ctrl.value1 || '-'"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Value 1 Init</span>
+                                                        <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="ctrl.value1Init || '-'"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Value 2</span>
+                                                        <span class="v2-exe-info-value font-mono text-[10px]" x-text="ctrl.value2 || '-'"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item">
+                                                        <span class="v2-exe-info-label">Value 2 Init</span>
+                                                        <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="ctrl.value2Init || '-'"></span>
+                                                    </div>
+                                                    <div class="v2-exe-info-item col-span-2">
+                                                        <span class="v2-exe-info-label">Return Message</span>
+                                                        <span class="v2-exe-info-value text-[10px]" x-text="ctrl.returnMessage || '-'"></span>
+                                                    </div>
+                                                    <template x-if="ctrl.conditionOperator && ctrl.conditionOperator !== 'always'">
+                                                        <div class="v2-exe-info-item col-span-2">
+                                                            <span class="v2-exe-info-label">Condition</span>
+                                                            <span class="v2-exe-info-value font-mono text-[10px]"
+                                                                  x-text="ctrl.conditionOperator + ' | ' + (ctrl.conditionValue1 || ctrl.conditionVal1 || '') + ' | ' + (ctrl.conditionValue2 || ctrl.conditionVal2 || '')"></span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+
+                                                <!-- Control media -->
+                                                <template x-if="ctrl.fileList && ctrl.fileList.length > 0">
+                                                    <div class="v2-exe-media-grid mt-1.5">
+                                                        <template x-for="file in ctrl.fileList" :key="file.fileName">
+                                                            <div>
+                                                                <template x-if="_isImageFile(file)">
+                                                                    <img :src="getMediaUrl(file, 120, 80)"
+                                                                         class="v2-exe-media-thumb"
+                                                                         @click="openLightbox(getMediaFullUrl(file))"
+                                                                         loading="lazy">
+                                                                </template>
+                                                                <template x-if="!_isImageFile(file)">
+                                                                    <a :href="getMediaFullUrl(file)" target="_blank" class="v2-exe-media-file-chip">
+                                                                        <i data-lucide="file" class="w-3 h-3"></i>
+                                                                        <span x-text="file.fileDesc || file.fileType || 'File'"></span>
+                                                                    </a>
+                                                                </template>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- ═══════════════════════════════════════ -->
+                        <!--  Technical Detail (toggle)             -->
+                        <!-- ═══════════════════════════════════════ -->
                         <div x-show="action._expanded" x-collapse>
-                            <div class="px-3 pb-3 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
-                                <!-- Action details grid -->
-                                <div class="grid grid-cols-2 gap-2 mt-2">
+                            <div class="px-3.5 pb-3 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                                <!-- Section label -->
+                                <div class="flex items-center gap-2 mt-2.5 mb-1">
+                                    <i data-lucide="code-2" class="w-3 h-3" style="color: var(--crb-grey-color)"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Technical Details</span>
+                                    <div class="flex-1 h-px" style="background: var(--crb-grey-light-color)"></div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
                                     <div class="v2-exe-info-item">
                                         <span class="v2-exe-info-label">Action</span>
                                         <span class="v2-exe-info-value" x-text="action.action"></span>
@@ -250,7 +483,7 @@
                                         <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="action.value2Init || '-'"></span>
                                     </div>
                                     <template x-if="action.value3">
-                                        <div class="v2-exe-info-item">
+                                        <div class="v2-exe-info-item col-span-2">
                                             <span class="v2-exe-info-label">Value 3</span>
                                             <span class="v2-exe-info-value font-mono text-[10px]" x-text="action.value3"></span>
                                         </div>
@@ -259,13 +492,13 @@
                                         <span class="v2-exe-info-label">Return Code</span>
                                         <span class="v2-exe-info-value font-bold" x-text="action.returnCode || '-'"></span>
                                     </div>
-                                    <div class="v2-exe-info-item col-span-2">
-                                        <span class="v2-exe-info-label">Return Message</span>
-                                        <span class="v2-exe-info-value text-[10px]" x-text="action.returnMessage || '-'"></span>
-                                    </div>
                                     <div class="v2-exe-info-item">
                                         <span class="v2-exe-info-label">Duration</span>
                                         <span class="v2-exe-info-value" x-text="formatDuration(action.start, action.end)"></span>
+                                    </div>
+                                    <div class="v2-exe-info-item col-span-2">
+                                        <span class="v2-exe-info-label">Return Message</span>
+                                        <span class="v2-exe-info-value text-[10px]" x-text="action.returnMessage || '-'"></span>
                                     </div>
                                     <template x-if="action.conditionOperator && action.conditionOperator !== 'always'">
                                         <div class="v2-exe-info-item col-span-2">
@@ -283,8 +516,7 @@
                                         <template x-if="_getScreenshots(action.fileList).length > 0">
                                             <div class="v2-exe-media-category">
                                                 <div class="v2-exe-media-category-label">
-                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                                    Screenshots
+                                                    <i data-lucide="image" class="w-3 h-3"></i> Screenshots
                                                 </div>
                                                 <div class="v2-exe-media-grid">
                                                     <template x-for="file in _getScreenshots(action.fileList)" :key="file.fileName">
@@ -296,17 +528,17 @@
                                                 </div>
                                             </div>
                                         </template>
-                                        <!-- Data files (JSON, XML, HTML, TXT) -->
+
+                                        <!-- Data Files -->
                                         <template x-if="_getDataFiles(action.fileList).length > 0">
                                             <div class="v2-exe-media-category">
                                                 <div class="v2-exe-media-category-label">
-                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                                    Data Files
+                                                    <i data-lucide="file-text" class="w-3 h-3"></i> Data Files
                                                 </div>
                                                 <div class="flex flex-wrap gap-1.5">
                                                     <template x-for="file in _getDataFiles(action.fileList)" :key="file.fileName">
                                                         <a :href="getMediaFullUrl(file)" target="_blank" class="v2-exe-media-file-chip">
-                                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                            <i data-lucide="file" class="w-3 h-3"></i>
                                                             <span x-text="file.fileDesc || file.fileType || 'File'"></span>
                                                             <span class="text-[9px] opacity-50" x-text="file.fileType"></span>
                                                         </a>
@@ -318,146 +550,18 @@
                                 </template>
                             </div>
                         </div>
-
-                        <!-- Controls -->
-                        <template x-if="action.controls && action.controls.length > 0">
-                            <div class="px-3 pb-2 space-y-1.5"
-                                 :style="!action._expanded ? 'border-top: 1px dashed var(--crb-grey-light-color)' : ''">
-                                <template x-for="(ctrl, cIdx) in action.controls" :key="ctrl._uid">
-                                    <div class="v2-exe-control-card rounded-lg overflow-hidden">
-                                        <!-- Control header -->
-                                        <div class="flex items-center gap-2 px-2.5 py-2 cursor-pointer select-none"
-                                             @click="toggleControlDetail(ctrl)">
-                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded shrink-0"
-                                                  :class="{
-                                                      'bg-green-100 dark:bg-green-900/20 text-green-600': ctrl.returnCode === 'OK',
-                                                      'bg-red-100 dark:bg-red-900/20 text-red-600': ctrl.returnCode === 'KO',
-                                                      'bg-amber-100 dark:bg-amber-900/20 text-amber-600': ctrl.returnCode === 'FA',
-                                                      'bg-blue-100 dark:bg-blue-900/20 text-blue-600': ctrl.returnCode === 'PE',
-                                                      'bg-slate-100 dark:bg-slate-700 text-slate-400': !ctrl.returnCode || ['NE','NA','WE'].includes(ctrl.returnCode)
-                                                  }">
-                                                <svg class="w-2.5 h-2.5" :class="ctrl.returnCode === 'PE' ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <template x-if="ctrl.returnCode === 'OK'"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></template>
-                                                    <template x-if="ctrl.returnCode === 'KO'"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></template>
-                                                    <template x-if="!ctrl.returnCode || !['OK','KO'].includes(ctrl.returnCode)"><circle cx="12" cy="12" r="1"/></template>
-                                                </svg>
-                                            </span>
-                                            <span class="v2-badge-control" x-text="'C' + (cIdx + 1)"></span>
-                                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400"
-                                                  x-text="ctrl.controlType || ctrl.control || 'Verify'"></span>
-                                            <span class="text-[10px] text-slate-400 truncate flex-1"
-                                                  x-text="ctrl.description || ''"></span>
-                                            <!-- Fatal badge -->
-                                            <template x-if="ctrl.fatal === 'Y'">
-                                                <span class="text-[9px] font-bold px-1 py-0.5 rounded bg-red-50 dark:bg-red-900/20 text-red-500">FATAL</span>
-                                            </template>
-                                            <!-- Manual buttons -->
-                                            <template x-if="isManual">
-                                                <div class="flex items-center gap-1 shrink-0" @click.stop>
-                                                    <button @click="setControlStatus(activeStepIndex, aIdx, cIdx, 'OK')"
-                                                            class="v2-exe-manual-btn v2-exe-manual-btn--ok v2-exe-manual-btn--sm"
-                                                            :class="ctrl.returnCode === 'OK' ? 'v2-exe-manual-btn--selected' : ''">
-                                                        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                        <span>OK</span>
-                                                    </button>
-                                                    <button @click="setControlStatus(activeStepIndex, aIdx, cIdx, 'KO')"
-                                                            class="v2-exe-manual-btn v2-exe-manual-btn--ko v2-exe-manual-btn--sm"
-                                                            :class="ctrl.returnCode === 'KO' ? 'v2-exe-manual-btn--selected' : ''">
-                                                        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                        <span>KO</span>
-                                                    </button>
-                                                </div>
-                                            </template>
-                                            <!-- Expand -->
-                                            <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform duration-200"
-                                                 :style="ctrl._expanded ? 'transform:rotate(180deg)' : ''"
-                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                                        </div>
-
-                                        <!-- Control smart preview: verify expected vs got -->
-                                        <template x-if="_isVerifyControl(ctrl) && (ctrl.returnCode === 'KO' || ctrl.returnCode === 'FA') && !ctrl._expanded">
-                                            <div class="v2-exe-smart-preview" style="padding-top:0">
-                                                <div class="v2-exe-verify-summary" style="font-size:10px">
-                                                    <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
-                                                        <div style="display:flex;align-items:flex-start;gap:6px">
-                                                            <span class="v2-exe-verify-label v2-exe-verify-label--expected">Expected</span>
-                                                            <span class="v2-exe-verify-value" x-text="ctrl.value2 || ctrl.value2Init || '-'"></span>
-                                                        </div>
-                                                        <div style="display:flex;align-items:flex-start;gap:6px">
-                                                            <span class="v2-exe-verify-label v2-exe-verify-label--got-fail">Got</span>
-                                                            <span class="v2-exe-verify-value" x-text="ctrl.value1 || ctrl.value1Init || '-'"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </template>
-
-                                        <!-- Control return message -->
-                                        <template x-if="(ctrl.returnCode === 'KO' || ctrl.returnCode === 'FA') && ctrl.returnMessage && !ctrl._expanded && !_isVerifyControl(ctrl)">
-                                            <div class="px-2.5 pb-1.5 text-[10px]"
-                                                 :class="ctrl.returnCode === 'KO' ? 'text-red-500' : 'text-amber-500'">
-                                                <span x-text="ctrl.returnMessage"></span>
-                                            </div>
-                                        </template>
-
-                                        <!-- Control expanded detail -->
-                                        <div x-show="ctrl._expanded" x-collapse>
-                                            <div class="px-2.5 pb-2.5 space-y-1" style="border-top: 1px solid var(--crb-grey-light-color)">
-                                                <div class="grid grid-cols-2 gap-1.5 mt-1.5">
-                                                    <div class="v2-exe-info-item">
-                                                        <span class="v2-exe-info-label">Control</span>
-                                                        <span class="v2-exe-info-value" x-text="ctrl.controlType || ctrl.control"></span>
-                                                    </div>
-                                                    <div class="v2-exe-info-item">
-                                                        <span class="v2-exe-info-label">Fatal</span>
-                                                        <span class="v2-exe-info-value" x-text="ctrl.fatal"></span>
-                                                    </div>
-                                                    <div class="v2-exe-info-item">
-                                                        <span class="v2-exe-info-label">Value 1</span>
-                                                        <span class="v2-exe-info-value font-mono text-[10px]" x-text="ctrl.value1 || '-'"></span>
-                                                    </div>
-                                                    <div class="v2-exe-info-item">
-                                                        <span class="v2-exe-info-label">Value 2</span>
-                                                        <span class="v2-exe-info-value font-mono text-[10px]" x-text="ctrl.value2 || '-'"></span>
-                                                    </div>
-                                                    <div class="v2-exe-info-item col-span-2">
-                                                        <span class="v2-exe-info-label">Return Message</span>
-                                                        <span class="v2-exe-info-value text-[10px]" x-text="ctrl.returnMessage || '-'"></span>
-                                                    </div>
-                                                </div>
-                                                <!-- Control media -->
-                                                <template x-if="ctrl.fileList && ctrl.fileList.length > 0">
-                                                    <div class="v2-exe-media-grid mt-1.5">
-                                                        <template x-for="file in ctrl.fileList" :key="file.fileName">
-                                                            <div>
-                                                                <template x-if="_isImageFile(file)">
-                                                                    <img :src="getMediaUrl(file, 120, 80)"
-                                                                         class="v2-exe-media-thumb"
-                                                                         @click="openLightbox(getMediaFullUrl(file))"
-                                                                         loading="lazy">
-                                                                </template>
-                                                                <template x-if="!_isImageFile(file)">
-                                                                    <a :href="getMediaFullUrl(file)" target="_blank" class="v2-exe-media-file-chip">
-                                                                        <span x-text="file.fileDesc || file.fileType || 'File'"></span>
-                                                                    </a>
-                                                                </template>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
                     </div>
                 </template>
 
-                <!-- No actions -->
+                <!-- No actions empty state -->
                 <template x-if="activeStep && activeStep.actions.length === 0">
-                    <div class="flex flex-col items-center justify-center py-8 gap-2">
-                        <span class="text-[12px] text-slate-400">No actions in this step</span>
+                    <div class="flex flex-col items-center justify-center py-12 gap-3">
+                        <div class="v2-empty-icon-ring" style="width: 44px; height: 44px">
+                            <div class="v2-empty-icon-inner" style="width: 36px; height: 36px">
+                                <i data-lucide="list-x" class="w-4 h-4" style="color: var(--crb-grey-color)"></i>
+                            </div>
+                        </div>
+                        <span class="text-[12px] text-slate-400 dark:text-slate-500">No actions in this step</span>
                     </div>
                 </template>
             </div>
@@ -465,12 +569,14 @@
     </template>
 </div>
 
-<!-- Lightbox overlay -->
+<!-- ══════════════════════════════════════════════ -->
+<!--  Lightbox Overlay                              -->
+<!-- ══════════════════════════════════════════════ -->
 <template x-if="lightboxUrl">
     <div class="v2-exe-lightbox" @click="lightboxUrl = null" x-transition.opacity.duration.200ms>
         <img :src="lightboxUrl" @click.stop>
         <button class="v2-exe-lightbox-close" @click="lightboxUrl = null">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            <i data-lucide="x" class="w-5 h-5"></i>
         </button>
     </div>
 </template>

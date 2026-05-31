@@ -1753,8 +1753,10 @@
 
 /* ═══ SMART PREVIEW ═══ */
 .v2-exe-smart-preview {
-    padding: 6px 12px 8px;
-    border-top: 1px dashed var(--crb-grey-light-color);
+    padding: 8px 14px 10px;
+    margin: 0 8px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--crb-grey-extra-light-color, #f8fafc) 60%, transparent);
 }
 
 /* Data block (request/response) */
@@ -1997,4 +1999,13 @@
     border-color: color-mix(in srgb, var(--crb-blue-color) 30%, transparent);
     color: var(--crb-blue-color);
     text-decoration: none;
+}
+
+/* Blink animation for LIVE buttons */
+@keyframes v2-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+.v2-blink {
+    animation: v2-blink 1.5s ease-in-out infinite;
 }
