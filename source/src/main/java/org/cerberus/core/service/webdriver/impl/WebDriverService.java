@@ -173,7 +173,7 @@ public class WebDriverService implements IWebDriverService {
         } else {
             answer.setItem(element);
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            msg.resolveDescription("ELEMENTFOUND", "At least one element was found")
+            msg.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                     .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
         }
 
@@ -378,7 +378,7 @@ public class WebDriverService implements IWebDriverService {
             if (element != null) {
                 answer.setItem(getWebElementUsingQuerySelector(session, identifier.getLocator()));
                 msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-                msg.resolveDescription("ELEMENTFOUND", "At least one element was found")
+                msg.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                         .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             } else {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
@@ -1282,7 +1282,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found");
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return message;
                 }
             }
@@ -1359,7 +1359,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found")
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                             .resolveDescription("OFFSET", "(" + hOffset + "," + vOffset + ")");
                     return message;
                 }
@@ -1398,7 +1398,7 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
-            message.resolveDescription("ELEMENTFOUND", "At least one element was found")
+            message.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                     .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             return message;
         } catch (TimeoutException exception) {
@@ -2075,7 +2075,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found");
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return message;
                 }
             }

@@ -761,7 +761,8 @@ public class ControlService implements IControlService {
 
                     } else if (this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                        mes.resolveDescription("STRING1", elementPath);
+                        mes.resolveDescription("STRING1", elementPath)
+                                .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                         return mes;
 
                     } else {
@@ -785,14 +786,16 @@ public class ControlService implements IControlService {
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                             }
-                            mes.resolveDescription("STRING1", elementPath);
+                            mes.resolveDescription("STRING1", elementPath)
+                                    .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
                                 if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
+                                    mes.resolveDescription("STRING1", elementPath)
+                                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                                     return mes;
                                 } else {
                                     throw new PathNotFoundException();
@@ -877,7 +880,8 @@ public class ControlService implements IControlService {
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                     }
-                    mes.resolveDescription("STRING1", elementPath);
+                    mes.resolveDescription("STRING1", elementPath)
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return mes;
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
@@ -914,7 +918,8 @@ public class ControlService implements IControlService {
                             if (!(xmlUnitService.isElementPresent(responseBody, elementPath))) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                             } else {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT)
+                                        .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                             }
                             mes.resolveDescription("STRING1", elementPath);
                             return mes;
@@ -923,7 +928,8 @@ public class ControlService implements IControlService {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
                                 if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
+                                    mes.resolveDescription("STRING1", elementPath)
+                                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                                     return mes;
                                 } else {
                                     throw new PathNotFoundException();

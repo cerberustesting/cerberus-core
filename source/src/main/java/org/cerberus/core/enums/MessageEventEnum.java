@@ -650,6 +650,8 @@ public enum MessageEventEnum {
     // *********** OTHERS ***********
     NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true, false, MessageGeneralEnum.EXECUTION_FA);
 
+    public static final String MESSAGE_ONE_ELEMENT_FOUND = "At least one element was found";
+
     private final int code;
     private final String codeString;
     private final String description;
