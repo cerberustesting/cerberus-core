@@ -7,8 +7,14 @@
     <template x-if="activeStep">
         <div class="flex items-center gap-3 px-5 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
             <div class="flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold shrink-0"
-                 style="background: var(--crb-blue-color); color: white"
+                 :style="activeStep.isUsingLibraryStep ? 'background: var(--crb-purple-color); color: white' : 'background: var(--crb-blue-color); color: white'"
                  x-text="activeStepIndex + 1"></div>
+            <template x-if="activeStep.isUsingLibraryStep">
+                <div class="flex items-center gap-1.5 shrink-0" style="color: var(--crb-purple-color);">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Library Step</span>
+                </div>
+            </template>
             <input type="text" class="v2-input-ghost flex-1 text-sm font-semibold"
                    :value="activeStep.description"
                    @input="updateStepDescription($event.target.value)"
@@ -38,13 +44,111 @@
                 </div>
             </template>
 
-            <button @click="openStepOptions(activeStepIndex)" :disabled="!canUpdate"
-                    class="v2-btn-icon shrink-0" data-tip="Step options (condition, loop, ...)">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+            <div class="relative flex items-center" x-data="{ open: false, _menuId: 'action-step-menu' }">
+                <button @click="open = !open" :disabled="!canUpdate"
+                        class="v2-btn-icon shrink-0" data-tip="Step actions">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                </button>
+                <div x-show="open" x-cloak x-transition.opacity.duration.100ms
+                     @click.outside="open = false"
+                     class="v2-step-menu-dropdown"
+                     style="position: absolute; z-index: 50; top: 100%; right: 0; margin-top: 4px;">
+                    <button class="v2-step-menu-item" @click="copyStep(activeStepIndex, $event); open=false">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                        Copy Step
+                        <kbd class="v2-step-menu-kbd">Ctrl+C</kbd>
+                    </button>
+                    <button class="v2-step-menu-item" @click="pasteAfterStep(activeStepIndex); open=false" :disabled="clipboardType !== 'step'">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                        Paste Step
+                        <kbd class="v2-step-menu-kbd">Ctrl+V</kbd>
+                    </button>
+                    <div class="v2-step-menu-sep"></div>
+                    <button class="v2-step-menu-item" @click="duplicateStep(activeStepIndex); open=false">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+                        Duplicate
+                    </button>
+                    <template x-if="activeStep.isUsingLibraryStep">
+                        <button class="v2-step-menu-item v2-step-menu-item--danger" @click="unlinkLibraryStep(activeStepIndex); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.84 12.25l1.72-1.71h-.02a5.004 5.004 0 00-.12-7.07 5.006 5.006 0 00-6.95 0l-1.72 1.71M5.17 11.75l-1.71 1.71a5.004 5.004 0 00.12 7.07 5.006 5.006 0 006.95 0l1.71-1.71M8 2v3M2 8h3M16 22v-3M22 16h-3"/></svg>
+                            Unlink Library
+                        </button>
+                    </template>
+                    <template x-if="!activeStep.isUsingLibraryStep">
+                        <button class="v2-step-menu-item" @click="toggleStepLibrary(activeStepIndex); open=false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            <span x-text="activeStep.isLibraryStep ? 'Remove Library' : 'Mark as Library'"></span>
+                        </button>
+                    </template>
+                    <button class="v2-step-menu-item" @click="openStepOptions(activeStepIndex); open=false">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Options
+                    </button>
+                    <div class="v2-step-menu-sep"></div>
+                    <button class="v2-step-menu-item v2-step-menu-item--danger" @click="toggleDeleteStep(activeStepIndex); open=false">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        <span x-text="activeStep.toDelete ? 'Restore' : 'Delete'"></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </template>
 
+    <!-- ═══ LIBRARY WARNING BANNER ═══ -->
+    <template x-if="activeStep && activeStep.isLibraryStep && activeStep.isStepInUseByOtherTestCase">
+        <div class="px-4 pt-3 pb-0 shrink-0" x-data="{ libExpanded: false, libUsers: [], libLoaded: false }">
+            <div style="background: color-mix(in srgb, var(--crb-orange-color) 8%, transparent); border: 1px solid color-mix(in srgb, var(--crb-orange-color) 20%, transparent); border-radius: 12px; padding: 12px 16px;">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background: color-mix(in srgb, var(--crb-orange-color) 15%, transparent);">
+                        <svg class="w-4 h-4" style="color: var(--crb-orange-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--crb-orange-color); margin-bottom: 2px;">Library Step</div>
+                        <div style="font-size: 11px; color: var(--crb-text-color, #475569); opacity: 0.8;">Modifying this step may impact other test cases that use it.</div>
+                    </div>
+                    <button @click="libExpanded = !libExpanded; if(!libLoaded){ libLoaded=true; $.ajax({ url:'ReadTestCaseStep', data:{ test: activeStep.test || testInfo.test, testcase: activeStep.testcase || testInfo.testcase, stepId: activeStep.stepId, getUses: true }, dataType:'json', success: (d) => { libUsers = d.step || []; } }); }"
+                            class="inline-flex items-center gap-1 shrink-0"
+                            style="font-size: 11px; font-weight: 600; color: var(--crb-orange-color); background: color-mix(in srgb, var(--crb-orange-color) 10%, transparent); border: 1px solid color-mix(in srgb, var(--crb-orange-color) 25%, transparent); border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: all 0.15s; white-space: nowrap;"
+                            onmouseenter="this.style.background='color-mix(in srgb, var(--crb-orange-color) 18%, transparent)'"
+                            onmouseleave="this.style.background='color-mix(in srgb, var(--crb-orange-color) 10%, transparent)'">
+                        <span x-text="libExpanded ? 'Hide' : 'See details'"></span>
+                        <svg class="w-3 h-3 transition-transform duration-200" :style="libExpanded ? 'transform: rotate(90deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                <div x-show="libExpanded" x-transition.duration.200ms style="margin-top: 10px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--crb-orange-color) 15%, transparent);">
+                    <template x-if="libUsers.length === 0 && libLoaded">
+                        <div style="font-size: 11px; color: var(--crb-grey-color); text-align: center; padding: 8px 0;">
+                            <svg class="w-4 h-4 inline-block animate-spin" style="color: var(--crb-orange-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+                            Loading...
+                        </div>
+                    </template>
+                    <template x-if="libUsers.length > 0">
+                        <div>
+                            <div style="font-size: 11px; font-weight: 600; color: var(--crb-text-color, #1e293b); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-orange-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <span x-text="libUsers.length + ' test case(s) using this library step:'"></span>
+                            </div>
+                            <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                <template x-for="u in libUsers" :key="u.test + u.testcase + u.stepId">
+                                    <a :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(u.test) + '&testcase=' + encodeURIComponent(u.testcase) + '&stepId=' + u.stepId"
+                                       target="_blank"
+                                       style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; font-size: 11px; text-decoration: none; color: var(--crb-text-color, #1e293b); transition: all 0.15s; border: 1px solid transparent;"
+                                       onmouseenter="this.style.background='color-mix(in srgb, var(--crb-orange-color) 8%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--crb-orange-color) 15%, transparent)'"
+                                       onmouseleave="this.style.background='transparent'; this.style.borderColor='transparent'">
+                                        <svg class="w-3 h-3 shrink-0" style="color: var(--crb-orange-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        <span x-text="u.test" style="font-weight: 600;"></span>
+                                        <span style="opacity: 0.3; font-size: 10px;">/</span>
+                                        <span x-text="u.testcase"></span>
+                                        <span style="opacity: 0.4; margin-left: auto; font-size: 10px;" x-text="u.testcaseObj ? u.testcaseObj.description : ''"></span>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <!-- ═══ ACTION LIST ═══ -->
     <div class="v2-action-scroll flex-1" id="v2ActionList">
@@ -87,7 +191,7 @@
                                     <button @click="addControl(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
                                             class="v2-btn-colored" style="background: var(--crb-green-light-color); color: var(--crb-green-color)"
                                             data-tip="Add verification"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg></button>
-                                    <button @click="copyAction(aIdx)"
+                                    <button @click="copyAction(aIdx, $event)"
                                             class="v2-btn-colored" style="background: var(--crb-blue-light-color); color: var(--crb-blue-color)"
                                             data-tip="Copy action"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></button>
                                     <button @click="toggleDeleteAction(aIdx)" :disabled="!canUpdate || activeStep.isUsingLibraryStep"
@@ -106,7 +210,7 @@
                                     <div class="min-w-[200px] flex-1" x-data="{ ddOpen: false, ddSearch: '' }" @click.outside="ddOpen = false">
                                         <label class="v2-field-label v2-field-label--action">Action</label>
                                         <div class="relative">
-                                            <button type="button" @click="ddOpen = !ddOpen"
+                                            <button type="button" @click="ddOpen = !ddOpen; if(ddOpen) $nextTick(() => { let si = $el.closest('.relative').querySelector('.v2-dd-search-input'); if(si) si.focus(); })"
                                                     class="v2-dd-trigger w-full"
                                                     :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                 <span class="truncate flex-1 text-left" x-text="getActionLabel(action.action) || 'Select...'"></span>
@@ -151,15 +255,15 @@
                                             <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field1')"></label>
                                             <div class="v2-ac-input-wrap">
                                                 <input type="text" class="v2-field-input" style="flex:1"
-                                                       :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                       :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                        @focus="acOnFocus(action.action, 'field1', false, action.value1, aIdx)"
                                                        @blur="acOnBlur()"
-                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value1', $event.target.value); }"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { if (_acMode==='variable') { let nv = acSelectVariable(_acResults[_acSelectedIdx], $event.target); updateActionField(aIdx, 'value1', nv); } else { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value1', $event.target.value); } }"
                                                        :disabled="!canUpdate || activeStep.isUsingLibraryStep"
                                                        autocomplete="off">
-                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field1', false))">
-                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value1"
-                                                            @click="_openFieldEditModal(action.action, 'field1', false, action.value1)">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field1', false)) && action.value1">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit / Create"
+                                                            @click="_openFieldSmartModal(action.action, 'field1', false, action.value1)">
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </button>
                                                 </template>
@@ -167,7 +271,8 @@
                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v);">
+                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value1', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v); }">
+                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                     </div>
@@ -181,15 +286,15 @@
                                             <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field2')"></label>
                                             <div class="v2-ac-input-wrap">
                                                 <input type="text" class="v2-field-input" style="flex:1"
-                                                       :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                       :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                        @focus="acOnFocus(action.action, 'field2', false, action.value2, aIdx)"
                                                        @blur="acOnBlur()"
-                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value2', $event.target.value); }"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { if (_acMode==='variable') { let nv = acSelectVariable(_acResults[_acSelectedIdx], $event.target); updateActionField(aIdx, 'value2', nv); } else { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value2', $event.target.value); } }"
                                                        :disabled="!canUpdate || activeStep.isUsingLibraryStep"
                                                        autocomplete="off">
-                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field2', false))">
-                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value2"
-                                                            @click="_openFieldEditModal(action.action, 'field2', false, action.value2)">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field2', false)) && action.value2">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit / Create"
+                                                            @click="_openFieldSmartModal(action.action, 'field2', false, action.value2)">
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </button>
                                                 </template>
@@ -197,7 +302,8 @@
                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field2' && !_acActiveField.isControl" x-cloak>
                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v);">
+                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value2', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v); }">
+                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                     </div>
@@ -211,15 +317,15 @@
                                             <label class="v2-field-label v2-field-label--action" x-text="getActionPlaceholder(action.action, 'field3')"></label>
                                             <div class="v2-ac-input-wrap">
                                                 <input type="text" class="v2-field-input" style="flex:1"
-                                                       :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                       :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                        @focus="acOnFocus(action.action, 'field3', false, action.value3, aIdx)"
                                                        @blur="acOnBlur()"
-                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value3', $event.target.value); }"
+                                                       @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { if (_acMode==='variable') { let nv = acSelectVariable(_acResults[_acSelectedIdx], $event.target); updateActionField(aIdx, 'value3', nv); } else { $event.target.value = acSelect(_acResults[_acSelectedIdx]); updateActionField(aIdx, 'value3', $event.target.value); } }"
                                                        :disabled="!canUpdate || activeStep.isUsingLibraryStep"
                                                        autocomplete="off">
-                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field3', false))">
-                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit" :disabled="!action.value3"
-                                                            @click="_openFieldEditModal(action.action, 'field3', false, action.value3)">
+                                                <template x-if="['service','property'].includes(_getFieldAutoType(action.action, 'field3', false)) && action.value3">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Edit / Create"
+                                                            @click="_openFieldSmartModal(action.action, 'field3', false, action.value3)">
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </button>
                                                 </template>
@@ -227,7 +333,8 @@
                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v);">
+                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value3', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v); }">
+                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                     </div>
@@ -250,14 +357,15 @@
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                           :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                           :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field1', false, action.value1, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v);">
+                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value1', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value1', v); }">
+                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                             </div>
@@ -269,14 +377,15 @@
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                           :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                           :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field2', false, action.value2, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field2' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v);">
+                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value2', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value2', v); }">
+                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                             </div>
@@ -288,14 +397,15 @@
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                           :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                           :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field3', false, action.value3, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v);">
+                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateActionField(aIdx, 'value3', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateActionField(aIdx, 'value3', v); }">
+                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                             </div>
@@ -368,7 +478,7 @@
                                             <!-- Control type — categorized searchable dropdown -->
                                             <div class="px-3 pb-2 pl-[44px]">
                                                 <div x-data="{ ddOpen: false, ddSearch: '' }" class="relative w-full" @click.outside="ddOpen = false">
-                                                    <button type="button" @click="ddOpen = !ddOpen; if(ddOpen) $nextTick(() => $refs['cSearch'+aIdx+cIdx] && $refs['cSearch'+aIdx+cIdx].focus())"
+                                                    <button type="button" @click="ddOpen = !ddOpen; if(ddOpen) $nextTick(() => { let si = $el.closest('.relative').querySelector('.v2-dd-search-input'); if(si) si.focus(); })"
                                                             class="v2-dd-trigger v2-dd-trigger--sm w-full"
                                                             :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                         <span class="truncate flex-1 text-left" x-text="getControlLabel(ctrl.control) || 'Select verification...'"></span>
@@ -379,7 +489,7 @@
                                                         <div class="v2-dd-search-box">
                                                             <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                                             <input type="text" x-model="ddSearch" placeholder="Search verifications..."
-                                                                   :x-ref="'cSearch'+aIdx+cIdx"
+
                                                                    class="v2-dd-search-input" @click.stop
                                                                    @keydown.escape="ddOpen = false; ddSearch = ''">
                                                         </div>
@@ -416,14 +526,15 @@
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field1')"></label>
                                                             <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                   :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                                   :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v);">
+                                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value1', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v); }">
+                                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                     </div>
@@ -435,14 +546,15 @@
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field2')"></label>
                                                             <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                   :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                                   :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v);">
+                                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value2', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v); }">
+                                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                     </div>
@@ -454,14 +566,15 @@
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field3')"></label>
                                                             <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                   :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                                   :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                         @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v);">
+                                                                         @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value3', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v); }">
+                                                                        <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                         <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                         <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                     </div>
@@ -483,14 +596,15 @@
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
                                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                           :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value)"
+                                                                           :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v);">
+                                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value1', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value1', v); }">
+                                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                             </div>
@@ -502,14 +616,15 @@
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
                                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                           :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value)"
+                                                                           :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v);">
+                                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value2', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value2', v); }">
+                                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                             </div>
@@ -521,14 +636,15 @@
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
                                                                     <input type="text" class="v2-field-input v2-field-input--sm"
-                                                                           :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value)"
+                                                                           :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
-                                                                                 @mousedown.prevent="let v = acSelect(acItem); let inp = $el.closest('.relative').querySelector('input'); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v);">
+                                                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('input'); if (_acMode==='variable') { let nv = acSelectVariable(acItem, inp); updateControlField(aIdx, cIdx, 'value3', nv); } else { let v = acSelect(acItem); inp.value = v; inp.dispatchEvent(new Event('input')); updateControlField(aIdx, cIdx, 'value3', v); }">
+                                                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
                                                                                 <span class="v2-ac-item__label" x-text="acItem.label"></span>
                                                                                 <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
                                                                             </div>

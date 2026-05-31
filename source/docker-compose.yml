@@ -17,14 +17,14 @@
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
 # Cerberus Glassfish MySQL composition.
 
-version: "3"
+
 
 services:
   # MAVEN BUILD STAGE:
   # build cerberus java project using the specified maven image
   # volumes are shared with the local repository, meaning built artifact can be found in 'target' folder
   maven:
-    image: maven:3.6.3-jdk-8-slim
+    image: maven:3.9-eclipse-temurin-11
     container_name: cerberus-local-build
     environment:
       - MAVEN_CONFIG=/var/maven/.m2

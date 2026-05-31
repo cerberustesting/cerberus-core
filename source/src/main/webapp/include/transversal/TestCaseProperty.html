@@ -112,27 +112,96 @@
                     <div class="v2-prop-field" style="flex:1">
                         <div style="display:flex;align-items:center;justify-content:space-between">
                             <label class="v2-prop-field-label" x-text="(getFields(prop.type).value1.label || {}).en || 'Value'"></label>
-                            <template x-if="prop.type === 'getFromDataLib'">
+                            <template x-if="prop.type === 'getFromDataLib' && prop.value1">
                                 <button @click="_cbOpenDataLib && _cbOpenDataLib(prop.value1)" class="v2-prop-action-btn" style="width:24px;height:24px" data-tip="Open DataLib editor">
                                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                 </button>
                             </template>
                         </div>
-                        <template x-if="isCodeType()">
-                            <div class="v2-prop-code-header">
-                                <span class="v2-prop-code-dot v2-prop-code-dot--red"></span>
-                                <span class="v2-prop-code-dot v2-prop-code-dot--yellow"></span>
-                                <span class="v2-prop-code-dot v2-prop-code-dot--green"></span>
-                                <span class="v2-prop-code-lang" x-text="prop.type.replace('getFrom','')"></span>
+                        <!-- DataLib autocomplete input -->
+                        <template x-if="prop.type === 'getFromDataLib'">
+                            <div style="position:relative" @click.away="_mdlDlVisible = false">
+                                <div class="v2-ac-input-wrap">
+                                    <input type="text" class="v2-prop-field-input" style="flex:1"
+                                           :value="prop.value1"
+                                           @focus="_mdlDlOnFocus()"
+                                           @input="_mdlDlOnInput($event.target.value)"
+                                           @blur="setTimeout(() => { _mdlDlVisible = false }, 200)"
+                                           @keydown.escape="_mdlDlVisible = false"
+                                           @keydown.down.prevent="_mdlDlIdx = Math.min(_mdlDlIdx + 1, _mdlDlFiltered.length - 1)"
+                                           @keydown.up.prevent="_mdlDlIdx = Math.max(_mdlDlIdx - 1, 0)"
+                                           @keydown.enter.prevent="if (_mdlDlIdx >= 0 && _mdlDlFiltered[_mdlDlIdx]) { _mdlDlSelect(_mdlDlFiltered[_mdlDlIdx]); }"
+                                           placeholder="DataLib name..."
+                                           :disabled="!editable"
+                                           autocomplete="off">
+                                </div>
+                                <div x-show="_mdlDlVisible && _mdlDlFiltered.length > 0" x-cloak class="v2-ac-dropdown">
+                                    <template x-for="(dlIt, dlI) in _mdlDlFiltered" :key="dlI">
+                                        <div class="v2-ac-item"
+                                             :class="dlI === _mdlDlIdx ? 'v2-ac-item--active' : ''"
+                                             @mousedown.prevent="_mdlDlSelect(dlIt)">
+                                            <span class="v2-ac-icon v2-ac-icon--datalib">DL</span>
+                                            <span class="v2-ac-item__label" x-text="dlIt.label"></span>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </template>
-                        <textarea class="v2-prop-field-textarea"
-                                  :class="isCodeType() ? 'v2-prop-field-textarea--code' : ''"
-                                  :value="prop.value1"
-                                  @change="onField('value1', $event.target.value)"
-                                  :placeholder="isCodeType() ? '// Write your code here...' : 'Value...'"
-                                  :rows="isCodeType() ? 8 : 3"
-                                  :disabled="!editable"></textarea>
+                        <!-- Code editor for JS/Groovy/SQL/Command -->
+                        <template x-if="isCodeType()">
+                            <div class="relative">
+                                <div class="absolute top-2 right-2 z-10 pointer-events-none opacity-60">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500" x-text="prop.type.replace('getFrom','')"></span>
+                                </div>
+                                <div class="v2-ace-wrap"
+                                     x-data="{ _ace: null }"
+                                     x-init="$nextTick(() => {
+                                         var el = $el.querySelector('.v2-ace-editor');
+                                         if (!el || _ace) return;
+                                         var modeMap = { getFromJS: 'javascript', getFromGroovy: 'groovy', getFromSql: 'sql', getFromCommand: 'text' };
+                                         var editor = ace.edit(el);
+                                         editor.setTheme(document.documentElement.classList.contains('dark') ? 'ace/theme/tomorrow_night' : 'ace/theme/tomorrow');
+                                         editor.session.setMode('ace/mode/' + (modeMap[prop.type] || 'text'));
+                                         editor.setOptions({
+                                             fontSize: 13,
+                                             fontFamily: `'JetBrains Mono', 'SF Mono', 'Fira Code', monospace`,
+                                             showPrintMargin: false,
+                                             maxLines: 30,
+                                             minLines: 6,
+                                             tabSize: 2,
+                                             wrap: true,
+                                             enableBasicAutocompletion: true,
+                                             enableLiveAutocompletion: false
+                                         });
+                                         editor.setReadOnly(!editable);
+                                         editor.setValue(prop.value1 || '', -1);
+                                         editor.on('change', () => {
+                                             var val = editor.getValue();
+                                             if (val !== prop.value1) {
+                                                 onField('value1', val);
+                                             }
+                                         });
+                                         _ace = editor;
+                                     })"
+                                     x-effect="if (_ace) {
+                                         var modeMap = { getFromJS: 'javascript', getFromGroovy: 'groovy', getFromSql: 'sql', getFromCommand: 'text' };
+                                         _ace.session.setMode('ace/mode/' + (modeMap[prop.type] || 'text'));
+                                         _ace.setTheme(document.documentElement.classList.contains('dark') ? 'ace/theme/tomorrow_night' : 'ace/theme/tomorrow');
+                                         if (_ace.getValue() !== (prop.value1 || '')) _ace.setValue(prop.value1 || '', -1);
+                                     }">
+                                    <div class="v2-ace-editor"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- Standard textarea for other types -->
+                        <template x-if="prop.type !== 'getFromDataLib' && !isCodeType()">
+                            <textarea class="v2-prop-field-textarea"
+                                      :value="prop.value1"
+                                      @change="onField('value1', $event.target.value)"
+                                      placeholder="Value..."
+                                      rows="3"
+                                      :disabled="!editable"></textarea>
+                        </template>
                     </div>
                 </div>
             </template>
@@ -361,6 +430,61 @@ function crbPropertyModal() {
 
         isCodeType() {
             return ['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(this.prop.type);
+        },
+
+        // ── DataLib autocomplete for value1 in modal ──
+        _mdlDlItems: [],
+        _mdlDlVisible: false,
+        _mdlDlIdx: -1,
+        _mdlDlSearch: '',
+        _mdlDlTimeout: null,
+
+        get _mdlDlFiltered() {
+            var s = (this._mdlDlSearch || '').toLowerCase();
+            if (!s) return this._mdlDlItems;
+            return this._mdlDlItems.filter(function(it) { return it.label.toLowerCase().indexOf(s) >= 0; });
+        },
+
+        _mdlDlFetch(query) {
+            var self = this;
+            clearTimeout(this._mdlDlTimeout);
+            this._mdlDlTimeout = setTimeout(function() {
+                $.ajax({
+                    url: 'ReadTestDataLib',
+                    data: { name: query || '', limit: 15, like: 'Y' },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.contentTable) {
+                            self._mdlDlItems = data.contentTable.map(function(d) { return { label: d.name, value: d.name }; });
+                        } else if (data.distinctValues) {
+                            self._mdlDlItems = data.distinctValues.map(function(v) { return { label: v, value: v }; });
+                        }
+                    },
+                    error: function() {
+                        self._mdlDlItems = [];
+                    }
+                });
+            }, 200);
+        },
+
+        _mdlDlOnFocus() {
+            this._mdlDlSearch = this.prop.value1 || '';
+            this._mdlDlVisible = true;
+            this._mdlDlIdx = -1;
+            this._mdlDlFetch(this._mdlDlSearch);
+        },
+
+        _mdlDlOnInput(val) {
+            this._mdlDlSearch = val;
+            this.onField('value1', val);
+            this._mdlDlFetch(val);
+            this._mdlDlVisible = true;
+        },
+
+        _mdlDlSelect(item) {
+            this.onField('value1', item.value);
+            this._mdlDlSearch = item.value;
+            this._mdlDlVisible = false;
         }
     };
 }

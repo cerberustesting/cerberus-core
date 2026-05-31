@@ -44,14 +44,13 @@
                  }">
 
                 <!-- Card Header (always visible) -->
-                <div class="v2-prop-card-header">
+                <div class="v2-prop-card-header" @click="expanded = !expanded" style="cursor: pointer">
                     <!-- Expand toggle -->
-                    <button class="v2-prop-expand-btn" @click="expanded = !expanded" :class="expanded ? 'v2-prop-expand-btn--open' : ''">
+                    <button class="v2-prop-expand-btn" @click.stop="expanded = !expanded" :class="expanded ? 'v2-prop-expand-btn--open' : ''">
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </button>
                     <!-- Name -->
-                    <span class="v2-prop-name" x-text="prop.property"
-                          @click="expanded = !expanded" style="cursor:pointer"></span>
+                    <span class="v2-prop-name" x-text="prop.property"></span>
 
                     <!-- Type badge (subtle) -->
                     <span class="v2-prop-type-badge"
@@ -85,13 +84,13 @@
                     </template>
 
                     <!-- Action buttons -->
-                    <div class="v2-prop-card-actions">
+                    <div class="v2-prop-card-actions" @click.stop>
                         <template x-if="!prop._isInherited && !prop.toDelete">
                             <button @click="openPropertyEditor(pIdx)" class="v2-prop-action-btn" data-tip="Edit property" :disabled="!canUpdate">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                         </template>
-                        <button @click="copyProperty(pIdx)" class="v2-prop-action-btn" data-tip="Copy property">
+                        <button @click="copyProperty(pIdx, $event)" class="v2-prop-action-btn" data-tip="Copy property">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
                         </button>
                         <template x-if="!prop._isInherited">
@@ -150,26 +149,100 @@
                         <div class="v2-prop-field">
                             <div style="display:flex;align-items:center;justify-content:space-between">
                                 <label class="v2-prop-field-label" x-text="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || fieldKey"></label>
-                                <template x-if="prop.type === 'getFromDataLib' && fieldKey === 'value1'">
+                                <template x-if="prop.type === 'getFromDataLib' && fieldKey === 'value1' && prop.value1">
                                     <button @click="openModalDataLib(prop.value1)" class="v2-prop-action-btn" style="width:22px;height:22px" title="Open DataLib">
                                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                     </button>
                                 </template>
                             </div>
-                            <template x-if="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) && fieldKey === 'value1'">
-                                <div class="v2-prop-code-header">
-                                    <span class="v2-prop-code-dot v2-prop-code-dot--red"></span>
-                                    <span class="v2-prop-code-dot v2-prop-code-dot--yellow"></span>
-                                    <span class="v2-prop-code-dot v2-prop-code-dot--green"></span>
-                                    <span class="v2-prop-code-lang" x-text="prop.type.replace('getFrom','')"></span>
+                            <!-- Special: DataLib autocomplete input for value1 when type=getFromDataLib -->
+                            <template x-if="prop.type === 'getFromDataLib' && fieldKey === 'value1'">
+                                <div class="relative" @click.away="_dlVisible = false" style="position:relative">
+                                    <div class="v2-ac-input-wrap">
+                                        <input type="text" class="v2-prop-field-input" style="flex:1"
+                                               :value="prop.value1"
+                                               @focus="_dlOnFocus(prop)"
+                                               @input="_dlOnInput(prop, $event.target.value)"
+                                               @change="updatePropertyField(pIdx, 'value1', $event.target.value)"
+                                               @blur="setTimeout(() => { _dlVisible = false }, 200)"
+                                               @keydown.escape="_dlVisible = false"
+                                               @keydown.down.prevent="_dlSelectedIdx = Math.min(_dlSelectedIdx + 1, _dlFiltered.length - 1)"
+                                               @keydown.up.prevent="_dlSelectedIdx = Math.max(_dlSelectedIdx - 1, 0)"
+                                               @keydown.enter.prevent="if (_dlSelectedIdx >= 0 && _dlFiltered[_dlSelectedIdx]) { _dlSelect(prop, _dlFiltered[_dlSelectedIdx]); updatePropertyField(pIdx, 'value1', prop.value1); }"
+                                               placeholder="DataLib name..."
+                                               :disabled="!canUpdate"
+                                               autocomplete="off">
+                                    </div>
+                                    <!-- Dropdown — same style as action autocomplete -->
+                                    <div x-show="_dlVisible && _dlFiltered.length > 0" x-cloak class="v2-ac-dropdown">
+                                        <template x-for="(dlItem, dlIdx) in _dlFiltered" :key="dlIdx">
+                                            <div class="v2-ac-item"
+                                                 :class="dlIdx === _dlSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                 @mousedown.prevent="_dlSelect(prop, dlItem); updatePropertyField(pIdx, 'value1', prop.value1)">
+                                                <span class="v2-ac-icon v2-ac-icon--datalib">DL</span>
+                                                <span class="v2-ac-item__label" x-text="dlItem.label"></span>
+                                            </div>
+                                        </template>
+                                    </div>
                                 </div>
                             </template>
-                            <textarea class="v2-prop-field-textarea"
-                                      :class="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) ? 'v2-prop-field-textarea--code' : ''"
-                                      :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
-                                      :rows="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) ? 5 : 2"
-                                      :placeholder="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || 'Value...'"
-                                      :disabled="!canUpdate"></textarea>
+                            <!-- Standard textarea for non-DataLib or value2 -->
+                            <template x-if="!(prop.type === 'getFromDataLib' && fieldKey === 'value1')">
+                                <div>
+                                    <template x-if="['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) && fieldKey === 'value1'">
+                                        <div class="relative">
+                                            <div class="absolute top-2 right-2 z-10 pointer-events-none opacity-60">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500" x-text="prop.type.replace('getFrom','')"></span>
+                                            </div>
+                                            <div class="v2-ace-wrap"
+                                                 x-data="{ _ace: null }"
+                                                 x-init="$nextTick(() => {
+                                                     var el = $el.querySelector('.v2-ace-editor');
+                                                     if (!el || _ace) return;
+                                                     var modeMap = { getFromJS: 'javascript', getFromGroovy: 'groovy', getFromSql: 'sql', getFromCommand: 'text' };
+                                                     var editor = ace.edit(el);
+                                                     editor.setTheme(document.documentElement.classList.contains('dark') ? 'ace/theme/tomorrow_night' : 'ace/theme/tomorrow');
+                                                     editor.session.setMode('ace/mode/' + (modeMap[prop.type] || 'text'));
+                                                     editor.setOptions({
+                                                         fontSize: 12,
+                                                         fontFamily: `'JetBrains Mono', 'SF Mono', 'Fira Code', monospace`,
+                                                         showPrintMargin: false,
+                                                         maxLines: 20,
+                                                         minLines: 4,
+                                                         tabSize: 2,
+                                                         wrap: true,
+                                                         enableBasicAutocompletion: true,
+                                                         enableLiveAutocompletion: false
+                                                     });
+                                                     editor.setReadOnly(!canUpdate);
+                                                     editor.setValue(prop.value1 || '', -1);
+                                                     editor.on('change', () => {
+                                                         var val = editor.getValue();
+                                                         if (val !== prop.value1) {
+                                                             updatePropertyField(pIdx, 'value1', val);
+                                                         }
+                                                     });
+                                                     _ace = editor;
+                                                 })"
+                                                 x-effect="if (_ace) {
+                                                     var modeMap = { getFromJS: 'javascript', getFromGroovy: 'groovy', getFromSql: 'sql', getFromCommand: 'text' };
+                                                     _ace.session.setMode('ace/mode/' + (modeMap[prop.type] || 'text'));
+                                                     _ace.setTheme(document.documentElement.classList.contains('dark') ? 'ace/theme/tomorrow_night' : 'ace/theme/tomorrow');
+                                                     if (_ace.getValue() !== (prop.value1 || '')) _ace.setValue(prop.value1 || '', -1);
+                                                 }">
+                                                <div class="v2-ace-editor"></div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="!(['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) && fieldKey === 'value1')">
+                                        <textarea class="v2-prop-field-textarea"
+                                                  :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
+                                                  rows="2"
+                                                  :placeholder="(_getPropertyFields(prop.type)[fieldKey].label || {}).en || 'Value...'"
+                                                  :disabled="!canUpdate"></textarea>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
                     </template>
 
@@ -195,6 +268,63 @@
                                 </template>
                             </div>
                         </template>
+                    </div>
+
+                    <!-- Countries inline -->
+                    <div class="v2-prop-modal-row" style="margin-top: 6px;">
+                        <div class="v2-prop-field" style="flex:1">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label class="v2-prop-field-label" style="margin-bottom:2px">Countries</label>
+                                <div class="flex gap-1.5" x-show="tcCountries.length > 0">
+                                    <button @click="selectAllCountries(pIdx)" class="v2-prop-country-toggle-btn" style="padding: 2px 6px; font-size: 9px;" :disabled="!canUpdate">All</button>
+                                    <button @click="deselectAllCountries(pIdx)" class="v2-prop-country-toggle-btn" style="padding: 2px 6px; font-size: 9px;" :disabled="!canUpdate">None</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5 mt-1">
+                                <template x-for="c in tcCountries" :key="c">
+                                    <button class="v2-prop-country-tag"
+                                            style="padding: 2px 6px; font-size: 10px;"
+                                            :class="(prop.countries || []).includes(c) ? 'v2-prop-country-tag--active' : ''"
+                                            @click="togglePropertyCountry(pIdx, c)"
+                                            :disabled="!canUpdate"
+                                            x-text="c"></button>
+                                </template>
+                                <template x-if="tcCountries.length === 0">
+                                    <span style="font-size: 11px; color: var(--crb-grey-color)">No countries configured on this test case</span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Settings Expandable -->
+                    <div x-data="{ adv: false }" style="margin-top: 6px;">
+                        <button @click="adv = !adv" class="v2-prop-advanced-toggle" style="padding: 4px 0" type="button">
+                            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="adv ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            Advanced Settings
+                        </button>
+                        <div x-show="adv" x-transition.duration.200ms class="v2-prop-modal-row" style="margin-top:4px">
+                            <div class="v2-prop-field" style="flex:1">
+                                <label class="v2-prop-field-label">Cache Expire (s)</label>
+                                <input type="number" class="v2-prop-field-input"
+                                       :value="prop.cacheExpire"
+                                       @change="updatePropertyField(pIdx, 'cacheExpire', parseInt($event.target.value) || 0)"
+                                       placeholder="0" :disabled="!canUpdate">
+                            </div>
+                            <div class="v2-prop-field" style="flex:1">
+                                <label class="v2-prop-field-label">Retry Count</label>
+                                <input type="number" class="v2-prop-field-input"
+                                       :value="prop.retryNb"
+                                       @change="updatePropertyField(pIdx, 'retryNb', parseInt($event.target.value) || 0)"
+                                       placeholder="0" :disabled="!canUpdate">
+                            </div>
+                            <div class="v2-prop-field" style="flex:1">
+                                <label class="v2-prop-field-label">Retry Period (ms)</label>
+                                <input type="number" class="v2-prop-field-input"
+                                       :value="prop.retryPeriod"
+                                       @change="updatePropertyField(pIdx, 'retryPeriod', parseInt($event.target.value) || 0)"
+                                       placeholder="0" :disabled="!canUpdate">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Footer -->

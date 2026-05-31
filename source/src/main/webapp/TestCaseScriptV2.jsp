@@ -32,6 +32,7 @@
 
         <!-- Ace Editor extensions -->
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
+        <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
 
         <!-- Shared static data (action/control/condition definitions) -->
         <script type="text/javascript" src="js/testcase/testcaseStatic.js?v=${appVersion}"></script>
