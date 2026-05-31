@@ -81,5 +81,6 @@ public interface AppServiceMapperV001 {
     @Mapping(target = "authAddTo", ignore = true)
     @Mapping(target = "start", ignore = true)
     @Mapping(target = "end", ignore = true)
+    @Mapping(target = "secrets", ignore = true)
     AppService toEntity(AppServiceDTOV001 appServiceDTO);
 }

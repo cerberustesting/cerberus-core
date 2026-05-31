@@ -36,8 +36,12 @@ import org.mapstruct.Mapping;
 )
 public interface RobotMapperV001 {
 
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "acceptInsecureCerts", target = "isAcceptInsecureCerts")
     RobotDTOV001 toDTO(Robot robot);
 
+    @Mapping(target = "preloadScript", ignore = true)
+    @Mapping(target = "capabilitiesDecoded", ignore = true)
     @InheritInverseConfiguration
     Robot toEntity(RobotDTOV001 robotDTO);
 }

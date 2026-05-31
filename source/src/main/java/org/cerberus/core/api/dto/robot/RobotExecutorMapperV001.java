@@ -29,10 +29,14 @@ import org.mapstruct.Mapping;
  * @author bcivel
  */
 @Mapper(componentModel = "spring")
+
 public interface RobotExecutorMapperV001 {
 
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "deviceLockUnlock", target = "isDeviceLockUnlock")
     RobotExecutorDTOV001 toDTO(RobotExecutor executor);
 
+    @Mapping(target = "isDeviceLockUnlock", ignore = true)
     @InheritInverseConfiguration
     RobotExecutor toEntity(RobotExecutorDTOV001 executorDTO);
 }

@@ -45,7 +45,6 @@ public class Label {
     private String label;
     private String type;
     private String color;
-    private String fontColor;
     private Integer parentLabelID;
     private String requirementType;
     private String requirementStatus;
@@ -64,6 +63,8 @@ public class Label {
     // External Database model
     @EqualsAndHashCode.Exclude
     Integer counter1;
+    @EqualsAndHashCode.Exclude
+    private String fontColor;
 
     /**
      * Invariant PROPERTY TYPE String.

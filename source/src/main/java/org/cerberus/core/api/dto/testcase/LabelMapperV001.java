@@ -42,5 +42,6 @@ public interface LabelMapperV001 {
 
     @InheritInverseConfiguration
     @Mapping(target = "counter1", ignore = true)
+    @Mapping(target = "fontColor", ignore = true)
     Label toEntity(LabelDTOV001 labelDTO);
 }
