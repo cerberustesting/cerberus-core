@@ -1750,3 +1750,251 @@
         font-size: 10px;
     }
 }
+
+/* ═══ SMART PREVIEW ═══ */
+.v2-exe-smart-preview {
+    padding: 6px 12px 8px;
+    border-top: 1px dashed var(--crb-grey-light-color);
+}
+
+/* Data block (request/response) */
+.v2-exe-data-block {
+    margin-bottom: 6px;
+}
+.v2-exe-data-block .v2-exe-data-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.v2-exe-data-block--request .v2-exe-data-label {
+    color: var(--crb-blue-color);
+    background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent);
+}
+.v2-exe-data-block--response .v2-exe-data-label {
+    color: var(--crb-green-color);
+    background: color-mix(in srgb, var(--crb-green-color) 8%, transparent);
+}
+.v2-exe-data-block--pagesource .v2-exe-data-label {
+    color: var(--crb-orange-color);
+    background: color-mix(in srgb, var(--crb-orange-color) 8%, transparent);
+}
+
+/* JSON/text preview */
+.v2-exe-json-preview {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--crb-grey-extra-light-color, #f8fafc);
+    border: 1px solid var(--crb-grey-light-color);
+    max-height: 80px;
+    overflow: hidden;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--crb-dark-color);
+    cursor: pointer;
+    transition: max-height 0.3s ease;
+    margin: 0;
+}
+.v2-exe-json-preview:hover {
+    background: color-mix(in srgb, var(--crb-blue-color) 4%, var(--crb-grey-extra-light-color, #f8fafc));
+}
+.v2-exe-json-preview--expanded {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.v2-exe-json-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: linear-gradient(transparent, var(--crb-grey-extra-light-color, #f8fafc));
+    pointer-events: none;
+    border-radius: 0 0 8px 8px;
+}
+.v2-exe-json-preview--expanded::after {
+    display: none;
+}
+
+/* Verify summary */
+.v2-exe-verify-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    background: var(--crb-grey-extra-light-color, #f8fafc);
+    border: 1px solid var(--crb-grey-light-color);
+}
+.v2-exe-verify-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    shrink: 0;
+    white-space: nowrap;
+}
+.v2-exe-verify-label--expected {
+    color: var(--crb-blue-color);
+    background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent);
+}
+.v2-exe-verify-label--got {
+    color: var(--crb-green-color);
+    background: color-mix(in srgb, var(--crb-green-color) 10%, transparent);
+}
+.v2-exe-verify-label--got-fail {
+    color: var(--crb-red-color);
+    background: color-mix(in srgb, var(--crb-red-color) 10%, transparent);
+}
+.v2-exe-verify-value {
+    word-break: break-all;
+    flex: 1;
+    min-width: 0;
+}
+.v2-exe-verify-vs {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--crb-grey-color);
+    padding: 2px 0;
+    shrink: 0;
+}
+
+/* Screenshot preview inline */
+.v2-exe-screenshot-preview {
+    max-width: 100%;
+    max-height: 160px;
+    border-radius: 8px;
+    border: 1px solid var(--crb-grey-light-color);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    object-fit: contain;
+}
+.v2-exe-screenshot-preview:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* Lightbox */
+.v2-exe-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    cursor: zoom-out;
+}
+.v2-exe-lightbox img {
+    max-width: 92vw;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    object-fit: contain;
+}
+.v2-exe-lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+.v2-exe-lightbox-close:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Run/Rerun buttons */
+.v2-exe-run-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.v2-exe-run-btn--primary {
+    background: var(--crb-green-color);
+}
+.v2-exe-run-btn--primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--crb-green-color) 40%, transparent);
+}
+.v2-exe-run-btn--secondary {
+    background: transparent;
+    color: var(--crb-blue-color);
+    border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent);
+}
+.v2-exe-run-btn--secondary:hover {
+    background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent);
+    border-color: var(--crb-blue-color);
+}
+
+/* Media files by category */
+.v2-exe-media-category {
+    margin-top: 6px;
+}
+.v2-exe-media-category-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--crb-grey-color);
+    margin-bottom: 4px;
+}
+.v2-exe-media-file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--crb-grey-extra-light-color, #f1f5f9);
+    border: 1px solid var(--crb-grey-light-color);
+    color: var(--crb-dark-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+.v2-exe-media-file-chip:hover {
+    background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent);
+    border-color: color-mix(in srgb, var(--crb-blue-color) 30%, transparent);
+    color: var(--crb-blue-color);
+    text-decoration: none;
+}

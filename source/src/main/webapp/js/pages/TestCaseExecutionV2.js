@@ -58,6 +58,9 @@ function executionV2() {
         // Bugs
         falseNegative: false,
 
+        // Lightbox
+        lightboxUrl: null,
+
         // Feature flags
         paramActivateWebSocket: 'N',
         paramWebSocketPeriod: 5000,
@@ -712,6 +715,95 @@ function executionV2() {
             if (ext === 'MP4' || ext === 'WEBM') return 'video';
             if (ext === 'HAR') return 'network';
             return 'file';
+        },
+
+        // ═══ SMART PREVIEW HELPERS ═══
+        _isVerifyAction(action) {
+            var a = (action.action || '').toLowerCase();
+            return a.indexOf('verify') === 0;
+        },
+        _isVerifyControl(ctrl) {
+            var c = (ctrl.controlType || ctrl.control || '').toLowerCase();
+            return c.indexOf('verify') === 0;
+        },
+        _isServiceAction(action) {
+            var a = (action.action || '').toLowerCase();
+            return a === 'callservice' || a === 'callsoapservice' || a === 'callservicewithbase';
+        },
+        _isScreenshotAction(action) {
+            var a = (action.action || '').toLowerCase();
+            return a === 'takescreenshot' || a === 'getpagesource';
+        },
+        _isImageFile(file) {
+            var ext = (file.fileType || file.fileName || '').toUpperCase();
+            return ext === 'JPG' || ext === 'JPEG' || ext === 'PNG' || ext === 'GIF';
+        },
+        _getScreenshots(fileList) {
+            if (!fileList) return [];
+            var self = this;
+            return fileList.filter(function(f) { return self._isImageFile(f); });
+        },
+        _getDataFiles(fileList) {
+            if (!fileList) return [];
+            var self = this;
+            return fileList.filter(function(f) { return !self._isImageFile(f) && f.fileType !== 'MP4' && f.fileType !== 'BIN'; });
+        },
+        _getFileByDesc(fileList, desc) {
+            if (!fileList) return null;
+            return fileList.find(function(f) { return f.fileDesc === desc; }) || null;
+        },
+        _loadMediaContent(file, callback) {
+            if (!file) return;
+            var url = this.getMediaFullUrl(file);
+            $.ajax({
+                url: url,
+                dataType: 'text',
+                success: function(data) {
+                    // Try to pretty-print JSON
+                    try {
+                        var parsed = JSON.parse(data);
+                        callback(JSON.stringify(parsed, null, 2));
+                    } catch(e) {
+                        callback(data);
+                    }
+                },
+                error: function() {
+                    callback('[Error loading content]');
+                }
+            });
+        },
+        openLightbox(url) {
+            this.lightboxUrl = url;
+        },
+        reRunSame() {
+            var self = this;
+            var url = 'RunTestCaseV2?test=' + encodeURIComponent(self.exe.test)
+                    + '&testCase=' + encodeURIComponent(self.exe.testcase || self.exe.testCase)
+                    + '&country=' + encodeURIComponent(self.exe.country || '')
+                    + '&environment=' + encodeURIComponent(self.exe.environment || '')
+                    + '&robot=' + encodeURIComponent(self.exe.robot || '')
+                    + '&robotDecli=' + encodeURIComponent(self.exe.robotDecli || '')
+                    + '&tag=' + encodeURIComponent(self.exe.tag || '')
+                    + '&manualExecution=' + encodeURIComponent(self.exe.manualExecution || 'N');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data && data.nbExe && data.nbExe > 0) {
+                        showMessageMainPage('success', 'Execution queued successfully!', true);
+                        // Refresh last executions
+                        setTimeout(function() {
+                            self._loadLastExecutions(self.exe.test, self.exe.testcase || self.exe.testCase);
+                        }, 3000);
+                    } else {
+                        showMessageMainPage('warning', data.message || 'Could not queue execution', true);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    showUnexpectedError(jqXHR, textStatus, errorThrown);
+                }
+            });
         },
 
         // ═══ HELPERS ═══
