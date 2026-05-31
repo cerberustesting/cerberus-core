@@ -73,6 +73,17 @@ function crbDropdown(config) {
                 if (e.target.closest && e.target.closest('[x-show="isOpen"]')) return;
                 self.isOpen = false;
             }, true);
+
+            // Re-calculate position on scroll to prevent detachment
+            window.addEventListener('scroll', function(e) {
+                if (self.isOpen) {
+                    // Slight debounce to improve performance during fast scroll
+                    if (self._scrollTimeout) clearTimeout(self._scrollTimeout);
+                    self._scrollTimeout = setTimeout(function() {
+                        self.updatePosition();
+                    }, 5);
+                }
+            }, true);
         },
 
         preselect: function(value) {
@@ -103,7 +114,20 @@ function crbDropdown(config) {
             var btn = document.getElementById(this.id + '-btn');
             if (!btn) return;
             var rect = btn.getBoundingClientRect();
-            this.pos = { top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 200) };
+            
+            // Estimate panel height: ~45px for search header, ~36px per item, max ~256px (max-h-64)
+            var numItems = this.filtered().length;
+            if (numItems === 0) numItems = 1; // "No results" text
+            var actualHeight = Math.min(256, 45 + (numItems * 36));
+            
+            var spaceBelow = window.innerHeight - rect.bottom;
+            if (spaceBelow < actualHeight + 10 && rect.top > actualHeight + 10) {
+                // open upwards, exactly above the button
+                this.pos = { top: rect.top - actualHeight - 4, left: rect.left, width: Math.max(rect.width, 200) };
+            } else {
+                // open downwards, below the button
+                this.pos = { top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 200) };
+            }
         },
 
         filtered: function() {
@@ -141,6 +165,20 @@ window.crbLoaders = {
                 callback(items);
             })
             .catch(function(err) { console.error("Failed to load tests:", err); callback([]); });
+    },
+
+    // Load app services
+    appServices: function(callback) {
+        $.getJSON('ReadAppService?iSortCol_0=0&sSortDir_0=asc&sColumns=service,type,method,description&iDisplayLength=300')
+            .then(function(data) {
+                var items = (data.contentTable || []).map(function(s) {
+                    var lbl = s.service;
+                    if (s.type) lbl += ' [' + s.type + ']';
+                    return { value: s.service, label: lbl };
+                });
+                callback(items);
+            })
+            .fail(function() { callback([]); });
     },
 
     // Load invariant lists (priority, status, type, etc.)

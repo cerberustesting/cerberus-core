@@ -20,6 +20,24 @@
 
 var _v2_uid = 0;
 function v2uid() { return '__v2_' + (++_v2_uid); }
+
+/**
+ * Show a floating copy-confirmation toast near the mouse cursor.
+ * @param {MouseEvent|null} evt   — mouse event for positioning (null → center of viewport)
+ * @param {string}          msg   — message to display (e.g. "Step copied!")
+ */
+function v2CopyToast(evt, msg) {
+    var x = evt ? evt.clientX : window.innerWidth / 2;
+    var y = evt ? evt.clientY : window.innerHeight / 2;
+    var el = document.createElement('div');
+    el.className = 'v2-copy-toast';
+    el.innerHTML = '<span class="v2-copy-toast__icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>' + msg;
+    el.style.left = (x - 10) + 'px';
+    el.style.top = (y - 10) + 'px';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', function() { el.remove(); });
+}
+
 var importInfoIdx = 0;
 if (typeof generateImportInfoId === 'undefined') {
     function generateImportInfoId(stepInfo) {
@@ -54,7 +72,7 @@ function scriptV2() {
         canUpdate: false,
         hasPermissionsDelete: false,
         activeStepIndex: -1,
-        autoSaveEnabled: false,
+
         saveState: '', // '' | 'dirty' | 'saving' | 'saved'
         undoStack: [],
         redoStack: [],
@@ -66,12 +84,14 @@ function scriptV2() {
         controlGroups: [],
         actionFlatItems: [],
         controlFlatItems: [],
-        _saveTimer: null,
+
         _dragIdx: -1,
         _dragControlInfo: null,
         lastRunCountry: '',
         lastRunEnvironment: '',
         lastRunRobot: '',
+        lastRunQueueId: 0,
+        lastRunTag: '',
 
         // ── Switcher state ──
         testFolders: [],
@@ -227,7 +247,20 @@ function scriptV2() {
                     this.testInfo.usrModif = tc.usrModif || '';
                     this.testInfo.dateCreated = tc.dateCreated || '';
                     this.testInfo.dateModif = tc.dateModif || '';
-                    this.testInfo.lastRunId = tc.lastExecutionId || 0;
+                    this.testInfo.lastRunId = 0; // will be set by ReadTestCaseExecution below
+                    // Fetch last execution details for re-run button
+                    $.ajax({ url: 'ReadTestCaseExecution', data: { test: test, testCase: testcase }, dataType: 'json',
+                        success: (exData) => {
+                            var ct = exData.contentTable;
+                            if (ct && ct.id) {
+                                this.testInfo.lastRunId = ct.id;
+                                this.lastRunCountry = ct.country || '';
+                                this.lastRunEnvironment = ct.env || '';  // API returns 'env' not 'environment'
+                                this.lastRunTag = ct.tag || '';
+                                this.lastRunQueueId = ct.queueId || 0;
+                            }
+                        }
+                    });
                     this.testInfo.status = tc.status || '';
                     // Load status list from invariants
                     $.ajax({ url: 'FindInvariantByID', data: { idName: 'TCSTATUS' }, dataType: 'json',
@@ -254,6 +287,8 @@ function scriptV2() {
                     }
                     console.info('[V2] activeStep after select:', this.activeStep);
                     this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+                    // Load autocomplete cache (objects, datalib)
+                    this._loadAcCache();
                     // Update page title (legacy parity)
                     document.title = 'TestCase - ' + testcase;
                 },
@@ -394,10 +429,6 @@ function scriptV2() {
         },
         _markDirty() {
             this.saveState = 'dirty';
-            if (this.autoSaveEnabled) {
-                clearTimeout(this._saveTimer);
-                this._saveTimer = setTimeout(() => this.save(), 1000);
-            }
         },
 
         // ── Step Operations ──
@@ -412,7 +443,7 @@ function scriptV2() {
                 conditionValue1: '', conditionValue2: '', conditionValue3: '',
                 conditionOptions: [], isExecutionForced: false, actions: []
             });
-            self.steps.push(s);
+            self.steps = self.steps.concat([s]);
             self._markDirty();
             self.$nextTick(() => {
                 self.activeStepIndex = self.steps.length - 1;
@@ -422,12 +453,16 @@ function scriptV2() {
         duplicateStep(idx) {
             this._mutate(() => {
                 const clone = JSON.parse(JSON.stringify(this.steps[idx]));
-                clone._uid = v2uid();
-                clone.stepId = -1;
-                clone.description = clone.description + ' (copy)';
-                clone.actions.forEach(a => { a._uid = v2uid(); a.actionId = -1; a.controls.forEach(c => { c._uid = v2uid(); c.controlId = -1; }); });
-                this.steps.splice(idx + 1, 0, clone);
-                this.selectStep(idx + 1);
+                // Re-normalize the full clone so Alpine can track all nested objects
+                const normalized = this._normalizeStep(clone);
+                normalized.stepId = -1;
+                normalized.description = (normalized.description || '') + ' (copy)';
+                (normalized.actions || []).forEach(a => { a.actionId = -1; (a.controls || []).forEach(c => { c.controlId = -1; }); });
+                // Force reactivity: create new array reference
+                var before = this.steps.slice(0, idx + 1);
+                var after = this.steps.slice(idx + 1);
+                this.steps = before.concat([normalized], after);
+                this.$nextTick(() => { this.selectStep(idx + 1); });
             });
         },
         toggleDeleteStep(idx) { this._mutate(() => { this.steps[idx].toDelete = !this.steps[idx].toDelete; }); },
@@ -514,47 +549,60 @@ function scriptV2() {
                             conditionValue1: '', conditionValue2: '', conditionValue3: '',
                             conditionOptions: [], isExecutionForced: false, actions: []
                         });
-                        self.steps.push(s);
+                        // Force reactivity: reassign steps array
+                        self.steps = self.steps.concat([s]);
                         self._markDirty();
                         self.$nextTick(() => { self.activeStepIndex = self.steps.length - 1; });
                     }
                 } else {
-                    // Import selected library steps
-                    $("[name='importInfo']").each(function(idx, importInfo) {
-                        const stepInfo = $(importInfo).data('stepInfo');
-                        if (!stepInfo) return;
-                        const parentDiv = $(importInfo).closest('[id]');
-                        const useStepChecked = parentDiv.find("[name='useStep']").prop('checked');
-                        $.ajax({
-                            url: 'ReadTestCaseStep',
-                            data: { test: stepInfo.test, testcase: stepInfo.testCase, stepId: stepInfo.step },
-                            async: false,
-                            success: function(data) {
-                                const s = self._normalizeStep({
-                                    stepId: -1, sort: self.steps.length + 1,
-                                    description: data.step.description || stepInfo.description,
-                                    isLibraryStep: false,
-                                    isUsingLibraryStep: !!useStepChecked,
-                                    libraryStepTest: useStepChecked ? stepInfo.test : '',
-                                    libraryStepTestCase: useStepChecked ? stepInfo.testCase : '',
-                                    libraryStepStepId: useStepChecked ? stepInfo.step : -1,
-                                    loop: data.step.loop || 'onceIfConditionTrue',
-                                    conditionOperator: data.step.conditionOperator || 'always',
-                                    conditionValue1: data.step.conditionValue1 || '',
-                                    conditionValue2: data.step.conditionValue2 || '',
-                                    conditionValue3: data.step.conditionValue3 || '',
-                                    conditionOptions: data.step.conditionOptions || [],
-                                    isExecutionForced: false,
-                                    actions: useStepChecked ? [] : (data.step.actions || [])
-                                });
-                                self.steps.push(s);
-                            }
+                    // Import selected library steps — collect all imports then apply at once
+                    var importInfos = $("[name='importInfo']").toArray();
+                    var promises = importInfos.map(function(importInfo) {
+                        var stepInfo = $(importInfo).data('stepInfo');
+                        if (!stepInfo) return Promise.resolve(null);
+                        var parentDiv = $(importInfo).closest('[id]');
+                        var useStepChecked = parentDiv.find("[name='useStep']").prop('checked');
+                        return new Promise(function(resolve) {
+                            $.ajax({
+                                url: 'ReadTestCaseStep',
+                                data: { test: stepInfo.test, testcase: stepInfo.testCase, stepId: stepInfo.step },
+                                dataType: 'json',
+                                success: function(data) {
+                                    if (!data || !data.step) { resolve(null); return; }
+                                    resolve(self._normalizeStep({
+                                        stepId: -1, sort: 0,
+                                        description: data.step.description || stepInfo.description,
+                                        isLibraryStep: false,
+                                        isUsingLibraryStep: !!useStepChecked,
+                                        libraryStepTest: useStepChecked ? stepInfo.test : '',
+                                        libraryStepTestCase: useStepChecked ? stepInfo.testCase : '',
+                                        libraryStepStepId: useStepChecked ? stepInfo.step : -1,
+                                        loop: data.step.loop || 'onceIfConditionTrue',
+                                        conditionOperator: data.step.conditionOperator || 'always',
+                                        conditionValue1: data.step.conditionValue1 || '',
+                                        conditionValue2: data.step.conditionValue2 || '',
+                                        conditionValue3: data.step.conditionValue3 || '',
+                                        conditionOptions: data.step.conditionOptions || [],
+                                        isExecutionForced: false,
+                                        actions: useStepChecked ? [] : JSON.parse(JSON.stringify(data.step.actions || []))
+                                    }));
+                                },
+                                error: function() { resolve(null); }
+                            });
                         });
                     });
-                    self._markDirty();
-                    self.$nextTick(() => {
-                        self.activeStepIndex = self.steps.length - 1;
-                        if (window.lucide) lucide.createIcons();
+                    Promise.all(promises).then(function(results) {
+                        var newSteps = results.filter(function(s) { return s !== null; });
+                        if (newSteps.length === 0) return;
+                        // Assign sort values
+                        newSteps.forEach(function(s, i) { s.sort = self.steps.length + i + 1; });
+                        // Force reactivity: create a new array reference
+                        self.steps = self.steps.concat(newSteps);
+                        self._markDirty();
+                        self.$nextTick(() => {
+                            self.activeStepIndex = self.steps.length - 1;
+                            if (window.lucide) lucide.createIcons();
+                        });
                     });
                 }
             });
@@ -573,7 +621,7 @@ function scriptV2() {
                     doScreenshotBefore: false, doScreenshotAfter: false,
                     waitBefore: 0, waitAfter: 0, screenshotFileName: '', controls: []
                 });
-                this.activeStep.actions.push(a);
+                this.activeStep.actions = this.activeStep.actions.concat([a]);
             });
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
@@ -588,7 +636,9 @@ function scriptV2() {
                     doScreenshotBefore: false, doScreenshotAfter: false,
                     waitBefore: 0, waitAfter: 0, screenshotFileName: '', controls: []
                 });
-                this.activeStep.actions.splice(aIdx + 1, 0, a);
+                var before = this.activeStep.actions.slice(0, aIdx + 1);
+                var after = this.activeStep.actions.slice(aIdx + 1);
+                this.activeStep.actions = before.concat([a], after);
             });
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
@@ -616,7 +666,7 @@ function scriptV2() {
                     doScreenshotBefore: false, doScreenshotAfter: false,
                     waitBefore: 0, waitAfter: 0, screenshotFileName: ''
                 });
-                this.activeStep.actions[aIdx].controls.push(c);
+                this.activeStep.actions[aIdx].controls = this.activeStep.actions[aIdx].controls.concat([c]);
             });
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
@@ -639,10 +689,10 @@ function scriptV2() {
             return (name || '').replace(/[.\s()%]/g, '');
         },
 
-        addProperty() {
+        addProperty(name) {
             this._mutate(() => {
                 const p = this._normalizeProp({
-                    property: 'PROP-' + this.properties.length, description: '',
+                    property: name || ('PROP-' + this.properties.length), description: '',
                     type: 'text', database: '', value1: '', value2: '', value3: 'value',
                     countries: this.tcCountries.slice(), nature: 'STATIC', length: '0', rowLimit: 0,
                     cacheExpire: 0, rank: 0, retryNb: 0, retryPeriod: 0
@@ -675,13 +725,15 @@ function scriptV2() {
                 this.properties.push(clone);
             });
         },
-        copyProperty(pIdx) {
-            const prop = this.filteredProperties[pIdx];
-            const payload = JSON.stringify({ type: 'property', data: prop });
+        copyProperty(pIdx, $event) {
+            var self = this;
+            var evt = $event || window.event || null;
+            var prop = this.filteredProperties[pIdx];
+            var payload = JSON.stringify({ type: 'property', data: prop });
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(payload).then(() => {
-                    this.clipboardType = 'property';
-                    showToast && showToast('Property copied!', 'info');
+                navigator.clipboard.writeText(payload).then(function() {
+                    self.clipboardType = 'property';
+                    v2CopyToast(evt, 'Property copied!');
                 });
             }
         },
@@ -697,6 +749,16 @@ function scriptV2() {
                                 clone._uid = v2uid();
                                 clone.toDelete = false;
                                 clone._isInherited = false;
+                                // Generate unique name with Copy-N suffix
+                                var baseName = (clone.property || 'PROP').replace(/-Copy-\d+$/, '');
+                                var existingNames = self.properties.map(function(p) { return p.property; });
+                                var copyNum = 1;
+                                var newName = baseName + '-Copy-' + copyNum;
+                                while (existingNames.indexOf(newName) >= 0) {
+                                    copyNum++;
+                                    newName = baseName + '-Copy-' + copyNum;
+                                }
+                                clone.property = newName;
                                 self.properties.push(clone);
                             });
                         }
@@ -740,16 +802,34 @@ function scriptV2() {
             window.dispatchEvent(new CustomEvent('property-modal-close'));
         },
         openModalDataLib(datalibName) {
-            // Open legacy DataLib modal if function exists
-            if (typeof openModalDataLib === 'function') {
-                openModalDataLib(datalibName);
-            } else if (typeof openDataLibModal === 'function') {
-                openDataLibModal(datalibName);
-            } else {
-                // Fallback: open in new tab
-                var url = 'TestDataLib.jsp?testdatalib=' + encodeURIComponent(datalibName || '');
-                window.open(url, '_blank');
+            // If no name, open in ADD mode directly
+            if (!datalibName || !datalibName.trim()) {
+                if (typeof window.openModalDataLib === 'function') {
+                    window.openModalDataLib(null, '', 'ADD', 'TestCaseScript_Steps', null);
+                }
+                return;
             }
+            // Smart EDIT/ADD — check if datalib exists via AJAX (same format as V1 property.js)
+            $.ajax({
+                url: 'ReadTestDataLib',
+                data: { name: datalibName.trim(), limit: 15, like: 'N' },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.messageType === 'OK' && data.contentTable && data.contentTable.length >= 1) {
+                        // DataLib exists → EDIT
+                        window.openModalDataLib(data.contentTable[0].testDataLibID, datalibName, 'EDIT', 'TestCaseScript_Steps', null);
+                    } else {
+                        // DataLib doesn't exist → ADD
+                        window.openModalDataLib(null, datalibName, 'ADD', 'TestCaseScript_Steps', null);
+                    }
+                },
+                error: function() {
+                    // On error, open in ADD mode
+                    if (typeof window.openModalDataLib === 'function') {
+                        window.openModalDataLib(null, datalibName, 'ADD', 'TestCaseScript_Steps', null);
+                    }
+                }
+            });
         },
         /** Open AppService transversal modal in EDIT mode */
         openModalService(serviceName) {
@@ -911,8 +991,9 @@ function scriptV2() {
             }
         },
 
-        copyStep(idx) {
+        copyStep(idx, $event) {
             var self = this;
+            var evt = $event || window.event || null;
             var step = this._cleanForExport(this.steps[idx]);
             var yamlContent = this._toYaml(step);
             var header = '# cerberus:step\n# Copied from: ' + (this.testInfo.test || '') + ' / ' + (this.testInfo.testCase || '') + '\n---\n';
@@ -921,14 +1002,15 @@ function scriptV2() {
 
             navigator.clipboard.writeText(fullText).then(function() {
                 self.clipboardType = 'step';
-                showMessageMainPage('success', 'Step copied to clipboard');
+                v2CopyToast(evt, 'Step copied!');
             }).catch(function() {
                 showMessageMainPage('warning', 'Could not access clipboard');
             });
         },
 
-        copyAction(aIdx) {
+        copyAction(aIdx, $event) {
             var self = this;
+            var evt = $event || window.event || null;
             var action = this._cleanForExport(this.activeStep.actions[aIdx]);
             var yamlContent = this._toYaml(action);
             var header = '# cerberus:action\n# Copied from: ' + (this.testInfo.test || '') + ' / ' + (this.testInfo.testCase || '') + '\n---\n';
@@ -937,7 +1019,7 @@ function scriptV2() {
 
             navigator.clipboard.writeText(fullText).then(function() {
                 self.clipboardType = 'action';
-                showMessageMainPage('success', 'Action copied to clipboard');
+                v2CopyToast(evt, 'Action copied!');
             }).catch(function() {
                 showMessageMainPage('warning', 'Could not access clipboard');
             });
@@ -961,16 +1043,20 @@ function scriptV2() {
                 return;
             }
             this._mutate(() => {
-                var clone = this._normalizeStep(data);
+                // Deep-clone to break any shared references, then re-normalize
+                var freshData = JSON.parse(JSON.stringify(data));
+                var clone = this._normalizeStep(freshData);
                 clone.stepId = -1;
                 clone.description = (clone.description || 'Pasted step') + ' (pasted)';
                 (clone.actions || []).forEach(a => {
-                    a._uid = v2uid();
                     a.actionId = -1;
-                    (a.controls || []).forEach(c => { c._uid = v2uid(); c.controlId = -1; });
+                    (a.controls || []).forEach(c => { c.controlId = -1; });
                 });
-                this.steps.splice(idx + 1, 0, clone);
-                this.selectStep(idx + 1);
+                // Force reactivity: create new array reference
+                var before = this.steps.slice(0, idx + 1);
+                var after = this.steps.slice(idx + 1);
+                this.steps = before.concat([clone], after);
+                this.$nextTick(() => { this.selectStep(idx + 1); });
             });
             showMessageMainPage('success', 'Step pasted successfully');
         },
@@ -994,10 +1080,12 @@ function scriptV2() {
                 return;
             }
             this._mutate(() => {
-                var clone = this._normalizeAction(data);
+                var freshData = JSON.parse(JSON.stringify(data));
+                var clone = this._normalizeAction(freshData);
                 clone.actionId = -1;
-                (clone.controls || []).forEach(c => { c._uid = v2uid(); c.controlId = -1; });
-                this.activeStep.actions.push(clone);
+                (clone.controls || []).forEach(c => { c.controlId = -1; });
+                // Force reactivity: create new array reference
+                this.activeStep.actions = this.activeStep.actions.concat([clone]);
             });
             showMessageMainPage('success', 'Action pasted successfully');
         },
@@ -1261,26 +1349,32 @@ function scriptV2() {
             }));
         },
         reRunTestCase() {
-            // Quick re-run: submit directly via AddToExecutionQueuePrivate
-            if (!this.lastRunCountry || !this.lastRunEnvironment) {
-                // No previous run, fallback to normal modal
+            // Re-run: duplicate the last queue entry and redirect (legacy pattern)
+            if (!this.lastRunQueueId || this.lastRunQueueId <= 0) {
+                // No previous queue entry, fallback to normal run
                 this.runTestCase();
                 return;
             }
-            var params = 'e=1'
-                + '&test=' + encodeURIComponent(this.testInfo.test)
-                + '&testcase=' + encodeURIComponent(this.testInfo.testcase)
-                + '&country=' + encodeURIComponent(this.lastRunCountry)
-                + '&environment=' + encodeURIComponent(this.lastRunEnvironment);
-            if (this.lastRunRobot) params += '&robot=' + encodeURIComponent(this.lastRunRobot);
-            params += '&outputformat=json';
-            $.post('AddToExecutionQueuePrivate', params, (data) => {
-                if (data.nbExe === 1 && data.queueList && data.queueList[0]) {
-                    window.location.href = 'TestCaseExecution.jsp?executionQueueId=' + data.queueList[0].queueId;
-                } else {
-                    handleAddToQueueResponse(data, true);
-                }
-            }, 'json').fail(handleErrorAjaxAfterTimeout);
+            $.ajax({
+                url: 'CreateTestCaseExecutionQueue',
+                async: true,
+                method: 'POST',
+                data: {
+                    id: this.lastRunQueueId,
+                    actionState: 'toQUEUED',
+                    actionSave: 'save',
+                    tag: this.lastRunTag || ''
+                },
+                success: function(data) {
+                    if (getAlertType(data.messageType) === 'success') {
+                        var url = './TestCaseExecution.jsp?executionQueueId=' + encodeURI(data.testCaseExecutionQueueList[0].id);
+                        window.location.replace(url);
+                    } else {
+                        showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+                    }
+                },
+                error: handleErrorAjaxAfterTimeout
+            });
         },
         editHeader() {
             openModalTestCase(this.testInfo.test, this.testInfo.testCase, 'EDIT');
@@ -1384,14 +1478,76 @@ function scriptV2() {
                    this.isControlFieldOptional(controlType, 'field3');
         },
 
-        // ── Autocomplete System ──
+        // ══════════════════════════════════════════════════
+        // ── Autocomplete System V2 — Full %variable% support ──
+        // ══════════════════════════════════════════════════
+
+        // --- State ---
         _acResults: [],
         _acVisible: false,
         _acActiveField: null,
         _acSelectedIdx: -1,
         _acActiveAIdx: -1,
         _acActiveCIdx: -1,
+        _acMode: 'field',   // 'field' = normal field suggestions, 'variable' = %xxx% inline
+        _acVarPrefix: '',   // e.g. '%property.' — what the user has typed so far
+        _acVarLevel: '',    // 'root' | 'property' | 'system' | 'object' | 'objectProp' | 'datalib' | 'datalibProp'
+        _acCreateLabel: '', // label for the "Create" button at the bottom
 
+        // --- Cache loaded once at init ---
+        _acCache: {
+            objects: [],    // [{value:'btnLogin', label:'btnLogin', desc:'ApplicationObject'}]
+            datalib: [],    // [{value:'myLib', label:'myLib', desc:'DataLib'}]
+            system: [
+                'SYSTEM','APPLI','BROWSER','ROBOT','ROBOTDECLI','SCREENSIZE',
+                'APP_DOMAIN','APP_HOST','APP_CONTEXTROOT','EXEURL','APP_VAR1','APP_VAR2','APP_VAR3','APP_VAR4','APP_SECRET1','APP_SECRET2',
+                'ENV','ENVGP',
+                'COUNTRY','COUNTRYGP1','COUNTRYGP2','COUNTRYGP3','COUNTRYGP4','COUNTRYGP5','COUNTRYGP6','COUNTRYGP7','COUNTRYGP8','COUNTRYGP9',
+                'TEST','TESTCASE','TESTCASEDESCRIPTION',
+                'SSIP','SSPORT','TAG','EXECUTIONID',
+                'EXESTART','EXEELAPSEDMS','EXESTORAGEURL',
+                'STEP.n.n.RETURNCODE','CURRENTSTEP_INDEX','CURRENTSTEP_STARTISO','CURRENTSTEP_ELAPSEDMS','CURRENTSTEP_SORT',
+                'LASTSERVICE_HTTPCODE','LASTSERVICE_CALL','LASTSERVICE_RESPONSE','LASTSERVICE_RESPONSETIME',
+                'TODAY-yyyy','TODAY-MM','TODAY-dd','TODAY-D','TODAY-HH','TODAY-mm','TODAY-ss',
+                'YESTERDAY-yyyy','YESTERDAY-MM','YESTERDAY-dd','YESTERDAY-D','YESTERDAY-HH','YESTERDAY-mm','YESTERDAY-ss',
+                'TOMORROW-yyyy','TOMORROW-MM','TOMORROW-dd','TOMORROW-D'
+            ],
+            objectProps: ['value', 'pictureurl', 'base64'],
+            datalibProps: ['value', 'base64'],
+            loaded: false
+        },
+
+        _loadAcCache() {
+            var self = this;
+            if (self._acCache.loaded) return;
+            var app = self.testInfo.application;
+            if (!app) return;
+            self._acCache.loaded = true;
+            // Load application objects
+            $.ajax({ url: 'ReadApplicationObject', data: { application: app }, dataType: 'json',
+                success: function(data) {
+                    if (data && data.contentTable) {
+                        self._acCache.objects = data.contentTable.map(function(o) {
+                            return { value: o.object, label: o.object, desc: 'Object', icon: 'object' };
+                        });
+                    }
+                    console.info('[V2-AC] Loaded', self._acCache.objects.length, 'application objects');
+                }
+            });
+            // Load datalib names
+            $.ajax({ url: 'ReadTestDataLib', data: { columnName: 'tdl.Name' }, dataType: 'json',
+                success: function(data) {
+                    if (data && data.distinctValues) {
+                        self._acCache.datalib = data.distinctValues.map(function(name) {
+                            return { value: name, label: name, desc: 'DataLib', icon: 'datalib' };
+                        });
+                    }
+                    console.info('[V2-AC] Loaded', self._acCache.datalib.length, 'datalib entries');
+                }
+            });
+        },
+
+        // --- Field auto-type detection (unchanged logic, rewritten for clarity) ---
         _getFieldAutoType(typeKey, fieldKey, isControl) {
             var def;
             if (isControl) {
@@ -1412,70 +1568,68 @@ function scriptV2() {
             return 'variable';
         },
 
+        // --- Static suggestions for field-level autocomplete ---
         _staticSuggestions: {
             element: [
-                { value: 'xpath=', label: 'xpath=', desc: 'XPath selector' },
-                { value: 'id=', label: 'id=', desc: 'Element ID' },
-                { value: 'name=', label: 'name=', desc: 'Element name attribute' },
-                { value: 'class=', label: 'class=', desc: 'CSS class name' },
-                { value: 'css=', label: 'css=', desc: 'CSS selector' },
-                { value: 'data-cerberus=', label: 'data-cerberus=', desc: 'Cerberus data attribute' },
-                { value: 'picture=', label: 'picture=', desc: 'Image recognition' },
-                { value: 'coord=', label: 'coord=', desc: 'Screen coordinates' },
+                { value: 'xpath=', label: 'xpath=', desc: 'XPath selector', icon: 'element' },
+                { value: 'id=', label: 'id=', desc: 'Element ID', icon: 'element' },
+                { value: 'name=', label: 'name=', desc: 'Element name attribute', icon: 'element' },
+                { value: 'class=', label: 'class=', desc: 'CSS class name', icon: 'element' },
+                { value: 'css=', label: 'css=', desc: 'CSS selector', icon: 'element' },
+                { value: 'data-cerberus=', label: 'data-cerberus=', desc: 'Cerberus data attribute', icon: 'element' },
+                { value: 'picture=', label: 'picture=', desc: 'Image recognition', icon: 'element' },
+                { value: 'coord=', label: 'coord=', desc: 'Screen coordinates', icon: 'element' },
             ],
             'switch': [
-                { value: 'title=', label: 'title=', desc: 'Window title' },
-                { value: 'url=', label: 'url=', desc: 'Window URL' },
-                { value: 'regexTitle=', label: 'regexTitle=', desc: 'Regex on title' },
-                { value: 'regexUrl=', label: 'regexUrl=', desc: 'Regex on URL' },
+                { value: 'title=', label: 'title=', desc: 'Window title', icon: 'element' },
+                { value: 'url=', label: 'url=', desc: 'Window URL', icon: 'element' },
+                { value: 'regexTitle=', label: 'regexTitle=', desc: 'Regex on title', icon: 'element' },
+                { value: 'regexUrl=', label: 'regexUrl=', desc: 'Regex on URL', icon: 'element' },
             ],
             select: [
-                { value: 'value=', label: 'value=', desc: 'By value attribute' },
-                { value: 'label=', label: 'label=', desc: 'By visible text' },
-                { value: 'index=', label: 'index=', desc: 'By index position' },
+                { value: 'value=', label: 'value=', desc: 'By value attribute', icon: 'element' },
+                { value: 'label=', label: 'label=', desc: 'By visible text', icon: 'element' },
+                { value: 'index=', label: 'index=', desc: 'By index position', icon: 'element' },
             ],
             boolean: [
-                { value: 'true', label: 'true', desc: 'Boolean true' },
-                { value: 'false', label: 'false', desc: 'Boolean false' },
+                { value: 'true', label: 'true', desc: 'Boolean true', icon: 'element' },
+                { value: 'false', label: 'false', desc: 'Boolean false', icon: 'element' },
             ],
             fileuploadflag: [
-                { value: 'EMPTYFOLDER', label: 'EMPTYFOLDER', desc: 'Empty folder before upload' },
+                { value: 'EMPTYFOLDER', label: 'EMPTYFOLDER', desc: 'Empty folder before upload', icon: 'element' },
             ],
             filesortflag: [
-                { value: 'LASTMODIFIED', label: 'LASTMODIFIED', desc: 'Sort by last modified' },
-                { value: 'DESC', label: 'DESC', desc: 'Descending order' },
-                { value: 'ASC', label: 'ASC', desc: 'Ascending order' },
-                { value: 'IGNORECASEDESC', label: 'IGNORECASEDESC', desc: 'Case-insensitive descending' },
-                { value: 'IGNORECASEASC', label: 'IGNORECASEASC', desc: 'Case-insensitive ascending' },
+                { value: 'LASTMODIFIED', label: 'LASTMODIFIED', desc: 'Sort by last modified', icon: 'element' },
+                { value: 'DESC', label: 'DESC', desc: 'Descending order', icon: 'element' },
+                { value: 'ASC', label: 'ASC', desc: 'Ascending order', icon: 'element' },
+                { value: 'IGNORECASEDESC', label: 'IGNORECASEDESC', desc: 'Case-insensitive descending', icon: 'element' },
+                { value: 'IGNORECASEASC', label: 'IGNORECASEASC', desc: 'Case-insensitive ascending', icon: 'element' },
             ],
         },
 
         _getPropertySuggestions() {
             var seen = {};
             var props = [];
-            // Local properties (highest priority)
-            var self = this;
             if (this.properties) {
                 this.properties.forEach(function(p) {
                     if (p.property && !seen[p.property]) {
                         seen[p.property] = true;
-                        props.push({ value: p.property, label: p.property, desc: p.type || 'Local' });
+                        props.push({ value: p.property, label: p.property, desc: p.type || 'Local', icon: 'property' });
                     }
                 });
             }
-            // Inherited properties
             if (this.inheritedProperties) {
                 this.inheritedProperties.forEach(function(p) {
                     if (p.property && !seen[p.property]) {
                         seen[p.property] = true;
-                        props.push({ value: p.property, label: p.property, desc: (p.type || 'Inherited') + ' (inherited)' });
+                        props.push({ value: p.property, label: p.property, desc: (p.type || 'Inherited') + ' (inh.)', icon: 'property' });
                     }
                 });
             }
             return props;
         },
 
-        /** Open property modal by name — used by the pencil button on action fields */
+        /** Open property modal by name */
         _openPropertyByName(name) {
             if (!name) return;
             var fp = this.filteredProperties;
@@ -1487,7 +1641,7 @@ function scriptV2() {
             }
         },
 
-        /** Pencil button handler — auto-detects service vs property and opens the right modal */
+        /** Pencil button handler */
         _openFieldEditModal(actionKey, fieldKey, isControl, value) {
             var autoType = this._getFieldAutoType(actionKey, fieldKey, isControl);
             if (autoType === 'service') {
@@ -1497,15 +1651,152 @@ function scriptV2() {
             }
         },
 
+        /**
+         * Smart Edit/Create handler — like V1, detects existence then opens the right modal.
+         * For service: AJAX call to ReadAppService to check existence, then EDIT or ADD mode.
+         * For property: checks local + inherited properties, opens editor or creates + opens editor.
+         */
+        _openFieldSmartModal(actionKey, fieldKey, isControl, value) {
+            if (!value || !value.trim()) return;
+            var autoType = this._getFieldAutoType(actionKey, fieldKey, isControl);
+            var val = value.trim();
+            var self = this;
+
+            if (autoType === 'service') {
+                // Like V1: AJAX call to check if service exists
+                console.log('[V2] _openFieldSmartModal service:', val);
+                $.ajax({
+                    url: 'ReadAppService?service=' + encodeURIComponent(val),
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log('[V2] ReadAppService response:', data);
+                        var mode = (data.contentTable && data.contentTable.hasPermissions !== undefined) ? 'EDIT' : 'ADD';
+                        console.log('[V2] Opening modal in mode:', mode);
+                        if (typeof openModalAppService === 'function') {
+                            openModalAppService(encodeURIComponent(val), mode, 'TestCase');
+                        } else {
+                            console.warn('[V2] openModalAppService not found!');
+                            window.open('AppServiceList.jsp?service=' + encodeURIComponent(val), '_blank');
+                        }
+                    },
+                    error: function(xhr, status, err) {
+                        console.warn('[V2] ReadAppService error:', status, err);
+                        // On error, assume ADD
+                        if (typeof openModalAppService === 'function') {
+                            openModalAppService(encodeURIComponent(val), 'ADD', 'TestCase');
+                        }
+                    }
+                });
+            } else if (autoType === 'property') {
+                // Check if property exists locally or inherited
+                var allProps = (this.properties || []).concat(this.inheritedProperties || []);
+                var exists = allProps.some(function(p) { return p.property === val; });
+                if (exists) {
+                    // Property exists — open its editor
+                    this._openPropertyByName(val);
+                } else {
+                    // Property doesn't exist — create it with name pre-filled, switch to tab, open editor
+                    var p = this._normalizeProp({
+                        property: val, description: '',
+                        type: 'text', database: '', value1: '', value2: '', value3: 'value',
+                        countries: this.tcCountries.slice(), nature: 'STATIC', length: '0', rowLimit: 0,
+                        cacheExpire: 0, rank: 0, retryNb: 0, retryPeriod: 0
+                    });
+                    this._mutate(function() { self.properties.push(p); });
+                    this.tab = 'properties';
+                    this.propertySearch = '';
+                    this.propertyFilter = 'all';
+                    this.$nextTick(function() {
+                        var idx = self.filteredProperties.findIndex(function(fp) { return fp._uid === p._uid; });
+                        if (idx >= 0) self.openPropertyEditor(idx);
+                    });
+                }
+            }
+        },
+
+        // ── DataLib autocomplete for property value1 when type=getFromDataLib ──
+        _dlAutoItems: [],
+        _dlSearch: '',
+        _dlVisible: false,
+        _dlSelectedIdx: -1,
+        _dlFetchTimeout: null,
+
+        // Fetch DataLib suggestions from API (debounced) — uses same API as V1 CompleterForAllDataLib
+        _dlFetch(query) {
+            var self = this;
+            clearTimeout(this._dlFetchTimeout);
+            this._dlFetchTimeout = setTimeout(function() {
+                $.ajax({
+                    url: 'ReadTestDataLib',
+                    data: { name: query || '', limit: 15, like: 'Y' },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.contentTable) {
+                            self._dlAutoItems = data.contentTable.map(function(d) { return { label: d.name, value: d.name }; });
+                        } else if (data.distinctValues) {
+                            self._dlAutoItems = data.distinctValues.map(function(v) { return { label: v, value: v }; });
+                        }
+                    },
+                    error: function() {
+                        self._dlAutoItems = [];
+                    }
+                });
+            }, 200);
+        },
+
+        // Filtered DataLib suggestions
+        get _dlFiltered() {
+            var s = (this._dlSearch || '').toLowerCase();
+            if (!s) return this._dlAutoItems;
+            return this._dlAutoItems.filter(function(it) { return it.label.toLowerCase().indexOf(s) >= 0; });
+        },
+
+        // Called when datalib input gets focus
+        _dlOnFocus(prop) {
+            this._dlSearch = prop.value1 || '';
+            this._dlVisible = true;
+            this._dlSelectedIdx = -1;
+            this._dlFetch(this._dlSearch);
+        },
+
+        // Called when datalib input changes
+        _dlOnInput(prop, val) {
+            this._dlSearch = val;
+            prop.value1 = val;
+            this._dlFetch(val);
+            this._dlVisible = true;
+        },
+
+        // Called when a datalib suggestion is selected
+        _dlSelect(prop, item) {
+            prop.value1 = item.value;
+            this._dlSearch = item.value;
+            this._dlVisible = false;
+        },
+
         _acFetchTimeout: null,
         _acServiceCache: {},
 
+        // ══════════════════════════════════════════════
+        // ── acOnFocus — called when any value input gets focus ──
+        // ══════════════════════════════════════════════
         acOnFocus(typeKey, fieldKey, isControl, currentVal, aIdx, cIdx) {
             var autoType = this._getFieldAutoType(typeKey, fieldKey, isControl);
             this._acActiveField = { typeKey: typeKey, fieldKey: fieldKey, isControl: isControl, autoType: autoType };
             this._acActiveAIdx = (aIdx !== undefined) ? aIdx : -1;
             this._acActiveCIdx = (cIdx !== undefined) ? cIdx : -1;
             this._acSelectedIdx = -1;
+            this._acCreateLabel = '';
+
+            // Check if we are already inside a %variable
+            var varState = this._parseVariableContext(currentVal || '', null);
+            if (varState) {
+                this._enterVariableMode(varState, currentVal || '');
+                return;
+            }
+
+            // Normal field-level autocomplete
+            this._acMode = 'field';
             if (autoType === 'service') {
                 this._fetchServiceSuggestions(currentVal || '');
             } else if (autoType === 'property') {
@@ -1517,14 +1808,40 @@ function scriptV2() {
                 this._filterAcResults(currentVal || '');
                 this._acVisible = this._acResults.length > 0;
             } else {
+                // 'variable' type — don't show anything until user types %
                 this._acVisible = false;
             }
         },
 
-        acOnInput(currentVal) {
-            if (!this._acActiveField) return;
+        // ══════════════════════════════════════════════
+        // ── acOnInput — called on every keystroke ──
+        // ══════════════════════════════════════════════
+        acOnInput(currentVal, inputEl) {
+            console.log('[V2-AC] acOnInput called:', { currentVal: currentVal, hasInputEl: !!inputEl, activeField: !!this._acActiveField });
+            if (!this._acActiveField) { console.warn('[V2-AC] No active field, returning'); return; }
             var autoType = this._acActiveField.autoType;
+            console.log('[V2-AC] autoType:', autoType);
             this._acSelectedIdx = -1;
+            this._acCreateLabel = '';
+
+            // Always check for %variable% context first
+            var cursorPos = inputEl ? inputEl.selectionStart : (currentVal || '').length;
+            console.log('[V2-AC] cursorPos:', cursorPos, 'val:', currentVal);
+            var varState = this._parseVariableContext(currentVal || '', cursorPos);
+            console.log('[V2-AC] varState:', varState);
+
+            if (varState) {
+                this._enterVariableMode(varState, currentVal || '');
+                console.log('[V2-AC] After enterVariableMode:', { results: this._acResults.length, visible: this._acVisible, mode: this._acMode });
+                return;
+            }
+
+            // If we were in variable mode but % context ended, exit
+            if (this._acMode === 'variable') {
+                this._acMode = 'field';
+            }
+
+            // Normal field-level autocomplete
             if (autoType === 'service') {
                 clearTimeout(this._acFetchTimeout);
                 var self = this;
@@ -1537,16 +1854,264 @@ function scriptV2() {
                 this._acResults = this._staticSuggestions[autoType].slice();
                 this._filterAcResults(currentVal);
                 this._acVisible = this._acResults.length > 0;
+            } else {
+                this._acVisible = false;
             }
         },
 
+        // ══════════════════════════════════════════════
+        // ── %variable% Parser ──
+        // Analyses the text around cursor to detect %xxx.yyy context
+        // ══════════════════════════════════════════════
+        _parseVariableContext(text, cursorPos) {
+            if (cursorPos === null || cursorPos === undefined) cursorPos = text.length;
+            var before = text.substring(0, cursorPos);
+
+            // Count % before cursor — if even, no open variable
+            var pctCount = (before.match(/%/g) || []).length;
+            console.log('[V2-AC] _parseVariableContext:', { text: text, cursorPos: cursorPos, before: before, pctCount: pctCount });
+            if (pctCount === 0 || pctCount % 2 === 0) return null;
+
+            // Extract from last % to cursor
+            var lastPct = before.lastIndexOf('%');
+            var fragment = before.substring(lastPct + 1); // e.g. "property.myPr" or "system.ENV" or ""
+            var parts = fragment.split('.');
+
+            if (parts.length === 1) {
+                // User typed % then maybe started a category: %pro...
+                return { level: 'root', search: parts[0], startIdx: lastPct };
+            } else if (parts.length === 2) {
+                var category = parts[0].toLowerCase();
+                if (category === 'property' || category === 'system' || category === 'object' || category === 'datalib') {
+                    return { level: category, search: parts[1], startIdx: lastPct };
+                }
+                return null;
+            } else if (parts.length === 3) {
+                var category = parts[0].toLowerCase();
+                if (category === 'object') {
+                    return { level: 'objectProp', objectName: parts[1], search: parts[2], startIdx: lastPct };
+                } else if (category === 'datalib') {
+                    return { level: 'datalibProp', datalibName: parts[1], search: parts[2], startIdx: lastPct };
+                }
+                return null;
+            }
+            return null;
+        },
+
+        // ══════════════════════════════════════════════
+        // ── Enter variable mode with parsed context ──
+        // ══════════════════════════════════════════════
+        _enterVariableMode(varState, currentVal) {
+            this._acMode = 'variable';
+            this._acVarLevel = varState.level;
+            var search = (varState.search || '').toLowerCase();
+            var results = [];
+            this._acCreateLabel = '';
+
+            switch (varState.level) {
+                case 'root':
+                    results = [
+                        { value: 'property', label: 'property', desc: 'Test case properties', icon: 'property' },
+                        { value: 'system', label: 'system', desc: 'System variables', icon: 'system' },
+                        { value: 'object', label: 'object', desc: 'Application objects', icon: 'object' },
+                        { value: 'datalib', label: 'datalib', desc: 'Data libraries', icon: 'datalib' },
+                    ];
+                    if (search) {
+                        results = results.filter(function(r) { return r.value.indexOf(search) >= 0; });
+                    }
+                    break;
+
+                case 'property':
+                    results = this._getPropertySuggestions();
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    // Show create if no exact match
+                    if (search && !results.some(function(r) { return r.value.toLowerCase() === search; })) {
+                        this._acCreateLabel = search;
+                    }
+                    break;
+
+                case 'system':
+                    results = this._acCache.system.map(function(s) {
+                        return { value: s, label: s, desc: 'System', icon: 'system' };
+                    });
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    break;
+
+                case 'object':
+                    results = this._acCache.objects.slice();
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    if (search && !results.some(function(r) { return r.value.toLowerCase() === search; })) {
+                        this._acCreateLabel = search;
+                    }
+                    break;
+
+                case 'objectProp':
+                    results = this._acCache.objectProps.map(function(p) {
+                        return { value: p, label: p, desc: 'Object attribute', icon: 'object' };
+                    });
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    break;
+
+                case 'datalib':
+                    results = this._acCache.datalib.slice();
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    if (search && !results.some(function(r) { return r.value.toLowerCase() === search; })) {
+                        this._acCreateLabel = search;
+                    }
+                    break;
+
+                case 'datalibProp':
+                    results = this._acCache.datalibProps.map(function(p) {
+                        return { value: p, label: p, desc: 'DataLib attribute', icon: 'datalib' };
+                    });
+                    if (search) {
+                        results = results.filter(function(r) { return r.label.toLowerCase().indexOf(search) >= 0; });
+                    }
+                    break;
+            }
+
+            this._acResults = results;
+            this._acVisible = results.length > 0 || !!this._acCreateLabel;
+        },
+
+        // ══════════════════════════════════════════════
+        // ── acSelect — handles selection for both modes ──
+        // ══════════════════════════════════════════════
+        acSelect(item) {
+            if (this._acMode === 'field') {
+                this._acVisible = false;
+                return item.value;
+            }
+            // Variable mode — handled by acSelectVariable
+            return item.value;
+        },
+
+        // ══════════════════════════════════════════════
+        // ── acSelectVariable — smart insertion at cursor position ──
+        // Called from the template when user clicks/enters a variable suggestion
+        // Returns the new full input value
+        // ══════════════════════════════════════════════
+        acSelectVariable(item, inputEl) {
+            var text = inputEl.value || '';
+            var cursorPos = inputEl.selectionStart || text.length;
+            var before = text.substring(0, cursorPos);
+            var after = text.substring(cursorPos);
+            var lastPct = before.lastIndexOf('%');
+            var prefix = text.substring(0, lastPct + 1); // everything up to and including the %
+            var level = this._acVarLevel;
+
+            var inserted = '';
+            var keepOpen = false;
+
+            switch (level) {
+                case 'root':
+                    // User selected a category — insert "category." and keep open
+                    inserted = item.value + '.';
+                    keepOpen = true;
+                    break;
+                case 'property':
+                case 'system':
+                    // Terminal — insert "property.xxx%" or "system.xxx%"
+                    inserted = level + '.' + item.value + '%';
+                    break;
+                case 'object':
+                case 'datalib':
+                    // Intermediate — insert "object.xxx." and keep open for sub-property
+                    inserted = level + '.' + item.value + '.';
+                    keepOpen = true;
+                    break;
+                case 'objectProp':
+                case 'datalibProp':
+                    // Terminal — rebuild full path: "object.objName.prop%"
+                    var fragment = before.substring(lastPct + 1);
+                    var parts = fragment.split('.');
+                    inserted = parts[0] + '.' + parts[1] + '.' + item.value + '%';
+                    break;
+            }
+
+            var newValue = prefix + inserted + after;
+            var newCursorPos = (prefix + inserted).length;
+
+            // Update the input
+            inputEl.value = newValue;
+            inputEl.setSelectionRange(newCursorPos, newCursorPos);
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+            if (keepOpen) {
+                // Re-parse to show next level
+                var self = this;
+                setTimeout(function() {
+                    var vs = self._parseVariableContext(newValue, newCursorPos);
+                    if (vs) {
+                        self._enterVariableMode(vs, newValue);
+                    }
+                }, 50);
+            } else {
+                this._acVisible = false;
+                this._acMode = 'field';
+            }
+
+            return newValue;
+        },
+
+        // ══════════════════════════════════════════════
+        // ── Create actions from dropdown ──
+        // ══════════════════════════════════════════════
+        acCreateProperty(name) {
+            this._acVisible = false;
+            var self = this;
+            this._mutate(function() {
+                var p = self._normalizeProp({
+                    property: name, description: '',
+                    type: 'text', database: '', value1: '', value2: '', value3: 'value',
+                    countries: self.tcCountries.slice(), nature: 'STATIC', length: '0', rowLimit: 0,
+                    cacheExpire: 0, rank: 0, retryNb: 0, retryPeriod: 0
+                });
+                self.properties = self.properties.concat([p]);
+            });
+            showMessageMainPage('success', 'Property "' + name + '" created');
+        },
+
+        acCreateObject(name, inputEl) {
+            this._acVisible = false;
+            if (typeof openModalApplicationObject === 'function') {
+                openModalApplicationObject(this.testInfo.application, name, 'ADD', 'testCaseScript');
+            }
+        },
+
+        acCreateDataLib(name, inputEl) {
+            this._acVisible = false;
+            if (typeof openModalDataLib === 'function') {
+                openModalDataLib(null, name, 'ADD', 'TestCaseScript_Steps', null);
+            }
+        },
+
+        acCreateService(name) {
+            this._acVisible = false;
+            if (typeof openModalAppService === 'function') {
+                openModalAppService(encodeURIComponent(name), 'ADD', 'TestCase');
+            }
+        },
+
+        // ══════════════════════════════════════════════
+        // ── Filtering and fetching ──
+        // ══════════════════════════════════════════════
         _filterAcResults(q) {
             if (!q) return;
             var lower = q.toLowerCase();
             this._acResults = this._acResults.filter(function(r) {
                 return r.label.toLowerCase().indexOf(lower) >= 0 || r.value.toLowerCase().indexOf(lower) >= 0;
             });
-            // Hide if exact match — the user already picked/typed the value
             if (this._acResults.length > 0 && this._acResults.some(function(r) {
                 return r.value.toLowerCase() === lower || r.label.toLowerCase() === lower;
             })) {
@@ -1560,28 +2125,31 @@ function scriptV2() {
             $.getJSON(url, function(data) {
                 if (data && data.contentTable) {
                     self._acResults = data.contentTable.map(function(s) {
-                        return { value: s.service, label: s.service, desc: s.type || 'Service' };
+                        return { value: s.service, label: s.service, desc: s.type || 'Service', icon: 'service' };
                     });
                 } else {
                     self._acResults = [];
                 }
-                // Hide if exact match
                 var lower = (query || '').toLowerCase();
-                if (lower && self._acResults.some(function(r) { return r.value.toLowerCase() === lower; })) {
-                    self._acResults = [];
+                // Show create button if no exact match
+                self._acCreateLabel = '';
+                if (lower && !self._acResults.some(function(r) { return r.value.toLowerCase() === lower; })) {
+                    self._acCreateLabel = query;
                 }
-                self._acVisible = self._acResults.length > 0;
+                if (lower && self._acResults.length === 1 && self._acResults[0].value.toLowerCase() === lower) {
+                    self._acResults = [];
+                    self._acCreateLabel = '';
+                }
+                self._acVisible = self._acResults.length > 0 || !!self._acCreateLabel;
             });
         },
 
-        acSelect(item) {
-            this._acVisible = false;
-            return item.value;
-        },
-
+        // ══════════════════════════════════════════════
+        // ── Blur / Keyboard ──
+        // ══════════════════════════════════════════════
         acOnBlur() {
             var self = this;
-            setTimeout(function() { self._acVisible = false; }, 200);
+            setTimeout(function() { self._acVisible = false; self._acMode = 'field'; }, 200);
         },
 
         acOnKeydown(e) {
@@ -1594,7 +2162,6 @@ function scriptV2() {
                 this._acSelectedIdx = Math.max(this._acSelectedIdx - 1, 0);
             } else if (e.key === 'Enter' && this._acSelectedIdx >= 0) {
                 e.preventDefault();
-                // Will be handled by the template
             } else if (e.key === 'Escape') {
                 this._acVisible = false;
             }

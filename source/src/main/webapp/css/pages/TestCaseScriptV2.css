@@ -178,6 +178,65 @@
     opacity: 0.35;
     cursor: not-allowed;
 }
+/* Autocomplete icon badge (letter-based) */
+.v2-ac-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+    background: var(--crb-grey-lighter-color, #f1f5f9);
+    color: var(--crb-grey-color, #94a3b8);
+}
+.v2-ac-icon--property { background: #fef3c7; color: #b45309; }
+.v2-ac-icon--system   { background: #e0e7ff; color: #4338ca; }
+.v2-ac-icon--object   { background: #dbeafe; color: #1d4ed8; }
+.v2-ac-icon--datalib  { background: #d1fae5; color: #059669; }
+.v2-ac-icon--service  { background: #fce7f3; color: #be185d; }
+.v2-ac-icon--element  { background: #fee2e2; color: #dc2626; }
+/* Create button at bottom of dropdown */
+.v2-ac-create {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--crb-blue-color, #3b82f6);
+    border-top: 1px solid var(--crb-grey-light-color, #e2e8f0);
+    margin-top: 2px;
+    transition: background 0.12s;
+}
+.v2-ac-create:hover {
+    background: var(--crb-blue-light-color, #eff6ff);
+}
+/* Create button (replaces edit pencil when value doesn't exist) */
+.v2-ac-create-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--crb-green-lighter-color, #bbf7d0);
+    background: var(--crb-green-light-color, #dcfce7);
+    color: var(--crb-green-color, #16a34a);
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.v2-ac-create-btn:hover {
+    background: var(--crb-green-color, #16a34a);
+    color: white;
+    border-color: var(--crb-green-color, #16a34a);
+}
 
 /* ═══════════════════════════════════════════════ */
 /*  Animations                                     */
@@ -193,6 +252,66 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 .v2-fade-in { animation: v2-fadeIn 0.2s ease-out; }
+
+/* ═══════════════════════════════════════════════ */
+/*  Copy Toast — floating near cursor             */
+/* ═══════════════════════════════════════════════ */
+.v2-copy-toast {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px 6px 10px;
+    border-radius: 10px;
+    background: var(--crb-dark-color, #1e293b);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    animation: v2-copy-toast-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: transform, opacity;
+}
+.v2-copy-toast__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--crb-green-color, #10b981);
+    flex-shrink: 0;
+    animation: v2-copy-check-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.v2-copy-toast__icon svg {
+    width: 12px;
+    height: 12px;
+    stroke: #fff;
+    stroke-width: 3;
+    fill: none;
+}
+.v2-copy-toast__icon svg path {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    animation: v2-copy-check-draw 0.35s ease-out 0.25s forwards;
+}
+@keyframes v2-copy-toast-in {
+    0%   { opacity: 0; transform: translateY(0) scale(0.8); }
+    20%  { opacity: 1; transform: translateY(-8px) scale(1.02); }
+    35%  { transform: translateY(-14px) scale(1); }
+    75%  { opacity: 1; transform: translateY(-22px); }
+    100% { opacity: 0; transform: translateY(-36px) scale(0.95); }
+}
+@keyframes v2-copy-check-pop {
+    0%   { transform: scale(0); }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+@keyframes v2-copy-check-draw {
+    to { stroke-dashoffset: 0; }
+}
 
 /* Empty state icon ring */
 .v2-empty-icon-ring {
@@ -1389,6 +1508,23 @@
     border-color: #3d4a5e;
     color: #cbd5e1;
 }
+:root.dark .v2-ac-create {
+    color: #60a5fa;
+    border-top-color: #2d3548;
+}
+:root.dark .v2-ac-create:hover {
+    background: #1e293b;
+}
+:root.dark .v2-ac-create-btn {
+    background: #052e16;
+    border-color: #166534;
+    color: #4ade80;
+}
+:root.dark .v2-ac-create-btn:hover {
+    background: #16a34a;
+    color: white;
+    border-color: #16a34a;
+}
 
 /* -- Opt toggle -- */
 :root.dark .v2-opt-toggle {
@@ -1676,24 +1812,36 @@
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 0 3px rgba(59,130,246,0.15);
 }
 /* Code editor header label */
-.v2-prop-code-header {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 12px; background: #1e293b; border-radius: 10px 10px 0 0;
-    border: 1.5px solid #1e293b; border-bottom: none;
-    margin-bottom: -2px; position: relative; z-index: 1;
+/* ── Ace Editor wrapper (property code fields) ── */
+.v2-ace-wrap {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    overflow: hidden;
+    transition: all 0.2s;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
-.v2-prop-code-header .v2-prop-code-dot {
-    width: 7px; height: 7px; border-radius: 50%;
+.v2-ace-wrap:focus-within {
+    border-color: var(--crb-blue-color);
+    background: #fff;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--crb-blue-color) 20%, transparent);
 }
-.v2-prop-code-header .v2-prop-code-dot--red { background: #ef4444; }
-.v2-prop-code-header .v2-prop-code-dot--yellow { background: #eab308; }
-.v2-prop-code-header .v2-prop-code-dot--green { background: #22c55e; }
-.v2-prop-code-header .v2-prop-code-lang {
-    font-size: 10px; font-weight: 600; color: #64748b; margin-left: auto;
-    text-transform: uppercase; letter-spacing: 0.5px;
+.v2-ace-editor {
+    width: 100%;
+    min-height: 80px;
 }
-.v2-prop-code-header + .v2-prop-field-textarea--code {
-    border-radius: 0 0 10px 10px;
+.v2-ace-editor .ace_editor {
+    border-radius: 8px;
+    background: transparent !important; /* Let wrapper background show */
+}
+:root.dark .v2-ace-wrap {
+    background: #1e2533;
+    border-color: #2d3548;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+:root.dark .v2-ace-wrap:focus-within {
+    border-color: var(--crb-blue-color);
+    background: #252b38;
 }
 
 /* Card action buttons */

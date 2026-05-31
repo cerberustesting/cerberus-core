@@ -113,7 +113,7 @@
                     </span>
                 </template>
             </div>
-            <div class="flex items-center gap-2 mt-0.5">
+            <div class="flex items-center gap-2 mt-0.5" style="padding-left: 8px">
                 <span class="text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-lg"
                       x-text="testInfo.description || 'No description'"></span>
                 <template x-if="testInfo.usrModif">
@@ -174,20 +174,10 @@
             <i data-lucide="redo-2" class="w-3.5 h-3.5"></i>
         </button>
 
-        <!-- Divider -->
-        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
-
-        <!-- Auto-save toggle + Save status — same line -->
-        <div class="inline-flex items-center gap-2 shrink-0">
-            <div class="v2-toggle" :class="autoSaveEnabled ? 'v2-toggle--on' : ''"
-                 @click="autoSaveEnabled = !autoSaveEnabled" title="Toggle auto-save">
-                <div class="v2-toggle__dot"></div>
-            </div>
-            <span class="text-[11px] text-slate-400 dark:text-slate-500 select-none"
-                  x-text="autoSaveEnabled ? 'Auto' : 'Manual'"></span>
-
-            <!-- Save status (hidden when no state) -->
-            <template x-if="saveState !== ''">
+        <!-- Save status badge + divider (only when there is a state) -->
+        <template x-if="saveState !== ''">
+            <div class="inline-flex items-center gap-2 shrink-0">
+                <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
                 <div class="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-md"
                      :class="{
                         'text-emerald-500': saveState === 'saved',
@@ -201,17 +191,14 @@
                                  : saveState === 'dirty'  ? 'Unsaved'
                                  : ''"></span>
                 </div>
-            </template>
-        </div>
+            </div>
+        </template>
 
-        <!-- Divider -->
-        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
-
-        <!-- Save button -->
-        <button @click="save()" :disabled="!canUpdate || saveState === 'saving'"
-                class="v2-header-action-btn shrink-0"
+        <!-- Save button — grey when clean, blue+nudge when dirty -->
+        <button @click="save()" :disabled="!canUpdate || saveState === 'saving' || saveState !== 'dirty'"
+                class="v2-header-action-btn shrink-0 transition-all duration-300"
                 :class="saveState === 'dirty' ? 'v2-save-nudge' : ''"
-                style="background: var(--crb-blue-color)"
+                :style="saveState === 'dirty' ? 'background: var(--crb-blue-color)' : 'background: var(--crb-grey-color); opacity: 0.45; cursor: not-allowed'"
                 data-tip="Save (Ctrl+S)">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Save
@@ -226,9 +213,9 @@
         </button>
 
         <!-- Re-run button -->
-        <button @click="reRunTestCase()" :disabled="!testInfo.lastRunId"
+        <button @click="reRunTestCase()" :disabled="!lastRunQueueId"
                 class="v2-header-rerun-btn shrink-0"
-                data-tip="Re-run with last config">
+                :data-tip="lastRunQueueId ? ('Re-run: ' + lastRunCountry + ' / ' + lastRunEnvironment) : 'No previous execution'">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
         </button>
 
