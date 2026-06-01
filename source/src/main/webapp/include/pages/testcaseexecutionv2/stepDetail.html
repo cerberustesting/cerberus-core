@@ -231,37 +231,27 @@
                             </div>
                         </template>
 
-                        <!-- 4. Service Request/Response JSON (ALWAYS visible) -->
+                        <!-- 4. Smart preview: Service Request/Response (ALWAYS visible) -->
                         <template x-if="_isServiceAction(action)">
                             <div class="v2-exe-smart-preview">
-                                <template x-if="_getFileByDesc(action.fileList, 'Service Request')">
-                                    <div class="v2-exe-data-block v2-exe-data-block--request"
-                                         x-data="{ content: '', loaded: false, expanded: false }"
-                                         x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Request'), (txt) => { content = txt; loaded = true; })">
-                                        <div class="v2-exe-data-label">
-                                            <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
-                                            Request
-                                        </div>
-                                        <pre class="v2-exe-json-preview"
-                                             :class="expanded ? 'v2-exe-json-preview--expanded' : ''"
-                                             @click="expanded = !expanded"
-                                             x-text="loaded ? content : 'Loading...'"></pre>
-                                    </div>
-                                </template>
-                                <template x-if="_getFileByDesc(action.fileList, 'Service Response')">
-                                    <div class="v2-exe-data-block v2-exe-data-block--response"
-                                         x-data="{ content: '', loaded: false, expanded: false }"
-                                         x-init="_loadMediaContent(_getFileByDesc(action.fileList, 'Service Response'), (txt) => { content = txt; loaded = true; })">
-                                        <div class="v2-exe-data-label">
-                                            <i data-lucide="arrow-down-left" class="w-3 h-3"></i>
-                                            Response
-                                        </div>
-                                        <pre class="v2-exe-json-preview"
-                                             :class="expanded ? 'v2-exe-json-preview--expanded' : ''"
-                                             @click="expanded = !expanded"
-                                             x-text="loaded ? content : 'Loading...'"></pre>
-                                    </div>
-                                </template>
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-if="_getFileByDesc(action.fileList, 'Service Request')">
+                                        <button @click.stop="openFileModal(_getFileByDesc(action.fileList, 'Service Request'))"
+                                                class="v2-exe-file-open-btn v2-exe-file-open-btn--request">
+                                            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                                            <span>Request</span>
+                                            <i data-lucide="external-link" class="w-3 h-3 opacity-50"></i>
+                                        </button>
+                                    </template>
+                                    <template x-if="_getFileByDesc(action.fileList, 'Service Response')">
+                                        <button @click.stop="openFileModal(_getFileByDesc(action.fileList, 'Service Response'))"
+                                                class="v2-exe-file-open-btn v2-exe-file-open-btn--response">
+                                            <i data-lucide="arrow-down-left" class="w-3.5 h-3.5"></i>
+                                            <span>Response</span>
+                                            <i data-lucide="external-link" class="w-3 h-3 opacity-50"></i>
+                                        </button>
+                                    </template>
+                                </div>
                             </div>
                         </template>
 
@@ -429,10 +419,10 @@
                                                                          loading="lazy">
                                                                 </template>
                                                                 <template x-if="!_isImageFile(file)">
-                                                                    <a :href="getMediaFullUrl(file)" target="_blank" class="v2-exe-media-file-chip">
+                                                                    <button @click.stop="openFileModal(file)" class="v2-exe-media-file-chip">
                                                                         <i data-lucide="file" class="w-3 h-3"></i>
                                                                         <span x-text="file.fileDesc || file.fileType || 'File'"></span>
-                                                                    </a>
+                                                                    </button>
                                                                 </template>
                                                             </div>
                                                         </template>
@@ -537,11 +527,11 @@
                                                 </div>
                                                 <div class="flex flex-wrap gap-1.5">
                                                     <template x-for="file in _getDataFiles(action.fileList)" :key="file.fileName">
-                                                        <a :href="getMediaFullUrl(file)" target="_blank" class="v2-exe-media-file-chip">
+                                                        <button @click.stop="openFileModal(file)" class="v2-exe-media-file-chip">
                                                             <i data-lucide="file" class="w-3 h-3"></i>
                                                             <span x-text="file.fileDesc || file.fileType || 'File'"></span>
                                                             <span class="text-[9px] opacity-50" x-text="file.fileType"></span>
-                                                        </a>
+                                                        </button>
                                                     </template>
                                                 </div>
                                             </div>

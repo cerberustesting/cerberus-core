@@ -2001,6 +2001,56 @@
     text-decoration: none;
 }
 
+/* File open buttons */
+.v2-exe-file-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--crb-grey-light-color);
+    background: var(--crb-white-color);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.v2-exe-file-open-btn:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+.v2-exe-file-open-btn--request {
+    color: var(--crb-blue-color);
+    border-color: color-mix(in srgb, var(--crb-blue-color) 20%, transparent);
+}
+.v2-exe-file-open-btn--request:hover {
+    background: color-mix(in srgb, var(--crb-blue-color) 8%, white);
+    border-color: var(--crb-blue-color);
+}
+.v2-exe-file-open-btn--response {
+    color: var(--crb-green-color);
+    border-color: color-mix(in srgb, var(--crb-green-color) 20%, transparent);
+}
+.v2-exe-file-open-btn--response:hover {
+    background: color-mix(in srgb, var(--crb-green-color) 8%, white);
+    border-color: var(--crb-green-color);
+}
+.v2-exe-file-open-btn--source {
+    color: var(--crb-orange-color);
+    border-color: color-mix(in srgb, var(--crb-orange-color) 20%, transparent);
+}
+.v2-exe-file-open-btn--source:hover {
+    background: color-mix(in srgb, var(--crb-orange-color) 8%, white);
+    border-color: var(--crb-orange-color);
+}
+.v2-exe-file-open-btn--default {
+    color: var(--crb-dark-color);
+}
+.v2-exe-file-open-btn--default:hover {
+    background: var(--crb-grey-extra-light-color);
+    border-color: var(--crb-grey-color);
+}
+
 /* Blink animation for LIVE buttons */
 @keyframes v2-blink {
     0%, 100% { opacity: 1; }

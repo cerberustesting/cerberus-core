@@ -73,7 +73,11 @@ function executionV2() {
         get primaryProperties() { return this.properties.filter(p => p.rank !== 2); },
         get secondaryProperties() { return this.properties.filter(p => p.rank === 2); },
         get progress() {
-            if (!this.exe || !this.exe.testCaseStepExecutionList) return 0;
+            // If execution is finished, always show 100%
+            if (this.exe && this.exe.controlStatus && this.exe.controlStatus !== 'PE' && this.exe.controlStatus !== 'NE' && this.exe.controlStatus !== 'QU') {
+                return 100;
+            }
+            if (!this.exe || !this.steps || this.steps.length === 0) return 0;
             let total = 0, done = 0;
             this.steps.forEach(s => {
                 (s.actions || []).forEach(a => {
@@ -795,6 +799,22 @@ function executionV2() {
         },
         openLightbox(url) {
             this.lightboxUrl = url;
+        },
+        openFileModal(file) {
+            if (!file) return;
+            // Use the transversal File.html modal (openModalFile is defined in File.html included via modalInclusions.jsp)
+            if (typeof openModalFile === 'function') {
+                openModalFile(null, null, 'VIEW', null, {
+                    fileName: file.fileName,
+                    fileType: file.fileType || '',
+                    fileDesc: file.fileDesc || '',
+                    level: file.level || '',
+                    id: this.exe.id
+                }, true);
+            } else {
+                // Fallback: open in new tab
+                window.open(this.getMediaFullUrl(file), '_blank');
+            }
         },
         reRunSame() {
             var self = this;
