@@ -6843,4 +6843,4 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1943
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
-  VALUES  ('', 'cerberus_mcp_enable', 'false', 'Boolean in order to enable the MCP endpoints.');
+VALUES  ('', 'cerberus_mcp_enable', 'false', 'Boolean in order to enable the MCP endpoints.');
