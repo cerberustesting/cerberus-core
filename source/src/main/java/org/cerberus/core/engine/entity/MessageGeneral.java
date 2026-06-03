@@ -36,17 +36,15 @@ public class MessageGeneral {
     public static final char VARIABLE_DELIMITER = '%';
 
     /**
-     * Message is a generic Message that is used to feedback the result of any Cerberus execution.
-     * For every message, we have:
-     * - a number
-     * - a 2 digit code that report the status of the event.
-     * - a clear message that will be reported to the user. describing what was done or the error that occured.
+     * Message is a generic Message that is used to feedback the result of any
+     * Cerberus execution. For every message, we have: - a number - a 2 digit
+     * code that report the status of the event. - a clear message that will be
+     * reported to the user. describing what was done or the error that occured.
      */
-
     private final int code;
     private final String codeString;
     private String description;
-    
+
     private MessageGeneralEnum source;
 
     public MessageGeneral(MessageGeneralEnum messageGeneralEnum) {
@@ -54,6 +52,13 @@ public class MessageGeneral {
         this.codeString = messageGeneralEnum.getCodeString();
         this.description = messageGeneralEnum.getDescription();
         this.source = messageGeneralEnum;
+    }
+
+    public MessageGeneral(String codeString, String description) {
+        this.code = 0;
+        this.codeString = codeString;
+        this.description = description;
+        this.source = null;
     }
 
     public int getCode() {
@@ -79,10 +84,12 @@ public class MessageGeneral {
     /**
      * Resolve description by injecting the given value for the given key
      * <p>
-     * A key is a {@link MessageGeneral} variable that follows the given pattern:
-     * {@link MessageGeneral#VARIABLE_DELIMITER}[variable name]{@link MessageGeneral#VARIABLE_DELIMITER}
+     * A key is a {@link MessageGeneral} variable that follows the given
+     * pattern: {@link MessageGeneral#VARIABLE_DELIMITER}[variable
+     * name]{@link MessageGeneral#VARIABLE_DELIMITER}
      *
-     * @param key   the variable name to replace on the {@link MessageGeneral} description
+     * @param key the variable name to replace on the {@link MessageGeneral}
+     * description
      * @param value the value to replace for the given variable name
      * @return this {@link MessageGeneral} instance
      */
@@ -111,6 +118,5 @@ public class MessageGeneral {
     public String toString() {
         return "MessageGeneral{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + '}';
     }
-    
-    
+
 }

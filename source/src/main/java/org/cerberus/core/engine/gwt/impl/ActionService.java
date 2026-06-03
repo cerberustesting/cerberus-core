@@ -166,15 +166,15 @@ public class ActionService implements IActionService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                 actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
-                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Description' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {
             actionExecution.setActionResultMessage(cex.getMessageError());
-            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             actionExecution.setEnd(new Date().getTime());
             return actionExecution;
         }
@@ -192,15 +192,15 @@ public class ActionService implements IActionService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                 actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value1"));
-                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value1' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {
             actionExecution.setActionResultMessage(cex.getMessageError());
-            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             actionExecution.setEnd(new Date().getTime());
             return actionExecution;
         }
@@ -215,15 +215,15 @@ public class ActionService implements IActionService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                 actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value2"));
-                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value2' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {
             actionExecution.setActionResultMessage(cex.getMessageError());
-            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             actionExecution.setEnd(new Date().getTime());
             return actionExecution;
         }
@@ -238,15 +238,15 @@ public class ActionService implements IActionService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                 actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value3"));
-                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value3' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {
             actionExecution.setActionResultMessage(cex.getMessageError());
-            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             actionExecution.setEnd(new Date().getTime());
             return actionExecution;
         }
@@ -537,13 +537,13 @@ public class ActionService implements IActionService {
          * Determine here the impact of the Action on the full test return code
          * from the ResultMessage of the Action.
          */
-        actionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+        execution.setResultMessageFinal(res);
 
         /**
          * Determine here if we stop the test from the ResultMessage of the
          * Action.
          */
-        actionExecution.setStopExecution(res.isStopTest());
+        execution.setStopExecution(res.isStopTest());
 
         /**
          * Timestamp stops here.

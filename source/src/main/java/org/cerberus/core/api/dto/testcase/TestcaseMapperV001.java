@@ -61,6 +61,7 @@ public interface TestcaseMapperV001 {
     @Mapping(source = "invariantCountries", target = "countries")
     @Mapping(source = "testCaseCountryProperties", target = "properties")
     @Mapping(source = "testCaseInheritedProperties", target = "inheritedProperties")
+    @Mapping(source = "muted", target = "isMuted")
     TestcaseDTOV001 toDTO(TestCase testcase);
 
     @Mapping(source = "testFolderId", target = "test")
@@ -74,12 +75,15 @@ public interface TestcaseMapperV001 {
     @Mapping(source = "countries", target = "invariantCountries")
     @Mapping(source = "properties", target = "testCaseCountryProperties")
     @Mapping(source = "inheritedProperties", target = "testCaseInheritedProperties")
+    @Mapping(source = "muted", target = "isMuted")
     @Mapping(target = "ticket", ignore = true)
     @Mapping(target = "system", ignore = true)
     @Mapping(target = "lastExecutionStatus", ignore = true)
     @Mapping(target = "testCaseCountries", ignore = true)
     @Mapping(target = "testCaseLabels", ignore = true)
     @Mapping(target = "refOrigineUrl", ignore = true)
+    @Mapping(target = "histos", ignore = true)
+    @Mapping(target = "dateLastExecuted", ignore = true)
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
 
     @Mapping(source = "testFolderId", target = "test")
@@ -90,6 +94,18 @@ public interface TestcaseMapperV001 {
     @Mapping(source = "activePROD", target = "isActivePROD")
     @Mapping(source = "externalProvider", target = "origine")
     @Mapping(source = "externalReference", target = "refOrigine")
+    @Mapping(source = "countries", target = "invariantCountries")
+    @Mapping(source = "properties", target = "testCaseCountryProperties")
+    @Mapping(source = "inheritedProperties", target = "testCaseInheritedProperties")
+    @Mapping(source = "muted", target = "isMuted")
+    @Mapping(target = "ticket", ignore = true)
+    @Mapping(target = "system", ignore = true)
+    @Mapping(target = "lastExecutionStatus", ignore = true)
+    @Mapping(target = "testCaseCountries", ignore = true)
+    @Mapping(target = "testCaseLabels", ignore = true)
+    @Mapping(target = "refOrigineUrl", ignore = true)
+    @Mapping(target = "histos", ignore = true)
+    @Mapping(target = "dateLastExecuted", ignore = true)
     TestCase fromAItoEntity(TestcaseDTOV001 testcaseDTO);
 
 }

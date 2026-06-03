@@ -117,6 +117,18 @@
                                                     <a><button class="btn btn-default pull-left" id="seeLogs" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Logs</button></a>
                                                 </div>
                                             </div>
+                                            <div class="btn-group marginRight5">
+                                                <a id="switchToBetaV2"><button class="btn btn-default" style="background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none;" title="Switch to Beta V2"><span class="glyphicon glyphicon-flash"></span> Beta V2</button></a>
+                                            </div>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    var params = new URLSearchParams(window.location.search);
+                                                    var t = params.get('test') || '';
+                                                    var tc = params.get('testcase') || '';
+                                                    var link = document.getElementById('switchToBetaV2');
+                                                    if (link) link.href = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(t) + '&testcase=' + encodeURIComponent(tc);
+                                                });
+                                            </script>
                                             <div class="btn-group">
                                                 <a><button class="btn btn-default pull-left" id="seeLastExecUniq"><span class="glyphicon glyphicon-cog"></span> Last Exe</button></a>
                                             </div>

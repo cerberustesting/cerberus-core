@@ -52,6 +52,7 @@ function workspaceSelector() {
         toggleOpen() {
             this.open = !this.open;
         },
+
         toggle(workspace) {
             const idx = this.selected.indexOf(workspace);
             if (idx === -1) this.selected.push(workspace);
@@ -66,6 +67,17 @@ function workspaceSelector() {
             this.selected = [];
         },
 
+        hasChanges() {
+            return !arraysEqual(this.selected, this.previousSelected);
+        },
+
+        applyChanges() {
+            if (!this.hasChanges()) return;
+
+            this.previousSelected = [...this.selected];
+            ChangeWorkspace(this.selected);
+        },
+
         selectedLabel() {
             if (this.selected.length === 0) return 'Select...';
             if (this.selected.length === this.workspaces.length) return 'All selected';
@@ -74,22 +86,20 @@ function workspaceSelector() {
         },
 
         filteredWorkspaces() {
-            if (!this.search) return this.workspaces
+            if (!this.search) return this.workspaces;
             return this.workspaces.filter(w =>
                 w.toLowerCase().includes(this.search.toLowerCase())
-            )
+            );
         },
 
         close() {
             this.open = false;
+
             this.$nextTick(() => {
-                if (!arraysEqual(this.selected, this.previousSelected)) {
-                    this.previousSelected = [...this.selected];
-                    ChangeWorkspace(this.selected);
-                }
+                this.applyChanges();
             });
         }
-    }
+    };
 }
 
 function arraysEqual(a, b) {
@@ -312,7 +322,7 @@ function ChangeWorkspace(selectedWorkspaces) {
         console.error("Aucun utilisateur trouvé");
         return;
     }
-
+console.info(selectedWorkspaces);
     $.ajax({
         url: "UpdateMyUserSystem",
         type: "POST",
@@ -323,6 +333,7 @@ function ChangeWorkspace(selectedWorkspaces) {
         async: false,
         success: function () {
             user.defaultSystems = [...selectedWorkspaces];
+            user.defaultSystem = selectedWorkspaces[selectedWorkspaces.length - 1];
             user.defaultSystemsQuery = selectedWorkspaces.reduce(
                 (acc, s) => acc + '&system=' + encodeURIComponent(s),
                 ''

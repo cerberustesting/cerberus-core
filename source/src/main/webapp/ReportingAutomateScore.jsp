@@ -152,7 +152,7 @@
 
 
                         <div class="panel panel-default">
-                            <div class="panel-body collapse in" id="automateScoreChart">
+                            <div class="panel-body in" id="automateScoreChart">
                                 <div class="row">
                                     <div class="col-md-3">
 
@@ -211,7 +211,7 @@
                             <label id="lblFreq">Key Metrics</label>
                             <!--                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
-                        <div class="panel-body collapse in" style="padding:0px;"  id="kpiScoreChart">
+                        <div class="panel-body in" style="padding:0px;"  id="kpiScoreChart">
                             <div class="row">
 
                                 <div class="col-md-6 ">
@@ -365,7 +365,7 @@
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="lblFreq">Recomendations</label>
                         </div>
-                        <div class="panel-body collapse in" style="padding:0px;"  id="automateScoreReco">
+                        <div class="panel-body in" style="padding:0px;"  id="automateScoreReco">
                             <div class="row">
 
                                 <div class="col-md-6">
@@ -416,7 +416,7 @@
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
 
-                        <div class="panel-body collapse in" id="trendChart">
+                        <div class="panel-body in" id="trendChart">
 
                             <div class="col-md-6">
                                 <div id="panelFrequencyChart" class="panel panel-default" style="display: block">
@@ -531,7 +531,7 @@
                                                                 <label id="ns3Label">Requests List</label>
                                                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                                             </div>-->
-                                <div class="panel-body collapse in" id="testcaseList">
+                                <div class="panel-body in" id="testcaseList">
                                     <table id="testcasesTable" class="table table-hover display" name="testcasesTable"></table>
                                 </div>
                             </div>

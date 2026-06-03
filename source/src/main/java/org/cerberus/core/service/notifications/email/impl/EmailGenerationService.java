@@ -359,9 +359,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             }
 
             StringBuilder urlreporttag = new StringBuilder();
-            urlreporttag.append(cerberusUrl);
-            urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-            urlreporttag.append(StringUtil.encodeURL(tag.getTag()));
+            urlreporttag.append(cerberusUrl).append("/ReportingExecutionByTag.jsp?Tag=").append(StringUtil.encodeURL(tag.getTag()));
 
             // Body replace.
             body = body.replace("%TAG%", tag.getTag());
@@ -459,6 +457,14 @@ public class EmailGenerationService implements IEmailGenerationService {
             for (TestCaseExecution execution : testCaseExecutions) {
                 if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                     if (totalTC < maxLines) {
+                        StringBuilder urlexe = new StringBuilder();
+                        StringBuilder statusCell = new StringBuilder();
+                        if (execution.getId() > 0) {
+                            urlexe.append(cerberusUrl).append("/TestCaseExecution.jsp?executionId=").append(execution.getId());
+                            statusCell.append("<a href=\"").append(urlexe).append("\">").append(execution.getControlStatus()).append("</a>");
+                        } else {
+                            statusCell.append(execution.getControlStatus());
+                        }
                         String tr = "";
                         if (odd) {
                             tr = "<tr style=\"background-color:#E3E3E3\">";
@@ -473,7 +479,7 @@ public class EmailGenerationService implements IEmailGenerationService {
                         detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
                         detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
                         detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
-                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(statusCell).append("</td>");
                         detailStatus.append("</tr>");
                         detailStatus.append(tr);
                         detailStatus.append("<td colspan=\"5\" style=\"font-size: xx-small;margin-left: 10px;\">").append(execution.getDescription()).append("</td>");

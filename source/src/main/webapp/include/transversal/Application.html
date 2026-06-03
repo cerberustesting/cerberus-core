@@ -699,11 +699,16 @@
         row3.append(F("Variable 1", var1Input));
         row3.append(F("Variable 2", var2Input));
         row3.append(F("Secret 1", secret1Input));
-        var expandBtn = $('<button type="button" class="env-btn env-btn-expand" data-toggle="collapse" data-target="#envX' + n + '" title="More"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button>');
+        var expandBtn = $('<button type="button" class="env-btn env-btn-expand" title="More"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></button>');
+        expandBtn.click(function () {
+            var $extra = $('#envX' + n);
+            $extra.slideToggle(200);
+            $(this).find('i, svg').toggleClass('crb-rotate-180');
+        });
         row3.append($('<div style="display:flex;align-items:end;"></div>').append(expandBtn));
         cardDiv.append(row3);
 
-        var extra = $('<div class="collapse" id="envX' + n + '"></div>');
+        var extra = $('<div id="envX' + n + '" style="display:none;"></div>');
         var inner = $('<div class="env-separator"></div>');
 
         var er1 = $('<div class="env-grid" style="grid-template-columns: 1fr 1fr; margin-bottom:6px;"></div>');

@@ -46,8 +46,16 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        $('#frompicker').datetimepicker();
+        $('#frompicker').datetimepicker({
+            showTodayButton: true,
+            sideBySide: true,
+            keepOpen: false,
+            useCurrent: false //Important! See issue #1075
+        });
         $('#topicker').datetimepicker({
+            showTodayButton: true,
+            sideBySide: true,
+            keepOpen: false,
             useCurrent: false //Important! See issue #1075
         });
 

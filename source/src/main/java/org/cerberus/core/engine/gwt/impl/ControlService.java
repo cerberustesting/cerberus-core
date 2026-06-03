@@ -108,15 +108,15 @@ public class ControlService implements IControlService {
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the control result.
                 controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
-                controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                execution.setResultMessageFinal(answerDecode.getResultMessage());
+                execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 controlExecution.setEnd(new Date().getTime());
                 LOG.debug("Control interrupted due to decode 'Description' Error.");
                 return controlExecution;
             }
         } catch (CerberusEventException cex) {
             controlExecution.setControlResultMessage(cex.getMessageError());
-            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             return controlExecution;
         }
 
@@ -142,8 +142,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value1' Error.");
                     return controlExecution;
@@ -166,8 +166,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value2' Error.");
                     return controlExecution;
@@ -190,8 +190,8 @@ public class ControlService implements IControlService {
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
-                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    execution.setResultMessageFinal(answerDecode.getResultMessage());
+                    execution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interrupted due to decode 'Control Value3' Error.");
                     return controlExecution;
@@ -200,7 +200,7 @@ public class ControlService implements IControlService {
             }
         } catch (CerberusEventException cex) {
             controlExecution.setControlResultMessage(cex.getMessageError());
-            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            execution.setResultMessageFinal(cex.getMessageError());
             return controlExecution;
         }
 
@@ -457,7 +457,7 @@ public class ControlService implements IControlService {
          * transformed to OK.
          */
         if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-            controlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+            execution.setResultMessageFinal(res);
         }
 
         /*
@@ -466,7 +466,7 @@ public class ControlService implements IControlService {
          * but refresh the Execution status.
          */
         if (res.isStopTest() && controlExecution.getFatal().equals("Y")) {
-            controlExecution.setStopExecution(true);
+            execution.setStopExecution(true);
         }
 
         controlExecution.setEnd(new Date().getTime());
@@ -757,7 +757,8 @@ public class ControlService implements IControlService {
 
                     } else if (this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                        mes.resolveDescription("STRING1", elementPath);
+                        mes.resolveDescription("STRING1", elementPath)
+                                .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                         return mes;
 
                     } else {
@@ -781,14 +782,16 @@ public class ControlService implements IControlService {
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                             }
-                            mes.resolveDescription("STRING1", elementPath);
+                            mes.resolveDescription("STRING1", elementPath)
+                                    .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
                                 if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
+                                    mes.resolveDescription("STRING1", elementPath)
+                                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                                     return mes;
                                 } else {
                                     throw new PathNotFoundException();
@@ -873,7 +876,8 @@ public class ControlService implements IControlService {
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                     }
-                    mes.resolveDescription("STRING1", elementPath);
+                    mes.resolveDescription("STRING1", elementPath)
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return mes;
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
@@ -910,7 +914,8 @@ public class ControlService implements IControlService {
                             if (!(xmlUnitService.isElementPresent(responseBody, elementPath))) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                             } else {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT)
+                                        .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                             }
                             mes.resolveDescription("STRING1", elementPath);
                             return mes;
@@ -919,7 +924,8 @@ public class ControlService implements IControlService {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
                                 if (!jsonService.getFromJson(execution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
+                                    mes.resolveDescription("STRING1", elementPath)
+                                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                                     return mes;
                                 } else {
                                     throw new PathNotFoundException();
@@ -1407,6 +1413,8 @@ public class ControlService implements IControlService {
                     return mes;
                 }
                 mes = checkNumericVerifyElement(control, value1, value2);
+                mes.resolveDescription("ELEMENTVALUETRANS", actualCleaned);
+                mes.resolveDescription("VALUETRANS", expectedCleaned);
                 break;
         }
         mes.resolveDescription("ELEMENT", path);

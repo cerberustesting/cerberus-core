@@ -270,7 +270,7 @@ public class CreateRobot extends HttpServlet {
             if (hostPassword.equals(StringUtil.SECRET_STRING)) {
                 hostPassword = "";
                 for (RobotExecutor robotExecutor : robotExecutorsFromDb) {
-                    if (robotExecutor.getID() == id) {
+                    if (robotExecutor.getId() == id) {
                         hostPassword = robotExecutor.getHostPassword();
                         LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
                     }

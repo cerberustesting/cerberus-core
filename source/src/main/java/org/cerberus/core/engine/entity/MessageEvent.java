@@ -166,6 +166,9 @@ public class MessageEvent {
      */
     public MessageEvent resolveDescription(String key, String value) {
         if (description != null) {
+            if (value == null) {
+                value = "";
+            }
             description = description.replace(VARIABLE_DELIMITER + key + VARIABLE_DELIMITER, StringUtil.getShortenVersionOfString(value));
         }
         return this;
@@ -177,7 +180,7 @@ public class MessageEvent {
         }
         return this;
     }
-    
+
     @Override
     public String toString() {
         return "MessageEvent{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + ", stopTest=" + stopTest + ", doScreenshot=" + doScreenshot + ", getPageSource=" + getPageSource + ", message=" + message.toString() + '}';

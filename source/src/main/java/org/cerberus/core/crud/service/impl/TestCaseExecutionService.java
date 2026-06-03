@@ -403,8 +403,59 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionStats> readTestCaseExecutionStats(String fromDate, String toDate, List<String> systems){
+    public AnswerItem<TestCaseExecutionStats> readTestCaseExecutionStats(String fromDate, String toDate, List<String> systems) {
         return testCaseExecutionDao.readStats(fromDate, toDate, systems);
+    }
+
+    @Override
+    public MessageGeneral getResultMessageAgregated(List<MessageGeneral> messageList) {
+//        LOG.debug("Aggate Result message");
+//        LOG.debug("  {}", messageList);
+        String finalMessage = "";
+        if (messageList.isEmpty()) {
+            return new MessageGeneral(MessageGeneralEnum.EXECUTION_OK);
+        }
+
+        boolean onlyOK = true;
+        for (MessageGeneral messageGeneral : messageList) {
+            if (!"OK".equals(messageGeneral.getCodeString())) {
+                onlyOK = false;
+            } else {
+                finalMessage += messageGeneral.getDescription().split("-- Waited")[0].split("-- Execution forced")[0];
+            }
+        }
+        if (onlyOK) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_OK);
+            mes.setDescription(mes.getDescription() + " with non blocking warnings : " + finalMessage);
+            return mes;
+        }
+        finalMessage = messageList.get(0).getDescription().split("-- Waited")[0];
+        HashMap<String, Integer> hash = new HashMap<>();
+        for (int i = 1; i < messageList.size(); i++) {
+            if (hash.containsKey(messageList.get(i).getCodeString())) {
+                hash.put(messageList.get(i).getCodeString(), hash.get(messageList.get(i).getCodeString()) + 1);
+            } else {
+                hash.put(messageList.get(i).getCodeString(), 1);
+            }
+        }
+        if (!hash.isEmpty()) {
+            finalMessage += " -- followed by :";
+            for (Map.Entry<String, Integer> entry : hash.entrySet()) {
+                Object key = entry.getKey();
+                Object val = entry.getValue();
+                finalMessage += " " + val + " " + key + ",";
+            }
+        }
+        if (finalMessage.endsWith(",")) {
+            finalMessage = StringUtil.removeLastChar(finalMessage);
+        }
+        String finalCode = messageList.get(0).getCodeString();
+        if ("KO".equals(finalCode)) {
+            finalMessage = MessageGeneralEnum.EXECUTION_KO.getDescription() + " " + finalMessage;
+        } else {
+            finalMessage = MessageGeneralEnum.EXECUTION_FA.getDescription() + " " + finalMessage;
+        }
+        return new MessageGeneral(messageList.get(0).getCodeString(), finalMessage);
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) {

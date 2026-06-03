@@ -95,6 +95,11 @@ public class TestcaseDTOV001 {
     private String status;
 
     @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonProperty("isMuted")
+    @Schema(description = "Mute flag (silent mode)", example = "true")
+    private boolean isMuted;
+
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @JsonProperty("isActive")
     @Schema(description = "Active flag", example = "true")
     private boolean isActive;

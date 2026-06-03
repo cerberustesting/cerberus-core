@@ -38,7 +38,7 @@
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
                 </button>
-                <button @click="open = false"
+                <button @click="console.log('close clicked', open); open = false; console.log('closed', open)"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
@@ -66,37 +66,54 @@ function propertyModal() {
         isFullscreen: false,
         handleOpen(detail) {
             this.open = true;
-            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
-        },
-        init() {
-            this.$watch('open', function(val) {
-                if (!val) { $('#modalProperty').trigger('hidden.bs.modal'); }
-            });
+            // If property data is passed directly (from ExecutionV2), render it
+            if (detail && detail.property) {
+                var prop = detail.property;
+                this.$nextTick(function() {
+                    var row1 = document.getElementById('firstRowProperty');
+                    var row2 = document.getElementById('secondRowProperty');
+                    if (row1) {
+                        row1.innerHTML = '';
+                        var fields = [
+                            { label: 'Property', value: prop.property || '-' },
+                            { label: 'Type', value: prop.type || '-' },
+                            { label: 'Value', value: prop.value || '-' },
+                            { label: 'Nature', value: prop.nature || '-' },
+                            { label: 'Database', value: prop.database || '-' },
+                            { label: 'Length', value: prop.length || '-' }
+                        ];
+                        var html = '<div class="grid grid-cols-2 gap-3">';
+                        fields.forEach(function(f) {
+                            html += '<div><label class="text-xs font-semibold text-slate-500 dark:text-slate-400">' + f.label + '</label>'
+                                  + '<div class="text-sm text-slate-800 dark:text-slate-200 mt-0.5 font-mono break-all">' + (f.value || '-') + '</div></div>';
+                        });
+                        html += '</div>';
+                        row1.innerHTML = html;
+                    }
+                    if (row2) {
+                        row2.innerHTML = '';
+                        var fields2 = [
+                            { label: 'Value 1 (raw)', value: prop.value1 || '-' },
+                            { label: 'Value 1 Init', value: prop.value1Init || '-' },
+                            { label: 'Value 2', value: prop.value2 || '-' },
+                            { label: 'Value 2 Init', value: prop.value2Init || '-' },
+                            { label: 'Return Code', value: prop.returnCode || 'OK' },
+                            { label: 'Return Message', value: prop.returnMessage || '-' }
+                        ];
+                        var html2 = '<div class="grid grid-cols-2 gap-3 mt-3">';
+                        fields2.forEach(function(f) {
+                            html2 += '<div><label class="text-xs font-semibold text-slate-500 dark:text-slate-400">' + f.label + '</label>'
+                                   + '<div class="text-[12px] text-slate-700 dark:text-slate-300 mt-0.5 font-mono break-all">' + (f.value || '-') + '</div></div>';
+                        });
+                        html2 += '</div>';
+                        row2.innerHTML = html2;
+                    }
+                    if (window.lucide) lucide.createIcons();
+                });
+            } else {
+                this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+            }
         }
     };
 }
-
-// ========== Bootstrap → Alpine Bridge (modalProperty only) ==========
-// Overrides $.fn.modal so that existing JS calls like
-//   data-toggle="modal" data-target="#modalProperty"
-// from TestCaseScript.js dispatch Alpine events instead of Bootstrap modals.
-// The other modals (addStepModal, modalOptions, modalStepOptions) are now
-// fully Alpine-driven from their own script tags.
-(function() {
-    var origModal = $.fn.modal;
-    $.fn.modal = function(action) {
-        if (this.length === 1) {
-            var id = this.attr('id');
-            if (id === 'modalProperty') {
-                if (action === 'hide') {
-                    window.dispatchEvent(new CustomEvent('modalproperty-close'));
-                } else if (action === 'show' || action === 'toggle' || typeof action === 'object') {
-                    window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
-                }
-                return this;
-            }
-        }
-        return origModal.apply(this, arguments);
-    };
-})();
 </script>

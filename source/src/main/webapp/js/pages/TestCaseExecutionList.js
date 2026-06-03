@@ -70,7 +70,7 @@ function loadTable(searchArray) {
 
     //configure and create the dataTable
     var lengthMenu = [10, 15, 20, 30, 50, 100, 500, 1000];
-    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [2, 'desc'], lengthMenu);
+    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [2, 'desc'], lengthMenu, (searchArray.length > 0));
     var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", searchArray, true, undefined, undefined);
 
     if (searchArray.length > 0) {

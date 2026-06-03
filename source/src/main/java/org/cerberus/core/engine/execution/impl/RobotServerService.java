@@ -978,12 +978,12 @@ public class RobotServerService implements IRobotServerService {
 
         if (tCExecution.getRobotExecutorObj() != null) {
             // Setting deviceUdid and device name from executor.
-            if (!StringUtil.isEmptyOrNull(tCExecution.getRobotExecutorObj().getDeviceUuid())
+            if (!StringUtil.isEmptyOrNull(tCExecution.getRobotExecutorObj().getDeviceUdid())
                     && ((caps.getCapability("udid") == null)
                     || ((caps.getCapability("udid") != null)
                     && (caps.getCapability("udid").toString().isEmpty())))) {
 
-                caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
+                caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUdid());
             }
 
             if (!StringUtil.isEmptyOrNull(tCExecution.getRobotExecutorObj().getDeviceName())
@@ -1239,8 +1239,8 @@ public class RobotServerService implements IRobotServerService {
         if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             if (execution.getRobotExecutorObj() != null) {
                 // Setting deviceUdid and device name from executor.
-                if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceUuid()) && isNotAlreadyDefined(finalCapabilities, "appium:udid")) {
-                    finalCapabilities.setCapability("appium:udid", execution.getRobotExecutorObj().getDeviceUuid());
+                if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceUdid()) && isNotAlreadyDefined(finalCapabilities, "appium:udid")) {
+                    finalCapabilities.setCapability("appium:udid", execution.getRobotExecutorObj().getDeviceUdid());
                 }
 
                 if (!StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getDeviceName()) && isNotAlreadyDefined(finalCapabilities, "appium:deviceName")) {

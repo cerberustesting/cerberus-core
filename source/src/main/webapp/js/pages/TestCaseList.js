@@ -899,6 +899,21 @@ function filterOnField(element) {
     $("#testCaseTable").dataTable().fnFilter(newTest, colIndex);
 }
 
+function filterOnStatus(element) {
+    var newStatus = $(element).get(0).textContent.trim();
+    var table = $("#testCaseTable").dataTable();
+
+    var domColIndex = $(element).closest('td').index();
+
+    var logicalColIndex = table.fnSettings().oApi._fnVisibleToColumnIndex(
+        table.fnSettings(),
+        domColIndex
+    );
+
+    table.fnFilter(newStatus, logicalColIndex);
+}
+
+
 function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
 
@@ -973,6 +988,21 @@ function aoColumnsFunc(countries, tableId) {
                 </button>
             `;
                 }
+                function actionButtonLink({ id, name, title, link, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+                    return `
+                <a href="${link}">
+                    <button
+                        id="${id}" name="${name}"
+                        type="button" 
+                        class="${baseBtnClass} ${extraClass} ${disabledClass}" 
+                        title="${title}" 
+                    >
+                        ${icon}
+                    </button>
+                </a>
+            `;
+                }
 
                 const icons = {
                     edit: `<i data-lucide="${hasUpdate ? 'pencil' : 'eye'}" class="w-4 h-4"></i>`,
@@ -985,14 +1015,24 @@ function aoColumnsFunc(countries, tableId) {
 
                 let buttons = [];
 
-                // Edit / View
+                // Edit Script (file-text icon) — navigate to script page
+                buttons.push(actionButtonLink({
+                    id: `testcase_action_editscript_${row}`,
+                    name: "editScriptTestcase",
+                    title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
+                    link: `TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}`,
+                    extraClass: "group-hover:!text-blue-500",
+                    icon: icons.edit
+                }));
+
+                // Edit Header (file-text icon) — open header modal
                 buttons.push(actionButton({
                     id:`testcase_action_editheader_${row}`,
                     name: "editTestcase",
                     title: hasUpdate ? doc.getDocLabel("page_testcaselist", "btn_edit")
                         : doc.getDocLabel("page_testcaselist", "btn_view"),
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','${hasUpdate ? 'EDIT' : 'VIEW'}')`,
-                    icon: icons.edit,
+                    icon: icons.script,
                     disabled: !hasUpdate
                 }));
 
@@ -1004,16 +1044,6 @@ function aoColumnsFunc(countries, tableId) {
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','DUPLICATE')`,
                     icon: icons.duplicate
                 }));
-
-                // Export
-                //buttons.push(actionButton({
-                //    id: `testcase_action_export_${row}`,
-                //    name: "exportTestcase",
-                //    title: doc.getDocLabel("page_testcaselist", "btn_export"),
-                //    onClick: `window.location.href='./ExportTestCase?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}'`,
-                //    icon: icons.export,
-                //    disabled: !hasUpdate
-                //}));
 
                 // Delete
                 buttons.push(actionButton({
@@ -1033,34 +1063,15 @@ function aoColumnsFunc(countries, tableId) {
                     onClick: `
                         window.dispatchEvent(new CustomEvent('open-execution', {
                             detail: {
-                                application: '${data.application}',
-                                test: '${obj.test}',
-                                testcase: '${obj.testcase}',
-                                description: '${data.description}'
+                                application: '${escapeQuote(data.application)}',
+                                test: '${escapeQuote(obj.test)}',
+                                testcase: '${escapeQuote(obj.testcase)}',
+                                description: '${escapeQuote(data.description)}'
                             }
                         }))
                     `,
                     extraClass: "group-hover:!text-green-500",
                     icon: icons.run
-                }));
-
-                // Edit Script
-                buttons.push(actionButton({
-                    id: `testcase_action_editscript_${row}`,
-                    name: "editScriptTestcase",
-                    title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
-                    onClick: `
-                        (function(event) {
-                            const url = './TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}';
-                            if (event.ctrlKey || event.metaKey) {
-                                window.open(url, '_blank');
-                            } else {
-                                window.location.href = url;
-                            }
-                        })(event)
-                    `,
-                    extraClass: "group-hover:!text-blue-500",
-                    icon: icons.script
                 }));
 
                 return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;
@@ -1200,13 +1211,13 @@ function aoColumnsFunc(countries, tableId) {
                 return `
                     <button
                         type="button"
-                        onclick="filterOnField(this)"
+                        onclick="filterOnStatus(this)"
                         class="inline-flex items-center px-3 py-1
                             border border-slate-300 dark:border-slate-600 rounded-xl
                             text-sm font-medium text-slate-700 dark:text-slate-200
                             hover:border-blue-500 hover:text-blue-600
                             transition cursor-pointer bg-transparent"
-                        title="Open test ${oObj.status}"
+                        title="Filter test ${oObj.status}"
                     >
                         ${oObj.status}
                     </button>

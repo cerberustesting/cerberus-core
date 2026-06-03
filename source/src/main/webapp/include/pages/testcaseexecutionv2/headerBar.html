@@ -1,0 +1,256 @@
+<!-- TestCaseExecution V2 - Header Bar -->
+
+<div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader"
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: visible">
+
+    <!-- Progress Bar - Premium Design -->
+    <div style="padding: 0 3px">
+        <div style="height: 4px; border-radius: 0 0 12px 12px; overflow: hidden; background: color-mix(in srgb, var(--crb-grey-light-color) 50%, transparent)">
+            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
+                 :class="exe.controlStatus === 'PE' ? 'v2-exe-progress-animated' : ''"
+                 :style="'width:' + progress + '%; background:' + (exe.controlStatus === 'OK' ? 'var(--crb-green-color)' : exe.controlStatus === 'KO' ? 'var(--crb-red-color)' : exe.controlStatus === 'FA' ? '#f59e0b' : exe.controlStatus === 'PE' ? 'var(--crb-blue-color)' : 'var(--crb-grey-color)')"></div>
+        </div>
+    </div>
+
+    <div class="p-3">
+        <div class="flex items-center gap-2 flex-wrap">
+
+            <!-- Back to Test Case Script V2 -->
+            <button @click="window.location.href='TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test || '') + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase || '')"
+                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg transition-colors
+                           hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-sky-500 shrink-0">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Test / TestCase + ID inline -->
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    <a :href="'TestCaseList.jsp?test=' + encodeURIComponent(exe.test)"
+                       class="truncate hover:text-sky-500 hover:underline transition-colors cursor-pointer"
+                       x-text="exe.test || '-'" style="max-width: 200px"></a>
+                    <span class="text-slate-400">/</span>
+                    <a :href="'TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase)"
+                       class="truncate hover:text-sky-500 hover:underline transition-colors cursor-pointer"
+                       x-text="exe.testcase || exe.testCase || '-'" style="max-width: 240px"></a>
+                    <!-- Execution ID Badge inline -->
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold shrink-0 ml-1"
+                          :class="{
+                              'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400': exe.controlStatus === 'OK',
+                              'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400': exe.controlStatus === 'KO',
+                              'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400': exe.controlStatus === 'FA',
+                              'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400': exe.controlStatus === 'PE',
+                              'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400': !exe.controlStatus || ['NE','NA','WE','CA','QU'].includes(exe.controlStatus)
+                          }">
+                        <span x-text="'#' + (exe.id || '-')"></span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5" style="padding-left: 2px">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-md"
+                          x-text="(testCaseObj && testCaseObj.description) || exe.description || ''"></span>
+                </div>
+            </div>
+
+            <!-- Country / Environment badges -->
+            <template x-if="exe.country">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                            bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400
+                            text-[10px] font-semibold shrink-0">
+                    <i data-lucide="flag" class="w-3 h-3"></i>
+                    <span x-text="exe.country"></span>
+                </span>
+            </template>
+            <template x-if="exe.environment">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                            bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400
+                            text-[10px] font-semibold shrink-0">
+                    <i data-lucide="earth" class="w-3 h-3"></i>
+                    <span x-text="exe.environment"></span>
+                </span>
+            </template>
+
+            <!-- Divider -->
+            <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+            <!-- Control Status Badge -->
+            <div class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
+                 :class="{
+                     'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': exe.controlStatus === 'OK',
+                     'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400': exe.controlStatus === 'KO',
+                     'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400': exe.controlStatus === 'FA',
+                     'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400': exe.controlStatus === 'PE',
+                     'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400': !exe.controlStatus || ['NE','NA','WE','CA','QU'].includes(exe.controlStatus)
+                 }">
+                <i :data-lucide="_getStatusIcon(exe.controlStatus)"
+                   class="w-3.5 h-3.5"
+                   :class="exe.controlStatus === 'PE' ? 'animate-spin' : ''"></i>
+                <span x-text="_getStatusLabel(exe.controlStatus)"></span>
+            </div>
+
+            <!-- Duration -->
+            <template x-if="exe.start">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                            bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400
+                            text-[10px] font-semibold shrink-0">
+                    <i data-lucide="timer" class="w-3 h-3"></i>
+                    <span x-text="formatDuration(exe.start, exe.end || Date.now())"></span>
+                </span>
+            </template>
+
+            <!-- Progress % pill -->
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tabular-nums shrink-0"
+                  :class="{
+                      'bg-green-50 text-green-600': exe.controlStatus === 'OK',
+                      'bg-red-50 text-red-600': exe.controlStatus === 'KO',
+                      'bg-amber-50 text-amber-600': exe.controlStatus === 'FA',
+                      'bg-blue-50 text-blue-600': exe.controlStatus === 'PE',
+                      'bg-slate-50 text-slate-400': !exe.controlStatus || ['NE','NA','WE','CA','QU'].includes(exe.controlStatus)
+                  }"
+                  x-text="progress + '%'"></span>
+
+            <!-- Divider -->
+            <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+            <!-- False Negative toggle -->
+            <button @click="toggleFalseNegative()"
+                    class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors shrink-0"
+                    :class="falseNegative ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                    data-tip="Toggle False Negative" data-tip-pos="bottom">
+                <i data-lucide="flag-triangle-right" class="w-3.5 h-3.5"></i>
+                <span x-show="falseNegative">FN</span>
+            </button>
+
+            <!-- Save status badge -->
+            <template x-if="saveState !== ''">
+                <div class="inline-flex items-center gap-2 shrink-0">
+                    <div class="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-md"
+                         :class="{
+                            'text-emerald-500': saveState === 'saved',
+                            'text-amber-500 bg-amber-50 dark:bg-amber-900/20': saveState === 'dirty',
+                            'text-sky-500': saveState === 'saving'
+                         }">
+                        <span class="w-1.5 h-1.5 rounded-full bg-current"
+                              :class="saveState === 'saving' ? 'v2-pulse' : ''"></span>
+                        <span x-text="saveState === 'saving' ? 'Saving...'
+                                     : saveState === 'saved'  ? 'Saved'
+                                     : saveState === 'dirty'  ? 'Unsaved'
+                                     : ''"></span>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Save button (manual mode) -->
+            <template x-if="isManual">
+                <button @click="save()" :disabled="saveState !== 'dirty'"
+                        class="v2-header-action-btn shrink-0 transition-all duration-300"
+                        :class="saveState === 'dirty' ? 'v2-save-nudge' : ''"
+                        :style="saveState === 'dirty' ? 'background: var(--crb-blue-color)' : 'background: var(--crb-grey-color); opacity: 0.45; cursor: not-allowed'"
+                        data-tip="Save (Ctrl+S)">
+                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                    Save
+                </button>
+            </template>
+
+            <!-- LIVE buttons (only visible during PE / execution in progress) -->
+            <template x-if="exe.controlStatus === 'PE' && exe.remoteLiveUrl">
+                <a :href="exe.remoteLiveUrl" target="_blank"
+                   class="v2-exe-run-btn shrink-0 v2-blink" style="background: var(--crb-blue-color); text-decoration: none">
+                    <i data-lucide="monitor-play" class="w-3.5 h-3.5"></i>
+                    LIVE
+                </a>
+            </template>
+            <template x-if="exe.controlStatus === 'PE' && exe.remoteControlLiveUrl">
+                <a :href="exe.remoteControlLiveUrl" target="_blank"
+                   class="v2-exe-run-btn shrink-0 v2-blink" style="background: #8b5cf6; text-decoration: none">
+                    <i data-lucide="monitor-smartphone" class="w-3.5 h-3.5"></i>
+                    LIVE CONTROL
+                </a>
+            </template>
+
+            <!-- Run button -->
+            <button @click="reRun()"
+                    class="v2-exe-run-btn v2-exe-run-btn--primary shrink-0"
+                    data-tip="Run this test case">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                Run
+            </button>
+
+            <!-- Rerun Same button -->
+            <button @click="reRunSame()"
+                    class="v2-exe-run-btn v2-exe-run-btn--secondary shrink-0"
+                    data-tip="Re-run with same parameters" data-tip-pos="bottom">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                Rerun
+            </button>
+
+            <!-- Last Executions dropdown -->
+            <div x-data="{ exeListOpen: false }" class="relative shrink-0" @click.outside="exeListOpen = false">
+                <button @click="exeListOpen = !exeListOpen"
+                        class="v2-header-rerun-btn"
+                        data-tip="Last executions" data-tip-pos="bottom">
+                    <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                </button>
+                <div x-show="exeListOpen" x-cloak x-transition.opacity.duration.150ms
+                     class="absolute right-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
+                     style="min-width: 320px; max-height: 320px; overflow-y: auto; background: var(--crb-new-bg); border-color: var(--crb-grey-light-color)">
+                    <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color); font-size: 11px; font-weight: 600; color: var(--crb-grey-color)">
+                        Last Executions
+                    </div>
+                    <div style="padding: 4px">
+                        <template x-for="e in lastExecutions" :key="e.id">
+                            <button @click="switchToExecution(e.id); exeListOpen = false"
+                                    class="flex items-center gap-2 w-full text-left transition-colors"
+                                    :style="e.id == exe.id ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); font-weight:600' : ''"
+                                    style="padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; border: none"
+                                    @mouseenter="$el.style.background = e.id == exe.id ? 'color-mix(in srgb, var(--crb-blue-color) 15%, transparent)' : 'var(--crb-grey-extra-light-color)'"
+                                    @mouseleave="$el.style.background = e.id == exe.id ? 'color-mix(in srgb, var(--crb-blue-color) 10%, transparent)' : 'transparent'">
+                                <span class="w-2 h-2 rounded-full shrink-0"
+                                      :class="{
+                                          'bg-green-500': e.controlStatus === 'OK',
+                                          'bg-red-500': e.controlStatus === 'KO',
+                                          'bg-amber-500': e.controlStatus === 'FA',
+                                          'bg-blue-500': e.controlStatus === 'PE',
+                                          'bg-slate-400': !e.controlStatus || ['NE','NA','WE','CA','QU'].includes(e.controlStatus)
+                                      }"></span>
+                                <span class="font-mono text-[11px]" x-text="'#' + e.id"></span>
+                                <span class="text-[10px] opacity-60" x-text="e.country + ' / ' + e.env"></span>
+                                <span class="text-[10px] opacity-40 ml-auto" x-text="e.tag || ''"></span>
+                            </button>
+                        </template>
+                        <div x-show="lastExecutions.length === 0"
+                             style="padding: 12px; text-align:center; font-size: 12px; color: var(--crb-grey-color)">No executions found</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More actions -->
+            <div x-data="{ moreOpen: false }" class="relative shrink-0">
+                <button @click="moreOpen = !moreOpen" @click.outside="moreOpen = false"
+                        class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-700
+                               text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                    <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                </button>
+                <div x-show="moreOpen" x-cloak x-transition
+                     class="absolute right-0 top-full mt-1 w-56 rounded-xl border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800 shadow-lg p-1 z-50">
+                    <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                                   hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            @click="window.open('TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase), '_blank'); moreOpen = false">
+                        <i data-lucide="file-code" class="w-3.5 h-3.5"></i> Edit Test Case Script
+                    </button>
+                    <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                                   hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            @click="if(exe.tag) window.open('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(exe.tag), '_blank'); moreOpen = false">
+                        <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i> Campaign Report
+                    </button>
+                    <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
+                    <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                                   hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            @click="createBug(); moreOpen = false"
+                            x-show="applicationObj && applicationObj.bugTrackerUrl">
+                        <i data-lucide="bug" class="w-3.5 h-3.5"></i> Create Bug
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

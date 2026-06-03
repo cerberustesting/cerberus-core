@@ -58,6 +58,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $('#topicker').datetimepicker({
             format: 'YYYY-MM-DD [(Week] WW YYYY)',
+            sideBySide: true,
             keepOpen: false,
             calendarWeeks: true
         });
@@ -519,18 +520,18 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
         environments = [];
     }
 
-    //let to = new Date($('#topicker').data("DateTimePicker").date());
-    let to = document.getElementById('topicker').value;
-
+    let to = new Date($('#topicker').data("DateTimePicker").date());
+//    let to = document.getElementById('topicker').value;
+    
     /*
-    if ($("#envSelect").val() !== null) {
-        environments = $("#envSelect").val();
-    }
-    len = environments.length;
-    var environmentsQ = "";
-    for (var i = 0; i < len; i++) {
-        environmentsQ += "&environments=" + encodeURI(environments[i]);
-    }*/
+     if ($("#envSelect").val() !== null) {
+     environments = $("#envSelect").val();
+     }
+     len = environments.length;
+     var environmentsQ = "";
+     for (var i = 0; i < len; i++) {
+     environmentsQ += "&environments=" + encodeURI(environments[i]);
+     }*/
 
     var campaignString = "";
     if ($("#campaignSelect").val() !== null) {
@@ -545,40 +546,40 @@ function loadKPIGraphBars(saveURLtoHistory, environments, gp1s, gp2s, gp3s) {
             systemString = systemString + "&systems=" + encodeURI($("#systemSelect").val()[i]);
         }
     }
-/*
-    if ($("#gp1Select").val() !== null) {
-        gp1s = $("#gp1Select").val();
-    }
-    var gp1sQ = "";
-    if (gp1s !== undefined) {
-        len = gp1s.length;
-        for (var i = 0; i < len; i++) {
-            gp1sQ += "&group1s=" + encodeURI(gp1s[i]);
-        }
-    }
-
-    if ($("#gp2Select").val() !== null) {
-        gp2s = $("#gp2Select").val();
-    }
-    var gp2sQ = "";
-    if (gp2s !== undefined) {
-        len = gp2s.length;
-        for (var i = 0; i < len; i++) {
-            gp2sQ += "&group2s=" + encodeURI(gp2s[i]);
-        }
-    }
-
-    if ($("#gp3Select").val() !== null) {
-        gp3s = $("#gp3Select").val();
-    }
-    var gp3sQ = "";
-    if (gp3s !== undefined) {
-        len = gp3s.length;
-        for (var i = 0; i < len; i++) {
-            gp3sQ += "&group3s=" + encodeURI(gp3s[i]);
-        }
-    }
-*/
+    /*
+     if ($("#gp1Select").val() !== null) {
+     gp1s = $("#gp1Select").val();
+     }
+     var gp1sQ = "";
+     if (gp1s !== undefined) {
+     len = gp1s.length;
+     for (var i = 0; i < len; i++) {
+     gp1sQ += "&group1s=" + encodeURI(gp1s[i]);
+     }
+     }
+     
+     if ($("#gp2Select").val() !== null) {
+     gp2s = $("#gp2Select").val();
+     }
+     var gp2sQ = "";
+     if (gp2s !== undefined) {
+     len = gp2s.length;
+     for (var i = 0; i < len; i++) {
+     gp2sQ += "&group2s=" + encodeURI(gp2s[i]);
+     }
+     }
+     
+     if ($("#gp3Select").val() !== null) {
+     gp3s = $("#gp3Select").val();
+     }
+     var gp3sQ = "";
+     if (gp3s !== undefined) {
+     len = gp3s.length;
+     for (var i = 0; i < len; i++) {
+     gp3sQ += "&group3s=" + encodeURI(gp3s[i]);
+     }
+     }
+     */
     nbWeeks = document.getElementById("trendWeeks").value;
 
     let qS = "nbWeeks=" + nbWeeks + "&to=" + mimicISOString(to) + campaignString + systemString;

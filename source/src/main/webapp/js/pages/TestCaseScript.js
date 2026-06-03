@@ -176,9 +176,9 @@ $.when($.getScript("js/global/global.js")
                     console.info(testcaseObject);
                     $("#tcHVersion").text(testcaseObject.version);
                     if (testcaseObject.dateModif >= testcaseObject.dateCreated) {
-                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrModif + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateModif).getTime()) / 1000,2) + " ago</b>");
+                        $("#tcHVersion").attr("data-original-title", "<b>" + testcaseObject.usrModif + "</b> created <b>" + getDate(new Date(testcaseObject.dateModif).getTime()) + "</b> (" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateModif).getTime()) / 1000, 2) + " ago)");
                     } else {
-                        $("#tcHVersion").attr("data-original-title", "<b>"+testcaseObject.usrCreated + "</b> created <b>" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateCreated).getTime()) / 1000,2) + " ago</b>");
+                        $("#tcHVersion").attr("data-original-title", "<b>" + testcaseObject.usrCreated + "</b> created <b>" + getDate(new Date(testcaseObject.dateModif).getTime()) + "</b> (" + getHumanReadableDuration((new Date().getTime() - new Date(testcaseObject.dateCreated).getTime()) / 1000, 2) + " ago");
                     }
                     $("#tcHVersion").show();
 
@@ -1434,7 +1434,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     break;
                 case 'calculateProperty':
                     let data = loadGuiProperties();
-                    var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+                    var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" "\n\
         				class="buttonObject btn btn-default input-sm " \n\
         				title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
         				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
@@ -1447,6 +1447,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             $("#modalProperty").find("#secondRowProperty").find("p").remove();
                             $("#modalProperty").find("#firstRowProperty").append(firstRow);
                             $("#modalProperty").find("#secondRowProperty").append(secondRow);
+                            window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
                         });
                         $(htmlElement).parent().append(viewEntry);
                     }
@@ -1519,7 +1520,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
                                 if (objectIntoTagToUseExist(TagsToUse[4], name)) {
-                                    var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+                                    var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" "\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
 	                                		title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-eye-open"></span></button></span>');
@@ -1533,6 +1534,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             $("#modalProperty").find("#firstRowProperty").append(firstRow);
                                             $("#modalProperty").find("#secondRowProperty").append(secondRow);
                                             $("#modalProperty").find(".modal-title").html(property);
+                                            window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
                                         });
                                         $(htmlElement).parent().append(viewEntry);
                                     }

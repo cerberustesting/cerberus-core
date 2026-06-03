@@ -27,7 +27,7 @@
         <meta name="active-submenu" content="TestCaseExecution.jsp">
         <meta name="active-page" content="TestCaseExecution.jsp">
         <meta name="page" content="Test Case Execution">
-        <<meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -208,6 +208,15 @@
                                                     </a>
                                                 </div>
                                             </div>
+                                            <div class="btn-group marginRight5">
+                                                <a id="switchToExeV2"><button class="btn btn-default" style="background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none;" title="Switch to Beta V2"><span class="glyphicon glyphicon-flash"></span> Beta V2</button></a>
+                                            </div>
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    var link = document.getElementById('switchToExeV2');
+                                                    if (link) link.href = 'TestCaseExecutionV2.jsp' + window.location.search;
+                                                });
+                                            </script>
                                             <div class="btn-group ">
                                                 <a>
                                                     <button class="btn btn-default" id="editTcStepInfo"

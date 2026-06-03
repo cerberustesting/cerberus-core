@@ -289,7 +289,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setString(i++, object.getPort());
                 preStat.setString(i++, object.getHostUser());
                 preStat.setString(i++, object.getHostPassword());
-                preStat.setString(i++, object.getDeviceUuid());
+                preStat.setString(i++, object.getDeviceUdid());
                 preStat.setString(i++, object.getDeviceName());
                 if (object.getDevicePort() != null) {
                     preStat.setInt(i++, object.getDevicePort());
@@ -390,7 +390,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             preStat.setString(i++, object.getPort());
             preStat.setString(i++, object.getHostUser());
             preStat.setString(i++, object.getHostPassword());
-            preStat.setString(i++, object.getDeviceUuid());
+            preStat.setString(i++, object.getDeviceUdid());
             preStat.setString(i++, object.getDeviceName());
             if (object.getDevicePort() != null) {
                 preStat.setInt(i++, object.getDevicePort());

@@ -315,6 +315,13 @@ const testcaseSimpleExecutionLabel = {
     modalsubtitle: {en:"Run your test case on specific environments, defining robots and parameters", fr:"Exécuter le cas de test sur les environnements selectionnés, avec les robots et paramètres choisis."}
 }
 
+const datePickerLabel = {
+    year: {en:"Year", fr:"Année"},
+    month: {en:"Month", fr:"Mois"},
+    day: {en:"Day", fr:"Jour"},
+    hour: {en:"Hour", fr:"Heure"}
+}
+
 window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
 window.homepageLabel = homepageLabel;
@@ -325,3 +332,4 @@ window.applicationObjectLabel = applicationObjectLabel;
 window.testcaseSimpleCreationImportLabel = testcaseSimpleCreationImportLabel;
 window.testcaseSimpleCreationLabel = testcaseSimpleCreationLabel;
 window.testcaseSimpleExecutionLabel = testcaseSimpleExecutionLabel;
+window.datePickerLabel = datePickerLabel;

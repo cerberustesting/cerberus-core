@@ -127,7 +127,7 @@ public abstract class AppiumService implements IAppiumService {
             WebElement elmt = this.getElement(session, identifier, false, false);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            message.resolveDescription("ELEMENTFOUND", "At least one element was found")
+            message.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                     .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             return message;
 
@@ -169,7 +169,8 @@ public abstract class AppiumService implements IAppiumService {
 //                }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("ELEMENTFOUND", foundElementMsg.getDescription()));
+            message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
+                    .resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
             if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
             } else {
@@ -262,7 +263,9 @@ public abstract class AppiumService implements IAppiumService {
                 Thread.sleep(150);
                 tap(appiumDriver, elementX, elementY);
             }
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK)
+                    .resolveDescription("ELEMENT", identifier.toString())
+                    .resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
         } catch (NoSuchElementException e) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(e.getMessage());

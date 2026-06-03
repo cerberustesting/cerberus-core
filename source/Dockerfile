@@ -1,7 +1,7 @@
 # DOCKERFILE FOR LOCAL DEVELOPMENT
 # this dockerfile creates an tomcat image packaged with all the necessary configuration for Cerberus
 
-FROM tomcat:8-jre8-alpine
+FROM tomcat:8.5-jre11-temurin
 
 ENV LOG_ROOT_PATH /usr/local/tomcat/logs/
 
@@ -14,12 +14,15 @@ ENV DATABASE_NAME cerberus
 ENV DATABASE_USER cerberus
 ENV DATABASE_PASSWORD toto
 
-ARG CERBERUS_NAME=Cerberus
-ARG CERBERUS_VERSION=4.14-SNAPSHOT
+ARG CERBERUS_NAME=cerberus-core
+ARG CERBERUS_VERSION=4.21-SNAPSHOT
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
 ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.47
 ARG MYSQL_JAVA_CONNECTOR_NAME=mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
+
+# Install required tools
+RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
 # Download & install MySQL JDBC Drivers
 RUN echo "Download & install MySQL JDBC Drivers" && \
@@ -52,5 +55,5 @@ COPY configuration/tomcat/*.xml /usr/local/tomcat/conf/
 #RUN echo ${CATALINA_OPTS}
 
 COPY entrypoint.sh /entrypoint.sh
-RUN dos2unix /entrypoint.sh && chmod u+x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod u+x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

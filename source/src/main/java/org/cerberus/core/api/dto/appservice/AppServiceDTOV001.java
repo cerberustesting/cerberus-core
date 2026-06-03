@@ -111,6 +111,10 @@ public class AppServiceDTOV001 {
     private String serviceRequest;
 
     @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Service request extra content 1")
+    private String serviceRequestExtra1;
+
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @Schema(description = "Kafka topic")
     private String kafkaTopic;
 

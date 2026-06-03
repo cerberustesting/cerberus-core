@@ -315,7 +315,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         robotExecutor.setHostUser(newRobotExecutorFromSource.getHostUser() == null ? re.getItem().getHostUser() : newRobotExecutorFromSource.getHostUser());
         robotExecutor.setHostPassword(newRobotExecutorFromSource.getHostPassword() == null ? re.getItem().getHostPassword() : newRobotExecutorFromSource.getHostPassword());
         robotExecutor.setExecutorExtensionProxyPort(newRobotExecutorFromSource.getExecutorExtensionProxyPort() == null ? re.getItem().getExecutorExtensionProxyPort() : newRobotExecutorFromSource.getExecutorExtensionProxyPort());
-        robotExecutor.setDeviceUuid(newRobotExecutorFromSource.getDeviceUdid() == null ? re.getItem().getDeviceUuid() : newRobotExecutorFromSource.getDeviceUdid());
+        robotExecutor.setDeviceUdid(newRobotExecutorFromSource.getDeviceUdid() == null ? re.getItem().getDeviceUdid() : newRobotExecutorFromSource.getDeviceUdid());
         robotExecutor.setDeviceName(newRobotExecutorFromSource.getDeviceName() == null ? re.getItem().getDeviceName() : newRobotExecutorFromSource.getDeviceName());
         robotExecutor.setDevicePort(newRobotExecutorFromSource.getDevicePort() == null ? re.getItem().getDevicePort() : newRobotExecutorFromSource.getDevicePort());
         robotExecutor.setIsDeviceLockUnlock(newRobotExecutorFromSource.getIsDeviceLockUnlock() == null ? re.getItem().isDeviceLockUnlock() : newRobotExecutorFromSource.getIsDeviceLockUnlock());

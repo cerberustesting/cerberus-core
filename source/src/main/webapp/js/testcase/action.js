@@ -211,7 +211,7 @@ Action.prototype.generateContent = function () {
 
     var field1Container = $("<div class='input-group'></div>");
     var field1Addon = $("<span></span>").attr("id", "field1Addon").attr('for', uniqfieldid + 'v1').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
-    field1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    field1Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     value1Field.attr("aria-describedby", "field1Addon");
     field1Container.append(field1Addon).append(value1Field);
 //END OF VALUE1 FIELD
@@ -226,7 +226,7 @@ Action.prototype.generateContent = function () {
 
     var field2Container = $("<div class='input-group'></div>");
     var field2Addon = $("<span></span>").attr("id", "field2Addon").attr('for', uniqfieldid + 'v2').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
-    field2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    field2Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     value2Field.attr("aria-describedby", "field2Addon");
     field2Container.append(field2Addon).append(value2Field);
 //END OF VALUE2 FIELD
@@ -239,8 +239,8 @@ Action.prototype.generateContent = function () {
     });
 
     var field3Container = $("<div class='input-group'></div>");
-    var field3Addon = $("<span></span>").attr("id", "field3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
-    field3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    var field3Addon = $("<span></span>").attr("id", "field3Addon").addClass("input-group-addon").attr("style", "font-weight: 700");
+    field3Addon.append("<img class='max-w-none inline-block' width='15px' height='15px' src='images/action-website.png'>");
     value3Field.attr("aria-describedby", "field3Addon");
     field3Container.append(field3Addon).append(value3Field);
 //END OF VALUE3 FIELD

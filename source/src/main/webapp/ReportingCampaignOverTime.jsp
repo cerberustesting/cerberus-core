@@ -233,7 +233,7 @@
                         </div>
                         <div class="panel-body" id="perfChart1">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagDStat">
+                                <div class="col-xs-12" id="ChartTagDStat" style="height: 350px;">
                                     <canvas id="canvasTagDStat"></canvas>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@
                         </div>
                         <div class="panel-body" id="perfChart3">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagEStat">
+                                <div class="col-xs-12" id="ChartTagEStat" style="height: 400px;">
                                     <canvas id="canvasTagEStat"></canvas>
                                 </div>
                             </div>
@@ -261,7 +261,7 @@
                         </div>
                         <div class="panel-body" id="perfChart2">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagSStat">
+                                <div class="col-xs-12" id="ChartTagSStat" style="height: 400px;">
                                     <canvas id="canvasTagSStat"></canvas>
                                 </div>
                             </div>
@@ -275,7 +275,7 @@
                         </div>
                         <div class="panel-body" id="perfChart4">
                             <div class="row">
-                                <div class="col-xs-12" id="ChartTagBar">
+                                <div class="col-xs-12" id="ChartTagBar" style="height: 350px;">
                                     <canvas id="canvasTagBar"></canvas>
                                 </div>
                             </div>

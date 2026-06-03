@@ -859,6 +859,7 @@ function renderCampaignGrid(container, tagList1, nextRuns) {
  */
 function renderCampaignCard(campaignName, tagExecutions, nextRun, runId) {
     const stats = computeCampaignStats(tagExecutions);
+    console.info(stats);
     return $(`<div class="crb_card_tag">
                 <div class="flex justify-between items-start mb-8 gap-4">
                     <div class="flex flex-col gap-1 min-w-0 min-h-[1.5rem]">
@@ -933,8 +934,10 @@ function renderNextRunBadge(label, id) {
 function computeCampaignStats(tags) {
     const executions = tags.reduce((acc, obj) => acc + (obj.nbExeUsefull || 0), 0);
 
-    const ok = tags.reduce((acc, obj) => acc + (obj.nbOK || 0), 0);
+    const tot_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? getResponseTime(obj.DateStartExe, obj.DateEndQueue) : 0), 0);
+    const nb_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? 1 : 0), 0);
     
+    const ok = tags.reduce((acc, obj) => acc + (obj.nbOK || 0), 0);
     const ko = executions - ok;
 
     return {
@@ -943,9 +946,9 @@ function computeCampaignStats(tags) {
         lastResults: tags.slice(-5).map(t => t.ciResult),
         history: tags.map(t => t.ciScore || 0),
         responseTime: tags.map(t =>
-            getResponseTime(t.DateStartExe, t.DateEndQueue)
+            (getResponseTime(t.DateStartExe, t.DateEndQueue) > 0 ? getResponseTime(t.DateStartExe, t.DateEndQueue) : (tot_duration/nb_duration))
         ),
-        status: tags.map(t => t.ciResult),
+        status: tags.map(t => t.ciResult === "" ? "PE" : t.ciResult),
         ok,
         ko
     };
@@ -957,7 +960,7 @@ function getResponseTime(startStr, endStr) {
 
     const start = new Date(startStr.replace(" ", "T"));
     const end = new Date(endStr.replace(" ", "T"));
-
+console.info(" TOTO " + Math.round((end - start) / 1000));
     return Math.round((end - start) / 1000); // en secondes
 }
 
@@ -1119,7 +1122,7 @@ function renderTrendGraph(responseTime = [], status = []) {
                 <!-- Points -->
                 ${pointsReversed.map(p => `
                     <circle cx="${p.x}" cy="${p.y}" r="2.8"
-                            fill="${p.status === "OK" ? "#22c55e" : "#ef4444"}"
+                            fill="${p.status === "OK" ? "#22c55e" : (p.status === "KO" ? "#ef4444" : "#0066CC")}"
                             stroke="white" stroke-width="0.8"/>
                 `).join("")}
         

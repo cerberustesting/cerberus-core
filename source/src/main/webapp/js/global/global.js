@@ -1649,11 +1649,12 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activateP
  * @param {type} lengthMenu - Length of the table default to [10, 25, 50, 100]
  * @returns {TableConfigurationsServerSide}
  */
-function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu) {
+function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu, deferLoading = false) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.ajaxSource = ajaxSource;
     this.ajaxProp = ajaxProp;
+    this.deferLoading = deferLoading;
 
     this.bDisplayRefreshButton = true;
     this.processing = true;
@@ -1735,6 +1736,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var domConf = 'ZRCB<"clear">lf<"pull-right"p>rti<"marginTop5">'; // Z allow to activate table resize
     if (!tableConfigurations.showColvis) {
         domConf = 'Zlf<"pull-right"p>rti<"marginTop5">';
+    }
+    if (tableConfigurations.deferLoading) {
+        configs["deferLoading"] = 0;
     }
     configs["dom"] = domConf;
     configs["stateDuration"] = tableConfigurations.stateDuration;
@@ -2447,18 +2451,16 @@ function ReplaceURLParameters(sParam, sValue) {
 
 /**
  * Add an browser history entry only if different from the current one.
- * @param {string} sUrl Url to insert in the history.
+ * @param {string} sUrlToAdd Url to insert in the history.
  * @returns {void}
  */
-function InsertURLInHistory(sUrl) {
-    if (sUrl.substr(sUrl.length - 1) === "?") { // If the url ends by ?, we remove it.
-        sUrl = sUrl.substr(0, sUrl.length - 1);
-    }
-    var currentURL = window.location.href.replace(window.location.origin, "");
-    var currentURLtoTest = currentURL + "TOTO";
-    var sUrltoTest = sUrl + "TOTO";
-    if (currentURLtoTest.indexOf(sUrltoTest) === -1) {
+function InsertURLInHistory(sUrlToAdd) {
+    var sUrl = new URL(sUrlToAdd, window.location.href);
+    var currentURL = new URL(window.location.href);
+    if (sUrl.pathname !== currentURL.pathname) {
         window.history.pushState({}, '', sUrl);
+    } else if (sUrl.search !== currentURL.search) {
+        history.replaceState(null, '', sUrl);
     }
     return null;
 }
@@ -2577,9 +2579,13 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 }
 
 function escapeHtml(unsafe) {
+    const div = document.createElement('div');
+    div.textContent = unsafe;
+    return div.innerHTML;
+}
+
+function escapeQuote(unsafe) {
     return unsafe
-            .replace(/"/g, "&quot;")
-            .replace(/\\/g, '\\\\')
             .replace(/'/g, "\\'");
 }
 
@@ -2660,6 +2666,9 @@ function isEmpty(val) {
     return (val === undefined || val === null || val.length <= 0) ? true : false;
 }
 
+function parseString(str, defaultValue) {
+    return (str === undefined || str === null) ? defaultValue : str;
+}
 /**
  * Method that return true if val is null, undefined, empty or = ALL
  * @param {String} val value to test
@@ -2740,7 +2749,7 @@ function getHumanReadableDuration(seconds, maxUnits = Infinity) {
     if (seconds > 432000000) {
         return "unknown";
     }
-    
+
     const units = [
         {label: 'y', value: 365 * 24 * 60 * 60},
         {label: 'mo', value: 30 * 24 * 60 * 60}, // mois approx

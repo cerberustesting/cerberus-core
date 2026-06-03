@@ -173,7 +173,7 @@ public class WebDriverService implements IWebDriverService {
         } else {
             answer.setItem(element);
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            msg.resolveDescription("ELEMENTFOUND", "At least one element was found")
+            msg.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                     .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
         }
 
@@ -378,7 +378,7 @@ public class WebDriverService implements IWebDriverService {
             if (element != null) {
                 answer.setItem(getWebElementUsingQuerySelector(session, identifier.getLocator()));
                 msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-                msg.resolveDescription("ELEMENTFOUND", "At least one element was found")
+                msg.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                         .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             } else {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
@@ -431,7 +431,8 @@ public class WebDriverService implements IWebDriverService {
             }
 
         } catch (TimeoutException exception) {
-            LOG.warn("Exception waiting for element :", exception);
+            //No element found
+//            LOG.warn("Exception waiting for element :", exception);
             Integer numberOfElement = 0;
             try {
                 numberOfElement = this.getNumberOfElements(session, identifier);
@@ -829,41 +830,45 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public File takeScreenShotFile(Session session, String cropValues) {
-        boolean event = true;
-        long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
-        //Try to capture picture. Try again until timeout is WebDriverException is raised.
-        while (event) {
-            try {
-                File image = ((TakesScreenshot) session.getDriver()).getScreenshotAs(OutputType.FILE);
-                if (!StringUtil.isEmptyOrNull(cropValues)) {
-                    BufferedImage fullImg = ImageIO.read(image);
-                    // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
-                    //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
-                    int l = getValue(cropValues, 0);
-                    int r = getValue(cropValues, 1);
-                    int t = getValue(cropValues, 2);
-                    int b = getValue(cropValues, 3);
-                    if ((fullImg.getWidth() > (l + r)) && (fullImg.getHeight() > (t + b))) {
-                        BufferedImage eleScreenshot = fullImg.getSubimage(l, t, (fullImg.getWidth() - l - r), (fullImg.getHeight() - t - b));
-                        ImageIO.write(eleScreenshot, "png", image);
+        try {
+            boolean event = true;
+            long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
+            //Try to capture picture. Try again until timeout is WebDriverException is raised.
+            while (event) {
+                try {
+                    File image = ((TakesScreenshot) session.getDriver()).getScreenshotAs(OutputType.FILE);
+                    if (!StringUtil.isEmptyOrNull(cropValues)) {
+                        BufferedImage fullImg = ImageIO.read(image);
+                        // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
+                        //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
+                        int l = getValue(cropValues, 0);
+                        int r = getValue(cropValues, 1);
+                        int t = getValue(cropValues, 2);
+                        int b = getValue(cropValues, 3);
+                        if ((fullImg.getWidth() > (l + r)) && (fullImg.getHeight() > (t + b))) {
+                            BufferedImage eleScreenshot = fullImg.getSubimage(l, t, (fullImg.getWidth() - l - r), (fullImg.getHeight() - t - b));
+                            ImageIO.write(eleScreenshot, "png", image);
+                        }
                     }
-                }
 
-                if (image != null) {
-                    //logs for debug purposes
-                    LOG.info("WebDriverService: screenshot taken with success: {} (size : {})", image.getName(), image.length());
-                } else {
-                    LOG.warn("WebDriverService: screen-shot returned null: ");
+                    if (image != null) {
+                        //logs for debug purposes
+                        LOG.info("WebDriverService: screenshot taken with success: {} (size : {})", image.getName(), image.length());
+                    } else {
+                        LOG.warn("WebDriverService: screen-shot returned null: ");
+                    }
+                    return image;
+                } catch (WebDriverException exception) {
+                    if (System.currentTimeMillis() >= timeout) {
+                        LOG.warn(exception.toString());
+                    }
+                    event = false;
+                } catch (IOException ex) {
+                    LOG.error("Exception when reading snapshot generated.", ex);
                 }
-                return image;
-            } catch (WebDriverException exception) {
-                if (System.currentTimeMillis() >= timeout) {
-                    LOG.warn(exception.toString());
-                }
-                event = false;
-            } catch (IOException ex) {
-                LOG.error("Exception when reading snapshot generated.", ex);
             }
+        } catch (Exception e) {
+            LOG.error(e, e);
         }
 
         return null;
@@ -1277,7 +1282,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found");
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return message;
                 }
             }
@@ -1354,7 +1359,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found")
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                             .resolveDescription("OFFSET", "(" + hOffset + "," + vOffset + ")");
                     return message;
                 }
@@ -1393,7 +1398,7 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
-            message.resolveDescription("ELEMENTFOUND", "At least one element was found")
+            message.resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND)
                     .resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
             return message;
         } catch (TimeoutException exception) {
@@ -2070,7 +2075,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
                     message.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator())
-                            .resolveDescription("ELEMENTFOUND", "At least one element was found");
+                            .resolveDescription("ELEMENTFOUND", MessageEventEnum.MESSAGE_ONE_ELEMENT_FOUND);
                     return message;
                 }
             }

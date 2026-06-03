@@ -34,7 +34,7 @@ public class RobotExecutor {
 
     private static final Logger LOG = LogManager.getLogger(RobotExecutor.class);
 
-    private Integer ID;
+    private Integer id;
     private String robot;
     private String executor;
     private boolean isActive;
@@ -77,12 +77,12 @@ public class RobotExecutor {
         this.executorExtensionProxyPort = executorExtensionProxyPort;
     }
 
-    public Integer getID() {
-        return ID;
+    public Integer getId() {
+        return id;
     }
 
-    public void setID(Integer ID) {
-        this.ID = ID;
+    public void setId(Integer ID) {
+        this.id = ID;
     }
 
     public String getRobot() {
@@ -157,11 +157,11 @@ public class RobotExecutor {
         this.hostPassword = hostPassword;
     }
 
-    public String getDeviceUuid() {
+    public String getDeviceUdid() {
         return deviceUdid;
     }
 
-    public void setDeviceUuid(String deviceUdid) {
+    public void setDeviceUdid(String deviceUdid) {
         this.deviceUdid = deviceUdid;
     }
 
@@ -403,13 +403,13 @@ public class RobotExecutor {
         try {
             result.put("DateCreated", this.getDateCreated());
             result.put("DateModif", this.getDateModif());
-            result.put("ID", this.getID());
+            result.put("ID", this.getId());
             result.put("UsrCreated", this.getUsrCreated());
             result.put("UsrModif", this.getUsrModif());
             result.put("isActive", this.isActive());
             result.put("description", this.getDescription());
             result.put("deviceName", this.getDeviceName());
-            result.put("deviceUdid", this.getDeviceUuid());
+            result.put("deviceUdid", this.getDeviceUdid());
             result.put("devicePort", this.getDevicePort());
             result.put("isDeviceLockUnlock", this.isDeviceLockUnlock());
             result.put("executorProxyServiceHost", this.getExecutorProxyServiceHost());

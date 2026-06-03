@@ -30,6 +30,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -175,7 +176,7 @@ public class MongodbService implements IMongodbService {
                         maxFetch = maxSecurityFetch;
                     }
 
-                    try (MongoCursor<Document> cursor = collection.find(BasicDBObject.parse(requestString)).limit(maxFetch)
+                    try (MongoCursor<Document> cursor = collection.find(Document.parse(requestString)).limit(maxFetch)
                             .iterator()) {
                         int i = 0;
                         while (cursor.hasNext() && i < 5) {
@@ -195,7 +196,43 @@ public class MongodbService implements IMongodbService {
 
                 case AppService.METHOD_MONGODBUPDATEONE:
                     if ((StringUtil.isNotEmptyOrNULLString(requestString)) && (StringUtil.isNotEmptyOrNULLString(requestExtra1String))) {
-                        UpdateResult resultUpdate = collection.updateOne(BasicDBObject.parse(requestString), BasicDBObject.parse(requestExtra1String));
+                        UpdateResult resultUpdate = collection.updateOne(Document.parse(requestString), Document.parse(requestExtra1String));
+                        LOG.debug("Results updated.");
+//                        mongoDBResultArray.put(new JSONObject(resultUpdate.getUpsertedId()));
+//                        LOG.debug(mongoDBResultArray);
+//                    System.out.println(cursor.next().toJson());
+//                        serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
+                        serviceMONGODB.setResponseNb(Integer.valueOf(String.valueOf(resultUpdate.getMatchedCount())));
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_MONGO_EMPTYREQUEST);
+                        result.setResultMessage(message);
+                        serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
+                        return result;
+                    }
+                    serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
+                    break;
+
+                case AppService.METHOD_MONGODBINSERTONE:
+                    if (StringUtil.isNotEmptyOrNULLString(requestExtra1String))  {
+                        InsertOneResult resultUpdate = collection.insertOne(Document.parse(requestExtra1String));
+                        LOG.debug("Results updated.");
+                        mongoDBResultArray.put(new JSONObject(resultUpdate.getInsertedId().asString()));
+                        LOG.debug(mongoDBResultArray);
+//                    System.out.println(cursor.next().toJson());
+                        serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
+                        serviceMONGODB.setResponseNb(1);
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_MONGO_EMPTYREQUEST);
+                        result.setResultMessage(message);
+                        serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
+                        return result;
+                    }
+                    serviceMONGODB.setEnd(new Timestamp(new Date().getTime()));
+                    break;
+
+                case AppService.METHOD_MONGODBREPLACEONE:
+                    if ((StringUtil.isNotEmptyOrNULLString(requestString)) && (StringUtil.isNotEmptyOrNULLString(requestExtra1String))) {
+                        UpdateResult resultUpdate = collection.replaceOne(Document.parse(requestString), Document.parse(requestExtra1String));
                         LOG.debug("Results updated.");
 //                        mongoDBResultArray.put(new JSONObject(resultUpdate.getUpsertedId()));
 //                        LOG.debug(mongoDBResultArray);

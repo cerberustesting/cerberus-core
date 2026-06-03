@@ -7,6 +7,8 @@
 <jsp:include page="../transversal/Campaign.html"/>
 <jsp:include page="../transversal/Robot.html"/>
 <jsp:include page="../transversal/TestCase.html"/>
+<jsp:include page="../transversal/TestCaseProperty.html"/>
+<jsp:include page="../transversal/TestCaseStep.html"/>
 <jsp:include page="../transversal/TestDataLib.html"/>
 <jsp:include page="../transversal/TestCaseSimpleCreation.html"/>
 <jsp:include page="../transversal/TestCaseSimpleCreationAI.html"/>

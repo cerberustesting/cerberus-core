@@ -143,6 +143,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setNetworkTrafficIndexList(new ArrayList<>());
         newTce.setSecrets(new HashMap<>());
         newTce.setCountryEnvApplicationParams(new HashMap<>());
+        newTce.setResultMessageList((new ArrayList<>()));
 
         return newTce;
     }

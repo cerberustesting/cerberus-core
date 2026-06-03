@@ -27,6 +27,12 @@ var configGantt = {};
 var sortCol = 1;
 var stepFocus = -1;
 var falseNegative = false;
+const thresholdStep1 = 60; // s
+const thresholdStep2 = 120; // s
+const thresholdAction1 = 5000; // ms
+const thresholdAction2 = 30000; // ms
+const thresholdControl1 = 5000; // ms
+const thresholdControl2 = 30000; // ms
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -669,19 +675,8 @@ function updatePage(data, steps) {
                     $("#bugs").append(link);
 
                     // Adding a button to create a new bug redirecting to Bugtracked URL.
-                    var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                    var newBugURL = getNewBugExternalLink(data, dataApp.contentTable.bugTrackerNewUrl);
                     if (!isEmpty(newBugURL)) {
-                        newBugURL = newBugURL.replace(/%EXEID%/g, data.id);
-                        newBugURL = newBugURL.replace(/%EXEDATE%/g, new Date(data.start).toLocaleString());
-                        newBugURL = newBugURL.replace(/%TEST%/g, data.test);
-                        newBugURL = newBugURL.replace(/%TESTCASE%/g, data.testcase);
-                        newBugURL = newBugURL.replace(/%TESTCASEDESC%/g, data.testCaseObj.description);
-                        newBugURL = newBugURL.replace(/%COUNTRY%/g, data.country);
-                        newBugURL = newBugURL.replace(/%ENV%/g, data.environment);
-                        newBugURL = newBugURL.replace(/%BUILD%/g, data.build);
-                        newBugURL = newBugURL.replace(/%REV%/g, data.revision);
-                        newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
-                        newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
                         link = $('<a target="_blank">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text(" Open a new bug From Application Bug Tracker").prepend($(" <span class='glyphicon glyphicon-new-window'></span>")));
                     } else {
                         link = $('<a>').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
@@ -713,8 +708,6 @@ function updatePage(data, steps) {
 
                                     }
                                     $("#addBugFromExternal").removeAttr('disabled');
-
-
                                 }
                             });
                         });
@@ -724,7 +717,7 @@ function updatePage(data, steps) {
                     link = $('<a>').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Manually Assign a bug to Test Case"));
                     $("#bugButtons").append(link);
                     $("#editTcHeaderBug").unbind("click").click(function () {
-                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")
+                        openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport", data.id);
                     });
 
 
@@ -1641,6 +1634,10 @@ function triggerTestCaseExecutionQueueandSee(queueId, tag) {
     });
 }
 
+function rgbToHex(rgb) {
+    var parts = rgb.match(/\d+/g);
+    return '#' + parts.map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+}
 
 function setConfigPanel(data) {
 
@@ -1655,7 +1652,7 @@ function setConfigPanel(data) {
 
     var favicon = new Favico({
         animation: 'slide',
-        bgColor: getExeStatusRowColor(data.controlStatus)
+        bgColor: rgbToHex(getExeStatusRowColor(data.controlStatus))
 //        textColor: "green"
     });
     favicon.badge(data.controlStatus);
@@ -2432,6 +2429,23 @@ function Step(json, steps, id) {
     this.actions = [];
     this.setActions(json.testCaseStepActionExecutionList, id);
 
+
+    // Claculate nb of failed actions and controls on that step
+    let nbActionsKO = 0;
+    let nbControlsKO = 0;
+    for (var i = 0, max = json.testCaseStepActionExecutionList.length; i < max; i++) {
+        var itemA = json.testCaseStepActionExecutionList[i];
+        if (!(["OK", "PE", "NE"].includes(itemA.returnCode))) {
+            nbActionsKO++;
+        }
+        for (var j = 0, maxC = itemA.testCaseStepActionControlExecutionList.length; j < maxC; j++) {
+            var itemC = itemA.testCaseStepActionControlExecutionList[j];
+            if (!(["OK", "PE", "NE"].includes(itemC.returnCode))) {
+                nbControlsKO++;
+            }
+        }
+    }
+
     this.steps = steps;
     this.toDelete = false;
 
@@ -2439,16 +2453,19 @@ function Step(json, steps, id) {
     $(this.html).data("index", id);
     let timeElapsedFormat = "...";
     if (this.timeElapsed !== undefined && this.timeElapsed > 0) {
-        timeElapsedFormat = this.timeElapsed;
+        timeElapsedFormat = getHumanReadableDuration((this.timeElapsed), 1);
     }
+    let timeElapsedFormatWithColor = colorTiming(this.timeElapsed, timeElapsedFormat, thresholdStep2, thresholdStep1);
+
+    var stepDesc = "";
     if (this.test === "Pre Testing") {
-        var stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     } else if (this.test === "Post Testing") {
-        var stepDesc = "[POST]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[POST]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     } else {
-        var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormat + ")";
+        stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormatWithColor + ")";
     }
-    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
+    this.textArea = $("<div></div>").addClass("col-lg-10").html(stepDesc);
 
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
 
@@ -2483,6 +2500,15 @@ function Step(json, steps, id) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
                 .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
         stepLabelContainer.append(labelOptions[0]);
+    }
+
+    if (nbControlsKO > 0) {
+        var controlLabelNb = $('<span class="label label-primary optionLabel labelCRed pull-right"></span>').text(nbControlsKO);
+        this.textArea.append(controlLabelNb)
+    }
+    if (nbActionsKO > 0) {
+        var actionLabelNb = $('<span class="label label-primary optionLabel labelARed pull-right"></span>').text(nbActionsKO);
+        this.textArea.append(actionLabelNb)
     }
 
 
@@ -2867,7 +2893,7 @@ Action.prototype.draw = function (idMotherStep, id) {
         showSaveTestCaseExecutionButton();
     } else {
         elapsedTime.append("<br><br>");
-        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
+        elapsedTime.append(colorTiming(generateElapsed(this.endlong, this.startlong), generateCleanElapsed(this.endlong, this.startlong), thresholdAction2, thresholdAction1));
     }
 
     if (action.returnCode === "OK") {
@@ -2921,19 +2947,6 @@ Action.prototype.draw = function (idMotherStep, id) {
     addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
-
-function generateCleanElapsed(endlong, startlong) {
-    if (endlong !== 19700101010000000 && endlong !== 0) {
-        let e1 = convToDate(endlong) - convToDate(startlong);
-        if (e1 > 999) {
-            return ((convToDate(endlong) - convToDate(startlong)) / 1000).toFixed(2) + ' s';
-        } else {
-            return e1 + " ms";
-        }
-    } else {
-        return "...";
-    }
-}
 
 
 Action.prototype.setControls = function (controls, idMotherStep, idMotherAction) {
@@ -3450,7 +3463,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         showSaveTestCaseExecutionButton();
     } else {
         elapsedTime.append("<br><br>");
-        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
+        elapsedTime.append(colorTiming(generateElapsed(this.endlong, this.startlong), generateCleanElapsed(this.endlong, this.startlong), thresholdControl2, thresholdControl1));
     }
 
 
@@ -3946,4 +3959,30 @@ function getAIHeaderButtons() {
     ];
 }
 
-
+function colorTiming(duration, text, threshold1, threshold2) {
+    if (duration > threshold1) {
+        return  '<span style="color : red;"><b>' + text + '<b></span>';
+    } else if (duration > threshold2) {
+        return '<span style="color : orange;"><b>' + text + '<b></span>';
+    }
+    return text;
+}
+function generateCleanElapsed(endlong, startlong) {
+    if (endlong !== 19700101010000000 && endlong !== 0) {
+        let e1 = convToDate(endlong) - convToDate(startlong);
+        if (e1 > 999) {
+            return ((convToDate(endlong) - convToDate(startlong)) / 1000).toFixed(2) + ' s';
+        } else {
+            return e1 + " ms";
+        }
+    } else {
+        return "...";
+    }
+}
+function generateElapsed(endlong, startlong) {
+    if (endlong !== 19700101010000000 && endlong !== 0) {
+        return convToDate(endlong) - convToDate(startlong);
+    } else {
+        return 0;
+    }
+}

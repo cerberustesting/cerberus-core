@@ -35,7 +35,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
                                 Integer executorExtensionProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorProxyType, String description,
                                 String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         RobotExecutor newRobot = new RobotExecutor();
-        newRobot.setID(ID);
+        newRobot.setId(ID);
         newRobot.setRobot(robot);
         newRobot.setExecutor(executor);
         newRobot.setIsActive(isActive);
@@ -45,7 +45,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
         newRobot.setHostUser(hostUser);
         newRobot.setHostPassword(hostPassword);
         newRobot.setExecutorExtensionProxyPort(executorExtensionProxyPort);
-        newRobot.setDeviceUuid(deviceUdid);
+        newRobot.setDeviceUdid(deviceUdid);
         newRobot.setDeviceName(deviceName);
         newRobot.setIsDeviceLockUnlock(isDeviceLockUnlock);
         newRobot.setExecutorProxyServiceHost(executorProxyServiceHost);

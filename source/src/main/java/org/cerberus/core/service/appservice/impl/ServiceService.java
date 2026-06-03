@@ -146,8 +146,10 @@ public class ServiceService implements IServiceService {
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
 
             }
-            execution.addSecret(appService.getAuthPassword());
-            execution.setCurrentApplication(appService.getApplication());
+            if (appService != null) {
+                execution.addSecret(appService.getAuthPassword());
+                execution.setCurrentApplication(appService.getApplication());
+            }
 
             String servicePath;
 
@@ -514,6 +516,8 @@ public class ServiceService implements IServiceService {
 
                             case AppService.METHOD_MONGODBFIND:
                             case AppService.METHOD_MONGODBUPDATEONE:
+                            case AppService.METHOD_MONGODBREPLACEONE:
+                            case AppService.METHOD_MONGODBINSERTONE:
                                 /**
                                  * Call MONGODB and store it into the execution.
                                  */

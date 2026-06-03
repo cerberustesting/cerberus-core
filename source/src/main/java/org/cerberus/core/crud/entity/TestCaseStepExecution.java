@@ -177,17 +177,17 @@ public class TestCaseStepExecution {
         }
     }
 
-    public MessageGeneral getExecutionResultMessage() {
-        return executionResultMessage;
-    }
+//    public MessageGeneral getExecutionResultMessage() {
+//        return executionResultMessage;
+//    }
 
-    public void setExecutionResultMessage(MessageGeneral executionResultMessage) {
-        this.executionResultMessage = executionResultMessage;
-    }
+//    public void setExecutionResultMessage(MessageGeneral executionResultMessage) {
+//        this.executionResultMessage = executionResultMessage;
+//    }
 
-    public boolean isStopExecution() {
-        return stopExecution;
-    }
+//    public boolean isStopExecution() {
+//        return stopExecution;
+//    }
 
     public void setStopExecution(boolean stopExecution) {
         this.stopExecution = stopExecution;

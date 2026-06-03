@@ -96,7 +96,7 @@
                     <!-- Row 1: Test Folder + Testcase ID + Priority -->
                     <div class="flex gap-3 items-end">
                         <!-- Test Folder -->
-                        <div class="flex-1" x-data="crbDropdown({id:'testFolder', preselectEvent:'testfolder-preselect', loader: crbLoaders.tests})" @click.stop>
+                        <div class="flex-1" x-data="crbDropdown({id:'testFolder', preselectEvent:'testfolder-preselect', loader: crbLoaders.tests, onSelect: function(item) { document.getElementById('test').value = item.value; window.dispatchEvent(new CustomEvent('testfolder-changed', {detail: item.value})); }})" @click.stop>
                             <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="testField">Test Folder</label>
                             <div class="relative w-full">
                                 <div @click.stop="toggle()" :id="id + '-btn'"
@@ -543,6 +543,16 @@
                                 <i data-lucide="bug" class="w-4 h-4 text-red-500"></i>
                                 <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Bug Tracker</span>
                             </div>
+                            <button type="button" id="addBugExternalLink" title=""
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Bug Going to Application Bug Tracker
+                            </button>
+                            <button type="button" id="addBugConnector" title=""
+                                    class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                Add Bug Using Connector
+                            </button>
                             <button type="button" id="addBug"
                                     class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" style="font-weight: 500; cursor: pointer;">
                                 <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
@@ -815,9 +825,10 @@ var curOpenTab = null;
  * @param {String} testcase - id of the testcase to open the modal
  * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
  * @param {String} tab - name of the tab to activate
+ * @param {Integer} executionId - Optional execution Id in order to buig the bug tab.
  * @returns {null}
  */
-function openModalTestCase(test, testcase, mode, tab) {
+function openModalTestCase(test, testcase, mode, tab, executionId = 0) {
     curMode = mode;
 
     checkEmptyDescription = getParameterBoolean("cerberus_testcasepage_controlemptybugdescription", getUser().defaultSystem, true);
@@ -835,7 +846,7 @@ function openModalTestCase(test, testcase, mode, tab) {
     curOpenTab = (!isEmpty(tab)) ? tab : null;
 
     if (mode === "EDIT") {
-        editTestCaseClick(test, testcase);
+        editTestCaseClick(test, testcase, executionId);
     } else if (mode === "DUPLICATE") {
         duplicateTestCaseClick(test, testcase);
     } else {
@@ -1085,9 +1096,10 @@ function removeTestCaseDependency(test, testCase) {
  * Open the modal with testcase information.
  * @param {String} test - type selected
  * @param {String} testCase - type selected
+ * @param {Integer} executionId - Optional execution Id in order to buig the bug tab.
  * @returns {null}
  */
-function editTestCaseClick(test, testCase) {
+function editTestCaseClick(test, testCase, executionId = 0) {
 
     $("#editTestCaseButton").off("click");
     $("#editTestCaseButton").click(function () {
@@ -1103,25 +1115,25 @@ function editTestCaseClick(test, testCase) {
     $("#editTestCaseModalForm #testCase").prop("value", testCase);
 
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(test, "editTestCaseModalForm");
-        // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
     $('#editTestCaseModalForm input[name="testCase"]').change(function () {
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey(test, testCase);
     });
-    feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
+    feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT", executionId);
 }
 
 function displayWarningOnChangeTestCaseKey(test, testCase) {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalTest").val();
     let old2 = $("#originalTestCase").val();
-    let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+    var ddWarning = document.getElementById('testFolder-btn');
+    let new1 = ddWarning ? Alpine.$data(ddWarning.closest('[x-data]')).selectedValue : $('#test').val();
     let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
 
     if ((old1 !== new1) || (old2 !== new2)) {
@@ -1156,10 +1168,13 @@ function duplicateTestCaseClick(test, testCase) {
 //    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    if (window._tcTestFolderChangeHandler) {
+        window.removeEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
+    }
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(test, "editTestCaseModalForm");
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedTestCaseModal(test, testCase, "editTestCaseModal", "DUPLICATE");
@@ -1186,11 +1201,14 @@ function addTestCaseClick(defaultTest) {
 //        feedTestCaseField(null, "editTestCaseModalForm");
 //    });
 
-    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
+    // In Add TestCase form, if we change the test, we don't display any warning.
+    if (window._tcTestFolderChangeHandler) {
+        window.removeEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
+    }
+    window._tcTestFolderChangeHandler = function() {
         feedTestCaseField(defaultTest, "editTestCaseModalForm");
-    });
+    };
+    window.addEventListener('testfolder-changed', window._tcTestFolderChangeHandler);
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedNewTestCaseModal("editTestCaseModal", defaultTest);
@@ -1204,18 +1222,20 @@ function addTestCaseClick(defaultTest) {
  * @returns {null}
  */
 function feedTestCaseField(test, modalForm) {
-//    console.info("feed Test Case. " + test + " mode : " + curMode);
     var trigNewTestCase = true;
 // Predefine the testcase value.
     if (curMode !== "EDIT") {
         trigNewTestCase = true;
-        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
-        test = new1;
+        // Read from the Alpine crbDropdown via the hidden input (not a <select>)
+        var ddEl = document.getElementById('testFolder-btn');
+        var new1 = ddEl ? Alpine.$data(ddEl.closest('[x-data]')).selectedValue : $('#test').val();
+        if (new1) test = new1;
 
     } else {
         trigNewTestCase = false;
         let old1 = $("#originalTest").val();
-        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+        var ddEl2 = document.getElementById('testFolder-btn');
+        var new1 = ddEl2 ? Alpine.$data(ddEl2.closest('[x-data]')).selectedValue : $('#test').val();
         if (test !== new1) {
             test = new1;
             trigNewTestCase = true;
@@ -1230,7 +1250,7 @@ function feedTestCaseField(test, modalForm) {
         $.ajax({
             url: "ReadTestCase",
             method: "GET",
-            data: {test: encodeURIComponent(test), getMaxTC: true},
+            data: {test: test, getMaxTC: true},
             dataType: "json",
             success: function (data) {
                 $('#' + modalForm + ' [name="testCase"]').val(data.nextAvailableTestcaseId);
@@ -1524,6 +1544,8 @@ function feedNewTestCaseModal(modalId, defaultTest) {
     $("#addBug").click(function () {
         addNewBugRow("bugTableBody", undefined);
     });
+    $("#addBugExternalLink").hide();
+    $("#addBugConnector").hide();
 
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
@@ -1542,9 +1564,10 @@ function feedNewTestCaseModal(modalId, defaultTest) {
  * @param {String} testCase - type selected
  * @param {String} modalId - type selected
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @param {String} exeId - optional execution id in order to contextualise the bug tab.
  * @returns {null}
  */
-function feedTestCaseModal(test, testCase, modalId, mode) {
+function feedTestCaseModal(test, testCase, modalId, mode, exeId = 0) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
@@ -1569,6 +1592,73 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             $("#addBug").click(function () {
                 addNewBugRow("bugTableBody", bugTrackerUrl);
             });
+
+            $("#addBugExternalLink").show();
+            if (!isEmpty(t.bugTrackerNewUrl)) {
+                if (exeId==0) {
+                    $("#addBugExternalLink").hide();
+                } else {
+                    $("#addBugExternalLink").attr("title", "From execution " + exeId);
+                
+                    $("#addBugExternalLink").off("click");
+                    $("#addBugExternalLink").click(function () {
+//                        console.info("Going to bug Tracker");
+//                        console.info(t);
+                        // TODO get the execution id from the context.
+                        testCase.id=exeId;
+                        var newBugURL = getNewBugExternalLink(testCase, t.bugTrackerNewUrl);
+                        if (!isEmpty(newBugURL)) {
+                            window.open(newBugURL, '_blank');
+                        } else {
+                            console.info("No 'New Bug' URL Specified.");
+                        }
+                    });
+                }
+            } else {
+                console.info("No Bugtracker URL");
+                $("#addBugExternalLink").text("No Bugtraker page defined !!");
+                $("#addBugExternalLink").attr("title","Configure New Bug URL from application screen (Bug Tracker Tab) !!");
+                $("#addBugExternalLink").attr("disabled", true);
+            }
+
+            $("#addBugConnector").show();
+            if (t.bugTrackerConnector !== "NONE") {
+                if (exeId==0) {
+                    $("#addBugConnector").hide();
+                } else {
+                    $("#addBugConnector").html("<svg width=\"14\" height=\"14\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"2.5\" viewBox=\"0 0 24 24\"><path d=\"M12 5v14m-7-7h14\"/></svg> Open a new bug using " + t.bugTrackerConnector + " connector");
+                    $("#addBugConnector").attr("title", "From execution " + exeId);
+                    $("#addBugConnector").removeAttr("disabled");
+                        
+                    $("#addBugConnector").off("click");
+                    $("#addBugConnector").click(function () {
+                        $('#addBugConnector').attr('disabled', true);
+                        $.ajax({
+                            url: "api/executions/" + exeId + "/createBug",
+                            async: true,
+                            method: "POST",
+                            success: function (bugCreated) {
+                                try {
+                                    let bugCreatedJ = JSON.parse(bugCreated);
+//                                    console.info(bugCreatedJ);
+                                    if (bugCreatedJ.bug) {
+//                                        console.info(bugCreatedJ.bug);
+                                        appendbugRow(bugCreatedJ.bug, "bugTableBody", bugTrackerUrl);
+                                    }
+                                    showMessageMainPage(getAlertHttpType(bugCreatedJ.statusCode), bugCreatedJ.message, false, 30000);
+                                } catch (e) {
+                                }
+                                $("#addBugConnector").removeAttr('disabled');
+                            }
+                        });
+                    });
+                }
+            } else {
+                console.info("No Bugtracker Connector !!");
+                $("#addBugConnector").text("No Bugtraker connector defined !!");
+                $("#addBugConnector").attr("title","Configure Connector from application screen (Bug Tracker Tab) !!");
+                $("#addBugConnector").attr("disabled", true);
+            }
 
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(t.system, testCase);
@@ -1729,6 +1819,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_duplicate"));
             appendTestList(testCase.test);
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
+            // Pre-select the same status as the source test case
+            window.dispatchEvent(new CustomEvent('status-preselect', { detail: testCase.status }));
         }
     }
     if (isEmpty(testCase)) {
@@ -1941,23 +2033,48 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var actInput = $("<input type='checkbox'>").css({ "width": "16px", "height": "16px", "accentColor": "#3b82f6", "cursor": "pointer" }).prop("checked", obj.act);
     var bugidInput = $("<input maxlength='30'>").addClass(inputClasses).val(obj.id);
     var bugdescInput = $("<input maxlength='100'>").addClass(inputClasses).val(obj.desc);
-    var dateCreatedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateCreated));
-    var dateClosedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateClosed));
+    
+    if (obj.manualUrl) {
+        var bugurlInput = $("<input maxlength='100' style='display: block;'>").addClass(inputClasses).val(obj.url);
+    } else {
+        var bugurlInput = $("<input maxlength='100' style='display: none;'>").addClass(inputClasses).val(obj.url);
+    }
+    var editUrlBtn = $("<button type='button'></button>")
+        .css({ "padding": "4px 8px", "border-radius": "6px", "border": "1px solid #93c5fd", "background": "#eff6ff", "color": "#1e3a8a", "cursor": "pointer", "display": "flex", "alignItems": "center", "gap": "4px", "fontSize": "12px", "transition": "all 0.2s" })
+        .html('<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>')
+        .on("mouseenter", function() { $(this).css({ "background": "#bfdbfe", "borderColor": "#60a5fa" }); })
+        .on("mouseleave", function() { if (!obj.toDelete) $(this).css({ "background": "#eff6ff", "borderColor": "#93c5fd" }); });
     if (newbugTrackerUrl !== "") {
         var buglinkText = $("<a></a>").text(obj.id).css({ "color": "#3b82f6", "textDecoration": "underline", "fontSize": "13px" });
         buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");
     } else {
         var buglinkText = $("<div></div>").text(obj.id).css({ "fontSize": "13px", "color": "#64748b" });
     }
+    var bugLine = $("<div style='display:inline-flex; align-items:center; gap:4px;'>").append(buglinkText).append(editUrlBtn);
+    
+    
+    var dateCreatedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateCreated));
+    var dateClosedInput = $("<input readonly='true'>").addClass(readonlyClasses).val(getDate(obj.dateClosed));
 
     var tdStyle = { "padding": "8px 12px", "verticalAlign": "middle" };
     var deleteData = $("<td></td>").css(tdStyle).append(deleteBtn);
     var actData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(actInput);
     var bugidData = $("<td></td>").css(tdStyle).append(bugidInput);
     var bugdescData = $("<td></td>").css(tdStyle).append(bugdescInput);
-    var buglinkData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(buglinkText);
+    var buglinkData = $("<td></td>").css($.extend({}, tdStyle, { "textAlign": "center" })).append(bugLine).append(bugurlInput);
     var dateCreatedData = $("<td></td>").css(tdStyle).append(dateCreatedInput);
     var dateClosedData = $("<td></td>").css(tdStyle).append(dateClosedInput);
+
+    editUrlBtn.click(function () {
+        console.info("toto");
+        obj.manualUrl = (obj.manualUrl) ? false : true;
+        if (obj.manualUrl) {
+            bugurlInput.css("display", "block");
+        } else {
+            bugurlInput.hide();
+        }
+    });
+
 
     deleteBtn.click(function () {
         obj.toDelete = (obj.toDelete) ? false : true;
@@ -1984,14 +2101,16 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
         }
     });
 
+    bugurlInput.change(function () {
+        obj.url = $(this).val();
+        buglinkText.prop("href", getNewUrl(obj.id, obj.url, bugTrackerUrl));
+    });
+
     bugidInput.change(function () {
         obj.id = $(this).val();
-        var newbugTrackerUrl = "";
-        if (obj.id !== "" && bugTrackerUrl) {
-            newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", obj.id);
-        }
-        buglinkText.prop("href", newbugTrackerUrl).text(obj.id);
+        buglinkText.prop("href", getNewUrl(obj.id, obj.url, bugTrackerUrl)).text(obj.id);
     });
+    
     bugdescInput.change(function () {
         obj.desc = $(this).val();
     });
@@ -2001,18 +2120,53 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     table.append(row);
 }
 
+function getNewUrl(bugid, url, bugTrackerUrl){
+    let newbugTrackerUrl = "";
+    if (!isEmpty(url))
+        return url;
+    if (bugid !== "" && bugTrackerUrl) {
+        newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", bugid);
+    }
+    return newbugTrackerUrl;
+}
+
 function addNewBugRow(dataTableBody, bugTrackerUrl) {
     var nbRows = $("#" + dataTableBody + " tr").size() + 1;
     var newBugData = {
         id: "BUGID" + nbRows,
         desc: "",
         url: "",
+        manualUrl: false,
         act: true,
         dateCreated: new Date(),
         dateClosed: new Date('1970-01-01'),
         toDelete: false
     };
     appendbugRow(newBugData, dataTableBody, bugTrackerUrl);
+}
+
+function getNewBugExternalLink(exe, appBugTrackerNewUrl){
+    if (!isEmpty(appBugTrackerNewUrl)) {
+        try {
+            appBugTrackerNewUrl = appBugTrackerNewUrl.replace(/%EXEID%/g, parseString(exe.id,'0'))
+                    .replace(/%EXEDATE%/g, parseString(new Date(exe.start).toLocaleString(),''))
+                    .replace(/%TEST%/g, parseString(exe.test,''))
+                    .replace(/%TESTCASE%/g, parseString(exe.testcase,''))
+                    .replace(/%TESTCASEDESC%/g, parseString(exe.description,''))
+                    .replace(/%COUNTRY%/g, parseString(exe.country,''))
+                    .replace(/%ENV%/g, parseString(exe.environment,''))
+                    .replace(/%BUILD%/g, parseString(exe.build,''))
+                    .replace(/%REV%/g, parseString(exe.revision,''))
+                    .replace(/%BROWSER%/g, parseString(exe.browser,''))
+                    .replace(/%BROWSERFULLVERSION%/g, parseString(exe.browser,'') + ' ' + parseString(exe.version,'') + ' ' + parseString(exe.platform,''));
+            console.info(appBugTrackerNewUrl);
+        } catch (e) {
+            console.warn(e);
+        }
+        return encodeURI(appBugTrackerNewUrl) ;
+    } else {
+        return null;
+    }
 }
 
 

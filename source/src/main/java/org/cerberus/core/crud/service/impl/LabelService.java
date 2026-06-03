@@ -175,6 +175,8 @@ public class LabelService implements ILabelService {
 
     @Override
     public Answer delete(Label object) {
+        // update all label that have parentid = object.getid()  to 0;
+        this.updateParentToRoot(object.getId(), object.getUsrModif());
         return labelDAO.delete(object);
     }
 
@@ -186,6 +188,11 @@ public class LabelService implements ILabelService {
         } else {
             return answerChecks;
         }
+    }
+
+    @Override
+    public Answer updateParentToRoot(Integer labelId, String usrModif) {
+        return labelDAO.updateParentToRoot(labelId, usrModif);
     }
 
     private Answer checkLabelParentconsistency(Label object) {
