@@ -6841,3 +6841,6 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES ('SRVMETHOD', 'INSERTONE', 950 , 'Insert a MongoDB Document')
         ,('SRVMETHOD', 'REPLACEONE', 900 , 'Replace a MongoDB Document');
 
+-- 1943
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES  ('', 'cerberus_mcp_enable', 'false', 'Boolean in order to enable the MCP endpoints.');

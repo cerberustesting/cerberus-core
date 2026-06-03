@@ -19,11 +19,11 @@
  */
 package org.cerberus.core.api.dto.robot;
 
-import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * @author bcivel

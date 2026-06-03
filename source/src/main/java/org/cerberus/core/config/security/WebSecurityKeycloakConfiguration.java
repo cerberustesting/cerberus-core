@@ -28,24 +28,33 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -113,29 +122,9 @@ public class WebSecurityKeycloakConfiguration {
 	}
 
 	private Stream<SimpleGrantedAuthority> extractRoles(Map<String, Object> attrs, String clientId, String logSuffix) {
-		Stream<SimpleGrantedAuthority> realmRoles = Stream.empty();
-		Stream<SimpleGrantedAuthority> clientRoles = Stream.empty();
-
-		// --- Realm roles ---
-		if (attrs.get("realm_access") instanceof Map<?, ?> realmAccess
-				&& realmAccess.get("roles") instanceof Collection<?> roles) {
-			roles.forEach(r -> LOG.debug("[KEYCLOAK REALM ROLE{}] {}", logSuffix, r));
-			realmRoles = roles.stream()
-					.filter(String.class::isInstance)
-					.map(r -> new SimpleGrantedAuthority("ROLE_" + r));
-		}
-
-		// --- Client roles ---
-		if (attrs.get("resource_access") instanceof Map<?, ?> resourceAccess
-				&& resourceAccess.get(clientId) instanceof Map<?, ?> client
-				&& client.get("roles") instanceof Collection<?> roles) {
-			roles.forEach(r -> LOG.debug("[KEYCLOAK CLIENT ROLE{}] {}", logSuffix, r));
-			clientRoles = roles.stream()
-					.filter(String.class::isInstance)
-					.map(r -> new SimpleGrantedAuthority("ROLE_" + r));
-		}
-
-		return Stream.concat(realmRoles, clientRoles);
+		Collection<SimpleGrantedAuthority> roles = KeycloakRoleMapper.extractRoles(attrs, clientId);
+		roles.forEach(r -> LOG.debug("[KEYCLOAK ROLE{}] {}", logSuffix, r.getAuthority()));
+		return roles.stream();
 	}
 
 	//Ignore static content
@@ -153,12 +142,59 @@ public class WebSecurityKeycloakConfiguration {
 	}
 
 	@Bean
+	public JwtDecoder mcpJwtDecoder() {
+		String keycloakUrl = System.getProperty("org.cerberus.keycloak.url");
+		String realm       = System.getProperty("org.cerberus.keycloak.realm");
+		// Optional : expected audience the token must be issued for (RFC 8707).
+		String audience    = System.getProperty("org.cerberus.keycloak.mcp.audience");
+
+		String issuer    = keycloakUrl + "/realms/" + realm;
+		String jwkSetUri = issuer + "/protocol/openid-connect/certs";
+
+		NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+
+		// Default validators (signature + expiry) + issuer binding, plus audience when configured.
+		OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
+		OAuth2TokenValidator<Jwt> audienceValidator = jwt -> {
+			if (audience == null || jwt.getAudience().contains(audience)) {
+				return OAuth2TokenValidatorResult.success();
+			}
+			return OAuth2TokenValidatorResult.failure(
+					new OAuth2Error("invalid_token", "Required audience '" + audience + "' is missing", null));
+		};
+		decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator));
+
+		return decoder;
+	}
+
+	@Bean
+	public JwtAuthenticationConverter mcpJwtAuthenticationConverter() {
+		String clientId = System.getProperty("org.cerberus.keycloak.client");
+		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+		converter.setPrincipalClaimName("preferred_username");
+		converter.setJwtGrantedAuthoritiesConverter(jwt ->
+				new ArrayList<GrantedAuthority>(KeycloakRoleMapper.extractRoles(jwt.getClaims(), clientId)));
+		return converter;
+	}
+
+	@Bean
 	@Order(1)
-	public SecurityFilterChain mcpSecurityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain mcpSecurityFilterChain(HttpSecurity http,
+			McpApiKeyAuthFilter mcpApiKeyAuthFilter,
+			JwtDecoder mcpJwtDecoder,
+			JwtAuthenticationConverter mcpJwtAuthenticationConverter) throws Exception {
 		http
 				.securityMatcher("/mcp")
 				.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+				// Bearer JWT issued by Keycloak, validated against the realm JWK set.
+				.oauth2ResourceServer(oauth2 -> oauth2
+						.jwt(jwt -> jwt
+								.decoder(mcpJwtDecoder)
+								.jwtAuthenticationConverter(mcpJwtAuthenticationConverter)))
+				// Runs after Bearer auth so it can reuse the resolved principal, X-API-KEY otherwise.
+				.addFilterBefore(mcpApiKeyAuthFilter, AuthorizationFilter.class);
 		return http.build();
 	}
 

@@ -29,6 +29,8 @@ public class WebSecurityRules {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(m.matcher("/api/public/**")).permitAll()
+                // OAuth Protected Resource Metadata (RFC 9728) : public discovery for MCP clients
+                .requestMatchers(m.matcher("/.well-known/oauth-protected-resource")).permitAll()
                 // ── Public
                 .requestMatchers(
                         m.matcher("/DatabaseMaintenance.jsp"),

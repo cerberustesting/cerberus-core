@@ -22,14 +22,18 @@
 	import org.springframework.context.annotation.Bean;
 	import org.springframework.context.annotation.Configuration;
 	import org.springframework.context.annotation.Profile;
+	import org.springframework.core.annotation.Order;
 	import org.springframework.security.authentication.AuthenticationManager;
 	import org.springframework.security.authentication.ProviderManager;
 	import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+	import org.springframework.security.config.Customizer;
 	import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 	import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 	import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+	import org.springframework.security.config.http.SessionCreationPolicy;
 	import org.springframework.security.crypto.password.PasswordEncoder;
 	import org.springframework.security.web.SecurityFilterChain;
+	import org.springframework.security.web.access.intercept.AuthorizationFilter;
 	import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 	import org.cerberus.core.config.security.WebSecurityRules;
 
@@ -74,6 +78,25 @@
 
 
 		@Bean
+		@Order(1)
+		public SecurityFilterChain mcpSecurityFilterChain(HttpSecurity http,
+				McpApiKeyAuthFilter mcpApiKeyAuthFilter,
+				AuthenticationManager authenticationManager) throws Exception {
+			http
+					.securityMatcher("/mcp")
+					.csrf(csrf -> csrf.disable())
+					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+					.authenticationManager(authenticationManager)
+					// HTTP Basic against the Cerberus internal user store (DaoAuthenticationProvider).
+					.httpBasic(Customizer.withDefaults())
+					// Runs after Basic auth so it can reuse the resolved principal, X-API-KEY otherwise.
+					.addFilterBefore(mcpApiKeyAuthFilter, AuthorizationFilter.class);
+			return http.build();
+		}
+
+		@Bean
+		@Order(2)
 		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 			http.csrf(csrf -> csrf.disable());

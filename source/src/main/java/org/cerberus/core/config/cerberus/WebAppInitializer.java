@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.security.OAuthProtectedResourceMetadataServlet;
 import org.cerberus.core.config.webmvc.WebMvcConfiguration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -87,6 +88,13 @@ public class WebAppInitializer implements WebApplicationInitializer {
         mcpServlet.setLoadOnStartup(2);
         mcpServlet.addMapping("/mcp");
         mcpServlet.setAsyncSupported(true);
+
+        // OAuth 2.0 Protected Resource Metadata (RFC 9728) for MCP client discovery.
+        // Returns 404 unless the Keycloak authorization server is configured.
+        ServletRegistration.Dynamic metadataServlet =
+                servletContext.addServlet("oauthProtectedResourceMetadata", new OAuthProtectedResourceMetadataServlet());
+        metadataServlet.setLoadOnStartup(3);
+        metadataServlet.addMapping("/.well-known/oauth-protected-resource");
 
 
         // Session expires after 600 minutes of inactivity
