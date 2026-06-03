@@ -190,10 +190,10 @@
                     </div>
 
                     <div class="crb_card" id="BugReportByStatusPanel">
-                        <div data-toggle="collapse" data-target="#BugReportByStatus">
+                        <div data-collapse-target="BugReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <span class="toggle fa fa-chevron-right pull-right transition-transform"></span>
                         </div>
                         <div id="BugReportByStatus">
                             <div class="row">

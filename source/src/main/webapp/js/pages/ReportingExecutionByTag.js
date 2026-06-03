@@ -151,6 +151,24 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
+        document.querySelectorAll("[data-collapse-target]").forEach(function (trigger) {
+                trigger.addEventListener("click", function () {
+                    const targetId = trigger.getAttribute("data-collapse-target");
+                    const target = document.getElementById(targetId);
+
+                    if (!target) {
+                        return;
+                    }
+
+                    target.classList.toggle("hidden");
+
+                    const icon = trigger.querySelector(".toggle");
+                    if (icon) {
+                        icon.classList.toggle("rotate-90");
+                    }
+                });
+            });
+
         displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
         displayInvariantList("video", "VIDEO", false, undefined, "");
         displayInvariantList("verbose", "VERBOSE", false, undefined, "");
