@@ -522,12 +522,28 @@
             },
 
             get locale() {
-                if (config.locale) return config.locale;
-
                 const userStore = (typeof Alpine !== 'undefined') ? Alpine.store('user') : null;
+
+                // Langue applicative, ex: "fr" ou "en"
                 const language = (userStore && userStore.language) || 'en';
 
-                return language === 'fr' ? 'fr-FR' : 'en-US';
+                // Locale navigateur, ex: "en-GB", "en-US", "fr-FR"
+                const browserLocale =
+                    navigator.languages && navigator.languages.length
+                        ? navigator.languages[0]
+                        : navigator.language;
+
+                if (language === 'fr') {
+                    return 'fr-FR';
+                }
+
+                if (language === 'en') {
+                    return browserLocale?.toLowerCase().startsWith('en-')
+                        ? browserLocale
+                        : 'en-GB';
+                }
+
+                return browserLocale || 'en-GB';
             },
 
             get datePlaceholder() {
