@@ -1015,24 +1015,24 @@ function aoColumnsFunc(countries, tableId) {
 
                 let buttons = [];
 
-                // Edit Script (pencil icon) — navigate to script page
+                // Edit Script (file-text icon) — navigate to script page
                 buttons.push(actionButtonLink({
                     id: `testcase_action_editscript_${row}`,
                     name: "editScriptTestcase",
                     title: doc.getDocLabel("page_testcaselist", "btn_editScript"),
                     link: `TestCaseScript.jsp?test=${encodeURIComponent(obj['test'])}&testcase=${encodeURIComponent(obj['testcase'])}`,
                     extraClass: "group-hover:!text-blue-500",
-                    icon: icons.script
+                    icon: icons.edit
                 }));
 
-                // Edit Header (paper icon) — open header modal
+                // Edit Header (file-text icon) — open header modal
                 buttons.push(actionButton({
                     id:`testcase_action_editheader_${row}`,
                     name: "editTestcase",
                     title: hasUpdate ? doc.getDocLabel("page_testcaselist", "btn_edit")
                         : doc.getDocLabel("page_testcaselist", "btn_view"),
                     onClick: `openModalTestCase('${obj.test}','${obj.testcase}','${hasUpdate ? 'EDIT' : 'VIEW'}')`,
-                    icon: icons.edit,
+                    icon: icons.script,
                     disabled: !hasUpdate
                 }));
 

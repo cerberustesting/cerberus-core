@@ -15,11 +15,10 @@
     <div class="p-3">
         <div class="flex items-center gap-2 flex-wrap">
 
-            <!-- Back to Executions -->
-            <button onclick="window.location.href='TestCaseExecution.jsp'"
+            <!-- Back to Test Case Script V2 -->
+            <button @click="window.location.href='TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test || '') + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase || '')"
                     class="inline-flex items-center justify-center h-8 w-8 rounded-lg transition-colors
-                           hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-sky-500 shrink-0"
-                    data-tip="Back to Executions" data-tip-pos="bottom">
+                           hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-sky-500 shrink-0">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
             </button>
 

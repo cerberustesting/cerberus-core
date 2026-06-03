@@ -968,6 +968,7 @@ function scriptV2() {
             var type = null;
             if (text.indexOf('# cerberus:step') === 0) { type = 'step'; }
             else if (text.indexOf('# cerberus:action') === 0) { type = 'action'; }
+            else if (text.indexOf('# cerberus:control') === 0) { type = 'control'; }
             else return null;
             // Extract embedded JSON from last line
             var lines = text.split('\n');
@@ -1089,6 +1090,65 @@ function scriptV2() {
             });
             showMessageMainPage('success', 'Action pasted successfully');
         },
+
+        copyControl(aIdx, cIdx, $event) {
+            var self = this;
+            var evt = $event || window.event || null;
+            var ctrl = this._cleanForExport(this.activeStep.actions[aIdx].controls[cIdx]);
+            var yamlContent = this._toYaml(ctrl);
+            var header = '# cerberus:control\n# Copied from: ' + (this.testInfo.test || '') + ' / ' + (this.testInfo.testCase || '') + '\n---\n';
+            var jsonBackup = '\n# __json__: ' + JSON.stringify(ctrl);
+            var fullText = header + yamlContent + jsonBackup;
+
+            navigator.clipboard.writeText(fullText).then(function() {
+                self.clipboardType = 'control';
+                v2CopyToast(evt, 'Control copied!');
+            }).catch(function() {
+                showMessageMainPage('warning', 'Could not access clipboard');
+            });
+        },
+
+        async pasteControl(aIdx) {
+            if (!this.activeStep) return;
+            var data = null;
+            try {
+                var text = await navigator.clipboard.readText();
+                var parsed = this._parseClipboardText(text);
+                if (parsed && parsed.type === 'control') {
+                    data = parsed.data;
+                } else if (parsed && (parsed.type === 'step' || parsed.type === 'action')) {
+                    showMessageMainPage('warning', 'Clipboard contains a ' + parsed.type + ', not a Control.');
+                    return;
+                }
+            } catch(e) {}
+
+            if (!data) {
+                showMessageMainPage('warning', 'No control in clipboard. Copy a control first.');
+                return;
+            }
+            this._mutate(() => {
+                var freshData = JSON.parse(JSON.stringify(data));
+                var clone = this._normalizeControl(freshData);
+                clone.controlId = -1;
+                this.activeStep.actions[aIdx].controls = this.activeStep.actions[aIdx].controls.concat([clone]);
+            });
+            showMessageMainPage('success', 'Control pasted successfully');
+        },
+
+        duplicateControl(aIdx, cIdx) {
+            this._mutate(() => {
+                var clone = JSON.parse(JSON.stringify(this.activeStep.actions[aIdx].controls[cIdx]));
+                clone = this._normalizeControl(clone);
+                clone.controlId = -1;
+                clone.description = (clone.description || '') + ' (copy)';
+                var controls = this.activeStep.actions[aIdx].controls;
+                var before = controls.slice(0, cIdx + 1);
+                var after = controls.slice(cIdx + 1);
+                this.activeStep.actions[aIdx].controls = before.concat([clone], after);
+            });
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
         openActionContextMenu(event, aIdx) {
             // For now, action context menu items are directly in the action row buttons
             // This is a placeholder for future right-click menu enhancement
