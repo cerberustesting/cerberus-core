@@ -38,7 +38,7 @@
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <i :data-lucide="isFullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
                 </button>
-                <button @click="open = false"
+                <button @click="console.log('close clicked', open); open = false; console.log('closed', open)"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
@@ -67,36 +67,7 @@ function propertyModal() {
         handleOpen(detail) {
             this.open = true;
             this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
-        },
-        init() {
-            this.$watch('open', function(val) {
-                if (!val) { $('#modalProperty').trigger('hidden.bs.modal'); }
-            });
         }
     };
 }
-
-// ========== Bootstrap → Alpine Bridge (modalProperty only) ==========
-// Overrides $.fn.modal so that existing JS calls like
-//   data-toggle="modal" data-target="#modalProperty"
-// from TestCaseScript.js dispatch Alpine events instead of Bootstrap modals.
-// The other modals (addStepModal, modalOptions, modalStepOptions) are now
-// fully Alpine-driven from their own script tags.
-(function() {
-    var origModal = $.fn.modal;
-    $.fn.modal = function(action) {
-        if (this.length === 1) {
-            var id = this.attr('id');
-            if (id === 'modalProperty') {
-                if (action === 'hide') {
-                    window.dispatchEvent(new CustomEvent('modalproperty-close'));
-                } else if (action === 'show' || action === 'toggle' || typeof action === 'object') {
-                    window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
-                }
-                return this;
-            }
-        }
-        return origModal.apply(this, arguments);
-    };
-})();
 </script>

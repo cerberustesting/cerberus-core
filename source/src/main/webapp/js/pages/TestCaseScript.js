@@ -1434,7 +1434,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     break;
                 case 'calculateProperty':
                     let data = loadGuiProperties();
-                    var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+                    var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" "\n\
         				class="buttonObject btn btn-default input-sm " \n\
         				title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
         				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
@@ -1447,6 +1447,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             $("#modalProperty").find("#secondRowProperty").find("p").remove();
                             $("#modalProperty").find("#firstRowProperty").append(firstRow);
                             $("#modalProperty").find("#secondRowProperty").append(secondRow);
+                            window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
                         });
                         $(htmlElement).parent().append(viewEntry);
                     }
@@ -1519,7 +1520,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
                                 if (objectIntoTagToUseExist(TagsToUse[4], name)) {
-                                    var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+                                    var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" "\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
 	                                		title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-eye-open"></span></button></span>');
@@ -1533,6 +1534,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             $("#modalProperty").find("#firstRowProperty").append(firstRow);
                                             $("#modalProperty").find("#secondRowProperty").append(secondRow);
                                             $("#modalProperty").find(".modal-title").html(property);
+                                            window.dispatchEvent(new CustomEvent('modalproperty-open', { detail: {} }));
                                         });
                                         $(htmlElement).parent().append(viewEntry);
                                     }
