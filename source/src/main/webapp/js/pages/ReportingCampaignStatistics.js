@@ -20,16 +20,9 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         let campaign = GetURLParameter("campaign");
-        let fromDate = GetURLParameter("from");
-        let toDate = GetURLParameter("to");
 
         if (campaign !== null && campaign !== "" && campaign !== undefined) {
             initDetailedPage();
-            if (fromDate && toDate) {
-                //  renderPicker('fromPicker', fromDate);
-                //renderPicker('toPicker', toDate);
-                getStatisticsByEnvCountry();
-            }
         } else {
             initGlobalPage();
         }
@@ -76,20 +69,47 @@ function reportingCampaignStatiticsForm() {
         selectedWorkspaces: [],
 
         init() {
+            const campaign = GetURLParameter("campaign");
+            const fromDate = GetURLParameter("from");
+            const toDate = GetURLParameter("to");
+
+            if (fromDate) {
+                this.form.from = fromDate;
+            }
+
+            if (toDate) {
+                this.form.to = toDate;
+            }
+
+            console.log("URL from =", fromDate);
+            console.log("URL to =", toDate);
+            console.log("FORM from =", this.form.from);
+            console.log("FORM to =", this.form.to);
+
             window.addEventListener('workspaceSelect-change', e => {
                 this.onWorkspaceChange(e.detail);
             });
+
+            if (campaign && fromDate && toDate) {
+                this.$nextTick(() => {
+                    getStatisticsByEnvCountry(this.form);
+                });
+            }
         },
 
         loadStatistics() {
-            getStatistics(this.form);
+            const campaign = GetURLParameter("campaign");
+
+            if (campaign) {
+                getStatisticsByEnvCountry(this.form);
+            } else {
+                getStatistics(this.form);
+            }
         },
 
-        // Triggered when workspace dropdown changes
         onWorkspaceChange(selected) {
             this.selectedWorkspaces = selected || [];
 
-            // Déclenche un event pour l'Application dropdown
             window.dispatchEvent(new CustomEvent('refresh-items', {
                 detail: this.selectedWorkspaces
             }));
@@ -236,11 +256,6 @@ function initDetailedPage() {
     let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [1, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticDetailList", undefined, undefined, undefined, undefined);
 
-    $('#loadDetailButton').click(function ()
-    {
-        getStatisticsByEnvCountry();
-    }
-    );
 }
 
 function getStatistics(form) {
@@ -274,20 +289,27 @@ function getStatistics(form) {
     });
 }
 
-function getStatisticsByEnvCountry() {
+function getPickerIsoValue(id) {
+    const el = document.getElementById(id);
+    if (!el || typeof Alpine === 'undefined') {
+        return '';
+    }
+
+    const data = Alpine.$data(el);
+
+    if (!data || !(data.value instanceof Date) || isNaN(data.value.getTime())) {
+        return '';
+    }
+
+    return data.value.toISOString();
+}
+
+function getStatisticsByEnvCountry(form) {
     let campaign = GetURLParameter("campaign");
     let environments = prepareFilterList($('#environmentSelect').val());
     let countries = prepareFilterList($('#countrySelect').val());
-    const fromInput = document.querySelector('#fromPicker input');
-    const toInput = document.querySelector('#toPicker input');
-
-    const from = fromInput && fromInput.value
-            ? new Date(fromInput.value.replace(' ', 'T')).toISOString()
-            : '';
-
-    const to = toInput && toInput.value
-            ? new Date(toInput.value.replace(' ', 'T')).toISOString()
-            : '';
+    const from = form && form.from ? form.from : '';
+    const to = form && form.to ? form.to : '';
 
     $.ajax
             ({
@@ -347,8 +369,8 @@ function aoColumnsFunc(tableId) {
             "searchable": false,
             "width": "70px",
             "render": function (data, type, obj) {
-                const fromValue = document.querySelector('#fromPicker input')?.value || '';
-                const toValue = document.querySelector('#toPicker input')?.value || '';
+                const fromValue = getPickerIsoValue('fromPicker');
+                const toValue = getPickerIsoValue('toPicker');
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${encodeURIComponent(fromValue)}&to=${encodeURIComponent(toValue)}"
                                         target="_blank"

@@ -85,7 +85,7 @@
                     <div>
                         <!-- Weekdays header -->
                         <div class="grid grid-cols-7 gap-1 mb-2">
-                            <template x-for="d in weekDays" :key="d">
+                            <template x-for="(d, index) in weekDays" :key="index">
                                 <div class="text-center text-xs font-medium text-gray-500 py-2" x-text="d"></div>
                             </template>
                         </div>
