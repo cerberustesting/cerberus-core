@@ -660,50 +660,21 @@ function executionV2() {
             });
         },
 
-        // ═══ STEP MODAL ═══
+        // ═══ STEP EDIT ═══
         openStepModal(step) {
             if (!step) return;
-            window.dispatchEvent(new CustomEvent('step-modal-open', {
-                detail: {
-                    test: step.test || this.exe.test,
-                    testcase: step.testcase || this.exe.testcase || this.exe.testCase,
-                    stepId: step.step || step.stepId
-                }
-            }));
+            var test = step.test || this.exe.test || '';
+            var tc = step.testcase || this.exe.testcase || this.exe.testCase || '';
+            var stepId = step.step || step.stepId || '';
+            var url = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(test) + '&testcase=' + encodeURIComponent(tc);
+            if (stepId) url += '&stepId=' + encodeURIComponent(stepId);
+            window.open(url, '_blank');
         },
 
         openPropertyModal(prop) {
             if (!prop) return;
-            var self = this;
-            // Clone the property for the modal (live editing)
-            var liveProp = JSON.parse(JSON.stringify(prop));
-            // Normalize countries to flat array if needed
-            if (liveProp.countries && liveProp.countries.length > 0 && typeof liveProp.countries[0] === 'object') {
-                liveProp.countries = liveProp.countries.map(function(c) { return c.value || c; });
-            }
-            window.dispatchEvent(new CustomEvent('property-modal-open', {
-                detail: {
-                    property: liveProp,
-                    countries: self._getCountries(),
-                    canUpdate: true,
-                    onField: function(key, val) { liveProp[key] = val; },
-                    onCountryToggle: function(country) {
-                        var arr = liveProp.countries || [];
-                        var idx = arr.indexOf(country);
-                        if (idx >= 0) arr.splice(idx, 1); else arr.push(country);
-                        liveProp.countries = arr;
-                    },
-                    onSelectAll: function() {
-                        liveProp.countries = (self._getCountries() || []).slice();
-                    },
-                    onDeselectAll: function() {
-                        liveProp.countries = [];
-                    },
-                    onClose: function() {
-                        // The property modal has a "Done" button, not Save
-                        // So we do nothing special on close
-                    }
-                }
+            window.dispatchEvent(new CustomEvent('modalproperty-open', {
+                detail: { property: prop }
             }));
         },
 

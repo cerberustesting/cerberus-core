@@ -66,7 +66,53 @@ function propertyModal() {
         isFullscreen: false,
         handleOpen(detail) {
             this.open = true;
-            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+            // If property data is passed directly (from ExecutionV2), render it
+            if (detail && detail.property) {
+                var prop = detail.property;
+                this.$nextTick(function() {
+                    var row1 = document.getElementById('firstRowProperty');
+                    var row2 = document.getElementById('secondRowProperty');
+                    if (row1) {
+                        row1.innerHTML = '';
+                        var fields = [
+                            { label: 'Property', value: prop.property || '-' },
+                            { label: 'Type', value: prop.type || '-' },
+                            { label: 'Value', value: prop.value || '-' },
+                            { label: 'Nature', value: prop.nature || '-' },
+                            { label: 'Database', value: prop.database || '-' },
+                            { label: 'Length', value: prop.length || '-' }
+                        ];
+                        var html = '<div class="grid grid-cols-2 gap-3">';
+                        fields.forEach(function(f) {
+                            html += '<div><label class="text-xs font-semibold text-slate-500 dark:text-slate-400">' + f.label + '</label>'
+                                  + '<div class="text-sm text-slate-800 dark:text-slate-200 mt-0.5 font-mono break-all">' + (f.value || '-') + '</div></div>';
+                        });
+                        html += '</div>';
+                        row1.innerHTML = html;
+                    }
+                    if (row2) {
+                        row2.innerHTML = '';
+                        var fields2 = [
+                            { label: 'Value 1 (raw)', value: prop.value1 || '-' },
+                            { label: 'Value 1 Init', value: prop.value1Init || '-' },
+                            { label: 'Value 2', value: prop.value2 || '-' },
+                            { label: 'Value 2 Init', value: prop.value2Init || '-' },
+                            { label: 'Return Code', value: prop.returnCode || 'OK' },
+                            { label: 'Return Message', value: prop.returnMessage || '-' }
+                        ];
+                        var html2 = '<div class="grid grid-cols-2 gap-3 mt-3">';
+                        fields2.forEach(function(f) {
+                            html2 += '<div><label class="text-xs font-semibold text-slate-500 dark:text-slate-400">' + f.label + '</label>'
+                                   + '<div class="text-[12px] text-slate-700 dark:text-slate-300 mt-0.5 font-mono break-all">' + (f.value || '-') + '</div></div>';
+                        });
+                        html2 += '</div>';
+                        row2.innerHTML = html2;
+                    }
+                    if (window.lucide) lucide.createIcons();
+                });
+            } else {
+                this.$nextTick(function() { if (window.lucide) lucide.createIcons(); });
+            }
         }
     };
 }

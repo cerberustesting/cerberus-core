@@ -58,6 +58,7 @@
 
             <!-- Templates -->
             <%@ include file="include/templates/selectDropdown.html"%>
+            <%@ include file="include/pages/testcasescript/manageProperties.html"%>
 
             <!-- ============================================================ -->
             <!-- MAIN V2 CONTENT — Pure Alpine.js                             -->
