@@ -384,58 +384,61 @@ public class SikuliService implements ISikuliService {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_NOT_REACHABLE);
             }
 
-            in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            String inputLine = "";
+            if (connection != null) {
+                in = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()));
+                String inputLine = "";
 
-            /**
-             * Wait here until all data received
-             */
-            while (inputLine != null) {
-                inputLine = in.readLine();
-                if (inputLine != null) {
-                    response.append(inputLine);
-                } else {
-                    break;
-                }
-            }
-
-            if (response.toString() != null && response.length() > 0) {
                 /**
-                 * Convert received string into JSONObject
+                 * Wait here until all data received
                  */
-                JSONObject objReceived = new JSONObject(response.toString());
-                LOG.debug("Robot Node Sikuli Answer:");
-                LOG.debug(objReceived.toString(2));
-                answer.setItem(objReceived);
-                if (objReceived.has("status")) {
-                    if ("OK".equals(objReceived.getString("status"))) {
-                        if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WITHDETAIL).resolveDescription("DETAIL", objReceived.getString("message"));
+                while (inputLine != null) {
+                    inputLine = in.readLine();
+                    if (inputLine != null) {
+                        response.append(inputLine);
+                    } else {
+                        break;
+                    }
+                }
+
+                if (response.toString() != null && response.length() > 0) {
+                    /**
+                     * Convert received string into JSONObject
+                     */
+                    JSONObject objReceived = new JSONObject(response.toString());
+                    LOG.debug("Robot Node Sikuli Answer:");
+                    LOG.debug(objReceived.toString(2));
+                    answer.setItem(objReceived);
+                    if (objReceived.has("status")) {
+                        if ("OK".equals(objReceived.getString("status"))) {
+                            if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WITHDETAIL).resolveDescription("DETAIL", objReceived.getString("message"));
+                            } else {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                            }
+                        } else if ("KO".equals(objReceived.getString("status"))) {
+                            if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).resolveDescription("DETAIL", objReceived.getString("message"));
+                            } else {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).resolveDescription("DETAIL", "");
+                            }
                         } else {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-                        }
-                    } else if ("KO".equals(objReceived.getString("status"))) {
-                        if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).resolveDescription("DETAIL", objReceived.getString("message"));
-                        } else {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).resolveDescription("DETAIL", "");
+                            if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", objReceived.getString("message"));
+                            } else {
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                            }
                         }
                     } else {
-                        if (objReceived.has("message") && !StringUtil.isEmptyOrNull(objReceived.getString("message"))) {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", objReceived.getString("message"));
-                        } else {
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
-                        }
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
                     }
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (Missing status information)");
-                }
-            } else {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (empty answer)");
+                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL).resolveDescription("DETAIL", "Sikuli Extention returned an invalid answer !! (empty answer)");
 
+                }
+                in.close();
             }
-            in.close();
+
         } catch (MalformedURLException ex) {
             LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);

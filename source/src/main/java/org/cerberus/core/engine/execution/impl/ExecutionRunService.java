@@ -1521,7 +1521,6 @@ public class ExecutionRunService implements IExecutionRunService {
 //                            .resolveDescription("AREA", "control ")
 //                            .resolveDescription("COND", controlExecution.getConditionOperator())
 //                            .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
-
                     controlExecution.setEnd(new Date().getTime());
 
                     this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
@@ -1620,28 +1619,28 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.warn("Selenium/Appium didn't manage to close connection for execution {}", execution.getId(), exception);
             }
         }
-
-        // Stopping Image reco extention.
-        if (Application.TYPE_FAT.equals(typ)) {
-            LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
-            if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
-                this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
+        if (execution.getSession().isSikuliAvailable()) {
+            // Stopping Image reco extention.
+            if (Application.TYPE_FAT.equals(typ)) {
+                LOG.info("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
+                if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
+                    this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
+                }
             }
-        }
-        // Stopping Image reco extention and collect Video when available.
-        if (Application.TYPE_GUI.equals(typ) || Application.TYPE_FAT.equals(typ)) {
-            LOG.debug("Ask Sikuli to clean execution {} with status {}", execution.getId(), execution.getControlStatus());
-            AnswerItem<JSONObject> actionResult;
-            if ((execution.getVideo() >= 2)
-                    || ((execution.getVideo() == 1) && !TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()))) {
-                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), true);
-            } else {
-                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), false);
+            // Stopping Image reco extention and collect Video when available.
+            if (Application.TYPE_GUI.equals(typ) || Application.TYPE_FAT.equals(typ)) {
+                LOG.info("Ask Sikuli to clean execution {} with status {}", execution.getId(), execution.getControlStatus());
+                AnswerItem<JSONObject> actionResult;
+                if ((execution.getVideo() >= 2)
+                        || ((execution.getVideo() == 1) && !TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()))) {
+                    actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), true);
+                } else {
+                    actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), false);
 
+                }
+                // Record Video
+                execution.addFileList(recorderService.recordExecutionVideo(execution, StringUtil.convertAnswerJSONToString(actionResult, "videoDebug")));
             }
-
-            // Record Video
-            execution.addFileList(recorderService.recordExecutionVideo(execution, StringUtil.convertAnswerJSONToString(actionResult, "videoDebug")));
         }
 
         // Stopping remote proxy.
