@@ -28,6 +28,7 @@ import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.RawMessageStreamEvent;
+import com.anthropic.models.messages.Tool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +62,19 @@ public class AIClientService {
      * @return MessageCreateParams
      */
     private MessageCreateParams buildMessageCreateParams(List<MessageParam> messageParamList, String systemContext) {
+        return buildMessageCreateParams(messageParamList, systemContext, null);
+    }
+
+    private MessageCreateParams buildMessageCreateParams(List<MessageParam> messageParamList, String systemContext, List<Tool> tools) {
 
         MessageCreateParams.Builder builder = MessageCreateParams.builder()
                 .model(aiConfig.modelName())
                 .maxTokens(aiConfig.maxTokens())
-                .messages(messageParamList)
-                //.tools()
-                ;
+                .messages(messageParamList);
+
+        if (tools != null) {
+            tools.forEach(builder::addTool);
+        }
 
         if (systemContext != null && !systemContext.isBlank()) {
             builder.system(systemContext);
@@ -95,9 +102,13 @@ public class AIClientService {
 
 
     public MessageAccumulator streamResponseAndAccumulate(List<MessageParam> messageParamList, String systemContext, Consumer<String> onToken) {
+        return streamResponseAndAccumulate(messageParamList, systemContext, null, onToken);
+    }
+
+    public MessageAccumulator streamResponseAndAccumulate(List<MessageParam> messageParamList, String systemContext, List<Tool> tools, Consumer<String> onToken) {
 
         AnthropicClient client = buildClient();
-        MessageCreateParams createParams = buildMessageCreateParams(messageParamList, systemContext);
+        MessageCreateParams createParams = buildMessageCreateParams(messageParamList, systemContext, tools);
         MessageAccumulator messageAccumulator = MessageAccumulator.create();
 
         try (StreamResponse<RawMessageStreamEvent> stream =

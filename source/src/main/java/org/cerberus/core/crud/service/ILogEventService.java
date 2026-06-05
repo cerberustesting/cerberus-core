@@ -107,6 +107,8 @@ public interface ILogEventService {
      */
     void createForPublicCalls(String page, String action, String status, String log, HttpServletRequest request, String login);
 
+    void createForMcpCalls(String toolName, String action, String status, String log, String login);
+
     /**
      *
      * @param searchParameter

@@ -38,6 +38,21 @@ public class AIConfig {
         return params.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
     }
 
+    /** Whether Claude is allowed to use the configured MCP server during chat. */
+    public boolean useMcp() {
+        return params.getParameterBooleanByKey("cerberus_ai_use_mcp", "", false);
+    }
+
+    /** Base URL of the MCP server (the /mcp endpoint is appended if missing), e.g. https://host/cerberus/mcp. */
+    public String mcpHost() {
+        return params.getParameterStringByKey("cerberus_ai_mcp_host", "", "");
+    }
+
+    /** API key sent as the X-API-KEY header when connecting to the MCP server. */
+    public String mcpApiKey() {
+        return params.getParameterStringByKey("cerberus_ai_mcp_apikey", "", "");
+    }
+
     public int maxTokens() {
         return params.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
     }

@@ -112,6 +112,13 @@ public class LogEventService implements ILogEventService {
             this.create(factoryLogEvent.create(0, 0, login, null, page, action, status, log, request.getRemoteAddr(), request.getLocalAddr()));
         }
     }
+
+    @Override
+    public void createForMcpCalls(String toolName, String action, String status, String log, String login) {
+        if (parameterService.getParameterBooleanByKey("cerberus_log_mcpcalls", "", false)) {
+            this.create(factoryLogEvent.create(0,0,login,null,"/mcp/tools/" + toolName,action,status,log,"MCP","MCP"));
+        }
+    }
     
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {

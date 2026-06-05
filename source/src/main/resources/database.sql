@@ -6843,4 +6843,12 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1943
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
-  VALUES  ('', 'cerberus_mcp_enable', 'false', 'Boolean in order to enable the MCP endpoints.');
+    VALUES  ('', 'cerberus_mcp_enable', 'false', 'Boolean in order to enable the MCP endpoints.');
+
+-- 1944
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES  ('', 'cerberus_log_mcpcalls', 'false', 'Boolean in order to log the MCP calls.'),
+    ('', 'cerberus_ai_use_mcp', 'false', 'Boolean in order to use the cerberus MCP.'),
+    ('', 'cerberus_ai_mcp_host', 'https://host/mcp', 'Host of the cerberus MCP server to use.'),
+    ('', 'cerberus_ai_mcp_apikey', 'apikey', 'API Key of the cerberus MCP server.');
+

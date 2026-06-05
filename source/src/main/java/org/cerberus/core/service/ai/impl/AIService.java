@@ -24,8 +24,10 @@ import com.anthropic.core.JsonValue;
 import com.anthropic.helpers.MessageAccumulator;
 import com.anthropic.models.messages.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.modelcontextprotocol.client.McpSyncClient;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.service.impl.*;
 import org.cerberus.core.exception.CerberusException;
@@ -72,6 +74,12 @@ public class AIService implements IAIService {
     TestCaseStepService testCaseStepService;
     @Autowired
     AIClientService aiClientService;
+    @Autowired
+    AIConfig aiConfig;
+    @Autowired
+    AIMcpClientService aiMcpClientService;
+
+    private static final int MAX_TOOL_ITERATIONS = 8;
 
     private TestCaseStepAction lastAction;
 
@@ -99,21 +107,91 @@ public class AIService implements IAIService {
 
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
         StringBuilder fullResponse = new StringBuilder();
+
+        /**
+         * If MCP is enabled, open a client to the configured server and expose its tools to Claude.
+         */
+        McpSyncClient mcpClient = null;
+        List<Tool> tools = new ArrayList<>();
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null,  text -> {
-                fullResponse.append(text);
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, String> message = new HashMap<>();
-                    message.put("type", "chat");
-                    message.put("done", "false");
-                    message.put("data", text);
-                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-                } catch (Exception e) {
-                    LOG.error("Error during streaming callback:", e);
-                    streamingErrors.add(e.getMessage());
+            if (aiConfig.useMcp() && aiConfig.mcpHost() != null && !aiConfig.mcpHost().isBlank()) {
+                mcpClient = aiMcpClientService.openClient();
+                tools = aiMcpClientService.listAnthropicTools(mcpClient);
+                LOG.info("MCP enabled for chat session {} — {} tools available", aiSessionID, tools.size());
+            }
+
+            MessageAccumulator messageAccumulator = null;
+            /**
+             * Agentic loop : stream a turn, and while Claude requests tool calls,
+             * execute them through MCP and feed the results back for the next turn.
+             */
+            for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+
+                messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null, tools, text -> {
+                    fullResponse.append(text);
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        Map<String, String> message = new HashMap<>();
+                        message.put("type", "chat");
+                        message.put("done", "false");
+                        message.put("data", text);
+                        websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                    } catch (Exception e) {
+                        LOG.error("Error during streaming callback:", e);
+                        streamingErrors.add(e.getMessage());
+                    }
+                });
+
+                Message response = messageAccumulator.message();
+
+                // Replay Claude's turn (text + tool_use blocks) in the conversation history.
+                messageParamList.add(MessageParam.builder()
+                        .role(MessageParam.Role.ASSISTANT)
+                        .contentOfBlockParams(response.content().stream()
+                                .map(ContentBlock::toParam)
+                                .collect(Collectors.toList()))
+                        .build());
+
+                boolean wantsTool = mcpClient != null
+                        && response.stopReason().isPresent()
+                        && response.stopReason().get().equals(StopReason.TOOL_USE);
+                if (!wantsTool) {
+                    break;
                 }
-            });
+
+                // Execute every requested tool and gather the tool_result blocks.
+                List<ContentBlockParam> toolResults = new ArrayList<>();
+                for (ContentBlock block : response.content()) {
+                    if (block.toolUse().isEmpty()) {
+                        continue;
+                    }
+                    ToolUseBlock toolUse = block.toolUse().get();
+                    Map<String, Object> arguments = toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
+                    notifyToolCall(websocketSession, toolUse.name());
+
+                    String toolResult;
+                    boolean isError = false;
+                    try {
+                        toolResult = aiMcpClientService.callTool(mcpClient, toolUse.name(), arguments);
+                    } catch (Exception ex) {
+                        LOG.error("MCP tool call '{}' failed:", toolUse.name(), ex);
+                        toolResult = "Tool execution failed: " + ex.getMessage();
+                        isError = true;
+                    }
+
+                    toolResults.add(ContentBlockParam.ofToolResult(ToolResultBlockParam.builder()
+                            .toolUseId(toolUse.id())
+                            .content(toolResult)
+                            .isError(isError)
+                            .build()));
+                }
+
+                messageParamList.add(MessageParam.builder()
+                        .role(MessageParam.Role.USER)
+                        .contentOfBlockParams(toolResults)
+                        .build());
+            }
+
             ObjectMapper mapper = new ObjectMapper();
             Map<String, String> message = new HashMap<>();
             message.put("type", "end");
@@ -134,6 +212,27 @@ public class AIService implements IAIService {
                 websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
                 websocketSession.close(CloseStatus.SERVER_ERROR);
             } catch (IOException ignored) {}
+        } finally {
+            if (mcpClient != null) {
+                try {
+                    mcpClient.closeGracefully();
+                } catch (Exception ignored) {}
+            }
+        }
+    }
+
+    /**
+     * Notifies the UI that Claude is invoking an MCP tool.
+     */
+    private void notifyToolCall(WebSocketSession websocketSession, String toolName) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> message = new HashMap<>();
+            message.put("type", "tool_call");
+            message.put("data", toolName);
+            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+        } catch (IOException e) {
+            LOG.error("Error notifying tool call:", e);
         }
     }
 
