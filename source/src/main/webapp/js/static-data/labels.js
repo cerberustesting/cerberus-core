@@ -202,6 +202,11 @@ const pageInvariantLabel = {
     message_remove: { en: "Are you sure?", fr: "Êtes-vous sûr ?" }
 }
 
+const pageParameterLabel = {
+    title: { en: "Parameters", fr: "Paramètres" },
+    subtitle: { en: "Manage the application’s parameters.", fr: "Gérer les paramètres de l’application." }
+}
+
 const pageQuickStartLabel = {
     title:{en:"Quick Start",fr:"Démarrage Rapide"},
     subtitle:{en:"Choose your preferred method to create and manage test cases quickly",fr:"Choisissez votre méthode préférée pour créer et gérer rapidement des cas de test"},
@@ -326,6 +331,7 @@ window.commonLabel = commonLabel;
 window.headerLabel = headerLabel;
 window.homepageLabel = homepageLabel;
 window.pageInvariantLabel = pageInvariantLabel;
+window.pageParameterLabel = pageParameterLabel;
 window.pageQuickStartLabel = pageQuickStartLabel;
 window.reportingCampaignStatisticsLabel = reportingCampaignStatisticsLabel;
 window.applicationObjectLabel = applicationObjectLabel;

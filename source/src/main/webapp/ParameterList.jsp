@@ -39,13 +39,36 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
 
 
-            <h1 class="page-title-line" id="title">Parameters</h1>
+            <h1 class="page-title-line" x-text="$store.labels.getLabel('pageParameter','title')">Invariants</h1>
+            <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageParameter','subtitle')">Manage the application’s constants and fixed elements.</p>
 
-            <div class="crb_card">
-                <div id="parameterList">
-                    <table id="parametersTable" class="table table-hover display" name="parametersTable"></table>
-                    <div class="marginBottom20"></div>
+            <div x-data="{ tab: 'all' }" class="w-full">
+                <!-- Tabs -->
+                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                    <!-- All -->
+                    <button @click="tab = 'all';displayAllParametersTable();"
+                            :class="tab === 'all' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="list" class="w-4 h-4"></i>All
+                    </button>
+                    <!-- AI -->
+                    <button @click="tab = 'ai';displayFilteredParametersTable('ai');"
+                            :class="tab === 'ai' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="bot" class="w-4 h-4"></i>AI
+                    </button>
+                    <!-- SMTP -->
+                    <button @click="tab = 'smtp';displayFilteredParametersTable('smtp');"
+                            :class="tab === 'smtp' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="mail" class="w-4 h-4"></i>SMTP
+                    </button>
                 </div>
+                <div id="parameterList">
+                        <table id="parametersTable" class="table table-hover display" name="parametersTable"></table>
+                        <div class="marginBottom20"></div>
+                </div>
+
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

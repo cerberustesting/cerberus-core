@@ -30,11 +30,89 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
-
-    //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("parametersTable", "ReadParameter?system1=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList", undefined, true);
+    displayParametersTable();
 }
+
+function displayParametersTable(parameterList) {
+    var ajaxUrl = "ReadParameter?system1=" + encodeURIComponent(getSys());
+
+    if ($.fn.dataTable.isDataTable('#parametersTable')) {
+        $('#parametersTable').DataTable().ajax.url(ajaxUrl).load();
+    } else {
+        var configurations = new TableConfigurationsServerSide(
+            "parametersTable",
+            ajaxUrl,
+            "contentTable",
+            aoColumnsFunc(),
+            [1, 'asc']
+        );
+
+        createDataTableWithPermissionsNew(
+            configurations,
+            renderOptionsForApplication,
+            "#parameterList",
+            undefined,
+            true
+        );
+    }
+}
+
+function displayAllParametersTable() {
+    $(document)
+        .off('cerberus:filterAlertCreated.aiParameters');
+
+    displayParametersTable();
+    const table = $("#parametersTable").dataTable();
+    table.fnFilter("", 1);
+}
+
+function displayFilteredParametersTable(view) {
+
+    const FILTERED_PARAMETER_VIEWS = {
+        ai: [
+            "cerberus_ai_mcp_apikey",
+            "cerberus_ai_mcp_host",
+            "cerberus_ai_use_mcp",
+            "cerberus_log_mcpcalls",
+            "cerberus_mcp_enable",
+            "cerberus_anthropic_apikey",
+            "cerberus_anthropic_defaultmodel",
+            "cerberus_anthropic_maxtoken",
+            "cerberus_anthropic_price_input_per_million",
+            "cerberus_anthropic_price_output_per_million"
+        ],
+
+        smtp: [
+            "cerberus_smtp_from",
+            "cerberus_smtp_host",
+            "cerberus_smtp_isSetTls",
+            "cerberus_smtp_password",
+            "cerberus_smtp_port",
+            "cerberus_smtp_username"
+        ]
+    };
+    const parameterList = FILTERED_PARAMETER_VIEWS[view];
+
+    if (!parameterList) {
+        console.warn("Unknown filtered parameters view:", view);
+        displayParametersTable();
+        return;
+    }
+
+    $(document)
+        .off('cerberus:filterAlertCreated.aiParameters')
+        .on('cerberus:filterAlertCreated.aiParameters', function (event, data) {
+            if (data.tableId === 'parametersTable') {
+                data.filterAlertDiv.hide();
+            }
+        });
+
+    displayParametersTable();
+    const table = $("#parametersTable").dataTable();
+
+    table.fnFilter(parameterList.join(","),1);
+}
+
 
 function displayPageLabel() {
     var doc = new Doc();

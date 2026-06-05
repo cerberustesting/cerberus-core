@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp.impl;
+package org.cerberus.core.mcp.impl;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.cerberus.core.api.mcp.MCPTool;
+import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.database.IDatabaseVersioningService;
 import org.springframework.stereotype.Component;
 

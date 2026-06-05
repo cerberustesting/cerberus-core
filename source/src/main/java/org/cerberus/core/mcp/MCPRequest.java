@@ -17,11 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp;
+package org.cerberus.core.mcp;
 
-import io.modelcontextprotocol.server.McpServerFeatures;
+import lombok.*;
+
+import java.util.Map;
 
 
-public interface MCPTool {
-    McpServerFeatures.SyncToolSpecification toToolSpecification();
+//TO DELETE
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class MCPRequest {
+
+    String jsonrpc;
+    Object id;
+    String method;
+    String toolName;
+    Map<String, Object> params;
+
 }

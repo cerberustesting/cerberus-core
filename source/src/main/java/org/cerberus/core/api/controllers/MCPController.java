@@ -20,20 +20,8 @@
 package org.cerberus.core.api.controllers;
 
 
-import io.modelcontextprotocol.server.McpServer;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import org.cerberus.core.api.mcp.MCPRequest;
-import org.cerberus.core.api.mcp.MCPTool;
-import org.cerberus.core.api.mcp.MCPToolRegistry;
-import org.cerberus.core.api.services.PublicApiAuthenticationService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.Map;
 
 /**
  * @author bcivel

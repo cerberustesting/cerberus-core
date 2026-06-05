@@ -454,6 +454,13 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         });
 
         $('#' + tableId + '_wrapper #filterAlertDiv').show();
+
+        $(document).trigger('cerberus:filterAlertCreated', {
+            tableId: tableId,
+            filterAlertDiv: $('#' + tableId + '_wrapper #filterAlertDiv'),
+            activatedFilters: $('#' + tableId + '_wrapper #activatedFilters')
+        });
+
         focusOnNextSearchInputBool = true;
     }
 

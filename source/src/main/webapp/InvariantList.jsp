@@ -31,8 +31,8 @@
     <script type="text/javascript" src="js/pages/InvariantList.js?v=${appVersion}"></script>
 </head>
 <body x-data x-cloak class="crb_body">
-<jsp:include page="include/global/header2.html"/>
-<jsp:include page="include/global/modalInclusions.jsp"/>
+    <jsp:include page="include/global/header2.html"/>
+    <jsp:include page="include/global/modalInclusions.jsp"/>
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
         <%@ include file="include/transversal/Invariant.html"%>
         <jsp:include page="include/templates/selectDropdown.html"/>

@@ -17,27 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp;
+package org.cerberus.core.mcp;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Value;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
-//TO DELETE
+@Component
+public class MCPToolRegistry {
 
-@Value
-@Builder
-@Getter
-@Setter
-public class MCPToolMetadata {
+    private final List<MCPTool> tools;
 
-    String name;
-    String description;
-    String category;
-    boolean requiresAuth;
-    Map<String, Object> inputSchema;
+    public MCPToolRegistry(List<MCPTool> tools) {
+        this.tools = tools;
+    }
 
+    public List<McpServerFeatures.SyncToolSpecification> listTools() {
+        return tools.stream()
+                .map(MCPTool::toToolSpecification)
+                .collect(Collectors.toList());
+    }
 }

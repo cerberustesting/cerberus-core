@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp.impl.testcasescript;
+package org.cerberus.core.mcp.impl.testcasescript;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.cerberus.core.api.mcp.MCPTool;
+import org.cerberus.core.mcp.MCPTool;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 

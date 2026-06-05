@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp.util;
+package org.cerberus.core.mcp.util;
 
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;

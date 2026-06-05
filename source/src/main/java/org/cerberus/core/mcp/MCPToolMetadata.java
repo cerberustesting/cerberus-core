@@ -17,24 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp;
+package org.cerberus.core.mcp;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 
 import java.util.Map;
 
-
 //TO DELETE
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class MCPRequest {
 
-    String jsonrpc;
-    Object id;
-    String method;
-    String toolName;
-    Map<String, Object> params;
+@Value
+@Builder
+@Getter
+@Setter
+public class MCPToolMetadata {
+
+    String name;
+    String description;
+    String category;
+    boolean requiresAuth;
+    Map<String, Object> inputSchema;
 
 }

@@ -17,26 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mcp;
+package org.cerberus.core.mcp;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class MCPToolRegistry {
-
-    private final List<MCPTool> tools;
-
-    public MCPToolRegistry(List<MCPTool> tools) {
-        this.tools = tools;
-    }
-
-    public List<McpServerFeatures.SyncToolSpecification> listTools() {
-        return tools.stream()
-                .map(MCPTool::toToolSpecification)
-                .collect(Collectors.toList());
-    }
+public interface MCPTool {
+    McpServerFeatures.SyncToolSpecification toToolSpecification();
 }
