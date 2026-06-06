@@ -104,7 +104,7 @@ public class SikuliService implements ISikuliService {
     private static final String SIKULI_EXECUTEACTION_PATH = "/extra/ExecuteSikuliAction";
 
     private JSONObject generatePostParameters(String action, long executionId, String locator, String locator2, String text, String text2,
-            long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+            long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay, String browserProcess) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
@@ -156,6 +156,10 @@ public class SikuliService implements ISikuliService {
         result.put("typeDelay", typeDelay);
         result.put("executionId", executionId);
         result.put("screenshot", 1);
+        if (StringUtil.isNotEmptyOrNull(browserProcess)) {
+            result.put("processName", browserProcess);
+            result.put("filterStrict", false);
+        }
         return result;
     }
 
@@ -364,7 +368,8 @@ public class SikuliService implements ISikuliService {
                     session.getCerberus_sikuli_wait_element(),
                     session.getCerberus_sikuli_minSimilarity(),
                     session.getCerberus_selenium_highlightElement(),
-                    session.getCerberus_sikuli_typeDelay()
+                    session.getCerberus_sikuli_typeDelay(),
+                    session.getBrowserProcess()
             );
             connection.setDoOutput(true);
 
@@ -994,8 +999,17 @@ public class SikuliService implements ISikuliService {
     }
 
     private String generateSikuliObjectFromLocator(String locator) {
+        // Replace something like http://localhost:9080/Cerberus/ReadApplicationObjectImage?application=Cerberus&object=BUTTONACCEPT#xoffset=|yoffset=
+        // by
+        // BUTTONACCEPT
+        // or
+        // BUTTONACCEPT (xoffset=10 yoffset=20)
         if (locator.contains("object=")) {
-            return locator.split("object=")[1];
+            String newName = locator.replace("#xoffset=|yoffset=", "").split("object=")[1].replace("#", " (").replace("|", " ");
+            if (newName.endsWith("=")) {
+                newName += ")";
+            }
+            return newName;
         } else {
             return locator;
         }

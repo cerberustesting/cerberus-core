@@ -6851,3 +6851,6 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
         ('', 'cerberus_ai_use_mcp', 'false', 'Boolean in order to use the cerberus MCP.'),
         ('', 'cerberus_ai_mcp_host', 'https://host/mcp', 'Host of the cerberus MCP server to use.'),
         ('', 'cerberus_ai_mcp_apikey', 'apikey', 'API Key of the cerberus MCP server.');
+
+-- 1945
+ALTER TABLE testcaseexecution ADD CPUTimeMs INT DEFAULT 0 AFTER Platform, ADD MemoryResidentMb INT DEFAULT 0 AFTER CPUTimeMs;

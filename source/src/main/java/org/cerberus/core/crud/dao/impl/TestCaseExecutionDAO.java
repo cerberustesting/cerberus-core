@@ -164,7 +164,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("  ConditionVal1 = ?, ConditionVal2 = ?, ConditionVal3 = ?, ManualExecution = ?, UserAgent = ?, ");
         query.append("  queueId = ?, testCaseVersion = ?, testCasePriority = ?, testCaseIsMuted = ?, `system` = ?, ");
         query.append("  robotdecli = ?, robot = ?, robotexecutor = ?, RobotProvider = ?, RobotSessionId = ?, ");
-        query.append("  RobotProviderSessionId = ?, UsrModif = ?, DateModif = NOW() ");
+        query.append("  RobotProviderSessionId = ?, CPUTimeMs = ?, MemoryResidentMb = ?, UsrModif = ?, DateModif = NOW() ");
         query.append("WHERE id = ?");
 
         LOG.debug("SQL : {}", query);
@@ -223,6 +223,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(i++, tCExecution.getRobotProvider());
             preStat.setString(i++, tCExecution.getRobotSessionID());
             preStat.setString(i++, tCExecution.getRobotProviderSessionID());
+            preStat.setInt(i++, tCExecution.getCpuTimeMs());
+            preStat.setInt(i++, tCExecution.getMemoryResidentMb());
             preStat.setString(i++, tCExecution.getUsrModif());
             preStat.setLong(i, tCExecution.getId());
             preStat.executeUpdate();

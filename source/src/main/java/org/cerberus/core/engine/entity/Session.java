@@ -46,6 +46,7 @@ public class Session {
 
     private WebDriver driver;
     private AppiumDriver appiumDriver;
+    private String browserProcess;
 
     private Integer cerberus_selenium_implicitlyWait;
 
@@ -82,6 +83,14 @@ public class Session {
     private MutableCapabilities desiredCapabilities;
 
     private JSONArray consoleLogs;
+
+    public String getBrowserProcess() {
+        return browserProcess;
+    }
+
+    public void setBrowserProcess(String browserProcess) {
+        this.browserProcess = browserProcess;
+    }
 
     public boolean isSikuliAvailable() {
         return sikuliAvailable;

@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.servlet.crud.test.testcase;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCase;
@@ -89,6 +91,11 @@ public class UpdateTestCase extends AbstractCreateUpdateTestCase {
     protected void updateTestCase(String originalTest, String originalTestCase, TestCase tc) throws CerberusException {
 
         testCaseService.convert(testCaseService.update(originalTest, originalTestCase, tc));
+
+        // Save histo entry
+        this.testCaseHistoService.create(testCaseService.convert(testCaseService.findTestCaseByKeyWithDependencies(originalTest, originalTestCase, true, false)),
+                Timestamp.from(Instant.now()), tc.getVersion(), tc.getUsrModif(), "");
+
     }
 
 }

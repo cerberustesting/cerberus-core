@@ -230,6 +230,14 @@ public interface IRecorderService {
     public TestCaseExecutionFile recordHar(TestCaseExecution execution, JSONObject har);
 
     /**
+     *
+     * @param execution
+     * @param systemStats
+     * @return
+     */
+    public TestCaseExecutionFile recordSystemStats(TestCaseExecution execution, JSONObject systemStats);
+
+    /**
      * @param testCaseStepActionControlExecution
      * @param testCaseStepActionExecution
      * @param extension
@@ -293,6 +301,23 @@ public interface IRecorderService {
      */
     String getStorageSubFolder(long exeID);
 
+    /**
+     *
+     * @param exeID
+     * @param test
+     * @param testCase
+     * @param step
+     * @param index
+     * @param sequence
+     * @param controlString
+     * @param property
+     * @param propertyIndex
+     * @param filename
+     * @param extention
+     * @param manual
+     * @return
+     * @throws CerberusException
+     */
     Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException;
 
     /**

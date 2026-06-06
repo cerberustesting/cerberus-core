@@ -21,7 +21,6 @@ package org.cerberus.core.engine.execution.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mchange.v1.lang.BooleanUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
@@ -55,7 +54,6 @@ import org.cerberus.core.service.rest.IRestService;
 import org.cerberus.core.service.robotproviders.ILambdaTestService;
 import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.webdriver.impl.BiDiUtils;
-import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
@@ -63,8 +61,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.bidi.BiDi;
-import org.openqa.selenium.bidi.HasBiDi;
-import org.openqa.selenium.bidi.Command;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
@@ -483,6 +479,8 @@ public class RobotServerService implements IRobotServerService {
                 execution.getSession().setSikuliAvailable(false);
             }
 
+            execution.getSession().setBrowserProcess(execution.getBrowser());
+
             execution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
@@ -856,6 +854,8 @@ public class RobotServerService implements IRobotServerService {
             } else {
                 execution.getSession().setSikuliAvailable(false);
             }
+
+            execution.getSession().setBrowserProcess(execution.getBrowser());
 
             execution.getSession().setStarted(true);
 

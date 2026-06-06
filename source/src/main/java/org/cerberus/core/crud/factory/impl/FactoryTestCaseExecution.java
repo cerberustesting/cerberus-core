@@ -144,6 +144,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setSecrets(new HashMap<>());
         newTce.setCountryEnvApplicationParams(new HashMap<>());
         newTce.setResultMessageList((new ArrayList<>()));
+        newTce.setCpuTimeMs(0);
+        newTce.setMemoryResidentMb(0);
 
         return newTce;
     }
