@@ -1008,7 +1008,9 @@ public class ExecutionRunService implements IExecutionRunService {
     public TestCaseExecution stopTestCase(TestCaseExecution execution) {
 
         // Calculate final Result code and message. (Need to be done before the Robots are stopped as this could impact the logs and video recording)
-        execution.setResultMessage(testCaseExecutionService.getResultMessageAgregated(execution.getResultMessageList()));
+        if ((!execution.getResultMessageList().isEmpty()) && !("PE".equalsIgnoreCase(execution.getControlStatus()))) {
+            execution.setResultMessage(testCaseExecutionService.getResultMessageAgregated(execution.getResultMessageList()));
+        }
 
         // Stop Execution
         LOG.debug("{} - Stop the execution {} UUID: {}", execution.getId(), execution.getId(), execution.getExecutionUUID());
