@@ -40,7 +40,7 @@
                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                     </div>
                     <div x-show="prop._expanded" x-collapse class="px-3 pb-2" style="border-top: 1px solid var(--crb-grey-light-color)">
-                        <div class="grid grid-cols-2 gap-1.5 mt-2">
+                        <div class="grid grid-cols-3 gap-1.5 mt-2">
                             <div class="v2-exe-info-item">
                                 <span class="v2-exe-info-label">Type</span>
                                 <span class="v2-exe-info-value" x-text="prop.type || '-'"></span>
@@ -57,16 +57,64 @@
                                 <span class="v2-exe-info-label">Length</span>
                                 <span class="v2-exe-info-value" x-text="prop.length || '-'"></span>
                             </div>
-                            <div class="v2-exe-info-item col-span-2">
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Row Limit</span>
+                                <span class="v2-exe-info-value" x-text="prop.rowLimit || '-'"></span>
+                            </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Index</span>
+                                <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
+                            </div>
+                            <div class="v2-exe-info-item col-span-3">
+                                <span class="v2-exe-info-label">Description</span>
+                                <span class="v2-exe-info-value text-[10px]" x-text="prop.description || '-'"></span>
+                            </div>
+                            <div class="v2-exe-info-item col-span-3">
                                 <span class="v2-exe-info-label">Value 1 (raw)</span>
                                 <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value1 || '-'"></span>
                             </div>
-                            <div class="v2-exe-info-item col-span-2">
+                            <div class="v2-exe-info-item col-span-3">
                                 <span class="v2-exe-info-label">Value 1 Init</span>
                                 <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value1Init || '-'"></span>
                             </div>
+                            <template x-if="prop.value2">
+                                <div class="v2-exe-info-item col-span-3">
+                                    <span class="v2-exe-info-label">Value 2</span>
+                                    <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value2"></span>
+                                </div>
+                            </template>
+                            <template x-if="prop.value2Init">
+                                <div class="v2-exe-info-item col-span-3">
+                                    <span class="v2-exe-info-label">Value 2 Init</span>
+                                    <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value2Init"></span>
+                                </div>
+                            </template>
+                            <template x-if="prop.value3">
+                                <div class="v2-exe-info-item col-span-3">
+                                    <span class="v2-exe-info-label">Value 3</span>
+                                    <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value3"></span>
+                                </div>
+                            </template>
+                            <template x-if="prop.value3Init">
+                                <div class="v2-exe-info-item col-span-3">
+                                    <span class="v2-exe-info-label">Value 3 Init</span>
+                                    <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value3Init"></span>
+                                </div>
+                            </template>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Retry</span>
+                                <span class="v2-exe-info-value" x-text="prop.retryNb || '0'"></span>
+                            </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Retry Period</span>
+                                <span class="v2-exe-info-value" x-text="prop.retryPeriod || '0'"></span>
+                            </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Elapsed</span>
+                                <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
+                            </div>
                             <template x-if="prop.returnMessage">
-                                <div class="v2-exe-info-item col-span-2">
+                                <div class="v2-exe-info-item col-span-3">
                                     <span class="v2-exe-info-label">Return Message</span>
                                     <span class="v2-exe-info-value text-[10px]" x-text="prop.returnMessage"></span>
                                 </div>
@@ -110,9 +158,36 @@
         <div class="flex items-center gap-3 mb-4">
             <i data-lucide="bug" class="w-5 h-5" style="color: var(--crb-red-color)"></i>
             <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Bug & Detail</span>
+            <!-- False Negative Badge -->
+            <template x-if="falseNegative">
+                <span class="ml-auto text-[10px] font-bold px-2 py-1 rounded-md bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i> FALSE NEGATIVE
+                </span>
+            </template>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
+            <!-- Execution ID -->
+            <div class="v2-exe-info-item">
+                <span class="v2-exe-info-label">Execution ID</span>
+                <span class="v2-exe-info-value font-mono" x-text="exe.id || '-'"></span>
+            </div>
+
+            <!-- False Negative Toggle -->
+            <div class="v2-exe-info-item">
+                <span class="v2-exe-info-label">False Negative</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <button @click="toggleFalseNegative()"
+                            class="text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
+                            :class="falseNegative
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200'"
+                            :disabled="exe.controlStatus === 'PE' || exe.controlStatus === 'OK'">
+                        <span x-text="falseNegative ? '✓ Declared' : 'Declare'"></span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Status & Message -->
             <div class="col-span-2">
                 <div class="v2-exe-info-grid">
@@ -131,22 +206,58 @@
             <!-- Bugs -->
             <div class="col-span-2">
                 <div class="v2-exe-info-label mb-2">Bugs</div>
-                <template x-if="exe.bugs && exe.bugs.length > 0">
+                <template x-if="exe.testCaseObj && exe.testCaseObj.bugs && exe.testCaseObj.bugs.length > 0">
                     <div class="space-y-1">
-                        <template x-for="bug in exe.bugs" :key="bug.id">
-                            <a :href="bug.bugTrackerUrl || '#'" target="_blank"
-                               class="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
-                               style="border: 1px solid var(--crb-grey-light-color)">
-                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
-                                <span class="text-[12px] font-semibold text-blue-600 dark:text-blue-400" x-text="bug.id"></span>
-                                <span class="text-[10px] text-slate-400 truncate" x-text="bug.desc || ''"></span>
-                            </a>
+                        <template x-for="bug in exe.testCaseObj.bugs" :key="bug.id">
+                            <template x-if="bug.act !== false">
+                                <a :href="bug.url || (applicationObj && applicationObj.bugTrackerUrl ? applicationObj.bugTrackerUrl.replace(/%BUGID%/g, bug.id) : '#')" target="_blank"
+                                   class="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                                   style="border: 1px solid var(--crb-grey-light-color)">
+                                    <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+                                    <span class="text-[12px] font-semibold text-blue-600 dark:text-blue-400" x-text="bug.id"></span>
+                                    <span class="text-[10px] text-slate-400 truncate" x-text="bug.desc || ''"></span>
+                                </a>
+                            </template>
                         </template>
                     </div>
                 </template>
-                <template x-if="!exe.bugs || exe.bugs.length === 0">
+                <template x-if="!exe.testCaseObj || !exe.testCaseObj.bugs || exe.testCaseObj.bugs.length === 0">
                     <span class="text-[11px] text-slate-400">No bugs reported</span>
                 </template>
+
+                <!-- Bug Action Buttons -->
+                <div class="flex flex-wrap gap-2 mt-3">
+                    <!-- Open New Bug (External Link) -->
+                    <template x-if="applicationObj && applicationObj.bugTrackerNewUrl">
+                        <a :href="_getBugNewUrl()" target="_blank"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all
+                                  bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                           style="border: 1px solid var(--crb-grey-light-color)">
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                            Open New Bug
+                        </a>
+                    </template>
+
+                    <!-- Create via Connector -->
+                    <template x-if="applicationObj && applicationObj.bugTrackerConnector && applicationObj.bugTrackerConnector !== 'NONE'">
+                        <button @click="createBug()"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all
+                                       bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40"
+                                style="border: 1px solid var(--crb-grey-light-color)">
+                            <i data-lucide="zap" class="w-3 h-3"></i>
+                            <span x-text="'Create via ' + applicationObj.bugTrackerConnector"></span>
+                        </button>
+                    </template>
+
+                    <!-- Manually Assign -->
+                    <button @click="openModalTestCase(exe.test, exe.testcase || exe.testCase, 'EDIT', 'tabTCBugReport', exe.id)"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all
+                                   bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                            style="border: 1px solid var(--crb-grey-light-color)">
+                        <i data-lucide="pencil" class="w-3 h-3"></i>
+                        Manually Assign Bug
+                    </button>
+                </div>
             </div>
 
             <!-- Tag -->
@@ -202,7 +313,7 @@
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Cerberus Version</span>
-                <span class="v2-exe-info-value" x-text="exe.cerberusVersion || '-'"></span>
+                <span class="v2-exe-info-value" x-text="exe.crbVersion || exe.cerberusVersion || '-'"></span>
             </div>
 
             <!-- Test Case info -->
@@ -222,6 +333,82 @@
                 <span class="v2-exe-info-label">TC Status</span>
                 <span class="v2-exe-info-value" x-text="exe.status || '-'"></span>
             </div>
+
+            <!-- Flags -->
+            <div class="v2-exe-info-item col-span-2">
+                <span class="v2-exe-info-label">Flags</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <template x-if="falseNegative">
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-green-50 dark:bg-green-900/20 text-green-600">FALSE NEGATIVE</span>
+                    </template>
+                    <template x-if="exe.isFlaky">
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600">FLAKY</span>
+                    </template>
+                    <template x-if="exe.manualExecution === 'Y'">
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600">MANUAL</span>
+                    </template>
+                    <template x-if="!falseNegative && !exe.isFlaky && exe.manualExecution !== 'Y'">
+                        <span class="text-[10px] text-slate-400">None</span>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Conditions -->
+            <template x-if="exe.conditionOperator && exe.conditionOperator !== 'always' && exe.conditionOperator !== ''">
+                <div class="col-span-2">
+                    <div class="v2-exe-info-label mb-2">Conditions</div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Operator</span>
+                            <span class="v2-exe-info-value" x-text="exe.conditionOperator || '-'"></span>
+                        </div>
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val1</span>
+                            <span class="v2-exe-info-value font-mono text-[10px]" x-text="exe.conditionVal1 || '-'"></span>
+                        </div>
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val2</span>
+                            <span class="v2-exe-info-value font-mono text-[10px]" x-text="exe.conditionVal2 || '-'"></span>
+                        </div>
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val3</span>
+                            <span class="v2-exe-info-value font-mono text-[10px]" x-text="exe.conditionVal3 || '-'"></span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-1">
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val1 Init</span>
+                            <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="exe.conditionVal1Init || '-'"></span>
+                        </div>
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val2 Init</span>
+                            <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="exe.conditionVal2Init || '-'"></span>
+                        </div>
+                        <div class="v2-exe-info-item">
+                            <span class="v2-exe-info-label">Val3 Init</span>
+                            <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="exe.conditionVal3Init || '-'"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Execution Files -->
+            <template x-if="exe.fileList && exe.fileList.length > 0">
+                <div class="col-span-2">
+                    <div class="v2-exe-info-label mb-2">Execution Files</div>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="file in exe.fileList" :key="file.fileName">
+                            <a :href="getMediaFullUrl(file)" target="_blank"
+                               class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium transition-colors
+                                      bg-slate-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-600"
+                               style="border: 1px solid var(--crb-grey-light-color)">
+                                <i :data-lucide="getFileIcon(file)" class="w-3 h-3"></i>
+                                <span x-text="file.fileDesc || file.fileName"></span>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </template>
         </div>
     </div>
 </div>
@@ -242,15 +429,39 @@
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Application</span>
-                <span class="v2-exe-info-value" x-text="exe.application || '-'"></span>
+                <div class="flex items-center gap-1.5">
+                    <span class="v2-exe-info-value" x-text="exe.application || '-'"></span>
+                    <template x-if="exe.application">
+                        <a :href="'ApplicationEdit.jsp?application=' + encodeURIComponent(exe.application)" target="_blank"
+                           class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Application">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </a>
+                    </template>
+                </div>
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Country</span>
-                <span class="v2-exe-info-value" x-text="exe.country || '-'"></span>
+                <div class="flex items-center gap-1.5">
+                    <span class="v2-exe-info-value" x-text="exe.country || '-'"></span>
+                    <template x-if="exe.country">
+                        <a :href="'InvariantList.jsp?idName=COUNTRY&value=' + encodeURIComponent(exe.country)" target="_blank"
+                           class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Country">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </a>
+                    </template>
+                </div>
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Environment</span>
-                <span class="v2-exe-info-value" x-text="exe.environment || '-'"></span>
+                <div class="flex items-center gap-1.5">
+                    <span class="v2-exe-info-value" x-text="exe.environment || '-'"></span>
+                    <template x-if="exe.environment">
+                        <a :href="'InvariantList.jsp?idName=ENVIRONMENT&value=' + encodeURIComponent(exe.environment)" target="_blank"
+                           class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Environment">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </a>
+                    </template>
+                </div>
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Environment Data</span>
@@ -289,7 +500,15 @@
         <div class="grid grid-cols-3 gap-4">
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Robot</span>
-                <span class="v2-exe-info-value" x-text="exe.robot || '-'"></span>
+                <div class="flex items-center gap-1.5">
+                    <span class="v2-exe-info-value" x-text="exe.robot || '-'"></span>
+                    <template x-if="exe.robot">
+                        <a :href="'RobotList.jsp?robot=' + encodeURIComponent(exe.robot)" target="_blank"
+                           class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Robot">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </a>
+                    </template>
+                </div>
             </div>
             <div class="v2-exe-info-item">
                 <span class="v2-exe-info-label">Robot Decli</span>
@@ -335,12 +554,37 @@
             <!-- Provider session links -->
             <template x-if="exe.robotProvider">
                 <div class="v2-exe-info-item col-span-3">
-                    <span class="v2-exe-info-label">Provider Session</span>
-                    <template x-if="exe.robotProviderSessionId">
-                        <a :href="exe.robotProviderSessionIdUrl || '#'" target="_blank"
-                           class="v2-exe-info-value text-blue-600 dark:text-blue-400 hover:underline"
-                           x-text="exe.robotProvider + ': ' + exe.robotProviderSessionId"></a>
-                    </template>
+                    <span class="v2-exe-info-label">Provider</span>
+                    <div class="flex items-center gap-2">
+                        <span class="v2-exe-info-value" x-text="exe.robotProvider || '-'"></span>
+                        <template x-if="exe.robotProviderSessionId">
+                            <a :href="_getProviderSessionUrl()" target="_blank"
+                               class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all
+                                      bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                               style="border: 1px solid var(--crb-grey-light-color)">
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                                <span x-text="'Open ' + exe.robotProvider + ' Session'"></span>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Execution-level robot files -->
+            <template x-if="exe.fileList && exe.fileList.filter(f => f.fileDesc && f.fileDesc.indexOf('robot') !== -1).length > 0">
+                <div class="v2-exe-info-item col-span-3">
+                    <span class="v2-exe-info-label">Robot Files</span>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        <template x-for="file in exe.fileList.filter(f => f.fileDesc && f.fileDesc.indexOf('robot') !== -1)" :key="file.fileName">
+                            <a :href="getMediaFullUrl(file)" target="_blank"
+                               class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium transition-colors
+                                      bg-slate-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-600"
+                               style="border: 1px solid var(--crb-grey-light-color)">
+                                <i :data-lucide="getFileIcon(file)" class="w-3 h-3"></i>
+                                <span x-text="file.fileDesc || file.fileName"></span>
+                            </a>
+                        </template>
+                    </div>
                 </div>
             </template>
         </div>
@@ -348,25 +592,414 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- TAB: NETWORK (placeholder for Chart.js)                       -->
+<!-- TAB: DEPENDENCIES                                             -->
 <!-- ============================================================ -->
-<div x-show="tab === 'network'" x-cloak class="v2-fade-in">
+<div x-show="tab === 'deps'" x-cloak class="v2-fade-in">
     <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
         <div class="flex items-center gap-3 mb-4">
-            <i data-lucide="network" class="w-5 h-5" style="color: var(--crb-blue-color)"></i>
-            <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Network</span>
-            <span class="text-[10px] text-slate-400">Coming soon in V2 — Advanced HAR viewer</span>
+            <i data-lucide="link" class="w-5 h-5" style="color: var(--crb-purple-color)"></i>
+            <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Dependencies</span>
+            <span class="text-[10px] text-slate-400" x-text="(exe.testCaseExecutionQueueDepList || []).length + ' dependencies'"></span>
         </div>
-        <div class="flex flex-col items-center justify-center py-12 gap-3">
-            <div class="v2-empty-icon-ring">
-                <div class="v2-empty-icon-inner">
-                    <i data-lucide="network" class="w-5 h-5" style="color: var(--crb-blue-color)"></i>
+
+        <!-- Dependencies list -->
+        <template x-if="exe.testCaseExecutionQueueDepList && exe.testCaseExecutionQueueDepList.length > 0">
+            <div class="space-y-2">
+                <template x-for="dep in exe.testCaseExecutionQueueDepList" :key="dep.id">
+                    <div class="rounded-lg px-3 py-2.5 transition-colors"
+                         :class="{
+                             'bg-green-50/50 dark:bg-green-900/10': dep.status === 'RELEASED',
+                             'bg-blue-50/50 dark:bg-blue-900/10': dep.status === 'IGNORED',
+                             'bg-slate-50 dark:bg-slate-800': dep.status !== 'RELEASED' && dep.status !== 'IGNORED'
+                         }"
+                         style="border: 1px solid var(--crb-grey-light-color)">
+
+                        <!-- Row 1: Type + Details -->
+                        <div class="flex items-center gap-3 mb-1.5">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0"
+                                  :class="{
+                                      'bg-purple-100 dark:bg-purple-900/20 text-purple-600': dep.type === 'TCEXEENDOK' || dep.type === 'TCEXEEND',
+                                      'bg-amber-100 dark:bg-amber-900/20 text-amber-600': dep.type === 'TIMING',
+                                      'bg-blue-100 dark:bg-blue-900/20 text-blue-600': dep.type === 'EVENT'
+                                  }"
+                                  x-text="dep.type"></span>
+
+                            <!-- TCEXEEND / TCEXEENDOK details -->
+                            <template x-if="dep.type === 'TCEXEENDOK' || dep.type === 'TCEXEEND'">
+                                <div class="flex items-center gap-2 text-[11px]">
+                                    <span class="font-semibold text-slate-700 dark:text-slate-200" x-text="dep.depTest"></span>
+                                    <span class="text-slate-400">/</span>
+                                    <span class="font-semibold text-slate-700 dark:text-slate-200" x-text="dep.depTestCase"></span>
+                                    <template x-if="dep.depTCDelay">
+                                        <span class="text-[9px] text-slate-400" x-text="'(delay: ' + dep.depTCDelay + 's)'"></span>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- TIMING details -->
+                            <template x-if="dep.type === 'TIMING'">
+                                <span class="text-[11px] font-mono text-slate-600 dark:text-slate-300" x-text="dep.depDate || '-'"></span>
+                            </template>
+
+                            <!-- EVENT details -->
+                            <template x-if="dep.type === 'EVENT'">
+                                <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-300" x-text="dep.depEvent || '-'"></span>
+                            </template>
+                        </div>
+
+                        <!-- Row 2: Status + Release + Comment + Links -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                                  :class="{
+                                      'bg-green-100 dark:bg-green-900/20 text-green-600': dep.status === 'RELEASED',
+                                      'bg-blue-100 dark:bg-blue-900/20 text-blue-600': dep.status === 'IGNORED',
+                                      'bg-amber-100 dark:bg-amber-900/20 text-amber-600': dep.status === 'WAITING'
+                                  }"
+                                  x-text="dep.status"></span>
+                            <template x-if="dep.releaseDate">
+                                <span class="text-[10px] text-slate-400" x-text="dep.releaseDate"></span>
+                            </template>
+                            <template x-if="dep.comment">
+                                <span class="text-[10px] text-slate-500 truncate flex-1" x-text="dep.comment"></span>
+                            </template>
+
+                            <!-- Links to execution/queue -->
+                            <template x-if="(dep.type === 'TCEXEENDOK' || dep.type === 'TCEXEEND') && dep.exeId > 0">
+                                <a :href="'TestCaseExecutionV2.jsp?executionId=' + dep.exeId" target="_blank"
+                                   class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-semibold
+                                          bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 hover:bg-slate-200 transition-colors ml-auto"
+                                   style="border: 1px solid var(--crb-grey-light-color)">
+                                    <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+                                    <span x-text="'Exe #' + dep.exeId"></span>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Empty state -->
+        <template x-if="!exe.testCaseExecutionQueueDepList || exe.testCaseExecutionQueueDepList.length === 0">
+            <div class="flex flex-col items-center justify-center py-8 gap-2">
+                <i data-lucide="link" class="w-6 h-6 text-slate-300"></i>
+                <span class="text-[12px] text-slate-400">No dependencies for this execution</span>
+            </div>
+        </template>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB: NETWORK — Charts + HAR Viewer                            -->
+<!-- ============================================================ -->
+<div x-show="tab === 'network'" x-cloak class="v2-fade-in space-y-4">
+
+    <!-- No httpStat data -->
+    <template x-if="!networkStat && !harData && !harLoading">
+        <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <div class="flex flex-col items-center justify-center py-12 gap-3">
+                <div class="v2-empty-icon-ring">
+                    <div class="v2-empty-icon-inner">
+                        <i data-lucide="network" class="w-5 h-5" style="color: var(--crb-blue-color)"></i>
+                    </div>
+                </div>
+                <span class="text-[12px] text-slate-400">No network data available for this execution</span>
+            </div>
+        </div>
+    </template>
+
+    <!-- ─── INDEX FILTER ─── -->
+    <template x-if="networkStat && networkStat.index && networkStat.index.length > 1">
+        <div class="rounded-xl px-4 py-3" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+                    <span class="text-[11px] font-semibold text-slate-500">Index Filter</span>
+                </div>
+                <template x-for="idx in networkStat.index" :key="idx.index">
+                    <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-medium cursor-pointer transition-all"
+                           :class="networkIndexFilter.indexOf(idx.index) !== -1
+                               ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                               : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                           style="border: 1px solid var(--crb-grey-light-color)">
+                        <input type="checkbox" class="sr-only"
+                               :checked="networkIndexFilter.indexOf(idx.index) !== -1"
+                               @change="
+                                   let i = networkIndexFilter.indexOf(idx.index);
+                                   if (i === -1) { networkIndexFilter.push(idx.index); }
+                                   else { networkIndexFilter.splice(i, 1); }
+                               ">
+                        <span x-text="idx.name"></span>
+                    </label>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- ─── STAT CARDS ROW (3 cards) ─── -->
+    <template x-if="networkStat">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <!-- CARD 1: HTTP Status Distribution -->
+            <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="pie-chart" class="w-4 h-4" style="color: var(--crb-green-color)"></i>
+                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">HTTP Status</span>
+                    <span class="text-[9px] text-slate-400 ml-auto" x-text="'Total: ' + networkHttpStatusData.total"></span>
+                </div>
+                <div class="space-y-1.5">
+                    <template x-for="item in networkHttpStatusData.entries" :key="item.label">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full shrink-0" :style="'background:' + item.color"></div>
+                            <span class="text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-300 w-10" x-text="item.label"></span>
+                            <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                                <div class="h-full rounded-full transition-all" :style="'width:' + (networkHttpStatusData.total > 0 ? (item.value / networkHttpStatusData.total * 100) : 0) + '%;background:' + item.color"></div>
+                            </div>
+                            <span class="text-[9px] font-semibold text-slate-500 w-8 text-right" x-text="item.value"></span>
+                        </div>
+                    </template>
+                    <template x-if="networkHttpStatusData.entries.length === 0">
+                        <span class="text-[10px] text-slate-400 italic">No requests</span>
+                    </template>
                 </div>
             </div>
-            <span class="text-[12px] text-slate-400">Network analysis will be available in the next iteration</span>
-            <span class="text-[10px] text-slate-300">Charts, HAR viewer, and request analysis</span>
+
+            <!-- CARD 2: Size by Content Type -->
+            <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="hard-drive" class="w-4 h-4" style="color: var(--crb-purple-color)"></i>
+                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Size by Type</span>
+                    <span class="text-[9px] text-slate-400 ml-auto" x-text="'Total: ' + _formatKb(networkSizeByTypeData.total)"></span>
+                </div>
+                <div class="space-y-1.5">
+                    <template x-for="item in networkSizeByTypeData.entries" :key="item.label">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full shrink-0" :style="'background:' + item.color"></div>
+                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 w-16 truncate" x-text="item.label"></span>
+                            <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+                                <div class="h-full rounded-full transition-all" :style="'width:' + (networkSizeByTypeData.total > 0 ? (item.value / networkSizeByTypeData.total * 100) : 0) + '%;background:' + item.color"></div>
+                            </div>
+                            <span class="text-[9px] font-semibold text-slate-500 w-14 text-right" x-text="_formatKb(item.value)"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- CARD 3: Third Party Providers -->
+            <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="globe" class="w-4 h-4" style="color: var(--crb-blue-color)"></i>
+                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Third Party</span>
+                    <span class="text-[9px] text-slate-400 ml-auto" x-text="'Providers: ' + networkThirdPartyData.nbTP"></span>
+                </div>
+                <!-- Sort buttons -->
+                <div class="flex gap-1 mb-2">
+                    <button @click="networkSortCol = 'size'" class="text-[9px] px-2 py-0.5 rounded-md transition-colors"
+                            :class="networkSortCol === 'size' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 font-bold' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                            style="border: 1px solid var(--crb-grey-light-color)">Size</button>
+                    <button @click="networkSortCol = 'request'" class="text-[9px] px-2 py-0.5 rounded-md transition-colors"
+                            :class="networkSortCol === 'request' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 font-bold' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                            style="border: 1px solid var(--crb-grey-light-color)">Requests</button>
+                    <button @click="networkSortCol = 'time'" class="text-[9px] px-2 py-0.5 rounded-md transition-colors"
+                            :class="networkSortCol === 'time' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 font-bold' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'"
+                            style="border: 1px solid var(--crb-grey-light-color)">Time</button>
+                </div>
+                <div class="space-y-1">
+                    <template x-for="item in networkThirdPartyData.entries" :key="item.label">
+                        <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-slate-50 dark:bg-slate-800"
+                             style="border: 1px solid var(--crb-grey-light-color)">
+                            <div class="w-2 h-2 rounded-full shrink-0" :style="'background:' + item.color"></div>
+                            <span class="text-[10px] font-semibold text-slate-700 dark:text-slate-200 flex-1 truncate" x-text="item.label"></span>
+                            <span class="text-[9px] text-slate-400" x-text="item.nb + ' req'"></span>
+                            <span class="text-[9px] text-slate-400" x-text="_formatKb(item.size)"></span>
+                            <span class="text-[9px] text-slate-400" x-text="item.time + 'ms'"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </div>
-    </div>
+    </template>
+
+    <!-- ─── UNKNOWN DOMAINS ─── -->
+    <template x-if="networkStat && networkUnknownDomains.length > 0">
+        <div class="rounded-xl px-4 py-3" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="help-circle" class="w-4 h-4 text-amber-500"></i>
+                <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Unknown Domains</span>
+                <span class="text-[9px] text-slate-400" x-text="networkUnknownDomains.length + ' domain(s)'"></span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                <template x-for="domain in networkUnknownDomains" :key="domain">
+                    <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-mono"
+                          style="border: 1px solid color-mix(in srgb, #f59e0b 20%, transparent)"
+                          x-text="domain"></span>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- ─── REQUEST TABLE ─── -->
+    <template x-if="networkStat && networkRequests.length > 0">
+        <div class="rounded-xl overflow-hidden" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center gap-2 px-4 py-3">
+                <i data-lucide="list" class="w-4 h-4 text-slate-400"></i>
+                <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Requests</span>
+                <span class="text-[9px] text-slate-400" x-text="networkRequests.length + ' entries'"></span>
+            </div>
+            <div class="overflow-auto max-h-[400px]">
+                <table class="w-full text-[10px]">
+                    <thead class="sticky top-0 bg-slate-100 dark:bg-slate-700 z-10">
+                        <tr>
+                            <th class="px-3 py-2 text-left font-semibold text-slate-500">Start</th>
+                            <th class="px-3 py-2 text-left font-semibold text-slate-500">Provider</th>
+                            <th class="px-3 py-2 text-left font-semibold text-slate-500">URL</th>
+                            <th class="px-3 py-2 text-left font-semibold text-slate-500">Type</th>
+                            <th class="px-3 py-2 text-center font-semibold text-slate-500">Status</th>
+                            <th class="px-3 py-2 text-right font-semibold text-slate-500">Size</th>
+                            <th class="px-3 py-2 text-right font-semibold text-slate-500">Time</th>
+                            <th class="px-3 py-2 text-left font-semibold text-slate-500">Index</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(req, ri) in networkRequests" :key="ri">
+                            <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                <td class="px-3 py-1.5 text-slate-500 font-mono" x-text="req.start"></td>
+                                <td class="px-3 py-1.5 text-slate-600 dark:text-slate-300 font-semibold" x-text="req.provider"></td>
+                                <td class="px-3 py-1.5 text-slate-600 dark:text-slate-300 max-w-[280px] truncate" x-text="req.url" :title="req.url"></td>
+                                <td class="px-3 py-1.5 text-slate-400" x-text="req.contentType"></td>
+                                <td class="px-3 py-1.5 text-center">
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold"
+                                          :class="{
+                                              'bg-green-100 dark:bg-green-900/30 text-green-700': ('' + req.httpStatus).startsWith('2'),
+                                              'bg-amber-100 dark:bg-amber-900/30 text-amber-700': ('' + req.httpStatus).startsWith('4'),
+                                              'bg-red-100 dark:bg-red-900/30 text-red-700': ('' + req.httpStatus).startsWith('5')
+                                          }"
+                                          x-text="req.httpStatus"></span>
+                                </td>
+                                <td class="px-3 py-1.5 text-right text-slate-500 font-mono" x-text="_formatKb(req.size)"></td>
+                                <td class="px-3 py-1.5 text-right text-slate-500 font-mono" x-text="req.time + 'ms'"></td>
+                                <td class="px-3 py-1.5 text-slate-400" x-text="req.indexName || req.index"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- ─── HAR VIEWER ─── -->
+    <template x-if="harLoading">
+        <div class="rounded-xl p-6 text-center" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center justify-center gap-2 text-slate-400">
+                <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-[12px]">Loading network HAR data…</span>
+            </div>
+        </div>
+    </template>
+
+    <template x-if="harData">
+        <div class="rounded-xl overflow-hidden" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+            <!-- HAR header + filters -->
+            <div class="px-4 py-3 flex items-center gap-3 flex-wrap" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                <i data-lucide="file-json" class="w-4 h-4" style="color: var(--crb-green-color)"></i>
+                <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">HAR Viewer</span>
+                <span class="text-[9px] text-slate-400" x-text="harData.log.entries.length + ' entries'"></span>
+                <div class="flex-1"></div>
+                <!-- Filter URL -->
+                <input x-model="harFilter" placeholder="Filter URL..."
+                       class="h-7 px-2.5 rounded-md text-[10px] w-48
+                              bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all"
+                       style="border: 1px solid var(--crb-grey-light-color)">
+                <!-- Status filter -->
+                <select x-model="harStatusFilter"
+                        class="h-7 px-2 rounded-md text-[10px]
+                               bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        style="border: 1px solid var(--crb-grey-light-color)">
+                    <option value="all">All</option>
+                    <option value="2xx">2xx</option>
+                    <option value="4xx">4xx</option>
+                    <option value="5xx">5xx</option>
+                </select>
+                <!-- Sort -->
+                <select x-model="harSortBy"
+                        class="h-7 px-2 rounded-md text-[10px]
+                               bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        style="border: 1px solid var(--crb-grey-light-color)">
+                    <option value="time">Sort: Time</option>
+                    <option value="status">Sort: Status</option>
+                    <option value="size">Sort: Size</option>
+                </select>
+            </div>
+
+            <!-- HAR content: List + Detail -->
+            <div class="flex" style="min-height: 400px">
+                <!-- LEFT: Request List -->
+                <div class="flex-1 overflow-auto max-h-[500px]" style="border-right: 1px solid var(--crb-grey-light-color)">
+                    <table class="w-full text-[10px]">
+                        <thead class="sticky top-0 bg-slate-50 dark:bg-slate-700 z-10">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-slate-500">Method</th>
+                                <th class="px-3 py-2 text-left font-semibold text-slate-500">URL</th>
+                                <th class="px-3 py-2 text-center font-semibold text-slate-500">Status</th>
+                                <th class="px-3 py-2 text-right font-semibold text-slate-500">Time</th>
+                                <th class="px-3 py-2 text-right font-semibold text-slate-500">Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="entry in harFilteredEntries" :key="entry._id">
+                                <tr @click="harSelected = entry; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
+                                    class="cursor-pointer border-b border-slate-100 dark:border-slate-700 transition-colors h-8"
+                                    :class="harSelected === entry ? 'bg-blue-50/60 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'">
+                                    <td class="px-3 py-1 font-semibold text-slate-600 dark:text-slate-300" x-text="entry.request.method"></td>
+                                    <td class="px-3 py-1 text-slate-500 truncate max-w-[350px]" x-text="entry.request.url" :title="entry.request.url"></td>
+                                    <td class="px-3 py-1 text-center">
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold" :class="_harStatusClass(entry.response.status)" x-text="entry.response.status"></span>
+                                    </td>
+                                    <td class="px-3 py-1 text-right text-slate-400 font-mono" x-text="Math.round(entry.time) + ' ms'"></td>
+                                    <td class="px-3 py-1 text-right text-slate-400 font-mono" x-text="(entry.response.content.size || 0) + ' B'"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template x-if="harFilteredEntries.length === 0">
+                        <div class="flex items-center justify-center py-8 text-[11px] text-slate-400">No matching entries</div>
+                    </template>
+                </div>
+
+                <!-- RIGHT: Request/Response Detail -->
+                <div class="w-[380px] shrink-0 flex flex-col overflow-hidden">
+                    <template x-if="!harSelected">
+                        <div class="flex-1 flex items-center justify-center text-[11px] text-slate-400">
+                            <span>Click a request to view details</span>
+                        </div>
+                    </template>
+                    <template x-if="harSelected">
+                        <div class="flex-1 flex flex-col overflow-hidden">
+                            <!-- Tabs Request/Response -->
+                            <div class="flex px-3 pt-2 gap-1" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+                                <button @click="harDetailTab = 'request'" class="px-3 py-1.5 text-[10px] font-semibold rounded-t-md transition-colors"
+                                        :class="harDetailTab === 'request' ? 'bg-slate-100 dark:bg-slate-700 text-blue-600' : 'text-slate-400 hover:text-slate-600'">Request</button>
+                                <button @click="harDetailTab = 'response'" class="px-3 py-1.5 text-[10px] font-semibold rounded-t-md transition-colors"
+                                        :class="harDetailTab === 'response' ? 'bg-slate-100 dark:bg-slate-700 text-blue-600' : 'text-slate-400 hover:text-slate-600'">Response</button>
+                            </div>
+                            <div class="flex-1 overflow-auto p-3">
+                                <pre class="text-[10px] font-mono leading-relaxed whitespace-pre-wrap rounded-lg p-3 bg-slate-900 text-slate-100 overflow-auto"
+                                     x-show="harDetailTab === 'request'"
+                                     x-html="_highlightJson(harSelected?.request)"></pre>
+                                <pre class="text-[10px] font-mono leading-relaxed whitespace-pre-wrap rounded-lg p-3 bg-slate-900 text-slate-100 overflow-auto"
+                                     x-show="harDetailTab === 'response'"
+                                     x-html="_highlightJson(harSelected?.response)"></pre>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
 </div>
 
 <!-- ============================================================ -->

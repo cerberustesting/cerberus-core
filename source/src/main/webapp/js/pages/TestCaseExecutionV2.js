@@ -194,7 +194,7 @@ function executionV2() {
                     this.exe = tce;
                     this.testCaseObj = tce.testCaseObj || null;
                     this.isManual = (tce.manualExecution === 'Y');
-                    this.falseNegative = !!(tce.currentFNB && tce.currentFNB !== '' && tce.currentFNB !== '0');
+                    this.falseNegative = !!(tce.currentFNB && tce.currentFNB !== '' && tce.currentFNB !== '0') || !!(tce.falseNegative);
 
                     // History
                     try {
@@ -379,7 +379,12 @@ function executionV2() {
         // ═══ TABS ═══
         setTab(name) {
             this.tab = name;
-            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            this.$nextTick(() => {
+                if (window.lucide) lucide.createIcons();
+                if (name === 'network' && !this.networkStat) {
+                    this._initNetwork();
+                }
+            });
         },
 
         // ═══ STEP NAVIGATION ═══
@@ -831,6 +836,230 @@ function executionV2() {
             });
         },
 
+        _getBugNewUrl() {
+            if (!this.applicationObj || !this.applicationObj.bugTrackerNewUrl) return '#';
+            var url = this.applicationObj.bugTrackerNewUrl;
+            var exe = this.exe;
+            url = url.replace(/%EXEID%/g, exe.id || '');
+            url = url.replace(/%EXEDATE%/g, exe.start || '');
+            url = url.replace(/%TEST%/g, exe.test || '');
+            url = url.replace(/%TESTCASE%/g, exe.testcase || exe.testCase || '');
+            url = url.replace(/%TESTCASEDESC%/g, exe.description || '');
+            url = url.replace(/%COUNTRY%/g, exe.country || '');
+            url = url.replace(/%ENV%/g, exe.environment || '');
+            url = url.replace(/%BUILD%/g, exe.build || '');
+            url = url.replace(/%REV%/g, exe.revision || '');
+            url = url.replace(/%BROWSER%/g, exe.browser || '');
+            url = url.replace(/%BROWSERFULLVERSION%/g, (exe.browser || '') + ' ' + (exe.version || '') + ' ' + (exe.platform || ''));
+            return encodeURI(url);
+        },
+
+        _getProviderSessionUrl() {
+            var provider = (this.exe.robotProvider || '').toUpperCase();
+            var sessionId = this.exe.robotProviderSessionId || '';
+            // If there's a pre-built URL, use it
+            if (this.exe.robotProviderSessionIdUrl) return this.exe.robotProviderSessionIdUrl;
+            if (provider === 'BROWSERSTACK') {
+                var hash = (this.exe.robotSessionId || '').split('/')[0] || '';
+                return 'https://automate.browserstack.com/builds/' + hash + '/sessions/' + sessionId;
+            } else if (provider === 'LAMBDATEST') {
+                return 'https://automation.lambdatest.com/logs/?testID=' + sessionId + '&build=' + encodeURIComponent(this.exe.build || '');
+            } else if (provider === 'KOBITON') {
+                return 'https://portal.kobiton.com/sessions/' + sessionId;
+            }
+            return '#';
+        },
+
+        // ═══ NETWORK TAB ═══
+        networkStat: null,
+        networkCharts: {},
+        networkIndexFilter: [],
+        networkSortCol: 'size',  // 'size' | 'request' | 'time'
+
+        // HAR viewer state
+        harData: null,
+        harLoading: false,
+        harLoaded: false,
+        harFilter: '',
+        harStatusFilter: 'all',
+        harSortBy: 'time',
+        harSelected: null,
+        harDetailTab: 'request',   // 'request' | 'response'
+
+        _initNetwork() {
+            if (!this.exe || !this.exe.httpStat) return;
+            this.networkStat = this.exe.httpStat.stat;
+            // Default: all indices selected
+            if (this.networkStat && this.networkStat.index) {
+                this.networkIndexFilter = this.networkStat.index.map(function(idx) { return idx.index; });
+            }
+            // Load HAR if enriched file exists
+            var harFile = (this.exe.fileList || []).find(function(f) {
+                return f.fileName && f.fileName.endsWith('enriched_har.json');
+            });
+            if (harFile && !this.harLoaded) {
+                this._loadHar(harFile);
+            }
+        },
+
+        _loadHar(file) {
+            if (this.harLoaded || this.harLoading) return;
+            this.harLoading = true;
+            var self = this;
+            var url = 'ReadTestCaseExecutionMedia'
+                + '?filename=' + encodeURIComponent(file.fileName)
+                + '&filetype=' + (file.fileType || 'JSON')
+                + '&filedesc=' + encodeURIComponent(file.fileDesc || '')
+                + '&auto=true&autoContentType=N';
+            fetch(url)
+                .then(function(r) { return r.text(); })
+                .then(function(txt) {
+                    try {
+                        var har = JSON.parse(txt);
+                        har.log.entries.forEach(function(e, i) { e._id = i; });
+                        self.harData = har;
+                        self.harLoaded = true;
+                    } catch(e) { console.warn('[ExeV2] HAR parse error:', e); }
+                })
+                .finally(function() { self.harLoading = false; });
+        },
+
+        _isNetworkIndexSelected(index) {
+            return this.networkIndexFilter.indexOf(index) !== -1;
+        },
+
+        get networkRequests() {
+            if (!this.networkStat || !this.networkStat.requests) return [];
+            var self = this;
+            return this.networkStat.requests.filter(function(r) {
+                return self._isNetworkIndexSelected(r.index);
+            });
+        },
+
+        get networkHttpStatusData() {
+            var counts = {};
+            var total = 0;
+            this.networkRequests.forEach(function(r) {
+                total++;
+                var key = '' + r.httpStatus;
+                counts[key] = (counts[key] || 0) + 1;
+            });
+            var entries = [];
+            for (var k in counts) {
+                entries.push({ label: k, value: counts[k], color: _httpStatusColor(k) });
+            }
+            entries.sort(function(a, b) { return b.value - a.value; });
+            return { entries: entries, total: total };
+        },
+
+        get networkSizeByTypeData() {
+            var sizes = {};
+            var total = 0;
+            this.networkRequests.forEach(function(r) {
+                total += r.size || 0;
+                var key = '' + (r.contentType || 'other');
+                sizes[key] = (sizes[key] || 0) + (r.size || 0);
+            });
+            var entries = [];
+            for (var k in sizes) {
+                entries.push({ label: k, value: sizes[k], color: _contentTypeColor(k) });
+            }
+            entries.sort(function(a, b) { return b.value - a.value; });
+            return { entries: entries, total: total };
+        },
+
+        get networkThirdPartyData() {
+            var providers = {};
+            var nbTP = 0;
+            this.networkRequests.forEach(function(r) {
+                var p = '' + r.provider;
+                if (!providers[p]) {
+                    providers[p] = { size: 0, nb: 0, time: 0 };
+                    if (p !== 'unknown' && p !== 'internal') nbTP++;
+                }
+                providers[p].size += r.size || 0;
+                providers[p].nb++;
+                if (r.time > providers[p].time) providers[p].time = r.time;
+            });
+            var entries = [];
+            var ci = 0;
+            for (var k in providers) {
+                var color = k === 'internal' ? '#3b82f6' : k === 'unknown' ? '#64748b' : get_Color_fromindex(ci++);
+                entries.push({
+                    label: k === 'internal' ? 'INTERNAL' : k === 'unknown' ? 'UNKNOWN' : k,
+                    size: providers[k].size,
+                    nb: providers[k].nb,
+                    time: providers[k].time,
+                    color: color
+                });
+            }
+            var sortKey = this.networkSortCol;
+            entries.sort(function(a, b) {
+                if (sortKey === 'request') return b.nb - a.nb;
+                if (sortKey === 'time') return b.time - a.time;
+                return b.size - a.size;
+            });
+            return { entries: entries, nbTP: nbTP };
+        },
+
+        get networkUnknownDomains() {
+            var domains = [];
+            this.networkRequests.forEach(function(r) {
+                if ('' + r.provider === 'unknown' && domains.indexOf(r.domain) === -1) {
+                    domains.push(r.domain);
+                }
+            });
+            return domains;
+        },
+
+        get harFilteredEntries() {
+            if (!this.harData) return [];
+            var entries = this.harData.log.entries.slice();
+            var f = this.harFilter.toLowerCase();
+            if (f) {
+                entries = entries.filter(function(e) {
+                    return e.request.url.toLowerCase().indexOf(f) !== -1;
+                });
+            }
+            var sf = this.harStatusFilter;
+            if (sf !== 'all') {
+                entries = entries.filter(function(e) {
+                    var s = e.response.status;
+                    if (sf === '2xx') return s < 300;
+                    if (sf === '4xx') return s >= 400 && s < 500;
+                    return s >= 500;
+                });
+            }
+            var sb = this.harSortBy;
+            entries.sort(function(a, b) {
+                if (sb === 'status') return b.response.status - a.response.status;
+                if (sb === 'size') return (b.response.content.size || 0) - (a.response.content.size || 0);
+                return (b.time || 0) - (a.time || 0);
+            });
+            return entries;
+        },
+
+        _harStatusClass(status) {
+            if (status >= 500) return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
+            if (status >= 400) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
+            return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
+        },
+
+        _highlightJson(obj) {
+            if (!obj) return '';
+            return JSON.stringify(obj, null, 2)
+                .replace(/(&)/g, '&amp;')
+                .replace(/(<)/g, '&lt;')
+                .replace(/(\".*?\")(?=\s*:)/g, '<span style="color:#93c5fd">$1</span>')
+                .replace(/:\s*(\".*?\")/g, ': <span style="color:#86efac">$1</span>')
+                .replace(/:\s*(\d+|\btrue\b|\bfalse\b|\bnull\b)/g, ': <span style="color:#fbbf24">$1</span>');
+        },
+
+        _formatKb(bytes) {
+            if (!bytes) return '0';
+            return Math.round(bytes / 1024).toLocaleString() + ' KB';
+        },
+
         // ═══ STEP MODAL ═══
         openStepModal(step) {
             if (!step) return;
@@ -1169,4 +1398,27 @@ function executionV2() {
             } catch(e) { return timestamp; }
         }
     };
+}
+
+// ═══ Network Chart Color Helpers ═══
+function _httpStatusColor(status) {
+    if (status && ('' + status).includes('nbE')) return '#a855f7';
+    if (status && ('' + status).startsWith('2')) return '#22c55e';
+    if (status && ('' + status).startsWith('3')) return '#86efac';
+    if (status && ('' + status).startsWith('4')) return '#f97316';
+    if (status && ('' + status).startsWith('5')) return '#ef4444';
+    return '#94a3b8';
+}
+
+function _contentTypeColor(type) {
+    if (!type) return '#1e293b';
+    if (type.includes('img')) return '#a855f7';
+    if (type.includes('html')) return '#22c55e';
+    if (type.includes('content')) return '#86efac';
+    if (type.includes('js')) return '#f97316';
+    if (type.includes('css')) return '#3b82f6';
+    if (type.includes('font')) return '#93c5fd';
+    if (type.includes('media')) return '#ec4899';
+    if (type.includes('other')) return '#94a3b8';
+    return '#1e293b';
 }

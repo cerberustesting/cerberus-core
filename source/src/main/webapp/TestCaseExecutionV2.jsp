@@ -126,6 +126,13 @@
                         <i data-lucide="bot" class="w-4 h-4"></i>
                         <span>Robot</span>
                     </button>
+                    <!-- Tab: Dependencies -->
+                    <button @click="setTab('deps')" id="v2ExeTabDeps"
+                            :class="tab === 'deps' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                        <span>Deps</span>
+                    </button>
                     <!-- Tab: Network -->
                     <button @click="setTab('network')" id="v2ExeTabNetwork"
                             :class="tab === 'network' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
