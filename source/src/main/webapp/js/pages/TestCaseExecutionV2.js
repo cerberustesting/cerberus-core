@@ -92,9 +92,14 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
-            // Load feature flags
-            getParameterString('cerberus_featureflipping_activatewebsocketpush', '', (val) => { this.paramActivateWebSocket = val; });
-            getParameterString('cerberus_featureflipping_websocketpushperiod', '5000', (val) => { this.paramWebSocketPeriod = parseInt(val) || 5000; });
+            // Load feature flags (getParameterString returns value synchronously, no callback)
+            try {
+                this.paramActivateWebSocket = getParameterString('cerberus_featureflipping_activatewebsocketpush', '', true) || 'N';
+            } catch(e) { this.paramActivateWebSocket = 'N'; console.warn('[ExeV2] Could not load WS param:', e); }
+            try {
+                var wsPeriod = getParameterString('cerberus_featureflipping_websocketpushperiod', '', true);
+                this.paramWebSocketPeriod = parseInt(wsPeriod) || 5000;
+            } catch(e) { this.paramWebSocketPeriod = 5000; }
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -389,12 +394,15 @@ function executionV2() {
             var tce = data.testCaseExecution;
             var prevStatus = this.exe.controlStatus;
 
-            // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
+            // Merge all top-level fields from tce into exe, then reassign to trigger Alpine reactivity
+            // This ensures new properties (remoteLiveUrl, remoteControlLiveUrl, videos, fileList) are detected
+            var updatedExe = Object.assign({}, this.exe);
             Object.keys(tce).forEach(function(k) {
                 if (k !== 'testCaseStepExecutionList' && k !== 'testCaseExecutionDataList') {
-                    this.exe[k] = tce[k];
+                    updatedExe[k] = tce[k];
                 }
-            }.bind(this));
+            });
+            this.exe = updatedExe;
 
             // Incremental step merge — update returnCode/returnMessage/end in-place
             var newSteps = tce.testCaseStepExecutionList || [];
@@ -1044,25 +1052,53 @@ function executionV2() {
             };
             this.progressColor = colorMap[status] || '#2c7be5';
 
-            // Always compute actual progress based on steps/actions/controls completed
-            if (!this.steps || this.steps.length === 0) {
-                // No steps loaded yet — if finished show 100%, else 0%
-                this.progress = (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
-                return;
-            }
+            // Compute total from testCaseObj definition if available (includes ALL steps/actions/controls
+            // from the test case script, not just those already executed). This way if KO happens
+            // at step 1 action 1, progress shows the real ratio vs the full test, not 100%.
             var total = 0, done = 0;
-            this.steps.forEach(function(s) {
-                total++;
-                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                (s.actions || []).forEach(function(a) {
-                    total++;
-                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(function(c) {
-                        total++;
-                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+
+            if (this.testCaseObj && this.testCaseObj.steps && this.testCaseObj.steps.length > 0) {
+                // Use testCaseObj definition for the total count
+                var tcSteps = this.testCaseObj.steps;
+                for (var i = 0; i < tcSteps.length; i++) {
+                    total++; // step itself
+                    var stepActions = tcSteps[i].actions || [];
+                    for (var j = 0; j < stepActions.length; j++) {
+                        total++; // action
+                        var actionControls = stepActions[j].controls || [];
+                        total += actionControls.length; // controls
+                    }
+                }
+                // Count done from execution steps
+                this.steps.forEach(function(s) {
+                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                    (s.actions || []).forEach(function(a) {
+                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                        (a.controls || []).forEach(function(c) {
+                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                        });
                     });
                 });
-            });
+            } else if (this.steps && this.steps.length > 0) {
+                // Fallback: compute from execution steps only
+                this.steps.forEach(function(s) {
+                    total++;
+                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                    (s.actions || []).forEach(function(a) {
+                        total++;
+                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                        (a.controls || []).forEach(function(c) {
+                            total++;
+                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                        });
+                    });
+                });
+            } else {
+                // No steps at all — only show 100% if status is OK
+                this.progress = (status === 'OK') ? 100 : 0;
+                return;
+            }
+
             this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
         },
 
