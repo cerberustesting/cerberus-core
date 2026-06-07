@@ -364,8 +364,12 @@ function executionV2() {
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            // Backend registers handler at /ws/execution/{id} (WebSocketConfiguration.java)
-            const wsUrl = protocol + '://' + location.host + '/ws/execution/' + executionId;
+            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333):
+            // Extract base path from current page URL, then append api/ws/execution/{id}
+            var parser = document.createElement('a');
+            parser.href = window.location.href;
+            var path = parser.pathname.split('TestCaseExecution')[0];
+            const wsUrl = protocol + '://' + parser.host + path + 'api/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
 
             try {
@@ -380,9 +384,16 @@ function executionV2() {
                 this.ws.onerror = (err) => {
                     console.warn('[ExeV2] WebSocket error, falling back to polling');
                     this.wsConnected = false;
-                    setTimeout(() => this._loadExecution(executionId), this.paramWebSocketPeriod);
+                    // Fall back to polling — do NOT retry WS to avoid infinite loop
+                    this._startPolling(executionId);
                 };
-                this.ws.onclose = () => { this.wsConnected = false; };
+                this.ws.onclose = () => {
+                    this.wsConnected = false;
+                    // If still running, fall back to polling
+                    if (this.exe && this.exe.controlStatus === 'PE') {
+                        this._startPolling(executionId);
+                    }
+                };
             } catch(e) {
                 console.warn('[ExeV2] WebSocket not available, using polling');
                 this._startPolling(executionId);
@@ -1083,12 +1094,14 @@ function executionV2() {
             // OK always means 100% completion
             if (status === 'OK') {
                 this.progress = 100;
+                console.info('[ExeV2] Progress: OK → 100%', 'color:', this.progressColor);
                 return;
             }
 
             // No steps loaded yet — if finished show estimated %, else 0%
             if (!this.steps || this.steps.length === 0) {
                 this.progress = (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
+                console.info('[ExeV2] Progress (no steps):', this.progress + '%', 'status:', status, 'color:', this.progressColor);
                 return;
             }
 
@@ -1110,6 +1123,7 @@ function executionV2() {
                 });
             });
             this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
+            console.info('[ExeV2] Progress:', this.progress + '%', '(' + done + '/' + total + ')', 'status:', status, 'color:', this.progressColor);
         },
 
         _getStatusColor(status) {
