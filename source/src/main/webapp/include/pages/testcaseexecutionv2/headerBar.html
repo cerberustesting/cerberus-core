@@ -5,10 +5,10 @@
 
     <!-- Progress Bar - Premium Design -->
     <div style="padding: 0 3px">
-        <div style="height: 6px; border-radius: 0 0 12px 12px; overflow: hidden; background: #e2e8f0; background: color-mix(in srgb, var(--crb-grey-light-color) 50%, transparent)">
-            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease; min-width: 2px"
+        <div style="height: 6px; border-radius: 0 0 12px 12px; overflow: hidden; background-color: #e2e8f0">
+            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease"
                  :class="exe.controlStatus === 'PE' ? 'v2-exe-progress-animated' : ''"
-                 :style="'width:' + (progress || 0) + '%; background:' + (progressColor || '#2c7be5') + '; box-shadow: 0 0 8px ' + (progressColor || '#2c7be5') + '60'"></div>
+                 x-bind:style="{ width: Math.max(progress, 0) + '%', backgroundColor: progressColor, boxShadow: progress > 0 ? ('0 0 10px ' + progressColor) : 'none' }"></div>
         </div>
     </div>
 

@@ -36,9 +36,7 @@ function executionV2() {
         steps: [],
         activeStepIndex: -1,
 
-        // Progress bar
-        progress: 0,
-        progressColor: '#2c7be5',
+        // Progress bar — computed via getters (see COMPUTED section)
 
         // Properties
         properties: [],
@@ -84,6 +82,41 @@ function executionV2() {
             return this._getStatusColor(this.exe.controlStatus);
         },
 
+        get progressColor() {
+            var status = this.exe ? this.exe.controlStatus : '';
+            var colorMap = {
+                'OK': '#00d27a', 'KO': '#e63757', 'FA': '#f59e0b',
+                'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
+                'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
+            };
+            return colorMap[status] || '#aaaaaa';
+        },
+
+        get progress() {
+            var status = this.exe ? this.exe.controlStatus : '';
+            // OK always means 100% completion
+            if (status === 'OK') return 100;
+            // No steps loaded yet
+            if (!this.steps || this.steps.length === 0) {
+                return (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
+            }
+            // Count items that have been actually processed
+            var total = 0, done = 0;
+            this.steps.forEach(function(s) {
+                total++;
+                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                (s.actions || []).forEach(function(a) {
+                    total++;
+                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                    (a.controls || []).forEach(function(c) {
+                        total++;
+                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                    });
+                });
+            });
+            return total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+
         // ═══ INIT ═══
         init() {
             console.info('[ExeV2] Initializing...');
@@ -92,11 +125,18 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
-            // Load feature flags (getParameterString is synchronous — returns value directly)
+            // Load feature flags from sessionStorage cache (non-blocking)
+            // getParameterString uses sync AJAX which can freeze the page — read cache directly instead
             try {
-                this.paramActivateWebSocket = getParameterString('cerberus_featureflipping_activatewebsocketpush', '') || 'N';
-                this.paramWebSocketPeriod = parseInt(getParameterString('cerberus_featureflipping_websocketpushperiod', '') || '5000') || 5000;
-            } catch(e) { console.warn('[ExeV2] Could not load feature flags:', e); }
+                var cachedWsPush = JSON.parse(sessionStorage.getItem('PARAMETER_cerberus_featureflipping_activatewebsocketpush'));
+                var cachedWsPeriod = JSON.parse(sessionStorage.getItem('PARAMETER_cerberus_featureflipping_websocketpushperiod'));
+                this.paramActivateWebSocket = (cachedWsPush && cachedWsPush.value) || 'Y';
+                this.paramWebSocketPeriod = parseInt((cachedWsPeriod && cachedWsPeriod.value) || '5000') || 5000;
+            } catch(e) {
+                this.paramActivateWebSocket = 'Y';
+                this.paramWebSocketPeriod = 5000;
+            }
+            console.info('[ExeV2] Feature flags: WS=' + this.paramActivateWebSocket + ', period=' + this.paramWebSocketPeriod);
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -229,10 +269,7 @@ function executionV2() {
 
                     this.mode = 'execution';
                     this._updateFavicon(tce.controlStatus);
-                    // Update progress immediately and also after DOM render
-                    this._updateProgress();
                     this.$nextTick(() => {
-                        this._updateProgress();
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
                     });
@@ -364,13 +401,23 @@ function executionV2() {
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333):
-            // Extract base path from current page URL, then append api/ws/execution/{id}
+            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333)
             var parser = document.createElement('a');
             parser.href = window.location.href;
             var path = parser.pathname.split('TestCaseExecution')[0];
             const wsUrl = protocol + '://' + parser.host + path + 'api/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
+
+            var self = this;
+            var fallbackDone = false; // Guard: onerror + onclose both fire — only fall back once
+
+            function fallbackToPolling() {
+                if (fallbackDone) return;
+                fallbackDone = true;
+                self.wsConnected = false;
+                console.info('[ExeV2] WS failed, falling back to polling');
+                self._startPolling(executionId);
+            }
 
             try {
                 this.ws = new WebSocket(wsUrl);
@@ -381,19 +428,8 @@ function executionV2() {
                         this._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = (err) => {
-                    console.warn('[ExeV2] WebSocket error, falling back to polling');
-                    this.wsConnected = false;
-                    // Fall back to polling — do NOT retry WS to avoid infinite loop
-                    this._startPolling(executionId);
-                };
-                this.ws.onclose = () => {
-                    this.wsConnected = false;
-                    // If still running, fall back to polling
-                    if (this.exe && this.exe.controlStatus === 'PE') {
-                        this._startPolling(executionId);
-                    }
-                };
+                this.ws.onerror = () => { fallbackToPolling(); };
+                this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
                 console.warn('[ExeV2] WebSocket not available, using polling');
                 this._startPolling(executionId);
@@ -434,7 +470,6 @@ function executionV2() {
             this.$nextTick(function() {
                 if (window.lucide) lucide.createIcons();
                 this._updateSidebarTop();
-                this._updateProgress();
             }.bind(this));
 
             // If execution finished, close WS
@@ -630,7 +665,6 @@ function executionV2() {
                 else if (stepStatus === 'WE' && globalStatus === 'OK') globalStatus = 'WE';
             });
             this.exe.controlStatus = globalStatus;
-            this._updateProgress();
         },
 
         _markDirty() {
@@ -1080,50 +1114,6 @@ function executionV2() {
             } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
-        // ═══ PROGRESS BAR ═══
-        _updateProgress() {
-            // Compute color based on status using raw hex values
-            var status = this.exe ? this.exe.controlStatus : '';
-            var colorMap = {
-                'OK': '#00d27a', 'KO': '#e63757', 'FA': '#f59e0b',
-                'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
-                'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
-            };
-            this.progressColor = colorMap[status] || '#aaaaaa';
-
-            // OK always means 100% completion
-            if (status === 'OK') {
-                this.progress = 100;
-                console.info('[ExeV2] Progress: OK → 100%', 'color:', this.progressColor);
-                return;
-            }
-
-            // No steps loaded yet — if finished show estimated %, else 0%
-            if (!this.steps || this.steps.length === 0) {
-                this.progress = (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
-                console.info('[ExeV2] Progress (no steps):', this.progress + '%', 'status:', status, 'color:', this.progressColor);
-                return;
-            }
-
-            // Count items that have been actually processed (have a returnCode set)
-            // An item is "done" when it has any returnCode except PE (still running)
-            // Items with NE/WE/QU are NOT done — they were never reached
-            var total = 0, done = 0;
-            this.steps.forEach(function(s) {
-                total++;
-                // A step is "done" if it has a returnCode and it's not PE (running) or NE/WE/QU (never started)
-                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                (s.actions || []).forEach(function(a) {
-                    total++;
-                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(function(c) {
-                        total++;
-                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
-                    });
-                });
-            });
-            this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
-            console.info('[ExeV2] Progress:', this.progress + '%', '(' + done + '/' + total + ')', 'status:', status, 'color:', this.progressColor);
         },
 
         _getStatusColor(status) {
