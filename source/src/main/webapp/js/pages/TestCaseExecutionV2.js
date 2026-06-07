@@ -1114,8 +1114,6 @@ function executionV2() {
             } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
-        },
-
         _getStatusColor(status) {
             const map = {
                 'OK': 'green', 'KO': 'red', 'FA': 'amber', 'PE': 'blue',
