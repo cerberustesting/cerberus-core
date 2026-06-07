@@ -36,6 +36,10 @@ function executionV2() {
         steps: [],
         activeStepIndex: -1,
 
+        // Progress bar
+        progress: 0,
+        progressColor: '#2c7be5',
+
         // Properties
         properties: [],
         showSecondary: false,
@@ -61,6 +65,9 @@ function executionV2() {
         // Lightbox
         lightboxUrl: null,
 
+        // Vision modal (Live / Video)
+        visionModal: { open: false, mode: 'live', url: '', fullscreen: false },
+
         // Feature flags
         paramActivateWebSocket: 'N',
         paramWebSocketPeriod: 5000,
@@ -72,38 +79,7 @@ function executionV2() {
         get mainSteps() { return this.steps.filter(s => !s._isPreTesting && !s._isPostTesting); },
         get primaryProperties() { return this.properties.filter(p => p.rank !== 2); },
         get secondaryProperties() { return this.properties.filter(p => p.rank === 2); },
-        get progress() {
-            // If execution is finished (not PE/NE/QU), always show 100%
-            if (this.exe && this.exe.controlStatus && this.exe.controlStatus !== 'PE' && this.exe.controlStatus !== 'NE' && this.exe.controlStatus !== 'QU') {
-                return 100;
-            }
-            if (!this.exe || !this.steps || this.steps.length === 0) return 0;
-            var total = 0, done = 0;
-            this.steps.forEach(function(s) {
-                total++;
-                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                (s.actions || []).forEach(function(a) {
-                    total++;
-                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(function(c) {
-                        total++;
-                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
-                    });
-                });
-            });
-            return total > 0 ? Math.round((done / total) * 100) : 0;
-        },
-        get progressColor() {
-            var s = this.exe ? this.exe.controlStatus : '';
-            if (s === 'OK') return 'var(--crb-green-color)';
-            if (s === 'KO') return 'var(--crb-red-color)';
-            if (s === 'FA') return '#f59e0b';
-            if (s === 'PE') return 'var(--crb-blue-color)';
-            if (s === 'NA') return 'var(--crb-yellow-color, #eab308)';
-            if (s === 'CA') return 'var(--crb-grey-color)';
-            if (s === 'NE') return 'var(--crb-grey-color)';
-            return 'var(--crb-blue-color)';
-        },
+
         get statusColor() {
             return this._getStatusColor(this.exe.controlStatus);
         },
@@ -116,9 +92,14 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
-            // Load feature flags
-            getParameterString('cerberus_featureflipping_activatewebsocketpush', '', (val) => { this.paramActivateWebSocket = val; });
-            getParameterString('cerberus_featureflipping_websocketpushperiod', '5000', (val) => { this.paramWebSocketPeriod = parseInt(val) || 5000; });
+            // Load feature flags (getParameterString returns value synchronously, no callback)
+            try {
+                this.paramActivateWebSocket = getParameterString('cerberus_featureflipping_activatewebsocketpush', '', true) || 'N';
+            } catch(e) { this.paramActivateWebSocket = 'N'; console.warn('[ExeV2] Could not load WS param:', e); }
+            try {
+                var wsPeriod = getParameterString('cerberus_featureflipping_websocketpushperiod', '', true);
+                this.paramWebSocketPeriod = parseInt(wsPeriod) || 5000;
+            } catch(e) { this.paramWebSocketPeriod = 5000; }
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -251,6 +232,7 @@ function executionV2() {
 
                     this.mode = 'execution';
                     this._updateFavicon(tce.controlStatus);
+                    this._updateProgress();
                     this.$nextTick(() => {
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
@@ -382,26 +364,54 @@ function executionV2() {
 
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
+            var self = this;
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
             const wsUrl = protocol + '://' + location.host + location.pathname.replace(/\/[^\/]*$/, '') + '/api/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
 
+            // Watchdog: if no WS message arrives within 2x the polling period, fall back to polling
+            var wsWatchdog = setTimeout(function() {
+                console.warn('[ExeV2] WebSocket watchdog triggered — no data received, falling back to polling');
+                if (self.ws) { try { self.ws.close(); } catch(e) {} self.ws = null; }
+                self.wsConnected = false;
+                if (self.exe && self.exe.controlStatus === 'PE') {
+                    self._startPolling(executionId);
+                }
+            }, self.paramWebSocketPeriod * 2);
+
             try {
                 this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = () => { this.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
-                this.ws.onmessage = (event) => {
+                this.ws.onopen = function() { self.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
+                this.ws.onmessage = function(event) {
+                    // Reset watchdog on each message
+                    clearTimeout(wsWatchdog);
                     try {
-                        const data = JSON.parse(event.data);
-                        this._onWebSocketMessage(data);
+                        var data = JSON.parse(event.data);
+                        self._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = (err) => {
+                this.ws.onerror = function(err) {
+                    clearTimeout(wsWatchdog);
                     console.warn('[ExeV2] WebSocket error, falling back to polling');
-                    this.wsConnected = false;
-                    setTimeout(() => this._loadExecution(executionId), this.paramWebSocketPeriod);
+                    self.wsConnected = false;
+                    self.ws = null;
+                    if (self.exe && self.exe.controlStatus === 'PE') {
+                        self._startPolling(executionId);
+                    }
                 };
-                this.ws.onclose = () => { this.wsConnected = false; };
+                this.ws.onclose = function() {
+                    clearTimeout(wsWatchdog);
+                    self.wsConnected = false;
+                    // If still PE, fall back to polling (WS closed unexpectedly)
+                    if (!self.ws) return; // Already handled by onerror or intentional close
+                    self.ws = null;
+                    console.info('[ExeV2] WebSocket closed, falling back to polling');
+                    if (self.exe && self.exe.controlStatus === 'PE') {
+                        self._startPolling(executionId);
+                    }
+                };
             } catch(e) {
+                clearTimeout(wsWatchdog);
                 console.warn('[ExeV2] WebSocket not available, using polling');
                 this._startPolling(executionId);
             }
@@ -412,12 +422,15 @@ function executionV2() {
             var tce = data.testCaseExecution;
             var prevStatus = this.exe.controlStatus;
 
-            // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
+            // Merge all top-level fields from tce into exe, then reassign to trigger Alpine reactivity
+            // This ensures new properties (remoteLiveUrl, remoteControlLiveUrl, videos, fileList) are detected
+            var updatedExe = Object.assign({}, this.exe);
             Object.keys(tce).forEach(function(k) {
                 if (k !== 'testCaseStepExecutionList' && k !== 'testCaseExecutionDataList') {
-                    this.exe[k] = tce[k];
+                    updatedExe[k] = tce[k];
                 }
-            }.bind(this));
+            });
+            this.exe = updatedExe;
 
             // Incremental step merge — update returnCode/returnMessage/end in-place
             var newSteps = tce.testCaseStepExecutionList || [];
@@ -441,6 +454,7 @@ function executionV2() {
             this.$nextTick(function() {
                 if (window.lucide) lucide.createIcons();
                 this._updateSidebarTop();
+                this._updateProgress();
             }.bind(this));
 
             // If execution finished, close WS
@@ -636,6 +650,7 @@ function executionV2() {
                 else if (stepStatus === 'WE' && globalStatus === 'OK') globalStatus = 'WE';
             });
             this.exe.controlStatus = globalStatus;
+            this._updateProgress();
         },
 
         _markDirty() {
@@ -986,6 +1001,37 @@ function executionV2() {
             });
         },
 
+        // ═══ VISION MODAL (Live / Video) ═══
+        openVisionModal(mode, url) {
+            this.visionModal.mode = mode;
+            this.visionModal.url = url;
+            this.visionModal.fullscreen = false;
+            this.visionModal.open = true;
+            document.body.style.overflow = 'hidden';
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }.bind(this));
+        },
+
+        closeVisionModal() {
+            this.visionModal.open = false;
+            document.body.style.overflow = '';
+        },
+
+        _getVideoUrl() {
+            // Check exe.videos array first (legacy API)
+            if (this.exe && this.exe.videos && this.exe.videos.length > 0) {
+                return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.videos[0]) + '&filedesc=Video&filetype=MP4';
+            }
+            // Fallback: find MP4 in execution-level fileList
+            if (this.exe && this.exe.fileList) {
+                for (var i = 0; i < this.exe.fileList.length; i++) {
+                    if (this.exe.fileList[i].fileType === 'MP4') {
+                        return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.fileList[i].fileName) + '&filedesc=Video&filetype=MP4&auto=true&r=true';
+                    }
+                }
+            }
+            return null;
+        },
+
         // ═══ HELPERS ═══
         _getCountries() {
             // Try to get countries from test case object
@@ -1023,6 +1069,67 @@ function executionV2() {
             } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
+        // ═══ PROGRESS BAR ═══
+        _updateProgress() {
+            // Compute color based on status using raw hex values
+            var status = this.exe ? this.exe.controlStatus : '';
+            var colorMap = {
+                'OK': '#00d27a', 'KO': '#e63757', 'FA': '#f59e0b',
+                'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
+                'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
+            };
+            this.progressColor = colorMap[status] || '#2c7be5';
+
+            // Compute total from testCaseObj definition if available (includes ALL steps/actions/controls
+            // from the test case script, not just those already executed). This way if KO happens
+            // at step 1 action 1, progress shows the real ratio vs the full test, not 100%.
+            var total = 0, done = 0;
+
+            if (this.testCaseObj && this.testCaseObj.steps && this.testCaseObj.steps.length > 0) {
+                // Use testCaseObj definition for the total count
+                var tcSteps = this.testCaseObj.steps;
+                for (var i = 0; i < tcSteps.length; i++) {
+                    total++; // step itself
+                    var stepActions = tcSteps[i].actions || [];
+                    for (var j = 0; j < stepActions.length; j++) {
+                        total++; // action
+                        var actionControls = stepActions[j].controls || [];
+                        total += actionControls.length; // controls
+                    }
+                }
+                // Count done from execution steps
+                this.steps.forEach(function(s) {
+                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                    (s.actions || []).forEach(function(a) {
+                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                        (a.controls || []).forEach(function(c) {
+                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                        });
+                    });
+                });
+            } else if (this.steps && this.steps.length > 0) {
+                // Fallback: compute from execution steps only
+                this.steps.forEach(function(s) {
+                    total++;
+                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                    (s.actions || []).forEach(function(a) {
+                        total++;
+                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                        (a.controls || []).forEach(function(c) {
+                            total++;
+                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                        });
+                    });
+                });
+            } else {
+                // No steps at all — only show 100% if status is OK
+                this.progress = (status === 'OK') ? 100 : 0;
+                return;
+            }
+
+            this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+
         _getStatusColor(status) {
             const map = {
                 'OK': 'green', 'KO': 'red', 'FA': 'amber', 'PE': 'blue',
@@ -1051,8 +1158,12 @@ function executionV2() {
         },
 
         formatDuration(startLong, endLong) {
-            if (!startLong || !endLong) return '-';
-            const ms = endLong - startLong;
+            if (!startLong) return '-';
+            // If no end time yet, use current time for live display
+            if (!endLong || endLong <= 0) endLong = Date.now();
+            var ms = endLong - startLong;
+            // Guard against negative or absurd values (bad date)
+            if (ms < 0 || ms > 31536000000) return '-';
             if (ms < 1000) return ms + 'ms';
             if (ms < 60000) return (ms / 1000).toFixed(1) + 's';
             return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
