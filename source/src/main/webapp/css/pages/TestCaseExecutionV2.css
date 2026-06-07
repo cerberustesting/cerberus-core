@@ -964,7 +964,7 @@
 .v2-exe-spin { animation: v2-exe-spin 1s linear infinite; }
 
 /* Spin limited — spins for ~5s then stops */
-.v2-exe-spin-limited { animation: v2-exe-spin 1s linear 5; }
+.v2-exe-spin-limited { animation: v2-exe-spin 1s linear infinite; }  /* infinite — stops when Alpine removes the class */
 
 
 /* Status Pop — bounce scale when status changes */

@@ -50,9 +50,12 @@ function executionV2() {
         queueInfo: null,
         queueRefreshTimer: null,
 
-        // WebSocket
+        // WebSocket / Live refresh
         ws: null,
         wsConnected: false,
+        _pollingTimer: null,
+        _pollErrorCount: 0,
+        liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
 
         // Navigation
         lastExecutions: [],
@@ -176,8 +179,18 @@ function executionV2() {
             }
         },
 
+        // ═══ LIVE CLEANUP ═══
+        _stopLive() {
+            if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
+            if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
+            this.wsConnected = false;
+            this._pollErrorCount = 0;
+            if (this.liveStatus !== 'idle') this.liveStatus = 'done';
+        },
+
         // ═══ DATA LOADING ═══
         _loadExecution(executionId) {
+            this._stopLive();  // Kill any existing WS/polling before loading new execution
             console.info('[ExeV2] Loading execution:', executionId);
             $.ajax({
                 url: 'ReadTestCaseExecution',
@@ -420,13 +433,19 @@ function executionV2() {
                 if (fallbackDone) return;
                 fallbackDone = true;
                 self.wsConnected = false;
+                self.liveStatus = 'polling';
                 console.info('[ExeV2] WS failed, falling back to polling');
                 self._startPolling(executionId);
             }
 
             try {
                 this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = () => { this.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
+                this.ws.onopen = () => {
+                    this.wsConnected = true;
+                    this.liveStatus = 'ws';
+                    this._pollErrorCount = 0;
+                    console.info('[ExeV2] WebSocket connected');
+                };
                 this.ws.onmessage = (event) => {
                     try {
                         const data = JSON.parse(event.data);
@@ -437,6 +456,7 @@ function executionV2() {
                 this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
                 console.warn('[ExeV2] WebSocket not available, using polling');
+                this.liveStatus = 'polling';
                 this._startPolling(executionId);
             }
         },
@@ -462,8 +482,11 @@ function executionV2() {
             // Force Alpine reactivity — shallow copy triggers getter recalculation
             this.steps = this.steps.slice();
 
-            // Properties — lightweight replace
+            // Properties — preserve expanded state across updates
+            var expandedProps = {};
+            (this.properties || []).forEach(function(p) { if (p._expanded) expandedProps[p.property] = true; });
             this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
+            this.properties.forEach(function(p) { if (expandedProps[p.property]) p._expanded = true; });
 
             // Auto-focus on current step during PE
             if (tce.controlStatus === 'PE') {
@@ -481,10 +504,10 @@ function executionV2() {
                 this._updateSidebarTop();
             }.bind(this));
 
-            // If execution finished, close WS
-            if (tce.controlStatus !== 'PE' && this.ws) {
-                this.ws.close();
-                this.ws = null;
+            // If execution finished, stop all live refresh
+            if (tce.controlStatus !== 'PE') {
+                this._stopLive();
+                this.liveStatus = 'done';
                 // Final full reload to get all data
                 this._loadExecution(tce.id);
             }
@@ -578,31 +601,48 @@ function executionV2() {
 
         _startPolling(executionId) {
             var self = this;
-            console.info('[ExeV2] Starting polling every', this.paramWebSocketPeriod, 'ms');
             if (this._pollingTimer) clearTimeout(this._pollingTimer);
+
+            // Backoff: base × 2^errors, capped at 30s
+            var delay = Math.min(this.paramWebSocketPeriod * Math.pow(2, this._pollErrorCount), 30000);
+            if (this._pollErrorCount === 0) {
+                console.info('[ExeV2] Polling every', delay, 'ms');
+            }
+            this.liveStatus = this._pollErrorCount >= 3 ? 'error' : 'polling';
+
             this._pollingTimer = setTimeout(function() {
-                if (!self.exe || self.exe.controlStatus !== 'PE') return;
+                if (!self.exe || self.exe.controlStatus !== 'PE') {
+                    self.liveStatus = 'done';
+                    return;
+                }
                 $.ajax({
                     url: 'ReadTestCaseExecution',
                     data: { executionId: executionId, executionWithDependency: true },
                     dataType: 'json',
+                    timeout: 15000,  // 15s timeout to avoid hanging requests
                     success: function(data) {
+                        self._pollErrorCount = 0;  // Reset on success
+                        self.liveStatus = 'polling';
                         if (data.testCaseExecution) {
                             self._onWebSocketMessage(data);
                         }
                         // Keep polling if still PE
                         if (self.exe && self.exe.controlStatus === 'PE') {
                             self._startPolling(executionId);
+                        } else {
+                            self.liveStatus = 'done';
                         }
                     },
                     error: function() {
-                        // Retry on error
+                        self._pollErrorCount++;
+                        console.warn('[ExeV2] Poll error #' + self._pollErrorCount + ', next retry in ' + Math.min(self.paramWebSocketPeriod * Math.pow(2, self._pollErrorCount), 30000) + 'ms');
+                        // Retry with backoff if still PE
                         if (self.exe && self.exe.controlStatus === 'PE') {
                             self._startPolling(executionId);
                         }
                     }
                 });
-            }, this.paramWebSocketPeriod);
+            }, delay);
         },
 
         // ═══ MANUAL EXECUTION ═══
@@ -777,7 +817,8 @@ function executionV2() {
 
         // ═══ HEADER ACTIONS ═══
         switchToExecution(executionId) {
-            // Inline navigation
+            // Inline navigation — cleanup live refresh before switching
+            this._stopLive();
             this.mode = 'loading';
             this.steps = [];
             this.activeStepIndex = -1;

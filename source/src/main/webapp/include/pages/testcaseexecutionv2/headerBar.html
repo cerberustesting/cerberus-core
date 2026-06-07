@@ -127,6 +127,20 @@
                 </span>
             </template>
 
+            <!-- Live connection indicator -->
+            <template x-if="liveStatus !== 'idle' && liveStatus !== 'done'">
+                <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md shrink-0"
+                      :class="{
+                          'text-emerald-500': liveStatus === 'ws',
+                          'text-sky-500': liveStatus === 'polling',
+                          'text-red-400 bg-red-50 dark:bg-red-900/20': liveStatus === 'error'
+                      }">
+                    <span class="w-1.5 h-1.5 rounded-full bg-current"
+                          :class="liveStatus !== 'error' ? 'v2-pulse' : ''"></span>
+                    <span x-text="liveStatus === 'ws' ? 'LIVE' : liveStatus === 'polling' ? 'POLL' : 'ERR'"></span>
+                </span>
+            </template>
+
             <!-- Progress % pill -->
             <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tabular-nums shrink-0"
                   :class="{
