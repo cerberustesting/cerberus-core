@@ -39,6 +39,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -64,8 +65,8 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
     public TestCaseHisto readByKey(String test, String testCase, int version) throws CerberusException {
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasehisto teh ");
-        query.append("WHERE teh.test = ? , teh.testcase = ? , teh.version = ?  ");
+        query.append("SELECT * FROM testcasehisto tch ");
+        query.append("WHERE tch.test = ? and tch.testcase = ? and tch.version = ? ");
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -83,7 +84,7 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
                     ps.setInt(3, version);
                 },
                 resultSet -> {
-                    return loadFromResultSet(resultSet);
+                    return loadFromResultSetFull(resultSet);
                 }
         );
 
@@ -148,6 +149,30 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
         return new Answer(msg);
     }
 
+    private TestCaseHisto loadFromResultSetFull(ResultSet resultSet) throws SQLException {
+        if (resultSet == null) {
+            return null;
+        }
+
+        String test = resultSet.getString("tch.test") == null ? "" : resultSet.getString("tch.test");
+        String testcase = resultSet.getString("tch.testcase") == null ? "" : resultSet.getString("tch.testcase");
+        int version = resultSet.getInt("tch.version");
+        String description = resultSet.getString("tch.description") == null ? "" : resultSet.getString("tch.description");
+        Timestamp dateVersion = resultSet.getTimestamp("tch.DateVersion");
+        String testCaseContent = resultSet.getString("tch.TestCaseContent");
+        String usrCreated = resultSet.getString("tch.UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tch.DateCreated");
+        String usrModif = resultSet.getString("tch.UsrModif");
+        Timestamp dateModif = resultSet.getTimestamp("tch.DateModif");
+
+        return TestCaseHisto.builder()
+                .test(test).testCase(testcase).version(version)
+                .description(description)
+                .testCaseContent(new JSONObject(testCaseContent))
+                .dateCreated(dateCreated).dateModif(dateModif).dateVersion(dateVersion).usrCreated(usrCreated).usrModif(usrModif)
+                .build();
+    }
+
     private TestCaseHisto loadFromResultSet(ResultSet resultSet) throws SQLException {
         if (resultSet == null) {
             return null;
@@ -169,7 +194,7 @@ public class TestCaseHistoDAO implements ITestCaseHistoDAO {
                 .dateCreated(dateCreated).dateModif(dateModif).dateVersion(dateVersion).usrCreated(usrCreated).usrModif(usrModif)
                 .build();
     }
-
+    
     @Override
     public AnswerList<TestCaseHisto> readByDate(Date from, Date to) {
         AnswerList<TestCaseHisto> response = new AnswerList<>();
