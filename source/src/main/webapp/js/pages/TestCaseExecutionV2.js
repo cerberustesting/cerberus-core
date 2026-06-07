@@ -364,26 +364,54 @@ function executionV2() {
 
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
+            var self = this;
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
             const wsUrl = protocol + '://' + location.host + location.pathname.replace(/\/[^\/]*$/, '') + '/api/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
 
+            // Watchdog: if no WS message arrives within 2x the polling period, fall back to polling
+            var wsWatchdog = setTimeout(function() {
+                console.warn('[ExeV2] WebSocket watchdog triggered — no data received, falling back to polling');
+                if (self.ws) { try { self.ws.close(); } catch(e) {} self.ws = null; }
+                self.wsConnected = false;
+                if (self.exe && self.exe.controlStatus === 'PE') {
+                    self._startPolling(executionId);
+                }
+            }, self.paramWebSocketPeriod * 2);
+
             try {
                 this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = () => { this.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
-                this.ws.onmessage = (event) => {
+                this.ws.onopen = function() { self.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
+                this.ws.onmessage = function(event) {
+                    // Reset watchdog on each message
+                    clearTimeout(wsWatchdog);
                     try {
-                        const data = JSON.parse(event.data);
-                        this._onWebSocketMessage(data);
+                        var data = JSON.parse(event.data);
+                        self._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = (err) => {
+                this.ws.onerror = function(err) {
+                    clearTimeout(wsWatchdog);
                     console.warn('[ExeV2] WebSocket error, falling back to polling');
-                    this.wsConnected = false;
-                    setTimeout(() => this._loadExecution(executionId), this.paramWebSocketPeriod);
+                    self.wsConnected = false;
+                    self.ws = null;
+                    if (self.exe && self.exe.controlStatus === 'PE') {
+                        self._startPolling(executionId);
+                    }
                 };
-                this.ws.onclose = () => { this.wsConnected = false; };
+                this.ws.onclose = function() {
+                    clearTimeout(wsWatchdog);
+                    self.wsConnected = false;
+                    // If still PE, fall back to polling (WS closed unexpectedly)
+                    if (!self.ws) return; // Already handled by onerror or intentional close
+                    self.ws = null;
+                    console.info('[ExeV2] WebSocket closed, falling back to polling');
+                    if (self.exe && self.exe.controlStatus === 'PE') {
+                        self._startPolling(executionId);
+                    }
+                };
             } catch(e) {
+                clearTimeout(wsWatchdog);
                 console.warn('[ExeV2] WebSocket not available, using polling');
                 this._startPolling(executionId);
             }
