@@ -369,8 +369,8 @@ function aoColumnsFunc(tableId) {
             "searchable": false,
             "width": "70px",
             "render": function (data, type, obj) {
-                const fromValue = getPickerIsoValue('fromPicker');
-                const toValue = getPickerIsoValue('toPicker');
+                const fromValue = getPickerIsoValue('fromPicker-input');
+                const toValue = getPickerIsoValue('toPicker-input');
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${encodeURIComponent(fromValue)}&to=${encodeURIComponent(toValue)}"
                                         target="_blank"
