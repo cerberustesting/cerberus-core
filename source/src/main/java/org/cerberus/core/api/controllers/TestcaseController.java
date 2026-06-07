@@ -58,6 +58,7 @@ import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseCountryService;
 import org.cerberus.core.crud.service.ITestCaseService;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
@@ -94,6 +95,7 @@ public class TestcaseController {
     private static final String API_KEY = "X-API-KEY";
     private final IInvariantService invariantService;
     private final ITestCaseService testCaseService;
+    private final ITestCaseHistoService testCaseHistoService;
     private final ITestCaseCountryService testCaseCountryService;
     private final ITestCaseStepService testCaseStepService;
     private final ITestCaseStepActionService testCaseStepActionService;
@@ -111,7 +113,8 @@ public class TestcaseController {
             summary = "Get all testcases by test folder",
             description = "Get all testcases by test folder",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Found the testcases", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
+                @ApiResponse(responseCode = "200", description = "Found the testcases", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
             }
     )
     @JsonView(View.Public.GET.class)
@@ -138,7 +141,8 @@ public class TestcaseController {
             summary = "Get all testcases by application",
             description = "Get all testcases by application",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Found the testcases", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
+                @ApiResponse(responseCode = "200", description = "Found the testcases", content = {
+            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TestcaseDTOV001.class)))})
             }
     )
     @JsonView(View.Public.GET.class)
@@ -162,10 +166,11 @@ public class TestcaseController {
 
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Get a testcase filtered by its FolderId and testCaseId",
-            description = "Get a testcase filtered by its FolderId and testCaseId",
+            summary = "Get a Testcase",
+            description = "Get a Testcase",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Found the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+                @ApiResponse(responseCode = "200", description = "Found the testcase", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = TestcaseDTOV001.class))})
             }
     )
     @JsonView(View.Public.GET.class)
@@ -188,12 +193,39 @@ public class TestcaseController {
         );
     }
 
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/v{version}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get a specific version of a Testcase",
+            description = "Get a specific version of a Testcase",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Found the testcase", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = TestcaseDTOV001.class))})
+            }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public String findTestcaseVersionByTestAndTestcase(
+            @PathVariable("testFolderId") String testFolderId,
+            @PathVariable("testcaseId") String testcaseId,
+            @PathVariable("version") Integer version,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
+            Principal principal) throws CerberusException {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request, login);
+
+        LOG.debug("Getting version : {}", version);
+        return this.testCaseHistoService.readByKey(testFolderId, testcaseId, version).getTestCaseContent().toString();
+    }
+
     @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Create a new Testcase",
             description = "Create a new Testcase",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Created the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+                @ApiResponse(responseCode = "200", description = "Created the testcase", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = TestcaseDTOV001.class))})
             }
     )
     @JsonView(View.Public.GET.class)
@@ -221,7 +253,8 @@ public class TestcaseController {
             summary = "Create a new Testcase with only few information",
             description = "Create a new Testcase with only few information",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Created the testcase", content = { @Content(mediaType = "application/json")})
+                @ApiResponse(responseCode = "200", description = "Created the testcase", content = {
+            @Content(mediaType = "application/json")})
             }
     )
     @JsonView(View.Public.GET.class)
@@ -388,7 +421,8 @@ public class TestcaseController {
             summary = "Update a Testcase",
             description = "Update a Testcase",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Updated the testcase", content = { @Content(mediaType = "application/json",schema = @Schema(implementation = TestcaseDTOV001.class))})
+                @ApiResponse(responseCode = "200", description = "Updated the testcase", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = TestcaseDTOV001.class))})
             }
     )
     @JsonView(View.Public.GET.class)
