@@ -447,11 +447,15 @@ function executionV2() {
                     this.exe[k] = tce[k];
                 }
             }.bind(this));
+            // Force Alpine to detect exe changes (computed getters like progress depend on it)
+            this.exe = Object.assign({}, this.exe);
 
             // Incremental step merge — update returnCode/returnMessage/end in-place
             var newSteps = tce.testCaseStepExecutionList || [];
             newSteps.sort(function(a, b) { return a.sort - b.sort; });
             this._mergeStepUpdates(newSteps);
+            // Force Alpine reactivity — shallow copy triggers getter recalculation
+            this.steps = this.steps.slice();
 
             // Properties — lightweight replace
             this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
@@ -912,11 +916,15 @@ function executionV2() {
         // ═══ SMART PREVIEW HELPERS ═══
         _isVerifyAction(action) {
             var a = (action.action || '').toLowerCase();
-            return a.indexOf('verify') === 0;
+            if (a.indexOf('verify') !== 0) return false;
+            // Only show Expected/Got if at least one value is present
+            return !!(action.value1 || action.value1Init || action.value2 || action.value2Init);
         },
         _isVerifyControl(ctrl) {
             var c = (ctrl.controlType || ctrl.control || '').toLowerCase();
-            return c.indexOf('verify') === 0;
+            if (c.indexOf('verify') !== 0) return false;
+            // Only show Expected/Got if at least one value is present
+            return !!(ctrl.value1 || ctrl.value1Init || ctrl.value2 || ctrl.value2Init);
         },
         _isServiceAction(action) {
             var a = (action.action || '').toLowerCase();

@@ -1,15 +1,13 @@
 <!-- TestCaseExecution V2 - Header Bar -->
 
 <div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader"
-     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: visible">
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: hidden">
 
-    <!-- Progress Bar - Premium Design -->
-    <div style="padding: 0 3px">
-        <div style="height: 6px; border-radius: 0 0 12px 12px; overflow: hidden; background-color: #e2e8f0">
-            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease"
-                 :class="exe.controlStatus === 'PE' ? 'v2-exe-progress-animated' : ''"
-                 x-bind:style="{ width: Math.max(progress, 0) + '%', backgroundColor: progressColor, boxShadow: progress > 0 ? ('0 0 10px ' + progressColor) : 'none' }"></div>
-        </div>
+    <!-- Progress Bar - integrated flush with header border-radius -->
+    <div style="height: 6px; overflow: hidden; border-radius: 16px 16px 0 0; background-color: #e2e8f0">
+        <div style="height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease"
+             :class="exe.controlStatus === 'PE' ? 'v2-exe-progress-animated' : ''"
+             x-bind:style="{ width: Math.max(progress, 0) + '%', backgroundColor: progressColor, boxShadow: progress > 0 ? ('0 0 10px ' + progressColor) : 'none' }"></div>
     </div>
 
     <div class="p-3">
