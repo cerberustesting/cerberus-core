@@ -111,7 +111,7 @@
             <!-- ══════════════════════════════════════ -->
             <!--  Actions List                          -->
             <!-- ══════════════════════════════════════ -->
-            <div class="space-y-3 v2-exe-detail-scroll" style="max-height: calc(100vh - 300px); overflow-y: auto">
+            <div class="space-y-3">
                 <template x-for="(action, aIdx) in activeStep.actions" :key="action._uid">
                     <div class="rounded-xl overflow-hidden v2-fade-in"
                          :style="'border: 1px solid ' + ({'OK':'var(--crb-green-color)','KO':'var(--crb-red-color)','FA':'#f59e0b','PE':'var(--crb-blue-color)'}[action.returnCode] || 'var(--crb-grey-light-color)') + '; border-left: 3px solid ' + ({'OK':'var(--crb-green-color)','KO':'var(--crb-red-color)','FA':'#f59e0b','PE':'var(--crb-blue-color)'}[action.returnCode] || 'var(--crb-grey-light-color)')">
