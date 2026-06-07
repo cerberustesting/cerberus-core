@@ -151,6 +151,9 @@
                 <!-- TAB: Other tabs -->
                 <%@ include file="include/pages/testcaseexecutionv2/tabPanels.html"%>
 
+                <!-- VISION MODAL (Live / Video) -->
+                <%@ include file="include/pages/testcaseexecutionv2/visionModal.html"%>
+
             </div>
 
             <footer class="footer">

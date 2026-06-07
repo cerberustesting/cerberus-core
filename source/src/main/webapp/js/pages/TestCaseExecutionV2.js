@@ -36,6 +36,10 @@ function executionV2() {
         steps: [],
         activeStepIndex: -1,
 
+        // Progress bar
+        progress: 0,
+        progressColor: '#2c7be5',
+
         // Properties
         properties: [],
         showSecondary: false,
@@ -61,6 +65,9 @@ function executionV2() {
         // Lightbox
         lightboxUrl: null,
 
+        // Vision modal (Live / Video)
+        visionModal: { open: false, mode: 'live', url: '', fullscreen: false },
+
         // Feature flags
         paramActivateWebSocket: 'N',
         paramWebSocketPeriod: 5000,
@@ -72,38 +79,7 @@ function executionV2() {
         get mainSteps() { return this.steps.filter(s => !s._isPreTesting && !s._isPostTesting); },
         get primaryProperties() { return this.properties.filter(p => p.rank !== 2); },
         get secondaryProperties() { return this.properties.filter(p => p.rank === 2); },
-        get progress() {
-            // If execution is finished (not PE/NE/QU), always show 100%
-            if (this.exe && this.exe.controlStatus && this.exe.controlStatus !== 'PE' && this.exe.controlStatus !== 'NE' && this.exe.controlStatus !== 'QU') {
-                return 100;
-            }
-            if (!this.exe || !this.steps || this.steps.length === 0) return 0;
-            var total = 0, done = 0;
-            this.steps.forEach(function(s) {
-                total++;
-                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                (s.actions || []).forEach(function(a) {
-                    total++;
-                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(function(c) {
-                        total++;
-                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
-                    });
-                });
-            });
-            return total > 0 ? Math.round((done / total) * 100) : 0;
-        },
-        get progressColor() {
-            var s = this.exe ? this.exe.controlStatus : '';
-            if (s === 'OK') return 'var(--crb-green-color)';
-            if (s === 'KO') return 'var(--crb-red-color)';
-            if (s === 'FA') return '#f59e0b';
-            if (s === 'PE') return 'var(--crb-blue-color)';
-            if (s === 'NA') return 'var(--crb-yellow-color, #eab308)';
-            if (s === 'CA') return 'var(--crb-grey-color)';
-            if (s === 'NE') return 'var(--crb-grey-color)';
-            return 'var(--crb-blue-color)';
-        },
+
         get statusColor() {
             return this._getStatusColor(this.exe.controlStatus);
         },
@@ -251,6 +227,7 @@ function executionV2() {
 
                     this.mode = 'execution';
                     this._updateFavicon(tce.controlStatus);
+                    this._updateProgress();
                     this.$nextTick(() => {
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
@@ -441,6 +418,7 @@ function executionV2() {
             this.$nextTick(function() {
                 if (window.lucide) lucide.createIcons();
                 this._updateSidebarTop();
+                this._updateProgress();
             }.bind(this));
 
             // If execution finished, close WS
@@ -636,6 +614,7 @@ function executionV2() {
                 else if (stepStatus === 'WE' && globalStatus === 'OK') globalStatus = 'WE';
             });
             this.exe.controlStatus = globalStatus;
+            this._updateProgress();
         },
 
         _markDirty() {
@@ -986,6 +965,37 @@ function executionV2() {
             });
         },
 
+        // ═══ VISION MODAL (Live / Video) ═══
+        openVisionModal(mode, url) {
+            this.visionModal.mode = mode;
+            this.visionModal.url = url;
+            this.visionModal.fullscreen = false;
+            this.visionModal.open = true;
+            document.body.style.overflow = 'hidden';
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }.bind(this));
+        },
+
+        closeVisionModal() {
+            this.visionModal.open = false;
+            document.body.style.overflow = '';
+        },
+
+        _getVideoUrl() {
+            // Check exe.videos array first (legacy API)
+            if (this.exe && this.exe.videos && this.exe.videos.length > 0) {
+                return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.videos[0]) + '&filedesc=Video&filetype=MP4';
+            }
+            // Fallback: find MP4 in execution-level fileList
+            if (this.exe && this.exe.fileList) {
+                for (var i = 0; i < this.exe.fileList.length; i++) {
+                    if (this.exe.fileList[i].fileType === 'MP4') {
+                        return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.fileList[i].fileName) + '&filedesc=Video&filetype=MP4&auto=true&r=true';
+                    }
+                }
+            }
+            return null;
+        },
+
         // ═══ HELPERS ═══
         _getCountries() {
             // Try to get countries from test case object
@@ -1023,6 +1033,39 @@ function executionV2() {
             } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
+        // ═══ PROGRESS BAR ═══
+        _updateProgress() {
+            // Compute color based on status using raw hex values
+            var status = this.exe ? this.exe.controlStatus : '';
+            var colorMap = {
+                'OK': '#00d27a', 'KO': '#e63757', 'FA': '#f59e0b',
+                'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
+                'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
+            };
+            this.progressColor = colorMap[status] || '#2c7be5';
+
+            // Always compute actual progress based on steps/actions/controls completed
+            if (!this.steps || this.steps.length === 0) {
+                // No steps loaded yet — if finished show 100%, else 0%
+                this.progress = (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
+                return;
+            }
+            var total = 0, done = 0;
+            this.steps.forEach(function(s) {
+                total++;
+                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                (s.actions || []).forEach(function(a) {
+                    total++;
+                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                    (a.controls || []).forEach(function(c) {
+                        total++;
+                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                    });
+                });
+            });
+            this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+
         _getStatusColor(status) {
             const map = {
                 'OK': 'green', 'KO': 'red', 'FA': 'amber', 'PE': 'blue',
@@ -1051,8 +1094,12 @@ function executionV2() {
         },
 
         formatDuration(startLong, endLong) {
-            if (!startLong || !endLong) return '-';
-            const ms = endLong - startLong;
+            if (!startLong) return '-';
+            // If no end time yet, use current time for live display
+            if (!endLong || endLong <= 0) endLong = Date.now();
+            var ms = endLong - startLong;
+            // Guard against negative or absurd values (bad date)
+            if (ms < 0 || ms > 31536000000) return '-';
             if (ms < 1000) return ms + 'ms';
             if (ms < 60000) return (ms / 1000).toFixed(1) + 's';
             return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
