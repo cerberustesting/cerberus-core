@@ -86,6 +86,8 @@ public class TestCaseHistoService implements ITestCaseHistoService {
     public Answer create(TestCase testcase, Timestamp dateVersion, int version, String usrCreated, String desc) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+//            LOG.debug("TOTO");
+//            LOG.debug(mapper.writeValueAsString(testcaseMapperV001.toDTO(testcase)));
             return this.create(TestCaseHisto.builder()
                     .test(testcase.getTest())
                     .testCase(testcase.getTestcase())

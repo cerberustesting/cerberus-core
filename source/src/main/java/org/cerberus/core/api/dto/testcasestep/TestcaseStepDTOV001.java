@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.api.dto.testcasestep;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -54,6 +55,7 @@ import org.cerberus.core.api.dto.views.View;
         "isExecutionForced", "usrCreated", "dateCreated", "usrModif", "dateModif", "actions", "properties"
 })
 @Schema(name = "TestcaseStep")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestcaseStepDTOV001 {
 
     @JsonView({View.Public.GET.class, View.Public.PUT.class})
