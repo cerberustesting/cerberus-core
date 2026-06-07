@@ -1378,6 +1378,17 @@ function executionV2() {
             return map[status] || status;
         },
 
+        // Duration color coding — same thresholds as legacy (>5s orange, >30s red)
+        _durationColorClass(start, end) {
+            if (!start) return 'text-slate-400';
+            if (!end || end <= 0) end = Date.now();
+            var ms = end - start;
+            if (ms < 0 || ms > 31536000000) return 'text-slate-400';
+            if (ms > 30000) return 'text-red-500 font-bold';
+            if (ms > 5000) return 'text-orange-500 font-bold';
+            return 'text-slate-400';
+        },
+
         formatDuration(startLong, endLong) {
             if (!startLong) return '-';
             // If no end time yet, use current time for live display

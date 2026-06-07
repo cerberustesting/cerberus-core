@@ -152,8 +152,9 @@
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 truncate flex-1 min-w-0"
                                   x-text="action.description || ''"></span>
 
-                            <!-- Duration -->
-                            <span class="text-[10px] text-slate-400 shrink-0 font-mono tabular-nums"
+                            <!-- Duration (color coded: >5s orange, >30s red) -->
+                            <span class="text-[10px] shrink-0 font-mono tabular-nums"
+                                  :class="_durationColorClass(action.start, action.end)"
                                   x-text="formatDuration(action.start, action.end)"></span>
 
                             <!-- Manual buttons -->
@@ -388,6 +389,11 @@
                                             <!-- Description -->
                                             <span class="text-[10px] text-slate-400 truncate flex-1 min-w-0"
                                                   x-text="ctrl.description || ''"></span>
+
+                                            <!-- Duration (color coded like actions) -->
+                                            <span class="text-[9px] shrink-0 font-mono tabular-nums"
+                                                  :class="_durationColorClass(ctrl.start, ctrl.end)"
+                                                  x-text="formatDuration(ctrl.start, ctrl.end)"></span>
 
                                             <!-- Fatal badge -->
                                             <template x-if="ctrl.fatal === 'Y'">
