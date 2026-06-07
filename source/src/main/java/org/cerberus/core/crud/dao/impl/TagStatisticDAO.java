@@ -169,6 +169,8 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
         query.append(") AND `DateStartExe` >= ? AND `DateEndExe` <= ?");
 
+        LOG.debug("SQL : {}", query);
+        
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
@@ -191,7 +193,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
             try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
-                LOG.info("Execute SQL Statement: {} ", preStat);
+//                LOG.debug("Execute SQL Statement: {} ", preStat);
 
                 while (resultSet.next()) {
                     tagStatistics.add(this.loadFromResultSet(resultSet));
@@ -242,6 +244,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         if (!environments.isEmpty()) {
             query.append(" AND ").append(SqlUtil.generateInClause("`Environment`", environments));
         }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
@@ -265,7 +268,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
             try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
-                LOG.info("Execute SQL Statement: {} ", preStat);
+//                LOG.debug("Execute SQL Statement: {} ", preStat);
 
                 while (resultSet.next()) {
                     tagStatistics.add(this.loadFromResultSet(resultSet));
