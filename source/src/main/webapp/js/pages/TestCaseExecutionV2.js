@@ -73,23 +73,36 @@ function executionV2() {
         get primaryProperties() { return this.properties.filter(p => p.rank !== 2); },
         get secondaryProperties() { return this.properties.filter(p => p.rank === 2); },
         get progress() {
-            // If execution is finished, always show 100%
+            // If execution is finished (not PE/NE/QU), always show 100%
             if (this.exe && this.exe.controlStatus && this.exe.controlStatus !== 'PE' && this.exe.controlStatus !== 'NE' && this.exe.controlStatus !== 'QU') {
                 return 100;
             }
             if (!this.exe || !this.steps || this.steps.length === 0) return 0;
-            let total = 0, done = 0;
-            this.steps.forEach(s => {
-                (s.actions || []).forEach(a => {
+            var total = 0, done = 0;
+            this.steps.forEach(function(s) {
+                total++;
+                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                (s.actions || []).forEach(function(a) {
                     total++;
                     if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(c => {
+                    (a.controls || []).forEach(function(c) {
                         total++;
                         if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
                     });
                 });
             });
             return total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+        get progressColor() {
+            var s = this.exe ? this.exe.controlStatus : '';
+            if (s === 'OK') return 'var(--crb-green-color)';
+            if (s === 'KO') return 'var(--crb-red-color)';
+            if (s === 'FA') return '#f59e0b';
+            if (s === 'PE') return 'var(--crb-blue-color)';
+            if (s === 'NA') return 'var(--crb-yellow-color, #eab308)';
+            if (s === 'CA') return 'var(--crb-grey-color)';
+            if (s === 'NE') return 'var(--crb-grey-color)';
+            return 'var(--crb-blue-color)';
         },
         get statusColor() {
             return this._getStatusColor(this.exe.controlStatus);
@@ -237,6 +250,7 @@ function executionV2() {
                     }
 
                     this.mode = 'execution';
+                    this._updateFavicon(tce.controlStatus);
                     this.$nextTick(() => {
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
@@ -394,38 +408,162 @@ function executionV2() {
         },
 
         _onWebSocketMessage(data) {
-            // Full reload from WS data
-            if (data.testCaseExecution) {
-                const tce = data.testCaseExecution;
-                this.exe = tce;
-                const stepsRaw = tce.testCaseStepExecutionList || [];
-                stepsRaw.sort((a, b) => a.sort - b.sort);
-                this.steps = stepsRaw.map(s => this._normalizeStep(s));
-                this.properties = (tce.testCaseExecutionDataList || []).map(p => this._normalizeProperty(p));
+            if (!data.testCaseExecution) return;
+            var tce = data.testCaseExecution;
+            var prevStatus = this.exe.controlStatus;
 
-                // Auto-focus on current step
-                const peIdx = this.steps.findIndex(s => s.returnCode === 'PE');
-                if (peIdx >= 0) this.activeStepIndex = peIdx;
+            // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
+            Object.keys(tce).forEach(function(k) {
+                if (k !== 'testCaseStepExecutionList' && k !== 'testCaseExecutionDataList') {
+                    this.exe[k] = tce[k];
+                }
+            }.bind(this));
 
-                this.$nextTick(() => {
-                    if (window.lucide) lucide.createIcons();
-                    this._updateSidebarTop();
+            // Incremental step merge — update returnCode/returnMessage/end in-place
+            var newSteps = tce.testCaseStepExecutionList || [];
+            newSteps.sort(function(a, b) { return a.sort - b.sort; });
+            this._mergeStepUpdates(newSteps);
+
+            // Properties — lightweight replace
+            this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
+
+            // Auto-focus on current step during PE
+            if (tce.controlStatus === 'PE') {
+                var peIdx = this.steps.findIndex(function(s) { return s.returnCode === 'PE'; });
+                if (peIdx >= 0 && peIdx !== this.activeStepIndex) this.activeStepIndex = peIdx;
+            }
+
+            // Favicon on status change
+            if (tce.controlStatus !== prevStatus) {
+                this._updateFavicon(tce.controlStatus);
+            }
+
+            this.$nextTick(function() {
+                if (window.lucide) lucide.createIcons();
+                this._updateSidebarTop();
+            }.bind(this));
+
+            // If execution finished, close WS
+            if (tce.controlStatus !== 'PE' && this.ws) {
+                this.ws.close();
+                this.ws = null;
+                // Final full reload to get all data
+                this._loadExecution(tce.id);
+            }
+        },
+
+        // Incremental merge: update existing step/action/control objects in-place
+        // This avoids full DOM re-render and makes transitions smooth
+        _mergeStepUpdates(newSteps) {
+            var self = this;
+            if (this.steps.length === 0) {
+                // First load
+                this.steps = newSteps.map(function(s) { return self._normalizeStep(s); });
+                return;
+            }
+            // Build lookup by step+index
+            var existingMap = {};
+            this.steps.forEach(function(s) { existingMap[s.step + '-' + s.index] = s; });
+
+            var needsFullRebuild = false;
+            newSteps.forEach(function(ns) {
+                var key = ns.step + '-' + ns.index;
+                var existing = existingMap[key];
+                if (!existing) { needsFullRebuild = true; return; }
+
+                // Merge step-level fields
+                existing.returnCode = ns.returnCode;
+                existing.returnMessage = ns.returnMessage;
+                existing.start = ns.start;
+                existing.end = ns.end;
+                existing.conditionOperator = ns.conditionOperator;
+
+                // Merge actions
+                var newActions = ns.testCaseStepActionExecutionList || [];
+                newActions.sort(function(a, b) { return a.sort - b.sort; });
+
+                if (existing.actions.length !== newActions.length) {
+                    // Structure changed, rebuild this step
+                    var rebuilt = self._normalizeStep(ns);
+                    Object.keys(rebuilt).forEach(function(k) { existing[k] = rebuilt[k]; });
+                    return;
+                }
+
+                newActions.forEach(function(na, ai) {
+                    var ea = existing.actions[ai];
+                    if (!ea) return;
+                    // Update action fields in-place
+                    ea.returnCode = na.returnCode;
+                    ea.returnMessage = na.returnMessage;
+                    ea.start = na.start;
+                    ea.end = na.end;
+                    ea.value1 = na.value1;
+                    ea.value2 = na.value2;
+                    if (na.fileList) ea.fileList = na.fileList;
+
+                    // Merge controls
+                    var newControls = na.testCaseStepActionControlExecutionList || [];
+                    newControls.sort(function(x, y) { return x.sort - y.sort; });
+
+                    if ((ea.controls || []).length !== newControls.length) {
+                        ea.controls = newControls.map(function(c) { return self._normalizeControl(c); });
+                    } else {
+                        newControls.forEach(function(nc, ci) {
+                            var ec = ea.controls[ci];
+                            if (!ec) return;
+                            ec.returnCode = nc.returnCode;
+                            ec.returnMessage = nc.returnMessage;
+                            ec.start = nc.start;
+                            ec.end = nc.end;
+                            ec.value1 = nc.value1;
+                            ec.value2 = nc.value2;
+                            if (nc.fileList) ec.fileList = nc.fileList;
+                        });
+                    }
                 });
 
-                // If execution finished, close WS
-                if (tce.controlStatus !== 'PE' && this.ws) {
-                    this.ws.close();
-                    this.ws = null;
-                }
+                // Recount KO
+                existing._nbActionsKO = 0;
+                existing._nbControlsKO = 0;
+                existing.actions.forEach(function(a) {
+                    if (a.returnCode === 'KO' || a.returnCode === 'FA') existing._nbActionsKO++;
+                    (a.controls || []).forEach(function(c) {
+                        if (c.returnCode === 'KO' || c.returnCode === 'FA') existing._nbControlsKO++;
+                    });
+                });
+            });
+
+            if (needsFullRebuild) {
+                this.steps = newSteps.map(function(s) { return self._normalizeStep(s); });
             }
         },
 
         _startPolling(executionId) {
+            var self = this;
             console.info('[ExeV2] Starting polling every', this.paramWebSocketPeriod, 'ms');
-            setTimeout(() => {
-                if (this.exe.controlStatus === 'PE') {
-                    this._loadExecution(executionId);
-                }
+            if (this._pollingTimer) clearTimeout(this._pollingTimer);
+            this._pollingTimer = setTimeout(function() {
+                if (!self.exe || self.exe.controlStatus !== 'PE') return;
+                $.ajax({
+                    url: 'ReadTestCaseExecution',
+                    data: { executionId: executionId, executionWithDependency: true },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.testCaseExecution) {
+                            self._onWebSocketMessage(data);
+                        }
+                        // Keep polling if still PE
+                        if (self.exe && self.exe.controlStatus === 'PE') {
+                            self._startPolling(executionId);
+                        }
+                    },
+                    error: function() {
+                        // Retry on error
+                        if (self.exe && self.exe.controlStatus === 'PE') {
+                            self._startPolling(executionId);
+                        }
+                    }
+                });
             }, this.paramWebSocketPeriod);
         },
 
@@ -660,21 +798,50 @@ function executionV2() {
             });
         },
 
-        // ═══ STEP EDIT ═══
+        // ═══ STEP MODAL ═══
         openStepModal(step) {
             if (!step) return;
-            var test = step.test || this.exe.test || '';
-            var tc = step.testcase || this.exe.testcase || this.exe.testCase || '';
-            var stepId = step.step || step.stepId || '';
-            var url = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(test) + '&testcase=' + encodeURIComponent(tc);
-            if (stepId) url += '&stepId=' + encodeURIComponent(stepId);
-            window.open(url, '_blank');
+            window.dispatchEvent(new CustomEvent('step-modal-open', {
+                detail: {
+                    test: step.test || this.exe.test,
+                    testcase: step.testcase || this.exe.testcase || this.exe.testCase,
+                    stepId: step.step || step.stepId
+                }
+            }));
         },
 
         openPropertyModal(prop) {
             if (!prop) return;
-            window.dispatchEvent(new CustomEvent('modalproperty-open', {
-                detail: { property: prop }
+            var self = this;
+            // Clone the property for the modal (live editing)
+            var liveProp = JSON.parse(JSON.stringify(prop));
+            // Normalize countries to flat array if needed
+            if (liveProp.countries && liveProp.countries.length > 0 && typeof liveProp.countries[0] === 'object') {
+                liveProp.countries = liveProp.countries.map(function(c) { return c.value || c; });
+            }
+            window.dispatchEvent(new CustomEvent('property-modal-open', {
+                detail: {
+                    property: liveProp,
+                    countries: self._getCountries(),
+                    canUpdate: true,
+                    onField: function(key, val) { liveProp[key] = val; },
+                    onCountryToggle: function(country) {
+                        var arr = liveProp.countries || [];
+                        var idx = arr.indexOf(country);
+                        if (idx >= 0) arr.splice(idx, 1); else arr.push(country);
+                        liveProp.countries = arr;
+                    },
+                    onSelectAll: function() {
+                        liveProp.countries = (self._getCountries() || []).slice();
+                    },
+                    onDeselectAll: function() {
+                        liveProp.countries = [];
+                    },
+                    onClose: function() {
+                        // The property modal has a "Done" button, not Save
+                        // So we do nothing special on close
+                    }
+                }
             }));
         },
 
@@ -830,6 +997,30 @@ function executionV2() {
                 return [this.exe.country];
             }
             return [];
+        },
+
+        _updateFavicon(status) {
+            try {
+                // rgbToHex helper (inline since not loaded on V2 page)
+                var _rgbHex = function(rgb) {
+                    var parts = rgb.match(/\d+/g);
+                    if (!parts) return '#999999';
+                    return '#' + parts.map(function(x) { return parseInt(x).toString(16).padStart(2, '0'); }).join('');
+                };
+                if (!this._favicon) {
+                    this._favicon = new Favico({
+                        animation: 'slide',
+                        bgColor: _rgbHex(getExeStatusRowColor(status))
+                    });
+                } else {
+                    this._favicon.badge('');
+                    this._favicon = new Favico({
+                        animation: 'slide',
+                        bgColor: _rgbHex(getExeStatusRowColor(status))
+                    });
+                }
+                this._favicon.badge(status);
+            } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
         _getStatusColor(status) {

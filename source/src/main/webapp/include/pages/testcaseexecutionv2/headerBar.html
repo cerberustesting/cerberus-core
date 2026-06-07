@@ -6,9 +6,9 @@
     <!-- Progress Bar - Premium Design -->
     <div style="padding: 0 3px">
         <div style="height: 4px; border-radius: 0 0 12px 12px; overflow: hidden; background: color-mix(in srgb, var(--crb-grey-light-color) 50%, transparent)">
-            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
+            <div style="height: 100%; border-radius: 0 0 12px 12px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease"
                  :class="exe.controlStatus === 'PE' ? 'v2-exe-progress-animated' : ''"
-                 :style="'width:' + progress + '%; background:' + (exe.controlStatus === 'OK' ? 'var(--crb-green-color)' : exe.controlStatus === 'KO' ? 'var(--crb-red-color)' : exe.controlStatus === 'FA' ? '#f59e0b' : exe.controlStatus === 'PE' ? 'var(--crb-blue-color)' : 'var(--crb-grey-color)')"></div>
+                 :style="'width:' + progress + '%; background:' + progressColor"></div>
         </div>
     </div>
 
@@ -47,6 +47,39 @@
                 <div class="flex items-center gap-2 mt-0.5" style="padding-left: 2px">
                     <span class="text-[11px] text-slate-400 dark:text-slate-500 truncate max-w-md"
                           x-text="(testCaseObj && testCaseObj.description) || exe.description || ''"></span>
+                </div>
+                <!-- Robot / Browser / Platform / App badges -->
+                <div class="flex items-center gap-1.5 mt-1 flex-wrap" style="padding-left: 2px">
+                    <template x-if="exe.browser">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                    bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400
+                                    text-[10px] font-semibold shrink-0">
+                            <img :src="'./images/browser-' + exe.browser + '.png'"
+                                 class="h-3.5 w-3.5 object-contain"
+                                 @error="$el.style.display='none'">
+                            <span x-text="exe.browser + (exe.version ? ' ' + exe.version : '')"></span>
+                        </span>
+                    </template>
+                    <template x-if="exe.platform">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                    bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400
+                                    text-[10px] font-semibold shrink-0">
+                            <img :src="'./images/platform-' + exe.platform.toUpperCase() + '.png'"
+                                 class="h-3.5 w-3.5 object-contain"
+                                 @error="$el.style.display='none'">
+                            <span x-text="exe.platform"></span>
+                        </span>
+                    </template>
+                    <template x-if="exe.application">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                    bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400
+                                    text-[10px] font-semibold shrink-0">
+                            <img :src="'./images/logoapp-' + ((applicationObj && applicationObj.type) || 'NONE') + '.png'"
+                                 class="h-3.5 w-3.5 object-contain"
+                                 @error="$el.style.display='none'">
+                            <span x-text="exe.application"></span>
+                        </span>
+                    </template>
                 </div>
             </div>
 
@@ -236,6 +269,11 @@
                                    hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                             @click="window.open('TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase), '_blank'); moreOpen = false">
                         <i data-lucide="file-code" class="w-3.5 h-3.5"></i> Edit Test Case Script
+                    </button>
+                    <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
+                                   hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            @click="if(typeof openModalTestCase === 'function') openModalTestCase(exe.test, exe.testcase || exe.testCase, 'EDIT', undefined, exe.id); moreOpen = false">
+                        <i data-lucide="file-pen" class="w-3.5 h-3.5"></i> Edit Test Case Header
                     </button>
                     <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
                                    hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
