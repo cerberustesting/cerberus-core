@@ -92,14 +92,11 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
-            // Load feature flags (getParameterString returns value synchronously, no callback)
+            // Load feature flags (getParameterString is synchronous — returns value directly)
             try {
-                this.paramActivateWebSocket = getParameterString('cerberus_featureflipping_activatewebsocketpush', '', true) || 'N';
-            } catch(e) { this.paramActivateWebSocket = 'N'; console.warn('[ExeV2] Could not load WS param:', e); }
-            try {
-                var wsPeriod = getParameterString('cerberus_featureflipping_websocketpushperiod', '', true);
-                this.paramWebSocketPeriod = parseInt(wsPeriod) || 5000;
-            } catch(e) { this.paramWebSocketPeriod = 5000; }
+                this.paramActivateWebSocket = getParameterString('cerberus_featureflipping_activatewebsocketpush', '') || 'N';
+                this.paramWebSocketPeriod = parseInt(getParameterString('cerberus_featureflipping_websocketpushperiod', '') || '5000') || 5000;
+            } catch(e) { console.warn('[ExeV2] Could not load feature flags:', e); }
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -232,8 +229,10 @@ function executionV2() {
 
                     this.mode = 'execution';
                     this._updateFavicon(tce.controlStatus);
+                    // Update progress immediately and also after DOM render
                     this._updateProgress();
                     this.$nextTick(() => {
+                        this._updateProgress();
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
                     });
@@ -364,54 +363,27 @@ function executionV2() {
 
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
-            var self = this;
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            const wsUrl = protocol + '://' + location.host + location.pathname.replace(/\/[^\/]*$/, '') + '/api/ws/execution/' + executionId;
+            // Backend registers handler at /ws/execution/{id} (WebSocketConfiguration.java)
+            const wsUrl = protocol + '://' + location.host + '/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
-
-            // Watchdog: if no WS message arrives within 2x the polling period, fall back to polling
-            var wsWatchdog = setTimeout(function() {
-                console.warn('[ExeV2] WebSocket watchdog triggered — no data received, falling back to polling');
-                if (self.ws) { try { self.ws.close(); } catch(e) {} self.ws = null; }
-                self.wsConnected = false;
-                if (self.exe && self.exe.controlStatus === 'PE') {
-                    self._startPolling(executionId);
-                }
-            }, self.paramWebSocketPeriod * 2);
 
             try {
                 this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = function() { self.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
-                this.ws.onmessage = function(event) {
-                    // Reset watchdog on each message
-                    clearTimeout(wsWatchdog);
+                this.ws.onopen = () => { this.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
+                this.ws.onmessage = (event) => {
                     try {
-                        var data = JSON.parse(event.data);
-                        self._onWebSocketMessage(data);
+                        const data = JSON.parse(event.data);
+                        this._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = function(err) {
-                    clearTimeout(wsWatchdog);
+                this.ws.onerror = (err) => {
                     console.warn('[ExeV2] WebSocket error, falling back to polling');
-                    self.wsConnected = false;
-                    self.ws = null;
-                    if (self.exe && self.exe.controlStatus === 'PE') {
-                        self._startPolling(executionId);
-                    }
+                    this.wsConnected = false;
+                    setTimeout(() => this._loadExecution(executionId), this.paramWebSocketPeriod);
                 };
-                this.ws.onclose = function() {
-                    clearTimeout(wsWatchdog);
-                    self.wsConnected = false;
-                    // If still PE, fall back to polling (WS closed unexpectedly)
-                    if (!self.ws) return; // Already handled by onerror or intentional close
-                    self.ws = null;
-                    console.info('[ExeV2] WebSocket closed, falling back to polling');
-                    if (self.exe && self.exe.controlStatus === 'PE') {
-                        self._startPolling(executionId);
-                    }
-                };
+                this.ws.onclose = () => { this.wsConnected = false; };
             } catch(e) {
-                clearTimeout(wsWatchdog);
                 console.warn('[ExeV2] WebSocket not available, using polling');
                 this._startPolling(executionId);
             }
@@ -422,15 +394,12 @@ function executionV2() {
             var tce = data.testCaseExecution;
             var prevStatus = this.exe.controlStatus;
 
-            // Merge all top-level fields from tce into exe, then reassign to trigger Alpine reactivity
-            // This ensures new properties (remoteLiveUrl, remoteControlLiveUrl, videos, fileList) are detected
-            var updatedExe = Object.assign({}, this.exe);
+            // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
             Object.keys(tce).forEach(function(k) {
                 if (k !== 'testCaseStepExecutionList' && k !== 'testCaseExecutionDataList') {
-                    updatedExe[k] = tce[k];
+                    this.exe[k] = tce[k];
                 }
-            });
-            this.exe = updatedExe;
+            }.bind(this));
 
             // Incremental step merge — update returnCode/returnMessage/end in-place
             var newSteps = tce.testCaseStepExecutionList || [];
@@ -1019,17 +988,48 @@ function executionV2() {
         _getVideoUrl() {
             // Check exe.videos array first (legacy API)
             if (this.exe && this.exe.videos && this.exe.videos.length > 0) {
-                return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.videos[0]) + '&filedesc=Video&filetype=MP4';
+                return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.videos[0]) + '&filedesc=Video&filetype=MP4&id=' + this.exe.id + '&r=true';
             }
             // Fallback: find MP4 in execution-level fileList
             if (this.exe && this.exe.fileList) {
                 for (var i = 0; i < this.exe.fileList.length; i++) {
                     if (this.exe.fileList[i].fileType === 'MP4') {
-                        return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.fileList[i].fileName) + '&filedesc=Video&filetype=MP4&auto=true&r=true';
+                        return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.fileList[i].fileName) + '&filedesc=Video&filetype=MP4&id=' + this.exe.id + '&r=true';
+                    }
+                }
+            }
+            // Deep scan: check step/action/control fileList for MP4
+            if (this.steps) {
+                for (var si = 0; si < this.steps.length; si++) {
+                    var step = this.steps[si];
+                    var actions = step.actions || [];
+                    for (var ai = 0; ai < actions.length; ai++) {
+                        var a = actions[ai];
+                        if (a.fileList) {
+                            for (var fi = 0; fi < a.fileList.length; fi++) {
+                                if (a.fileList[fi].fileType === 'MP4') {
+                                    return this.getMediaFullUrl(a.fileList[fi]);
+                                }
+                            }
+                        }
+                        var controls = a.controls || [];
+                        for (var ci = 0; ci < controls.length; ci++) {
+                            if (controls[ci].fileList) {
+                                for (var cfi = 0; cfi < controls[ci].fileList.length; cfi++) {
+                                    if (controls[ci].fileList[cfi].fileType === 'MP4') {
+                                        return this.getMediaFullUrl(controls[ci].fileList[cfi]);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             return null;
+        },
+
+        _hasVideo() {
+            return !!this._getVideoUrl();
         },
 
         // ═══ HELPERS ═══
@@ -1078,55 +1078,37 @@ function executionV2() {
                 'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
                 'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
             };
-            this.progressColor = colorMap[status] || '#2c7be5';
+            this.progressColor = colorMap[status] || '#aaaaaa';
 
-            // Compute total from testCaseObj definition if available (includes ALL steps/actions/controls
-            // from the test case script, not just those already executed). This way if KO happens
-            // at step 1 action 1, progress shows the real ratio vs the full test, not 100%.
-            var total = 0, done = 0;
-
-            if (this.testCaseObj && this.testCaseObj.steps && this.testCaseObj.steps.length > 0) {
-                // Use testCaseObj definition for the total count
-                var tcSteps = this.testCaseObj.steps;
-                for (var i = 0; i < tcSteps.length; i++) {
-                    total++; // step itself
-                    var stepActions = tcSteps[i].actions || [];
-                    for (var j = 0; j < stepActions.length; j++) {
-                        total++; // action
-                        var actionControls = stepActions[j].controls || [];
-                        total += actionControls.length; // controls
-                    }
-                }
-                // Count done from execution steps
-                this.steps.forEach(function(s) {
-                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                    (s.actions || []).forEach(function(a) {
-                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                        (a.controls || []).forEach(function(c) {
-                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
-                        });
-                    });
-                });
-            } else if (this.steps && this.steps.length > 0) {
-                // Fallback: compute from execution steps only
-                this.steps.forEach(function(s) {
-                    total++;
-                    if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
-                    (s.actions || []).forEach(function(a) {
-                        total++;
-                        if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                        (a.controls || []).forEach(function(c) {
-                            total++;
-                            if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
-                        });
-                    });
-                });
-            } else {
-                // No steps at all — only show 100% if status is OK
-                this.progress = (status === 'OK') ? 100 : 0;
+            // OK always means 100% completion
+            if (status === 'OK') {
+                this.progress = 100;
                 return;
             }
 
+            // No steps loaded yet — if finished show estimated %, else 0%
+            if (!this.steps || this.steps.length === 0) {
+                this.progress = (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
+                return;
+            }
+
+            // Count items that have been actually processed (have a returnCode set)
+            // An item is "done" when it has any returnCode except PE (still running)
+            // Items with NE/WE/QU are NOT done — they were never reached
+            var total = 0, done = 0;
+            this.steps.forEach(function(s) {
+                total++;
+                // A step is "done" if it has a returnCode and it's not PE (running) or NE/WE/QU (never started)
+                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                (s.actions || []).forEach(function(a) {
+                    total++;
+                    if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
+                    (a.controls || []).forEach(function(c) {
+                        total++;
+                        if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
+                    });
+                });
+            });
             this.progress = total > 0 ? Math.round((done / total) * 100) : 0;
         },
 

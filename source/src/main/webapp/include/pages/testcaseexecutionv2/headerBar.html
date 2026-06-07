@@ -174,7 +174,7 @@
             <!-- Save button (manual mode) -->
             <template x-if="isManual">
                 <button @click="save()" :disabled="saveState !== 'dirty'"
-                        class="v2-header-action-btn shrink-0 transition-all duration-300"
+                        class="v2-exe-run-btn shrink-0 transition-all duration-300"
                         :class="saveState === 'dirty' ? 'v2-save-nudge' : ''"
                         :style="saveState === 'dirty' ? 'background: var(--crb-blue-color)' : 'background: var(--crb-grey-color); opacity: 0.45; cursor: not-allowed'"
                         data-tip="Save (Ctrl+S)">
@@ -203,7 +203,7 @@
                 </button>
             </template>
             <!-- VIDEO button (visible when execution finished and has video files) -->
-            <template x-if="exe.controlStatus !== 'PE' && _getVideoUrl()">
+            <template x-if="exe.controlStatus !== 'PE' && _hasVideo()">
                 <button @click="openVisionModal('video', _getVideoUrl())"
                         class="v2-exe-run-btn shrink-0"
                         style="background: #6366f1"
