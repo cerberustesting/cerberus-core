@@ -1613,7 +1613,7 @@ public class ExecutionRunService implements IExecutionRunService {
         String typ = execution.getApplicationObj().getType();
 
         // First we stop Robot extension collecting video and CPU/Memory stats
-        if (execution.getSession().isSikuliAvailable()) {
+        if (execution.getSession() != null && execution.getSession().isSikuliAvailable()) {
             // Stopping Image reco extention.
             if (Application.TYPE_FAT.equals(typ)) {
                 LOG.info("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
