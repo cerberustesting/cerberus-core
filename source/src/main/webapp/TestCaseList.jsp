@@ -31,6 +31,8 @@
     <head>
         <meta name="active-menu" content="maintain">
         <meta name="active-submenu" content="TestCaseList.jsp">
+        <meta name="active-page" content="TestCaseList.jsp">
+        <meta name="page" content="TestCaseList">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
@@ -68,6 +70,7 @@
                 <footer class="footer">
                     <div class="container-fluid" id="footer"></div>
                 </footer>
+                <jsp:include page="include/global/aiBottomBar.html"/>
             </div>
         </main>
     </body>

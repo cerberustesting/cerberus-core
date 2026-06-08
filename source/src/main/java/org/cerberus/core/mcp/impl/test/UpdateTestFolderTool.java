@@ -34,6 +34,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that updates an existing Cerberus test folder (the {@link Test} entity).
+ *
+ * <p>Exposed MCP tool name: {@value TOOL_NAME}</p>
+ *
+ * <p>Delegates all persistence to {@link ITestService}: the folder is first read by key to
+ * ensure it exists, individual fields are patched in-memory, then the updated entity is
+ * persisted via {@link ITestService#update(String, Test)}.</p>
+ *
+ * <p>Only a strict allow-list of fields ({@code description}, {@code active}) may be
+ * modified; any unrecognised field name returns an error instead of silently ignoring it.</p>
+ */
 @Component
 public class UpdateTestFolderTool implements MCPTool {
 
@@ -58,6 +70,15 @@ public class UpdateTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP tool schema that the AI model uses to understand the tool contract.
+     *
+     * <p>The input schema is intentionally strict ({@code additionalProperties: false}) so
+     * the model cannot pass undocumented fields that would hit the {@code default} branch in
+     * {@link #execute} and return an error.</p>
+     *
+     * @return the fully described {@link McpSchema.Tool} registered with the MCP server
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> updateProperties = new LinkedHashMap<>();
 
@@ -75,6 +96,7 @@ public class UpdateTestFolderTool implements MCPTool {
         updatesSchema.put("type", "object");
         updatesSchema.put("description", "Fields to update on the test folder. Only supported fields are allowed.");
         updatesSchema.put("properties", updateProperties);
+        // Prevent the model from sending arbitrary keys that would fail in execute()
         updatesSchema.put("additionalProperties", false);
 
         Map<String, Object> properties = new LinkedHashMap<>();
@@ -117,6 +139,16 @@ public class UpdateTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Executes the update: validates inputs, reads the current entity, patches requested
+     * fields, and persists the result.
+     *
+     * <p>The folder is read first to fail fast with a clear error when it does not exist,
+     * rather than letting the service layer propagate an opaque persistence error.</p>
+     *
+     * @param args raw MCP arguments map produced by the model
+     * @return a success JSON result listing the updated fields, or an error text result
+     */
     @SuppressWarnings("unchecked")
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
@@ -143,6 +175,7 @@ public class UpdateTestFolderTool implements MCPTool {
             return MCPToolUtils.errorText("No field provided to update.");
         }
 
+        // Read the existing entity so we can patch only the supplied fields and leave the rest intact
         AnswerItem<Test> readAnswer = testService.readByKey(testFolder);
 
         if (!readAnswer.isCodeStringEquals("OK") || readAnswer.getItem() == null) {
@@ -151,6 +184,7 @@ public class UpdateTestFolderTool implements MCPTool {
 
         Test test = readAnswer.getItem();
 
+        // Track only the fields that were actually changed, for the success response
         Map<String, Object> modifiedFields = new LinkedHashMap<>();
 
         try {
@@ -172,6 +206,8 @@ public class UpdateTestFolderTool implements MCPTool {
                         break;
 
                     default:
+                        // Reject unknown fields explicitly — the schema uses additionalProperties:false,
+                        // but a direct API caller could still bypass the schema validation
                         return MCPToolUtils.errorText("Unsupported field for test folder update: " + field);
                 }
             }
@@ -183,6 +219,7 @@ public class UpdateTestFolderTool implements MCPTool {
             return MCPToolUtils.errorText("No valid field provided to update.");
         }
 
+        // Tag the modifier as "MCP" so audit logs distinguish AI-driven changes from UI/API changes
         test.setUsrModif("MCP");
 
         Answer updateAnswer = testService.update(test.getTest(), test);
@@ -201,6 +238,14 @@ public class UpdateTestFolderTool implements MCPTool {
         ));
     }
 
+    /**
+     * Coerces an MCP argument value to a trimmed {@link String}.
+     *
+     * @param value the raw value from the model; {@code null} is accepted and mapped to {@code ""}
+     * @param field field name used in the exception message
+     * @return the trimmed string value, never {@code null}
+     * @throws IllegalArgumentException if the value is present but not a {@link String}
+     */
     private String asString(Object value, String field) {
         if (value == null) {
             return "";
@@ -213,6 +258,14 @@ public class UpdateTestFolderTool implements MCPTool {
         return ((String) value).trim();
     }
 
+    /**
+     * Coerces an MCP argument value to a {@link Boolean}.
+     *
+     * @param value the raw value from the model; must not be {@code null}
+     * @param field field name used in the exception message
+     * @return the boolean value
+     * @throws IllegalArgumentException if the value is not a {@link Boolean}
+     */
     private Boolean asBoolean(Object value, String field) {
         if (!(value instanceof Boolean)) {
             throw new IllegalArgumentException("Invalid value for field '" + field + "'. Expected boolean.");

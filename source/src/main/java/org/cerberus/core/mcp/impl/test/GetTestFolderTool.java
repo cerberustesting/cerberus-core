@@ -33,11 +33,20 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that retrieves a single Cerberus test folder by its unique {@code test} identifier.
+ *
+ * <p>Exposed MCP tool name: {@value TOOL_NAME}.</p>
+ *
+ * <p>Delegates to {@link ITestService#readByKey(String)} to load the {@link Test} entity,
+ * then projects the mapped DTO onto {@link #ALL_FIELDS} before returning the result.</p>
+ */
 @Component
 public class GetTestFolderTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_test_folder_get";
 
+    /** Exhaustive list of DTO fields returned to the caller — no projection filtering needed for a single-item fetch. */
     private static final List<String> ALL_FIELDS = List.of("test", "description", "isActive", "parentTest",
             "usrCreated", "dateCreated", "usrModif", "dateModif");
 
@@ -62,6 +71,14 @@ public class GetTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP tool schema descriptor for {@value TOOL_NAME}.
+     *
+     * <p>The single required parameter {@code test} is the primary key of the test folder.
+     * The tool is declared read-only because it performs no mutations.</p>
+     *
+     * @return the fully populated {@link McpSchema.Tool} descriptor
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> properties = Map.of(
                 "test", Map.of(
@@ -92,11 +109,21 @@ public class GetTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Executes the tool: looks up the test folder by its {@code test} key and returns its DTO.
+     *
+     * <p>Returns {@code found=false} (without an error) when the identifier is blank or the
+     * folder does not exist, so the AI client can handle the "not found" case gracefully.</p>
+     *
+     * @param args raw MCP arguments map, must contain a non-blank {@code test} value
+     * @return a JSON result containing {@code found} flag and, when found, the projected DTO
+     */
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "test", "");
 
         mcpLogUtils.call(TOOL_NAME, "test_folder_get", String.format("MCP tool %s called with testFolder=%s", TOOL_NAME, testFolder));
 
+        // Blank identifier cannot match any key — return early to avoid a spurious DB call.
         if (testFolder.isBlank()) {
             return MCPToolUtils.successJson(Map.of(
                     "testFolder", testFolder,
@@ -106,6 +133,7 @@ public class GetTestFolderTool implements MCPTool {
 
         Test folder = testService.readByKey(testFolder).getItem();
 
+        // readByKey returns null inside the Answer when the folder does not exist.
         if (folder == null) {
             return MCPToolUtils.successJson(Map.of(
                     "testFolder", testFolder,

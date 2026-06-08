@@ -32,6 +32,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that creates a new test folder (a {@link Test} entity) in Cerberus.
+ *
+ * <p>Exposed MCP tool name: {@code cerberus_test_folder_create}</p>
+ *
+ * <p>Delegates to {@link ITestService} for existence checks and persistence.</p>
+ */
 @Component
 public class CreateTestFolderTool implements MCPTool {
 
@@ -56,6 +63,11 @@ public class CreateTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP tool schema, declaring the tool name, description, and JSON input schema.
+     *
+     * @return the tool specification describing accepted parameters and their constraints
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> properties = Map.of(
                 "testFolder", Map.of(
@@ -92,6 +104,15 @@ public class CreateTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Validates input, checks for duplicates, creates the {@link Test} entity, and returns the result.
+     *
+     * <p>The existence check with {@link ITestService#exist} prevents a redundant service call
+     * and provides a clearer error message than letting the DAO throw a duplicate-key constraint.</p>
+     *
+     * @param args the MCP call arguments extracted from the request
+     * @return a success result containing the created folder name, or an error result on failure
+     */
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
         String description = MCPToolUtils.getString(args, "description", "");
@@ -109,6 +130,7 @@ public class CreateTestFolderTool implements MCPTool {
         Test test = new Test();
         test.setTest(testFolder);
         test.setDescription(description);
+        // Tag MCP-created folders so they can be distinguished from UI/API-created ones in audits.
         test.setUsrCreated("MCP");
         test.setActive(true);
 

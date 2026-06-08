@@ -47,6 +47,13 @@ public final class MCPToolUtils {
         return value instanceof Boolean booleanValue ? booleanValue : defaultValue;
     }
 
+    public static int getInteger(Map<String, Object> args, String key, int defaultValue) {
+        Object value = args.get(key);
+        if (value instanceof Integer intValue) return intValue;
+        if (value instanceof Number number) return number.intValue();
+        return defaultValue;
+    }
+
     @SuppressWarnings("unchecked")
     public static List<String> getStringList(Map<String, Object> args, String key, List<String> defaultValue) {
         Object value = args.get(key);

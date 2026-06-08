@@ -57,15 +57,20 @@ public class UserSecurity {
      * @return
      */
     public static List<String> getSystemAllow() {
-        LOG.debug("Get Allowed system for : " + getCurrentHttpRequest().getRemoteUser());
+        HttpServletRequest request = getCurrentHttpRequest();
+        if (request == null) {
+            // No HTTP context (e.g. MCP tool call from async thread) — allow all systems
+            return null;
+        }
+
+        LOG.debug("Get Allowed system for : " + request.getRemoteUser());
 
         /**
          * RG. If it is an administrator, he can access to all system. Note that
          * this does not work when http call is made on public servlets.
          */
-        // 
-        if (getCurrentHttpRequest().isUserInRole("Administrator")) {
-            LOG.debug("Administrator user : " + getCurrentHttpRequest().getRemoteUser());
+        if (request.isUserInRole("Administrator")) {
+            LOG.debug("Administrator user : " + request.getRemoteUser());
             return null;
         }
 
@@ -117,7 +122,8 @@ public class UserSecurity {
     }
 
     public static boolean isAdministrator() {
-        return getCurrentHttpRequest().isUserInRole("Administrator");
+        HttpServletRequest request = getCurrentHttpRequest();
+        return request != null && request.isUserInRole("Administrator");
     }
 
     private static HttpSession getSession() {

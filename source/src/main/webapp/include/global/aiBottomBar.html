@@ -147,7 +147,8 @@
                 const host = window.location.host;
                 const pageName = document.querySelector('meta[name="active-page"]')?.content;
                 const fullPath = window.location.pathname;
-                const context = pageName ? fullPath.replace("/" + pageName, "") : "";
+                let context = pageName ? fullPath.replace("/" + pageName, "") : "";
+                context = context.replace(/\/$/, "");
 
                 // Build WebSocket URL
                 const wsUrl = `${protocol}${host}${context}/api/ws/AIWebSocket`;

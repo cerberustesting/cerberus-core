@@ -28,6 +28,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that exposes the current Cerberus database schema version.
+ *
+ * <p>Tool name: {@code get_db_version}</p>
+ * <p>Delegates to {@link IDatabaseVersioningService#getSqlVersion()} to retrieve the
+ * applied SQL migration version stored in the database.</p>
+ *
+ * <p>This tool takes no input parameters and always returns a plain-text response
+ * containing the version number.</p>
+ */
 @Component
 public class GetDbVersionTool implements MCPTool {
 
@@ -37,6 +47,15 @@ public class GetDbVersionTool implements MCPTool {
         this.databaseVersioningService = databaseVersioningService;
     }
 
+    /**
+     * Builds and returns the MCP {@code get_db_version} tool specification.
+     *
+     * <p>The tool accepts an empty JSON object as input (no parameters required)
+     * and returns a single text content block with the current DB schema version.</p>
+     *
+     * @return a {@link McpServerFeatures.SyncToolSpecification} that can be registered
+     *         with the MCP server
+     */
     @Override
     public McpServerFeatures.SyncToolSpecification toToolSpecification() {
         return new McpServerFeatures.SyncToolSpecification(
@@ -44,12 +63,14 @@ public class GetDbVersionTool implements MCPTool {
                         "get_db_version",           // name
                         null,                       // title
                         "Returns current Cerberus DB schema version", // description
+                        // Empty object schema — no input parameters needed
                         new McpSchema.JsonSchema("object", Map.of(), null, null, null, null), // inputSchema
                         null,                       // outputSchema
                         null,                       // annotations
                         null                        // meta
                 ),
                 (exchange, args) -> {
+                    // Convert to String explicitly in case getSqlVersion returns a numeric type
                     String version = String.valueOf(databaseVersioningService.getSqlVersion());
                     return new McpSchema.CallToolResult(
                             List.of(new McpSchema.TextContent(

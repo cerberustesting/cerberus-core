@@ -36,6 +36,8 @@
 <html class="h-full">
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta name="active-page" content="Homepage.jsp">
+        <meta name="page" content="Homepage">
         <title>Cerberus Homepage</title>
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
@@ -368,6 +370,7 @@
                 <footer class="footer">
                     <div class="container-fluid" id="footer"></div>
                 </footer>
+                <jsp:include page="include/global/aiBottomBar.html"/>
             </div>
         </main>
     </body>

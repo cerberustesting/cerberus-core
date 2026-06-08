@@ -32,6 +32,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that deletes an existing Cerberus test folder (the {@link Test} entity).
+ *
+ * <p>Exposed MCP tool name: {@value TOOL_NAME}</p>
+ *
+ * <p>Delegates to {@link ITestService#readByKey(String)} to verify the folder exists
+ * before attempting deletion via {@link ITestService#delete(Test)}.</p>
+ */
 @Component
 public class DeleteTestFolderTool implements MCPTool {
 
@@ -45,6 +53,12 @@ public class DeleteTestFolderTool implements MCPTool {
         this.mcpLogUtils = mcpLogUtils;
     }
 
+    /**
+     * Builds and returns the MCP synchronous tool specification, pairing the tool
+     * schema with the execution handler that delegates to {@link #execute(Map)}.
+     *
+     * @return the fully configured {@link McpServerFeatures.SyncToolSpecification}
+     */
     @Override
     public McpServerFeatures.SyncToolSpecification toToolSpecification() {
         return new McpServerFeatures.SyncToolSpecification(
@@ -56,6 +70,12 @@ public class DeleteTestFolderTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the {@link McpSchema.Tool} descriptor that the MCP runtime exposes to AI clients.
+     * Declares {@code testFolder} as the single required string parameter (the {@code Test.test} key).
+     *
+     * @return the tool schema with input shape, description, and destructive-action annotations
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> properties = Map.of(
                 "testFolder", Map.of(
@@ -82,11 +102,23 @@ public class DeleteTestFolderTool implements MCPTool {
                         null
                 ),
                 null,
+                // Marks this operation as destructive so MCP clients can warn users before confirming
                 MCPToolUtils.deleteAnnotations("Delete test folder", false),
                 null
         );
     }
 
+    /**
+     * Validates the input, loads the existing {@link Test} entity, and deletes it.
+     *
+     * <p>The folder is loaded before deletion so that a meaningful "not found" error can
+     * be returned rather than relying on the service to surface a missing-entity failure
+     * after the call.</p>
+     *
+     * @param args the raw MCP argument map provided by the AI client
+     * @return a success JSON result containing the deleted folder name,
+     *         or an error result if the folder is missing or the deletion fails
+     */
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
 
@@ -96,12 +128,14 @@ public class DeleteTestFolderTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: testFolder");
         }
 
+        // Load the entity first so we can confirm existence and surface a clear error if absent
         Test test = testService.readByKey(testFolder).getItem();
 
         if (test == null) {
             return MCPToolUtils.errorText("Test Folder does not exist: " + testFolder);
         }
 
+        // Snapshot of testFolder name is kept in the local variable — the entity is gone after this call
         Answer answer = testService.delete(test);
 
         if (!answer.isCodeStringEquals("OK")) {

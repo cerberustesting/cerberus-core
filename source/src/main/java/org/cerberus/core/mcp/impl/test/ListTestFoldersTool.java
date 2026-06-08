@@ -33,11 +33,24 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that lists Cerberus test folders (the {@link Test} entity).
+ *
+ * <p>Exposes the MCP tool {@code cerberus_test_folders_list} to AI clients.
+ * Delegates to {@link ITestService#readAll()} to retrieve all test folders,
+ * then applies an optional in-memory search filter and field projection before
+ * returning the result.</p>
+ *
+ * <p>The tool supports an {@code intent} parameter that selects a sensible
+ * default field subset so callers do not need to enumerate fields explicitly
+ * for common use-cases (e.g. picking a folder before creating a test case).</p>
+ */
 @Component
 public class ListTestFoldersTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_test_folders_list";
 
+    /** Exhaustive list of fields the tool can return; used to populate the JSON schema enum. */
     private static final List<String> ALL_FIELDS = List.of("test", "description", "isActive", "parentTest",
             "usrCreated", "dateCreated", "usrModif", "dateModif");
 
@@ -45,7 +58,7 @@ public class ListTestFoldersTool implements MCPTool {
     private final TestMapperV001 testMapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public ListTestFoldersTool(ITestService testService, TestMapperV001 testMapper,MCPLogUtils mcpLogUtils) {
+    public ListTestFoldersTool(ITestService testService, TestMapperV001 testMapper, MCPLogUtils mcpLogUtils) {
         this.testService = testService;
         this.testMapper = testMapper;
         this.mcpLogUtils = mcpLogUtils;
@@ -62,6 +75,16 @@ public class ListTestFoldersTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP {@link McpSchema.Tool} descriptor for this tool.
+     *
+     * <p>Defines the JSON schema accepted by the tool, including the optional
+     * {@code intent}, {@code search}, and {@code fields} parameters.
+     * The {@code fields} enum is derived from {@link #ALL_FIELDS} so the schema
+     * stays in sync with the projection logic automatically.</p>
+     *
+     * @return a fully configured {@link McpSchema.Tool} ready for MCP registration
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> properties = Map.of(
                 "intent", Map.of(
@@ -128,12 +151,21 @@ public class ListTestFoldersTool implements MCPTool {
         );
     }
 
+    /**
+     * Executes the list operation: loads all test folders, applies the optional
+     * search filter, maps each entity to a DTO, projects the requested fields,
+     * and wraps the result in a successful MCP response.
+     *
+     * @param args the raw MCP tool arguments supplied by the client
+     * @return a {@link McpSchema.CallToolResult} containing the serialised folder list
+     */
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String intent = MCPToolUtils.getString(args, "intent", "select_test_folder");
         String search = MCPToolUtils.getString(args, "search", "");
 
         mcpLogUtils.call(TOOL_NAME, intent, String.format("MCP tool %s called with intent=%s", TOOL_NAME, intent));
 
+        // fields override intent defaults when explicitly provided by the caller
         List<String> fields = MCPToolUtils.getStringList(
                 args,
                 "fields",
@@ -155,15 +187,39 @@ public class ListTestFoldersTool implements MCPTool {
         ));
     }
 
+    /**
+     * Returns the default set of fields to project for a given intent value.
+     *
+     * <p>Keeping defaults intent-driven avoids over-fetching data when the
+     * caller does not know exactly which fields it needs (e.g. an AI agent
+     * picking a folder before creating a test case only needs the folder name).</p>
+     *
+     * @param intent the intent string supplied by the caller
+     * @return the list of field names to include in the projection
+     */
     private List<String> defaultFieldsForIntent(String intent) {
         return switch (intent) {
+            // only the folder key is needed when the AI is resolving a folder name
             case "create_testcase" -> List.of("test");
+            // expose all metadata for detailed inspection
             case "inspect_test_folder" -> ALL_FIELDS;
             case "select_test_folder" -> List.of("test", "description");
+            // safe fallback: return only the key to minimise noise
             default -> List.of("test");
         };
     }
 
+    /**
+     * Returns {@code true} when the given {@link Test} matches the search string.
+     *
+     * <p>Matches against both the folder name and its description so that
+     * callers can locate a folder by either attribute without knowing in advance
+     * which field holds the relevant value.</p>
+     *
+     * @param test   the entity to check
+     * @param search the search term; blank or {@code null} matches everything
+     * @return {@code true} if the entity matches, {@code false} otherwise
+     */
     private boolean matchesSearch(Test test, String search) {
         if (search == null || search.isBlank()) {
             return true;

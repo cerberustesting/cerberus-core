@@ -23,6 +23,7 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.dto.application.ApplicationMapperV001;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPProjectionUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.crud.entity.Application;
@@ -32,11 +33,23 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MCP tool that lists Cerberus {@link Application} entities accessible to the current user.
+ *
+ * <p>Exposes the MCP tool named {@value TOOL_NAME}, which returns a filtered and projected
+ * list of applications. Delegates data retrieval to {@link IApplicationService#readAll()} and
+ * relies on {@link ApplicationMapperV001} to convert entities to serialisable DTOs.</p>
+ *
+ * <p>The tool accepts an optional {@code intent} hint so the AI agent can signal its usage
+ * context (e.g. selecting an application, creating a test case) and receive only the fields
+ * that are relevant to that context by default.</p>
+ */
 @Component
 public class ListApplicationTool implements MCPTool {
 
     private static final String TOOL_NAME = "list_applications";
 
+    /** Exhaustive set of DTO field names that can be returned to the caller. */
     private static final List<String> ALL_FIELDS = List.of("application", "description", "sort", "type", "system", "subsystem", "svnurl",
             "bugTrackerUrl", "bugTrackerNewUrl", "poolSize", "deploytype", "mavengroupid",
             "bugTrackerConnector", "bugTrackerParam1", "bugTrackerParam2", "bugTrackerParam3",
@@ -44,10 +57,12 @@ public class ListApplicationTool implements MCPTool {
 
     private final IApplicationService applicationService;
     private final ApplicationMapperV001 applicationMapper;
+    private final MCPLogUtils mcpLogUtils;
 
-    public ListApplicationTool(IApplicationService applicationService, ApplicationMapperV001 applicationMapper) {
+    public ListApplicationTool(IApplicationService applicationService, ApplicationMapperV001 applicationMapper, MCPLogUtils mcpLogUtils) {
         this.applicationService = applicationService;
         this.applicationMapper = applicationMapper;
+        this.mcpLogUtils = mcpLogUtils;
     }
 
     @Override
@@ -61,23 +76,38 @@ public class ListApplicationTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP {@link McpSchema.Tool} descriptor for {@value TOOL_NAME}.
+     *
+     * <p>Declares three optional input parameters:
+     * <ul>
+     *   <li>{@code intent} — usage context enum that drives the default field projection when
+     *       {@code fields} is not explicitly provided.</li>
+     *   <li>{@code search} — free-text filter applied against application name and description.</li>
+     *   <li>{@code fields} — explicit allow-list of DTO fields to include in each result entry;
+     *       takes precedence over the intent-driven defaults when present.</li>
+     * </ul>
+     * </p>
+     *
+     * @return the fully-configured tool descriptor
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> properties = Map.of(
                 "intent", Map.of(
                         "type", "string",
                         "description", """
                                 Optional usage context used to optimize the returned fields when fields is not provided.
-                
+
                                 Use:
                                 - select_application when the user needs to choose an application.
                                   Default fields: application, description, type, system.
-                
+
                                 - create_testcase before creating a testcase when the application is unknown.
                                   Default fields: application, type.
-                
+
                                 - inspect_application when detailed application metadata is needed.
                                   Default fields: ALL_FIELDS.
-                
+
                                 If fields is provided, fields takes precedence over intent defaults.
                                 Default: select_application.
                                 """,
@@ -96,6 +126,7 @@ public class ListApplicationTool implements MCPTool {
                         "description", "Optional list of fields to return.",
                         "items", Map.of(
                                 "type", "string",
+                                // Constrain field names to the known DTO surface so the agent cannot request arbitrary keys.
                                 "enum", ALL_FIELDS
                         )
                 )
@@ -127,10 +158,18 @@ public class ListApplicationTool implements MCPTool {
         );
     }
 
+    /**
+     * Executes the tool: loads all applications, applies the optional search filter,
+     * maps entities to DTOs, projects the requested fields, and returns a JSON result.
+     *
+     * @param args raw MCP argument map from the agent request
+     * @return a {@link McpSchema.CallToolResult} containing the serialised application list
+     */
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String intent = MCPToolUtils.getString(args, "intent", "");
         String search = MCPToolUtils.getString(args, "search", "");
 
+        // Explicit fields override intent-driven defaults when provided by the caller.
         List<String> fields = MCPToolUtils.getStringList(
                 args,
                 "fields",
@@ -143,6 +182,7 @@ public class ListApplicationTool implements MCPTool {
                 .map(Application.class::cast)
                 .filter(app -> matchesSearch(app, search))
                 .map(applicationMapper::toDTO)
+                // Reduce each DTO to only the caller-requested (or intent-default) fields to minimise payload size.
                 .map(dto -> MCPProjectionUtils.project(dto, fields))
                 .toList();
 
@@ -153,15 +193,35 @@ public class ListApplicationTool implements MCPTool {
         ));
     }
 
+    /**
+     * Returns the default field projection for a given intent value.
+     *
+     * <p>Each intent maps to the minimal set of fields needed for that usage context,
+     * keeping the response payload small and focused for the AI agent.</p>
+     *
+     * @param intent the intent string provided by the caller (may be empty)
+     * @return an ordered list of DTO field names to include in the response
+     */
     private List<String> defaultFieldsForIntent(String intent) {
         return switch (intent) {
+            // Only application name and type are needed when the agent is about to create a test case.
             case "create_testcase" -> List.of("application","type");
+            // Full metadata when the user wants to inspect a specific application in detail.
             case "inspect_application" -> ALL_FIELDS;
             case "select_application" -> List.of("application","description","type","system");
+            // Unrecognised or missing intent: return only the application name as a safe minimum.
             default -> List.of("application");
         };
     }
 
+    /**
+     * Returns {@code true} when the application name or description contains the search term
+     * (case-insensitive), or when no search term was provided.
+     *
+     * @param app    the application entity to test
+     * @param search the search string; blank or null means "match all"
+     * @return whether this application passes the search filter
+     */
     private boolean matchesSearch(Application app, String search) {
         if (search == null || search.isBlank()) {
             return true;

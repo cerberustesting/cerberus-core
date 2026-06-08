@@ -79,7 +79,7 @@ public class AIService implements IAIService {
     @Autowired
     AIMcpClientService aiMcpClientService;
 
-    private static final int MAX_TOOL_ITERATIONS = 8;
+    private static final int MAX_TOOL_ITERATIONS = 20;
 
     private TestCaseStepAction lastAction;
 
