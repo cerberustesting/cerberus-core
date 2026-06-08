@@ -7,33 +7,33 @@
      x-data="{ propSearch: '', propStatusFilter: 'all', propTypeFilter: 'all' }">
     <div class="rounded-xl" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
 
-        <!-- HEADER: Title + Search + Filters -->
-        <div style="padding: 12px 16px; border-bottom: 1px solid var(--crb-grey-light-color)">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="h-8 w-8 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent)">
-                    <i data-lucide="variable" class="w-4 h-4" style="color: var(--crb-purple-color)"></i>
+        <!-- HEADER: Title + Search + Filters — single line -->
+        <div class="flex items-center gap-2.5 flex-wrap" style="padding: 10px 14px; border-bottom: 1px solid var(--crb-grey-light-color)">
+
+            <!-- Title -->
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="h-7 w-7 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent)">
+                    <i data-lucide="variable" class="w-3.5 h-3.5" style="color: var(--crb-purple-color)"></i>
                 </div>
-                <span class="text-sm font-bold" style="color: var(--crb-text-color)">Properties</span>
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--crb-text-color)">Properties</span>
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)"
                       x-text="properties.length"></span>
             </div>
 
             <!-- Search bar -->
-            <div class="flex items-center gap-2 mb-2.5">
-                <div class="relative flex-1">
-                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style="color: var(--crb-grey-color); opacity: 0.5"></i>
-                    <input type="text" x-model="propSearch" placeholder="Search properties..."
-                           class="w-full h-8 pl-8 pr-3 rounded-lg text-[12px]"
-                           style="border: 1px solid var(--crb-grey-light-color); background: var(--crb-grey-extra-light-color); color: var(--crb-text-color); outline: none"
-                           @focus="$el.style.borderColor='var(--crb-blue-color)'" @blur="$el.style.borderColor='var(--crb-grey-light-color)'">
-                </div>
+            <div class="relative" style="min-width: 160px; max-width: 240px; flex: 1">
+                <i data-lucide="search" class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2" style="color: var(--crb-grey-color); opacity: 0.5"></i>
+                <input type="text" x-model="propSearch" placeholder="Search..."
+                       class="w-full h-7 pl-7 pr-2 rounded-lg text-[11px]"
+                       style="border: 1px solid var(--crb-grey-light-color); background: var(--crb-grey-extra-light-color); color: var(--crb-text-color); outline: none"
+                       @focus="$el.style.borderColor='var(--crb-blue-color)'" @blur="$el.style.borderColor='var(--crb-grey-light-color)'">
             </div>
 
             <!-- Status filters -->
-            <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="flex items-center gap-1 shrink-0">
                 <template x-for="f in [{key:'all',label:'All'},{key:'OK',label:'OK'},{key:'KO',label:'KO'},{key:'FA',label:'FA'},{key:'PE',label:'PE'}]" :key="f.key">
                     <button @click="propStatusFilter = f.key"
-                            class="px-2 py-1 rounded-md text-[10px] font-semibold transition-all"
+                            class="px-1.5 py-0.5 rounded text-[10px] font-semibold transition-all"
                             :style="propStatusFilter === f.key
                                 ? 'background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent); color: var(--crb-blue-color); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent)'
                                 : 'background: transparent; color: var(--crb-grey-color); border: 1px solid transparent'"
@@ -41,17 +41,19 @@
                             @mouseleave="if(propStatusFilter !== f.key) $el.style.background='transparent'"
                             x-text="f.label"></button>
                 </template>
+            </div>
 
-                <span style="width: 1px; height: 16px; background: var(--crb-grey-light-color); margin: 0 4px"></span>
+            <span style="width: 1px; height: 14px; background: var(--crb-grey-light-color)" class="shrink-0"></span>
 
-                <!-- Type filter -->
+            <!-- Type filter -->
+            <div class="flex items-center gap-1 shrink-0 flex-wrap">
                 <template x-for="t in (function() {
                     var types = {};
                     properties.forEach(function(p) { if(p.type) types[p.type] = true; });
                     return [{key:'all', label:'All Types'}].concat(Object.keys(types).map(function(k) { return {key:k, label:k}; }));
                 })()" :key="t.key">
                     <button @click="propTypeFilter = t.key"
-                            class="px-2 py-1 rounded-md text-[10px] font-semibold transition-all"
+                            class="px-1.5 py-0.5 rounded text-[10px] font-semibold transition-all"
                             :style="propTypeFilter === t.key
                                 ? 'background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent); color: var(--crb-purple-color); border: 1px solid color-mix(in srgb, var(--crb-purple-color) 30%, transparent)'
                                 : 'background: transparent; color: var(--crb-grey-color); border: 1px solid transparent'"
