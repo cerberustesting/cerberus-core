@@ -36,24 +36,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MCP tool that manages updates to existing {@link AppServiceContent} entities in Cerberus.
+ * MCP tool that updates an existing {@link AppServiceContent} entry.
  *
- * <p>Exposes the MCP tool name {@code cerberus_appservice_content_update}, which allows an AI
- * agent to mutate a subset of fields (value, sort, isActive, description) on a content parameter
- * identified by its composite key {@code (service, key)}. Delegates persistence to
- * {@link IAppServiceContentService}.</p>
+ * <p>Exposed MCP tool name: {@code cerberus_appservice_content_update}.</p>
  *
- * <p>The read-before-write pattern is applied: the existing record is fetched first so that
- * unmodified fields retain their current values and a clear "does not exist" error is returned
- * instead of silently creating or corrupting data.</p>
+ * <p>Uses a read-before-write pattern so unmodified fields retain their current values.
+ * Delegates to {@link IAppServiceContentService#update(String, String, AppServiceContent)}.</p>
  *
- * <p>Note on the boolean active field: {@link AppServiceContent} uses Lombok {@code @Data}, which
- * generates the getter/setter pair as {@code isActive()} / {@code setActive(boolean)} — stripping
- * the {@code is-} prefix from the setter name. This is why the switch branch for {@code "isActive"}
- * calls {@code content.setActive(...)} rather than {@code content.setIsActive(...)}.</p>
- *
- * <p>Only explicitly declared fields are accepted; any unrecognised field causes an immediate
- * error response, preventing unintended mutations.</p>
+ * <p>Note: {@link AppServiceContent} uses Lombok {@code @Data}. For boolean field {@code isActive},
+ * the setter is {@code setActive(boolean)} — Lombok strips the {@code is} prefix.</p>
  */
 @Component
 public class UpdateAppServiceContentTool implements MCPTool {
@@ -83,75 +74,45 @@ public class UpdateAppServiceContentTool implements MCPTool {
         );
     }
 
+    /**
+     * Builds the MCP tool descriptor for {@code cerberus_appservice_content_update}.
+     *
+     * <p>{@code additionalProperties: false} on the {@code updates} object prevents the AI model
+     * from sending unrecognised fields that would be rejected by the switch in
+     * {@link #execute(Map)}.</p>
+     */
     private McpSchema.Tool createTool() {
         Map<String, Object> updateProperties = new LinkedHashMap<>();
-
-        updateProperties.put("value", Map.of(
-                "type", "string",
-                "description", "New value of the content parameter."
-        ));
-
-        updateProperties.put("sort", Map.of(
-                "type", "integer",
-                "description", "New sort order of the content parameter."
-        ));
-
-        updateProperties.put("isActive", Map.of(
-                "type", "boolean",
-                "description", "Whether the content parameter is active."
-        ));
-
-        updateProperties.put("description", Map.of(
-                "type", "string",
-                "description", "New description of the content parameter."
-        ));
+        updateProperties.put("value", Map.of("type", "string", "description", "New parameter value."));
+        updateProperties.put("sort", Map.of("type", "integer", "description", "New sort order."));
+        updateProperties.put("isActive", Map.of("type", "boolean", "description", "Whether this content entry is active."));
+        updateProperties.put("description", Map.of("type", "string", "description", "New description."));
 
         Map<String, Object> updatesSchema = new LinkedHashMap<>();
         updatesSchema.put("type", "object");
-        updatesSchema.put("description", "Fields to update on the content parameter. Only supported fields are allowed.");
+        updatesSchema.put("description", "Fields to update. Only provide the fields that need to change.");
         updatesSchema.put("properties", updateProperties);
+        // Reject unknown fields so the switch never hits an unexpected default.
         updatesSchema.put("additionalProperties", false);
 
         Map<String, Object> properties = new LinkedHashMap<>();
-
-        properties.put("service", Map.of(
-                "type", "string",
-                "description", "Name (primary key) of the service the content parameter belongs to."
-        ));
-
-        properties.put("key", Map.of(
-                "type", "string",
-                "description", "Key (part of composite primary key) of the content parameter to update."
-        ));
-
+        properties.put("service", Map.of("type", "string", "description", "Name of the app service."));
+        properties.put("key", Map.of("type", "string", "description", "Key of the content parameter to update."));
         properties.put("updates", updatesSchema);
 
         return new McpSchema.Tool(
                 TOOL_NAME,
                 null,
                 """
-                Updates an existing app service content parameter in Cerberus.
+                Updates an existing content parameter for an app service.
 
-                Call this tool whenever the user asks to modify or change properties of an existing service content parameter.
+                Call this tool when the user asks to modify the value, sort order, or active state of a content parameter.
+                Only provide the fields that need to change in the updates object.
 
-                Both service and key are required to identify the content parameter.
-
-                Only explicitly supported fields can be updated:
-                - value
-                - sort        (integer)
-                - isActive    (boolean)
-                - description
-
-                Do not call this tool when the user only asks to display, list, read, or search a content parameter.
+                Use cerberus_appservice_content_list to find the exact key before updating.
+                Do not call this tool when the user only asks to list, read, create, or delete content.
                 """,
-                new McpSchema.JsonSchema(
-                        "object",
-                        properties,
-                        List.of("service", "key", "updates"),
-                        null,
-                        null,
-                        null
-                ),
+                new McpSchema.JsonSchema("object", properties, List.of("service", "key", "updates"), null, null, null),
                 null,
                 MCPToolUtils.updateAnnotations("Update app service content", false),
                 null
@@ -160,35 +121,24 @@ public class UpdateAppServiceContentTool implements MCPTool {
 
     @SuppressWarnings("unchecked")
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
-        mcpLogUtils.call(TOOL_NAME, "appservice_content_update", "MCP tool cerberus_appservice_content_update called with args: " + args);
-
         String service = MCPToolUtils.getString(args, "service", "");
         String key = MCPToolUtils.getString(args, "key", "");
 
-        if (service.isBlank()) {
-            return MCPToolUtils.errorText("Missing required parameter: service");
-        }
+        mcpLogUtils.call(TOOL_NAME, "appservice_content_update",
+                String.format("MCP tool %s called with service=%s key=%s", TOOL_NAME, service, key));
 
-        if (key.isBlank()) {
-            return MCPToolUtils.errorText("Missing required parameter: key");
-        }
+        if (service.isBlank()) return MCPToolUtils.errorText("Missing required parameter: service");
+        if (key.isBlank()) return MCPToolUtils.errorText("Missing required parameter: key");
 
-        Object updatesObject = args.get("updates");
+        Object updatesObj = args.get("updates");
+        if (!(updatesObj instanceof Map)) return MCPToolUtils.errorText("Missing or invalid required parameter: updates");
+        Map<String, Object> updates = (Map<String, Object>) updatesObj;
+        if (updates.isEmpty()) return MCPToolUtils.errorText("No field provided to update.");
 
-        if (!(updatesObject instanceof Map)) {
-            return MCPToolUtils.errorText("Missing or invalid required parameter: updates");
-        }
-
-        Map<String, Object> updates = (Map<String, Object>) updatesObject;
-
-        if (updates.isEmpty()) {
-            return MCPToolUtils.errorText("No field provided to update.");
-        }
-
+        // Read-before-write so unmodified fields retain their current values.
         AnswerItem<AppServiceContent> readAnswer = appServiceContentService.readByKey(service, key);
-
         if (!readAnswer.isCodeStringEquals("OK") || readAnswer.getItem() == null) {
-            return MCPToolUtils.errorText("App service content does not exist: service=" + service + ", key=" + key);
+            return MCPToolUtils.errorText("Content does not exist: service=" + service + " key=" + key);
         }
 
         AppServiceContent content = readAnswer.getItem();
@@ -197,28 +147,13 @@ public class UpdateAppServiceContentTool implements MCPTool {
             for (Map.Entry<String, Object> entry : updates.entrySet()) {
                 String field = entry.getKey();
                 Object value = entry.getValue();
-
                 switch (field) {
-                    case "value":
-                        content.setValue(asString(value, field));
-                        break;
-                    case "sort":
-                        if (!(value instanceof Number)) {
-                            throw new IllegalArgumentException("Invalid value for field 'sort'. Expected integer.");
-                        }
-                        content.setSort(((Number) value).intValue());
-                        break;
-                    case "isActive":
-                        if (!(value instanceof Boolean)) {
-                            throw new IllegalArgumentException("Invalid value for field 'isActive'. Expected boolean.");
-                        }
-                        content.setActive((Boolean) value);
-                        break;
-                    case "description":
-                        content.setDescription(asString(value, field));
-                        break;
-                    default:
-                        return MCPToolUtils.errorText("Unsupported field: " + field);
+                    case "value": content.setValue(asString(value, field)); break;
+                    case "sort": content.setSort(((Number) value).intValue()); break;
+                    // setActive(boolean) — Lombok strips 'is' prefix from isActive field name.
+                    case "isActive": content.setActive((Boolean) value); break;
+                    case "description": content.setDescription(asString(value, field)); break;
+                    default: return MCPToolUtils.errorText("Unsupported field for content update: " + field);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -227,31 +162,17 @@ public class UpdateAppServiceContentTool implements MCPTool {
 
         content.setUsrModif("MCP");
 
-        Answer updateAnswer = appServiceContentService.update(service, key, content);
-
-        if (!updateAnswer.isCodeStringEquals("OK")) {
-            return MCPToolUtils.errorText(
-                    "Unable to update app service content (service=" + service + ", key=" + key + "): "
-                            + updateAnswer.getMessageDescription()
-            );
+        Answer answer = appServiceContentService.update(service, key, content);
+        if (!answer.isCodeStringEquals("OK")) {
+            return MCPToolUtils.errorText("Unable to update content: " + answer.getMessageDescription());
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "status", "updated",
-                "content", mapper.toDTO(content)
-        ));
+        return MCPToolUtils.successJson(Map.of("status", "updated", "content", mapper.toDTO(content)));
     }
 
     private String asString(Object value, String field) {
-        if (value == null) {
-            return "";
-        }
-
-        if (!(value instanceof String)) {
-            throw new IllegalArgumentException("Invalid value for field '" + field + "'. Expected string.");
-        }
-
+        if (value == null) return "";
+        if (!(value instanceof String)) throw new IllegalArgumentException("Invalid value for '" + field + "'. Expected string.");
         return ((String) value).trim();
     }
-
 }

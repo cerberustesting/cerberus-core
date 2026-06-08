@@ -134,9 +134,8 @@ public class ListAppServicesTool implements MCPTool {
 
         AnswerList<AppService> answerList = appServiceService.readByLikeName(search, 100);
 
-        List<AppServiceDTOV001> services = ((AnswerList) answerList).getDataList()
+        List<AppServiceDTOV001> services = answerList.getDataList()
                 .stream()
-                .filter(AppService.class::isInstance)
                 .map(AppService.class::cast)
                 .map(mapper::toDTO)
                 .toList();
