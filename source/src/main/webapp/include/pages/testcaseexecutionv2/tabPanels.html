@@ -3,213 +3,275 @@
 <!-- ============================================================ -->
 <!-- TAB: PROPERTIES                                               -->
 <!-- ============================================================ -->
-<div x-show="tab === 'properties'" x-cloak class="v2-fade-in">
-    <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
-        <div class="flex items-center gap-3 mb-4">
-            <i data-lucide="variable" class="w-5 h-5" style="color: var(--crb-purple-color)"></i>
-            <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Execution Properties</span>
-            <span class="text-[10px] text-slate-400" x-text="properties.length + ' properties'"></span>
-            <template x-if="secondaryProperties.length > 0">
-                <button @click="showSecondary = !showSecondary"
-                        class="ml-auto text-[11px] font-semibold px-2 py-1 rounded-md transition-colors"
-                        :class="showSecondary ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'">
-                    <span x-text="showSecondary ? 'Hide secondary' : 'Show ' + secondaryProperties.length + ' secondary'"></span>
-                </button>
-            </template>
+<div x-show="tab === 'properties'" x-cloak class="v2-fade-in"
+     x-data="{ propSearch: '', propStatusFilter: 'all', propTypeFilter: 'all' }">
+    <div class="rounded-xl" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+
+        <!-- HEADER: Title + Search + Filters -->
+        <div style="padding: 12px 16px; border-bottom: 1px solid var(--crb-grey-light-color)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="h-8 w-8 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent)">
+                    <i data-lucide="variable" class="w-4 h-4" style="color: var(--crb-purple-color)"></i>
+                </div>
+                <span class="text-sm font-bold" style="color: var(--crb-text-color)">Properties</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)"
+                      x-text="properties.length"></span>
+            </div>
+
+            <!-- Search bar -->
+            <div class="flex items-center gap-2 mb-2.5">
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style="color: var(--crb-grey-color); opacity: 0.5"></i>
+                    <input type="text" x-model="propSearch" placeholder="Search properties..."
+                           class="w-full h-8 pl-8 pr-3 rounded-lg text-[12px]"
+                           style="border: 1px solid var(--crb-grey-light-color); background: var(--crb-grey-extra-light-color); color: var(--crb-text-color); outline: none"
+                           @focus="$el.style.borderColor='var(--crb-blue-color)'" @blur="$el.style.borderColor='var(--crb-grey-light-color)'">
+                </div>
+            </div>
+
+            <!-- Status filters -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <template x-for="f in [{key:'all',label:'All'},{key:'OK',label:'OK'},{key:'KO',label:'KO'},{key:'FA',label:'FA'},{key:'PE',label:'PE'}]" :key="f.key">
+                    <button @click="propStatusFilter = f.key"
+                            class="px-2 py-1 rounded-md text-[10px] font-semibold transition-all"
+                            :style="propStatusFilter === f.key
+                                ? 'background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent); color: var(--crb-blue-color); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent)'
+                                : 'background: transparent; color: var(--crb-grey-color); border: 1px solid transparent'"
+                            @mouseenter="if(propStatusFilter !== f.key) $el.style.background='var(--crb-grey-extra-light-color)'"
+                            @mouseleave="if(propStatusFilter !== f.key) $el.style.background='transparent'"
+                            x-text="f.label"></button>
+                </template>
+
+                <span style="width: 1px; height: 16px; background: var(--crb-grey-light-color); margin: 0 4px"></span>
+
+                <!-- Type filter -->
+                <template x-for="t in (function() {
+                    var types = {};
+                    properties.forEach(function(p) { if(p.type) types[p.type] = true; });
+                    return [{key:'all', label:'All Types'}].concat(Object.keys(types).map(function(k) { return {key:k, label:k}; }));
+                })()" :key="t.key">
+                    <button @click="propTypeFilter = t.key"
+                            class="px-2 py-1 rounded-md text-[10px] font-semibold transition-all"
+                            :style="propTypeFilter === t.key
+                                ? 'background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent); color: var(--crb-purple-color); border: 1px solid color-mix(in srgb, var(--crb-purple-color) 30%, transparent)'
+                                : 'background: transparent; color: var(--crb-grey-color); border: 1px solid transparent'"
+                            @mouseenter="if(propTypeFilter !== t.key) $el.style.background='var(--crb-grey-extra-light-color)'"
+                            @mouseleave="if(propTypeFilter !== t.key) $el.style.background='transparent'"
+                            x-text="t.label"></button>
+                </template>
+            </div>
         </div>
 
-        <!-- Primary properties -->
-        <div class="space-y-1.5">
-            <template x-for="prop in primaryProperties" :key="prop._uid">
-                <div class="v2-exe-prop-card rounded-lg cursor-pointer" @click="prop._expanded = !prop._expanded">
-                    <div class="flex items-center gap-2 px-3 py-2">
-                        <span class="text-[11px] font-bold text-purple-600 dark:text-purple-400 shrink-0" style="min-width: 120px"
+        <!-- PROPERTY LIST -->
+        <div style="padding: 4px">
+            <template x-for="prop in properties.filter(function(p) {
+                var matchSearch = !propSearch || (p.property || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0
+                    || (p.value || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0
+                    || (p.type || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0;
+                var matchStatus = propStatusFilter === 'all' || (p.returnCode || 'OK') === propStatusFilter;
+                var matchType = propTypeFilter === 'all' || p.type === propTypeFilter;
+                return matchSearch && matchStatus && matchType;
+            })" :key="prop._uid">
+                <div class="rounded-lg transition-all" style="margin-bottom: 2px"
+                     :style="prop._expanded ? 'background: var(--crb-grey-extra-light-color)' : ''"
+                     @mouseenter="if(!prop._expanded) $el.style.background='color-mix(in srgb, var(--crb-grey-light-color) 30%, transparent)'"
+                     @mouseleave="if(!prop._expanded) $el.style.background='transparent'">
+
+                    <!-- COLLAPSED ROW -->
+                    <div class="flex items-center gap-2 cursor-pointer" style="padding: 6px 10px"
+                         @click="prop._expanded = !prop._expanded">
+
+                        <!-- Status dot -->
+                        <span class="w-2 h-2 rounded-full shrink-0"
+                              :style="(prop.returnCode === 'OK' || !prop.returnCode) ? 'background: var(--crb-green-color)'
+                                     : prop.returnCode === 'PE' ? 'background: var(--crb-blue-color)'
+                                     : prop.returnCode === 'FA' ? 'background: #f59e0b'
+                                     : 'background: var(--crb-red-color)'"></span>
+
+                        <!-- Name -->
+                        <span class="text-[12px] font-bold shrink-0" style="min-width: 130px; color: var(--crb-text-color)"
                               x-text="prop.property || '-'"></span>
-                        <span class="text-[11px] text-slate-400 shrink-0">:</span>
-                        <span class="v2-exe-prop-value flex-1 truncate" x-text="prop.value || '-'"></span>
-                        <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                              :class="(prop.returnCode === 'OK' || !prop.returnCode) ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'"
-                              x-text="prop.returnCode || 'OK'"></span>
-                        <button @click.stop="openPropertyModal(prop)"
-                                class="v2-exe-step-edit-btn"
-                                data-tip="Edit property" data-tip-pos="bottom">
-                            <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </button>
-                        <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform"
-                             :style="prop._expanded ? 'transform:rotate(180deg)' : ''"
-                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                    </div>
-                    <div x-show="prop._expanded" x-collapse class="px-3 pb-2" style="border-top: 1px solid var(--crb-grey-light-color)">
-                        <div class="grid grid-cols-3 gap-1.5 mt-2">
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Type</span>
-                                <span class="v2-exe-info-value" x-text="prop.type || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Nature</span>
-                                <span class="v2-exe-info-value" x-text="prop.nature || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Database</span>
-                                <span class="v2-exe-info-value" x-text="prop.database || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Length</span>
-                                <span class="v2-exe-info-value" x-text="prop.length || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Row Limit</span>
-                                <span class="v2-exe-info-value" x-text="prop.rowLimit || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Index</span>
-                                <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Rank</span>
-                                <span class="v2-exe-info-value" x-text="prop.rank !== undefined ? prop.rank : '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Retry</span>
-                                <span class="v2-exe-info-value" x-text="prop.retryNb || '0'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Elapsed</span>
-                                <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item col-span-3">
-                                <span class="v2-exe-info-label">Description</span>
-                                <span class="v2-exe-info-value text-[10px]" x-text="prop.description || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item col-span-3">
-                                <span class="v2-exe-info-label">Value 1 (raw)</span>
-                                <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value1 || '-'"></span>
-                            </div>
-                            <div class="v2-exe-info-item col-span-3">
-                                <span class="v2-exe-info-label">Value 1 Init</span>
-                                <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value1Init || '-'"></span>
-                            </div>
-                            <template x-if="prop.value2">
-                                <div class="v2-exe-info-item col-span-3">
-                                    <span class="v2-exe-info-label">Value 2</span>
-                                    <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value2"></span>
-                                </div>
-                            </template>
-                            <template x-if="prop.value2Init">
-                                <div class="v2-exe-info-item col-span-3">
-                                    <span class="v2-exe-info-label">Value 2 Init</span>
-                                    <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value2Init"></span>
-                                </div>
-                            </template>
-                            <template x-if="prop.value3">
-                                <div class="v2-exe-info-item col-span-3">
-                                    <span class="v2-exe-info-label">Value 3</span>
-                                    <span class="v2-exe-info-value font-mono text-[10px]" x-text="prop.value3"></span>
-                                </div>
-                            </template>
-                            <template x-if="prop.value3Init">
-                                <div class="v2-exe-info-item col-span-3">
-                                    <span class="v2-exe-info-label">Value 3 Init</span>
-                                    <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value3Init"></span>
-                                </div>
-                            </template>
-                            <template x-if="prop.returnMessage">
-                                <div class="v2-exe-info-item col-span-3">
-                                    <span class="v2-exe-info-label">Return Message</span>
-                                    <span class="v2-exe-info-value text-[10px]" x-text="prop.returnMessage"></span>
-                                </div>
-                            </template>
-                        </div>
-                        <!-- Property Files (screenshots, JSON, XML, HTML, etc.) -->
+
+                        <!-- Type badge -->
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                              style="background: color-mix(in srgb, var(--crb-purple-color) 10%, transparent); color: var(--crb-purple-color)"
+                              x-text="prop.type || '-'"></span>
+
+                        <!-- Data file chips (inline, clickable) -->
                         <template x-if="prop.fileList && prop.fileList.length > 0">
-                            <div class="mt-2 pt-2 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="paperclip" class="w-3 h-3" style="color: var(--crb-grey-color)"></i>
-                                    <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Files</span>
-                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)" x-text="prop.fileList.length"></span>
-                                </div>
-                                <!-- Screenshots -->
-                                <template x-if="_getScreenshots(prop.fileList).length > 0">
-                                    <div class="v2-exe-media-grid" style="padding:4px 0">
-                                        <template x-for="file in _getScreenshots(prop.fileList)" :key="file.fileName">
-                                            <img :src="getMediaUrl(file, 140, 90)"
-                                                 class="v2-exe-media-thumb"
-                                                 style="width:80px;height:52px"
-                                                 @click.stop="openLightbox(getMediaFullUrl(file))"
-                                                 loading="lazy">
-                                        </template>
-                                    </div>
+                            <div class="flex items-center gap-1 shrink-0" @click.stop>
+                                <template x-for="file in _getDataFiles(prop.fileList).slice(0, 3)" :key="file.fileName">
+                                    <button @click="openFileModal(file)"
+                                            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold transition-colors"
+                                            style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); color: var(--crb-blue-color); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 15%, transparent)"
+                                            @mouseenter="$el.style.background='color-mix(in srgb, var(--crb-blue-color) 18%, transparent)'"
+                                            @mouseleave="$el.style.background='color-mix(in srgb, var(--crb-blue-color) 8%, transparent)'">
+                                        <i data-lucide="file-text" class="w-2.5 h-2.5"></i>
+                                        <span x-text="file.fileDesc || file.fileType || 'File'"></span>
+                                    </button>
                                 </template>
-                                <!-- Data files (JSON, XML, HTML, TXT, etc.) -->
-                                <template x-if="_getDataFiles(prop.fileList).length > 0">
-                                    <div class="flex flex-wrap gap-1.5">
-                                        <template x-for="file in _getDataFiles(prop.fileList)" :key="file.fileName">
-                                            <button @click.stop="openFileModal(file)" class="v2-exe-media-file-chip">
-                                                <i data-lucide="file-text" class="w-3 h-3"></i>
-                                                <span x-text="file.fileDesc || file.fileType || 'File'"></span>
-                                            </button>
-                                        </template>
-                                    </div>
+                                <template x-if="_getScreenshots(prop.fileList).length > 0">
+                                    <button @click.stop="openLightbox(getMediaFullUrl(_getScreenshots(prop.fileList)[0]))"
+                                            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold transition-colors"
+                                            style="background: color-mix(in srgb, var(--crb-green-color) 8%, transparent); color: var(--crb-green-color); border: 1px solid color-mix(in srgb, var(--crb-green-color) 15%, transparent)"
+                                            @mouseenter="$el.style.background='color-mix(in srgb, var(--crb-green-color) 18%, transparent)'"
+                                            @mouseleave="$el.style.background='color-mix(in srgb, var(--crb-green-color) 8%, transparent)'">
+                                        <i data-lucide="image" class="w-2.5 h-2.5"></i>
+                                        <span x-text="_getScreenshots(prop.fileList).length"></span>
+                                    </button>
                                 </template>
                             </div>
                         </template>
-                    </div>
-                </div>
-            </template>
-        </div>
 
-        <!-- Secondary properties (toggle) -->
-        <div x-show="showSecondary" x-collapse class="mt-3 pt-3" style="border-top: 1px dashed var(--crb-grey-light-color)">
-            <div class="text-[10px] text-slate-400 font-semibold mb-2 uppercase tracking-wider">Secondary Properties</div>
-            <div class="space-y-1.5">
-                <template x-for="prop in secondaryProperties" :key="prop._uid">
-                    <div class="v2-exe-prop-card rounded-lg cursor-pointer" @click="prop._expanded = !prop._expanded">
-                        <div class="flex items-center gap-2 px-3 py-2">
-                            <span class="text-[11px] font-bold text-slate-500 shrink-0" style="min-width: 120px"
-                                  x-text="prop.property || '-'"></span>
-                            <span class="text-[11px] text-slate-400 shrink-0">:</span>
-                            <span class="v2-exe-prop-value flex-1 truncate" x-text="prop.value || '-'"></span>
-                            <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                                  :class="(prop.returnCode === 'OK' || !prop.returnCode) ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : prop.returnCode === 'PE' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'"
-                                  x-text="prop.returnCode || 'OK'"></span>
-                            <!-- File count indicator -->
-                            <template x-if="prop.fileList && prop.fileList.length > 0">
-                                <span class="inline-flex items-center gap-1 text-[9px] text-slate-400 shrink-0">
-                                    <i data-lucide="paperclip" class="w-2.5 h-2.5"></i>
-                                    <span x-text="prop.fileList.length"></span>
-                                </span>
-                            </template>
-                            <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform"
-                                 :style="prop._expanded ? 'transform:rotate(180deg)' : ''"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                        <!-- Expanded detail -->
-                        <div x-show="prop._expanded" x-collapse class="px-3 pb-2" style="border-top: 1px solid var(--crb-grey-light-color)">
-                            <div class="grid grid-cols-3 gap-1.5 mt-2">
+                        <!-- Value (truncated) -->
+                        <span class="flex-1 min-w-0 truncate text-[11px] font-mono"
+                              style="color: var(--crb-text-color); opacity: 0.7"
+                              x-text="prop.value || '-'"></span>
+
+                        <!-- Status badge -->
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                              :style="(prop.returnCode === 'OK' || !prop.returnCode)
+                                  ? 'background: color-mix(in srgb, var(--crb-green-color) 10%, transparent); color: var(--crb-green-color)'
+                                  : prop.returnCode === 'PE'
+                                  ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); color: var(--crb-blue-color)'
+                                  : prop.returnCode === 'FA'
+                                  ? 'background: color-mix(in srgb, #f59e0b 10%, transparent); color: #f59e0b'
+                                  : 'background: color-mix(in srgb, var(--crb-red-color) 10%, transparent); color: var(--crb-red-color)'"
+                              x-text="prop.returnCode || 'OK'"></span>
+
+                        <!-- Edit button -->
+                        <button @click.stop="openPropertyModal(prop)"
+                                class="w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors"
+                                style="color: var(--crb-grey-color)"
+                                @mouseenter="$el.style.color='var(--crb-blue-color)'; $el.style.background='color-mix(in srgb, var(--crb-blue-color) 10%, transparent)'"
+                                @mouseleave="$el.style.color='var(--crb-grey-color)'; $el.style.background='transparent'"
+                                data-tip="Edit property">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </button>
+
+                        <!-- Chevron -->
+                        <svg class="w-3 h-3 shrink-0 transition-transform" style="color: var(--crb-grey-color)"
+                             :style="prop._expanded ? 'transform:rotate(180deg)' : ''"
+                             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+
+                    <!-- EXPANDED DETAIL -->
+                    <div x-show="prop._expanded" x-collapse style="padding: 0 10px 10px 10px">
+                        <div style="border-top: 1px solid var(--crb-grey-light-color); padding-top: 10px">
+
+                            <!-- Info grid -->
+                            <div class="grid grid-cols-4 gap-2 mb-3">
                                 <div class="v2-exe-info-item">
                                     <span class="v2-exe-info-label">Type</span>
                                     <span class="v2-exe-info-value" x-text="prop.type || '-'"></span>
                                 </div>
                                 <div class="v2-exe-info-item">
-                                    <span class="v2-exe-info-label">Index</span>
-                                    <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
+                                    <span class="v2-exe-info-label">Nature</span>
+                                    <span class="v2-exe-info-value" x-text="prop.nature || '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Database</span>
+                                    <span class="v2-exe-info-value" x-text="prop.database || '-'"></span>
                                 </div>
                                 <div class="v2-exe-info-item">
                                     <span class="v2-exe-info-label">Elapsed</span>
                                     <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
                                 </div>
-                                <template x-if="prop.returnMessage">
-                                    <div class="v2-exe-info-item col-span-3">
-                                        <span class="v2-exe-info-label">Return Message</span>
-                                        <span class="v2-exe-info-value text-[10px]" x-text="prop.returnMessage"></span>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Length</span>
+                                    <span class="v2-exe-info-value" x-text="prop.length || '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Row Limit</span>
+                                    <span class="v2-exe-info-value" x-text="prop.rowLimit || '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Rank</span>
+                                    <span class="v2-exe-info-value" x-text="prop.rank !== undefined ? prop.rank : '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Index</span>
+                                    <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <template x-if="prop.description">
+                                <div class="v2-exe-info-item mb-2">
+                                    <span class="v2-exe-info-label">Description</span>
+                                    <span class="v2-exe-info-value text-[10px]" x-text="prop.description"></span>
+                                </div>
+                            </template>
+
+                            <!-- Value fields -->
+                            <div class="space-y-1.5 mb-2">
+                                <div class="flex items-start gap-2">
+                                    <span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--crb-grey-color); min-width: 55px; padding-top: 2px">Value</span>
+                                    <span class="text-[11px] font-mono break-all" style="color: var(--crb-text-color); background: var(--crb-grey-lighter-color); padding: 4px 8px; border-radius: 6px; flex: 1"
+                                          x-text="prop.value || '-'"></span>
+                                </div>
+                                <div class="flex items-start gap-2">
+                                    <span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--crb-grey-color); min-width: 55px; padding-top: 2px">Value 1</span>
+                                    <span class="text-[11px] font-mono break-all" style="color: var(--crb-text-color); opacity: 0.7; padding: 2px 0; flex: 1"
+                                          x-text="prop.value1 || '-'"></span>
+                                </div>
+                                <template x-if="prop.value1Init && prop.value1Init !== prop.value1">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--crb-grey-color); min-width: 55px; padding-top: 2px; opacity: 0.5">V1 Init</span>
+                                        <span class="text-[10px] font-mono break-all" style="color: var(--crb-text-color); opacity: 0.4; padding: 2px 0; flex: 1"
+                                              x-text="prop.value1Init"></span>
+                                    </div>
+                                </template>
+                                <template x-if="prop.value2">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--crb-grey-color); min-width: 55px; padding-top: 2px">Value 2</span>
+                                        <span class="text-[11px] font-mono break-all" style="color: var(--crb-text-color); opacity: 0.7; padding: 2px 0; flex: 1"
+                                              x-text="prop.value2"></span>
+                                    </div>
+                                </template>
+                                <template x-if="prop.value3">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--crb-grey-color); min-width: 55px; padding-top: 2px">Value 3</span>
+                                        <span class="text-[11px] font-mono break-all" style="color: var(--crb-text-color); opacity: 0.7; padding: 2px 0; flex: 1"
+                                              x-text="prop.value3"></span>
                                     </div>
                                 </template>
                             </div>
-                            <!-- Files -->
+
+                            <!-- Return Message -->
+                            <template x-if="prop.returnMessage">
+                                <div class="v2-exe-info-item mb-2">
+                                    <span class="v2-exe-info-label">Return Message</span>
+                                    <div class="text-[10px] font-mono mt-1 px-2 py-1.5 rounded-md" style="background: var(--crb-grey-lighter-color); max-height: 80px; overflow-y: auto; color: var(--crb-text-color)"
+                                         x-text="prop.returnMessage"></div>
+                                </div>
+                            </template>
+
+                            <!-- Retry info -->
+                            <template x-if="prop.retryNb && parseInt(prop.retryNb) > 0">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="v2-exe-info-item">
+                                        <span class="v2-exe-info-label">Retry</span>
+                                        <span class="v2-exe-info-value" x-text="prop.retryNb"></span>
+                                    </div>
+                                    <div class="v2-exe-info-item">
+                                        <span class="v2-exe-info-label">Retry Period</span>
+                                        <span class="v2-exe-info-value" x-text="(prop.retryPeriod || 0) + ' ms'"></span>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Files section -->
                             <template x-if="prop.fileList && prop.fileList.length > 0">
-                                <div class="mt-2 pt-2 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                                <div style="border-top: 1px solid var(--crb-grey-light-color); padding-top: 8px; margin-top: 4px">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <i data-lucide="paperclip" class="w-3 h-3" style="color: var(--crb-grey-color)"></i>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Files</span>
+                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)" x-text="prop.fileList.length"></span>
+                                    </div>
+                                    <!-- Screenshots -->
                                     <template x-if="_getScreenshots(prop.fileList).length > 0">
-                                        <div class="v2-exe-media-grid" style="padding:4px 0">
+                                        <div class="v2-exe-media-grid" style="padding: 4px 0; margin-bottom: 6px">
                                             <template x-for="file in _getScreenshots(prop.fileList)" :key="file.fileName">
                                                 <img :src="getMediaUrl(file, 140, 90)"
                                                      class="v2-exe-media-thumb"
@@ -219,6 +281,7 @@
                                             </template>
                                         </div>
                                     </template>
+                                    <!-- Data files -->
                                     <template x-if="_getDataFiles(prop.fileList).length > 0">
                                         <div class="flex flex-wrap gap-1.5">
                                             <template x-for="file in _getDataFiles(prop.fileList)" :key="file.fileName">
@@ -233,19 +296,42 @@
                             </template>
                         </div>
                     </div>
-                </template>
-            </div>
+                </div>
+            </template>
+
+            <!-- No results after filter -->
+            <template x-if="properties.length > 0 && properties.filter(function(p) {
+                var matchSearch = !propSearch || (p.property || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0
+                    || (p.value || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0
+                    || (p.type || '').toLowerCase().indexOf(propSearch.toLowerCase()) >= 0;
+                var matchStatus = propStatusFilter === 'all' || (p.returnCode || 'OK') === propStatusFilter;
+                var matchType = propTypeFilter === 'all' || p.type === propTypeFilter;
+                return matchSearch && matchStatus && matchType;
+            }).length === 0">
+                <div class="flex flex-col items-center justify-center py-8 gap-2">
+                    <i data-lucide="search-x" class="w-5 h-5" style="color: var(--crb-grey-color); opacity: 0.3"></i>
+                    <span class="text-[11px]" style="color: var(--crb-grey-color)">No properties match your filters</span>
+                    <button @click="propSearch=''; propStatusFilter='all'; propTypeFilter='all'"
+                            class="text-[10px] font-semibold px-3 py-1 rounded-md transition-colors"
+                            style="color: var(--crb-blue-color); background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent)"
+                            @mouseenter="$el.style.background='color-mix(in srgb, var(--crb-blue-color) 15%, transparent)'"
+                            @mouseleave="$el.style.background='color-mix(in srgb, var(--crb-blue-color) 8%, transparent)'">
+                        Clear filters
+                    </button>
+                </div>
+            </template>
         </div>
 
-        <!-- Empty -->
+        <!-- Empty state -->
         <template x-if="properties.length === 0">
             <div class="flex flex-col items-center justify-center py-8 gap-2">
-                <i data-lucide="variable" class="w-6 h-6 text-slate-300"></i>
-                <span class="text-[12px] text-slate-400">No properties in this execution</span>
+                <i data-lucide="variable" class="w-6 h-6" style="color: var(--crb-grey-color); opacity: 0.3"></i>
+                <span class="text-[12px]" style="color: var(--crb-grey-color)">No properties in this execution</span>
             </div>
         </template>
     </div>
 </div>
+
 
 <!-- ============================================================ -->
 <!-- TAB: BUG / DETAIL                                             -->

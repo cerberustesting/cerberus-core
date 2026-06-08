@@ -113,7 +113,7 @@
                  }">
                 <i :data-lucide="_getStatusIcon(exe.controlStatus)"
                    class="w-3.5 h-3.5"
-                   :class="exe.controlStatus === 'PE' ? 'v2-exe-spin-limited' : ''"></i>
+                   :class="(exe.controlStatus === 'PE' || _spinDone) ? 'v2-exe-spin-limited' : ''"></i>
                 <span x-text="_getStatusLabel(exe.controlStatus)"></span>
             </div>
 

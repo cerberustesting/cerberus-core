@@ -5,13 +5,137 @@
 
     <!-- Queue mode -->
     <template x-if="mode === 'queue'">
-        <div class="flex flex-col items-center justify-center py-12 gap-4">
-            <div class="v2-exe-queue-spinner"></div>
-            <div class="text-center">
-                <div class="text-sm font-semibold text-slate-700 dark:text-slate-300">Waiting in Queue</div>
-                <div class="text-[11px] text-slate-400 mt-1" x-text="queueInfo ? ('Position: ' + (queueInfo.nbEntryInQueueToGo || '...')) : 'Loading...'"></div>
-                <div class="text-[10px] text-slate-400 mt-1" x-text="queueInfo ? ('State: ' + queueInfo.state) : ''"></div>
+        <div class="flex flex-col py-6 px-4 gap-5">
+            <!-- Animated spinner -->
+            <div class="flex flex-col items-center gap-3">
+                <div class="v2-exe-queue-spinner" style="width: 48px; height: 48px; border-width: 4px"></div>
+                <div class="text-center">
+                    <div class="text-sm font-bold text-slate-700 dark:text-slate-200">Waiting in Queue</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5" x-text="queueInfo ? ('Auto-refresh every 5 seconds') : 'Connecting...'"></div>
+                </div>
             </div>
+
+            <!-- Queue info cards -->
+            <template x-if="queueInfo">
+                <div class="space-y-3">
+                    <!-- Position & State -->
+                    <div class="rounded-xl p-3" style="background: var(--crb-grey-extra-light-color); border: 1px solid var(--crb-grey-light-color)">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Position</div>
+                                <div class="text-lg font-black mt-0.5" style="color: var(--crb-blue-color)"
+                                     x-text="queueInfo.nbEntryInQueueToGo != null ? queueInfo.nbEntryInQueueToGo : '...'"></div>
+                                <div class="text-[9px] text-slate-400" x-text="queueInfo.nbEntryInQueueToGo > 0 ? 'execution(s) ahead' : 'Next in line'"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">State</div>
+                                <div class="inline-flex items-center gap-1.5 mt-1 px-2.5 py-1 rounded-lg text-[11px] font-bold"
+                                     :class="{
+                                         'bg-blue-100 dark:bg-blue-900/20 text-blue-600': queueInfo.state === 'QUEUED' || queueInfo.state === 'QUWITHDEP',
+                                         'bg-amber-100 dark:bg-amber-900/20 text-amber-600': queueInfo.state === 'STARTING' || queueInfo.state === 'WAITING',
+                                         'bg-green-100 dark:bg-green-900/20 text-green-600': queueInfo.state === 'EXECUTING',
+                                         'bg-red-100 dark:bg-red-900/20 text-red-600': queueInfo.state === 'CANCELLED' || queueInfo.state === 'ERROR',
+                                         'bg-purple-100 dark:bg-purple-900/20 text-purple-600': queueInfo.state === 'QUEUED_PAUSED' || queueInfo.state === 'QUWITHDEP_PAUSED',
+                                         'bg-slate-100 dark:bg-slate-700 text-slate-500': !queueInfo.state
+                                     }"
+                                     x-text="queueInfo.state || '-'"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Priority</div>
+                                <div class="text-lg font-black mt-0.5 text-slate-700 dark:text-slate-300"
+                                     x-text="queueInfo.priority != null ? queueInfo.priority : '-'"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Case info -->
+                    <div class="rounded-xl p-3" style="background: var(--crb-grey-extra-light-color); border: 1px solid var(--crb-grey-light-color)">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Test</div>
+                                <div class="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mt-0.5 truncate" x-text="queueInfo.test || '-'"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">TestCase</div>
+                                <div class="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mt-0.5 truncate" x-text="queueInfo.testCase || '-'"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Country</div>
+                                <div class="text-[12px] text-slate-600 dark:text-slate-400 mt-0.5" x-text="queueInfo.country || '-'"></div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Environment</div>
+                                <div class="text-[12px] text-slate-600 dark:text-slate-400 mt-0.5" x-text="queueInfo.environment || '-'"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tag & Comment -->
+                    <template x-if="queueInfo.tag || queueInfo.comment">
+                        <div class="rounded-xl p-3" style="background: var(--crb-grey-extra-light-color); border: 1px solid var(--crb-grey-light-color)">
+                            <template x-if="queueInfo.tag">
+                                <div class="mb-2">
+                                    <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Tag</div>
+                                    <div class="text-[12px] font-mono text-slate-600 dark:text-slate-400 mt-0.5 truncate" x-text="queueInfo.tag"></div>
+                                </div>
+                            </template>
+                            <template x-if="queueInfo.comment">
+                                <div>
+                                    <div class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Comment</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed" x-text="queueInfo.comment"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Queue ID + Last Refresh -->
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-[10px] font-mono text-slate-400"
+                              x-text="'Queue ID: #' + (queueInfo.id || '-')"></span>
+                        <span class="text-[10px] text-slate-400"
+                              x-text="'Last refresh: ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'})"></span>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="flex flex-col gap-2">
+                        <button @click="openModalTestCaseExecutionQueue(queueInfo.id, 'EDIT')"
+                                class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-all"
+                                style="background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); color: var(--crb-blue-color); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 20%, transparent)"
+                                @mouseenter="$el.style.background = 'color-mix(in srgb, var(--crb-blue-color) 18%, transparent)'"
+                                @mouseleave="$el.style.background = 'color-mix(in srgb, var(--crb-blue-color) 10%, transparent)'">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                            Edit Queue Entry
+                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button @click="_loadQueue(queueInfo.id)"
+                                    class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold transition-all"
+                                    style="background: var(--crb-grey-extra-light-color); color: var(--crb-grey-color); border: 1px solid var(--crb-grey-light-color)"
+                                    @mouseenter="$el.style.borderColor = 'var(--crb-grey-color)'"
+                                    @mouseleave="$el.style.borderColor = 'var(--crb-grey-light-color)'">
+                                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                                Refresh
+                            </button>
+                            <button @click="if(confirm('Cancel this queue entry?')) { $.ajax({ url: 'UpdateTestCaseExecutionQueue', method: 'POST', data: { id: queueInfo.id, actionState: 'toCANCELLED', actionSave: '' }, success: function() { _loadQueue(queueInfo.id); } }); }"
+                                    class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-semibold transition-all"
+                                    style="background: color-mix(in srgb, var(--crb-red-color) 8%, transparent); color: var(--crb-red-color); border: 1px solid color-mix(in srgb, var(--crb-red-color) 15%, transparent)"
+                                    @mouseenter="$el.style.background = 'color-mix(in srgb, var(--crb-red-color) 15%, transparent)'"
+                                    @mouseleave="$el.style.background = 'color-mix(in srgb, var(--crb-red-color) 8%, transparent)'"
+                                    x-show="queueInfo.state === 'QUEUED' || queueInfo.state === 'QUWITHDEP' || queueInfo.state === 'QUEUED_PAUSED' || queueInfo.state === 'QUWITHDEP_PAUSED' || queueInfo.state === 'WAITING'">
+                                <i data-lucide="x-circle" class="w-3 h-3"></i>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Loading state -->
+            <template x-if="!queueInfo">
+                <div class="flex items-center justify-center gap-2 text-[11px] text-slate-400">
+                    <i data-lucide="loader-2" class="w-3.5 h-3.5 v2-exe-spin-limited"></i>
+                    Loading queue information...
+                </div>
+            </template>
         </div>
     </template>
 

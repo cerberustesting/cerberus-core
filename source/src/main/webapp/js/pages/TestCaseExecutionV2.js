@@ -56,6 +56,8 @@ function executionV2() {
         _pollingTimer: null,
         _pollErrorCount: 0,
         liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
+        _spinDone: false,     // true for 5s after PE→done transition
+        _spinDoneTimer: null,
 
         // Navigation
         lastExecutions: [],
@@ -517,6 +519,12 @@ function executionV2() {
             if (tce.controlStatus !== 'PE') {
                 this._stopLive();
                 this.liveStatus = 'done';
+                // Spin-down animation for 5 seconds
+                if (prevStatus === 'PE') {
+                    this._spinDone = true;
+                    if (this._spinDoneTimer) clearTimeout(this._spinDoneTimer);
+                    this._spinDoneTimer = setTimeout(() => { this._spinDone = false; }, 5000);
+                }
                 // Final full reload to get all data
                 this._loadExecution(tce.id);
             }
