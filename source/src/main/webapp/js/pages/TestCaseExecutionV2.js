@@ -269,13 +269,12 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // WebSocket for live updates if PE
+                    // Live updates if PE — always poll + try WS for instant notifications
                     if (tce.controlStatus === 'PE') {
                         this.$nextTick(() => {
+                            this._startPolling(tce.id);
                             if (this.paramActivateWebSocket === 'Y') {
                                 this._connectWebSocket(tce.id);
-                            } else {
-                                this._startPolling(tce.id);
                             }
                         });
                     }
@@ -434,8 +433,8 @@ function executionV2() {
                 fallbackDone = true;
                 self.wsConnected = false;
                 self.liveStatus = 'polling';
-                console.info('[ExeV2] WS failed, falling back to polling');
-                self._startPolling(executionId);
+                console.info('[ExeV2] WS closed — polling continues');
+                // Polling is already running alongside, no need to restart
             }
 
             try {
@@ -444,7 +443,7 @@ function executionV2() {
                     this.wsConnected = true;
                     this.liveStatus = 'ws';
                     this._pollErrorCount = 0;
-                    console.info('[ExeV2] WebSocket connected');
+                    console.info('[ExeV2] WebSocket connected (polling continues alongside)');
                 };
                 this.ws.onmessage = (event) => {
                     try {
@@ -455,9 +454,9 @@ function executionV2() {
                 this.ws.onerror = () => { fallbackToPolling(); };
                 this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
-                console.warn('[ExeV2] WebSocket not available, using polling');
+                console.warn('[ExeV2] WebSocket not available — polling continues');
                 this.liveStatus = 'polling';
-                this._startPolling(executionId);
+                // Polling is already running, no need to start
             }
         },
 
@@ -628,7 +627,7 @@ function executionV2() {
                     timeout: 15000,  // 15s timeout to avoid hanging requests
                     success: function(data) {
                         self._pollErrorCount = 0;  // Reset on success
-                        self.liveStatus = 'polling';
+                        if (self.wsConnected) self.liveStatus = 'ws'; else self.liveStatus = 'polling';
                         if (data.testCaseExecution) {
                             self._onWebSocketMessage(data);
                         }
