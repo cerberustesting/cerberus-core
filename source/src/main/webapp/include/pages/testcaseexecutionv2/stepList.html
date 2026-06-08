@@ -159,10 +159,27 @@
             <!-- Empty state -->
             <template x-if="steps.length === 0 && mode === 'execution'">
                 <div class="flex flex-col items-center justify-center py-8 gap-3 flex-1">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--crb-grey-lighter-color)">
-                        <i data-lucide="list-tree" class="w-5 h-5" style="color: var(--crb-grey-color)"></i>
-                    </div>
-                    <span class="text-[12px] text-slate-400">No steps in this execution</span>
+                    <!-- Animated waiting state during PE -->
+                    <template x-if="exe.controlStatus === 'PE'">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 dark:bg-blue-900/20">
+                                <i data-lucide="loader-2" class="w-5 h-5 v2-exe-spin-limited" style="color: var(--crb-blue-color)"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-[12px] font-semibold" style="color: var(--crb-blue-color)">Execution in progress...</div>
+                                <div class="text-[10px] text-slate-400 mt-1">Waiting for steps to appear</div>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Static empty state when not PE -->
+                    <template x-if="exe.controlStatus !== 'PE'">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: var(--crb-grey-lighter-color)">
+                                <i data-lucide="list-tree" class="w-5 h-5" style="color: var(--crb-grey-color)"></i>
+                            </div>
+                            <span class="text-[12px] text-slate-400">No steps in this execution</span>
+                        </div>
+                    </template>
                 </div>
             </template>
         </div>

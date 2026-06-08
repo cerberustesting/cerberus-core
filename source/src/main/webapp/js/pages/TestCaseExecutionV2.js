@@ -488,10 +488,16 @@ function executionV2() {
             this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
             this.properties.forEach(function(p) { if (expandedProps[p.property]) p._expanded = true; });
 
-            // Auto-focus on current step during PE
-            if (tce.controlStatus === 'PE') {
+            // Auto-focus: select the best step when execution is PE
+            if (tce.controlStatus === 'PE' && this.steps.length > 0) {
                 var peIdx = this.steps.findIndex(function(s) { return s.returnCode === 'PE'; });
-                if (peIdx >= 0 && peIdx !== this.activeStepIndex) this.activeStepIndex = peIdx;
+                if (peIdx >= 0 && peIdx !== this.activeStepIndex) {
+                    // A step is actively running — follow it
+                    this.activeStepIndex = peIdx;
+                } else if (this.activeStepIndex < 0 || this.activeStepIndex >= this.steps.length) {
+                    // No step selected (first load or steps just appeared) — select PE or last
+                    this.activeStepIndex = peIdx >= 0 ? peIdx : this.steps.length - 1;
+                }
             }
 
             // Favicon on status change
