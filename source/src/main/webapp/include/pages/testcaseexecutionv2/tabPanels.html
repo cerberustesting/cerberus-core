@@ -65,6 +65,18 @@
                                 <span class="v2-exe-info-label">Index</span>
                                 <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
                             </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Rank</span>
+                                <span class="v2-exe-info-value" x-text="prop.rank !== undefined ? prop.rank : '-'"></span>
+                            </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Retry</span>
+                                <span class="v2-exe-info-value" x-text="prop.retryNb || '0'"></span>
+                            </div>
+                            <div class="v2-exe-info-item">
+                                <span class="v2-exe-info-label">Elapsed</span>
+                                <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
+                            </div>
                             <div class="v2-exe-info-item col-span-3">
                                 <span class="v2-exe-info-label">Description</span>
                                 <span class="v2-exe-info-value text-[10px]" x-text="prop.description || '-'"></span>
@@ -101,18 +113,6 @@
                                     <span class="v2-exe-info-value font-mono text-[10px] opacity-50" x-text="prop.value3Init"></span>
                                 </div>
                             </template>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Retry</span>
-                                <span class="v2-exe-info-value" x-text="prop.retryNb || '0'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Retry Period</span>
-                                <span class="v2-exe-info-value" x-text="prop.retryPeriod || '0'"></span>
-                            </div>
-                            <div class="v2-exe-info-item">
-                                <span class="v2-exe-info-label">Elapsed</span>
-                                <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
-                            </div>
                             <template x-if="prop.returnMessage">
                                 <div class="v2-exe-info-item col-span-3">
                                     <span class="v2-exe-info-label">Return Message</span>
@@ -120,6 +120,39 @@
                                 </div>
                             </template>
                         </div>
+                        <!-- Property Files (screenshots, JSON, XML, HTML, etc.) -->
+                        <template x-if="prop.fileList && prop.fileList.length > 0">
+                            <div class="mt-2 pt-2 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="paperclip" class="w-3 h-3" style="color: var(--crb-grey-color)"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider" style="color: var(--crb-grey-color)">Files</span>
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)" x-text="prop.fileList.length"></span>
+                                </div>
+                                <!-- Screenshots -->
+                                <template x-if="_getScreenshots(prop.fileList).length > 0">
+                                    <div class="v2-exe-media-grid" style="padding:4px 0">
+                                        <template x-for="file in _getScreenshots(prop.fileList)" :key="file.fileName">
+                                            <img :src="getMediaUrl(file, 140, 90)"
+                                                 class="v2-exe-media-thumb"
+                                                 style="width:80px;height:52px"
+                                                 @click.stop="openLightbox(getMediaFullUrl(file))"
+                                                 loading="lazy">
+                                        </template>
+                                    </div>
+                                </template>
+                                <!-- Data files (JSON, XML, HTML, TXT, etc.) -->
+                                <template x-if="_getDataFiles(prop.fileList).length > 0">
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <template x-for="file in _getDataFiles(prop.fileList)" :key="file.fileName">
+                                            <button @click.stop="openFileModal(file)" class="v2-exe-media-file-chip">
+                                                <i data-lucide="file-text" class="w-3 h-3"></i>
+                                                <span x-text="file.fileDesc || file.fileType || 'File'"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </template>
@@ -130,11 +163,75 @@
             <div class="text-[10px] text-slate-400 font-semibold mb-2 uppercase tracking-wider">Secondary Properties</div>
             <div class="space-y-1.5">
                 <template x-for="prop in secondaryProperties" :key="prop._uid">
-                    <div class="v2-exe-prop-card rounded-lg px-3 py-2 flex items-center gap-2">
-                        <span class="text-[11px] font-bold text-slate-500 shrink-0" style="min-width: 120px"
-                              x-text="prop.property || '-'"></span>
-                        <span class="text-[11px] text-slate-400 shrink-0">:</span>
-                        <span class="v2-exe-prop-value flex-1 truncate" x-text="prop.value || '-'"></span>
+                    <div class="v2-exe-prop-card rounded-lg cursor-pointer" @click="prop._expanded = !prop._expanded">
+                        <div class="flex items-center gap-2 px-3 py-2">
+                            <span class="text-[11px] font-bold text-slate-500 shrink-0" style="min-width: 120px"
+                                  x-text="prop.property || '-'"></span>
+                            <span class="text-[11px] text-slate-400 shrink-0">:</span>
+                            <span class="v2-exe-prop-value flex-1 truncate" x-text="prop.value || '-'"></span>
+                            <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
+                                  :class="(prop.returnCode === 'OK' || !prop.returnCode) ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : prop.returnCode === 'PE' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'"
+                                  x-text="prop.returnCode || 'OK'"></span>
+                            <!-- File count indicator -->
+                            <template x-if="prop.fileList && prop.fileList.length > 0">
+                                <span class="inline-flex items-center gap-1 text-[9px] text-slate-400 shrink-0">
+                                    <i data-lucide="paperclip" class="w-2.5 h-2.5"></i>
+                                    <span x-text="prop.fileList.length"></span>
+                                </span>
+                            </template>
+                            <svg class="w-3 h-3 text-slate-400 shrink-0 transition-transform"
+                                 :style="prop._expanded ? 'transform:rotate(180deg)' : ''"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                        <!-- Expanded detail -->
+                        <div x-show="prop._expanded" x-collapse class="px-3 pb-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                            <div class="grid grid-cols-3 gap-1.5 mt-2">
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Type</span>
+                                    <span class="v2-exe-info-value" x-text="prop.type || '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Index</span>
+                                    <span class="v2-exe-info-value" x-text="prop.index !== undefined ? prop.index : '-'"></span>
+                                </div>
+                                <div class="v2-exe-info-item">
+                                    <span class="v2-exe-info-label">Elapsed</span>
+                                    <span class="v2-exe-info-value" x-text="(prop.endLong && prop.startLong && prop.endLong !== 0) ? ((prop.endLong - prop.startLong) + ' ms') : '-'"></span>
+                                </div>
+                                <template x-if="prop.returnMessage">
+                                    <div class="v2-exe-info-item col-span-3">
+                                        <span class="v2-exe-info-label">Return Message</span>
+                                        <span class="v2-exe-info-value text-[10px]" x-text="prop.returnMessage"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            <!-- Files -->
+                            <template x-if="prop.fileList && prop.fileList.length > 0">
+                                <div class="mt-2 pt-2 space-y-2" style="border-top: 1px solid var(--crb-grey-light-color)">
+                                    <template x-if="_getScreenshots(prop.fileList).length > 0">
+                                        <div class="v2-exe-media-grid" style="padding:4px 0">
+                                            <template x-for="file in _getScreenshots(prop.fileList)" :key="file.fileName">
+                                                <img :src="getMediaUrl(file, 140, 90)"
+                                                     class="v2-exe-media-thumb"
+                                                     style="width:80px;height:52px"
+                                                     @click.stop="openLightbox(getMediaFullUrl(file))"
+                                                     loading="lazy">
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="_getDataFiles(prop.fileList).length > 0">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="file in _getDataFiles(prop.fileList)" :key="file.fileName">
+                                                <button @click.stop="openFileModal(file)" class="v2-exe-media-file-chip">
+                                                    <i data-lucide="file-text" class="w-3 h-3"></i>
+                                                    <span x-text="file.fileDesc || file.fileType || 'File'"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </template>
             </div>

@@ -385,6 +385,10 @@ function executionV2() {
         _normalizeProperty(p) {
             p._uid = v2exeuid();
             p._expanded = false;
+            // Remap API field names (Java sends RC/rMessage, V2 uses returnCode/returnMessage)
+            if (p.RC !== undefined && p.returnCode === undefined) p.returnCode = p.RC;
+            if (p.rMessage !== undefined && p.returnMessage === undefined) p.returnMessage = p.rMessage;
+            if (!p.fileList) p.fileList = [];
             return p;
         },
 

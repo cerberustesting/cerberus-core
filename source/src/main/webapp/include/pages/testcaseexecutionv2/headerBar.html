@@ -1,7 +1,7 @@
 <!-- TestCaseExecution V2 - Header Bar -->
 
 <div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader"
-     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: hidden">
 
     <!-- Progress Bar - integrated flush with header border-radius -->
     <div style="height: 6px; overflow: hidden; border-radius: 16px 16px 0 0; background-color: #e2e8f0">
@@ -243,13 +243,13 @@
 
             <!-- Last Executions dropdown -->
             <div x-data="{ exeListOpen: false }" class="relative shrink-0" @click.outside="exeListOpen = false">
-                <button @click="exeListOpen = !exeListOpen"
+                <button @click="exeListOpen = !exeListOpen; $nextTick(() => { if(exeListOpen) { let r=$el.getBoundingClientRect(); let dd=$el.nextElementSibling; dd.style.top=(r.bottom+4)+'px'; dd.style.right=(window.innerWidth-r.right)+'px'; } })"
                         class="v2-header-rerun-btn"
                         data-tip="Last executions" data-tip-pos="bottom">
                     <i data-lucide="history" class="w-3.5 h-3.5"></i>
                 </button>
                 <div x-show="exeListOpen" x-cloak x-transition.opacity.duration.150ms
-                     class="absolute right-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
+                     class="fixed z-[9999] rounded-xl border shadow-xl"
                      style="min-width: 380px; max-height: 400px; overflow-y: auto; background: var(--crb-new-bg); border-color: var(--crb-grey-light-color)">
                     <!-- Header -->
                     <div class="flex items-center gap-2" style="padding: 10px 12px; border-bottom: 1px solid var(--crb-grey-light-color)">
@@ -320,15 +320,15 @@
             </div>
 
             <!-- More actions -->
-            <div x-data="{ moreOpen: false }" class="relative shrink-0">
-                <button @click="moreOpen = !moreOpen" @click.outside="moreOpen = false"
+            <div x-data="{ moreOpen: false }" class="relative shrink-0" @click.outside="moreOpen = false">
+                <button @click="moreOpen = !moreOpen; $nextTick(() => { if(moreOpen) { let r=$el.getBoundingClientRect(); let dd=$el.nextElementSibling; dd.style.top=(r.bottom+4)+'px'; dd.style.right=(window.innerWidth-r.right)+'px'; } })"
                         class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 dark:border-slate-700
                                text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
                     <i data-lucide="more-horizontal" class="w-4 h-4"></i>
                 </button>
                 <div x-show="moreOpen" x-cloak x-transition
-                     class="absolute right-0 top-full mt-1 w-56 rounded-xl border border-slate-200 dark:border-slate-700
-                            bg-white dark:bg-slate-800 shadow-lg p-1 z-50">
+                     class="fixed z-[9999] w-56 rounded-xl border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800 shadow-lg p-1">
                     <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
                                    hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                             @click="window.open('TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase), '_blank'); moreOpen = false">
