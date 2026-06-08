@@ -1,7 +1,7 @@
 <!-- TestCaseExecution V2 - Header Bar -->
 
 <div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader"
-     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: hidden">
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
 
     <!-- Progress Bar - integrated flush with header border-radius -->
     <div style="height: 6px; overflow: hidden; border-radius: 16px 16px 0 0; background-color: #e2e8f0">
@@ -250,33 +250,71 @@
                 </button>
                 <div x-show="exeListOpen" x-cloak x-transition.opacity.duration.150ms
                      class="absolute right-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
-                     style="min-width: 320px; max-height: 320px; overflow-y: auto; background: var(--crb-new-bg); border-color: var(--crb-grey-light-color)">
-                    <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color); font-size: 11px; font-weight: 600; color: var(--crb-grey-color)">
-                        Last Executions
+                     style="min-width: 380px; max-height: 400px; overflow-y: auto; background: var(--crb-new-bg); border-color: var(--crb-grey-light-color)">
+                    <!-- Header -->
+                    <div class="flex items-center gap-2" style="padding: 10px 12px; border-bottom: 1px solid var(--crb-grey-light-color)">
+                        <i data-lucide="history" class="w-3.5 h-3.5" style="color: var(--crb-grey-color)"></i>
+                        <span style="font-size: 11px; font-weight: 700; color: var(--crb-grey-color); text-transform: uppercase; letter-spacing: 0.05em">Last Executions</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color); margin-left: auto" x-text="lastExecutions.length"></span>
                     </div>
+                    <!-- List -->
                     <div style="padding: 4px">
                         <template x-for="e in lastExecutions" :key="e.id">
                             <button @click="switchToExecution(e.id); exeListOpen = false"
-                                    class="flex items-center gap-2 w-full text-left transition-colors"
-                                    :style="e.id == exe.id ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); font-weight:600' : ''"
-                                    style="padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; border: none"
-                                    @mouseenter="$el.style.background = e.id == exe.id ? 'color-mix(in srgb, var(--crb-blue-color) 15%, transparent)' : 'var(--crb-grey-extra-light-color)'"
-                                    @mouseleave="$el.style.background = e.id == exe.id ? 'color-mix(in srgb, var(--crb-blue-color) 10%, transparent)' : 'transparent'">
-                                <span class="w-2 h-2 rounded-full shrink-0"
+                                    class="flex items-center gap-2.5 w-full text-left transition-all duration-150"
+                                    :style="e.id == exe.id ? 'background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); border-left: 3px solid var(--crb-blue-color)' : 'border-left: 3px solid transparent'"
+                                    style="padding: 7px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; border-top: none; border-right: none; border-bottom: none"
+                                    @mouseenter="if(e.id != exe.id) $el.style.background = 'var(--crb-grey-extra-light-color)'"
+                                    @mouseleave="$el.style.background = e.id == exe.id ? 'color-mix(in srgb, var(--crb-blue-color) 8%, transparent)' : 'transparent'">
+                                <!-- Status dot + badge -->
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded shrink-0"
                                       :class="{
-                                          'bg-green-500': e.controlStatus === 'OK',
-                                          'bg-red-500': e.controlStatus === 'KO',
-                                          'bg-amber-500': e.controlStatus === 'FA',
-                                          'bg-blue-500': e.controlStatus === 'PE',
-                                          'bg-slate-400': !e.controlStatus || ['NE','NA','WE','CA','QU'].includes(e.controlStatus)
-                                      }"></span>
-                                <span class="font-mono text-[11px]" x-text="'#' + e.id"></span>
-                                <span class="text-[10px] opacity-60" x-text="e.country + ' / ' + e.env"></span>
-                                <span class="text-[10px] opacity-40 ml-auto" x-text="e.tag || ''"></span>
+                                          'bg-green-100 text-green-600': e.controlStatus === 'OK',
+                                          'bg-red-100 text-red-600': e.controlStatus === 'KO',
+                                          'bg-amber-100 text-amber-600': e.controlStatus === 'FA',
+                                          'bg-blue-100 text-blue-600': e.controlStatus === 'PE',
+                                          'bg-slate-100 text-slate-400': !e.controlStatus || ['NE','NA','WE','CA','QU'].includes(e.controlStatus)
+                                      }">
+                                    <i :data-lucide="_getStatusIcon(e.controlStatus)" class="w-2.5 h-2.5"
+                                       :class="e.controlStatus === 'PE' ? 'v2-exe-spin-limited' : ''"></i>
+                                </span>
+                                <!-- ID -->
+                                <span class="font-mono text-[11px] font-bold shrink-0" style="min-width: 55px"
+                                      :style="e.id == exe.id ? 'color: var(--crb-blue-color)' : 'color: var(--crb-text-color)'"
+                                      x-text="'#' + e.id"></span>
+                                <!-- Status label -->
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                                      :class="{
+                                          'bg-green-50 text-green-600': e.controlStatus === 'OK',
+                                          'bg-red-50 text-red-600': e.controlStatus === 'KO',
+                                          'bg-amber-50 text-amber-600': e.controlStatus === 'FA',
+                                          'bg-blue-50 text-blue-600': e.controlStatus === 'PE',
+                                          'bg-slate-50 text-slate-400': !e.controlStatus || ['NE','NA','WE','CA','QU'].includes(e.controlStatus)
+                                      }"
+                                      x-text="e.controlStatus || 'NE'"></span>
+                                <!-- Country / Env -->
+                                <span class="text-[10px] truncate flex-1 min-w-0" style="color: var(--crb-grey-color)" x-text="(e.country || '') + ' / ' + (e.env || '')"></span>
+                                <!-- Date -->
+                                <span class="text-[9px] font-mono tabular-nums shrink-0" style="color: var(--crb-grey-color); opacity: 0.7"
+                                      x-text="e.end ? new Date(e.end).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '...'"></span>
                             </button>
                         </template>
                         <div x-show="lastExecutions.length === 0"
-                             style="padding: 12px; text-align:center; font-size: 12px; color: var(--crb-grey-color)">No executions found</div>
+                             class="flex flex-col items-center gap-2 py-6">
+                            <i data-lucide="inbox" class="w-5 h-5" style="color: var(--crb-grey-color); opacity: 0.4"></i>
+                            <span style="font-size: 12px; color: var(--crb-grey-color)">No executions found</span>
+                        </div>
+                    </div>
+                    <!-- Footer: See All -->
+                    <div style="padding: 6px 8px; border-top: 1px solid var(--crb-grey-light-color)">
+                        <a :href="'TestCaseExecutionList.jsp?test=' + encodeURIComponent(exe.test || '') + '&TestCase=' + encodeURIComponent(exe.testcase || exe.testCase || '')"
+                           class="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                           style="color: var(--crb-blue-color); background: color-mix(in srgb, var(--crb-blue-color) 5%, transparent)"
+                           @mouseenter="$el.style.background = 'color-mix(in srgb, var(--crb-blue-color) 12%, transparent)'"
+                           @mouseleave="$el.style.background = 'color-mix(in srgb, var(--crb-blue-color) 5%, transparent)'">
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                            See All Executions
+                        </a>
                     </div>
                 </div>
             </div>
