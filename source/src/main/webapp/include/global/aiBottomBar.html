@@ -1495,19 +1495,44 @@
             },
 
             getCerberusBasePath() {
-                if (window.appContext) {
-                    return window.appContext.endsWith("/")
-                        ? window.appContext
-                        : window.appContext + "/";
+                /*
+                 * 1. Priorité à window.appContext si défini proprement.
+                 * Exemples valides :
+                 *   "/cerberus_core_war_exploded"
+                 *   "/cerberus_core_war"
+                 *   ""
+                 *   "/"
+                 */
+                if (typeof window.appContext === "string") {
+                    const appContext = window.appContext.trim();
+
+                    if (appContext === "" || appContext === "/") {
+                        return "/";
+                    }
+
+                    return appContext.endsWith("/")
+                        ? appContext
+                        : appContext + "/";
                 }
 
+                /*
+                 * 2. Fallback local/dev :
+                 * Si la première partie du path ressemble à un contexte applicatif,
+                 * on l'utilise.
+                 */
                 const parts = window.location.pathname.split("/").filter(Boolean);
 
                 if (parts.length === 0) {
                     return "/";
                 }
 
-                return "/" + parts[0] + "/";
+                const first = parts[0];
+
+                if (first.endsWith(".jsp")) {
+                    return "/";
+                }
+
+                return "/" + first + "/";
             },
 
             getHttpBaseUrl() {
