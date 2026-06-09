@@ -686,7 +686,7 @@ public class UserPromptDAO implements IUserPromptDAO {
                 + "  COALESCE(SUM(upm.cost), 0) AS totalCost "
                 + "FROM userprompt up "
                 + "LEFT JOIN userpromptmessage upm ON up.sessionID = upm.sessionID "
-                + "WHERE up.DateCreated > ? AND up.DateCreated <= ?"
+                + "WHERE up.DateCreated >= ? AND up.DateCreated < ?"
         );
 
         boolean hasUserFilter = (user != null && !user.trim().isEmpty());

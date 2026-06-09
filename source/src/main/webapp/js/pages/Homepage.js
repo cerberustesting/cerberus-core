@@ -1629,7 +1629,7 @@ function mapAIUsage(api) {
             diffPositive: true // hausse = bon
         },
         totalTokens: {
-            value: formatTokens((current.totalInputTokens || 0) + (current.totalOutputTokens || 0)),
+            value: (current.totalInputTokens || 0) + (current.totalOutputTokens || 0),
             tab: "Tokens",
             label: "Tokens Consumed",
             currentValue: (current.totalInputTokens || 0) + (current.totalOutputTokens || 0),

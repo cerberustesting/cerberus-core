@@ -115,7 +115,7 @@ public class UsagePrivateController {
 
         // Last 30 days
         LocalDate thisStartDate = today.minusDays(30);
-        LocalDate thisEndDate   = today;
+        LocalDate thisEndDate   = today.plusDays(1);
 
         // Previous 30 days
         LocalDate prevStartDate = today.minusDays(60);
