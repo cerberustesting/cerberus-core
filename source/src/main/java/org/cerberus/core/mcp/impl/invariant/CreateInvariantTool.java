@@ -188,8 +188,7 @@ public class CreateInvariantTool implements MCPTool {
         invariant.setIdName(type);
         invariant.setValue(value);
         invariant.setDescription(description);
-        // Default sort to 0; ordering can be adjusted later through the Cerberus UI.
-        invariant.setSort(0);
+        invariant.setSort(10);
 
         Answer answer = invariantService.create(invariant);
 

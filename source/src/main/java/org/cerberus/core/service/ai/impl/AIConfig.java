@@ -34,6 +34,8 @@ public class AIConfig {
 
     private static final Logger LOG = LogManager.getLogger(AIConfig.class);
 
+    public String baseUrl() { return params.getParameterStringByKey("cerberus_anthropic_baseurl", "", "https://api.anthropic.com");}
+
     public String apiKey() {
         return params.getParameterStringByKey("cerberus_anthropic_apikey", "", "apikey");
     }

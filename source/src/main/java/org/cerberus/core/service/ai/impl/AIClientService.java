@@ -52,6 +52,7 @@ public class AIClientService {
      */
     private AnthropicClient buildClient() {
         return AnthropicOkHttpClient.builder()
+                .baseUrl(aiConfig.baseUrl())
                 .apiKey(aiConfig.apiKey())
                 .build();
     }

@@ -116,6 +116,9 @@ public class AIService implements IAIService {
          */
         McpSyncClient mcpClient = null;
         List<Tool> tools = new ArrayList<>();
+        long totalInputTokens = 0;
+        long totalOutputTokens = 0;
+
         try {
             if (aiConfig.useMcp() && aiConfig.mcpHost() != null && !aiConfig.mcpHost().isBlank()) {
                 mcpClient = aiMcpClientService.openClient();
@@ -146,6 +149,17 @@ public class AIService implements IAIService {
                 });
 
                 Message response = messageAccumulator.message();
+
+                if (response.usage().isValid()) {
+                    Usage usage = response.usage();
+
+                    totalInputTokens += usage.inputTokens();
+                    totalOutputTokens += usage.outputTokens();
+
+                    totalInputTokens += usage.cacheCreationInputTokens().orElse(0L);
+                    totalInputTokens += usage.cacheReadInputTokens().orElse(0L);
+
+                }
 
                 // Replay Claude's turn (text + tool_use blocks) in the conversation history.
                 messageParamList.add(MessageParam.builder()
@@ -207,7 +221,7 @@ public class AIService implements IAIService {
              */
             LOG.debug("New message from :"+user+" in session :"+aiSessionID+" - message : "+newMessage);
             LOG.debug("New message from :"+user+" in session :"+aiSessionID+" - answer : "+fullResponse.toString());
-            aiSessionManager.saveMessage(user, aiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI");
+            aiSessionManager.saveMessage(user, aiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI", totalInputTokens, totalOutputTokens);
 
         } catch (Exception e) {
             LOG.error("Error during chatWithAI:", e);
@@ -305,7 +319,7 @@ public class AIService implements IAIService {
             });
 
             // Log AI usage
-            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCaseProposal");
+            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCaseProposal", 0, 0);
 
             //update Title
             aiSessionManager.updateTitle(user, session, featureDescription);
@@ -388,7 +402,7 @@ public class AIService implements IAIService {
             });
 
             // Log AI usage
-            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase");
+            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase", 0, 0);
 
             // Notify completion
             websocketSession.sendMessage(new TextMessage("{\"type\":\"test_created_ack\",\"tempId\":\""+tempId+"\",\"test\":\""+finalTestCase.getTest()+"\",\"testcase\":\""+finalTestCase.getTestcase()+"\"}"));
@@ -428,7 +442,7 @@ public class AIService implements IAIService {
         LOG.debug("Response AI = " + result);
 
         //Log AI Usage
-        aiSessionManager.saveMessage(user, sessionId, prompt, result, response, "generateTestCase");
+        aiSessionManager.saveMessage(user, sessionId, prompt, result, response, "generateTestCase", 0, 0);
 
         return result;
     }
@@ -483,7 +497,7 @@ public class AIService implements IAIService {
             });
 
             // Log AI usage
-            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase");
+            aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase", 0, 0);
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
@@ -537,7 +551,7 @@ public class AIService implements IAIService {
             /**
              * store message and answer
              */
-            aiSessionManager.saveMessage(user, aiSessionID, prompt, fullResponse.toString(), messageAccumulator.message(), "self_healing_explain");
+            aiSessionManager.saveMessage(user, aiSessionID, prompt, fullResponse.toString(), messageAccumulator.message(), "self_healing_explain", 0, 0);
 
         } catch (Exception e) {
             LOG.error("Error during chatWithAI:", e);
@@ -703,7 +717,7 @@ public class AIService implements IAIService {
             /**
              * store message and answer
              */
-            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals", 0, 0);
 
             //update Title
             aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);
@@ -848,7 +862,7 @@ public class AIService implements IAIService {
             /**
              * store message and answer
              */
-            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals");
+            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals", 0, 0);
 
             //update Title
             aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);

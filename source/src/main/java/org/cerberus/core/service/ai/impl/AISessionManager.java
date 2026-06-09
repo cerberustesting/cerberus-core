@@ -75,10 +75,10 @@ public class AISessionManager {
      * @param message
      * @return
      */
-    public void saveMessage(String login, String aiSessionID, String prompt, String response, Message message, String type) {
+    public void saveMessage(String login, String aiSessionID, String prompt, String response, Message message, String type, long in, long out) {
 
-        long in = message.usage().inputTokens();
-        long out = message.usage().outputTokens();
+        in = in == 0 ? message.usage().inputTokens() : in;
+        out = out == 0 ? message.usage().outputTokens() : out;
         double costIn = (in / 1_000_000.0) * aiConfig.priceInput();
         double costOut = (out / 1_000_000.0) * aiConfig.priceOutput();
 

@@ -6852,3 +6852,6 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
     ('', 'cerberus_ai_mcp_host', 'https://host/mcp', 'Host of the cerberus MCP server to use.'),
     ('', 'cerberus_ai_mcp_apikey', 'apikey', 'API Key of the cerberus MCP server.');
 
+-- 1945
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES  ('', 'cerberus_anthropic_baseurl', 'https://api.anthropic.com', 'Host of the Anthropic endpoint. Claude endpoint is set by default with https://api.anthropic.com but it can be replaced with another public endpoint');
