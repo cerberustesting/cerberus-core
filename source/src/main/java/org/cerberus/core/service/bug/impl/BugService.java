@@ -139,6 +139,12 @@ public class BugService implements IBugService {
                                     newBugCreated = glpiService.createGlpiIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
+                                case Application.BUGTRACKER_NONE:
+                                    LOG.debug("No bug creation due to NONE Connector.");
+                                    newBugCreated.put("message", "Not creating because no connector configured.");
+                                    newBugCreated.put("statusCode", 200);
+
+                                    break;
                                 default:
                                     LOG.warn("Unknown Bug Connector '{}' configured on application '{}'", currentAppli.getBugTrackerConnector(), execution.getApplication());
                                     newBugCreated.put("message", "Issue not created because connector '" + currentAppli.getBugTrackerConnector() + "' configured on application '" + execution.getApplication() + "' is not valid or not supported.");

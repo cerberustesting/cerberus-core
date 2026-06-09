@@ -1251,6 +1251,40 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordSystemStats(TestCaseExecution execution, JSONObject systemStats) {
+        TestCaseExecutionFile object = null;
+
+        LOG.debug("Starting to save System Stats file.");
+
+        if ((StringUtil.isEmptyOrNull(systemStats.toString()))) {
+            LOG.debug("No system stats to record.");
+            return null;
+        }
+
+        if ((execution.getRobotLog() == 2 || (execution.getRobotLog() == 1))) {
+
+            try {
+
+                // RESULT.
+                Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "system_stats", "json", false);
+                recordFile(recorder.getFullPath(), recorder.getFileName(), systemStats.toString(1), execution.getSecrets());
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(
+                        0, execution.getId(),
+                        recorder.getLevel(), "System Stats File", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+                testCaseExecutionFileService.save(object);
+
+            } catch (Exception ex) {
+                LOG.error(ex.toString(), ex);
+            }
+
+        }
+
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution execution) {
         TestCaseExecutionFile object = null;
 

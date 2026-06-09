@@ -20,6 +20,7 @@
 package org.cerberus.core.apiprivate;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,13 +31,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.api.dto.application.ApplicationMonthlyStatsDTOV001;
-import org.cerberus.core.api.dto.application.ApplicationStatsDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.api.dto.testcase.TestcaseMonthlyStatsDTOV001;
 import org.cerberus.core.api.dto.testcase.TestcaseStatsDTOV001;
-import org.cerberus.core.crud.entity.stats.ApplicationStats;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.stats.TestCaseStats;
 import org.cerberus.core.crud.entity.TestGenericObject;
+import org.cerberus.core.crud.service.ITestCaseHistoService;
+import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.impl.TestCaseService;
 import org.cerberus.core.crud.service.impl.TestGenericObjectService;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -55,6 +58,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,11 +75,15 @@ public class TestCasePrivateController {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    TestCaseService testCaseService;
+    ITestCaseService testCaseService;
+    @Autowired
+    ITestCaseHistoService testCaseHistoService;
     @Autowired
     TestGenericObjectService testGenericObjectService;
+    @Autowired
+    TestcaseMapperV001 testcaseMapper;
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @GetMapping("/count")
     public String getnbByCriteria(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -96,7 +104,37 @@ public class TestCasePrivateController {
         }
     }
 
-    @Operation(hidden=true)
+    @Operation(hidden = true)
+    @GetMapping("/{testFolderId}/{testcaseId}/v{version}")
+    public String getTestCaseVersion(
+            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
+            @PathVariable(name = "testFolderId", required = true) String testFolderId,
+            @PathVariable(name = "testcaseId", required = true) String testcaseId,
+            @PathVariable(name = "version", required = true) Integer version,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+            LOG.debug(systems);
+            LOG.debug("Getting version : {}", version);
+            ObjectMapper mapper = new ObjectMapper();
+            LOG.debug("TOTO1");
+            TestcaseDTOV001 myTc = mapper.readValue(this.testCaseHistoService.readByKey(testFolderId, testcaseId, version).getTestCaseContent().toString(), TestcaseDTOV001.class);
+            LOG.debug("TOTO2");
+            LOG.debug(mapper.writeValueAsString(myTc));
+            return testcaseMapper.toEntity(myTc).toJson().toString();
+
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return ex.getMessage();
+        }
+    }
+
+    @Operation(hidden = true)
     @PostMapping("/objects")
     public String readObjects(
             @RequestParam(name = "system", value = "system", required = false) List<String> systems,
@@ -154,9 +192,10 @@ public class TestCasePrivateController {
 
     /**
      * Endpoint pour récupérer les statistiques d'usage AI sur une période
-     *@return DTO avec totalInputTokens, totalOutputTokens, totalCost
+     *
+     * @return DTO avec totalInputTokens, totalOutputTokens, totalCost
      */
-    @Operation(hidden=true)
+    @Operation(hidden = true)
     @GetMapping("/monthlyStats")
     public TestcaseMonthlyStatsDTOV001 getMonthlyStats(
             @RequestParam(name = "user", required = false) String user,
@@ -166,7 +205,7 @@ public class TestCasePrivateController {
 
         // Last 30 days
         LocalDate thisStartDate = today.minusDays(30);
-        LocalDate thisEndDate   = today;
+        LocalDate thisEndDate = today;
 
         // --- Get Global Stats : All dates, All systems --- and build DTO
         TestCaseStats statsGlobal = testCaseService

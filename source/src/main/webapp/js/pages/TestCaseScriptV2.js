@@ -1427,7 +1427,7 @@ function scriptV2() {
                 },
                 success: function(data) {
                     if (getAlertType(data.messageType) === 'success') {
-                        var url = './TestCaseExecution.jsp?executionQueueId=' + encodeURI(data.testCaseExecutionQueueList[0].id);
+                        var url = './TestCaseExecutionV2.jsp?executionQueueId=' + encodeURI(data.testCaseExecutionQueueList[0].id);
                         window.location.replace(url);
                     } else {
                         showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
@@ -1545,6 +1545,7 @@ function scriptV2() {
         // --- State ---
         _acResults: [],
         _acVisible: false,
+        _acBlurTimer: null,
         _acActiveField: null,
         _acSelectedIdx: -1,
         _acActiveAIdx: -1,
@@ -1841,6 +1842,8 @@ function scriptV2() {
         // ── acOnFocus — called when any value input gets focus ──
         // ══════════════════════════════════════════════
         acOnFocus(typeKey, fieldKey, isControl, currentVal, aIdx, cIdx) {
+            // Cancel any pending blur-hide so the dropdown stays open
+            if (this._acBlurTimer) { clearTimeout(this._acBlurTimer); this._acBlurTimer = null; }
             var autoType = this._getFieldAutoType(typeKey, fieldKey, isControl);
             this._acActiveField = { typeKey: typeKey, fieldKey: fieldKey, isControl: isControl, autoType: autoType };
             this._acActiveAIdx = (aIdx !== undefined) ? aIdx : -1;
@@ -2209,7 +2212,8 @@ function scriptV2() {
         // ══════════════════════════════════════════════
         acOnBlur() {
             var self = this;
-            setTimeout(function() { self._acVisible = false; self._acMode = 'field'; }, 200);
+            if (self._acBlurTimer) clearTimeout(self._acBlurTimer);
+            self._acBlurTimer = setTimeout(function() { self._acVisible = false; self._acMode = 'field'; self._acBlurTimer = null; }, 200);
         },
 
         acOnKeydown(e) {

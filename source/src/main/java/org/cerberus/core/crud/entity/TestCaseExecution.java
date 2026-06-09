@@ -70,6 +70,8 @@ public class TestCaseExecution {
     private String browser;
     private String version;
     private String platform;
+    private int cpuTimeMs;
+    private int memoryResidentMb;
     private long start;
     private long end;
     private long durationMs;
@@ -279,7 +281,7 @@ public class TestCaseExecution {
 //        LOG.debug("  {} - {}", eventMessage.getMessage().getCodeString(), eventMessage.getMessage().getDescription());
         if (!"PE".equals(eventMessage.getMessage().getCodeString())) {
             resultMessageList.add(new MessageGeneral(eventMessage.getMessage().getCodeString(), eventMessage.getDescription()));
-        } else if ((!eventMessage.isStopTest()) && (!"OK".equals(eventMessage.getCodeString()))){
+        } else if ((!eventMessage.isStopTest()) && (!"OK".equals(eventMessage.getCodeString()))) {
             // Trapping the case when event failed but it was ignored. We store the Result message anyway.
             resultMessageList.add(new MessageGeneral("OK", eventMessage.getDescription()));
         }
@@ -480,6 +482,9 @@ public class TestCaseExecution {
             result.put("isFlaky", this.isFlaky());
             result.put("durationMs", this.getDurationMs());
 
+            result.put("cpuTimeMs", this.getCpuTimeMs());
+            result.put("memoryResidentMb", this.getMemoryResidentMb());
+
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateCreated", this.getDateCreated());
             result.put("usrModif", this.getUsrModif());
@@ -653,6 +658,9 @@ public class TestCaseExecution {
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
             result.put("system", this.getSystem());
+
+            result.put("cpuTimeMs", this.getCpuTimeMs());
+            result.put("memoryResidentMb", this.getMemoryResidentMb());
 
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateCreated", this.getDateCreated());

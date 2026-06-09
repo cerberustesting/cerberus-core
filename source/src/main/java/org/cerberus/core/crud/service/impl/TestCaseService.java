@@ -525,7 +525,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public Answer update(String keyTest, String keyTestcase, TestCase testcase) {
-        // We first create the corresponding test if it doesn,'t exist.
+        // We first create the corresponding test folder if it doesn,'t exist.
         if (testcase.getTest() != null && !testService.exist(testcase.getTest())) {
             testService.create(factoryTest.create(testcase.getTest(), "", true, null, testcase.getUsrModif(), null, "", null));
         }

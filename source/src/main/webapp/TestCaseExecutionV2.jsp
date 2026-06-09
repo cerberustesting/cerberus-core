@@ -38,6 +38,7 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
 
         <!-- V2 Scripts -->
+        <script type="text/javascript" src="js/testcase/testcaseStatic.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionV2.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
 
@@ -58,7 +59,6 @@
 
             <!-- Templates -->
             <%@ include file="include/templates/selectDropdown.html"%>
-            <%@ include file="include/pages/testcasescript/manageProperties.html"%>
 
             <!-- ============================================================ -->
             <!-- MAIN V2 CONTENT — Pure Alpine.js                             -->
@@ -67,6 +67,27 @@
 
                 <!-- HEADER BAR -->
                 <%@ include file="include/pages/testcaseexecutionv2/headerBar.html"%>
+
+                <!-- Return message bar -->
+                <template x-if="exe.controlMessage && exe.controlStatus !== 'PE'">
+                    <div class="mb-3 px-4 py-2.5 rounded-xl text-[12px] flex items-start gap-2 v2-fade-in"
+                         :class="{
+                             'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400': exe.controlStatus === 'KO',
+                             'bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400': exe.controlStatus === 'FA',
+                             'bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400': exe.controlStatus === 'OK',
+                             'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400': exe.controlStatus !== 'KO' && exe.controlStatus !== 'FA' && exe.controlStatus !== 'OK'
+                         }"
+                         :style="{
+                             'border': exe.controlStatus === 'KO' ? '1px solid color-mix(in srgb, var(--crb-red-color) 20%, transparent)' :
+                                       exe.controlStatus === 'FA' ? '1px solid color-mix(in srgb, #f59e0b 20%, transparent)' :
+                                       exe.controlStatus === 'OK' ? '1px solid color-mix(in srgb, var(--crb-green-color) 20%, transparent)' :
+                                       '1px solid var(--crb-grey-light-color)'
+                         }">
+                        <i :data-lucide="exe.controlStatus === 'KO' ? 'alert-circle' : exe.controlStatus === 'FA' ? 'alert-triangle' : exe.controlStatus === 'OK' ? 'check-circle' : 'info'"
+                           class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span x-text="exe.controlMessage" class="leading-relaxed"></span>
+                    </div>
+                </template>
 
                 <!-- TABS -->
                 <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-4 h-10">
@@ -105,6 +126,13 @@
                         <i data-lucide="bot" class="w-4 h-4"></i>
                         <span>Robot</span>
                     </button>
+                    <!-- Tab: Dependencies -->
+                    <button @click="setTab('deps')" id="v2ExeTabDeps"
+                            :class="tab === 'deps' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                        <span>Deps</span>
+                    </button>
                     <!-- Tab: Network -->
                     <button @click="setTab('network')" id="v2ExeTabNetwork"
                             :class="tab === 'network' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
@@ -129,6 +157,9 @@
 
                 <!-- TAB: Other tabs -->
                 <%@ include file="include/pages/testcaseexecutionv2/tabPanels.html"%>
+
+                <!-- VISION MODAL (Live / Video) -->
+                <%@ include file="include/pages/testcaseexecutionv2/visionModal.html"%>
 
             </div>
 

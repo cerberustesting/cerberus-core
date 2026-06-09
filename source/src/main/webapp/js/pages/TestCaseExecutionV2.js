@@ -36,6 +36,8 @@ function executionV2() {
         steps: [],
         activeStepIndex: -1,
 
+        // Progress bar — computed via getters (see COMPUTED section)
+
         // Properties
         properties: [],
         showSecondary: false,
@@ -48,9 +50,14 @@ function executionV2() {
         queueInfo: null,
         queueRefreshTimer: null,
 
-        // WebSocket
+        // WebSocket / Live refresh
         ws: null,
         wsConnected: false,
+        _pollingTimer: null,
+        _pollErrorCount: 0,
+        liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
+        _spinDone: false,     // true for 5s after PE→done transition
+        _spinDoneTimer: null,
 
         // Navigation
         lastExecutions: [],
@@ -60,6 +67,9 @@ function executionV2() {
 
         // Lightbox
         lightboxUrl: null,
+
+        // Vision modal (Live / Video)
+        visionModal: { open: false, mode: 'live', url: '', fullscreen: false },
 
         // Feature flags
         paramActivateWebSocket: 'N',
@@ -72,27 +82,44 @@ function executionV2() {
         get mainSteps() { return this.steps.filter(s => !s._isPreTesting && !s._isPostTesting); },
         get primaryProperties() { return this.properties.filter(p => p.rank !== 2); },
         get secondaryProperties() { return this.properties.filter(p => p.rank === 2); },
+
+        get statusColor() {
+            return this._getStatusColor(this.exe.controlStatus);
+        },
+
+        get progressColor() {
+            var status = this.exe ? this.exe.controlStatus : '';
+            var colorMap = {
+                'OK': '#00d27a', 'KO': '#e63757', 'FA': '#f59e0b',
+                'PE': '#2c7be5', 'NA': '#eab308', 'NE': '#aaaaaa',
+                'CA': '#aaaaaa', 'WE': '#34495E', 'QU': '#BF00BF'
+            };
+            return colorMap[status] || '#aaaaaa';
+        },
+
         get progress() {
-            // If execution is finished, always show 100%
-            if (this.exe && this.exe.controlStatus && this.exe.controlStatus !== 'PE' && this.exe.controlStatus !== 'NE' && this.exe.controlStatus !== 'QU') {
-                return 100;
+            var status = this.exe ? this.exe.controlStatus : '';
+            // OK always means 100% completion
+            if (status === 'OK') return 100;
+            // No steps loaded yet
+            if (!this.steps || this.steps.length === 0) {
+                return (status && status !== 'PE' && status !== 'NE' && status !== 'QU') ? 100 : 0;
             }
-            if (!this.exe || !this.steps || this.steps.length === 0) return 0;
-            let total = 0, done = 0;
-            this.steps.forEach(s => {
-                (s.actions || []).forEach(a => {
+            // Count items that have been actually processed
+            var total = 0, done = 0;
+            this.steps.forEach(function(s) {
+                total++;
+                if (s.returnCode && s.returnCode !== 'PE' && s.returnCode !== 'NE' && s.returnCode !== 'WE' && s.returnCode !== 'QU') done++;
+                (s.actions || []).forEach(function(a) {
                     total++;
                     if (a.returnCode && a.returnCode !== 'PE' && a.returnCode !== 'NE' && a.returnCode !== 'WE' && a.returnCode !== 'QU') done++;
-                    (a.controls || []).forEach(c => {
+                    (a.controls || []).forEach(function(c) {
                         total++;
                         if (c.returnCode && c.returnCode !== 'PE' && c.returnCode !== 'NE' && c.returnCode !== 'WE' && c.returnCode !== 'QU') done++;
                     });
                 });
             });
             return total > 0 ? Math.round((done / total) * 100) : 0;
-        },
-        get statusColor() {
-            return this._getStatusColor(this.exe.controlStatus);
         },
 
         // ═══ INIT ═══
@@ -103,9 +130,18 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
-            // Load feature flags
-            getParameterString('cerberus_featureflipping_activatewebsocketpush', '', (val) => { this.paramActivateWebSocket = val; });
-            getParameterString('cerberus_featureflipping_websocketpushperiod', '5000', (val) => { this.paramWebSocketPeriod = parseInt(val) || 5000; });
+            // Load feature flags from sessionStorage cache (non-blocking)
+            // getParameterString uses sync AJAX which can freeze the page — read cache directly instead
+            try {
+                var cachedWsPush = JSON.parse(sessionStorage.getItem('PARAMETER_cerberus_featureflipping_activatewebsocketpush'));
+                var cachedWsPeriod = JSON.parse(sessionStorage.getItem('PARAMETER_cerberus_featureflipping_websocketpushperiod'));
+                this.paramActivateWebSocket = (cachedWsPush && cachedWsPush.value) || 'Y';
+                this.paramWebSocketPeriod = parseInt((cachedWsPeriod && cachedWsPeriod.value) || '5000') || 5000;
+            } catch(e) {
+                this.paramActivateWebSocket = 'Y';
+                this.paramWebSocketPeriod = 5000;
+            }
+            console.info('[ExeV2] Feature flags: WS=' + this.paramActivateWebSocket + ', period=' + this.paramWebSocketPeriod);
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -145,8 +181,18 @@ function executionV2() {
             }
         },
 
+        // ═══ LIVE CLEANUP ═══
+        _stopLive() {
+            if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
+            if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
+            this.wsConnected = false;
+            this._pollErrorCount = 0;
+            if (this.liveStatus !== 'idle') this.liveStatus = 'done';
+        },
+
         // ═══ DATA LOADING ═══
         _loadExecution(executionId) {
+            this._stopLive();  // Kill any existing WS/polling before loading new execution
             console.info('[ExeV2] Loading execution:', executionId);
             $.ajax({
                 url: 'ReadTestCaseExecution',
@@ -163,7 +209,7 @@ function executionV2() {
                     this.exe = tce;
                     this.testCaseObj = tce.testCaseObj || null;
                     this.isManual = (tce.manualExecution === 'Y');
-                    this.falseNegative = !!(tce.currentFNB && tce.currentFNB !== '' && tce.currentFNB !== '0');
+                    this.falseNegative = !!(tce.currentFNB && tce.currentFNB !== '' && tce.currentFNB !== '0') || !!(tce.falseNegative);
 
                     // History
                     try {
@@ -225,18 +271,18 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // WebSocket for live updates if PE
+                    // Live updates if PE — always poll + try WS for instant notifications
                     if (tce.controlStatus === 'PE') {
                         this.$nextTick(() => {
+                            this._startPolling(tce.id);
                             if (this.paramActivateWebSocket === 'Y') {
                                 this._connectWebSocket(tce.id);
-                            } else {
-                                this._startPolling(tce.id);
                             }
                         });
                     }
 
                     this.mode = 'execution';
+                    this._updateFavicon(tce.controlStatus);
                     this.$nextTick(() => {
                         if (window.lucide) lucide.createIcons();
                         this._updateSidebarTop();
@@ -341,13 +387,22 @@ function executionV2() {
         _normalizeProperty(p) {
             p._uid = v2exeuid();
             p._expanded = false;
+            // Remap API field names (Java sends RC/rMessage, V2 uses returnCode/returnMessage)
+            if (p.RC !== undefined && p.returnCode === undefined) p.returnCode = p.RC;
+            if (p.rMessage !== undefined && p.returnMessage === undefined) p.returnMessage = p.rMessage;
+            if (!p.fileList) p.fileList = [];
             return p;
         },
 
         // ═══ TABS ═══
         setTab(name) {
             this.tab = name;
-            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            this.$nextTick(() => {
+                if (window.lucide) lucide.createIcons();
+                if (name === 'network' && !this.networkStat) {
+                    this._initNetwork();
+                }
+            });
         },
 
         // ═══ STEP NAVIGATION ═══
@@ -369,64 +424,242 @@ function executionV2() {
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            const wsUrl = protocol + '://' + location.host + location.pathname.replace(/\/[^\/]*$/, '') + '/api/ws/execution/' + executionId;
+            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333)
+            var parser = document.createElement('a');
+            parser.href = window.location.href;
+            var path = parser.pathname.split('TestCaseExecution')[0];
+            const wsUrl = protocol + '://' + parser.host + path + 'api/ws/execution/' + executionId;
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
+
+            var self = this;
+            var fallbackDone = false; // Guard: onerror + onclose both fire — only fall back once
+
+            function fallbackToPolling() {
+                if (fallbackDone) return;
+                fallbackDone = true;
+                self.wsConnected = false;
+                self.liveStatus = 'polling';
+                console.info('[ExeV2] WS closed — polling continues');
+                // Polling is already running alongside, no need to restart
+            }
 
             try {
                 this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = () => { this.wsConnected = true; console.info('[ExeV2] WebSocket connected'); };
+                this.ws.onopen = () => {
+                    this.wsConnected = true;
+                    this.liveStatus = 'ws';
+                    this._pollErrorCount = 0;
+                    console.info('[ExeV2] WebSocket connected (polling continues alongside)');
+                };
                 this.ws.onmessage = (event) => {
                     try {
                         const data = JSON.parse(event.data);
                         this._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = (err) => {
-                    console.warn('[ExeV2] WebSocket error, falling back to polling');
-                    this.wsConnected = false;
-                    setTimeout(() => this._loadExecution(executionId), this.paramWebSocketPeriod);
-                };
-                this.ws.onclose = () => { this.wsConnected = false; };
+                this.ws.onerror = () => { fallbackToPolling(); };
+                this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
-                console.warn('[ExeV2] WebSocket not available, using polling');
-                this._startPolling(executionId);
+                console.warn('[ExeV2] WebSocket not available — polling continues');
+                this.liveStatus = 'polling';
+                // Polling is already running, no need to start
             }
         },
 
         _onWebSocketMessage(data) {
-            // Full reload from WS data
-            if (data.testCaseExecution) {
-                const tce = data.testCaseExecution;
-                this.exe = tce;
-                const stepsRaw = tce.testCaseStepExecutionList || [];
-                stepsRaw.sort((a, b) => a.sort - b.sort);
-                this.steps = stepsRaw.map(s => this._normalizeStep(s));
-                this.properties = (tce.testCaseExecutionDataList || []).map(p => this._normalizeProperty(p));
+            if (!data.testCaseExecution) return;
+            var tce = data.testCaseExecution;
+            var prevStatus = this.exe.controlStatus;
 
-                // Auto-focus on current step
-                const peIdx = this.steps.findIndex(s => s.returnCode === 'PE');
-                if (peIdx >= 0) this.activeStepIndex = peIdx;
+            // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
+            Object.keys(tce).forEach(function(k) {
+                if (k !== 'testCaseStepExecutionList' && k !== 'testCaseExecutionDataList') {
+                    this.exe[k] = tce[k];
+                }
+            }.bind(this));
+            // Force Alpine to detect exe changes (computed getters like progress depend on it)
+            this.exe = Object.assign({}, this.exe);
 
-                this.$nextTick(() => {
-                    if (window.lucide) lucide.createIcons();
-                    this._updateSidebarTop();
+            // Incremental step merge — update returnCode/returnMessage/end in-place
+            var newSteps = tce.testCaseStepExecutionList || [];
+            newSteps.sort(function(a, b) { return a.sort - b.sort; });
+            this._mergeStepUpdates(newSteps);
+            // Force Alpine reactivity — shallow copy triggers getter recalculation
+            this.steps = this.steps.slice();
+
+            // Properties — preserve expanded state across updates
+            var expandedProps = {};
+            (this.properties || []).forEach(function(p) { if (p._expanded) expandedProps[p.property] = true; });
+            this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
+            this.properties.forEach(function(p) { if (expandedProps[p.property]) p._expanded = true; });
+
+            // Auto-focus: select the best step when execution is PE
+            if (tce.controlStatus === 'PE' && this.steps.length > 0) {
+                var peIdx = this.steps.findIndex(function(s) { return s.returnCode === 'PE'; });
+                if (peIdx >= 0 && peIdx !== this.activeStepIndex) {
+                    // A step is actively running — follow it
+                    this.activeStepIndex = peIdx;
+                } else if (this.activeStepIndex < 0 || this.activeStepIndex >= this.steps.length) {
+                    // No step selected (first load or steps just appeared) — select PE or last
+                    this.activeStepIndex = peIdx >= 0 ? peIdx : this.steps.length - 1;
+                }
+            }
+
+            // Favicon on status change
+            if (tce.controlStatus !== prevStatus) {
+                this._updateFavicon(tce.controlStatus);
+            }
+
+            this.$nextTick(function() {
+                if (window.lucide) lucide.createIcons();
+                this._updateSidebarTop();
+            }.bind(this));
+
+            // If execution finished, stop all live refresh
+            if (tce.controlStatus !== 'PE') {
+                this._stopLive();
+                this.liveStatus = 'done';
+                // Spin-down animation for 5 seconds
+                if (prevStatus === 'PE') {
+                    this._spinDone = true;
+                    if (this._spinDoneTimer) clearTimeout(this._spinDoneTimer);
+                    this._spinDoneTimer = setTimeout(() => { this._spinDone = false; }, 5000);
+                }
+                // Final full reload to get all data
+                this._loadExecution(tce.id);
+            }
+        },
+
+        // Incremental merge: update existing step/action/control objects in-place
+        // This avoids full DOM re-render and makes transitions smooth
+        _mergeStepUpdates(newSteps) {
+            var self = this;
+            if (this.steps.length === 0) {
+                // First load
+                this.steps = newSteps.map(function(s) { return self._normalizeStep(s); });
+                return;
+            }
+            // Build lookup by step+index
+            var existingMap = {};
+            this.steps.forEach(function(s) { existingMap[s.step + '-' + s.index] = s; });
+
+            var needsFullRebuild = false;
+            newSteps.forEach(function(ns) {
+                var key = ns.step + '-' + ns.index;
+                var existing = existingMap[key];
+                if (!existing) { needsFullRebuild = true; return; }
+
+                // Merge step-level fields
+                existing.returnCode = ns.returnCode;
+                existing.returnMessage = ns.returnMessage;
+                existing.start = ns.start;
+                existing.end = ns.end;
+                existing.conditionOperator = ns.conditionOperator;
+
+                // Merge actions
+                var newActions = ns.testCaseStepActionExecutionList || [];
+                newActions.sort(function(a, b) { return a.sort - b.sort; });
+
+                if (existing.actions.length !== newActions.length) {
+                    // Structure changed, rebuild this step
+                    var rebuilt = self._normalizeStep(ns);
+                    Object.keys(rebuilt).forEach(function(k) { existing[k] = rebuilt[k]; });
+                    return;
+                }
+
+                newActions.forEach(function(na, ai) {
+                    var ea = existing.actions[ai];
+                    if (!ea) return;
+                    // Update action fields in-place
+                    ea.returnCode = na.returnCode;
+                    ea.returnMessage = na.returnMessage;
+                    ea.start = na.start;
+                    ea.end = na.end;
+                    ea.value1 = na.value1;
+                    ea.value2 = na.value2;
+                    if (na.fileList) ea.fileList = na.fileList;
+
+                    // Merge controls
+                    var newControls = na.testCaseStepActionControlExecutionList || [];
+                    newControls.sort(function(x, y) { return x.sort - y.sort; });
+
+                    if ((ea.controls || []).length !== newControls.length) {
+                        ea.controls = newControls.map(function(c) { return self._normalizeControl(c); });
+                    } else {
+                        newControls.forEach(function(nc, ci) {
+                            var ec = ea.controls[ci];
+                            if (!ec) return;
+                            ec.returnCode = nc.returnCode;
+                            ec.returnMessage = nc.returnMessage;
+                            ec.start = nc.start;
+                            ec.end = nc.end;
+                            ec.value1 = nc.value1;
+                            ec.value2 = nc.value2;
+                            if (nc.fileList) ec.fileList = nc.fileList;
+                        });
+                    }
                 });
 
-                // If execution finished, close WS
-                if (tce.controlStatus !== 'PE' && this.ws) {
-                    this.ws.close();
-                    this.ws = null;
-                }
+                // Recount KO
+                existing._nbActionsKO = 0;
+                existing._nbControlsKO = 0;
+                existing.actions.forEach(function(a) {
+                    if (a.returnCode === 'KO' || a.returnCode === 'FA') existing._nbActionsKO++;
+                    (a.controls || []).forEach(function(c) {
+                        if (c.returnCode === 'KO' || c.returnCode === 'FA') existing._nbControlsKO++;
+                    });
+                });
+            });
+
+            if (needsFullRebuild) {
+                this.steps = newSteps.map(function(s) { return self._normalizeStep(s); });
             }
         },
 
         _startPolling(executionId) {
-            console.info('[ExeV2] Starting polling every', this.paramWebSocketPeriod, 'ms');
-            setTimeout(() => {
-                if (this.exe.controlStatus === 'PE') {
-                    this._loadExecution(executionId);
+            var self = this;
+            if (this._pollingTimer) clearTimeout(this._pollingTimer);
+
+            // Backoff: base × 2^errors, capped at 30s
+            var delay = Math.min(this.paramWebSocketPeriod * Math.pow(2, this._pollErrorCount), 30000);
+            if (this._pollErrorCount === 0) {
+                console.info('[ExeV2] Polling every', delay, 'ms');
+            }
+            this.liveStatus = this._pollErrorCount >= 3 ? 'error' : 'polling';
+
+            this._pollingTimer = setTimeout(function() {
+                if (!self.exe || self.exe.controlStatus !== 'PE') {
+                    self.liveStatus = 'done';
+                    return;
                 }
-            }, this.paramWebSocketPeriod);
+                $.ajax({
+                    url: 'ReadTestCaseExecution',
+                    data: { executionId: executionId, executionWithDependency: true },
+                    dataType: 'json',
+                    timeout: 15000,  // 15s timeout to avoid hanging requests
+                    success: function(data) {
+                        self._pollErrorCount = 0;  // Reset on success
+                        if (self.wsConnected) self.liveStatus = 'ws'; else self.liveStatus = 'polling';
+                        if (data.testCaseExecution) {
+                            self._onWebSocketMessage(data);
+                        }
+                        // Keep polling if still PE
+                        if (self.exe && self.exe.controlStatus === 'PE') {
+                            self._startPolling(executionId);
+                        } else {
+                            self.liveStatus = 'done';
+                        }
+                    },
+                    error: function() {
+                        self._pollErrorCount++;
+                        console.warn('[ExeV2] Poll error #' + self._pollErrorCount + ', next retry in ' + Math.min(self.paramWebSocketPeriod * Math.pow(2, self._pollErrorCount), 30000) + 'ms');
+                        // Retry with backoff if still PE
+                        if (self.exe && self.exe.controlStatus === 'PE') {
+                            self._startPolling(executionId);
+                        }
+                    }
+                });
+            }, delay);
         },
 
         // ═══ MANUAL EXECUTION ═══
@@ -601,7 +834,8 @@ function executionV2() {
 
         // ═══ HEADER ACTIONS ═══
         switchToExecution(executionId) {
-            // Inline navigation
+            // Inline navigation — cleanup live refresh before switching
+            this._stopLive();
             this.mode = 'loading';
             this.steps = [];
             this.activeStepIndex = -1;
@@ -660,21 +894,274 @@ function executionV2() {
             });
         },
 
-        // ═══ STEP EDIT ═══
+        _getBugNewUrl() {
+            if (!this.applicationObj || !this.applicationObj.bugTrackerNewUrl) return '#';
+            var url = this.applicationObj.bugTrackerNewUrl;
+            var exe = this.exe;
+            url = url.replace(/%EXEID%/g, exe.id || '');
+            url = url.replace(/%EXEDATE%/g, exe.start || '');
+            url = url.replace(/%TEST%/g, exe.test || '');
+            url = url.replace(/%TESTCASE%/g, exe.testcase || exe.testCase || '');
+            url = url.replace(/%TESTCASEDESC%/g, exe.description || '');
+            url = url.replace(/%COUNTRY%/g, exe.country || '');
+            url = url.replace(/%ENV%/g, exe.environment || '');
+            url = url.replace(/%BUILD%/g, exe.build || '');
+            url = url.replace(/%REV%/g, exe.revision || '');
+            url = url.replace(/%BROWSER%/g, exe.browser || '');
+            url = url.replace(/%BROWSERFULLVERSION%/g, (exe.browser || '') + ' ' + (exe.version || '') + ' ' + (exe.platform || ''));
+            return encodeURI(url);
+        },
+
+        _getProviderSessionUrl() {
+            var provider = (this.exe.robotProvider || '').toUpperCase();
+            var sessionId = this.exe.robotProviderSessionId || '';
+            // If there's a pre-built URL, use it
+            if (this.exe.robotProviderSessionIdUrl) return this.exe.robotProviderSessionIdUrl;
+            if (provider === 'BROWSERSTACK') {
+                var hash = (this.exe.robotSessionId || '').split('/')[0] || '';
+                return 'https://automate.browserstack.com/builds/' + hash + '/sessions/' + sessionId;
+            } else if (provider === 'LAMBDATEST') {
+                return 'https://automation.lambdatest.com/logs/?testID=' + sessionId + '&build=' + encodeURIComponent(this.exe.build || '');
+            } else if (provider === 'KOBITON') {
+                return 'https://portal.kobiton.com/sessions/' + sessionId;
+            }
+            return '#';
+        },
+
+        // ═══ NETWORK TAB ═══
+        networkStat: null,
+        networkCharts: {},
+        networkIndexFilter: [],
+        networkSortCol: 'size',  // 'size' | 'request' | 'time'
+
+        // HAR viewer state
+        harData: null,
+        harLoading: false,
+        harLoaded: false,
+        harFilter: '',
+        harStatusFilter: 'all',
+        harSortBy: 'time',
+        harSelected: null,
+        harDetailTab: 'request',   // 'request' | 'response'
+
+        _initNetwork() {
+            if (!this.exe || !this.exe.httpStat) return;
+            this.networkStat = this.exe.httpStat.stat;
+            // Default: all indices selected
+            if (this.networkStat && this.networkStat.index) {
+                this.networkIndexFilter = this.networkStat.index.map(function(idx) { return idx.index; });
+            }
+            // Load HAR if enriched file exists
+            var harFile = (this.exe.fileList || []).find(function(f) {
+                return f.fileName && f.fileName.endsWith('enriched_har.json');
+            });
+            if (harFile && !this.harLoaded) {
+                this._loadHar(harFile);
+            }
+        },
+
+        _loadHar(file) {
+            if (this.harLoaded || this.harLoading) return;
+            this.harLoading = true;
+            var self = this;
+            var url = 'ReadTestCaseExecutionMedia'
+                + '?filename=' + encodeURIComponent(file.fileName)
+                + '&filetype=' + (file.fileType || 'JSON')
+                + '&filedesc=' + encodeURIComponent(file.fileDesc || '')
+                + '&auto=true&autoContentType=N';
+            fetch(url)
+                .then(function(r) { return r.text(); })
+                .then(function(txt) {
+                    try {
+                        var har = JSON.parse(txt);
+                        har.log.entries.forEach(function(e, i) { e._id = i; });
+                        self.harData = har;
+                        self.harLoaded = true;
+                    } catch(e) { console.warn('[ExeV2] HAR parse error:', e); }
+                })
+                .finally(function() { self.harLoading = false; });
+        },
+
+        _isNetworkIndexSelected(index) {
+            return this.networkIndexFilter.indexOf(index) !== -1;
+        },
+
+        get networkRequests() {
+            if (!this.networkStat || !this.networkStat.requests) return [];
+            var self = this;
+            return this.networkStat.requests.filter(function(r) {
+                return self._isNetworkIndexSelected(r.index);
+            });
+        },
+
+        get networkHttpStatusData() {
+            var counts = {};
+            var total = 0;
+            this.networkRequests.forEach(function(r) {
+                total++;
+                var key = '' + r.httpStatus;
+                counts[key] = (counts[key] || 0) + 1;
+            });
+            var entries = [];
+            for (var k in counts) {
+                entries.push({ label: k, value: counts[k], color: _httpStatusColor(k) });
+            }
+            entries.sort(function(a, b) { return b.value - a.value; });
+            return { entries: entries, total: total };
+        },
+
+        get networkSizeByTypeData() {
+            var sizes = {};
+            var total = 0;
+            this.networkRequests.forEach(function(r) {
+                total += r.size || 0;
+                var key = '' + (r.contentType || 'other');
+                sizes[key] = (sizes[key] || 0) + (r.size || 0);
+            });
+            var entries = [];
+            for (var k in sizes) {
+                entries.push({ label: k, value: sizes[k], color: _contentTypeColor(k) });
+            }
+            entries.sort(function(a, b) { return b.value - a.value; });
+            return { entries: entries, total: total };
+        },
+
+        get networkThirdPartyData() {
+            var providers = {};
+            var nbTP = 0;
+            this.networkRequests.forEach(function(r) {
+                var p = '' + r.provider;
+                if (!providers[p]) {
+                    providers[p] = { size: 0, nb: 0, time: 0 };
+                    if (p !== 'unknown' && p !== 'internal') nbTP++;
+                }
+                providers[p].size += r.size || 0;
+                providers[p].nb++;
+                if (r.time > providers[p].time) providers[p].time = r.time;
+            });
+            var entries = [];
+            var ci = 0;
+            for (var k in providers) {
+                var color = k === 'internal' ? '#3b82f6' : k === 'unknown' ? '#64748b' : get_Color_fromindex(ci++);
+                entries.push({
+                    label: k === 'internal' ? 'INTERNAL' : k === 'unknown' ? 'UNKNOWN' : k,
+                    size: providers[k].size,
+                    nb: providers[k].nb,
+                    time: providers[k].time,
+                    color: color
+                });
+            }
+            var sortKey = this.networkSortCol;
+            entries.sort(function(a, b) {
+                if (sortKey === 'request') return b.nb - a.nb;
+                if (sortKey === 'time') return b.time - a.time;
+                return b.size - a.size;
+            });
+            return { entries: entries, nbTP: nbTP };
+        },
+
+        get networkUnknownDomains() {
+            var domains = [];
+            this.networkRequests.forEach(function(r) {
+                if ('' + r.provider === 'unknown' && domains.indexOf(r.domain) === -1) {
+                    domains.push(r.domain);
+                }
+            });
+            return domains;
+        },
+
+        get harFilteredEntries() {
+            if (!this.harData) return [];
+            var entries = this.harData.log.entries.slice();
+            var f = this.harFilter.toLowerCase();
+            if (f) {
+                entries = entries.filter(function(e) {
+                    return e.request.url.toLowerCase().indexOf(f) !== -1;
+                });
+            }
+            var sf = this.harStatusFilter;
+            if (sf !== 'all') {
+                entries = entries.filter(function(e) {
+                    var s = e.response.status;
+                    if (sf === '2xx') return s < 300;
+                    if (sf === '4xx') return s >= 400 && s < 500;
+                    return s >= 500;
+                });
+            }
+            var sb = this.harSortBy;
+            entries.sort(function(a, b) {
+                if (sb === 'status') return b.response.status - a.response.status;
+                if (sb === 'size') return (b.response.content.size || 0) - (a.response.content.size || 0);
+                return (b.time || 0) - (a.time || 0);
+            });
+            return entries;
+        },
+
+        _harStatusClass(status) {
+            if (status >= 500) return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
+            if (status >= 400) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
+            return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
+        },
+
+        _highlightJson(obj) {
+            if (!obj) return '';
+            return JSON.stringify(obj, null, 2)
+                .replace(/(&)/g, '&amp;')
+                .replace(/(<)/g, '&lt;')
+                .replace(/(\".*?\")(?=\s*:)/g, '<span style="color:#93c5fd">$1</span>')
+                .replace(/:\s*(\".*?\")/g, ': <span style="color:#86efac">$1</span>')
+                .replace(/:\s*(\d+|\btrue\b|\bfalse\b|\bnull\b)/g, ': <span style="color:#fbbf24">$1</span>');
+        },
+
+        _formatKb(bytes) {
+            if (!bytes) return '0';
+            return Math.round(bytes / 1024).toLocaleString() + ' KB';
+        },
+
+        // ═══ STEP MODAL ═══
         openStepModal(step) {
             if (!step) return;
-            var test = step.test || this.exe.test || '';
-            var tc = step.testcase || this.exe.testcase || this.exe.testCase || '';
-            var stepId = step.step || step.stepId || '';
-            var url = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(test) + '&testcase=' + encodeURIComponent(tc);
-            if (stepId) url += '&stepId=' + encodeURIComponent(stepId);
-            window.open(url, '_blank');
+            window.dispatchEvent(new CustomEvent('step-modal-open', {
+                detail: {
+                    test: step.test || this.exe.test,
+                    testcase: step.testcase || this.exe.testcase || this.exe.testCase,
+                    stepId: step.step || step.stepId
+                }
+            }));
         },
 
         openPropertyModal(prop) {
             if (!prop) return;
-            window.dispatchEvent(new CustomEvent('modalproperty-open', {
-                detail: { property: prop }
+            var self = this;
+            // Clone the property for the modal (live editing)
+            var liveProp = JSON.parse(JSON.stringify(prop));
+            // Normalize countries to flat array if needed
+            if (liveProp.countries && liveProp.countries.length > 0 && typeof liveProp.countries[0] === 'object') {
+                liveProp.countries = liveProp.countries.map(function(c) { return c.value || c; });
+            }
+            window.dispatchEvent(new CustomEvent('property-modal-open', {
+                detail: {
+                    property: liveProp,
+                    countries: self._getCountries(),
+                    canUpdate: true,
+                    onField: function(key, val) { liveProp[key] = val; },
+                    onCountryToggle: function(country) {
+                        var arr = liveProp.countries || [];
+                        var idx = arr.indexOf(country);
+                        if (idx >= 0) arr.splice(idx, 1); else arr.push(country);
+                        liveProp.countries = arr;
+                    },
+                    onSelectAll: function() {
+                        liveProp.countries = (self._getCountries() || []).slice();
+                    },
+                    onDeselectAll: function() {
+                        liveProp.countries = [];
+                    },
+                    onClose: function() {
+                        // The property modal has a "Done" button, not Save
+                        // So we do nothing special on close
+                    }
+                }
             }));
         },
 
@@ -716,11 +1203,15 @@ function executionV2() {
         // ═══ SMART PREVIEW HELPERS ═══
         _isVerifyAction(action) {
             var a = (action.action || '').toLowerCase();
-            return a.indexOf('verify') === 0;
+            if (a.indexOf('verify') !== 0) return false;
+            // Only show Expected/Got if at least one value is present
+            return !!(action.value1 || action.value1Init || action.value2 || action.value2Init);
         },
         _isVerifyControl(ctrl) {
             var c = (ctrl.controlType || ctrl.control || '').toLowerCase();
-            return c.indexOf('verify') === 0;
+            if (c.indexOf('verify') !== 0) return false;
+            // Only show Expected/Got if at least one value is present
+            return !!(ctrl.value1 || ctrl.value1Init || ctrl.value2 || ctrl.value2Init);
         },
         _isServiceAction(action) {
             var a = (action.action || '').toLowerCase();
@@ -819,6 +1310,68 @@ function executionV2() {
             });
         },
 
+        // ═══ VISION MODAL (Live / Video) ═══
+        openVisionModal(mode, url) {
+            this.visionModal.mode = mode;
+            this.visionModal.url = url;
+            this.visionModal.fullscreen = false;
+            this.visionModal.open = true;
+            document.body.style.overflow = 'hidden';
+            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }.bind(this));
+        },
+
+        closeVisionModal() {
+            this.visionModal.open = false;
+            document.body.style.overflow = '';
+        },
+
+        _getVideoUrl() {
+            // Check exe.videos array first (legacy API)
+            if (this.exe && this.exe.videos && this.exe.videos.length > 0) {
+                return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.videos[0]) + '&filedesc=Video&filetype=MP4&id=' + this.exe.id + '&r=true';
+            }
+            // Fallback: find MP4 in execution-level fileList
+            if (this.exe && this.exe.fileList) {
+                for (var i = 0; i < this.exe.fileList.length; i++) {
+                    if (this.exe.fileList[i].fileType === 'MP4') {
+                        return 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(this.exe.fileList[i].fileName) + '&filedesc=Video&filetype=MP4&id=' + this.exe.id + '&r=true';
+                    }
+                }
+            }
+            // Deep scan: check step/action/control fileList for MP4
+            if (this.steps) {
+                for (var si = 0; si < this.steps.length; si++) {
+                    var step = this.steps[si];
+                    var actions = step.actions || [];
+                    for (var ai = 0; ai < actions.length; ai++) {
+                        var a = actions[ai];
+                        if (a.fileList) {
+                            for (var fi = 0; fi < a.fileList.length; fi++) {
+                                if (a.fileList[fi].fileType === 'MP4') {
+                                    return this.getMediaFullUrl(a.fileList[fi]);
+                                }
+                            }
+                        }
+                        var controls = a.controls || [];
+                        for (var ci = 0; ci < controls.length; ci++) {
+                            if (controls[ci].fileList) {
+                                for (var cfi = 0; cfi < controls[ci].fileList.length; cfi++) {
+                                    if (controls[ci].fileList[cfi].fileType === 'MP4') {
+                                        return this.getMediaFullUrl(controls[ci].fileList[cfi]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        },
+
+        _hasVideo() {
+            return !!this._getVideoUrl();
+        },
+
         // ═══ HELPERS ═══
         _getCountries() {
             // Try to get countries from test case object
@@ -830,6 +1383,30 @@ function executionV2() {
                 return [this.exe.country];
             }
             return [];
+        },
+
+        _updateFavicon(status) {
+            try {
+                // rgbToHex helper (inline since not loaded on V2 page)
+                var _rgbHex = function(rgb) {
+                    var parts = rgb.match(/\d+/g);
+                    if (!parts) return '#999999';
+                    return '#' + parts.map(function(x) { return parseInt(x).toString(16).padStart(2, '0'); }).join('');
+                };
+                if (!this._favicon) {
+                    this._favicon = new Favico({
+                        animation: 'slide',
+                        bgColor: _rgbHex(getExeStatusRowColor(status))
+                    });
+                } else {
+                    this._favicon.badge('');
+                    this._favicon = new Favico({
+                        animation: 'slide',
+                        bgColor: _rgbHex(getExeStatusRowColor(status))
+                    });
+                }
+                this._favicon.badge(status);
+            } catch(e) { console.warn('[ExeV2] Favicon error:', e); }
         },
 
         _getStatusColor(status) {
@@ -859,9 +1436,24 @@ function executionV2() {
             return map[status] || status;
         },
 
+        // Duration color coding — same thresholds as legacy (>5s orange, >30s red)
+        _durationColorClass(start, end) {
+            if (!start) return 'text-slate-400';
+            if (!end || end <= 0) end = Date.now();
+            var ms = end - start;
+            if (ms < 0 || ms > 31536000000) return 'text-slate-400';
+            if (ms > 30000) return 'text-red-500 font-bold';
+            if (ms > 5000) return 'text-orange-500 font-bold';
+            return 'text-slate-400';
+        },
+
         formatDuration(startLong, endLong) {
-            if (!startLong || !endLong) return '-';
-            const ms = endLong - startLong;
+            if (!startLong) return '-';
+            // If no end time yet, use current time for live display
+            if (!endLong || endLong <= 0) endLong = Date.now();
+            var ms = endLong - startLong;
+            // Guard against negative or absurd values (bad date)
+            if (ms < 0 || ms > 31536000000) return '-';
             if (ms < 1000) return ms + 'ms';
             if (ms < 60000) return (ms / 1000).toFixed(1) + 's';
             return Math.floor(ms / 60000) + 'm ' + Math.floor((ms % 60000) / 1000) + 's';
@@ -875,4 +1467,27 @@ function executionV2() {
             } catch(e) { return timestamp; }
         }
     };
+}
+
+// ═══ Network Chart Color Helpers ═══
+function _httpStatusColor(status) {
+    if (status && ('' + status).includes('nbE')) return '#a855f7';
+    if (status && ('' + status).startsWith('2')) return '#22c55e';
+    if (status && ('' + status).startsWith('3')) return '#86efac';
+    if (status && ('' + status).startsWith('4')) return '#f97316';
+    if (status && ('' + status).startsWith('5')) return '#ef4444';
+    return '#94a3b8';
+}
+
+function _contentTypeColor(type) {
+    if (!type) return '#1e293b';
+    if (type.includes('img')) return '#a855f7';
+    if (type.includes('html')) return '#22c55e';
+    if (type.includes('content')) return '#86efac';
+    if (type.includes('js')) return '#f97316';
+    if (type.includes('css')) return '#3b82f6';
+    if (type.includes('font')) return '#93c5fd';
+    if (type.includes('media')) return '#ec4899';
+    if (type.includes('other')) return '#94a3b8';
+    return '#1e293b';
 }

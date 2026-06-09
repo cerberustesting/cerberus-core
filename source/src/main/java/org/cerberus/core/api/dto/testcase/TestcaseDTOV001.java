@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.api.dto.testcase;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -56,6 +58,7 @@ import org.cerberus.core.api.dto.views.View;
         "steps", "countries", "properties", "inheritedProperties", "labels", "dependencies"
 })
 @Schema(name = "Testcase")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestcaseDTOV001 {
 
     @NotBlank(message = "Test folder id is mandatory")

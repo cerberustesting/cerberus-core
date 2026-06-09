@@ -19,11 +19,14 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -40,6 +43,7 @@ import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.AnswerList;
+import org.json.JSONObject;
 
 /**
  * @author vertigo17
@@ -53,6 +57,8 @@ public class TestCaseHistoService implements ITestCaseHistoService {
     private ITestCaseHistoDAO testCaseHistoDao;
     @Autowired
     private ITestCaseService testCaseService;
+    @Autowired
+    private TestcaseMapperV001 testcaseMapperV001;
     @Autowired
     private IParameterService parameterService;
 
@@ -78,15 +84,23 @@ public class TestCaseHistoService implements ITestCaseHistoService {
 
     @Override
     public Answer create(TestCase testcase, Timestamp dateVersion, int version, String usrCreated, String desc) {
-        return this.create(TestCaseHisto.builder()
-                .test(testcase.getTest())
-                .testCase(testcase.getTestcase())
-                .version(version)
-                .usrCreated(usrCreated)
-                .testCaseContent(testcase.toJsonV001(parameterService.getParameterStringCerberusURLByKey(), null))
-                .description(desc)
-                .dateVersion(dateVersion)
-                .build());
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+//            LOG.debug("TOTO");
+//            LOG.debug(mapper.writeValueAsString(testcaseMapperV001.toDTO(testcase)));
+            return this.create(TestCaseHisto.builder()
+                    .test(testcase.getTest())
+                    .testCase(testcase.getTestcase())
+                    .version(version)
+                    .usrCreated(usrCreated)
+                    .testCaseContent(new JSONObject(mapper.writeValueAsString(testcaseMapperV001.toDTO(testcase))))
+                    .description(desc)
+                    .dateVersion(dateVersion)
+                    .build());
+        } catch (JsonProcessingException ex) {
+            LOG.error(ex, ex);
+        }
+        return null;
     }
 
     @Override

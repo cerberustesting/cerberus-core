@@ -1007,6 +1007,11 @@ public class ExecutionRunService implements IExecutionRunService {
     @Override
     public TestCaseExecution stopTestCase(TestCaseExecution execution) {
 
+        // Calculate final Result code and message. (Need to be done before the Robots are stopped as this could impact the logs and video recording)
+        if ((!execution.getResultMessageList().isEmpty()) && !("PE".equalsIgnoreCase(execution.getControlStatus()))) {
+            execution.setResultMessage(testCaseExecutionService.getResultMessageAgregated(execution.getResultMessageList()));
+        }
+
         // Stop Execution
         LOG.debug("{} - Stop the execution {} UUID: {}", execution.getId(), execution.getId(), execution.getExecutionUUID());
         try {
@@ -1018,8 +1023,6 @@ public class ExecutionRunService implements IExecutionRunService {
         // Timastamp TestCaseExecution object.
         execution.setEnd(new Date().getTime());
         execution.setDurationMs(new Date().getTime() - execution.getStart());
-        // Calculate final Result code and message.
-        execution.setResultMessage(testCaseExecutionService.getResultMessageAgregated(execution.getResultMessageList()));
 
         // Saving TestCaseExecution object.
         try {
@@ -1521,7 +1524,6 @@ public class ExecutionRunService implements IExecutionRunService {
 //                            .resolveDescription("AREA", "control ")
 //                            .resolveDescription("COND", controlExecution.getConditionOperator())
 //                            .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
-
                     controlExecution.setEnd(new Date().getTime());
 
                     this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
@@ -1610,8 +1612,45 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseExecution stopExecutionRobotAndProxy(TestCaseExecution execution) {
 
-        // Stopping Selenium / Appium.
         String typ = execution.getApplicationObj().getType();
+
+        // First we stop Robot extension collecting video and CPU/Memory stats
+        if (execution.getSession() != null && execution.getSession().isSikuliAvailable()) {
+            // Stopping Image reco extention.
+            if (Application.TYPE_FAT.equals(typ)) {
+                LOG.info("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
+                if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
+                    this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
+                }
+            }
+            // Stopping Image reco extention and collect Video and stats when available.
+            if (Application.TYPE_GUI.equals(typ) || Application.TYPE_FAT.equals(typ)) {
+                LOG.info("Ask Sikuli to clean execution {} with status {}", execution.getId(), execution.getControlStatus());
+                AnswerItem<JSONObject> actionResult;
+                if ((execution.getVideo() >= 2)
+                        || ((execution.getVideo() == 1) && !TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()))) {
+                    actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), true);
+                } else {
+                    actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), false);
+
+                }
+                // Record Video
+                execution.addFileList(recorderService.recordExecutionVideo(execution, StringUtil.convertAnswerJSONToString(actionResult, "videoDebug")));
+                // CPU and Memory stats
+                if (actionResult.getItem() != null && actionResult.getItem().has("system")) {
+                    JSONObject systemStats = actionResult.getItem().getJSONObject("system");
+                    execution.addFileList(recorderService.recordSystemStats(execution, systemStats));
+                    if (systemStats.has("totalTimeMs")) {
+                        execution.setCpuTimeMs((int) Math.round(systemStats.getDouble("totalTimeMs")));
+                    }
+                    if (systemStats.has("residentMemoryMb")) {
+                        execution.setMemoryResidentMb((int) Math.round(systemStats.getDouble("residentMemoryMb")));
+                    }
+                }
+            }
+        }
+
+        // Stopping Selenium / Appium.
         if (Application.TYPE_GUI.equals(typ) || Application.TYPE_APK.equals(typ) || Application.TYPE_IPA.equals(typ)) {
             try {
                 this.robotServerService.stopServer(execution);
@@ -1619,29 +1658,6 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (WebDriverException exception) {
                 LOG.warn("Selenium/Appium didn't manage to close connection for execution {}", execution.getId(), exception);
             }
-        }
-
-        // Stopping Image reco extention.
-        if (Application.TYPE_FAT.equals(typ)) {
-            LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
-            if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
-                this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
-            }
-        }
-        // Stopping Image reco extention and collect Video when available.
-        if (Application.TYPE_GUI.equals(typ) || Application.TYPE_FAT.equals(typ)) {
-            LOG.debug("Ask Sikuli to clean execution {} with status {}", execution.getId(), execution.getControlStatus());
-            AnswerItem<JSONObject> actionResult;
-            if ((execution.getVideo() >= 2)
-                    || ((execution.getVideo() == 1) && !TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()))) {
-                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), true);
-            } else {
-                actionResult = this.sikuliService.doSikuliEndExecution(execution.getSession(), execution.getId(), false);
-
-            }
-
-            // Record Video
-            execution.addFileList(recorderService.recordExecutionVideo(execution, StringUtil.convertAnswerJSONToString(actionResult, "videoDebug")));
         }
 
         // Stopping remote proxy.

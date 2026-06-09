@@ -479,6 +479,8 @@ public class RobotServerService implements IRobotServerService {
                 execution.getSession().setSikuliAvailable(false);
             }
 
+            execution.getSession().setBrowserProcess(execution.getBrowser());
+
             execution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
@@ -708,14 +710,14 @@ public class RobotServerService implements IRobotServerService {
 
                                 BiDiUtils.addPreloadScript(biDiSession, preloadJs);
 
-                                execution.addExecutionLog(ExecutionLog.STATUS_INFO,"Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
+                                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
 
                             } catch (Exception e) {
-                                execution.addExecutionLog(ExecutionLog.STATUS_WARN,"Failed to enable BiDi or set preload script : " + e.getMessage()
+                                execution.addExecutionLog(ExecutionLog.STATUS_WARN, "Failed to enable BiDi or set preload script : " + e.getMessage()
                                 );
                             }
                         } else {
-                            execution.addExecutionLog(ExecutionLog.STATUS_WARN,"BiDi not available (no webSocketUrl capability)"
+                            execution.addExecutionLog(ExecutionLog.STATUS_WARN, "BiDi not available (no webSocketUrl capability)"
                             );
                         }
                     }
@@ -852,6 +854,8 @@ public class RobotServerService implements IRobotServerService {
             } else {
                 execution.getSession().setSikuliAvailable(false);
             }
+
+            execution.getSession().setBrowserProcess(execution.getBrowser());
 
             execution.getSession().setStarted(true);
 
