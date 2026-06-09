@@ -25,6 +25,8 @@
     <head>
         <meta name="active-menu" content="automate">
         <meta name="active-submenu" content="QuickStart.jsp">
+        <meta name="active-page" content="QuickStart.jsp">
+        <meta name="page" content="Quick Start">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions_new.html" %>
         <title id="pageTitle">Quick Start</title>
@@ -166,6 +168,7 @@
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
+            <jsp:include page="include/global/aiBottomBar.html"/>
         </div>
         </main>
     </body>

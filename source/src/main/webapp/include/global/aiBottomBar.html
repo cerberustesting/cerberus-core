@@ -1,61 +1,382 @@
 <!-- AI Assistant Bottom Bar -->
 <div x-data="aiAssistant()"
+     x-init="init()"
      :style="`right:0;left: ${$store.sidebar.hidden ? '0' : $store.sidebar.expanded ? '18rem' : '5rem'}`"
      class="fixed bottom-0 z-50 transition-all duration-300">
 
-    <!-- Toggle Button (when closed) -->
+    <!-- Toggle Button when closed -->
     <button x-show="!open"
-      @click="openAssistant()"
-      class="absolute right-4 bottom-4 dark:bg-slate-800 bg-slate-200 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white px-4 py-2
-      rounded-full shadow-lg flex items-center gap-2 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
-        <i data-lucide="bot" class="w-4 h-4"></i>AI Assistant
+            @click="openAssistant()"
+            class="absolute right-4 bottom-4 dark:bg-slate-800 bg-slate-200 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+        <i data-lucide="bot" class="w-4 h-4"></i>
+        AI Assistant
     </button>
 
-    <!-- Sliding Panel -->
     <div x-show="open"
-        x-transition:enter="transform transition ease-out duration-300"
-        x-transition:enter-start="translate-y-full"
-        x-transition:enter-end="translate-y-0"
-        x-transition:leave="transform transition ease-in duration-200"
-        x-transition:leave-start="translate-y-0"
-        x-transition:leave-end="translate-y-full"
-        class="dark:bg-slate-900 bg-slate-100 text-slate-900 dark:text-white h-96 w-full shadow-2xl rounded-t-xl p-4 flex flex-col">
+         x-transition:enter="transform transition ease-out duration-300"
+         x-transition:enter-start="translate-y-full"
+         x-transition:enter-end="translate-y-0"
+         x-transition:leave="transform transition ease-in duration-200"
+         x-transition:leave-start="translate-y-0"
+         x-transition:leave-end="translate-y-full"
+         :style="`height: ${panelHeight}px`"
+         class="dark:bg-slate-900 bg-slate-100 text-slate-900 dark:text-white w-full shadow-2xl rounded-t-xl flex flex-col overflow-hidden">
+
+        <!-- Resize handle -->
+        <div @mousedown="startResize($event)"
+             class="h-3 cursor-ns-resize flex items-center justify-center bg-transparent hover:bg-blue-500/10 transition shrink-0"
+             title="Redimensionner l'assistant">
+            <div class="w-12 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+        </div>
+
         <!-- Header -->
-        <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-300 dark:border-slate-700 shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-2 shrink-0">
                     <i data-lucide="bot" class="w-5 h-5"></i>
                     <span class="font-semibold">AI Copilot Assistant</span>
                 </div>
-                <!-- Dynamic button -->
-                <div class="header-buttons flex gap-2"></div>
+
+                <div class="hidden lg:block text-xs text-slate-500 truncate max-w-96"
+                     x-show="currentSessionTitle">
+                    <span x-text="currentSessionTitle"></span>
+                </div>
             </div>
 
-            <button @click="close()" class="hover:text-slate-700 dark:hover:text-slate-300">
+            <button @click="close()"
+                    class="hover:text-slate-700 dark:hover:text-slate-300 shrink-0">
                 <i data-lucide="chevron-down" class="w-5 h-5"></i>
             </button>
         </div>
 
-        <!-- Conversation Display -->
-        <div id="aiConversation" class="flex flex-col flex-1 overflow-y-auto dark:bg-slate-800 bg-slate-200 p-3 rounded-lg text-sm space-y-2">
-        </div>
+        <!-- Body -->
+        <div class="flex flex-1 min-h-0 overflow-hidden relative">
 
-        <!-- Input -->
-        <div class="mt-3 flex gap-2">
-            <input x-ref="aiInput"
-                @keydown.enter="sendUserMessage()"
-                type="text"
-                placeholder="Write your question..."
-                class="flex-1 rounded-md p-2 text-white dark:text-slate-800">
-            <button @click="sendUserMessage()"
-                    class="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-md">
-                Send
-            </button>
+            <!-- Sidebar -->
+            <aside
+                    :class="sidebarOpen ? 'w-64' : 'w-14'"
+                    class="bg-white dark:bg-slate-950 flex flex-col min-h-0 shrink-0 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 overflow-hidden">
+
+                <!-- Sidebar top actions -->
+                <div class="px-2 py-3 space-y-1 shrink-0">
+
+                    <button @click="sidebarOpen = !sidebarOpen"
+                            :title="sidebarOpen ? 'Réduire la sidebar' : 'Ouvrir la sidebar'"
+                            class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="panel-left"
+                           class="w-4 h-4 shrink-0 transition-transform duration-300"
+                           :class="sidebarOpen ? '' : 'rotate-180'"></i>
+
+                        <span x-show="sidebarOpen" x-transition.opacity>
+                            Réduire
+                        </span>
+                    </button>
+
+                    <button @click="newChat()"
+                            :title="sidebarOpen ? '' : 'Nouveau chat'"
+                            class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+                        <span x-show="sidebarOpen" x-transition.opacity>Nouveau chat</span>
+                    </button>
+
+                    <button @click="toggleSidebar('history')"
+                            :title="sidebarOpen ? '' : 'Historique'"
+                            :class="sidebarOpen && sidebarMode === 'history'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                            class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors">
+                        <i data-lucide="history" class="w-4 h-4 shrink-0"></i>
+                        <span x-show="sidebarOpen" x-transition.opacity>Historique</span>
+                    </button>
+
+                    <button @click="toggleSidebar('suggestions')"
+                            :title="sidebarOpen ? '' : 'Suggestions'"
+                            :class="sidebarOpen && sidebarMode === 'suggestions'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                            class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors">
+                        <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
+                        <span x-show="sidebarOpen" x-transition.opacity>Suggestions</span>
+                    </button>
+
+                    <div class="header-buttons flex flex-col gap-1"></div>
+                </div>
+
+                <!-- Search -->
+                <div x-show="sidebarOpen"
+                     x-transition.opacity
+                     class="px-3 pb-2 shrink-0">
+                    <div class="relative">
+                        <i data-lucide="search"
+                           class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400"></i>
+
+                        <input x-model="searchText"
+                               @input.debounce.300ms="searchConversations()"
+                               type="text"
+                               placeholder="Rechercher..."
+                               class="w-full pl-8 pr-3 py-2 text-xs rounded-lg bg-slate-100 dark:bg-slate-800/70 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50 border-0">
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div x-show="sidebarOpen && sidebarMode === 'suggestions'"
+                     class="flex-1 overflow-y-auto py-1">
+
+                    <template x-for="group in suggestions" :key="group.category">
+                        <div class="mb-3">
+                            <div class="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-4 py-1.5"
+                                 x-text="group.category"></div>
+
+                            <template x-for="item in group.items" :key="item.id">
+                                <button @click="useSuggestion(item)"
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors">
+                                    <div class="text-[13px] font-medium text-slate-700 dark:text-slate-200"
+                                         x-text="item.label"></div>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- History -->
+                <div x-show="sidebarOpen && sidebarMode === 'history'"
+                     class="flex-1 overflow-y-auto py-1">
+
+                    <div x-show="sessionsLoading"
+                         class="px-4 py-2 text-xs text-slate-400">
+                        Chargement...
+                    </div>
+
+                    <div x-show="searchLoading"
+                         class="px-4 py-2 text-xs text-slate-400">
+                        Recherche...
+                    </div>
+
+                    <!-- Search results -->
+                    <template x-if="searchText.trim()">
+                        <div>
+                            <div class="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-4 py-1.5">
+                                Résultats
+                            </div>
+
+                            <div x-show="!searchLoading && searchResults.length === 0"
+                                 class="px-4 py-2 text-xs text-slate-400">
+                                Aucun résultat.
+                            </div>
+
+                            <template x-for="result in searchResults"
+                                      :key="result.sessionID + '-' + result.messageIndex">
+                                <button @click="loadSession(result.sessionID, result.messageIndex)"
+                                        class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors">
+                                    <div class="text-[13px] font-medium text-slate-700 dark:text-slate-200 truncate"
+                                         x-text="result.title || 'Nouvelle conversation'"></div>
+
+                                    <div class="text-[11px] text-slate-400 mt-0.5"
+                                         x-text="formatDateLabel(result.dateCreated)"></div>
+
+                                    <div class="text-[11px] mt-1 text-slate-500 dark:text-slate-400 line-clamp-2"
+                                         x-show="result.question">
+                                        <span x-text="result.question"></span>
+                                    </div>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Session history -->
+                    <template x-if="!searchText.trim()">
+                        <div>
+                            <div x-show="!sessionsLoading && groupedSessions.length === 0"
+                                 class="px-4 py-2 text-xs text-slate-400">
+                                Aucune conversation.
+                            </div>
+
+                            <template x-for="group in groupedSessions" :key="group.label">
+                                <div class="mb-2">
+                                    <div class="text-[11px] font-medium text-slate-400 dark:text-slate-500 px-3 py-1.5"
+                                         x-text="group.label"></div>
+
+                                    <template x-for="session in group.sessions" :key="session.sessionID">
+                                        <div class="group relative flex items-center px-2">
+                                            <button @click="loadSession(session.sessionID)"
+                                                    @contextmenu.prevent="openSessionContextMenu(session, $event)"
+                                                    :class="session.sessionID === sessionID
+                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70'"
+                                                    class="flex-1 min-w-0 text-left px-2.5 py-1.5 pr-8 rounded-lg transition-colors">
+                                                <div class="text-sm truncate"
+                                                     x-text="cleanTitle(session.title) || 'Nouvelle conversation'"></div>
+                                            </button>
+
+                                            <button @click.stop="deleteSession(session)"
+                                                    title="Supprimer"
+                                                    class="absolute right-3 opacity-0 group-hover:opacity-100 p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </aside>
+
+            <!-- Main Conversation -->
+            <main class="flex-1 min-w-0 overflow-hidden p-4 relative"
+                  style="display:grid; grid-template-rows:1fr auto; min-height:0;">
+
+                <!-- Conversation Display : seule cette zone scrolle -->
+                <div id="aiConversation"
+                     class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50 dark:bg-slate-900 rounded-lg"
+                     style="min-height:0;">
+
+                    <template x-for="(m, i) in messages" :key="i">
+                        <div class="flex items-end gap-2"
+                             :class="m.role === 'user' ? 'justify-end' : 'justify-start'">
+
+                            <!-- Avatar assistant -->
+                            <div x-show="m.role !== 'user'"
+                                 class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0 shadow-sm">
+                                <i data-lucide="bot" class="w-4 h-4 text-sky-500"></i>
+                            </div>
+
+                            <!-- Thinking bubble -->
+                            <div x-show="m.type === 'thinking'"
+                                 class="bg-slate-200 dark:bg-slate-800 rounded-xl rounded-bl-sm px-4 py-3 shadow-sm">
+                                <div class="flex items-center gap-1">
+                                    <span class="ai-dot"></span>
+                                    <span class="ai-dot"></span>
+                                    <span class="ai-dot"></span>
+                                </div>
+                            </div>
+
+                            <!-- Message bubble -->
+                            <div x-show="m.type !== 'thinking'"
+                                 class="max-w-[80%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm"
+                                 :class="m.role === 'user'
+                    ? 'bg-sky-500 text-white rounded-br-sm'
+                    : 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm'">
+
+                                <span x-html="m.role === 'user' ? escapeHtml(m.text) : formatAI(m.text)"></span>
+                            </div>
+
+                            <!-- Avatar user -->
+                            <div x-show="m.role === 'user'"
+                                 class="h-8 w-8 rounded-full bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                            </div>
+
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Welcome suggestions : compact avec Lucide -->
+                <div x-show="showWelcomeSuggestions"
+                     x-transition.opacity.duration.200ms
+                     class="absolute left-6 right-6 top-6 pointer-events-none">
+
+                    <div class="max-w-4xl mx-auto pointer-events-auto">
+                        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/90 shadow-sm backdrop-blur p-4">
+
+                            <!-- Header compact -->
+                            <div class="mb-4 flex items-center gap-3">
+                                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                                    <i data-lucide="sparkles" class="h-4 w-4"></i>
+                                </div>
+
+                                <div>
+                                    <div class="text-base font-bold text-slate-900 dark:text-slate-100">
+                                        Bonjour 👋
+                                    </div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">
+                                        Que veux-tu faire dans Cerberus aujourd’hui ?
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Suggestions compactes -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                                <template x-for="(item, index) in flatSuggestions.slice(0, 6)" :key="item.id">
+                                    <button @click="useSuggestion(item)"
+                                            class="group flex items-start gap-3 crb_card">
+
+                                        <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition"
+                                             :class="{
+                                'bg-blue-50 text-blue-500 group-hover:bg-blue-500 group-hover:text-white dark:bg-blue-950/50 dark:text-blue-300': index === 0,
+                                'bg-green-50 text-green-500 group-hover:bg-green-500 group-hover:text-white dark:bg-green-950/50 dark:text-green-300': index === 1,
+                                'bg-purple-50 text-purple-500 group-hover:bg-purple-500 group-hover:text-white dark:bg-purple-950/50 dark:text-purple-300': index === 2,
+                                'bg-orange-50 text-orange-500 group-hover:bg-orange-500 group-hover:text-white dark:bg-orange-950/50 dark:text-orange-300': index === 3,
+                                'bg-cyan-50 text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white dark:bg-cyan-950/50 dark:text-cyan-300': index === 4,
+                                'bg-pink-50 text-pink-500 group-hover:bg-pink-500 group-hover:text-white dark:bg-pink-950/50 dark:text-pink-300': index === 5
+                             }">
+
+                                            <template x-if="index === 0">
+                                                <i data-lucide="app-window" class="h-4 w-4"></i>
+                                            </template>
+                                            <template x-if="index === 1">
+                                                <i data-lucide="clipboard-check" class="h-4 w-4"></i>
+                                            </template>
+                                            <template x-if="index === 2">
+                                                <i data-lucide="target" class="h-4 w-4"></i>
+                                            </template>
+                                            <template x-if="index === 3">
+                                                <i data-lucide="square-pen" class="h-4 w-4"></i>
+                                            </template>
+                                            <template x-if="index === 4">
+                                                <i data-lucide="list" class="h-4 w-4"></i>
+                                            </template>
+                                            <template x-if="index === 5">
+                                                <i data-lucide="chart-line" class="h-4 w-4"></i>
+                                            </template>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <div class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100"
+                                                 x-text="item.label"></div>
+
+                                            <div class="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400"
+                                                 x-text="item.description"></div>
+                                        </div>
+                                    </button>
+                                </template>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input fixé en bas du panneau -->
+                <div class="flex items-end gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 focus-within:border-blue-500 transition">
+                    <input x-ref="aiInput"
+                           @keydown.enter="sendUserMessage()"
+                           type="text"
+                           placeholder="Write your question..."
+                           class="flex-1 bg-transparent text-sm focus:outline-none px-2 py-1.5 text-slate-900 dark:text-white">
+
+                    <button @click="sendUserMessage()"
+                            class="h-9 w-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </main>
         </div>
     </div>
+
+    <!-- Right click context menu -->
+    <div x-show="contextMenu.open"
+         @click.outside="contextMenu.open = false"
+         :style="`left:${contextMenu.x}px; top:${contextMenu.y}px`"
+         class="fixed z-[9999] bg-white dark:bg-slate-900 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 py-1 w-44">
+        <button @click="deleteSession(contextMenu.session)"
+                class="w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 shrink-0"></i>
+            Supprimer
+        </button>
+    </div>
 </div>
+
 <script>
-    /** Utilities **/
     function escapeHtmlForPreview(str) {
         if (!str) return "";
         return str
@@ -64,24 +385,17 @@
             .replace(/>/g, "&gt;");
     }
 
-    /** aiAssistant avec streaming Markdown + final sanitize **/
     function aiAssistant(options = {}) {
-
 
         function makeQuestionsClickable(html) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
-
-            console.debug(html);
-            // Cherche tous les <li> et <p> qui contiennent une question
             const candidates = doc.querySelectorAll("li, p, strong, em");
 
             candidates.forEach(el => {
                 const text = el.textContent.trim();
-
                 const cleanText = text.replace(/^"+|"+$/g, "").trim();
-                console.debug(cleanText);
-                // Détecte les vraies questions (terminent par ?)
+
                 if (cleanText.endsWith("?")) {
                     const btn = document.createElement("button");
                     btn.className =
@@ -101,60 +415,194 @@
             open: false,
             ws: null,
             connected: false,
+
+            panelHeight: 480,
+            panelMinHeight: 320,
+            panelMaxHeight: 760,
+            isResizing: false,
+            resizeStartY: 0,
+            resizeStartHeight: 0,
+
             sessionID: null,
+            currentSessionTitle: null,
+
+            messages: [],
+            welcomeMessage: "Bonjour 👋 Je suis ton assistant IA Cerberus. Que veux-tu faire aujourd’hui ?",
+
             aiBuffer: "",
             aiCurrentBubble: null,
             isCurrentFinalized: false,
 
-            init() {
-                this.connectWebSocket();
+            sidebarOpen: false,
+            sidebarMode: "history",
 
-                /*
-                Listener for sollicitation from outside
-                 */
-                document.addEventListener('open-debug-assistant', (e) => {
+            sessions: [],
+            groupedSessions: [],
+            sessionsLoading: false,
+
+            searchText: "",
+            searchResults: [],
+            searchLoading: false,
+
+            /*
+             * Cache local des messages.
+             * Structure :
+             * {
+             *   "sessionID": [
+             *      { role: "user", message: "..." },
+             *      { role: "assistant", message: "..." }
+             *   ]
+             * }
+             */
+            messagesCache: {},
+
+            showWelcomeSuggestions: false,
+
+            contextMenu: {
+                open: false,
+                x: 0,
+                y: 0,
+                session: null
+            },
+
+            suggestions: [
+                {
+                    category: "Créer",
+                    items: [
+                        {
+                            id: "create_application",
+                            label: "Créer une application",
+                            description: "Créer une nouvelle application Cerberus",
+                            prompt: "Crée une application nommée [nom] dans le système [système]."
+                        },
+                        {
+                            id: "create_testcase",
+                            label: "Créer un cas de test",
+                            description: "Créer un nouveau cas de test",
+                            prompt: "Crée un cas de test nommé [nom] dans l'application [application]."
+                        },
+                        {
+                            id: "create_campaign",
+                            label: "Créer une campagne",
+                            description: "Créer une campagne d'exécution",
+                            prompt: "Crée une campagne nommée [nom] avec les cas de test suivants : [liste]."
+                        }
+                    ]
+                },
+                {
+                    category: "Modifier",
+                    items: [
+                        {
+                            id: "modify_testcase",
+                            label: "Modifier un cas de test",
+                            description: "Modifier les propriétés ou étapes d'un testcase",
+                            prompt: "Modifie le cas de test [testcase] pour [objectif]."
+                        },
+                        {
+                            id: "modify_step",
+                            label: "Modifier une étape",
+                            description: "Adapter une étape existante",
+                            prompt: "Modifie l'étape [étape] du cas de test [testcase] pour [objectif]."
+                        },
+                        {
+                            id: "modify_application",
+                            label: "Modifier une application",
+                            description: "Mettre à jour les informations d'une application",
+                            prompt: "Modifie l'application [application] pour [objectif]."
+                        }
+                    ]
+                },
+                {
+                    category: "Explorer",
+                    items: [
+                        {
+                            id: "list_applications",
+                            label: "Lister mes applications",
+                            description: "Afficher les applications accessibles",
+                            prompt: "Liste mes applications disponibles."
+                        },
+                        {
+                            id: "search_api_service",
+                            label: "Rechercher un service API",
+                            description: "Trouver un service API ou une librairie step",
+                            prompt: "Recherche un service API correspondant à [besoin]."
+                        },
+                        {
+                            id: "list_campaigns",
+                            label: "Lister les campagnes",
+                            description: "Afficher les campagnes configurées",
+                            prompt: "Liste les campagnes disponibles dans mon workspace."
+                        }
+                    ]
+                },
+                {
+                    category: "Analyser",
+                    items: [
+                        {
+                            id: "analyze_executions",
+                            label: "Analyser les dernières exécutions",
+                            description: "Comprendre les échecs récents",
+                            prompt: "Analyse les dernières exécutions et identifie les principales causes d'échec."
+                        },
+                        {
+                            id: "unstable_tests",
+                            label: "Identifier les tests instables",
+                            description: "Trouver les tests flaky ou instables",
+                            prompt: "Identifie les tests instables sur les dernières campagnes."
+                        }
+                    ]
+                }
+            ],
+
+            get flatSuggestions() {
+                return this.suggestions.flatMap(group => group.items);
+            },
+
+            init() {
+                this.restorePanelHeight();
+
+                document.addEventListener("open-debug-assistant", (e) => {
                     const { subject, content } = e.detail;
                     this.openWithSubject(subject, content);
                 });
 
-                /*
-                Listener for click inside response from AI
-                 */
                 document.addEventListener("click", (e) => {
                     const btn = e.target.closest(".question-suggest");
                     if (!btn) return;
 
                     const question = btn.dataset.question;
-
                     const input = this.$refs.aiInput;
-                    input.value = question;
 
+                    input.value = question;
                     this.sendUserMessage();
                 });
 
-                /*
-                Get HeaderButtons spécifics
-                 */
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") {
+                        this.contextMenu.open = false;
+                    }
+                });
+
                 if (typeof window.getAIHeaderButtons === "function") {
                     const buttons = getAIHeaderButtons();
                     this.setHeaderButtons(buttons);
                 }
+
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                });
             },
 
             connectWebSocket() {
-
                 const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
                 const host = window.location.host;
-                const pageName = document.querySelector('meta[name="active-page"]')?.content;
-                const fullPath = window.location.pathname;
-                let context = pageName ? fullPath.replace("/" + pageName, "") : "";
-                context = context.replace(/\/$/, "");
+                const context = this.getCerberusBasePath();
 
-                // Build WebSocket URL
-                const wsUrl = `${protocol}${host}${context}/api/ws/AIWebSocket`;
+                const wsUrl = `${protocol}${host}${context}api/ws/AIWebSocket`;
                 console.debug("WebSocket URL:", wsUrl);
 
-                // Connect to WebSocket endpoint
                 this.ws = new WebSocket(wsUrl);
 
                 this.ws.onopen = () => {
@@ -163,7 +611,15 @@
 
                 this.ws.onclose = () => {
                     this.connected = false;
-                    setTimeout(() => this.connectWebSocket(), 2000);
+                    this.ws = null;
+
+                    if (this.open) {
+                        setTimeout(() => {
+                            if (this.open && (!this.ws || this.ws.readyState === WebSocket.CLOSED)) {
+                                this.connectWebSocket();
+                            }
+                        }, 2000);
+                    }
                 };
 
                 this.ws.onerror = (err) => {
@@ -171,116 +627,323 @@
                 };
 
                 this.ws.onmessage = (event) => {
-                    // parse JSON if possible
                     let parsed = null;
+
                     try {
                         parsed = JSON.parse(event.data);
                     } catch (e) {
-                        // if not JSON, stream text
                         this.appendAI(String(event.data), false, false);
                         return;
                     }
 
-                    // Supporte plusieurs formats de serveurs : json.data, json.delta, json.chunk, json.text
-                    const chunk = (parsed.data ?? parsed.delta ?? parsed.chunk ?? parsed.text ?? "");
+                    const chunk = parsed.data ?? parsed.delta ?? parsed.chunk ?? parsed.text ?? "";
                     const type = parsed.type ?? null;
-                    const doneFlag = parsed.done === true || parsed.type === 'end' || chunk === "";
+                    const doneFlag = parsed.done === true || parsed.type === "end" || chunk === "";
 
-                    // If title, handle differently
-                    if (type === 'title') {
-                        //TODO
+                    if (type === "title") {
+                        const title = this.cleanTitle(parsed.title || chunk);
+                        const sessionID = parsed.sessionID || this.sessionID;
+
+                        if (sessionID) {
+                            this.sessionID = sessionID;
+                        }
+
+                        this.updateCurrentSessionTitle(title, sessionID);
                         return;
                     }
 
-                    // Append the chunk to the current AI bubble (stream)
+                    if (type === "chat") {
+                        this.appendAI(parsed.data || "", false, false);
+                        return;
+                    }
+
+                    if (type === "end") {
+                        this.finalizeCurrentAI();
+                        return;
+                    }
+
+                    if (type === "error") {
+                        this.appendAI(parsed.message || parsed.data || "Erreur côté assistant IA.", false, true);
+                        return;
+                    }
+
                     this.appendAI(chunk, false, doneFlag);
                 };
             },
 
-            openAssistant() {
-                this.open = true;
-                const input = this.$refs.aiInput;
-
-                if (!this.sessionID) {
-                    this.sessionID = crypto.randomUUID();
-
-                    var username = getUser().name;
-                    const language = getUser().language === "en" ? "English" : "French";
-                    const pageMeta = document.querySelector('meta[name="page"]');
-                    const pageName = pageMeta ? pageMeta.content : "unknown page";
-
-                    const payload = {
-                        subject: "chat_with_ai",
-                        sender: getUser().login,
-                        sessionID: this.sessionID,
-                        content:
-                            "Hello, I'm " + username + ". I'm working in a software development context, in a job related to Quality Assurance (automation, tester)." +
-                            "The context of the question is related to Cerberus-Testing, a low-code testing framework. " +
-                            "Could you give me 2 or 3 examples of things that I can ask you related to the page " + pageName + " in Cerberus-Testing? " +
-                            "Please, answer in " + language + "language." +
-                            "Be concise, and Answer in Markdown format, using **bold**, _italic_, lists, code blocks, and proper Markdown syntax."
-
-                    };
-
-                    if (this.connected) this.ws.send(JSON.stringify(payload));
-
-                    //empty the input
-                    input.value = "";
-
-                    // prepare a new AI bubble for the streaming response
-                    this.appendAI("", true, false);
+            closeWebSocket() {
+                if (!this.ws) {
+                    this.connected = false;
+                    return;
                 }
 
+                this.ws.onclose = null;
+                this.ws.onerror = null;
+                this.ws.onmessage = null;
+
+                if (
+                    this.ws.readyState === WebSocket.OPEN ||
+                    this.ws.readyState === WebSocket.CONNECTING
+                ) {
+                    this.ws.close(1000, "AI assistant closed");
+                }
+
+                this.ws = null;
+                this.connected = false;
+            },
+
+            openAssistant() {
+                this.open = true;
+
+                if (!this.sessionID) {
+                    this.newChat(false);
+                }
+
+                this.ensureWebSocketConnected()
+                    .catch((e) => {
+                        console.error("Unable to open AI WebSocket:", e);
+                    });
+
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                });
+            },
+
+            ensureWebSocketConnected() {
+                return new Promise((resolve, reject) => {
+                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                        this.connected = true;
+                        resolve();
+                        return;
+                    }
+
+                    if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
+                        const existingOnOpen = this.ws.onopen;
+                        const existingOnError = this.ws.onerror;
+
+                        this.ws.onopen = (event) => {
+                            this.connected = true;
+
+                            if (existingOnOpen) {
+                                existingOnOpen.call(this.ws, event);
+                            }
+
+                            resolve();
+                        };
+
+                        this.ws.onerror = (event) => {
+                            if (existingOnError) {
+                                existingOnError.call(this.ws, event);
+                            }
+
+                            reject(event);
+                        };
+
+                        return;
+                    }
+
+                    this.connectWebSocket();
+
+                    const timeout = setTimeout(() => {
+                        reject(new Error("WebSocket connection timeout"));
+                    }, 5000);
+
+                    this.ws.onopen = () => {
+                        clearTimeout(timeout);
+                        this.connected = true;
+                        resolve();
+                    };
+
+                    this.ws.onerror = (err) => {
+                        clearTimeout(timeout);
+                        console.error("WebSocket error:", err);
+                        reject(err);
+                    };
+                });
             },
 
             close() {
                 this.open = false;
+                this.contextMenu.open = false;
+                this.closeWebSocket();
             },
 
-            sendUserMessage() {
+            startResize(event) {
+                event.preventDefault();
+
+                this.isResizing = true;
+                this.resizeStartY = event.clientY;
+                this.resizeStartHeight = this.panelHeight;
+
+                document.body.classList.add("select-none");
+
+                const onMouseMove = (e) => {
+                    if (!this.isResizing) return;
+
+                    /*
+                     * Le panneau est collé en bas.
+                     * Si on tire vers le haut, clientY diminue, donc la hauteur augmente.
+                     */
+                    const delta = this.resizeStartY - e.clientY;
+                    const nextHeight = this.resizeStartHeight + delta;
+
+                    this.panelHeight = Math.min(
+                        this.panelMaxHeight,
+                        Math.max(this.panelMinHeight, nextHeight)
+                    );
+                };
+
+                const onMouseUp = () => {
+                    this.isResizing = false;
+                    document.body.classList.remove("select-none");
+
+                    window.removeEventListener("mousemove", onMouseMove);
+                    window.removeEventListener("mouseup", onMouseUp);
+
+                    localStorage.setItem("aiAssistant.panelHeight", String(this.panelHeight));
+                };
+
+                window.addEventListener("mousemove", onMouseMove);
+                window.addEventListener("mouseup", onMouseUp);
+            },
+
+            restorePanelHeight() {
+                const saved = Number(localStorage.getItem("aiAssistant.panelHeight"));
+
+                if (!Number.isNaN(saved) && saved > 0) {
+                    this.panelHeight = Math.min(
+                        this.panelMaxHeight,
+                        Math.max(this.panelMinHeight, saved)
+                    );
+                }
+            },
+
+            toggleSidebar(mode) {
+                /*
+                 * Si la sidebar est réduite :
+                 * - on l'ouvre
+                 * - on affiche le mode demandé
+                 */
+                if (!this.sidebarOpen) {
+                    this.sidebarOpen = true;
+                    this.sidebarMode = mode || this.sidebarMode || "history";
+                }
+                /*
+                 * Si on clique sur le mode déjà ouvert :
+                 * - on réduit la sidebar
+                 * - on conserve sidebarMode pour savoir quoi rouvrir ensuite
+                 */
+                else if (this.sidebarMode === mode) {
+                    this.sidebarOpen = false;
+                }
+                /*
+                 * Sinon, on change simplement de section.
+                 */
+                else {
+                    this.sidebarMode = mode;
+                }
+
+                this.contextMenu.open = false;
+
+                if (this.sidebarOpen && this.sidebarMode === "history") {
+                    this.loadSessions();
+                }
+
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                });
+            },
+
+            newChat() {
+                this.sessionID = crypto.randomUUID();
+                this.currentSessionTitle = "Nouvelle conversation";
+
                 this.aiBuffer = "";
+                this.aiCurrentBubble = null;
+                this.isCurrentFinalized = false;
+
+                this.showWelcomeSuggestions = true;
+                this.contextMenu.open = false;
+
+                const conv = document.getElementById("aiConversation");
+                if (conv) {
+                    conv.innerHTML = "";
+                }
+
+                const input = this.$refs.aiInput;
+                if (input) {
+                    input.value = "";
+                    input.focus();
+                }
+            },
+
+            async sendUserMessage() {
+                this.aiBuffer = "";
+                this.showWelcomeSuggestions = false;
+
                 const input = this.$refs.aiInput;
                 const msg = input.value.trim();
+
                 if (!msg) return;
+
+                if (!this.sessionID) {
+                    this.sessionID = crypto.randomUUID();
+                }
 
                 this.addMessage("user", msg);
 
-                if (!this.sessionID) this.sessionID = crypto.randomUUID();
-
                 const payload = {
-                    subject: "chat_with_ai",
                     sender: getUser().login,
                     sessionID: this.sessionID,
+                    subject: "chat_with_ai",
                     content: msg
                 };
 
-                if (this.connected) this.ws.send(JSON.stringify(payload));
-
                 input.value = "";
 
-                // prepare a new AI bubble for the streaming response
                 this.appendAI("", true, false);
+
+                try {
+                    await this.ensureWebSocketConnected();
+                    this.ws.send(JSON.stringify(payload));
+                } catch (e) {
+                    console.error("AI WebSocket is not connected", e);
+                    this.finalizeCurrentAI();
+                    this.addMessage("ai", "Impossible de contacter l'assistant IA. Merci de réessayer.");
+                }
             },
 
-            /**
-             * appendAI(chunk, isNew, isFinal)
-             *  - chunk : string fragment reçu (possibly empty)
-             *  - isNew : true -> create new bubble (start of answer)
-             *  - isFinal : true -> server signals end -> sanitize + finalize bubble
-             */
+            useSuggestion(item) {
+                if (!this.sessionID) {
+                    this.newChat(false);
+                }
+
+                const input = this.$refs.aiInput;
+                if (!input) return;
+
+                input.value = item.prompt;
+                input.focus();
+
+                this.showWelcomeSuggestions = false;
+            },
+
             appendAI(chunk, isNew = false, isFinal = false) {
                 const conv = document.getElementById("aiConversation");
                 if (!conv) return;
 
-                // Création d'une nouvelle bulle si nécessaire
+                this.showWelcomeSuggestions = false;
+
                 if (isNew || !this.aiCurrentBubble || this.isCurrentFinalized) {
                     const bubble = document.createElement("div");
                     bubble.className =
                         "ai-msg dark:bg-slate-700 bg-slate-300 dark:text-white text-slate-900 " +
                         "self-start p-3 rounded-lg max-w-[75%] transition-transform duration-300 ease-out";
-                    bubble.setAttribute('data-streaming', 'true');
+                    bubble.setAttribute("data-streaming", "true");
 
-                    // loader uniquement pour l'attente du début de la réponse
                     bubble.innerHTML = `
                         <div class="loader flex space-x-1 mb-1">
                             <div class="w-1 h-1 bg-white/70 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
@@ -291,17 +954,20 @@
                     `;
 
                     conv.appendChild(bubble);
+
                     this.aiCurrentBubble = bubble;
                     this.aiBuffer = "";
                     this.isCurrentFinalized = false;
                 }
 
-                // Dès qu'on reçoit un premier chunk, supprimer le loader
-                if (chunk.trim() !== "") {
+                if (chunk && chunk.trim() !== "") {
                     const loader = this.aiCurrentBubble.querySelector(".loader");
-                    if (loader) loader.remove();
+                    if (loader) {
+                        loader.remove();
+                    }
 
                     const contentDiv = this.aiCurrentBubble.querySelector(".ai-content");
+
                     try {
                         const previewSource = escapeHtmlForPreview(this.aiBuffer + chunk);
                         contentDiv.innerHTML = marked.parse(previewSource);
@@ -310,9 +976,7 @@
                     }
                 }
 
-                // ajouter chunk au buffer
-                this.aiBuffer += chunk;
-
+                this.aiBuffer += chunk || "";
                 conv.scrollTop = conv.scrollHeight;
 
                 if (isFinal) {
@@ -325,47 +989,469 @@
 
                 try {
                     const finalHtml = marked.parse(this.aiBuffer);
+
                     const clean = DOMPurify.sanitize(finalHtml, {
                         ALLOWED_TAGS: [
-                            'b','i','strong','em','ul','ol','li','p','div','span',
-                            'code','pre','br','hr','h1','h2','h3','h4','table','thead','tbody','tr','th','td'
+                            "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
+                            "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
+                            "table", "thead", "tbody", "tr", "th", "td",
+                            "button"
                         ],
-                        ALLOWED_ATTR: ['class','style']
+                        ALLOWED_ATTR: [
+                            "class", "style", "data-question"
+                        ]
                     });
-                    this.aiCurrentBubble.innerHTML = clean;
 
+                    this.aiCurrentBubble.innerHTML = clean;
                     this.aiCurrentBubble.innerHTML = makeQuestionsClickable(this.aiCurrentBubble.innerHTML);
 
                 } catch (e) {
-                    // fallback to escaped text
                     this.aiCurrentBubble.textContent = this.aiBuffer;
                 }
 
-                this.aiCurrentBubble.removeAttribute('data-streaming');
+                this.aiCurrentBubble.removeAttribute("data-streaming");
                 this.isCurrentFinalized = true;
                 this.aiBuffer = "";
             },
 
-            addMessage(who, text) {
+            addMessage(who, text, messageIndex = null) {
                 const conv = document.getElementById("aiConversation");
                 if (!conv) return;
 
-                const bubble = `<div class="${
-                    who === "ai" ? 'ai-msg dark:bg-slate-700 bg-slate-300 dark:text-white text-slate-900 self-start'
-                        : 'user-msg bg-blue-600 text-white self-end'
-                } p-3 rounded-lg max-w-[75%] transition-transform duration-300 ease-out">${DOMPurify.sanitize(text)}
-                </div>`;
+                const row = document.createElement("div");
 
-                conv.insertAdjacentHTML("beforeend", bubble);
+                row.className = "flex items-end gap-2";
+                row.classList.add(
+                    who === "ai" || who === "assistant"
+                        ? "justify-start"
+                        : "justify-end"
+                );
+
+                if (messageIndex !== null && messageIndex !== undefined) {
+                    row.dataset.messageIndex = String(messageIndex);
+                }
+
+                const avatar = document.createElement("div");
+                avatar.className =
+                    "h-8 w-8 rounded-full flex items-center justify-center shrink-0 shadow-sm";
+
+                const icon = document.createElement("i");
+
+                const bubble = document.createElement("div");
+                bubble.className =
+                    "max-w-[80%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm";
+
+                if (who === "ai" || who === "assistant") {
+                    avatar.className += " bg-slate-200 dark:bg-slate-800";
+                    icon.setAttribute("data-lucide", "bot");
+                    icon.className = "w-4 h-4 text-sky-500";
+
+                    bubble.className +=
+                        " bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm";
+
+                    try {
+                        const html = marked.parse(text || "");
+                        bubble.innerHTML = DOMPurify.sanitize(html, {
+                            ALLOWED_TAGS: [
+                                "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
+                                "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
+                                "table", "thead", "tbody", "tr", "th", "td", "blockquote"
+                            ],
+                            ALLOWED_ATTR: ["class", "style"]
+                        });
+                    } catch (e) {
+                        bubble.textContent = text || "";
+                    }
+
+                    avatar.appendChild(icon);
+                    row.appendChild(avatar);
+                    row.appendChild(bubble);
+                } else {
+                    avatar.className += " bg-sky-500 text-white";
+                    icon.setAttribute("data-lucide", "user");
+                    icon.className = "w-4 h-4 text-white";
+
+                    bubble.className +=
+                        " bg-sky-500 text-white rounded-br-sm";
+
+                    bubble.textContent = text || "";
+
+                    avatar.appendChild(icon);
+                    row.appendChild(bubble);
+                    row.appendChild(avatar);
+                }
+
+                conv.appendChild(row);
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+
                 conv.scrollTop = conv.scrollHeight;
             },
 
-            /*
-            Open bar with specific subject
-             */
-            openWithSubject(subject, content) {
+            async loadSessions() {
+                this.sessionsLoading = true;
+
+                try {
+                    const response = await fetch(`${this.getHttpBaseUrl()}api/ai/prompts`, {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Unable to load prompts");
+                    }
+
+                    const data = await response.json();
+
+                    const prompts = Array.isArray(data.prompts) ? data.prompts : [];
+
+                    this.sessions = prompts
+                        .filter(p => p.title !== "")
+                        .map(p => ({
+                            ...p,
+                            title: this.cleanTitle(p.title)
+                        }));
+
+                    this.groupedSessions = this.groupPromptsByDate(this.sessions);
+                    this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+
+                } catch (e) {
+                    console.error("Failed to fetch prompt history:", e);
+                    this.sessions = [];
+                    this.groupedSessions = [];
+                } finally {
+                    this.sessionsLoading = false;
+                }
+            },
+
+            async loadSession(sessionID, focusMessageIndex = null) {
+                try {
+                    const messages = await this.fetchSessionMessages(sessionID);
+
+                    const session = this.sessions.find(s => s.sessionID === sessionID);
+
+                    this.sessionID = sessionID;
+                    this.currentSessionTitle = session ? this.cleanTitle(session.title) : "Conversation";
+                    this.showWelcomeSuggestions = false;
+
+                    this.renderConversation(messages, focusMessageIndex);
+
+                } catch (e) {
+                    console.error("Failed to load session:", e);
+                }
+            },
+
+            async fetchSessionMessages(sessionID) {
+                if (this.messagesCache[sessionID]) {
+                    return this.messagesCache[sessionID];
+                }
+
+                const response = await fetch(`${this.getHttpBaseUrl()}api/ai/messagesFromPrompt/${encodeURIComponent(sessionID)}`, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Unable to load messagesFromPrompt");
+                }
+
+                const data = await response.json();
+                const messages = Array.isArray(data.messages) ? data.messages : [];
+
+                this.messagesCache[sessionID] = messages;
+
+                return messages;
+            },
+
+            renderConversation(messages, focusMessageIndex = null) {
+                const conv = document.getElementById("aiConversation");
+                if (!conv) return;
+
+                conv.innerHTML = "";
+
+                messages.forEach((msg, index) => {
+                    const role = msg.role === "user" ? "user" : "ai";
+                    const content = msg.message || msg.content || "";
+
+                    this.addMessage(role, content, index);
+                });
+
+                if (focusMessageIndex !== null && focusMessageIndex !== undefined) {
+                    const target = conv.querySelector(`[data-message-index="${focusMessageIndex}"]`);
+
+                    if (target) {
+                        target.classList.add("ring-2", "ring-blue-400");
+                        target.scrollIntoView({
+                            block: "center",
+                            behavior: "smooth"
+                        });
+
+                        setTimeout(() => {
+                            target.classList.remove("ring-2", "ring-blue-400");
+                        }, 2500);
+                    }
+                } else {
+                    conv.scrollTop = conv.scrollHeight;
+                }
+            },
+
+            async searchConversations() {
+                const q = this.searchText.trim().toLowerCase();
+
+                if (!q) {
+                    this.searchResults = [];
+                    return;
+                }
+
+                if (this.sessions.length === 0) {
+                    await this.loadSessions();
+                }
+
+                this.searchLoading = true;
+
+                try {
+                    const results = [];
+
+                    /*
+                     * 1. Recherche immédiate dans les titres.
+                     */
+                    this.sessions.forEach(session => {
+                        const title = this.cleanTitle(session.title).toLowerCase();
+
+                        if (title.includes(q)) {
+                            results.push({
+                                sessionID: session.sessionID,
+                                title: this.cleanTitle(session.title),
+                                dateCreated: session.dateCreated,
+                                messageIndex: 0,
+                                question: "",
+                                answer: ""
+                            });
+                        }
+                    });
+
+                    /*
+                     * 2. Recherche dans questions/réponses.
+                     * Attention : avec les services actuels, cela charge les messages session par session.
+                     */
+                    for (const session of this.sessions) {
+                        const messages = await this.fetchSessionMessages(session.sessionID);
+
+                        for (let i = 0; i < messages.length; i++) {
+                            const current = messages[i];
+                            const content = this.stripHtml(current.message || current.content || "");
+                            const role = current.role;
+
+                            if (!content.toLowerCase().includes(q)) {
+                                continue;
+                            }
+
+                            let question = "";
+                            let answer = "";
+
+                            if (role === "user") {
+                                question = content;
+                                const next = messages[i + 1];
+                                if (next) {
+                                    answer = this.stripHtml(next.message || next.content || "");
+                                }
+                            } else {
+                                answer = content;
+                                const previous = messages[i - 1];
+                                if (previous && previous.role === "user") {
+                                    question = this.stripHtml(previous.message || previous.content || "");
+                                }
+                            }
+
+                            results.push({
+                                sessionID: session.sessionID,
+                                title: this.cleanTitle(session.title),
+                                dateCreated: session.dateCreated,
+                                messageIndex: i,
+                                question: this.truncate(question, 160),
+                                answer: this.truncate(answer, 220)
+                            });
+                        }
+                    }
+
+                    /*
+                     * Déduplication simple.
+                     */
+                    const unique = [];
+                    const seen = new Set();
+
+                    results.forEach(r => {
+                        const key = `${r.sessionID}-${r.messageIndex}-${r.question}-${r.answer}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            unique.push(r);
+                        }
+                    });
+
+                    this.searchResults = unique.slice(0, 50);
+
+                } catch (e) {
+                    console.error("Failed to search conversations:", e);
+                    this.searchResults = [];
+                } finally {
+                    this.searchLoading = false;
+                }
+            },
+
+            openSessionContextMenu(session, event) {
+                this.contextMenu.open = true;
+                this.contextMenu.x = event.clientX;
+                this.contextMenu.y = event.clientY;
+                this.contextMenu.session = session;
+            },
+
+            async deleteSession(session) {
+                if (!session) return;
+
+                const title = this.cleanTitle(session.title) || "Nouvelle conversation";
+                const confirmed = window.confirm(`Supprimer la conversation "${title}" ?`);
+
+                if (!confirmed) {
+                    this.contextMenu.open = false;
+                    return;
+                }
+
+                /*
+                 * À adapter à ton service backend.
+                 * Le code existant ne montre pas encore d'endpoint de suppression.
+                 *
+                 * Proposition :
+                 * DELETE /api/ai/prompts/{sessionID}
+                 */
+                try {
+                    const response = await fetch(`${this.getHttpBaseUrl()}api/ai/prompts/${encodeURIComponent(session.sessionID)}`, {
+                        method: "DELETE"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Unable to delete prompt");
+                    }
+
+                    delete this.messagesCache[session.sessionID];
+
+                    this.contextMenu.open = false;
+
+                    if (this.sessionID === session.sessionID) {
+                        this.newChat();
+                    }
+
+                    await this.loadSessions();
+
+                } catch (e) {
+                    console.error("Failed to delete conversation:", e);
+                    alert("La suppression n'est pas disponible ou le service DELETE n'existe pas encore.");
+                    this.contextMenu.open = false;
+                }
+            },
+
+            updateCurrentSessionTitle(title, sessionID = null) {
+                const clean = this.cleanTitle(title);
+
+                if (!clean) return;
+
+                const sid = sessionID || this.sessionID;
+                if (!sid) return;
+
+                this.currentSessionTitle = clean;
+
+                const existing = this.sessions.find(s => s.sessionID === sid);
+
+                if (existing) {
+                    existing.title = clean;
+                } else {
+                    this.sessions.unshift({
+                        sessionID: sid,
+                        title: clean,
+                        dateCreated: new Date().toISOString()
+                    });
+                }
+
+                this.groupedSessions = this.groupPromptsByDate(this.sessions);
+            },
+
+            groupPromptsByDate(prompts) {
+                const now = new Date();
+
+                const today = [];
+                const last7 = [];
+                const last30 = [];
+                const older = {};
+
+                prompts.forEach(p => {
+                    if (!p.title) return;
+
+                    const date = new Date(p.dateCreated || Date.now());
+                    const diffDays = (now - date) / (1000 * 60 * 60 * 24);
+                    const monthKey = `${date.toLocaleString("default", { month: "long" })} ${date.getFullYear()}`;
+
+                    if (diffDays < 1) {
+                        today.push(p);
+                    } else if (diffDays <= 7) {
+                        last7.push(p);
+                    } else if (diffDays <= 30) {
+                        last30.push(p);
+                    } else {
+                        if (!older[monthKey]) {
+                            older[monthKey] = [];
+                        }
+                        older[monthKey].push(p);
+                    }
+                });
+
+                const groups = [];
+
+                if (today.length) {
+                    groups.push({ label: "Today", sessions: today });
+                }
+
+                if (last7.length) {
+                    groups.push({ label: "Previous 7 Days", sessions: last7 });
+                }
+
+                if (last30.length) {
+                    groups.push({ label: "Previous 30 Days", sessions: last30 });
+                }
+
+                Object.entries(older).forEach(([month, items]) => {
+                    groups.push({ label: month, sessions: items });
+                });
+
+                return groups;
+            },
+
+            formatDateLabel(dateStr) {
+                if (!dateStr) return "";
+
+                const date = new Date(dateStr);
+                const now = new Date();
+
+                const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 0) return "Aujourd’hui";
+                if (diffDays === 1) return "Hier";
+                if (diffDays < 7) return `Il y a ${diffDays} jours`;
+
+                return date.toLocaleDateString();
+            },
+
+            async openWithSubject(subject, content) {
                 this.open = true;
-                if (!this.sessionID) this.sessionID = crypto.randomUUID();
+                this.showWelcomeSuggestions = false;
+
+                if (!this.sessionID) {
+                    this.sessionID = crypto.randomUUID();
+                }
 
                 const payload = {
                     subject: subject,
@@ -374,27 +1460,78 @@
                     content: content || ""
                 };
 
-                if (this.connected) this.ws.send(JSON.stringify(payload));
-
-                // prepare bubble for streaming response
                 this.appendAI("", true, false);
+
+                try {
+                    await this.ensureWebSocketConnected();
+                    this.ws.send(JSON.stringify(payload));
+                } catch (e) {
+                    console.error("AI WebSocket is not connected", e);
+                    this.finalizeCurrentAI();
+                    this.addMessage("ai", "Impossible de contacter l'assistant IA. Merci de réessayer.");
+                }
             },
 
             setHeaderButtons(buttons = []) {
-                // buttons = [{ label: "Btn1", onClick: () => {} }, ...]
-                const header = document.querySelector("#aiConversation")?.closest(".shadow-2xl")?.querySelector(".header-buttons");
+                const header = document.querySelector("#aiConversation")
+                    ?.closest(".shadow-2xl")
+                    ?.querySelector(".header-buttons");
+
                 if (!header) return;
 
-                // vider les anciens boutons
                 header.innerHTML = "";
 
                 buttons.forEach(btn => {
                     const b = document.createElement("button");
-                    b.className = "px-3 py-1 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-bold";
+                    b.className = "px-3 py-1 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-bold";
                     b.textContent = btn.label;
-                    if (btn.onClick) b.addEventListener("click", btn.onClick);
+
+                    if (btn.onClick) {
+                        b.addEventListener("click", btn.onClick);
+                    }
+
                     header.appendChild(b);
                 });
+            },
+
+            getCerberusBasePath() {
+                if (window.appContext) {
+                    return window.appContext.endsWith("/")
+                        ? window.appContext
+                        : window.appContext + "/";
+                }
+
+                const parts = window.location.pathname.split("/").filter(Boolean);
+
+                if (parts.length === 0) {
+                    return "/";
+                }
+
+                return "/" + parts[0] + "/";
+            },
+
+            getHttpBaseUrl() {
+                const parser = document.createElement("a");
+                parser.href = window.location.href;
+
+                return `${parser.protocol}//${parser.host}${this.getCerberusBasePath()}`;
+            },
+
+            cleanTitle(title) {
+                if (!title) return "";
+                return String(title).replace(/(^")|("$)/g, "").trim();
+            },
+
+            stripHtml(html) {
+                const div = document.createElement("div");
+                div.innerHTML = DOMPurify.sanitize(html || "");
+                return div.textContent || div.innerText || "";
+            },
+
+            truncate(str, max) {
+                if (!str) return "";
+                if (str.length <= max) return str;
+                return str.substring(0, max - 1) + "…";
             }
         };
     }

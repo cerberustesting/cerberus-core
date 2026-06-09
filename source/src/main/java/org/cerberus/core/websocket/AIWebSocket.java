@@ -60,34 +60,102 @@ public class AIWebSocket extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        LOG.debug("Received message: " + message.getPayload());
-        try {
-            MessageTestCreationAI incoming = objectMapper.readValue(message.getPayload(), MessageTestCreationAI.class);
+        LOG.debug("Received AI WebSocket message: {}", message.getPayload());
 
-            if(incoming.getSubject().equals("test_proposal")) {
-                aiService.generateTestCaseProposal(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent(), incoming.getApplication(), incoming.getTestFolder());
-            } else if (incoming.getSubject().equals("test_creation")) {
-                aiService.createTestCaseAndGenerateContent(incoming.getSender(), session, incoming.getSessionID(), incoming.getTestFolder(), incoming.getTestcaseObject(), incoming.getTestDetailedDescription(), incoming.getTempId());
-            } else if (incoming.getSubject().equals("chat_with_ai")){
-                aiService.chatWithAI(incoming.getSender(), session, incoming.getSessionID(), incoming.getContent());
-            } else if (incoming.getSubject().equals("execution_debug_assistant")){
-                aiService.executionDebugWithAI(incoming.getSender(), session, incoming.getSessionID(), Integer.valueOf(incoming.getContent()));
-            } else if (incoming.getSubject().equals("ao_generate")||incoming.getSubject().equals("ao_generate_continue")){
-                aiService.generateApplicationObjectProposalWithAI(incoming.getSender(),session,incoming.getSessionID(),incoming.getApplication(),incoming.getPage(),incoming.getHtmlPath(),
-                        incoming.getScreenshotPath(),incoming.getContent(), incoming.getSubject());
-            } else if (incoming.getSubject().equals("import_with_ai")){
-              //  aiService.generateTestCaseFromImportWithAI(incoming.getSender(),session,incoming.getSessionID(),incoming.getApplication(),incoming.getPage(),incoming.getHtmlPath(),
-                     //   incoming.getScreenshotPath(),incoming.getContent(), incoming.getSubject());
+        try {
+            MessageTestCreationAI incoming =
+                    objectMapper.readValue(message.getPayload(), MessageTestCreationAI.class);
+
+            String subject = incoming.getSubject();
+
+            if (subject == null || subject.isBlank()) {
+                throw new IllegalArgumentException("Missing subject");
             }
 
+            if (incoming.getSessionID() == null || incoming.getSessionID().isBlank()) {
+                throw new IllegalArgumentException("Missing sessionID");
+            }
 
-        } catch (Exception ex){
-            LOG.error("Exception handling WebSocket message", ex);
-            // Envoie un message d'erreur au client
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
-                    new MessageAI("system", "error", "Unexpected error: " + ex.getMessage())
-            )));
+            switch (subject) {
+                case "chat_with_ai":
+                    aiService.chatWithAI(
+                            incoming.getSender(),
+                            session,
+                            incoming.getSessionID(),
+                            incoming.getContent()
+                    );
+                    break;
+
+                case "test_proposal":
+                    aiService.generateTestCaseProposal(
+                            incoming.getSender(),
+                            session,
+                            incoming.getSessionID(),
+                            incoming.getContent(),
+                            incoming.getApplication(),
+                            incoming.getTestFolder()
+                    );
+                    break;
+
+                case "test_creation":
+                    aiService.createTestCaseAndGenerateContent(
+                            incoming.getSender(),
+                            session,
+                            incoming.getSessionID(),
+                            incoming.getTestFolder(),
+                            incoming.getTestcaseObject(),
+                            incoming.getTestDetailedDescription(),
+                            incoming.getTempId()
+                    );
+                    break;
+
+                case "execution_debug_assistant":
+                    aiService.executionDebugWithAI(
+                            incoming.getSender(),
+                            session,
+                            incoming.getSessionID(),
+                            Integer.valueOf(incoming.getContent())
+                    );
+                    break;
+
+                case "ao_generate":
+                case "ao_generate_continue":
+                    aiService.generateApplicationObjectProposalWithAI(
+                            incoming.getSender(),
+                            session,
+                            incoming.getSessionID(),
+                            incoming.getApplication(),
+                            incoming.getPage(),
+                            incoming.getHtmlPath(),
+                            incoming.getScreenshotPath(),
+                            incoming.getContent(),
+                            incoming.getSubject()
+                    );
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported subject: " + subject);
+            }
+
+        } catch (Exception ex) {
+            LOG.error("Exception handling AI WebSocket message", ex);
+
+            if (session.isOpen()) {
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
+                        new MessageAI("system", "error", "Unexpected error: " + ex.getMessage())
+                )));
+            }
         }
+    }
+
+    private void sendSystemMessage(WebSocketSession session, String type, String sessionID) throws Exception {
+        if (!session.isOpen()) {
+            return;
+        }
+
+        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
+                new MessageAI("system", type, sessionID)
+        )));
     }
 
 }

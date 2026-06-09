@@ -159,6 +159,7 @@ public class CreateApplicationTool implements MCPTool {
         application.setDescription(description);
         application.setType(type);
         application.setSystem(system);
+        application.setSubsystem("");
         // Tag the creator as "MCP" so audit trails distinguish tool-driven creation from UI creation.
         application.setUsrCreated("MCP");
 

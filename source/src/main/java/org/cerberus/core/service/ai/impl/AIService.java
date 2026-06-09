@@ -90,7 +90,9 @@ public class AIService implements IAIService {
         /**
          * Generate aiSessionID if not exists)
          */
-        aiSessionID = aiSessionID.equals("") ? UUID.randomUUID().toString() : aiSessionID;
+        if (aiSessionID == null || aiSessionID.isBlank()) {
+            aiSessionID = UUID.randomUUID().toString();
+        }
 
         /**
          * Get all message of session and add the new message
@@ -99,9 +101,10 @@ public class AIService implements IAIService {
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(newMessage).build());
 
         /**
-         * After the first question (request N°3), generate a title to retrieve conversation
+         * After the first question (request N°1), generate a title to retrieve conversation
          */
-        if (messageParamList.size()==3) {
+        if (messageParamList.size()==1) {
+            aiSessionManager.initSession(user, aiSessionID, "chatWithAI");
             generateTitleForSession(newMessage, websocketSession, user, aiSessionID);
         }
 
