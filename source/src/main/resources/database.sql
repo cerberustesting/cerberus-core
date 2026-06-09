@@ -6854,3 +6854,8 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 
 -- 1945
 ALTER TABLE testcaseexecution ADD CPUTimeMs INT DEFAULT 0 AFTER Platform, ADD MemoryResidentMb INT DEFAULT 0 AFTER CPUTimeMs;
+
+-- 1946
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES  ('', 'cerberus_anthropic_baseurl', 'https://api.anthropic.com', 'Host of the Anthropic endpoint. Claude endpoint is set by default with https://api.anthropic.com but it can be replaced with another public endpoint');
+
