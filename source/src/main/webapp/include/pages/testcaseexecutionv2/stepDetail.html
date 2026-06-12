@@ -7,15 +7,34 @@
     <!-- ══════════════════════════════════════════ -->
     <template x-if="!activeStep">
         <div class="flex flex-col items-center justify-center py-20 gap-4">
-            <div class="v2-empty-icon-ring">
-                <div class="v2-empty-icon-inner">
-                    <i data-lucide="mouse-pointer-click" class="w-6 h-6" style="color: var(--crb-blue-color)"></i>
+            <!-- During PE: animated executing state -->
+            <template x-if="exe.controlStatus === 'PE'">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="v2-empty-icon-ring">
+                        <div class="v2-empty-icon-inner" style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent)">
+                            <i data-lucide="loader-2" class="w-6 h-6 v2-exe-spin-limited" style="color: var(--crb-blue-color)"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-semibold" style="color: var(--crb-blue-color)">Execution in progress...</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Steps and actions will appear here as they execute</p>
+                    </div>
                 </div>
-            </div>
-            <div class="text-center">
-                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">No step selected</p>
-                <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Click a step on the left to see its actions and controls</p>
-            </div>
+            </template>
+            <!-- Not PE: static empty state -->
+            <template x-if="exe.controlStatus !== 'PE'">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="v2-empty-icon-ring">
+                        <div class="v2-empty-icon-inner">
+                            <i data-lucide="mouse-pointer-click" class="w-6 h-6" style="color: var(--crb-blue-color)"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">No step selected</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Click a step on the left to see its actions and controls</p>
+                    </div>
+                </div>
+            </template>
         </div>
     </template>
 
@@ -565,7 +584,7 @@
     <div class="v2-exe-lightbox" @click="lightboxUrl = null" x-transition.opacity.duration.200ms>
         <img :src="lightboxUrl" @click.stop>
         <button class="v2-exe-lightbox-close" @click="lightboxUrl = null">
-            <i data-lucide="x" class="w-5 h-5"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
     </div>
 </template>

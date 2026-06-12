@@ -641,8 +641,10 @@
                     const data = JSON.parse(text);
 
                     if (data.messageType === 'OK' && data.nbExe === 1) {
+                        var isV2 = window.location.href.indexOf('V2.jsp') > -1;
+                        var exePage = isV2 ? 'TestCaseExecutionV2.jsp' : 'TestCaseExecution.jsp';
                         window.location.href =
-                                'TestCaseExecution.jsp?executionQueueId=' +
+                                exePage + '?executionQueueId=' +
                                 data.queueList[0].queueId;
                         return;
                     }

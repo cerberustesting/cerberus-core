@@ -147,7 +147,7 @@
                                             <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 1</label>
                                             <input type="text" class="v2-prop-field-input text-xs"
                                                    :value="action.value1"
-                                                   @change="updateActionField(aIdx, 'value1', $event.target.value)"
+                                                   @input="updateActionField(aIdx, 'value1', $event.target.value)"
                                                    placeholder="Element / Value..."
                                                    :disabled="!canUpdate">
                                         </div>
@@ -155,7 +155,7 @@
                                             <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 2</label>
                                             <input type="text" class="v2-prop-field-input text-xs"
                                                    :value="action.value2"
-                                                   @change="updateActionField(aIdx, 'value2', $event.target.value)"
+                                                   @input="updateActionField(aIdx, 'value2', $event.target.value)"
                                                    placeholder="Property..."
                                                    :disabled="!canUpdate">
                                         </div>
@@ -163,7 +163,7 @@
                                             <label class="text-[10px] font-medium text-slate-400 uppercase mb-0.5 block">Value 3</label>
                                             <input type="text" class="v2-prop-field-input text-xs"
                                                    :value="action.value3"
-                                                   @change="updateActionField(aIdx, 'value3', $event.target.value)"
+                                                   @input="updateActionField(aIdx, 'value3', $event.target.value)"
                                                    placeholder="Extra..."
                                                    :disabled="!canUpdate">
                                         </div>
@@ -207,13 +207,13 @@
                                                     </select>
                                                     <div class="grid grid-cols-3 gap-1.5" style="margin-top: 10px">
                                                         <input type="text" class="v2-prop-field-input text-[11px]"
-                                                               :value="ctrl.value1" @change="updateControlField(aIdx, cIdx, 'value1', $event.target.value)"
+                                                               :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value)"
                                                                placeholder="Element..." :disabled="!canUpdate">
                                                         <input type="text" class="v2-prop-field-input text-[11px]"
-                                                               :value="ctrl.value2" @change="updateControlField(aIdx, cIdx, 'value2', $event.target.value)"
+                                                               :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value)"
                                                                placeholder="Expected..." :disabled="!canUpdate">
                                                         <input type="text" class="v2-prop-field-input text-[11px]"
-                                                               :value="ctrl.value3" @change="updateControlField(aIdx, cIdx, 'value3', $event.target.value)"
+                                                               :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value)"
                                                                placeholder="Extra..." :disabled="!canUpdate">
                                                     </div>
                                                 </div>

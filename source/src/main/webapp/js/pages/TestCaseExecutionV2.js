@@ -56,6 +56,8 @@ function executionV2() {
         _pollingTimer: null,
         _pollErrorCount: 0,
         liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
+        _spinDone: false,     // true for 5s after PE→done transition
+        _spinDoneTimer: null,
 
         // Navigation
         lastExecutions: [],
@@ -269,13 +271,12 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // WebSocket for live updates if PE
+                    // Live updates if PE — always poll + try WS for instant notifications
                     if (tce.controlStatus === 'PE') {
                         this.$nextTick(() => {
+                            this._startPolling(tce.id);
                             if (this.paramActivateWebSocket === 'Y') {
                                 this._connectWebSocket(tce.id);
-                            } else {
-                                this._startPolling(tce.id);
                             }
                         });
                     }
@@ -386,6 +387,10 @@ function executionV2() {
         _normalizeProperty(p) {
             p._uid = v2exeuid();
             p._expanded = false;
+            // Remap API field names (Java sends RC/rMessage, V2 uses returnCode/returnMessage)
+            if (p.RC !== undefined && p.returnCode === undefined) p.returnCode = p.RC;
+            if (p.rMessage !== undefined && p.returnMessage === undefined) p.returnMessage = p.rMessage;
+            if (!p.fileList) p.fileList = [];
             return p;
         },
 
@@ -434,8 +439,8 @@ function executionV2() {
                 fallbackDone = true;
                 self.wsConnected = false;
                 self.liveStatus = 'polling';
-                console.info('[ExeV2] WS failed, falling back to polling');
-                self._startPolling(executionId);
+                console.info('[ExeV2] WS closed — polling continues');
+                // Polling is already running alongside, no need to restart
             }
 
             try {
@@ -444,7 +449,7 @@ function executionV2() {
                     this.wsConnected = true;
                     this.liveStatus = 'ws';
                     this._pollErrorCount = 0;
-                    console.info('[ExeV2] WebSocket connected');
+                    console.info('[ExeV2] WebSocket connected (polling continues alongside)');
                 };
                 this.ws.onmessage = (event) => {
                     try {
@@ -455,9 +460,9 @@ function executionV2() {
                 this.ws.onerror = () => { fallbackToPolling(); };
                 this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
-                console.warn('[ExeV2] WebSocket not available, using polling');
+                console.warn('[ExeV2] WebSocket not available — polling continues');
                 this.liveStatus = 'polling';
-                this._startPolling(executionId);
+                // Polling is already running, no need to start
             }
         },
 
@@ -488,10 +493,16 @@ function executionV2() {
             this.properties = (tce.testCaseExecutionDataList || []).map(function(p) { return this._normalizeProperty(p); }.bind(this));
             this.properties.forEach(function(p) { if (expandedProps[p.property]) p._expanded = true; });
 
-            // Auto-focus on current step during PE
-            if (tce.controlStatus === 'PE') {
+            // Auto-focus: select the best step when execution is PE
+            if (tce.controlStatus === 'PE' && this.steps.length > 0) {
                 var peIdx = this.steps.findIndex(function(s) { return s.returnCode === 'PE'; });
-                if (peIdx >= 0 && peIdx !== this.activeStepIndex) this.activeStepIndex = peIdx;
+                if (peIdx >= 0 && peIdx !== this.activeStepIndex) {
+                    // A step is actively running — follow it
+                    this.activeStepIndex = peIdx;
+                } else if (this.activeStepIndex < 0 || this.activeStepIndex >= this.steps.length) {
+                    // No step selected (first load or steps just appeared) — select PE or last
+                    this.activeStepIndex = peIdx >= 0 ? peIdx : this.steps.length - 1;
+                }
             }
 
             // Favicon on status change
@@ -508,6 +519,12 @@ function executionV2() {
             if (tce.controlStatus !== 'PE') {
                 this._stopLive();
                 this.liveStatus = 'done';
+                // Spin-down animation for 5 seconds
+                if (prevStatus === 'PE') {
+                    this._spinDone = true;
+                    if (this._spinDoneTimer) clearTimeout(this._spinDoneTimer);
+                    this._spinDoneTimer = setTimeout(() => { this._spinDone = false; }, 5000);
+                }
                 // Final full reload to get all data
                 this._loadExecution(tce.id);
             }
@@ -622,7 +639,7 @@ function executionV2() {
                     timeout: 15000,  // 15s timeout to avoid hanging requests
                     success: function(data) {
                         self._pollErrorCount = 0;  // Reset on success
-                        self.liveStatus = 'polling';
+                        if (self.wsConnected) self.liveStatus = 'ws'; else self.liveStatus = 'polling';
                         if (data.testCaseExecution) {
                             self._onWebSocketMessage(data);
                         }
