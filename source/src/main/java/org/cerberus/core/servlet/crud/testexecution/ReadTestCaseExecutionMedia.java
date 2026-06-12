@@ -329,7 +329,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         mp4File = new File(filePath + tc.getFileName());
         response.setContentType("video/mp4");
         response.setContentLength((int) mp4File.length());
-        response.setHeader("Content-Range", "bytes start-end/length");
+        response.setHeader("Accept-Ranges", "bytes");
         try {
             FileUtils.copyFile(mp4File, response.getOutputStream());
         } catch (IOException e) {
