@@ -936,7 +936,7 @@ function computeCampaignStats(tags) {
 
     const tot_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? getResponseTime(obj.DateStartExe, obj.DateEndQueue) : 0), 0);
     const nb_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? 1 : 0), 0);
-    
+
     const ok = tags.reduce((acc, obj) => acc + (obj.nbOK || 0), 0);
     const ko = executions - ok;
 
@@ -946,7 +946,7 @@ function computeCampaignStats(tags) {
         lastResults: tags.slice(-5).map(t => t.ciResult),
         history: tags.map(t => t.ciScore || 0),
         responseTime: tags.map(t =>
-            (getResponseTime(t.DateStartExe, t.DateEndQueue) > 0 ? getResponseTime(t.DateStartExe, t.DateEndQueue) : (tot_duration/nb_duration))
+            (getResponseTime(t.DateStartExe, t.DateEndQueue) > 0 ? getResponseTime(t.DateStartExe, t.DateEndQueue) : (tot_duration / nb_duration))
         ),
         status: tags.map(t => t.ciResult === "" ? "PE" : t.ciResult),
         ok,
@@ -960,7 +960,7 @@ function getResponseTime(startStr, endStr) {
 
     const start = new Date(startStr.replace(" ", "T"));
     const end = new Date(endStr.replace(" ", "T"));
-console.info(" TOTO " + Math.round((end - start) / 1000));
+//    console.info(" TOTO " + Math.round((end - start) / 1000));
     return Math.round((end - start) / 1000); // en secondes
 }
 
@@ -1189,6 +1189,7 @@ function readLastTagExec(searchString, reportArea) {
     if (tagFilterList.trim().length > 0) {
         myUrl += "&sSearch_2=" + encodeURIComponent(tagFilterList);
     }
+    document.getElementById("refreshTags").classList.add("spin");
 
     // === Appel AJAX ===
     $.ajax({
@@ -1225,6 +1226,7 @@ function readLastTagExec(searchString, reportArea) {
             tagListResult.tagLists = tagAgregated;
 
             refreshTagList(tagListResult, reportArea);
+            document.getElementById("refreshTags").classList.remove("spin");
         }
     });
 
