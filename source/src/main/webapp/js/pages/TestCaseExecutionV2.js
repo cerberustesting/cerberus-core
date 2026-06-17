@@ -67,6 +67,7 @@ function executionV2() {
 
         // Lightbox
         lightboxUrl: null,
+        lightboxLabel: '',
 
         // Vision modal (Live / Video)
         visionModal: { open: false, mode: 'live', url: '', fullscreen: false },
@@ -120,6 +121,13 @@ function executionV2() {
                 });
             });
             return total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+
+        // Progress for the visual bar: 100% when execution finished (any status except PE/NE/QU)
+        get progressBar() {
+            var status = this.exe ? this.exe.controlStatus : '';
+            if (!status || status === 'PE' || status === 'NE' || status === 'QU') return this.progress;
+            return 100;
         },
 
         // ═══ INIT ═══
@@ -986,11 +994,33 @@ function executionV2() {
             return this.networkIndexFilter.indexOf(index) !== -1;
         },
 
+        // Request table filters
+        netReqUrlFilter: '',
+        netReqStatusFilter: 'all',
+        netReqSelected: null,
+
         get networkRequests() {
             if (!this.networkStat || !this.networkStat.requests) return [];
             var self = this;
             return this.networkStat.requests.filter(function(r) {
                 return self._isNetworkIndexSelected(r.index);
+            });
+        },
+
+        get networkRequestsFiltered() {
+            var self = this;
+            return this.networkRequests.filter(function(r) {
+                // URL filter
+                if (self.netReqUrlFilter && (r.url || '').toLowerCase().indexOf(self.netReqUrlFilter.toLowerCase()) < 0) return false;
+                // Status filter
+                if (self.netReqStatusFilter !== 'all') {
+                    var s = '' + (r.httpStatus || '');
+                    if (self.netReqStatusFilter === '2xx' && !s.startsWith('2')) return false;
+                    if (self.netReqStatusFilter === '3xx' && !s.startsWith('3')) return false;
+                    if (self.netReqStatusFilter === '4xx' && !s.startsWith('4')) return false;
+                    if (self.netReqStatusFilter === '5xx' && !s.startsWith('5')) return false;
+                }
+                return true;
             });
         },
 
@@ -1259,8 +1289,9 @@ function executionV2() {
                 }
             });
         },
-        openLightbox(url) {
+        openLightbox(url, label) {
             this.lightboxUrl = url;
+            this.lightboxLabel = label || '';
         },
         openFileModal(file) {
             if (!file) return;
