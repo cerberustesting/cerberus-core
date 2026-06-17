@@ -1403,13 +1403,6 @@ function executionV2() {
 
         // ═══ VISION MODAL (Live / Video) ═══
         openVisionModal(mode, url) {
-            if (mode === 'live' || mode === 'control') {
-                // Live/control URLs are on external servers (Guacamole/noVNC) that block iframe embedding
-                // Same approach as legacy: open in a new tab
-                window.open(url, '_blank');
-                return;
-            }
-            // Video mode: open in modal with embedded player
             this.visionModal.mode = mode;
             this.visionModal.url = url;
             this.visionModal.fullscreen = false;

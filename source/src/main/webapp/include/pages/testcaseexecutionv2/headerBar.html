@@ -211,7 +211,7 @@
                 </span>
             </template>
 
-            <!-- LIVE button (only visible during PE / execution in progress) -->
+            <!-- LIVE button (single button — Take Control is inside the modal) -->
             <template x-if="exe.controlStatus === 'PE' && exe.remoteLiveUrl">
                 <button @click="openVisionModal('live', exe.remoteLiveUrl)"
                         class="v2-exe-run-btn shrink-0 v2-blink"
@@ -219,15 +219,6 @@
                         data-tip="Watch live execution">
                     <i data-lucide="monitor-play" class="w-3.5 h-3.5"></i>
                     LIVE
-                </button>
-            </template>
-            <template x-if="exe.controlStatus === 'PE' && exe.remoteControlLiveUrl">
-                <button @click="openVisionModal('control', exe.remoteControlLiveUrl)"
-                        class="v2-exe-run-btn shrink-0 v2-blink"
-                        style="background: #8b5cf6"
-                        data-tip="Remote control live session">
-                    <i data-lucide="monitor-smartphone" class="w-3.5 h-3.5"></i>
-                    LIVE CONTROL
                 </button>
             </template>
             <!-- VIDEO button (visible when execution finished and has video files) -->

@@ -13,16 +13,13 @@
                     <div class="v2-vision-mode-badge"
                          :class="{
                              'v2-vision-mode--live': visionModal.mode === 'live',
-                             'v2-vision-mode--control': visionModal.mode === 'control',
                              'v2-vision-mode--video': visionModal.mode === 'video'
                          }">
                         <span class="v2-vision-mode-dot"
-                              :class="visionModal.mode !== 'video' ? 'v2-pulse' : ''"></span>
-                        <i :data-lucide="visionModal.mode === 'video' ? 'film' : visionModal.mode === 'control' ? 'monitor-smartphone' : 'monitor-play'"
+                              :class="visionModal.mode === 'live' ? 'v2-pulse' : ''"></span>
+                        <i :data-lucide="visionModal.mode === 'video' ? 'film' : 'monitor-play'"
                            class="w-4 h-4"></i>
-                        <span x-text="visionModal.mode === 'video' ? 'Video Replay'
-                                    : visionModal.mode === 'control' ? 'Live Control'
-                                    : 'Live Execution'"></span>
+                        <span x-text="visionModal.mode === 'video' ? 'Video Replay' : 'Live Execution'"></span>
                     </div>
                     <!-- Execution info -->
                     <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline"
@@ -30,6 +27,16 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <!-- Take Control: opens control URL in new tab (only during live) -->
+                    <template x-if="visionModal.mode === 'live' && exe.remoteControlLiveUrl">
+                        <button @click="window.open(exe.remoteControlLiveUrl, '_blank')"
+                                class="v2-vision-toolbar-btn"
+                                style="background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;"
+                                data-tip="Take remote control of the session">
+                            <i data-lucide="monitor-smartphone" class="w-3.5 h-3.5" style="margin-right:4px"></i>
+                            Take Control
+                        </button>
+                    </template>
                     <!-- Open in new tab -->
                     <button @click="window.open(visionModal.url, '_blank')"
                             class="v2-vision-toolbar-btn"
@@ -52,13 +59,29 @@
 
             <!-- Content: iframe for live or video player -->
             <div class="v2-vision-body">
-                <!-- Live / Live Control: iframe -->
-                <template x-if="visionModal.mode === 'live' || visionModal.mode === 'control'">
-                    <iframe :src="visionModal.url"
-                            class="v2-vision-iframe"
-                            allow="autoplay; clipboard-write; clipboard-read"
-                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                            referrerpolicy="no-referrer"></iframe>
+                <!-- Live: iframe — if server blocks embedding, fallback message appears -->
+                <template x-if="visionModal.mode === 'live'">
+                    <div class="relative w-full h-full">
+                        <iframe :src="visionModal.url"
+                                class="v2-vision-iframe"
+                                allow="autoplay; clipboard-write; clipboard-read"
+                                @load="$el.dataset.loaded = 'true'; $el.nextElementSibling && ($el.nextElementSibling.style.display = 'none')"
+                                @error="$el.nextElementSibling && ($el.nextElementSibling.style.display = 'flex')"></iframe>
+                        <!-- Fallback: shown if iframe is blocked by X-Frame-Options / CSP -->
+                        <div class="v2-vision-iframe-fallback"
+                             style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:var(--crb-bg-color, #1a1a2e); color:var(--crb-text-color, #e2e8f0); text-align:center; padding:32px;">
+                            <i data-lucide="monitor-x" style="width:48px; height:48px; opacity:0.5"></i>
+                            <p style="font-size:14px; max-width:400px; line-height:1.6; opacity:0.8">
+                                The remote server does not allow embedding in an iframe.<br>
+                                Click below to open the live view in a new tab.
+                            </p>
+                            <button @click="window.open(visionModal.url, '_blank')"
+                                    style="background: var(--crb-blue-color, #2c7be5); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="external-link" style="width:16px; height:16px"></i>
+                                Open Live View
+                            </button>
+                        </div>
+                    </div>
                 </template>
 
                 <!-- Video: native HTML5 player -->
@@ -88,3 +111,4 @@
         </div>
     </div>
 </template>
+
