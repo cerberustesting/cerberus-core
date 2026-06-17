@@ -279,12 +279,15 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // Live updates if PE — always poll + try WS for instant notifications
+                    // Live updates if PE — WS first, polling as fallback
                     if (tce.controlStatus === 'PE') {
                         this.$nextTick(() => {
-                            this._startPolling(tce.id);
                             if (this.paramActivateWebSocket === 'Y') {
+                                // Try WS — it will start polling as fallback if WS fails/closes
                                 this._connectWebSocket(tce.id);
+                            } else {
+                                // WS disabled — go straight to polling
+                                this._startPolling(tce.id);
                             }
                         });
                     }
@@ -432,7 +435,6 @@ function executionV2() {
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333)
             var parser = document.createElement('a');
             parser.href = window.location.href;
             var path = parser.pathname.split('TestCaseExecution')[0];
@@ -440,15 +442,18 @@ function executionV2() {
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
 
             var self = this;
-            var fallbackDone = false; // Guard: onerror + onclose both fire — only fall back once
+            var fallbackDone = false;
 
             function fallbackToPolling() {
                 if (fallbackDone) return;
                 fallbackDone = true;
                 self.wsConnected = false;
-                self.liveStatus = 'polling';
-                console.info('[ExeV2] WS closed — polling continues');
-                // Polling is already running alongside, no need to restart
+                // Only start polling fallback if execution is still running
+                if (self.exe && self.exe.controlStatus === 'PE') {
+                    console.info('[ExeV2] WS closed — starting polling fallback');
+                    self.liveStatus = 'polling';
+                    self._startPolling(executionId);
+                }
             }
 
             try {
@@ -457,7 +462,12 @@ function executionV2() {
                     this.wsConnected = true;
                     this.liveStatus = 'ws';
                     this._pollErrorCount = 0;
-                    console.info('[ExeV2] WebSocket connected (polling continues alongside)');
+                    // WS is primary — stop polling to avoid double server load
+                    if (this._pollingTimer) {
+                        clearTimeout(this._pollingTimer);
+                        this._pollingTimer = null;
+                    }
+                    console.info('[ExeV2] WebSocket connected — polling stopped');
                 };
                 this.ws.onmessage = (event) => {
                     try {
@@ -468,15 +478,16 @@ function executionV2() {
                 this.ws.onerror = () => { fallbackToPolling(); };
                 this.ws.onclose = () => { fallbackToPolling(); };
             } catch(e) {
-                console.warn('[ExeV2] WebSocket not available — polling continues');
+                console.warn('[ExeV2] WebSocket not available — starting polling fallback');
                 this.liveStatus = 'polling';
-                // Polling is already running, no need to start
+                this._startPolling(executionId);
             }
         },
 
         _onWebSocketMessage(data) {
-            if (!data.testCaseExecution) return;
-            var tce = data.testCaseExecution;
+            // WS sends execution flat (type='testCaseExecution'), API wraps it in { testCaseExecution: {...} }
+            var tce = data.testCaseExecution || (data.type === 'testCaseExecution' ? data : null);
+            if (!tce) return;
             var prevStatus = this.exe.controlStatus;
 
             // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
@@ -626,6 +637,11 @@ function executionV2() {
 
         _startPolling(executionId) {
             var self = this;
+            // Don't poll if WS is connected — WS is primary
+            if (this.wsConnected) {
+                console.debug('[ExeV2] WS active — skipping polling');
+                return;
+            }
             if (this._pollingTimer) clearTimeout(this._pollingTimer);
 
             // Backoff: base × 2^errors, capped at 30s
