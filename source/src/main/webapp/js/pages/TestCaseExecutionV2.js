@@ -55,6 +55,7 @@ function executionV2() {
         wsConnected: false,
         _pollingTimer: null,
         _pollErrorCount: 0,
+        _wsHeartbeatTimer: null,  // Safety: if no WS push in 5s, do one API poll
         liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
         _spinDone: false,     // true for 5s after PE→done transition
         _spinDoneTimer: null,
@@ -192,6 +193,7 @@ function executionV2() {
         // ═══ LIVE CLEANUP ═══
         _stopLive() {
             if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
+            if (this._wsHeartbeatTimer) { clearTimeout(this._wsHeartbeatTimer); this._wsHeartbeatTimer = null; }
             if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
             this.wsConnected = false;
             this._pollErrorCount = 0;
@@ -434,6 +436,13 @@ function executionV2() {
 
         // ═══ WEBSOCKET ═══
         _connectWebSocket(executionId) {
+            // Close any existing WS first to prevent duplicates
+            if (this.ws) {
+                try { this.ws.onclose = null; this.ws.onerror = null; this.ws.close(); } catch(e) {}
+                this.ws = null;
+                this.wsConnected = false;
+            }
+
             const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
             var parser = document.createElement('a');
             parser.href = window.location.href;
@@ -467,7 +476,9 @@ function executionV2() {
                         clearTimeout(this._pollingTimer);
                         this._pollingTimer = null;
                     }
-                    console.info('[ExeV2] WebSocket connected — polling stopped');
+                    // Start heartbeat: if no WS push within period, do one API poll
+                    this._startWsHeartbeat(executionId);
+                    console.info('[ExeV2] WebSocket connected — polling stopped, heartbeat started');
                 };
                 this.ws.onmessage = (event) => {
                     try {
@@ -489,6 +500,11 @@ function executionV2() {
             var tce = data.testCaseExecution || (data.type === 'testCaseExecution' ? data : null);
             if (!tce) return;
             var prevStatus = this.exe.controlStatus;
+
+            // Reset heartbeat timer — we just got fresh data
+            if (this.wsConnected && tce.controlStatus === 'PE') {
+                this._startWsHeartbeat(tce.id);
+            }
 
             // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
             Object.keys(tce).forEach(function(k) {
@@ -633,6 +649,34 @@ function executionV2() {
             if (needsFullRebuild) {
                 this.steps = newSteps.map(function(s) { return self._normalizeStep(s); });
             }
+        },
+
+        // Heartbeat: if no WS push within period, do one API poll to guarantee freshness
+        _startWsHeartbeat(executionId) {
+            if (this._wsHeartbeatTimer) clearTimeout(this._wsHeartbeatTimer);
+            var self = this;
+            this._wsHeartbeatTimer = setTimeout(function() {
+                if (!self.wsConnected || !self.exe || self.exe.controlStatus !== 'PE') return;
+                console.debug('[ExeV2] Heartbeat: no WS push in ' + self.paramWebSocketPeriod + 'ms — doing API poll');
+                $.ajax({
+                    url: 'ReadTestCaseExecution',
+                    data: { executionId: executionId, executionWithDependency: true },
+                    dataType: 'json',
+                    timeout: 10000,
+                    success: function(data) {
+                        if (data.testCaseExecution) {
+                            self._onWebSocketMessage(data);
+                        }
+                    },
+                    error: function() {
+                        console.warn('[ExeV2] Heartbeat poll failed — will retry on next cycle');
+                        // Reset heartbeat to try again
+                        if (self.wsConnected && self.exe && self.exe.controlStatus === 'PE') {
+                            self._startWsHeartbeat(executionId);
+                        }
+                    }
+                });
+            }, this.paramWebSocketPeriod);
         },
 
         _startPolling(executionId) {
@@ -1359,6 +1403,13 @@ function executionV2() {
 
         // ═══ VISION MODAL (Live / Video) ═══
         openVisionModal(mode, url) {
+            if (mode === 'live' || mode === 'control') {
+                // Live/control URLs are on external servers (Guacamole/noVNC) that block iframe embedding
+                // Same approach as legacy: open in a new tab
+                window.open(url, '_blank');
+                return;
+            }
+            // Video mode: open in modal with embedded player
             this.visionModal.mode = mode;
             this.visionModal.url = url;
             this.visionModal.fullscreen = false;
