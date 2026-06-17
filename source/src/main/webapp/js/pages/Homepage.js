@@ -1259,7 +1259,7 @@ function readNextTagScheduled() {
                         nextRunLabel:
                                 "will trigger in " +
                                 getHumanReadableDuration(
-                                        Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
+                                        Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000), 2
                                         ),
                         nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
                         durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
@@ -1283,7 +1283,7 @@ function updateNextFireTime() {
     let nbAlreadyTriggered = 0;
     for (var s = 0; s < futureCampaigns.length; s++) {
         if ((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) > 0) {
-            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
+            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000), 2));
         } else {
             $("#futurTag_" + toSafeId(futureCampaigns[s])).text("already triggered");
             nbAlreadyTriggered++;
