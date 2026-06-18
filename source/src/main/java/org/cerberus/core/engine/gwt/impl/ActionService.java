@@ -142,6 +142,7 @@ public class ActionService implements IActionService {
 
     private static final Logger LOG = LogManager.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
+    private static final String SWIPE_RELATIVE_PREFIX = "relative:";
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution actionExecution) {
@@ -2351,10 +2352,28 @@ public class ActionService implements IActionService {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
         }
 
-        // Create the associated swipe action to the given arguments
         SwipeAction action = null;
         try {
-            action = SwipeAction.fromStrings(object, property);
+            if (SwipeAction.ActionType.CUSTOM.name().equalsIgnoreCase(object)
+                    && property != null
+                    && property.trim().toLowerCase().startsWith(SWIPE_RELATIVE_PREFIX)) {
+                String relativeValue = property.trim().substring(SWIPE_RELATIVE_PREFIX.length()).trim();
+                int separator = relativeValue.indexOf('|');
+                if (separator < 0) {
+                    throw new IllegalArgumentException("Bad relative swipe format: no element separator");
+                }
+                String element = relativeValue.substring(0, separator).trim();
+                String coords = relativeValue.substring(separator + 1).trim();
+
+                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                if (identifier == null) {
+                    throw new IllegalArgumentException("Bad relative swipe element identifier: " + element);
+                }
+
+                action = SwipeAction.fromRelativeStrings(object, identifier, coords);
+            } else {
+                action = SwipeAction.fromStrings(object, property);
+            }
         } catch (Exception e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
                     .resolveDescription("DIRECTION", action == null ? "Unknown" : action.getActionType().name())
