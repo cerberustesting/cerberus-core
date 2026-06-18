@@ -2066,180 +2066,9 @@
 
 /* ═══════════════════════════════════════════════ */
 /*  VISION MODAL — Live Execution & Video Replay   */
+/*  Now uses crb_modal / crb_card transversal       */
+/*  charter (same as TestCaseStep, Property, etc.)  */
 /* ═══════════════════════════════════════════════ */
-
-.v2-vision-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding: 24px;
-}
-
-.v2-vision-modal {
-    width: 85vw;
-    height: 80vh;
-    max-width: 1400px;
-    max-height: 900px;
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    background: var(--crb-new-bg, #ffffff);
-    border: 1px solid var(--crb-grey-light-color, #e2e8f0);
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.05) inset;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Fullscreen override */
-.v2-vision-modal:has(+ *) { } /* fallback */
-[x-data] .v2-vision-overlay:has([style*="fullscreen"]) .v2-vision-modal { }
-
-.v2-vision-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: color-mix(in srgb, var(--crb-new-bg) 90%, transparent);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--crb-grey-light-color, #e2e8f0);
-    flex-shrink: 0;
-}
-
-/* Mode badge */
-.v2-vision-mode-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-}
-.v2-vision-mode-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-}
-.v2-vision-mode--live {
-    background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent);
-    color: var(--crb-blue-color, #3b82f6);
-}
-.v2-vision-mode--control {
-    background: color-mix(in srgb, #8b5cf6 12%, transparent);
-    color: #8b5cf6;
-}
-.v2-vision-mode--video {
-    background: color-mix(in srgb, #6366f1 12%, transparent);
-    color: #6366f1;
-}
-
-/* Toolbar buttons */
-.v2-vision-toolbar-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid var(--crb-grey-light-color, #e2e8f0);
-    background: transparent;
-    color: var(--crb-grey-color, #94a3b8);
-    cursor: pointer;
-    transition: all 0.15s;
-}
-.v2-vision-toolbar-btn:hover {
-    background: var(--crb-grey-lighter-color, #f1f5f9);
-    color: var(--crb-dark-color, #1e293b);
-    border-color: var(--crb-grey-color);
-}
-
-.v2-vision-close-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    border: none;
-    background: color-mix(in srgb, var(--crb-red-color) 10%, transparent);
-    color: var(--crb-red-color, #ef4444);
-    cursor: pointer;
-    transition: all 0.15s;
-}
-.v2-vision-close-btn:hover {
-    background: var(--crb-red-color, #ef4444);
-    color: white;
-}
-
-/* Body */
-.v2-vision-body {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    background: #0a0a0a;
-}
-
-/* Iframe */
-.v2-vision-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #000;
-}
-
-/* Video */
-.v2-vision-video-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-}
-.v2-vision-video {
-    flex: 1;
-    width: 100%;
-    min-height: 0;
-    background: #000;
-    object-fit: contain;
-}
-
-/* Multi-part navigation */
-.v2-vision-video-parts {
-    display: flex;
-    gap: 6px;
-    padding: 10px 16px;
-    background: color-mix(in srgb, var(--crb-new-bg) 95%, transparent);
-    border-top: 1px solid var(--crb-grey-light-color, #e2e8f0);
-    overflow-x: auto;
-}
-.v2-vision-video-part-btn {
-    padding: 5px 14px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border: 1px solid var(--crb-grey-light-color, #e2e8f0);
-    background: transparent;
-    color: var(--crb-grey-color, #94a3b8);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-}
-.v2-vision-video-part-btn:hover {
-    background: var(--crb-grey-lighter-color, #f1f5f9);
-    color: var(--crb-dark-color);
-}
-.v2-vision-video-part-btn--active {
-    background: #6366f1 !important;
-    color: white !important;
-    border-color: #6366f1 !important;
-}
 
 /* Pulse animation for live indicator */
 @keyframes v2-pulse {
@@ -2250,16 +2079,15 @@
     animation: v2-pulse 1.5s ease-in-out infinite;
 }
 
-/* Responsive */
+/* Mobile: force fullscreen */
 @media (max-width: 768px) {
-    .v2-vision-overlay {
-        padding: 8px;
-    }
-    .v2-vision-modal {
-        width: 100vw;
-        height: 100vh;
-        max-width: none;
-        max-height: none;
-        border-radius: 0;
+    #visionLiveModal > div:last-child {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
     }
 }
+
