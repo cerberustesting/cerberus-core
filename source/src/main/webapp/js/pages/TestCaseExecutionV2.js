@@ -192,12 +192,8 @@ function executionV2() {
 
         // ═══ LIVE CLEANUP ═══
         _stopLive() {
-            if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
-            if (this._wsHeartbeatTimer) { clearTimeout(this._wsHeartbeatTimer); this._wsHeartbeatTimer = null; }
             if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
             this.wsConnected = false;
-            this._pollErrorCount = 0;
-            if (this.liveStatus !== 'idle') this.liveStatus = 'done';
         },
 
         // ═══ DATA LOADING ═══
@@ -478,10 +474,6 @@ function executionV2() {
             if (!tce) return;
             var prevStatus = this.exe.controlStatus;
 
-            // Reset heartbeat timer — we just got fresh data
-            if (this.wsConnected && tce.controlStatus === 'PE') {
-                this._startWsHeartbeat(tce.id);
-            }
 
             // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
             Object.keys(tce).forEach(function(k) {
