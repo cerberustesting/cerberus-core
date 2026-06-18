@@ -1,8 +1,8 @@
 <!-- TestCaseExecution V2 - Vision Modal (Live / Video) -->
 <!-- Follows crb_modal transversal charter (same DNA as TestCaseStep.html / TestCaseProperty.html) -->
 
-<div x-show="visionModal.open" x-cloak
-     class="crb_modal" id="visionLiveModal">
+<template x-if="visionModal.open">
+<div class="crb_modal" id="visionLiveModal">
 
     <!-- Overlay -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]"
@@ -141,3 +141,4 @@
         </div>
     </div>
 </div>
+</template>
