@@ -19,6 +19,10 @@
  */
 package org.cerberus.core.service.webdriver.impl;
 
+import com.deque.html.axecore.results.CheckedNode;
+import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.Rule;
+import com.deque.html.axecore.selenium.AxeBuilder;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.W32APIOptions;
@@ -2059,6 +2063,44 @@ public class WebDriverService implements IWebDriverService {
             result.put(e.getMessage());
         }
 
+        return result;
+    }
+
+    @Override
+    public JSONObject getJSONAxeCoreLog(Session session) {
+        JSONObject result = new JSONObject();
+
+        try {
+
+            Results results = new AxeBuilder().analyze(session.getDriver());
+            result.put("Violations", convertAxeCoreRules(results.getViolations(), "Violated"));
+            result.put("Passes", convertAxeCoreRules(results.getPasses(), "Passed"));
+            result.put("Inapplicable", convertAxeCoreRules(results.getInapplicable(), "Inapplicable"));
+            result.put("Incomplete", convertAxeCoreRules(results.getIncomplete(), "Incomplete"));
+
+        } catch (JSONException e) {
+            LOG.debug(e, e);
+            result.put("message", "CRITICAL ERROR when getting the AxeCore logs!!\n" + e.getMessage());
+        }
+        LOG.debug(result.toString(1));
+        return result;
+    }
+
+    private JSONArray convertAxeCoreRules(List<Rule> rules, String status) {
+        JSONArray result = new JSONArray();
+        JSONObject entry;
+        for (Rule rule : rules) {
+            entry = new JSONObject();
+            entry.put("id", rule.getId());
+            entry.put("description", rule.getDescription());
+            entry.put("help", rule.getHelp());
+            entry.put("helpUrl", rule.getHelpUrl());
+            entry.put("impact", rule.getImpact());
+            entry.put("tags", rule.getTags());
+            entry.put("nodes", rule.getNodes());
+            entry.put("status", status);
+            result.put(entry);
+        }
         return result;
     }
 

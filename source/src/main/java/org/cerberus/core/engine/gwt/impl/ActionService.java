@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
@@ -41,7 +40,6 @@ import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.execution.IIdentifierService;
 import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.engine.execution.IRobotServerService;
@@ -53,6 +51,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.service.accessibilitylog.IAccessibilitylogService;
 import org.cerberus.core.service.appium.IAppiumService;
 import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.service.appservice.IServiceService;
@@ -129,6 +128,8 @@ public class ActionService implements IActionService {
     private IServiceService serviceService;
     @Autowired
     private IConsolelogService consolelogService;
+    @Autowired
+    private IAccessibilitylogService accessibilitylogService;
     @Autowired
     private IRobotProxyService executorService;
     @Autowired
@@ -457,6 +458,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
                     res = this.doActionSetConsoleContent(execution, actionExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_SETACCESSIBILITYCONTENT:
+                    res = this.doActionSetAccessibilityContent(execution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
                     res = this.doActionSetServiceCallContent(execution, actionExecution);
@@ -2134,6 +2138,46 @@ public class ActionService implements IActionService {
             exe.setApplicationType(Application.TYPE_SRV);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETCONSOLECONTENT);
+            return message;
+        } catch (Exception ex) {
+            LOG.error("Error doing Action setNetworkTrafficContent :" + ex);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETCONSOLECONTENT);
+            message.setDescription(message.getDescription().replace("%DETAIL%", ex.toString()));
+            return message;
+        }
+    }
+
+    private MessageEvent doActionSetAccessibilityContent(TestCaseExecution exe, TestCaseStepActionExecution actionexe, String textToFilter) throws IOException {
+        MessageEvent message;
+        try {
+            /**
+             * Building the url to get the Har file from cerberus-executor
+             */
+            LOG.debug("Getting Accessibility content.");
+
+            JSONObject axeRecap = new JSONObject();
+            JSONObject axeLogs = webdriverService.getJSONAxeCoreLog(exe.getSession());
+            axeRecap.put("rules", axeLogs);
+            JSONObject accessibilityStat = new JSONObject();
+            accessibilityStat = accessibilitylogService.enrichWithStats(axeLogs);
+            axeRecap.put("stat", accessibilityStat);
+
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", null, "", null, "", null, "");
+            appSrv.setResponseHTTPBody(axeRecap.toString());
+            appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
+            appSrv.setRecordTraceFile(false);
+
+            exe.setLastServiceCalled(appSrv);
+
+            /**
+             * Record the Request and Response in file system.
+             */
+            actionexe.addFileList(recorderService.recordAccessibilityContent(exe, actionexe, 0, null, axeRecap));
+
+            // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+            exe.setApplicationType(Application.TYPE_SRV);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SETACCESSIBILITYCONTENT);
             return message;
         } catch (Exception ex) {
             LOG.error("Error doing Action setNetworkTrafficContent :" + ex);

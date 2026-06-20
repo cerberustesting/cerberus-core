@@ -139,6 +139,16 @@ public interface IRecorderService {
      * @param testCaseStepActionExecution
      * @param control
      * @param property
+     * @param consoleContent
+     * @return
+     */
+    List<TestCaseExecutionFile> recordAccessibilityContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, JSONObject consoleContent);
+
+    /**
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param property
      * @param content
      * @param contentType
      * @return
@@ -269,7 +279,7 @@ public interface IRecorderService {
      * @param base64
      * @return
      */
-    TestCaseExecutionFile recordExecutionVideo (TestCaseExecution execution, String base64);
+    TestCaseExecutionFile recordExecutionVideo(TestCaseExecution execution, String base64);
 
     /**
      *
