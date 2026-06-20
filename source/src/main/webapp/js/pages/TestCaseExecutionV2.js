@@ -192,12 +192,8 @@ function executionV2() {
 
         // ═══ LIVE CLEANUP ═══
         _stopLive() {
-            if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
-            if (this._wsHeartbeatTimer) { clearTimeout(this._wsHeartbeatTimer); this._wsHeartbeatTimer = null; }
             if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
             this.wsConnected = false;
-            this._pollErrorCount = 0;
-            if (this.liveStatus !== 'idle') this.liveStatus = 'done';
         },
 
         // ═══ DATA LOADING ═══
@@ -281,16 +277,10 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // Live updates if PE — WS first, polling as fallback
-                    if (tce.controlStatus === 'PE') {
+                    // Live updates if PE — WebSocket only (no API polling)
+                    if (tce.controlStatus === 'PE' && this.paramActivateWebSocket === 'Y') {
                         this.$nextTick(() => {
-                            if (this.paramActivateWebSocket === 'Y') {
-                                // Try WS — it will start polling as fallback if WS fails/closes
-                                this._connectWebSocket(tce.id);
-                            } else {
-                                // WS disabled — go straight to polling
-                                this._startPolling(tce.id);
-                            }
+                            this._connectWebSocket(tce.id);
                         });
                     }
 
@@ -451,34 +441,13 @@ function executionV2() {
             console.info('[ExeV2] Connecting WebSocket:', wsUrl);
 
             var self = this;
-            var fallbackDone = false;
-
-            function fallbackToPolling() {
-                if (fallbackDone) return;
-                fallbackDone = true;
-                self.wsConnected = false;
-                // Only start polling fallback if execution is still running
-                if (self.exe && self.exe.controlStatus === 'PE') {
-                    console.info('[ExeV2] WS closed — starting polling fallback');
-                    self.liveStatus = 'polling';
-                    self._startPolling(executionId);
-                }
-            }
 
             try {
                 this.ws = new WebSocket(wsUrl);
                 this.ws.onopen = () => {
                     this.wsConnected = true;
                     this.liveStatus = 'ws';
-                    this._pollErrorCount = 0;
-                    // WS is primary — stop polling to avoid double server load
-                    if (this._pollingTimer) {
-                        clearTimeout(this._pollingTimer);
-                        this._pollingTimer = null;
-                    }
-                    // Start heartbeat: if no WS push within period, do one API poll
-                    this._startWsHeartbeat(executionId);
-                    console.info('[ExeV2] WebSocket connected — polling stopped, heartbeat started');
+                    console.info('[ExeV2] WebSocket connected');
                 };
                 this.ws.onmessage = (event) => {
                     try {
@@ -486,12 +455,16 @@ function executionV2() {
                         this._onWebSocketMessage(data);
                     } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
                 };
-                this.ws.onerror = () => { fallbackToPolling(); };
-                this.ws.onclose = () => { fallbackToPolling(); };
+                this.ws.onerror = () => {
+                    self.wsConnected = false;
+                    console.warn('[ExeV2] WebSocket error');
+                };
+                this.ws.onclose = () => {
+                    self.wsConnected = false;
+                    console.info('[ExeV2] WebSocket closed');
+                };
             } catch(e) {
-                console.warn('[ExeV2] WebSocket not available — starting polling fallback');
-                this.liveStatus = 'polling';
-                this._startPolling(executionId);
+                console.warn('[ExeV2] WebSocket not available');
             }
         },
 
@@ -501,10 +474,6 @@ function executionV2() {
             if (!tce) return;
             var prevStatus = this.exe.controlStatus;
 
-            // Reset heartbeat timer — we just got fresh data
-            if (this.wsConnected && tce.controlStatus === 'PE') {
-                this._startWsHeartbeat(tce.id);
-            }
 
             // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
             Object.keys(tce).forEach(function(k) {
@@ -651,84 +620,7 @@ function executionV2() {
             }
         },
 
-        // Heartbeat: if no WS push within period, do one API poll to guarantee freshness
-        _startWsHeartbeat(executionId) {
-            if (this._wsHeartbeatTimer) clearTimeout(this._wsHeartbeatTimer);
-            var self = this;
-            this._wsHeartbeatTimer = setTimeout(function() {
-                if (!self.wsConnected || !self.exe || self.exe.controlStatus !== 'PE') return;
-                console.debug('[ExeV2] Heartbeat: no WS push in ' + self.paramWebSocketPeriod + 'ms — doing API poll');
-                $.ajax({
-                    url: 'ReadTestCaseExecution',
-                    data: { executionId: executionId, executionWithDependency: true },
-                    dataType: 'json',
-                    timeout: 10000,
-                    success: function(data) {
-                        if (data.testCaseExecution) {
-                            self._onWebSocketMessage(data);
-                        }
-                    },
-                    error: function() {
-                        console.warn('[ExeV2] Heartbeat poll failed — will retry on next cycle');
-                        // Reset heartbeat to try again
-                        if (self.wsConnected && self.exe && self.exe.controlStatus === 'PE') {
-                            self._startWsHeartbeat(executionId);
-                        }
-                    }
-                });
-            }, this.paramWebSocketPeriod);
-        },
-
-        _startPolling(executionId) {
-            var self = this;
-            // Don't poll if WS is connected — WS is primary
-            if (this.wsConnected) {
-                console.debug('[ExeV2] WS active — skipping polling');
-                return;
-            }
-            if (this._pollingTimer) clearTimeout(this._pollingTimer);
-
-            // Backoff: base × 2^errors, capped at 30s
-            var delay = Math.min(this.paramWebSocketPeriod * Math.pow(2, this._pollErrorCount), 30000);
-            if (this._pollErrorCount === 0) {
-                console.info('[ExeV2] Polling every', delay, 'ms');
-            }
-            this.liveStatus = this._pollErrorCount >= 3 ? 'error' : 'polling';
-
-            this._pollingTimer = setTimeout(function() {
-                if (!self.exe || self.exe.controlStatus !== 'PE') {
-                    self.liveStatus = 'done';
-                    return;
-                }
-                $.ajax({
-                    url: 'ReadTestCaseExecution',
-                    data: { executionId: executionId, executionWithDependency: true },
-                    dataType: 'json',
-                    timeout: 15000,  // 15s timeout to avoid hanging requests
-                    success: function(data) {
-                        self._pollErrorCount = 0;  // Reset on success
-                        if (self.wsConnected) self.liveStatus = 'ws'; else self.liveStatus = 'polling';
-                        if (data.testCaseExecution) {
-                            self._onWebSocketMessage(data);
-                        }
-                        // Keep polling if still PE
-                        if (self.exe && self.exe.controlStatus === 'PE') {
-                            self._startPolling(executionId);
-                        } else {
-                            self.liveStatus = 'done';
-                        }
-                    },
-                    error: function() {
-                        self._pollErrorCount++;
-                        console.warn('[ExeV2] Poll error #' + self._pollErrorCount + ', next retry in ' + Math.min(self.paramWebSocketPeriod * Math.pow(2, self._pollErrorCount), 30000) + 'ms');
-                        // Retry with backoff if still PE
-                        if (self.exe && self.exe.controlStatus === 'PE') {
-                            self._startPolling(executionId);
-                        }
-                    }
-                });
-            }, delay);
-        },
+        // No more heartbeat or polling — all live data comes through WebSocket only
 
         // ═══ MANUAL EXECUTION ═══
         setActionStatus(stepIdx, actionIdx, status) {
@@ -1408,7 +1300,6 @@ function executionV2() {
             this.visionModal.fullscreen = false;
             this.visionModal.open = true;
             document.body.style.overflow = 'hidden';
-            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }.bind(this));
         },
 
         closeVisionModal() {

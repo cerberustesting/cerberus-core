@@ -195,21 +195,6 @@
                 </button>
             </template>
 
-            <!-- Live mode indicator (during PE) -->
-            <template x-if="exe.controlStatus === 'PE'">
-                <span class="text-[9px] font-bold px-2 py-1 rounded-lg shrink-0 flex items-center gap-1"
-                      :style="liveStatus === 'ws'
-                          ? 'background: rgba(0,210,122,0.12); color: #00d27a; border: 1px solid rgba(0,210,122,0.3)'
-                          : liveStatus === 'polling'
-                          ? 'background: rgba(44,123,229,0.12); color: #2c7be5; border: 1px solid rgba(44,123,229,0.3)'
-                          : 'background: var(--crb-grey-lighter-color); color: var(--crb-grey-color); border: 1px solid transparent'"
-                      :title="liveStatus === 'ws' ? 'WebSocket: instant push from server' : liveStatus === 'polling' ? 'Polling: refreshing every few seconds' : 'Connecting...'">
-                    <i :data-lucide="liveStatus === 'ws' ? 'zap' : liveStatus === 'polling' ? 'refresh-cw' : 'loader'"
-                       class="w-3 h-3"
-                       :class="liveStatus !== 'ws' ? 'animate-spin' : ''"></i>
-                    <span x-text="liveStatus === 'ws' ? 'WS' : liveStatus === 'polling' ? 'Poll' : '...'"></span>
-                </span>
-            </template>
 
             <!-- LIVE button (single button — Take Control is inside the modal) -->
             <template x-if="exe.controlStatus === 'PE' && exe.remoteLiveUrl">

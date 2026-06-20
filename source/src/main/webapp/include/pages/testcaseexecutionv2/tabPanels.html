@@ -12,8 +12,8 @@
 
             <!-- Title -->
             <div class="flex items-center gap-2 shrink-0">
-                <div class="h-7 w-7 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent)">
-                    <i data-lucide="variable" class="w-3.5 h-3.5" style="color: var(--crb-purple-color)"></i>
+                <div class="h-7 w-7 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent)">
+                    <i data-lucide="variable" class="w-3.5 h-3.5" style="color: var(--crb-blue-color)"></i>
                 </div>
                 <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--crb-text-color)">Properties</span>
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)"
@@ -55,7 +55,7 @@
                     <button @click="propTypeFilter = t.key"
                             class="px-1.5 py-0.5 rounded text-[10px] font-semibold transition-all"
                             :style="propTypeFilter === t.key
-                                ? 'background: color-mix(in srgb, var(--crb-purple-color) 12%, transparent); color: var(--crb-purple-color); border: 1px solid color-mix(in srgb, var(--crb-purple-color) 30%, transparent)'
+                                ? 'background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent); color: var(--crb-blue-color); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent)'
                                 : 'background: transparent; color: var(--crb-grey-color); border: 1px solid transparent'"
                             @mouseenter="if(propTypeFilter !== t.key) $el.style.background='var(--crb-grey-extra-light-color)'"
                             @mouseleave="if(propTypeFilter !== t.key) $el.style.background='transparent'"
@@ -96,7 +96,7 @@
 
                         <!-- Type badge -->
                         <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
-                              style="background: color-mix(in srgb, var(--crb-purple-color) 10%, transparent); color: var(--crb-purple-color)"
+                              style="background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); color: var(--crb-blue-color)"
                               x-text="prop.type || '-'"></span>
 
                         <!-- Data file chips (inline, clickable) -->
@@ -782,7 +782,7 @@
 <div x-show="tab === 'deps'" x-cloak class="v2-fade-in">
     <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
         <div class="flex items-center gap-3 mb-4">
-            <i data-lucide="link" class="w-5 h-5" style="color: var(--crb-purple-color)"></i>
+            <i data-lucide="link" class="w-5 h-5" style="color: var(--crb-blue-color)"></i>
             <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Dependencies</span>
             <span class="text-[10px] text-slate-400" x-text="(exe.testCaseExecutionQueueDepList || []).length + ' dependencies'"></span>
         </div>
@@ -952,7 +952,7 @@
             <!-- CARD 2: Size by Content Type -->
             <div class="rounded-xl p-4" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
                 <div class="flex items-center gap-2 mb-3">
-                    <i data-lucide="hard-drive" class="w-4 h-4" style="color: var(--crb-purple-color)"></i>
+                    <i data-lucide="hard-drive" class="w-4 h-4" style="color: var(--crb-blue-color)"></i>
                     <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Size by Type</span>
                     <span class="text-[9px] text-slate-400 ml-auto" x-text="'Total: ' + _formatKb(networkSizeByTypeData.total)"></span>
                 </div>
@@ -1203,7 +1203,7 @@
                             <!-- Post Data -->
                             <template x-if="netReqSelected.postData && Object.keys(netReqSelected.postData).length > 0">
                                 <div>
-                                    <div class="text-[9px] font-bold uppercase tracking-wider mb-1" style="color: var(--crb-purple-color)">Post Data</div>
+                                    <div class="text-[9px] font-bold uppercase tracking-wider mb-1" style="color: var(--crb-blue-color)">Post Data</div>
                                     <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--crb-grey-light-color)">
                                         <template x-for="key in Object.keys(netReqSelected.postData)" :key="key">
                                             <div class="flex text-[10px] border-b last:border-0" style="border-color: var(--crb-grey-light-color)">
