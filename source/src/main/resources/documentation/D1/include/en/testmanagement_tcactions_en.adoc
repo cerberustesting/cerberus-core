@@ -837,8 +837,8 @@ That action is handy in order to perform a full end user scenario (ex : a custom
 
 [NOTE]
 ====
-This action is only possible when Robot has the Cerberus executor activated and fully working.
-It also require at least version 1.1 of the executor.
+This action is only possible when Robot has the Cerberus extension activated and fully working.
+It also require at least version 1.1 of the robot extension.
 ====
 
 ==== setServiceCallContent
@@ -855,7 +855,15 @@ Force current content of the test case on the last service call in a JSON format
 | *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
 
 |=== 
-Force current content of the test case to the console logs in a JSON format. That JSON will allow controls on the all the logs collected between each call to that action (logs contents are reset after each call to get them). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+Force current content of the test case to the browser console logs in a JSON format. That JSON will allow controls on the all the logs collected between each call to that action (logs contents are reset after each call to get them). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+==== setAccessibilityContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Force current content of the test case to the Accessibility Analysis in a JSON format. That JSON will allow to control result on accessibility controls (AXE CORE is used). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
 ==== setContent
 |=== 

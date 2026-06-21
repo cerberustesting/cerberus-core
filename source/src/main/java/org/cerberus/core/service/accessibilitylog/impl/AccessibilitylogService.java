@@ -69,6 +69,12 @@ public class AccessibilitylogService implements IAccessibilitylogService {
                         newEntryImpact.put("total", 1);
                     }
 
+                    if (newEntryImpact.containsKey("total-nodes")) {
+                        newEntryImpact.put("total-nodes", newEntryImpact.get("total-nodes") + valueJSON.getJSONArray("nodes").length());
+                    } else {
+                        newEntryImpact.put("total-nodes", valueJSON.getJSONArray("nodes").length());
+                    }
+                    
                     if (valueJSON.has("impact")) {
                         String impact = valueJSON.getString("impact");
                         if (impact.isEmpty()) {

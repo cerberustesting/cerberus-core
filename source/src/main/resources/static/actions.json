@@ -344,6 +344,14 @@
     "description": "Switch context to console content"
   },
   {
+    "action": "setAccessibilityContent",
+    "param1": null,
+    "param2": null,
+    "param3": null,
+    "applicationType": ["GUI"],
+    "description": "Switch context to accessibility analysis content"
+  },
+  {
     "action": "setContent",
     "param1": "Value to Set",
     "param2": null,

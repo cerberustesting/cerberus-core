@@ -1324,6 +1324,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 && (actionExecution.getAction().equals(TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT)
                 || actionExecution.getAction().equals(TestCaseStepAction.ACTION_SETSERVICECALLCONTENT)
                 || actionExecution.getAction().equals(TestCaseStepAction.ACTION_SETCONSOLECONTENT)
+                || actionExecution.getAction().equals(TestCaseStepAction.ACTION_SETACCESSIBILITYCONTENT)
                 || actionExecution.getAction().equals(TestCaseStepAction.ACTION_SETCONTENT))) {
             return actionExecution;
         }

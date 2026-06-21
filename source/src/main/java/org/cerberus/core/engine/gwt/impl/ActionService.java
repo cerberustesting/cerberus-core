@@ -567,6 +567,7 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_HIDEKEYBOARD:
             case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
             case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
+            case TestCaseStepAction.ACTION_SETACCESSIBILITYCONTENT:
             case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
             case TestCaseStepAction.ACTION_DONOTHING:
                 actionExecution.setValue1("");
