@@ -46,16 +46,13 @@ var SEPARATOR = "-";
 var lastReceivedPush = new Date();
 var lastReceivedData = {};
 var wsOpen = false;
-var wsStartOpenning = false;
-var socket;
+var monitorSubscribed = false;
 
 // Variables used for automatic refresh of global last refresh timing and box refresh
 var boxTimeout;
 var boxTimeoutPeriod = 5000;
 var globalTimeout;
 var globalTimeoutPeriod = 2000;
-var reopenWSTimeout;
-var reopenWSTimeoutPeriod = 5000;
 
 // Column selection on monitoring table
 var colConfig = {
@@ -134,25 +131,91 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#displayRetry").prop("checked", displayRetry);
         $("#displayMuted").prop("checked", displayMuted);
 
-        openSocketAndBuildTable();
+        initExecutionMonitorWebSocket();
 
         refreshBoxTimings();
         refreshGlobalTimings();
-        // Trigger automatic reopen of ws only after 2 sec delay
-        wait(2000, function reOpenWSTimings() {
-            if ((!wsOpen) & (!wsStartOpenning)) {
-                loadBoard();
-            }
-            // Loop on refresh reopen ws
-            reopenWSTimeout = setTimeout(() => {
-                reOpenWSTimings();
-            }, reopenWSTimeoutPeriod);
-        }
-        );
 
     });
 });
 
+function initExecutionMonitorWebSocket() {
+    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_EXECUTIONMONITOR), handleExecutionMonitorPush);
+
+
+    document.addEventListener(CerberusWs.Event.CONNECTED, function () {
+        wsOpen = true;
+        monitorSubscribed = false;
+        subscribeToExecutionMonitor();
+    });
+
+    document.addEventListener(CerberusWs.Event.DISCONNECTED, function () {
+        wsOpen = false;
+        monitorSubscribed = false;
+        showLoader("#tableMonitor", "Connection closed from server.");
+        showLoader("#progressMonitor", "Connection closed from server.");
+    });
+
+    if (!window.Alpine || !Alpine.store('ws')) {
+        console.warn("ExecutionMonitor WS: Alpine ws store is not available");
+        showLoader("#tableMonitor", "WebSocket store not available.");
+        showLoader("#progressMonitor", "WebSocket store not available.");
+        return;
+    }
+
+    if (Alpine.store('ws').connected) {
+        wsOpen = true;
+        subscribeToExecutionMonitor();
+        return;
+    }
+
+    Alpine.store('ws').whenConnected()
+        .then(function () {
+            wsOpen = true;
+            subscribeToExecutionMonitor();
+        })
+        .catch(function () {
+            showLoader("#tableMonitor", "Connection timeout.");
+            showLoader("#progressMonitor", "Connection timeout.");
+        });
+}
+
+function subscribeToExecutionMonitor() {
+    if (monitorSubscribed) {
+        return;
+    }
+
+    var user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    if (!user.login) {
+        console.warn("ExecutionMonitor WS: missing user login");
+        return;
+    }
+
+    var sent = Alpine.store('ws').send({
+        sender: user.login,
+        sessionID: 'executionmonitor-' + user.login,
+        subject: CerberusWs.Subject.SUBSCRIBE,
+        channel: CerberusWs.Channel.PAGE_EXECUTIONMONITOR
+    });
+
+    if (sent) {
+        monitorSubscribed = true;
+        wsOpen = true;
+    }
+}
+
+function handleExecutionMonitorPush(e) {
+    var message = e.detail || {};
+    var data = message.payload || message;
+
+    hideLoader("#tableMonitor");
+    hideLoader("#progressMonitor");
+
+    lastReceivedPush = new Date();
+    lastReceivedData = data;
+
+    refreshMonitorTable(data);
+}
 
 function feedColConfigFromURL(paramCol) {
     // If at least 1 column is specified from URL, we default all values to false.
@@ -398,76 +461,13 @@ function loadBoard() {
             + systemQ + environmentsQ + countriesQ + campaignsQ;
 
     InsertURLInHistory("./ReportingMonitor.jsp?" + qS);
-    if (wsOpen) {
+    if (wsOpen && lastReceivedData && lastReceivedData.executionBoxes !== undefined) {
         refreshMonitorTable(lastReceivedData);
-    } else if (!wsStartOpenning) {
-        openSocketAndBuildTable();
+    } else {
+        subscribeToExecutionMonitor();
     }
 
 }
-
-function openSocketAndBuildTable() {
-
-    if (!wsOpen) {
-
-        sockets = [];
-        var parser = document.createElement('a');
-        parser.href = window.location.href;
-
-        var protocol = "ws:";
-        if (parser.protocol === "https:") {
-            protocol = "wss:";
-        }
-        var path = parser.pathname.split("ReportingMonitor")[0];
-        var new_uri = protocol + parser.host + path + "api/ws/executionmonitor";
-        console.info("Open Socket to : " + new_uri);
-        wsStartOpenning = true;
-        socket = new WebSocket(new_uri);
-
-        socket.onopen = function (e) {
-            hideLoader("#tableMonitor");
-            hideLoader("#progressMonitor");
-            console.info("ws onopen");
-            wsOpen = true;
-            wsStartOpenning = false;
-        }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-
-        socket.onmessage = function (e) {
-            var data = JSON.parse(e.data);
-            hideLoader("#tableMonitor");
-            hideLoader("#progressMonitor");
-            console.info("ws onmessage");
-            let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
-            console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
-            lastReceivedPush = new Date();
-            lastReceivedData = data;
-            console.info(data);
-            refreshMonitorTable(data);
-        }; //on récupère les messages provenant du serveur websocket
-
-        socket.onclose = function (e) {
-            console.info("ws onclose");
-            showLoader("#tableMonitor", "Connection closed from server.");
-            showLoader("#progressMonitor", "Connection closed from server.");
-            wsOpen = false;
-            wsStartOpenning = false;
-        }; //on est informé lors de la fermeture de la connexion vers le serveur
-
-        socket.onerror = function (e) {
-            console.info("ws onerror");
-            showLoader("#tableMonitor", "Connection error on server.");
-            showLoader("#progressMonitor", "Connection error on server.");
-            wsOpen = false;
-            wsStartOpenning = false;
-        }; //on traite les cas d'erreur*/
-
-        // Remain in memory
-        sockets.push(socket);
-
-    }
-
-}
-
 
 function getColumnsFromConfigAndBoxes(data, localColConfig) {
     // Calculate here the list of columns to display

@@ -115,6 +115,93 @@ document.addEventListener('alpine:init', () => {
         }
     });
 
+    Alpine.store('ws', {
+        connected: false,
+        _ws: null,
+        _reconnectDelay: 1000,
+
+        init() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (user && user.login) {
+                this._connect();
+            } else {
+                window.addEventListener('user-loaded', () => this._connect(), { once: true });
+            }
+        },
+
+        _connect() {
+            if (this._ws && (this._ws.readyState === WebSocket.OPEN || this._ws.readyState === WebSocket.CONNECTING)) return;
+
+            const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const url = `${protocol}${window.location.host}${getCerberusBasePath()}api/ws/CerberusWebSocket`;
+
+            this._ws = new WebSocket(url);
+
+            this._ws.onopen = () => {
+                this.connected = true;
+                this._reconnectDelay = 1000;
+                document.dispatchEvent(new CustomEvent(CerberusWs.Event.CONNECTED));
+            };
+
+            this._ws.onclose = () => {
+                this.connected = false;
+                this._ws = null;
+                document.dispatchEvent(new CustomEvent(CerberusWs.Event.DISCONNECTED));
+                setTimeout(() => {
+                    this._reconnectDelay = Math.min(this._reconnectDelay * 2, 30000);
+                    this._connect();
+                }, this._reconnectDelay);
+            };
+
+            this._ws.onerror = (err) => console.error('CerberusWS error:', err);
+
+            this._ws.onmessage = (event) => {
+                let message;
+
+                try {
+                    message = JSON.parse(event.data);
+                } catch (e) {
+                    console.warn('CerberusWS: invalid JSON message', event.data);
+                    return;
+                }
+
+                const channel = message.channel || '';
+
+                // Main routing by channel.
+                if (channel) {
+                    document.dispatchEvent(new CustomEvent(CerberusWs.Event.forChannel(channel), {
+                        detail: message
+                    }));
+                }
+            };
+        },
+
+        send(payload) {
+            if (!this._ws || this._ws.readyState !== WebSocket.OPEN) {
+                console.warn('CerberusWS: not connected, message dropped');
+                return false;
+            }
+            this._ws.send(typeof payload === 'string' ? payload : JSON.stringify(payload));
+            return true;
+        },
+
+        whenConnected() {
+            return new Promise((resolve, reject) => {
+                if (this.connected && this._ws?.readyState === WebSocket.OPEN) {
+                    resolve();
+                    return;
+                }
+                const timeout = setTimeout(() => {
+                    document.removeEventListener(CerberusWs.Event.CONNECTED, onConnect);
+                    reject(new Error('WebSocket connection timeout'));
+                }, 5000);
+                const onConnect = () => { clearTimeout(timeout); resolve(); };
+                document.addEventListener(CerberusWs.Event.CONNECTED, onConnect, { once: true });
+                this._connect();
+            });
+        }
+    });
+
     Alpine.data('dropdown', ({ items = [], label = 'Select' }) => ({
         items,
         selected: [],

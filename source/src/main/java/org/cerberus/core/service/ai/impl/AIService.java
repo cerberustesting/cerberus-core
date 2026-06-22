@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.service.ai.impl;
 
-import com.anthropic.core.JsonField;
 import com.anthropic.core.JsonValue;
 import com.anthropic.helpers.MessageAccumulator;
 import com.anthropic.models.messages.*;
@@ -33,11 +32,10 @@ import org.cerberus.core.crud.service.impl.*;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ai.IAIService;
 import org.cerberus.core.service.ai.impl.parsing.ApplicationObjectFromAI;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,7 +50,6 @@ import java.util.stream.Collectors;
 public class AIService implements IAIService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AIService.class);
-    private String sessionId;
 
     @Autowired
     AISessionManager aiSessionManager;
@@ -78,6 +75,8 @@ public class AIService implements IAIService {
     AIConfig aiConfig;
     @Autowired
     AIMcpClientService aiMcpClientService;
+    @Autowired
+    private WebSocketEventSender webSocketEventSender;
 
     private static final int MAX_TOOL_ITERATIONS = 20;
 
@@ -85,35 +84,26 @@ public class AIService implements IAIService {
 
 
     @Override
-    public void chatWithAI(String user, WebSocketSession websocketSession, String aiSessionID,  String newMessage) {
+    public void chatWithAI(String user, String aiSessionID, String newMessage) {
 
-        /**
-         * Generate aiSessionID if not exists)
-         */
-        if (aiSessionID == null || aiSessionID.isBlank()) {
-            aiSessionID = UUID.randomUUID().toString();
-        }
+        //Generate aiSessionID if not exists
+        final String currentAiSessionID = aiSessionID == null || aiSessionID.isBlank()
+                        ? UUID.randomUUID().toString() : aiSessionID;
 
-        /**
-         * Get all message of session and add the new message
-         */
+        //Get all message of session and add the new message
         List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(newMessage).build());
 
-        /**
-         * After the first question (request N°1), generate a title to retrieve conversation
-         */
-        if (messageParamList.size()==1) {
-            aiSessionManager.initSession(user, aiSessionID, "chatWithAI");
-            generateTitleForSession(newMessage, websocketSession, user, aiSessionID);
+        //For the first question (request N°1), generate a title to retrieve conversation
+        if (messageParamList.size() == 1) {
+            aiSessionManager.initSession(user, currentAiSessionID, "chatWithAI");
+            generateTitleForSession(newMessage, user, currentAiSessionID);
         }
 
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
         StringBuilder fullResponse = new StringBuilder();
 
-        /**
-         * If MCP is enabled, open a client to the configured server and expose its tools to Claude.
-         */
+        //If MCP is enabled, open a client to the configured server and expose its tools to Claude.
         McpSyncClient mcpClient = null;
         List<Tool> tools = new ArrayList<>();
         long totalInputTokens = 0;
@@ -123,42 +113,37 @@ public class AIService implements IAIService {
             if (aiConfig.useMcp() && aiConfig.mcpHost() != null && !aiConfig.mcpHost().isBlank()) {
                 mcpClient = aiMcpClientService.openClient();
                 tools = aiMcpClientService.listAnthropicTools(mcpClient);
-                LOG.info("MCP enabled for chat session {} — {} tools available", aiSessionID, tools.size());
+                LOG.debug("MCP enabled for chat session {} — {} tools available", currentAiSessionID, tools.size());
             }
 
             MessageAccumulator messageAccumulator = null;
-            /**
-             * Agentic loop : stream a turn, and while Claude requests tool calls,
-             * execute them through MCP and feed the results back for the next turn.
-             */
+            //Agentic loop : stream a turn, and while Claude requests tool calls,
+            //execute them through MCP and feed the results back for the next turn.
             for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
 
-                messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null, tools, text -> {
-                    fullResponse.append(text);
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Map<String, String> message = new HashMap<>();
-                        message.put("type", "chat");
-                        message.put("done", "false");
-                        message.put("data", text);
-                        websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-                    } catch (Exception e) {
-                        LOG.error("Error during streaming callback:", e);
-                        streamingErrors.add(e.getMessage());
-                    }
-                });
+                messageAccumulator = aiClientService.streamResponseAndAccumulate(
+                        messageParamList,null,tools,
+                        text -> {
+                            fullResponse.append(text);
+                            try {
+                                // Stream response : WebSocket type=chat.delta, channel=ai
+                                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AI_CHAT,Map.of("done", false, "data", text));
+                            } catch (Exception e) {
+                                LOG.error("Error during streaming callback:", e);
+                                streamingErrors.add(e.getMessage());
+                            }
+                        }
+                );
 
                 Message response = messageAccumulator.message();
 
+                //Increment Usage
                 if (response.usage().isValid()) {
                     Usage usage = response.usage();
-
                     totalInputTokens += usage.inputTokens();
                     totalOutputTokens += usage.outputTokens();
-
                     totalInputTokens += usage.cacheCreationInputTokens().orElse(0L);
                     totalInputTokens += usage.cacheReadInputTokens().orElse(0L);
-
                 }
 
                 // Replay Claude's turn (text + tool_use blocks) in the conversation history.
@@ -178,57 +163,64 @@ public class AIService implements IAIService {
 
                 // Execute every requested tool and gather the tool_result blocks.
                 List<ContentBlockParam> toolResults = new ArrayList<>();
+                var currentToolUsed = "";
                 for (ContentBlock block : response.content()) {
                     if (block.toolUse().isEmpty()) {
                         continue;
                     }
+
                     ToolUseBlock toolUse = block.toolUse().get();
-                    Map<String, Object> arguments = toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
-                    notifyToolCall(websocketSession, toolUse.name());
+                    currentToolUsed = toolUse.name();
+
+                    //Send tool start through Websocket
+                    webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+                            Map.of("toolName", currentToolUsed));
 
                     String toolResult;
                     boolean isError = false;
+
                     try {
+                        //Call tool
+                        Map<String, Object> arguments = toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
+                        arguments.put("_context", Map.of("source", "GUI","user", user,"appSessionID", currentAiSessionID,"channel", WebSocketStatic.CHANNEL_AI_CHAT));
                         toolResult = aiMcpClientService.callTool(mcpClient, toolUse.name(), arguments);
+
+                        //Send result through Websocket
+                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_RESULT, WebSocketStatic.CHANNEL_AI_CHAT,
+                                Map.of("toolName", currentToolUsed, "data", toolResult));
+
                     } catch (Exception ex) {
                         LOG.error("MCP tool call '{}' failed:", toolUse.name(), ex);
                         toolResult = "Tool execution failed: " + ex.getMessage();
                         isError = true;
+
+                        //Send tool error through Websocket
+                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_ERROR, WebSocketStatic.CHANNEL_AI_CHAT,
+                                Map.of("toolName", currentToolUsed, "error", ex.toString()));
                     }
 
-                    toolResults.add(ContentBlockParam.ofToolResult(ToolResultBlockParam.builder()
-                            .toolUseId(toolUse.id())
-                            .content(toolResult)
-                            .isError(isError)
-                            .build()));
+                    toolResults.add(ContentBlockParam.ofToolResult(ToolResultBlockParam.builder().toolUseId(toolUse.id()).content(toolResult).isError(isError).build()));
                 }
 
-                messageParamList.add(MessageParam.builder()
-                        .role(MessageParam.Role.USER)
-                        .contentOfBlockParams(toolResults)
-                        .build());
+                //Send tool end through Websocket
+                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+                        Map.of("toolName", currentToolUsed));
+
+                messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).contentOfBlockParams(toolResults).build());
             }
 
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> message = new HashMap<>();
-            message.put("type", "end");
-            message.put("done", "true");
-            message.put("data", "");
-            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+            // Notify WebSocket type=chat.done
+            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_DONE, WebSocketStatic.CHANNEL_AI_CHAT, Map.of("done", true, "data", ""));
 
-            /**
-             * store message and answer
-             */
-            LOG.debug("New message from :"+user+" in session :"+aiSessionID+" - message : "+newMessage);
-            LOG.debug("New message from :"+user+" in session :"+aiSessionID+" - answer : "+fullResponse.toString());
-            aiSessionManager.saveMessage(user, aiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI", totalInputTokens, totalOutputTokens);
+            //store message and answer
+            LOG.debug("New message from :"+user+" in session :"+currentAiSessionID+" - message : "+newMessage);
+            LOG.debug("New message from :"+user+" in session :"+currentAiSessionID+" - answer : "+fullResponse.toString());
+            aiSessionManager.saveMessage(user, currentAiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI", totalInputTokens, totalOutputTokens);
 
         } catch (Exception e) {
             LOG.error("Error during chatWithAI:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            // Notify WebSocket type=chat.error, channel=ai
+            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_ERROR,WebSocketStatic.CHANNEL_AI_CHAT,Map.of("message", e.getMessage()));
         } finally {
             if (mcpClient != null) {
                 try {
@@ -238,56 +230,31 @@ public class AIService implements IAIService {
         }
     }
 
-    /**
-     * Notifies the UI that Claude is invoking an MCP tool.
-     */
-    private void notifyToolCall(WebSocketSession websocketSession, String toolName) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> message = new HashMap<>();
-            message.put("type", "tool_call");
-            message.put("data", toolName);
-            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-        } catch (IOException e) {
-            LOG.error("Error notifying tool call:", e);
-        }
-    }
 
-    private void generateTitleForSession(String newMessage, WebSocketSession websocketSession, String user, String aiSessionID) {
+    /**
+     * Generate Session Title, notify user and insert into database.
+     */
+    private void generateTitleForSession(String newMessage, String user, String aiSessionID) {
         String title = aiBuildPrompt.buildPromptForSessionTitle(newMessage);
 
-        List<MessageParam> messageParamTitle = new ArrayList<MessageParam>();
+        List<MessageParam> messageParamTitle = new ArrayList<>();
         messageParamTitle.add(MessageParam.builder().role(MessageParam.Role.USER).content(title).build());
         StringBuilder fullTitle = new StringBuilder();
-        aiClientService.streamResponseAndAccumulate(messageParamTitle,null,  text -> {
+        aiClientService.streamResponseAndAccumulate(messageParamTitle, null, text -> {
             fullTitle.append(text);
             try {
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, String> message = new HashMap<>();
-                message.put("type", "title");
-                message.put("data", text);
-                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_TITLE, WebSocketStatic.CHANNEL_AI_CHAT,
+                        Map.of("data", text));
             } catch (Exception e) {
                 LOG.error("Error during streaming callback:", e);
             }
         });
         LOG.debug(fullTitle.toString());
         aiSessionManager.updateTitle(user, aiSessionID, fullTitle.toString());
-
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> message = new HashMap<>();
-        message.put("type", "title");
-        message.put("title", fullTitle.toString());
-        message.put("sessionID", aiSessionID);
-        try {
-            websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
-    public void generateTestCaseProposal(String user, WebSocketSession websocketSession, String session,  String featureDescription, String application, String testFolderId) throws JsonProcessingException {
+    public void generateTestCaseProposal(String user, String session, String featureDescription, String application, String testFolderId) throws JsonProcessingException {
 
         String prompt = aiBuildPrompt.buildPromptForTestcase(testFolderId, featureDescription);
         ObjectMapper mapper = new ObjectMapper();
@@ -302,15 +269,13 @@ public class AIService implements IAIService {
 
                     JsonNode json = mapper.readTree(cleanedJson);
                     if (json.isObject()) {
-                        Map<String, Object> message = new HashMap<>();
-                        message.put("type", "testcaseCreated");
-                        message.put("sessionID", session);
-                        message.put("application", application);
-                        message.put("testFolder", testFolderId);
-                        message.put("data", json);
-                        fullResponse.append(mapper.writeValueAsString(message));
-
-                        websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                        Map<String, Object> payload = new HashMap<>();
+                        payload.put("sessionID", session);
+                        payload.put("application", application);
+                        payload.put("testFolder", testFolderId);
+                        payload.put("data", json);
+                        fullResponse.append(mapper.writeValueAsString(payload));
+                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_TESTCASE_PROPOSALS, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, payload);
                     }
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
@@ -324,34 +289,26 @@ public class AIService implements IAIService {
             //update Title
             aiSessionManager.updateTitle(user, session, featureDescription);
 
-            // Notify completion
-            websocketSession.sendMessage(new TextMessage("{\"type\":\"done\",\"message\":\"Generation complete\"}"));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_DONE, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", "Generation complete"));
 
-            // Notify accumulated errors if any
             if (!streamingErrors.isEmpty()) {
-                Map<String, Object> errorMessage = new HashMap<>();
-                errorMessage.put("type", "error");
-                errorMessage.put("message", "Errors occurred during streaming callback : "+streamingErrors);
-                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(errorMessage)));
+                webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
             }
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", e.getMessage()));
         }
     }
 
 
-    public void createTestCaseAndGenerateContent(String user, WebSocketSession websocketSession, String session, String testFolder,  String testCaseJsonObject, String detailedDescription, String tempId) throws JsonProcessingException {
+    public void createTestCaseAndGenerateContent(String user, String session, String testFolder, String testCaseJsonObject, String detailedDescription, String tempId) throws JsonProcessingException {
 
         //Get Testcase Ids existing for specific folder
         Map<String, List<String>> individualSearch = new HashMap<>();
         individualSearch.put("tec.test", List.of(testFolder));
         List<String> existingTestcases = testCaseService.readDistinctValuesByCriteria(null, testFolder, null, individualSearch, "tec.testcase").getDataList();
-        LOG.info("Existing TestcaseID : " + existingTestcases.toString());
+        LOG.info("Existing TestcaseID : " + existingTestcases);
 
         //Generate Prompt to Guess the next ID
         String promptNextTestCaseID = aiBuildPrompt.buildPromptForNextTestcaseIdGeneration(String.join(",", existingTestcases));
@@ -365,8 +322,7 @@ public class AIService implements IAIService {
         TestCase testCase = null;
         try {
             testCase = objectFromAiResponse.createTestCase(testCaseJsonObject, testcaseId, user);
-            // Notify testcase created
-            websocketSession.sendMessage(new TextMessage("{\"type\":\"testcase_created\",\"tempId\":\""+tempId+"\"}"));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASE, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -386,14 +342,14 @@ public class AIService implements IAIService {
             MessageAccumulator messageAccumulator = aiClientService.streamResponseObjectAndAccumulate(prompt, null, objectRetrieved -> {
                 try {
                     String cleanedJson = aiClientService.sanitizeJson(objectRetrieved);
-                    LOG.debug("Step : "+cleanedJson);
+                    LOG.debug("Step : " + cleanedJson);
 
                     JsonNode json = mapper.readTree(cleanedJson);
                     if (json.isObject()) {
                         TestCaseStep testCaseStep = objectFromAiResponse.createTestCaseStep(json.toString(), finalTestCase);
-                        this.createTestCaseStepActionAndControlAndGenerateContent(user, websocketSession, session, testCaseStep,finalTestCase.getDetailedDescription(), json.get("promptForActionDefinition").toString());
+                        this.createTestCaseStepActionAndControlAndGenerateContent(user, session, testCaseStep, finalTestCase.getDetailedDescription(), json.get("promptForActionDefinition").toString());
                         fullResponse.append(mapper.writeValueAsString(testCaseStep));
-                        websocketSession.sendMessage(new TextMessage("{\"type\":\"testcasestep_created\",\"tempId\":\""+tempId+"\"}"));
+                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASESTEP, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId));
                     }
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
@@ -403,39 +359,30 @@ public class AIService implements IAIService {
 
             // Log AI usage
             aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase", 0, 0);
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASE, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId, "test", finalTestCase.getTest(), "testcase", finalTestCase.getTestcase()));
 
-            // Notify completion
-            websocketSession.sendMessage(new TextMessage("{\"type\":\"test_created_ack\",\"tempId\":\""+tempId+"\",\"test\":\""+finalTestCase.getTest()+"\",\"testcase\":\""+finalTestCase.getTestcase()+"\"}"));
-
-            // Notify accumulated errors if any
             if (!streamingErrors.isEmpty()) {
-                Map<String, Object> errorMessage = new HashMap<>();
-                errorMessage.put("type", "error");
-                errorMessage.put("message", "Errors occurred during streaming callback : "+streamingErrors);
-                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(errorMessage)));
+                webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
             }
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", e.getMessage()));
         }
     }
 
-    private String getNextTestcaseId(String prompt, String sessionId, String user){
+    private String getNextTestcaseId(String prompt, String sessionId, String user) {
 
         Message response = aiClientService.getSyncMessage(prompt);
 
-        //Get content (text only)
         String result = response.content().stream()
                 .map(block -> block
-                                .text()
-                                .map(tb -> {
-                                    String txt = tb.text();
-                                    return txt == null ? "" : txt;})
-                                .orElse(""))
+                        .text()
+                        .map(tb -> {
+                            String txt = tb.text();
+                            return txt == null ? "" : txt;
+                        })
+                        .orElse(""))
                 .collect(Collectors.joining())
                 .trim();
 
@@ -448,7 +395,7 @@ public class AIService implements IAIService {
     }
 
 
-    private void createTestCaseStepActionAndControlAndGenerateContent(String user, WebSocketSession websocketSession, String session, TestCaseStep testCaseStep, String testCaseDescription,  String promptForActionDefinition) throws JsonProcessingException {
+    private void createTestCaseStepActionAndControlAndGenerateContent(String user, String session, TestCaseStep testCaseStep, String testCaseDescription, String promptForActionDefinition) throws JsonProcessingException {
 
         //Build prompt
         String prompt = aiBuildPrompt.buildPromptForActionsAndControls(testCaseStep, testCaseDescription, promptForActionDefinition);
@@ -470,20 +417,15 @@ public class AIService implements IAIService {
                         JsonNode controlNode = json.get("control");
 
                         if (actionNode != null && !actionNode.isNull()) {
-                            // C’est une action
                             LOG.debug("Detected ACTION: " + actionNode.asText());
-                            lastAction = objectFromAiResponse.createTestCaseStepAction(
-                                    json.toString(),
-                                    testCaseStep
-                            );
+                            lastAction = objectFromAiResponse.createTestCaseStepAction(json.toString(), testCaseStep);
                             fullResponse.append(mapper.writeValueAsString(lastAction));
                         } else if (controlNode != null && !controlNode.isNull()) {
-                            // C’est un contrôle — nécessite la dernière action
                             if (lastAction == null) {
                                 LOG.warn("Received CONTROL without a previous ACTION, skipping...");
                             } else {
                                 LOG.debug("Detected CONTROL: " + controlNode.asText());
-                                TestCaseStepActionControl tcsac = objectFromAiResponse.createTestCaseStepActionControl(json.toString(),lastAction);
+                                TestCaseStepActionControl tcsac = objectFromAiResponse.createTestCaseStepActionControl(json.toString(), lastAction);
                                 fullResponse.append(mapper.writeValueAsString(tcsac));
                             }
                         } else {
@@ -501,15 +443,12 @@ public class AIService implements IAIService {
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", e.getMessage()));
         }
     }
 
 
-    public void executionDebugWithAI(String user, WebSocketSession websocketSession, String aiSessionID, long executionId) {
+    public void executionDebugWithAI(String user, String aiSessionID, long executionId) {
 
         /*
         Retreive TestCaseExecution
@@ -528,43 +467,31 @@ public class AIService implements IAIService {
         String prompt = aiBuildPrompt.buildPromptForSelfHealing(tce, tc);
         LOG.debug(prompt);
 
-        List<MessageParam> messageParamList = new ArrayList<MessageParam>();
+        List<MessageParam> messageParamList = new ArrayList<>();
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(prompt).build());
 
         List<String> streamingErrors = new CopyOnWriteArrayList<>();
         StringBuilder fullResponse = new StringBuilder();
         try {
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,null,  text -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null, text -> {
                 fullResponse.append(text);
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, String> message = new HashMap<>();
-                    message.put("type", "self_healing_explain");
-                    message.put("data", text);
-                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+                    webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_EXECUTION_DEBUG, Map.of("data", text));
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
                     streamingErrors.add(e.getMessage());
                 }
             });
 
-            /**
-             * store message and answer
-             */
             aiSessionManager.saveMessage(user, aiSessionID, prompt, fullResponse.toString(), messageAccumulator.message(), "self_healing_explain", 0, 0);
 
         } catch (Exception e) {
-            LOG.error("Error during chatWithAI:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            LOG.error("Error during executionDebugWithAI:", e);
+            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_EXECUTION_DEBUG, Map.of("message", e.getMessage()));
         }
-
-
     }
 
-    public void generateApplicationObjectProposalWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, String htmlPath, String screenshotPath, String prompt, String subject ) {
+    public void generateApplicationObjectProposalWithAI(String user, String aiSessionID, String applicationId, String pageName, String htmlPath, String screenshotPath, String prompt, String subject) {
 
         /*
         Retreive existing Application Objects
@@ -585,19 +512,17 @@ public class AIService implements IAIService {
             throw new RuntimeException(e);
         }
         final String screenshotBase64Final = screenshotBase64;
-        //BufferedImage fullImage = applicationObjectFromAI.loadAndConvertImage(screenshotPath);
 
         /*
         Build prompt and context. For first call, generate prompt
          */
         String aoPrompt = prompt;
-        if ("ao_generate".equals(subject)) {
+        if (WebSocketStatic.CHANNEL_AO_GENERATE.equals(subject)) {
             aoPrompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(applicationId, aoList, pageName, prompt);
         }
         LOG.debug(aoPrompt);
         String systemContext = aiBuildPrompt.buildPromptForApplicationObjectSystemContext();
         LOG.debug(systemContext);
-
 
         List<ContentBlockParam> contentOfBlockParams = new ArrayList<>();
         // Image block
@@ -611,7 +536,6 @@ public class AIService implements IAIService {
                 .build();
         contentOfBlockParams.add(ContentBlockParam.ofImage(imgBlock));
 
-        // Document block HTML
         @SuppressWarnings("unchecked")
         DocumentBlockParam docBlock = DocumentBlockParam.builder()
                 .type(JsonValue.from("document"))
@@ -627,91 +551,76 @@ public class AIService implements IAIService {
          * Get all message of session and add the new message
          */
         List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
-        MessageParam.Builder mpBuilder =  MessageParam.builder()
-                        .role(MessageParam.Role.USER)
-                        .content(aoPrompt);
-        // Content of block param only for first call
-        if ("ao_generate".equals(subject)) {
+        MessageParam.Builder mpBuilder = MessageParam.builder()
+                .role(MessageParam.Role.USER)
+                .content(aoPrompt);
+        if (WebSocketStatic.CHANNEL_AO_GENERATE.equals(subject)) {
             mpBuilder.contentOfBlockParams(contentOfBlockParams);
         }
 
         MessageParam msg = mpBuilder.build();
         messageParamList.add(msg);
 
-
         StringBuilder fullResponse = new StringBuilder();
         try {
-
             StringBuilder textBuffer = new StringBuilder();
             AtomicBoolean insideJsonBlock = new AtomicBoolean(false);
 
-            //Start Streaming
-            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext,chunk -> {
+            MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, systemContext, chunk -> {
 
-                                textBuffer.append(chunk);
-                                String current = textBuffer.toString();
+                textBuffer.append(chunk);
+                String current = textBuffer.toString();
 
-                                while (true) {
+                while (true) {
 
-                                    if (!insideJsonBlock.get()) {
-                                        int start = current.indexOf("```json");
-                                        if (start >= 0) {
+                    if (!insideJsonBlock.get()) {
+                        int start = current.indexOf("```json");
+                        if (start >= 0) {
 
-                                            // Send text before JSON in streaming
-                                            String chatPart = current.substring(0, start).trim();
-                                            if (!chatPart.isEmpty()) {
-                                                sendChatMessage(websocketSession, chatPart);
-                                            }
+                            String chatPart = current.substring(0, start).trim();
+                            if (!chatPart.isEmpty()) {
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", chatPart));
+                            }
 
-                                            insideJsonBlock.set(true);
-                                            current = current.substring(start + 7); // skip ```json{}```
-                                            textBuffer.setLength(0);
-                                            textBuffer.append(current);
+                            insideJsonBlock.set(true);
+                            current = current.substring(start + 7);
+                            textBuffer.setLength(0);
+                            textBuffer.append(current);
 
-                                        } else {
-                                            // Pas de JSON détecté → stream normal
-                                            if (!current.isEmpty()) {
-                                                sendChatMessage(websocketSession, current);
-                                                textBuffer.setLength(0);
-                                            }
-                                            break;
-                                        }
-                                    } else {
+                        } else {
+                            if (!current.isEmpty()) {
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", current));
+                                textBuffer.setLength(0);
+                            }
+                            break;
+                        }
+                    } else {
 
-                                        int end = current.indexOf("```");
-                                        if (end >= 0) {
+                        int end = current.indexOf("```");
+                        if (end >= 0) {
 
-                                            String jsonPart = current.substring(0, end).trim();
+                            String jsonPart = current.substring(0, end).trim();
 
-                                            try {
-                                                String cleaned = aiClientService.sanitizeJson(jsonPart);
-                                                LOG.info("Cleaned JSON: " + cleaned);
-                                                ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId,screenshotBase64Final,cleaned,user);
+                            try {
+                                String cleaned = aiClientService.sanitizeJson(jsonPart);
+                                LOG.info("Cleaned JSON: " + cleaned);
+                                ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId, screenshotBase64Final, cleaned, user);
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_AO_PROPOSALS,  WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", ao));
+                            } catch (Exception e) {
+                                LOG.error("Failed parsing streamed AO", e);
+                            }
 
-                                                Map<String,Object> message = new HashMap<>();
-                                                message.put("type","ao_proposals");
-                                                message.put("data", ao);
+                            insideJsonBlock.set(false);
+                            current = current.substring(end + 3);
+                            textBuffer.setLength(0);
+                            textBuffer.append(current);
 
-                                                ObjectMapper mapper = new ObjectMapper();
-                                                websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-
-                                            } catch(Exception e) {
-                                                LOG.error("Failed parsing streamed AO", e);
-                                            }
-
-                                            insideJsonBlock.set(false);
-
-                                            current = current.substring(end + 3);
-                                            textBuffer.setLength(0);
-                                            textBuffer.append(current);
-
-                                        } else {
-                                            // JSON not completed yet
-                                            break;
-                                        }
-                                    }
-                                }
-                            });
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            });
             LOG.debug(fullResponse.toString());
 
             /**
@@ -724,161 +633,11 @@ public class AIService implements IAIService {
 
         } catch (Exception e) {
             LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
-        }
-    }
-
-
-    public void generateTestCaseFromImportWithAI(String user, WebSocketSession websocketSession, String aiSessionID, String applicationId, String pageName, List<String> filePaths, String screenshotPath, String prompt, String subject ) {
-
-
-        try {
-            /*
-            Get Exiting Library
-             */
-            Application application = applicationService.readByKey(applicationId).getItem();
-            List<TestCaseStep> stepLibList = testCaseStepService.getStepLibraryBySystem(application.getSystem());
-
-
-            /*
-            Get List of Files and generate content
-             */
-            List<ContentBlockParam> contentOfBlockParams = new ArrayList<>();
-
-            for (String filePath : filePaths) {
-                //TODO
-            }
-
-            /**
-             * Get all message of session
-             */
-            List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
-
-
-            /*
-             * If first message, build prompt, else, use user prompt
-             */
-            String aoPrompt = prompt;
-            if ("ao_generate".equals(subject)) {
-                //aoPrompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(applicationId, aoList, pageName, prompt);
-            }
-            LOG.debug(aoPrompt);
-            String systemContext = aiBuildPrompt.buildPromptForApplicationObjectSystemContext();
-            LOG.debug(systemContext);
-
-            MessageParam.Builder mpBuilder =  MessageParam.builder()
-                    .role(MessageParam.Role.USER)
-                    .content(aoPrompt);
-            // Content of block param only for first call
-            if ("ao_generate".equals(subject)) {
-                mpBuilder.contentOfBlockParams(contentOfBlockParams);
-            }
-
-            MessageParam msg = mpBuilder.build();
-            messageParamList.add(msg);
-
-
-            StringBuilder fullResponse = new StringBuilder();
-            StringBuilder textBuffer = new StringBuilder();
-            AtomicBoolean insideJsonBlock = new AtomicBoolean(false);
-
-                //Start Streaming
-                MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList,systemContext,chunk -> {
-
-                    textBuffer.append(chunk);
-                    String current = textBuffer.toString();
-
-                    while (true) {
-
-                        if (!insideJsonBlock.get()) {
-                            int start = current.indexOf("```json");
-                            if (start >= 0) {
-
-                                // Send text before JSON in streaming
-                                String chatPart = current.substring(0, start).trim();
-                                if (!chatPart.isEmpty()) {
-                                    sendChatMessage(websocketSession, chatPart);
-                                }
-
-                                insideJsonBlock.set(true);
-                                current = current.substring(start + 7); // skip ```json{}```
-                                textBuffer.setLength(0);
-                                textBuffer.append(current);
-
-                            } else {
-                                // Pas de JSON détecté → stream normal
-                                if (!current.isEmpty()) {
-                                    sendChatMessage(websocketSession, current);
-                                    textBuffer.setLength(0);
-                                }
-                                break;
-                            }
-                        } else {
-
-                            int end = current.indexOf("```");
-                            if (end >= 0) {
-
-                                String jsonPart = current.substring(0, end).trim();
-
-                                try {
-                                    String cleaned = aiClientService.sanitizeJson(jsonPart);
-                                    LOG.info("Cleaned JSON: " + cleaned);
-                                    //ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId,screenshotBase64Final,cleaned,user);
-                                    ApplicationObject ao = new ApplicationObject();
-
-                                    Map<String,Object> message = new HashMap<>();
-                                    message.put("type","ao_proposals");
-                                    message.put("data", ao);
-
-                                    ObjectMapper mapper = new ObjectMapper();
-                                    websocketSession.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-
-                                } catch(Exception e) {
-                                    LOG.error("Failed parsing streamed AO", e);
-                                }
-
-                                insideJsonBlock.set(false);
-
-                                current = current.substring(end + 3);
-                                textBuffer.setLength(0);
-                                textBuffer.append(current);
-
-                            } else {
-                                // JSON not completed yet
-                                break;
-                            }
-                        }
-                    }
-                });
-                LOG.debug(fullResponse.toString());
-
-
-
-
-
-            /**
-             * store message and answer
-             */
-            aiSessionManager.saveMessage(user, aiSessionID, aoPrompt, fullResponse.toString(), messageAccumulator.message(), "ao_proposals", 0, 0);
-
-            //update Title
-            aiSessionManager.updateTitle(user, aiSessionID, "Application Object Generation for page " + pageName);
-
-
-            } catch (Exception e) {
-            LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
-            try {
-                websocketSession.sendMessage(new TextMessage("{\"type\":\"error\",\"message\":\"" + e.getMessage() + "\"}"));
-                websocketSession.close(CloseStatus.SERVER_ERROR);
-            } catch (IOException ignored) {}
+            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("message", e.getMessage()));
         }
     }
 
     private String removeScriptsAndStyles(String html) {
-
         if (html == null || html.isEmpty()) {
             return html;
         }
@@ -887,20 +646,8 @@ public class AIService implements IAIService {
         html = html.replaceAll("(?is)<style.*?>.*?</style>", "");
         html = html.replaceAll("(?is)<!--.*?-->", "");
         LOG.info(html.length());
-
         return html;
     }
 
-    private void sendChatMessage(WebSocketSession session, String text) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> message = new HashMap<>();
-            message.put("type", "chat");
-            message.put("data", text);
-            session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
-        } catch (IOException e) {
-            LOG.error("Error sending chat message:", e);
-        }
-    }
 
 }

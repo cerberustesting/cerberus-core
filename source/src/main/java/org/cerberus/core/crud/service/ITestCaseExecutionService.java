@@ -369,4 +369,16 @@ public interface ITestCaseExecutionService {
      * @return
      */
     public MessageGeneral getResultMessageAgregated(List<MessageGeneral> messageList);
+
+    /**
+     *
+     * @param user
+     */
+    public List<TestCaseExecutionLight> readRunningExecutionLightByUser(String user) throws CerberusException ;
+
+    /**
+     *
+     * @param user
+     */
+    public List<TestCaseExecutionLight> readLastExecutionLightByUser(String user) throws CerberusException ;
 }

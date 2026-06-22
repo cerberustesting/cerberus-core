@@ -28,6 +28,9 @@ import org.cerberus.core.mcp.util.MCPProjectionUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -58,6 +61,9 @@ public class ListApplicationTool implements MCPTool {
     private final IApplicationService applicationService;
     private final ApplicationMapperV001 applicationMapper;
     private final MCPLogUtils mcpLogUtils;
+
+    @Autowired
+    private WebSocketEventSender webSocketEventSender;
 
     public ListApplicationTool(IApplicationService applicationService, ApplicationMapperV001 applicationMapper, MCPLogUtils mcpLogUtils) {
         this.applicationService = applicationService;
@@ -168,6 +174,16 @@ public class ListApplicationTool implements MCPTool {
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String intent = MCPToolUtils.getString(args, "intent", "");
         String search = MCPToolUtils.getString(args, "search", "");
+        String appSessionID = MCPToolUtils.getString(args, "appSessionID", "");
+        String user = MCPToolUtils.getString(args, "user", "MCPTool");
+
+        //Send tool start through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME ));
+        }
+        mcpLogUtils.call(TOOL_NAME, intent, String.format("MCP tool %s called with intent=%s", TOOL_NAME, intent));
+
 
         // Explicit fields override intent-driven defaults when provided by the caller.
         List<String> fields = MCPToolUtils.getStringList(
@@ -185,6 +201,19 @@ public class ListApplicationTool implements MCPTool {
                 // Reduce each DTO to only the caller-requested (or intent-default) fields to minimise payload size.
                 .map(dto -> MCPProjectionUtils.project(dto, fields))
                 .toList();
+
+        //Send tool end through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_RESULT, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME,"intent", intent, "count", applications.size(),"application", applications ));
+        }
+
+
+        //Send tool end through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME ));
+        }
 
         return MCPToolUtils.successJson(Map.of(
                 "intent", intent,

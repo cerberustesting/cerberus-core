@@ -22,6 +22,8 @@ package org.cerberus.core.engine.execution.impl;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryRobotCapability;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionSysVer;
@@ -59,7 +61,6 @@ import org.cerberus.core.engine.gwt.IVariableService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
-import org.cerberus.core.enums.Video;
 import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
@@ -72,7 +73,8 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.websocket.TestCaseExecutionWebSocket;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,8 +96,7 @@ import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
-import org.cerberus.core.websocket.ExecutionMonitor;
-import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
+import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.json.JSONObject;
 
 /**
@@ -109,13 +110,12 @@ public class ExecutionRunService implements IExecutionRunService {
     private static final Logger LOG = LogManager.getLogger(ExecutionRunService.class);
 
     @Autowired
-    TestCaseExecutionWebSocket testCaseExecutionWebSocket;
-
-    @Autowired
     ExecutionMonitor executionMonitor;
 
     @Autowired
-    ExecutionMonitorWebSocket executionMonitorWebSocket;
+    private WebSocketEventSender webSocketEventSender;
+    @Autowired
+    private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
 
     private ISikuliService sikuliService;
     private IRobotServerService robotServerService;
@@ -967,10 +967,14 @@ public class ExecutionRunService implements IExecutionRunService {
              * light version of the execution and prepare it for sending it to
              * monitoring screen.
              */
-            if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-                executionMonitor.addNewExecutionToMonitor(execution.toLight());
-                executionMonitorWebSocket.send(true);
-            }
+            executionMonitor.addNewExecutionToMonitor(execution.toLight());
+            webSocketEventSender.sendToChannel(
+                        WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
+                        WebSocketStatic.TYPE_EXECUTION_END,
+                        executionMonitor.toJson(true).toMap(),
+                        true
+            );
+
 
             // Write Execution log to file and make it available as a file on execution.
             execution.addFileList(recorderService.recordExeLog(execution));
@@ -997,10 +1001,23 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private void updateExecutionWebSocketOnly(TestCaseExecution execution, boolean forcePush) {
-        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            testCaseExecutionWebSocket.send(execution, forcePush);
+        if (forcePush){
+            webSocketEventSender.sendToChannel(
+                    WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
+                    WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
+                    execution.toJson(true).toMap()
+            );
+        } else {
+            webSocketEventSender.sendToChannel(
+                    WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
+                    WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
+                    execution.toJson(true).toMap(),
+                    true
+            );
         }
+        //Push light execution to user who execute the testcase
+        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
+        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_UPDATE, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
 
     }
 
@@ -1031,11 +1048,16 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.warn("Exception updating Execution : {} Exception: {}", execution.getId(), ex.toString());
         }
 
-        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            testCaseExecutionWebSocket.send(execution, true);
-            testCaseExecutionWebSocket.end(execution);
-        }
+        //Push notification to user that suscribed on the testcaseexecution page
+        webSocketEventSender.sendToChannel(
+                WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
+                WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
+                execution.toJson(true).toMap()
+            );
+
+        //Push light execution to user who execute the testcase
+        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
+        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_END, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
 
         return execution;
     }

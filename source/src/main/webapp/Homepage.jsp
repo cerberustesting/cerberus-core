@@ -67,7 +67,15 @@
         <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
             <div>
                 <%@ include file="include/global/messagesArea.html" %>
-                <h1 class="page-title-line" id="title">Welcome to Cerberus</h1>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h1 class="page-title-line mb-0" id="title">
+                        Welcome to Cerberus
+                    </h1>
+
+                    <div class="shrink-0">
+                        <jsp:include page="include/global/notificationBar.html"/>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     <!-- Application (via API) -->

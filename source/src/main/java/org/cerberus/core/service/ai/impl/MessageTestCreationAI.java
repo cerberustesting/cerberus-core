@@ -46,6 +46,9 @@ public class MessageTestCreationAI {
     private String testcaseObject;
     private String testDetailedDescription;
 
+    //subscription
+    private String channel;
+
     //specific application object
     private String page;
     private String htmlPath;

@@ -34,7 +34,7 @@
 	import org.springframework.security.crypto.password.PasswordEncoder;
 	import org.springframework.security.web.SecurityFilterChain;
 	import org.springframework.security.web.access.intercept.AuthorizationFilter;
-	import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+	import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 	import org.cerberus.core.config.security.WebSecurityRules;
 
 	/**
@@ -65,14 +65,16 @@
 
 		//Ignore static content
 		@Bean
+		@SuppressWarnings({"deprecation", "removal"})
+		// TODO: Replace AntPathRequestMatcher when Spring Security migration is finalized.
 		public WebSecurityCustomizer webSecurityCustomizer() {
 			return web -> web.ignoring().requestMatchers(
-					PathPatternRequestMatcher.withDefaults().matcher("/js/**"),
-					PathPatternRequestMatcher.withDefaults().matcher("/css/**"),
-					PathPatternRequestMatcher.withDefaults().matcher("/img/**"),
-					PathPatternRequestMatcher.withDefaults().matcher("/fonts/**"),
-					PathPatternRequestMatcher.withDefaults().matcher("/favicon.ico"),
-					PathPatternRequestMatcher.withDefaults().matcher("/webjars/**")
+					new AntPathRequestMatcher("/js/**"),
+					new AntPathRequestMatcher("/css/**"),
+					new AntPathRequestMatcher("/img/**"),
+					new AntPathRequestMatcher("/fonts/**"),
+					new AntPathRequestMatcher("/favicon.ico"),
+					new AntPathRequestMatcher("/webjars/**")
 			);
 		}
 

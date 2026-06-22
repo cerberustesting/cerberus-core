@@ -19,12 +19,10 @@
  */
 package org.cerberus.core.engine.queuemanagement.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.entity.Application;
@@ -52,8 +50,9 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
-import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusWebSocket;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.cerberus.core.websocket.runtime.QueueStatus;
+import org.cerberus.core.websocket.WebSocketEventSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -109,7 +108,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Autowired
     private IQueueStatService queueStatService;
     @Autowired
-    private QueueStatusWebSocket queueStatusWebSocket;
+    private WebSocketEventSender webSocketEventSender;
 
     @Override
     public boolean isInstanceActive() {
@@ -677,8 +676,30 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             .globalLimit(poolSizeGeneral)
                             .running(const01_current)
                             .queueSize(executionsInQueue.size()).build();
-                    queueStatusWebSocket.send(queueS, true);
+
+                    webSocketEventSender.sendToChannels(List.of(WebSocketStatic.CHANNEL_PAGE_HOMEPAGE, WebSocketStatic.CHANNEL_NOTIFICATION), WebSocketStatic.TYPE_QUEUE_CHANGE, queueS.toJson(true).toMap());
                 }
+
+                Map<String, List<TestCaseExecutionQueueToTreat>> executionsInQueueByUser =
+                        executionsInQueue.stream()
+                                .filter(execution -> !StringUtil.isEmptyOrNull(execution.getUsrCreated()))
+                                .collect(Collectors.groupingBy(
+                                        TestCaseExecutionQueueToTreat::getUsrCreated,
+                                        LinkedHashMap::new,
+                                        Collectors.toList()
+                                ));
+                executionsInQueueByUser.forEach((user, userExecutionsInQueue) ->
+                        webSocketEventSender.sendToUser(
+                                user,
+                                WebSocketStatic.TYPE_QUEUE_CHANGE,
+                                WebSocketStatic.CHANNEL_NOTIFICATION,
+                                Map.of(
+                                        "queueTotal", userExecutionsInQueue.size(),
+                                        "executionsInQueue", userExecutionsInQueue
+                                )
+                        )
+                );
+
 
                 queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));
 

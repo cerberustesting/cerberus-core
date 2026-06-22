@@ -33,6 +33,11 @@ const thresholdAction1 = 5000; // ms
 const thresholdAction2 = 30000; // ms
 const thresholdControl1 = 5000; // ms
 const thresholdControl2 = 30000; // ms
+var executionPendingSubscribed = {};
+var executionPendingSubscribing = {};
+var currentExecutionPending = null;
+var executionPendingListenerRegistered = false;
+var currentExecutionSteps = null;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -97,9 +102,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
 
             /* global */
-            sockets = [];
             initPage(executionId);
-            loadExecutionInformation(executionId, steps, sockets);
+            loadExecutionInformation(executionId, steps);
 
             $('[data-toggle="popover"]').popover({
                 'placement': 'auto',
@@ -297,7 +301,98 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
 //global bool that say if the execution is manual
 var isTheExecutionManual = false;
 
-function loadExecutionInformation(executionId, steps, sockets) {
+async function subscribeToExecutionPending(executionId, steps) {
+    if (!executionId) {
+        return;
+    }
+
+    currentExecutionSteps = steps;
+
+    var sessionID = "execution.update." + executionId;
+
+    if (executionPendingSubscribed[sessionID] || executionPendingSubscribing[sessionID]) {
+        return;
+    }
+
+    executionPendingSubscribing[sessionID] = true;
+
+    try {
+        await Alpine.store('ws').whenConnected();
+
+        var sent = Alpine.store('ws').send({
+            sender: getUser().login,
+            sessionID: sessionID,
+            subject: "subscribe",
+            channel: "page.testcaseexecution",
+            content: String(executionId)
+        });
+
+        if (sent) {
+            executionPendingSubscribed[sessionID] = true;
+            currentExecutionPending = {
+                executionId: String(executionId),
+                sessionID: sessionID
+            };
+        }
+
+    } catch (e) {
+        console.error("Unable to subscribe to page.testcaseexecution", e);
+        executionPendingSubscribed[sessionID] = false;
+
+        setTimeout(function () {
+            subscribeToExecutionPending(executionId, steps);
+        }, 5000);
+
+    } finally {
+        executionPendingSubscribing[sessionID] = false;
+    }
+}
+
+function registerExecutionPendingListener() {
+    if (executionPendingListenerRegistered) {
+        return;
+    }
+
+    executionPendingListenerRegistered = true;
+
+    document.addEventListener("cerberus:ws:page.testcaseexecution", function (e) {
+        var message = e.detail || {};
+
+        if (message.channel !== "page.testcaseexecution") {
+            return;
+        }
+
+        var expectedSessionID = currentExecutionPending ? currentExecutionPending.sessionID : null;
+
+        if (expectedSessionID && message.sessionID && message.sessionID !== expectedSessionID) {
+            return;
+        }
+
+        var payload = message.payload || message.data || {};
+
+        if (!payload) {
+            return;
+        }
+
+        updatePage(payload, currentExecutionSteps || []);
+    });
+
+    document.addEventListener("cerberus:ws:connected", function () {
+        executionPendingSubscribed = {};
+        executionPendingSubscribing = {};
+
+        if (currentExecutionPending && currentExecutionPending.executionId) {
+            subscribeToExecutionPending(currentExecutionPending.executionId, currentExecutionSteps || []);
+        }
+    });
+
+    document.addEventListener("cerberus:ws:disconnected", function () {
+        executionPendingSubscribed = {};
+        executionPendingSubscribing = {};
+    });
+}
+
+function loadExecutionInformation(executionId, steps) {
 
     $.ajax({
         url: "ReadTestCaseExecution",
@@ -322,43 +417,13 @@ function loadExecutionInformation(executionId, steps, sockets) {
 
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {
-                    var parser = document.createElement('a');
-                    parser.href = window.location.href;
-
-                    var protocol = "ws:";
-                    if (parser.protocol === "https:") {
-                        protocol = "wss:";
-                    }
-                    var path = parser.pathname.split("TestCaseExecution")[0];
-                    var new_uri = protocol + parser.host + path + "api/ws/execution/" + executionId;
-
-                    var socket = new WebSocket(new_uri);
-
-                    socket.onopen = function (e) {
-                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function (e) {
-                        var data = JSON.parse(e.data);
-                        updatePage(data, steps);
-                    } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function (e) {
-                    } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function (e) {
-                        setTimeout(function () {
-                            loadExecutionInformation(executionId, steps);
-                        }, 5000);
-                    } //on traite les cas d'erreur*/
-
-                    // Remain in memory
-                    sockets.push(socket);
-
+                    registerExecutionPendingListener();
+                    subscribeToExecutionPending(executionId, steps);
                 } else {
-
                     setTimeout(function () {
                         loadExecutionInformation(executionId, steps);
                     }, paramWebsocketpushperiod);
-
                 }
-
             }
 
             const enrichedHarFile = tce.fileList?.find(f =>

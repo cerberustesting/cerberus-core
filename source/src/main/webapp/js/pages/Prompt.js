@@ -44,7 +44,7 @@ function initPage() {
         protocol = "wss:";
     }
     var path = parser.pathname.split("Prompt")[0];
-    var new_uri = protocol + parser.host + path + "api/ws/AIWebSocket";
+    var new_uri = protocol + parser.host + path + "api/ws/CerberusWebSocket";
     console.info("Open Socket to : " + new_uri);
     var socket = new WebSocket(new_uri);
 

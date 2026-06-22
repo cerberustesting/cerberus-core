@@ -29,6 +29,19 @@
         @apply rounded-2xl p-6 border border-sky-500/30;
     }
 
+    .crb_card_notif {
+        background: var(--crb-new-bg);
+        border: 1px solid var(--crb-new-border);
+
+        @apply rounded-2xl p-2;
+    }
+
+    .crb_card_notif:hover {
+        background: var(--crb-new-bg);
+
+        @apply rounded-2xl p-2 border border-sky-500/30;
+    }
+
     .crb_widget {
         background: var(--crb-new-bg);
 
@@ -212,4 +225,19 @@
 
 .swal2-html-container {
     @apply text-sm text-gray-600 dark:text-slate-300;
+}
+
+@keyframes notification-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.notification-spin { animation: notification-spin 1s linear infinite; }
+
+.notification-spin-limited { animation: notification-spin 1s linear infinite; }
+
+.notification-icon-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @apply bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md
 }

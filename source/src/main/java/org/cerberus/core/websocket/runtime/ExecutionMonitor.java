@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket;
+package org.cerberus.core.websocket.runtime;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,9 +55,6 @@ public class ExecutionMonitor {
 
     @Autowired
     ITestCaseExecutionService testCaseExecutionService;
-
-    @Autowired
-    private ExecutionMonitorWebSocket executionMonitorWebSocket;
 
     @PostConstruct
     public void init() {

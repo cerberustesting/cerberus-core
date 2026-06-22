@@ -38,8 +38,9 @@ import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.util.servlet.ServletUtil;
-import org.cerberus.core.websocket.ExecutionMonitor;
-import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -71,7 +72,7 @@ public class ExecutionPrivateController {
     @Autowired
     private ExecutionMonitor executionMonitor;
     @Autowired
-    private ExecutionMonitorWebSocket executionMonitorWebSocket;
+    private WebSocketEventSender webSocketEventSender;
 
     @Operation(hidden = true)
     @GetMapping("/getLastByCriteria")
@@ -142,7 +143,12 @@ public class ExecutionPrivateController {
         try {
             executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, true);
-            executionMonitorWebSocket.send(true);
+            webSocketEventSender.sendToChannel(
+                    WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
+                    WebSocketStatic.TYPE_EXECUTION_DECLAREFALSENEGATIVE,
+                    executionMonitor.toJson(true).toMap(),
+                    true
+            );
         } catch (Exception ex) {
             LOG.error(ex, ex);
             return ex.toString();
@@ -162,7 +168,12 @@ public class ExecutionPrivateController {
         try {
             executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, false);
-            executionMonitorWebSocket.send(true);
+            webSocketEventSender.sendToChannel(
+                    WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
+                    WebSocketStatic.TYPE_EXECUTION_UNDECLAREFALSENEGATIVE,
+                    executionMonitor.toJson(true).toMap(),
+                    true
+            );
         } catch (Exception ex) {
             LOG.error(ex, ex);
             return ex.toString();

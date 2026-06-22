@@ -29,11 +29,8 @@ var idTimeout;
 
 var lastReceivedPush = new Date();
 var lastReceivedData = {};
-var wsOpen = false;
-var wsStartOpenning = false;
+var queueStatusSubscribed = false;
 
-var reopenWSTimeout;
-var reopenWSTimeoutPeriod = 5000;
 
 
 
@@ -149,76 +146,30 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 });
 
-
-function loadQueueStatusWebSocket(sockets) {
-
-
-
-    if (!wsOpen) {
-
-        sockets = [];
-        var parser = document.createElement('a');
-        parser.href = window.location.href;
-
-        var protocol = "ws:";
-        if (parser.protocol === "https:") {
-            protocol = "wss:";
-        }
-        var path = parser.pathname.split("Homepage")[0];
-        var new_uri = protocol + parser.host + path + "api/ws/queuestatus";
-        console.info("Open Socket to : " + new_uri);
-        wsStartOpenning = true;
-        socket = new WebSocket(new_uri);
-
-        socket.onopen = function (e) {
-//            hideLoader("#currentlyRunning");
-            console.info("ws onopen");
-            wsOpen = true;
-            wsStartOpenning = false;
-            lastReceivedData.active = true;
-            window.dispatchEvent(
-                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
-                    );
-        }; //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-
-        socket.onmessage = function (e) {
-            var data = JSON.parse(e.data);
-            console.info("ws onmessage");
-            let nbMsSinceLastPushReceived = new Date() - lastReceivedPush;
-            console.info("nb of ms since last push received : " + nbMsSinceLastPushReceived);
-            lastReceivedPush = new Date();
-            lastReceivedData = data;
-            data.active = true;
-            window.dispatchEvent(
-                    new CustomEvent("queue-stats-updated", {detail: data})
-                    );
-        }; //on récupère les messages provenant du serveur websocket
-
-        socket.onclose = function (e) {
-            console.info("ws onclose");
-            lastReceivedData.active = false;
-            window.dispatchEvent(
-                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
-                    );
-            wsOpen = false;
-            wsStartOpenning = false;
-        }; //on est informé lors de la fermeture de la connexion vers le serveur
-
-        socket.onerror = function (e) {
-            console.info("ws onerror");
-            lastReceivedData.active = false;
-            window.dispatchEvent(
-                    new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
-                    );
-            wsOpen = false;
-            wsStartOpenning = false;
-        }; //on traite les cas d'erreur*/
-
-        // Remain in memory
-        sockets.push(socket);
-
+/*
+ * Subscribe this page to queue status updates.
+ */
+async function subscribeToQueueStatus() {
+    if (queueStatusSubscribed) {
+        return;
     }
 
+    try {
+        await Alpine.store('ws').whenConnected();
+
+        Alpine.store('ws').send({
+            sender: getUser().login,
+            sessionID: 'homepage-' + getUser().login,
+            subject: 'subscribe',
+            channel: 'page.homepage'
+        });
+
+        queueStatusSubscribed = true;
+
+    } catch (e) {
+        console.error("Unable to subscribe to page.homepage", e);
+        queueStatusSubscribed = false;
+    }
 }
 
 function displayPageLabel() {
@@ -392,50 +343,48 @@ function updatePageQueueStatus(data) {
 
 
 function loadExeCurrentlyRunning() {
+    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_HOMEPAGE), handleHomepageWsMessage);
+    document.addEventListener(CerberusWs.Event.CONNECTED, subscribeToQueueStatus);
+    document.addEventListener(CerberusWs.Event.DISCONNECTED, handleQueueStatusDisconnected);
 
-//    $.ajax({
-//        url: "api/executions/running",
-//        method: "GET",
-//        async: true,
-//        dataType: 'json',
-//        success: function (data) {
-
-//            updatePageQueueStatus(data);
-//console.info(data);
-//            var data = JSON.parse(e.data);
-//            lastReceivedData = data;
-
-    sockets = [];
-    loadQueueStatusWebSocket(sockets);
-
-    // Trigger automatic reopen of ws only after 2 sec delay
-    wait(2000, function reOpenWSTimings() {
-//                console.info("is socket still open ?");
-        if ((!wsOpen) & (!wsStartOpenning)) {
-            if (wsOpen) {
-//                        console.info("   Yes 2");
-                lastReceivedData.active = true;
-                window.dispatchEvent(
-                        new CustomEvent("queue-stats-updated", {detail: lastReceivedData})
-                        );
-//                        refreshMonitorTable(lastReceivedData);
-            } else if (!wsStartOpenning) {
-                console.info("Retry to open socket following error/close...");
-                loadQueueStatusWebSocket();
-            }
-//                } else {
-//                    console.info("   Yes");
-        }
-        // Loop on refresh reopen ws
-        reopenWSTimeout = setTimeout(() => {
-            reOpenWSTimings();
-        }, reopenWSTimeoutPeriod);
+    if (Alpine.store('ws').connected) {
+        subscribeToQueueStatus();
     }
-    );
+}
 
+function handleHomepageWsMessage(e) {
+    var message = e.detail;
 
-//        }
-//    });
+    if (!message || message.type !== CerberusWs.Type.QUEUE_UPDATE) {
+        console.debug('Homepage: ignored WS message', message);
+        return;
+    }
+
+    handleQueueChange(message.payload || {});
+}
+
+function handleQueueChange(data) {
+    lastReceivedPush = new Date();
+    lastReceivedData = data;
+    lastReceivedData.active = true;
+
+    window.dispatchEvent(new CustomEvent('queue-stats-updated', {
+        detail: lastReceivedData
+    }));
+}
+
+function handleQueueStatusDisconnected() {
+    queueStatusSubscribed = false;
+
+    if (!lastReceivedData) {
+        lastReceivedData = {};
+    }
+
+    lastReceivedData.active = false;
+
+    window.dispatchEvent(new CustomEvent('queue-stats-updated', {
+        detail: lastReceivedData
+    }));
 }
 
 
@@ -960,7 +909,6 @@ function getResponseTime(startStr, endStr) {
 
     const start = new Date(startStr.replace(" ", "T"));
     const end = new Date(endStr.replace(" ", "T"));
-console.info(" TOTO " + Math.round((end - start) / 1000));
     return Math.round((end - start) / 1000); // en secondes
 }
 

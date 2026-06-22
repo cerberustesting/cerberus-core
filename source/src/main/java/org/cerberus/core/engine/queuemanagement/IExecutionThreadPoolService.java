@@ -44,7 +44,7 @@ public interface IExecutionThreadPoolService {
     HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException;
 
     /**
-     * Search any {@link org.cerberus.crud.entity.TestCaseExecutionInQueue}
+     * Search any {@link org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat}
      * which are currently in queue (QUEUED State) for execution and trigger
      * their executions
      *
@@ -81,7 +81,7 @@ public interface IExecutionThreadPoolService {
 
     /**
      *
-     * @param instanceActive
+     * @param isSplashPageActive
      */
     void setSplashPageActive(boolean isSplashPageActive);
 }

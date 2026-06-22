@@ -420,14 +420,35 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, exq.selectedExtensionHost, app.type ");
-        query.append("from testcaseexecutionqueue exq ");
-        query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
-        query.append("left join application app on app.application=tec.application ");
-        query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
+        query.append("SELECT ");
+        query.append("exq.ID AS queueId, ");
+        query.append("exq.ManualExecution AS manualExecution, ");
+        query.append("exq.UsrCreated AS usrCreated, ");
+        query.append("ROW_NUMBER() OVER (ORDER BY exq.Priority ASC, exq.ID ASC) AS queuePosition, ");
+        query.append("app.System AS appSystem, ");
+        query.append("app.PoolSize AS appPoolSize, ");
+        query.append("cea.Environment AS ceaEnvironment, ");
+        query.append("cea.Country AS ceaCountry, ");
+        query.append("cea.Application AS ceaApplication, ");
+        query.append("cea.PoolSize AS ceaPoolSize, ");
+        query.append("exq.Robot AS queueRobot, ");
+        query.append("exq.RobotIP AS queueRobotIP, ");
+        query.append("exq.RobotPort AS queueRobotPort, ");
+        query.append("exq.DebugFlag AS debugFlag, ");
+        query.append("exq.SelectedRobotHost AS selectedRobotHost, ");
+        query.append("exq.SelectedExtensionHost AS selectedExtensionHost, ");
+        query.append("app.Type AS appType ");
+        query.append("FROM testcaseexecutionqueue exq ");
+        query.append("LEFT JOIN testcase tec ON tec.Test = exq.Test AND tec.TestCase = exq.TestCase ");
+        query.append("LEFT JOIN application app ON app.Application = tec.Application ");
+        query.append("LEFT JOIN countryenvironmentparameters cea ");
+        query.append("ON cea.System = app.System ");
+        query.append("AND cea.Environment = exq.Environment ");
+        query.append("AND cea.Country = exq.Country ");
+        query.append("AND cea.Application = tec.Application ");
         query.append("WHERE 1=1 ");
-        query.append(SqlUtil.createWhereInClause(" AND exq.state", stateList, true));
-        query.append("order by exq.priority, exq.id asc;");
+        query.append(SqlUtil.createWhereInClause(" AND exq.State", stateList, true));
+        query.append(" ORDER BY exq.Priority ASC, exq.ID ASC");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -2502,42 +2523,47 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         TestCaseExecutionQueueToTreat inQueue = new TestCaseExecutionQueueToTreat();
         try {
 
-            inQueue.setId(resultSet.getInt("exq.id"));
-            inQueue.setManualExecution(resultSet.getString("exq.manualexecution"));
-            inQueue.setSystem(resultSet.getString("app.system"));
-            inQueue.setEnvironment(resultSet.getString("cea.environment"));
-            inQueue.setCountry(resultSet.getString("cea.country"));
-            inQueue.setApplication(resultSet.getString("cea.application"));
-            inQueue.setPoolSizeAppEnvironment(resultSet.getInt("cea.poolsize"));
-            inQueue.setPoolSizeApplication(resultSet.getInt("app.poolsize"));
-            inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
-            /**
-             * Robot host is feed only if application type really required a
-             * robot. data comes from robot by priority or exe when exist.
-             */
-            String queueRobot = "";
-            String queueRobotHost = "";
-            String queueRobotPort = "";
-            String appType = resultSet.getString("app.type");
+            inQueue.setId(resultSet.getLong("queueId"));
+            inQueue.setManualExecution(resultSet.getString("manualExecution"));
+            inQueue.setUsrCreated(resultSet.getString("usrCreated"));
+
+            int queuePosition = resultSet.getInt("queuePosition");
+            inQueue.setQueuePosition(queuePosition);
+            inQueue.setNbEntryBefore(queuePosition - 1);
+
+            inQueue.setSystem(resultSet.getString("appSystem"));
+            inQueue.setEnvironment(resultSet.getString("ceaEnvironment"));
+            inQueue.setCountry(resultSet.getString("ceaCountry"));
+            inQueue.setApplication(resultSet.getString("ceaApplication"));
+            inQueue.setPoolSizeAppEnvironment(resultSet.getInt("ceaPoolSize"));
+            inQueue.setPoolSizeApplication(resultSet.getInt("appPoolSize"));
+            inQueue.setDebugFlag(resultSet.getString("debugFlag"));
+
+            String appType = resultSet.getString("appType");
             if (appType == null) {
                 appType = "";
             }
             inQueue.setAppType(appType);
 
-            // If application type require a selenium/appium/sikuli server, we get the robot host from robot and not execution queue.
-            if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
-//                robotHost = resultSet.getString("rbt.host");
-                queueRobot = resultSet.getString("exq.robot");
-                if (StringUtil.isEmptyOrNull(queueRobotHost)) {
-                    queueRobotHost = resultSet.getString("exq.robotIP");
-                    queueRobotPort = resultSet.getString("exq.robotPort");
-                }
+            String queueRobot = "";
+            String queueRobotHost = "";
+            String queueRobotPort = "";
+
+            if (Application.TYPE_APK.equals(appType)
+                    || Application.TYPE_GUI.equals(appType)
+                    || Application.TYPE_FAT.equals(appType)
+                    || Application.TYPE_IPA.equals(appType)) {
+
+                queueRobot = resultSet.getString("queueRobot");
+                queueRobotHost = resultSet.getString("queueRobotIP");
+                queueRobotPort = resultSet.getString("queueRobotPort");
             }
+
             inQueue.setQueueRobot(queueRobot);
             inQueue.setQueueRobotHost(queueRobotHost);
             inQueue.setQueueRobotPort(queueRobotPort);
-            inQueue.setSelectedRobotHost(resultSet.getString("exq.SelectedRobotHost"));
-            inQueue.setSelectedRobotExtensionHost(resultSet.getString("exq.SelectedExtensionHost"));
+            inQueue.setSelectedRobotHost(resultSet.getString("selectedRobotHost"));
+            inQueue.setSelectedRobotExtensionHost(resultSet.getString("selectedExtensionHost"));
 
         } catch (Exception e) {
             LOG.debug("Exception in load queue from resultset : " + e.toString());

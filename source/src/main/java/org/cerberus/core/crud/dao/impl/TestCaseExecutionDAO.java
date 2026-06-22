@@ -1351,7 +1351,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public List<TestCaseExecutionLight> ReadLastExecutionForMonitor() throws CerberusException {
 
         final StringBuilder query = new StringBuilder()
-                .append("SELECT exe.id, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
+                .append("SELECT exe.id, exe.queueId, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
                 .append(", exe.Application, exe.ApplicationType, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
                 .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
                 .append("FROM testcaseexecution exe ")
@@ -1359,6 +1359,50 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("WHERE start >= DATE(NOW() - INTERVAL 7 DAY) and exe.ControlStatus != 'PE' order by id desc limit 10000;");
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
+                },
+                this::loadLightWithDependenciesFromResultSet
+        );
+    }
+
+    public List<TestCaseExecutionLight> ReadRunningExecutionByUser(String user) throws CerberusException{
+
+        final StringBuilder query = new StringBuilder()
+                .append("SELECT exe.id, exe.queueId, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
+                .append(", exe.Application, exe.ApplicationType, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
+                .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
+                .append("FROM testcaseexecution exe ")
+                .append("LEFT OUTER JOIN tag ON tag.tag = exe.tag ")
+                .append("WHERE exe.`Start` >= DATE(NOW() - INTERVAL 7 DAY) ")
+                .append("AND exe.ControlStatus = 'PE' ")
+                .append("AND exe.UsrCreated = ? ")
+                .append("ORDER BY exe.id DESC ")
+                .append("LIMIT 100");
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                    preStat.setString(1, user);
+                },
+                this::loadLightWithDependenciesFromResultSet
+        );
+    }
+
+    public List<TestCaseExecutionLight> ReadLastExecutionByUser(String user) throws CerberusException{
+
+        final StringBuilder query = new StringBuilder()
+                .append("SELECT exe.id, exe.queueId, exe.`System`, exe.Test, exe.TestCase, exe.Description ")
+                .append(", exe.Application, exe.ApplicationType, exe.Environment, exe.EnvironmentData, exe.Country, exe.robot, exe.Tag, tag.campaign ")
+                .append(", exe.`Start`, exe.`End`, exe.TestCaseIsMuted, exe.FalseNegative, exe.IsUseful, exe.ControlMessage, exe.ControlStatus ")
+                .append("FROM testcaseexecution exe ")
+                .append("LEFT OUTER JOIN tag ON tag.tag = exe.tag ")
+                .append("WHERE exe.`Start` >= DATE(NOW() - INTERVAL 7 DAY) ")
+                .append("AND exe.ControlStatus != 'PE' ")
+                .append("AND exe.UsrCreated = ? ")
+                .append("ORDER BY exe.id DESC ")
+                .append("LIMIT 10");
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                    preStat.setString(1, user);
                 },
                 this::loadLightWithDependenciesFromResultSet
         );
@@ -1530,6 +1574,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     private TestCaseExecutionLight loadLightWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException {
         long id = ParameterParserUtil.parseLongParam(resultSet.getString("exe.ID"), 0);
+        long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
         String test = ParameterParserUtil.parseStringParam(resultSet.getString("exe.test"), "");
         String testcase = ParameterParserUtil.parseStringParam(resultSet.getString("exe.testcase"), "");
@@ -1555,6 +1600,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         return TestCaseExecutionLight.builder()
                 .id(id)
+                .queueId(queueId)
                 .system(system)
                 .test(test).testCase(testcase).description(description).applicationType(applicationType)
                 .application(application).environment(environment).environmentData(environmentData)

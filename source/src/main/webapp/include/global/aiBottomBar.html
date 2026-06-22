@@ -1,6 +1,5 @@
 <!-- AI Assistant Bottom Bar -->
 <div x-data="aiAssistant()"
-     x-init="init()"
      :style="`right:0;left: ${$store.sidebar.hidden ? '0' : $store.sidebar.expanded ? '18rem' : '5rem'}`"
      class="fixed bottom-0 z-50 transition-all duration-300">
 
@@ -413,8 +412,6 @@
 
         return {
             open: false,
-            ws: null,
-            connected: false,
 
             panelHeight: 480,
             panelMinHeight: 320,
@@ -432,6 +429,7 @@
             aiBuffer: "",
             aiCurrentBubble: null,
             isCurrentFinalized: false,
+            _wsChatHandler: null,
 
             sidebarOpen: false,
             sidebarMode: "history",
@@ -444,16 +442,6 @@
             searchResults: [],
             searchLoading: false,
 
-            /*
-             * Cache local des messages.
-             * Structure :
-             * {
-             *   "sessionID": [
-             *      { role: "user", message: "..." },
-             *      { role: "assistant", message: "..." }
-             *   ]
-             * }
-             */
             messagesCache: {},
 
             showWelcomeSuggestions: false,
@@ -558,8 +546,20 @@
                 return this.suggestions.flatMap(group => group.items);
             },
 
+            get connected() {
+                return Alpine.store('ws').connected;
+            },
+
             init() {
                 this.restorePanelHeight();
+
+                if (this._wsChatHandler) {
+                    document.removeEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODULE_CHAT), this._wsChatHandler);
+                }
+
+                this._wsChatHandler = (e) => this.handleWsMessage(e.detail);
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODULE_CHAT), this._wsChatHandler);
+
 
                 document.addEventListener("open-debug-assistant", (e) => {
                     const { subject, content } = e.detail;
@@ -595,114 +595,100 @@
                 });
             },
 
-            connectWebSocket() {
-                const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-                const host = window.location.host;
-                const context = this.getCerberusBasePath();
+            handleWsMessage(message) {
+                    const type = message.type;
+                    const payload = message.payload || {};
 
-                const wsUrl = `${protocol}${host}${context}api/ws/AIWebSocket`;
-                console.debug("WebSocket URL:", wsUrl);
+                    switch (type) {
+                        //Chat Delta >> Append Text
+                        case "chat.delta":
+                            this.appendAI(payload.data || payload.text || "", false, false);
+                            return;
+                        //Chat Done >> Finalize
+                        case "chat.done":
+                            this.finalizeCurrentAI();
+                            return;
 
-                this.ws = new WebSocket(wsUrl);
+                        //Chat Delta >> Append Error
+                        case "chat.error":
+                            this.appendAI(
+                                payload.message || "Erreur côté assistant IA.",
+                                false,
+                                true
+                            );
+                            return;
 
-                this.ws.onopen = () => {
-                    this.connected = true;
-                };
+                        //Chat Title >> Add Title to history
+                        case "chat.title": {
+                            const title = this.cleanTitle(
+                                message.title || payload.title || message.data || ""
+                            );
 
-                this.ws.onclose = () => {
-                    this.connected = false;
-                    this.ws = null;
+                            const sessionID =
+                                message.sessionID ||
+                                payload.sessionID ||
+                                this.sessionID;
 
-                    if (this.open) {
-                        setTimeout(() => {
-                            if (this.open && (!this.ws || this.ws.readyState === WebSocket.CLOSED)) {
-                                this.connectWebSocket();
+                            if (sessionID) {
+                                this.sessionID = sessionID;
                             }
-                        }, 2000);
-                    }
-                };
 
-                this.ws.onerror = (err) => {
-                    console.error("WebSocket error:", err);
-                };
-
-                this.ws.onmessage = (event) => {
-                    let parsed = null;
-
-                    try {
-                        parsed = JSON.parse(event.data);
-                    } catch (e) {
-                        this.appendAI(String(event.data), false, false);
-                        return;
-                    }
-
-                    const chunk = parsed.data ?? parsed.delta ?? parsed.chunk ?? parsed.text ?? "";
-                    const type = parsed.type ?? null;
-                    const doneFlag = parsed.done === true || parsed.type === "end" || chunk === "";
-
-                    if (type === "title") {
-                        const title = this.cleanTitle(parsed.title || chunk);
-                        const sessionID = parsed.sessionID || this.sessionID;
-
-                        if (sessionID) {
-                            this.sessionID = sessionID;
+                            this.updateCurrentSessionTitle(title, sessionID);
+                            return;
                         }
 
-                        this.updateCurrentSessionTitle(title, sessionID);
-                        return;
-                    }
+                        //Tool Started >> Notify Tool Usage
+                        case "tool.start":
+                            this.handleToolStarted(payload);
+                            return;
 
-                    if (type === "chat") {
-                        this.appendAI(parsed.data || "", false, false);
-                        return;
-                    }
+                        //Tool Started >> Notify Tool Done
+                        case "tool.done":
+                            this.handleToolCompleted(payload);
+                            return;
 
-                    if (type === "end") {
-                        this.finalizeCurrentAI();
-                        return;
-                    }
+                        //Tool Started >> Notify Tool Result
+                        case "tool.result":
+                            this.handleToolDelta(payload);
+                            return;
 
-                    if (type === "error") {
-                        this.appendAI(parsed.message || parsed.data || "Erreur côté assistant IA.", false, true);
-                        return;
-                    }
+                        case "tool.error":
+                            this.handleToolFailed(payload);
+                            return;
 
-                    this.appendAI(chunk, false, doneFlag);
-                };
+                        default: {
+                            const chunk =
+                                message.data ??
+                                message.delta ??
+                                message.chunk ??
+                                message.text ??
+                                payload.data ??
+                                payload.text ??
+                                "";
+
+                            const doneFlag =
+                                message.done === true ||
+                                payload.done === true ||
+                                type === "end";
+
+                            if (chunk) {
+                                this.appendAI(chunk, false, doneFlag);
+                                return;
+                            }
+
+                            console.warn("Unhandled WebSocket message:", message);
+                        }
+                    }
             },
 
-            closeWebSocket() {
-                if (!this.ws) {
-                    this.connected = false;
-                    return;
-                }
-
-                this.ws.onclose = null;
-                this.ws.onerror = null;
-                this.ws.onmessage = null;
-
-                if (
-                    this.ws.readyState === WebSocket.OPEN ||
-                    this.ws.readyState === WebSocket.CONNECTING
-                ) {
-                    this.ws.close(1000, "AI assistant closed");
-                }
-
-                this.ws = null;
-                this.connected = false;
-            },
-
-            openAssistant() {
+            async openAssistant() {
                 this.open = true;
 
                 if (!this.sessionID) {
-                    this.newChat(false);
+                    await this.newChat();
+                } else {
+                    await this.subscribeChat();
                 }
-
-                this.ensureWebSocketConnected()
-                    .catch((e) => {
-                        console.error("Unable to open AI WebSocket:", e);
-                    });
 
                 this.$nextTick(() => {
                     if (window.lucide) {
@@ -711,63 +697,9 @@
                 });
             },
 
-            ensureWebSocketConnected() {
-                return new Promise((resolve, reject) => {
-                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                        this.connected = true;
-                        resolve();
-                        return;
-                    }
-
-                    if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
-                        const existingOnOpen = this.ws.onopen;
-                        const existingOnError = this.ws.onerror;
-
-                        this.ws.onopen = (event) => {
-                            this.connected = true;
-
-                            if (existingOnOpen) {
-                                existingOnOpen.call(this.ws, event);
-                            }
-
-                            resolve();
-                        };
-
-                        this.ws.onerror = (event) => {
-                            if (existingOnError) {
-                                existingOnError.call(this.ws, event);
-                            }
-
-                            reject(event);
-                        };
-
-                        return;
-                    }
-
-                    this.connectWebSocket();
-
-                    const timeout = setTimeout(() => {
-                        reject(new Error("WebSocket connection timeout"));
-                    }, 5000);
-
-                    this.ws.onopen = () => {
-                        clearTimeout(timeout);
-                        this.connected = true;
-                        resolve();
-                    };
-
-                    this.ws.onerror = (err) => {
-                        clearTimeout(timeout);
-                        console.error("WebSocket error:", err);
-                        reject(err);
-                    };
-                });
-            },
-
             close() {
                 this.open = false;
                 this.contextMenu.open = false;
-                this.closeWebSocket();
             },
 
             startResize(event) {
@@ -782,10 +714,6 @@
                 const onMouseMove = (e) => {
                     if (!this.isResizing) return;
 
-                    /*
-                     * Le panneau est collé en bas.
-                     * Si on tire vers le haut, clientY diminue, donc la hauteur augmente.
-                     */
                     const delta = this.resizeStartY - e.clientY;
                     const nextHeight = this.resizeStartHeight + delta;
 
@@ -821,27 +749,12 @@
             },
 
             toggleSidebar(mode) {
-                /*
-                 * Si la sidebar est réduite :
-                 * - on l'ouvre
-                 * - on affiche le mode demandé
-                 */
                 if (!this.sidebarOpen) {
                     this.sidebarOpen = true;
                     this.sidebarMode = mode || this.sidebarMode || "history";
-                }
-                /*
-                 * Si on clique sur le mode déjà ouvert :
-                 * - on réduit la sidebar
-                 * - on conserve sidebarMode pour savoir quoi rouvrir ensuite
-                 */
-                else if (this.sidebarMode === mode) {
+                } else if (this.sidebarMode === mode) {
                     this.sidebarOpen = false;
-                }
-                /*
-                 * Sinon, on change simplement de section.
-                 */
-                else {
+                } else {
                     this.sidebarMode = mode;
                 }
 
@@ -858,7 +771,7 @@
                 });
             },
 
-            newChat() {
+            async newChat() {
                 this.sessionID = crypto.randomUUID();
                 this.currentSessionTitle = "Nouvelle conversation";
 
@@ -878,6 +791,28 @@
                 if (input) {
                     input.value = "";
                     input.focus();
+                }
+
+                await this.subscribeChat();
+            },
+
+            async subscribeChat() {
+                if (!this.sessionID) {
+                    this.sessionID = crypto.randomUUID();
+                }
+
+                try {
+                    await Alpine.store('ws').whenConnected();
+
+                    Alpine.store('ws').send({
+                        sender: getUser().login,
+                        sessionID: this.sessionID,
+                        subject: "subscribe",
+                        channel: "ai.chat"
+                    });
+
+                } catch (e) {
+                    console.error("Unable to subscribe to AI chat channel", e);
                 }
             },
 
@@ -899,7 +834,8 @@
                 const payload = {
                     sender: getUser().login,
                     sessionID: this.sessionID,
-                    subject: "chat_with_ai",
+                    subject: "message",
+                    channel: "ai.chat",
                     content: msg
                 };
 
@@ -908,8 +844,13 @@
                 this.appendAI("", true, false);
 
                 try {
-                    await this.ensureWebSocketConnected();
-                    this.ws.send(JSON.stringify(payload));
+                    await Alpine.store('ws').whenConnected();
+
+                    // Important : s'assurer que la session courante est enregistrée côté back
+                    await this.subscribeChat();
+
+                    Alpine.store('ws').send(payload);
+
                 } catch (e) {
                     console.error("AI WebSocket is not connected", e);
                     this.finalizeCurrentAI();
@@ -986,32 +927,71 @@
 
             finalizeCurrentAI() {
                 if (!this.aiCurrentBubble) return;
+                if (this.isCurrentFinalized) return; // guard against double finalization
 
                 try {
                     const finalHtml = marked.parse(this.aiBuffer);
 
-                    const clean = DOMPurify.sanitize(finalHtml, {
-                        ALLOWED_TAGS: [
-                            "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
-                            "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
-                            "table", "thead", "tbody", "tr", "th", "td",
-                            "button"
-                        ],
-                        ALLOWED_ATTR: [
-                            "class", "style", "data-question"
-                        ]
-                    });
+                        const clean = DOMPurify.sanitize(finalHtml, {
+                            ALLOWED_TAGS: [
+                                "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
+                                "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
+                                "table", "thead", "tbody", "tr", "th", "td",
+                                "button"
+                            ],
+                            ALLOWED_ATTR: [
+                                "class", "style", "data-question"
+                            ]
+                        });
 
-                    this.aiCurrentBubble.innerHTML = clean;
-                    this.aiCurrentBubble.innerHTML = makeQuestionsClickable(this.aiCurrentBubble.innerHTML);
-
-                } catch (e) {
-                    this.aiCurrentBubble.textContent = this.aiBuffer;
-                }
+                        if (clean.trim()) {
+                            this.aiCurrentBubble.innerHTML = clean;
+                            this.aiCurrentBubble.innerHTML = makeQuestionsClickable(this.aiCurrentBubble.innerHTML);
+                        }
+                    } catch (e) {
+                        this.aiCurrentBubble.textContent = this.aiBuffer;
+                    }
 
                 this.aiCurrentBubble.removeAttribute("data-streaming");
                 this.isCurrentFinalized = true;
                 this.aiBuffer = "";
+            },
+
+            handleToolStarted(payload) {
+                const toolName = payload.toolName || "tool";
+                console.debug("Tool started:", toolName);
+            },
+
+            handleToolDelta(payload) {
+                const toolName = payload.toolName || "tool";
+                console.debug("Tool result:", toolName);
+            },
+
+            handleToolCompleted(payload) {
+                const toolName = payload.toolName || "tool";
+                console.debug("Tool completed:", toolName);
+            },
+
+            handleToolFailed(payload) {
+                this.handleNotification({
+                    level: "danger",
+                    title: "Erreur MCP",
+                    message: payload.message || "Erreur pendant l'appel d'un tool MCP."
+                });
+            },
+
+            handleInvariantCreated(payload) {
+                console.debug("Invariant created:", payload);
+
+                const cacheKey = `invariants.${payload.type}`;
+
+                if (localStorage.getItem(cacheKey)) {
+                    localStorage.removeItem(cacheKey);
+                }
+
+                document.dispatchEvent(new CustomEvent("cerberus:invariantCreated", {
+                    detail: payload
+                }));
             },
 
             addMessage(who, text, messageIndex = null) {
@@ -1117,7 +1097,12 @@
                         }));
 
                     this.groupedSessions = this.groupPromptsByDate(this.sessions);
-                    this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+
+                    this.$nextTick(() => {
+                        if (window.lucide) {
+                            lucide.createIcons();
+                        }
+                    });
 
                 } catch (e) {
                     console.error("Failed to fetch prompt history:", e);
@@ -1137,6 +1122,8 @@
                     this.sessionID = sessionID;
                     this.currentSessionTitle = session ? this.cleanTitle(session.title) : "Conversation";
                     this.showWelcomeSuggestions = false;
+
+                    await this.subscribeChat();
 
                     this.renderConversation(messages, focusMessageIndex);
 
@@ -1218,9 +1205,6 @@
                 try {
                     const results = [];
 
-                    /*
-                     * 1. Recherche immédiate dans les titres.
-                     */
                     this.sessions.forEach(session => {
                         const title = this.cleanTitle(session.title).toLowerCase();
 
@@ -1236,10 +1220,6 @@
                         }
                     });
 
-                    /*
-                     * 2. Recherche dans questions/réponses.
-                     * Attention : avec les services actuels, cela charge les messages session par session.
-                     */
                     for (const session of this.sessions) {
                         const messages = await this.fetchSessionMessages(session.sessionID);
 
@@ -1280,9 +1260,6 @@
                         }
                     }
 
-                    /*
-                     * Déduplication simple.
-                     */
                     const unique = [];
                     const seen = new Set();
 
@@ -1322,13 +1299,6 @@
                     return;
                 }
 
-                /*
-                 * À adapter à ton service backend.
-                 * Le code existant ne montre pas encore d'endpoint de suppression.
-                 *
-                 * Proposition :
-                 * DELETE /api/ai/prompts/{sessionID}
-                 */
                 try {
                     const response = await fetch(`${this.getHttpBaseUrl()}api/ai/prompts/${encodeURIComponent(session.sessionID)}`, {
                         method: "DELETE"
@@ -1445,7 +1415,7 @@
                 return date.toLocaleDateString();
             },
 
-            async openWithSubject(subject, content) {
+            async openWithSubject(channel, content) {
                 this.open = true;
                 this.showWelcomeSuggestions = false;
 
@@ -1454,7 +1424,8 @@
                 }
 
                 const payload = {
-                    subject: subject,
+                    subject: "message",
+                    channel: channel,
                     sender: getUser().login,
                     sessionID: this.sessionID,
                     content: content || ""
@@ -1463,8 +1434,11 @@
                 this.appendAI("", true, false);
 
                 try {
-                    await this.ensureWebSocketConnected();
-                    this.ws.send(JSON.stringify(payload));
+                    await Alpine.store('ws').whenConnected();
+                    await this.subscribeChat();
+
+                    Alpine.store('ws').send(payload);
+
                 } catch (e) {
                     console.error("AI WebSocket is not connected", e);
                     this.finalizeCurrentAI();
@@ -1494,52 +1468,11 @@
                 });
             },
 
-            getCerberusBasePath() {
-                /*
-                 * 1. Priorité à window.appContext si défini proprement.
-                 * Exemples valides :
-                 *   "/cerberus_core_war_exploded"
-                 *   "/cerberus_core_war"
-                 *   ""
-                 *   "/"
-                 */
-                if (typeof window.appContext === "string") {
-                    const appContext = window.appContext.trim();
-
-                    if (appContext === "" || appContext === "/") {
-                        return "/";
-                    }
-
-                    return appContext.endsWith("/")
-                        ? appContext
-                        : appContext + "/";
-                }
-
-                /*
-                 * 2. Fallback local/dev :
-                 * Si la première partie du path ressemble à un contexte applicatif,
-                 * on l'utilise.
-                 */
-                const parts = window.location.pathname.split("/").filter(Boolean);
-
-                if (parts.length === 0) {
-                    return "/";
-                }
-
-                const first = parts[0];
-
-                if (first.endsWith(".jsp")) {
-                    return "/";
-                }
-
-                return "/" + first + "/";
-            },
-
             getHttpBaseUrl() {
                 const parser = document.createElement("a");
                 parser.href = window.location.href;
 
-                return `${parser.protocol}//${parser.host}${this.getCerberusBasePath()}`;
+                return `${parser.protocol}//${parser.host}${getCerberusBasePath()}`;
             },
 
             cleanTitle(title) {

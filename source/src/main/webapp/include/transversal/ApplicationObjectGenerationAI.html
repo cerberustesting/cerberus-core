@@ -321,8 +321,6 @@
             error: '',
 
             // IA
-            ws: null,
-            loading: false,
             connected: false,
             sessionID: null,
             contextSent: false,
@@ -330,6 +328,26 @@
             /* =========================
                OPEN MODAL ACTION : INIT STATE AND FIRST MESSAGE
             ========================= */
+            init() {
+                window.addEventListener(CerberusWs.Event.CONNECTED, () => {
+                    if (this.open && this.sessionID) {
+                        this.subscribeToAO();
+                    }
+                });
+
+                window.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODAL_AOGENERATE), (e) => {
+                    this.handleWebSocketMessage(e.detail);
+                });
+            },
+
+            subscribeToAO() {
+                Alpine.store('ws').send({
+                    sender: getUser().login,
+                    subject: CerberusWs.Subject.SUBSCRIBE,
+                    channel: CerberusWs.Channel.MODAL_AOGENERATE,
+                    sessionID: this.sessionID
+                });
+            },
 
             openModal(data = {}) {
                 this.open = true;
@@ -343,35 +361,13 @@
 
                 this.sessionID = crypto.randomUUID();
 
-                this.connectWebSocket();
+                if (Alpine.store('ws').connected) {
+                    this.subscribeToAO();
+                }
 
                 const firstMessage = Alpine.store('labels').getLabel('applicationObject','firstmessage');
 
                 this.simulateStream(firstMessage);
-
-                /*
-                // Message d'accueil
-                this.messages.push({
-                    role: 'assistant',
-                    type: 'message',
-                    text: Alpine.store('labels').getLabel('applicationObject','firstmessage')
-                });
-
-
-                // Initial proposal (facultatif)
-                this.messages.push({
-                    role: 'assistant',
-                    type: 'proposals',
-                    proposals: [{
-                        name: 'Test Button',
-                        object: 'BTN_TEST',
-                        value: '//button[@id="test"]',
-                        description: 'Bouton de test',
-                        confidence: 95,
-                        screenshotFilename: null
-                    }]
-                });
-                */
             },
 
             /* =========================
@@ -414,76 +410,44 @@
             /* =========================
                WEBSOCKET
             ========================= */
-            connectWebSocket() {
-                if (this.ws && this.ws.readyState === 1) return;
+            handleWebSocketMessage(parsed) {
+                if (!parsed) return;
 
-                const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-                const host = window.location.host;
+                this.loading = false;
 
-                // Build WebSocket URL
-                const wsUrl = `${protocol}${host}${window.appContext}/api/ws/AIWebSocket`;
-                console.debug("WebSocket URL:", wsUrl);
+                const type = parsed.type || "message";
+                const payload = parsed.payload || {};
+                const data = parsed.data || payload.data || payload.content || payload.message;
 
-                this.ws = new WebSocket(wsUrl);
+                if (type === CerberusWs.Type.CHAT_ERROR) {
+                    console.error("WebSocket Error :", payload.message || payload.error || parsed.message);
+                    this.error = payload.message || payload.error || parsed.message || "Unexpected WebSocket error";
+                    return;
+                }
 
-                this.ws.onopen = () => {
-                    this.connected = true;
-                };
+                if (type === CerberusWs.Type.AO_PROPOSALS) {
+                    const obj = payload.data || payload || parsed.data;
 
-                this.ws.onclose = () => {
-                    this.connected = false;
-                };
+                    const proposalMessage = {
+                        role: 'assistant',
+                        type: 'proposals',
+                        proposals: [{
+                            name: obj.object || obj.name || 'unknown',
+                            object: obj.object || obj.name || 'unknown',
+                            value: obj.value || '',
+                            description: obj.description || '',
+                            confidence: obj.confidence || 0,
+                            screenshotFilename: obj.screenshotFilename || null
+                        }]
+                    };
 
-                this.ws.onerror = () => {
-                    this.connected = false;
-                };
+                    this.messages = [...this.messages, proposalMessage];
+                    return;
+                }
 
-                this.ws.onmessage = (event) => {
-
-                    let parsed;
-                    try { parsed = JSON.parse(event.data); }
-                    catch { return; }
-
-                    this.loading = false;
-
-                    const type = parsed.type || "chat";
-
-                    if (type === "error" || type === "erreur") {
-                        console.error("WebSocket Error :", parsed.message || parsed.error);
-                        this.error = parsed.message || parsed.error;
-                        this.loading = false;
-                        return;
-                    }
-
-                    if (type === "ao_proposals") {
-                        try {
-                            const obj = parsed.data;
-
-                            const proposalMessage = {
-                                role: 'assistant',
-                                type: 'proposals',
-                                proposals: [{
-                                    name: obj.object || obj.name || 'unknown',
-                                    object: obj.object || obj.name || 'unknown',
-                                    value: obj.value || '',
-                                    description: obj.description || '',
-                                    confidence: obj.confidence || 0,
-                                    screenshotFilename: obj.screenshotFilename || null
-                                }]
-                            };
-
-                            this.messages = [...this.messages, proposalMessage];
-                        } catch (e) {
-                            console.error("Failed to parse AO proposal", e);
-                        }
-                        return;
-                    }
-
-                    // Chat streaming simple
-                    if (parsed.data) {
-                        this.appendAI(parsed.data);
-                    }
-                };
+                if (data) {
+                    this.appendAI(data);
+                }
             },
 
 
@@ -700,13 +664,13 @@
                CHAT
             ========================= */
             async sendChat() {
-
                 const txt = this.chatInput.trim();
                 if (!txt || !this.contextReady) return;
 
                 this.messages.push({ role: 'user', type: 'message', text: txt });
                 this.chatInput = '';
                 this.error = '';
+                this.loading = true;
 
                 this.messages.push({
                     role: 'assistant',
@@ -715,14 +679,24 @@
 
                 this.$nextTick(() => {
                     lucide.createIcons();
-                })
+                });
 
-                // FIRST CALL = upload + ao_generate
+                const channel = this.contextSent ? CerberusWs.Channel.MODAL_AOGENERATECONTINUE : CerberusWs.Channel.MODAL_AOGENERATE;
+
+                let uploadData = {
+                    screenshotName: this.screenshotName,
+                    screenshotPath: this.screenshotPath || null,
+                    htmlName: this.htmlName || null,
+                    htmlPath: this.htmlPath || null
+                };
+
                 if (!this.contextSent) {
-
                     const formData = new FormData();
                     formData.append("screenshot", this.screenshotFile);
-                    if (this.htmlFile) formData.append("htmlFile", this.htmlFile);
+
+                    if (this.htmlFile) {
+                        formData.append("htmlFile", this.htmlFile);
+                    }
 
                     const uploadUrl = `${window.appContext}/api/applicationobjects/uploadFiles`;
 
@@ -733,47 +707,33 @@
 
                     if (!uploadResp.ok) {
                         this.error = "Upload failed";
+                        this.loading = false;
                         return;
                     }
 
-                    const uploadData = await uploadResp.json();
+                    uploadData = await uploadResp.json();
 
-                    const payload = {
-                        subject: "ao_generate",
-                        sender: getUser().login,
-                        sessionID: this.sessionID,
-                        application: this.application,
-                        page: this.page,
-                        screenshotName: uploadData.screenshotName,
-                        screenshotPath: uploadData.screenshotPath,
-                        htmlName: uploadData.htmlName || null,
-                        htmlPath: uploadData.htmlPath || null,
-                        content: txt
-                    };
-
-                    this.ws.send(JSON.stringify(payload));
+                    this.screenshotName = uploadData.screenshotName;
+                    this.screenshotPath = uploadData.screenshotPath;
+                    this.htmlName = uploadData.htmlName || null;
+                    this.htmlPath = uploadData.htmlPath || null;
 
                     this.contextSent = true;
                 }
 
-                //NEXT CALLS = ao_generate_continue
-                else {
-
-                    const payload = {
-                        subject: "ao_generate_continue",
-                        sender: getUser().login,
-                        sessionID: this.sessionID,
-                        application: this.application,
-                        page: this.page,
-                        screenshotName: uploadData.screenshotName,
-                        screenshotPath: uploadData.screenshotPath,
-                        htmlName: uploadData.htmlName || null,
-                        htmlPath: uploadData.htmlPath || null,
-                        content: txt
-                    };
-
-                    this.ws.send(JSON.stringify(payload));
-                }
+                Alpine.store('ws').send({
+                    subject: CerberusWs.Subject.MESSAGE,
+                    channel: channel,
+                    sender: getUser().login,
+                    sessionID: this.sessionID,
+                    application: this.application,
+                    page: this.page,
+                    screenshotName: uploadData.screenshotName,
+                    screenshotPath: uploadData.screenshotPath,
+                    htmlName: uploadData.htmlName || null,
+                    htmlPath: uploadData.htmlPath || null,
+                    content: txt
+                });
             },
 
             /* =========================

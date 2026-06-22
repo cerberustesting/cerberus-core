@@ -348,6 +348,17 @@ console.info(selectedWorkspaces);
     });
 }
 
+/**
+ * Returns the application base path, always ending with "/".
+ */
+function getCerberusBasePath() {
+    const ctx = (window.appContext || "").trim();
+    if (ctx === "" || ctx === "/") {
+        return "/";
+    }
+    return ctx.endsWith("/") ? ctx : ctx + "/";
+}
+
 function getWorkspace() {
     const workspaceEl = document.querySelector('[x-data="workspaceSelector()"]');
     if (!workspaceEl) return null;

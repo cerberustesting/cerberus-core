@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
+import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
@@ -58,8 +60,9 @@ import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
-import org.cerberus.core.websocket.QueueStatus;
-import org.cerberus.core.websocket.QueueStatusWebSocket;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.cerberus.core.websocket.runtime.QueueStatus;
+import org.cerberus.core.websocket.WebSocketEventSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -106,7 +109,9 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     private IEventService eventService;
     @Autowired
-    private QueueStatusWebSocket queueStatusWebSocket;
+    private WebSocketEventSender webSocketEventSender;
+    @Autowired
+    private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -590,7 +595,9 @@ public class ExecutionStartService implements IExecutionStartService {
                         .globalLimit(executionUUIDObject.getGlobalLimit())
                         .running(executionUUIDObject.getRunning())
                         .queueSize(executionUUIDObject.getQueueSize()).build();
-                queueStatusWebSocket.send(queueS, true);
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_PAGE_HOMEPAGE, WebSocketStatic.TYPE_QUEUE_CHANGE, queueS.toJson(true).toMap());
+                TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
+                webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_START, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);

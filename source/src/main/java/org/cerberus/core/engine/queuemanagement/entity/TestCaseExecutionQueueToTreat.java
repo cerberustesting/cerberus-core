@@ -36,6 +36,10 @@ public class TestCaseExecutionQueueToTreat {
     private String appType;
     private String selectedRobotHost;
     private String selectedRobotExtensionHost;
+    private String usrCreated;
+    private int queuePosition;
+    private int nbEntryBefore;
+
 
     /**
      * Invariant Constrains.
@@ -164,6 +168,30 @@ public class TestCaseExecutionQueueToTreat {
 
     public void setPoolSizeApplication(int poolSizeApplication) {
         this.poolSizeApplication = poolSizeApplication;
+    }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public int getQueuePosition() {
+        return queuePosition;
+    }
+
+    public void setQueuePosition(int queuePosition) {
+        this.queuePosition = queuePosition;
+    }
+
+    public int getNbEntryBefore() {
+        return nbEntryBefore;
+    }
+
+    public void setNbEntryBefore(int nbEntryBefore) {
+        this.nbEntryBefore = nbEntryBefore;
     }
 
 }

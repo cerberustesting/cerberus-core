@@ -20,312 +20,320 @@
 package org.cerberus.core.config.security;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public class WebSecurityRules {
 
+    // PathPatternRequestMatcher.withDefaults() only works for requests dispatched through
+    // Spring MVC's DispatcherServlet. Cerberus @WebServlet servlets bypass DispatcherServlet,
+    // so their paths would silently miss permitAll() rules and get redirected to login.
+    // TODO: Replace AntPathRequestMatcher when Spring Security migration is finalized.
+    @SuppressWarnings({"deprecation", "removal"})
+    private static AntPathRequestMatcher m(String pattern) {
+        return new AntPathRequestMatcher(pattern);
+    }
+
     public static void applyRules(HttpSecurity http) throws Exception {
-        var m = PathPatternRequestMatcher.withDefaults();
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(m.matcher("/api/public/**")).permitAll()
+                .requestMatchers(m("/api/public/**")).permitAll()
                 // OAuth Protected Resource Metadata (RFC 9728) : public discovery for MCP clients
-                .requestMatchers(m.matcher("/.well-known/oauth-protected-resource")).permitAll()
+                .requestMatchers(m("/.well-known/oauth-protected-resource")).permitAll()
                 // ── Public
                 .requestMatchers(
-                        m.matcher("/DatabaseMaintenance.jsp"),
-                        m.matcher("/Documentation.jsp"),
-                        m.matcher("/Login.jsp"),
-                        m.matcher("/Logout.jsp"),
-                        m.matcher("/Error.jsp"),
-                        m.matcher("/dummy/**"),
-                        m.matcher("/ChangePassword.jsp"),
-                        m.matcher("/RunTestCase"), m.matcher("/RunTestCaseV001"),
-                        m.matcher("/GetNumberOfExecutions"),
-                        m.matcher("/ResultCI"), m.matcher("/ResultCIV001"),
-                        m.matcher("/ResultCIV002"), m.matcher("/ResultCIV003"),
-                        m.matcher("/ResultCIV004"),
-                        m.matcher("/NewRelease"),
-                        m.matcher("/AddToExecutionQueue"),
-                        m.matcher("/AddToExecutionQueueV001"),
-                        m.matcher("/AddToExecutionQueueV002"),
-                        m.matcher("/AddToExecutionQueueV003"),
-                        m.matcher("/NewBuildRevisionV000"),
-                        m.matcher("/DisableEnvironmentV000"),
-                        m.matcher("/NewEnvironmentEventV000"),
-                        m.matcher("/GetTagExecutions"),
-                        m.matcher("/GetTestCasesV001"),
-                        m.matcher("/ManageV001"),
-                        m.matcher("/ForgotPassword"),
-                        m.matcher("/ForgotPasswordEmailConfirmation"),
-                        m.matcher("/ChangeUserPassword"),
-                        m.matcher("/ReadApplicationObjectImage"),
-                        m.matcher("/DummyRESTCall"), m.matcher("/DummyRESTCallEmpty"),
-                        m.matcher("/j_security_check")
+                        m("/DatabaseMaintenance.jsp"),
+                        m("/Documentation.jsp"),
+                        m("/Login.jsp"),
+                        m("/Logout.jsp"),
+                        m("/Error.jsp"),
+                        m("/dummy/**"),
+                        m("/ChangePassword.jsp"),
+                        m("/RunTestCase"), m("/RunTestCaseV001"),m("/RunTestCaseV002"),
+                        m("/GetNumberOfExecutions"),
+                        m("/ResultCI"), m("/ResultCIV001"),
+                        m("/ResultCIV002"), m("/ResultCIV003"),
+                        m("/ResultCIV004"),
+                        m("/NewRelease"),
+                        m("/AddToExecutionQueue"),
+                        m("/AddToExecutionQueueV001"),
+                        m("/AddToExecutionQueueV002"),
+                        m("/AddToExecutionQueueV003"),
+                        m("/NewBuildRevisionV000"),
+                        m("/DisableEnvironmentV000"),
+                        m("/NewEnvironmentEventV000"),
+                        m("/GetTagExecutions"),
+                        m("/GetTestCasesV001"),
+                        m("/ManageV001"),
+                        m("/ForgotPassword"),
+                        m("/ForgotPasswordEmailConfirmation"),
+                        m("/ChangeUserPassword"),
+                        m("/ReadApplicationObjectImage"),
+                        m("/DummyRESTCall"), m("/DummyRESTCallEmpty"),
+                        m("/j_security_check")
                 ).permitAll()
 
                 // ── TestRO
                 .requestMatchers(
-                        m.matcher("/TestCaseExecution.jsp"),
-                        m.matcher("/TestCaseExecutionList.jsp"),
-                        m.matcher("/ReportingExecutionByTag.jsp"),
-                        m.matcher("/ReportingExecutionOverTime.jsp"),
-                        m.matcher("/ReportingCampaignOverTime.jsp"),
-                        m.matcher("/ReportingCampaignStatistics.jsp"),
-                        m.matcher("/TestCaseExecutionQueueList.jsp"),
-                        m.matcher("/Test.jsp"),
-                        m.matcher("/TestCaseScript.jsp"),
-                        m.matcher("/TestCaseList.jsp"),
-                        m.matcher("/CampaignList.jsp"),
-                        m.matcher("/SwaggerUI.jsp"),
-                        m.matcher("/ManageExecutionPool"), m.matcher("/ReadExecutionPool"),
-                        m.matcher("/ReadExecutionPools"),
-                        m.matcher("/GetTestCaseList"),
-                        m.matcher("/ReadTestCaseExecutionMedia"),
-                        m.matcher("/TestcaseList"),
-                        m.matcher("/GetDataForTestCaseSearch"),
-                        m.matcher("/TCEwwwDetail"),
-                        m.matcher("/GenerateGraph"),
-                        m.matcher("/TestCaseActionExecutionDetail"),
-                        m.matcher("/ExecutionPerBuildRevision"),
-                        m.matcher("/GetStepUsedAsLibraryInOtherTestCasePerApplication"),
-                        m.matcher("/ExportTestCase"),
-                        m.matcher("/FindTestImplementationStatusPerApplication"),
-                        m.matcher("/GetCountryForTestCase"),
-                        m.matcher("/GetPropertiesForTestCase"),
-                        m.matcher("/GetReport"),
-                        m.matcher("/GetStepInLibrary"),
-                        m.matcher("/ReadTestCase"), m.matcher("/ReadTest"),
-                        m.matcher("/ReadTestCaseStep"),
-                        m.matcher("/GetReportTest"),
-                        m.matcher("/ReadTestCaseExecutionByTag"),
-                        m.matcher("/ReadExecutionStat"),
-                        m.matcher("/ReadQueueStat"),
-                        m.matcher("/ReadTagStat")
+                        m("/TestCaseExecution.jsp"),
+                        m("/TestCaseExecutionList.jsp"),
+                        m("/ReportingExecutionByTag.jsp"),
+                        m("/ReportingExecutionOverTime.jsp"),
+                        m("/ReportingCampaignOverTime.jsp"),
+                        m("/ReportingCampaignStatistics.jsp"),
+                        m("/TestCaseExecutionQueueList.jsp"),
+                        m("/Test.jsp"),
+                        m("/TestCaseScript.jsp"),
+                        m("/TestCaseList.jsp"),
+                        m("/CampaignList.jsp"),
+                        m("/SwaggerUI.jsp"),
+                        m("/ManageExecutionPool"), m("/ReadExecutionPool"),
+                        m("/ReadExecutionPools"),
+                        m("/GetTestCaseList"),
+                        m("/ReadTestCaseExecutionMedia"),
+                        m("/TestcaseList"),
+                        m("/GetDataForTestCaseSearch"),
+                        m("/TCEwwwDetail"),
+                        m("/GenerateGraph"),
+                        m("/TestCaseActionExecutionDetail"),
+                        m("/ExecutionPerBuildRevision"),
+                        m("/GetStepUsedAsLibraryInOtherTestCasePerApplication"),
+                        m("/ExportTestCase"),
+                        m("/FindTestImplementationStatusPerApplication"),
+                        m("/GetCountryForTestCase"),
+                        m("/GetPropertiesForTestCase"),
+                        m("/GetReport"),
+                        m("/GetStepInLibrary"),
+                        m("/ReadTestCase"), m("/ReadTest"),
+                        m("/ReadTestCaseStep"),
+                        m("/GetReportTest"),
+                        m("/ReadTestCaseExecutionByTag"),
+                        m("/ReadExecutionStat"),
+                        m("/ReadQueueStat"),
+                        m("/ReadTagStat")
                 ).hasRole("TestRO")
 
                 // ── Test
                 .requestMatchers(
-                        m.matcher("/SqlLibrary.jsp"),
-                        m.matcher("/TestDataLibList.jsp"),
-                        m.matcher("/QuickStart.jsp"),
-                        m.matcher("/UpdateTestCase"), m.matcher("/UpdateTestCaseMass"),
-                        m.matcher("/CreateTestCaseCountry"), m.matcher("/DeleteTestCaseCountry"),
-                        m.matcher("/CalculatePropertyForTestCase"),
-                        m.matcher("/UpdateProperties"),
-                        m.matcher("/CreateTestCase"),
-                        m.matcher("/CreateTestCaseLabel"), m.matcher("/DeleteTestCaseLabel"),
-                        m.matcher("/ImportSeleniumIDE"),
-                        m.matcher("/ImportTestCaseStep"),
-                        m.matcher("/ImportPropertyOfATestCaseToAnOtherTestCase"),
-                        m.matcher("/CreateNotDefinedProperty"),
-                        m.matcher("/DeleteTestData"), m.matcher("/UpdateTestData"),
-                        m.matcher("/FindAllTestData"),
-                        m.matcher("/ReadTestDataLib"), m.matcher("/ReadTestDataLibData"),
-                        m.matcher("/ReadSqlLibrary"),
-                        m.matcher("/PictureConnector"),
-                        m.matcher("/UseTestCaseStep"),
-                        m.matcher("/UpdateTestCaseWithDependencies"),
-                        m.matcher("/UpdateTestCaseProperties"),
-                        m.matcher("/Thumbnailer"),
-                        m.matcher("/SaveTestCaseLabel"), m.matcher("/ReadTestCaseLabel")
+                        m("/SqlLibrary.jsp"),
+                        m("/TestDataLibList.jsp"),
+                        m("/QuickStart.jsp"),
+                        m("/UpdateTestCase"), m("/UpdateTestCaseMass"),
+                        m("/CreateTestCaseCountry"), m("/DeleteTestCaseCountry"),
+                        m("/CalculatePropertyForTestCase"),
+                        m("/UpdateProperties"),
+                        m("/CreateTestCase"),
+                        m("/CreateTestCaseLabel"), m("/DeleteTestCaseLabel"),
+                        m("/ImportSeleniumIDE"),
+                        m("/ImportTestCaseStep"),
+                        m("/ImportPropertyOfATestCaseToAnOtherTestCase"),
+                        m("/CreateNotDefinedProperty"),
+                        m("/DeleteTestData"), m("/UpdateTestData"),
+                        m("/FindAllTestData"),
+                        m("/ReadTestDataLib"), m("/ReadTestDataLibData"),
+                        m("/ReadSqlLibrary"),
+                        m("/PictureConnector"),
+                        m("/UseTestCaseStep"),
+                        m("/UpdateTestCaseWithDependencies"),
+                        m("/UpdateTestCaseProperties"),
+                        m("/Thumbnailer"),
+                        m("/SaveTestCaseLabel"), m("/ReadTestCaseLabel")
                 ).hasRole("Test")
 
                 // ── TestStepLibrary
-                .requestMatchers(m.matcher("/ZZZ")).hasRole("TestStepLibrary")
+                .requestMatchers(m("/ZZZ")).hasRole("TestStepLibrary")
 
                 // ── TestAdmin
                 .requestMatchers(
-                        m.matcher("/CreateTest"), m.matcher("/DeleteTest"),
-                        m.matcher("/UpdateTest"),
-                        m.matcher("/DeleteTestCase"), m.matcher("/DeleteTestCaseFromTestPage"),
-                        m.matcher("/CreateSqlLibrary"), m.matcher("/DeleteSqlLibrary"),
-                        m.matcher("/UpdateSqlLibrary")
+                        m("/CreateTest"), m("/DeleteTest"),
+                        m("/UpdateTest"),
+                        m("/DeleteTestCase"), m("/DeleteTestCaseFromTestPage"),
+                        m("/CreateSqlLibrary"), m("/DeleteSqlLibrary"),
+                        m("/UpdateSqlLibrary")
                 ).hasRole("TestAdmin")
 
                 // ── Label
                 .requestMatchers(
-                        m.matcher("/Label.jsp"),
-                        m.matcher("/CreateLabel"), m.matcher("/UpdateLabel"),
-                        m.matcher("/DeleteLabel")
+                        m("/Label.jsp"),
+                        m("/CreateLabel"), m("/UpdateLabel"),
+                        m("/DeleteLabel")
                 ).hasRole("Label")
 
                 // ── AS
                 .requestMatchers(
-                        m.matcher("/ReportingAutomateScore.jsp")
+                        m("/ReportingAutomateScore.jsp")
                 ).hasRole("AS")
 
                 // ── RunTest
                 .requestMatchers(
-                        m.matcher("/RunTests.jsp"),
-                        m.matcher("/findEnvironmentByCriteria"),
-                        m.matcher("/UpdateTestCaseExecution"),
-                        m.matcher("/RunExecutionInQueue"),
-                        m.matcher("/SetTagToExecution"),
-                        m.matcher("/GetExecutionQueue"),
-                        m.matcher("/UpdateTestCaseExecutionQueue"),
-                        m.matcher("/ReadTestCaseExecutionQueue"),
-                        m.matcher("/CreateTestCaseExecutionQueue"),
-                        m.matcher("/CreateUpdateTestCaseExecutionFile"),
-                        m.matcher("/DeleteTestCaseExecutionFile"),
-                        m.matcher("/ReadCampaign"), m.matcher("/ReadCampaignParameter"),
-                        m.matcher("/GetCampaign"), m.matcher("/UpdateCampaign"),
-                        m.matcher("/CreateCampaign"), m.matcher("/DeleteCampaign"),
-                        m.matcher("/CreateScheduleEntry"), m.matcher("/ReadScheduleEntry"),
-                        m.matcher("/UpdateScheduleEntry"), m.matcher("/DeleteScheduleEntry"),
-                        m.matcher("/AddToExecutionQueuePrivate")
+                        m("/RunTests.jsp"),
+                        m("/findEnvironmentByCriteria"),
+                        m("/UpdateTestCaseExecution"),
+                        m("/RunExecutionInQueue"),
+                        m("/SetTagToExecution"),
+                        m("/GetExecutionQueue"),
+                        m("/UpdateTestCaseExecutionQueue"),
+                        m("/ReadTestCaseExecutionQueue"),
+                        m("/CreateTestCaseExecutionQueue"),
+                        m("/CreateUpdateTestCaseExecutionFile"),
+                        m("/DeleteTestCaseExecutionFile"),
+                        m("/ReadCampaign"), m("/ReadCampaignParameter"),
+                        m("/GetCampaign"), m("/UpdateCampaign"),
+                        m("/CreateCampaign"), m("/DeleteCampaign"),
+                        m("/CreateScheduleEntry"), m("/ReadScheduleEntry"),
+                        m("/UpdateScheduleEntry"), m("/DeleteScheduleEntry"),
+                        m("/AddToExecutionQueuePrivate")
                 ).hasRole("RunTest")
 
                 // ── TestDataManager
                 .requestMatchers(
-                        m.matcher("/CreateTestDataLib"),
-                        m.matcher("/DuplicateTestDataLib"),
-                        m.matcher("/ImportTestDataLib"),
-                        m.matcher("/DeleteTestDataLib"),
-                        m.matcher("/UpdateTestDataLibData"),
-                        m.matcher("/UpdateTestDataLib"),
-                        m.matcher("/BulkRenameDataLib")
+                        m("/CreateTestDataLib"),
+                        m("/DuplicateTestDataLib"),
+                        m("/ImportTestDataLib"),
+                        m("/DeleteTestDataLib"),
+                        m("/UpdateTestDataLibData"),
+                        m("/UpdateTestDataLib"),
+                        m("/BulkRenameDataLib")
                 ).hasRole("TestDataManager")
 
                 // ── IntegratorRO
                 .requestMatchers(
-                        m.matcher("/ApplicationList.jsp"),
-                        m.matcher("/AppServiceList.jsp"),
-                        m.matcher("/ApplicationObjectList.jsp"),
-                        m.matcher("/BuildContent.jsp"),
-                        m.matcher("/BuildRevDefinition.jsp"),
-                        m.matcher("/Environment.jsp"),
-                        m.matcher("/IntegrationStatus.jsp"),
-                        m.matcher("/Project.jsp"),
-                        m.matcher("/DeployType.jsp"),
-                        m.matcher("/BatchInvariant.jsp"),
-                        m.matcher("/GetShortTests"),
-                        m.matcher("/GetInvariantsForTest"),
-                        m.matcher("/GetEnvironmentAvailable"),
-                        m.matcher("/FindBuildContent"),
-                        m.matcher("/FindCountryEnvironmentDatabase"),
-                        m.matcher("/GetCountryEnvParamList"),
-                        m.matcher("/GetCountryEnvironmentParameterList"),
-                        m.matcher("/FindEnvironments"),
-                        m.matcher("/ReadDeployType"),
-                        m.matcher("/GetNotification"),
-                        m.matcher("/ReadBuildRevisionParameters"),
-                        m.matcher("/ReadCountryEnvParam_log"),
-                        m.matcher("/ReadBuildRevisionBatch"),
-                        m.matcher("/ReadBatchInvariant"),
-                        m.matcher("/ReadCountryEnvDeployType"),
-                        m.matcher("/ReadCountryEnvironmentDatabase"),
-                        m.matcher("/ReadCountryEnvironmentParameters"),
-                        m.matcher("/ReadCountryEnvLink")
+                        m("/ApplicationList.jsp"),
+                        m("/AppServiceList.jsp"),
+                        m("/ApplicationObjectList.jsp"),
+                        m("/BuildContent.jsp"),
+                        m("/BuildRevDefinition.jsp"),
+                        m("/Environment.jsp"),
+                        m("/IntegrationStatus.jsp"),
+                        m("/Project.jsp"),
+                        m("/DeployType.jsp"),
+                        m("/BatchInvariant.jsp"),
+                        m("/GetShortTests"),
+                        m("/GetInvariantsForTest"),
+                        m("/GetEnvironmentAvailable"),
+                        m("/FindBuildContent"),
+                        m("/FindCountryEnvironmentDatabase"),
+                        m("/GetCountryEnvParamList"),
+                        m("/GetCountryEnvironmentParameterList"),
+                        m("/FindEnvironments"),
+                        m("/ReadDeployType"),
+                        m("/GetNotification"),
+                        m("/ReadBuildRevisionParameters"),
+                        m("/ReadCountryEnvParam_log"),
+                        m("/ReadBuildRevisionBatch"),
+                        m("/ReadBatchInvariant"),
+                        m("/ReadCountryEnvDeployType"),
+                        m("/ReadCountryEnvironmentDatabase"),
+                        m("/ReadCountryEnvironmentParameters"),
+                        m("/ReadCountryEnvLink")
                 ).hasRole("IntegratorRO")
 
                 // ── Integrator
                 .requestMatchers(
-                        m.matcher("/CreateApplication"), m.matcher("/UpdateApplication"),
-                        m.matcher("/CreateApplicationObject"), m.matcher("/UpdateApplicationObject"),
-                        m.matcher("/DeleteApplicationObject"),
-                        m.matcher("/UpdateCountryEnv"),
-                        m.matcher("/CreateProject"), m.matcher("/DeleteProject"),
-                        m.matcher("/UpdateProject"),
-                        m.matcher("/CreateBuildRevisionInvariant"),
-                        m.matcher("/UpdateBuildRevisionInvariant"),
-                        m.matcher("/DeleteBuildRevisionInvariant"),
-                        m.matcher("/CreateRobot"), m.matcher("/UpdateRobot"),
-                        m.matcher("/DeleteRobot"),
-                        m.matcher("/CreateCountryEnvParam"), m.matcher("/UpdateCountryEnvParam"),
-                        m.matcher("/DeleteCountryEnvParam"),
-                        m.matcher("/CreateCountryEnvironmentParameter"),
-                        m.matcher("/UpdateCountryEnvironmentParameter"),
-                        m.matcher("/DeleteCountryEnvironmentParameter"),
-                        m.matcher("/CreateCountryEnvironmentDatabase"),
-                        m.matcher("/UpdateCountryEnvironmentDatabase"),
-                        m.matcher("/DeleteCountryEnvironmentDatabase"),
-                        m.matcher("/CreateDeployType"), m.matcher("/UpdateDeployType"),
-                        m.matcher("/DeleteDeployType"),
-                        m.matcher("/CreateBuildRevisionParameters"),
-                        m.matcher("/UpdateBuildRevisionParameters"),
-                        m.matcher("/DeleteBuildRevisionParameters"),
-                        m.matcher("/CreateBatchInvariant"), m.matcher("/DeleteBatchInvariant"),
-                        m.matcher("/UpdateBatchInvariant"),
-                        m.matcher("/CreateAppService"), m.matcher("/DeleteAppService"),
-                        m.matcher("/UpdateAppService")
+                        m("/CreateApplication"), m("/UpdateApplication"),
+                        m("/CreateApplicationObject"), m("/UpdateApplicationObject"),
+                        m("/DeleteApplicationObject"),
+                        m("/UpdateCountryEnv"),
+                        m("/CreateProject"), m("/DeleteProject"),
+                        m("/UpdateProject"),
+                        m("/CreateBuildRevisionInvariant"),
+                        m("/UpdateBuildRevisionInvariant"),
+                        m("/DeleteBuildRevisionInvariant"),
+                        m("/CreateRobot"), m("/UpdateRobot"),
+                        m("/DeleteRobot"),
+                        m("/CreateCountryEnvParam"), m("/UpdateCountryEnvParam"),
+                        m("/DeleteCountryEnvParam"),
+                        m("/CreateCountryEnvironmentParameter"),
+                        m("/UpdateCountryEnvironmentParameter"),
+                        m("/DeleteCountryEnvironmentParameter"),
+                        m("/CreateCountryEnvironmentDatabase"),
+                        m("/UpdateCountryEnvironmentDatabase"),
+                        m("/DeleteCountryEnvironmentDatabase"),
+                        m("/CreateDeployType"), m("/UpdateDeployType"),
+                        m("/DeleteDeployType"),
+                        m("/CreateBuildRevisionParameters"),
+                        m("/UpdateBuildRevisionParameters"),
+                        m("/DeleteBuildRevisionParameters"),
+                        m("/CreateBatchInvariant"), m("/DeleteBatchInvariant"),
+                        m("/UpdateBatchInvariant"),
+                        m("/CreateAppService"), m("/DeleteAppService"),
+                        m("/UpdateAppService")
                 ).hasRole("Integrator")
 
                 // ── IntegratorNewChain
-                .requestMatchers(m.matcher("/NewChain")).hasRole("IntegratorNewChain")
+                .requestMatchers(m("/NewChain")).hasRole("IntegratorNewChain")
 
                 // ── IntegratorDeploy
                 .requestMatchers(
-                        m.matcher("/DisableEnvironment"),
-                        m.matcher("/NewBuildRev"),
-                        m.matcher("/JenkinsDeploy")
+                        m("/DisableEnvironment"),
+                        m("/NewBuildRev"),
+                        m("/JenkinsDeploy")
                 ).hasRole("IntegratorDeploy")
 
                 // ── Administrator
                 .requestMatchers(
-                        m.matcher("/LogEvent.jsp"),
-                        m.matcher("/Usage.jsp"),
-                        m.matcher("/ParameterList.jsp"),
-                        m.matcher("/UserManager.jsp"),
-                        m.matcher("/EventHookList.jsp"),
-                        m.matcher("/InvariantList.jsp"),
-                        m.matcher("/CerberusInformation.jsp"),
-                        m.matcher("/Prompt.jsp"),
-                        m.matcher("/ReadUser"), m.matcher("/GetParameter"),
-                        m.matcher("/UpdateParameter"),
-                        m.matcher("/GetUsers"), m.matcher("/CreateUser"),
-                        m.matcher("/UpdateUser"), m.matcher("/DeleteUser"),
-                        m.matcher("/ReadLogEvent"),
-                        m.matcher("/CreateInvariant"), m.matcher("/UpdateInvariant"),
-                        m.matcher("/DeleteInvariant"),
-                        m.matcher("/CreateEventHook"), m.matcher("/UpdateEventHook"),
-                        m.matcher("/DeleteEventHook"),
-                        m.matcher("/DeleteApplication"),
-                        m.matcher("/ReadCerberusDetailInformation"),
-                        m.matcher("/ChangeUserPasswordAdmin")
+                        m("/LogEvent.jsp"),
+                        m("/Usage.jsp"),
+                        m("/ParameterList.jsp"),
+                        m("/UserManager.jsp"),
+                        m("/EventHookList.jsp"),
+                        m("/InvariantList.jsp"),
+                        m("/CerberusInformation.jsp"),
+                        m("/Prompt.jsp"),
+                        m("/ReadUser"), m("/GetParameter"),
+                        m("/UpdateParameter"),
+                        m("/GetUsers"), m("/CreateUser"),
+                        m("/UpdateUser"), m("/DeleteUser"),
+                        m("/ReadLogEvent"),
+                        m("/CreateInvariant"), m("/UpdateInvariant"),
+                        m("/DeleteInvariant"),
+                        m("/CreateEventHook"), m("/UpdateEventHook"),
+                        m("/DeleteEventHook"),
+                        m("/DeleteApplication"),
+                        m("/ReadCerberusDetailInformation"),
+                        m("/ChangeUserPasswordAdmin")
                 ).hasRole("Administrator")
 
                 // ── ANY : tout utilisateur authentifié
                 .requestMatchers(
-                        m.matcher("/"),
-                        m.matcher("/Homepage.jsp"),
-                        m.matcher("/ImpactAnalysis.jsp"),
-                        m.matcher("/RobotList.jsp"),
-                        m.matcher("/ReportingMonitor.jsp"),
-                        m.matcher("/Homepage"),
-                        m.matcher("/ReadMyUser"),
-                        m.matcher("/ReadExecutionTagHistory"),
-                        m.matcher("/GetInvariantList"),
-                        m.matcher("/ReadCerberusInformation"),
-                        m.matcher("/GeneratePerformanceString"),
-                        m.matcher("/UpdateMyUser"), m.matcher("/UpdateMyUserSystem"),
-                        m.matcher("/UpdateMyUserReporting"),
-                        m.matcher("/UpdateMyUserReporting1"),
-                        m.matcher("/UpdateMyUserRobotPreference"),
-                        m.matcher("/ReadUserPublic"),
-                        m.matcher("/FindInvariantByID"),
-                        m.matcher("/ImportTestCaseFromJson"),
-                        m.matcher("/ReadApplication"),
-                        m.matcher("/ReadApplicationObject"),
-                        m.matcher("/ReadBuildRevisionInvariant"),
-                        m.matcher("/ReadProject"),
-                        m.matcher("/ReadRobot"),
-                        m.matcher("/ReadCountryEnvParam"),
-                        m.matcher("/GetTestBySystem"),
-                        m.matcher("/GetTestCaseForTest"),
-                        m.matcher("/GetEnvironmentsPerBuildRevision"),
-                        m.matcher("/GetEnvironmentsLastChangePerCountry"),
-                        m.matcher("/ReadAppService"),
-                        m.matcher("/ReadInvariant"),
-                        m.matcher("/ReadTestCaseExecution"),
-                        m.matcher("/ReadTag"),
-                        m.matcher("/ReadParameter"),
-                        m.matcher("/GetExecutionsInQueue"),
-                        m.matcher("/ReadDocumentation"),
-                        m.matcher("/ReadLabel")
+                        m("/"),
+                        m("/Homepage.jsp"),
+                        m("/ImpactAnalysis.jsp"),
+                        m("/RobotList.jsp"),
+                        m("/ReportingMonitor.jsp"),
+                        m("/Homepage"),
+                        m("/ReadMyUser"),
+                        m("/ReadExecutionTagHistory"),
+                        m("/GetInvariantList"),
+                        m("/ReadCerberusInformation"),
+                        m("/GeneratePerformanceString"),
+                        m("/UpdateMyUser"), m("/UpdateMyUserSystem"),
+                        m("/UpdateMyUserReporting"),
+                        m("/UpdateMyUserReporting1"),
+                        m("/UpdateMyUserRobotPreference"),
+                        m("/ReadUserPublic"),
+                        m("/FindInvariantByID"),
+                        m("/ImportTestCaseFromJson"),
+                        m("/ReadApplication"),
+                        m("/ReadApplicationObject"),
+                        m("/ReadBuildRevisionInvariant"),
+                        m("/ReadProject"),
+                        m("/ReadRobot"),
+                        m("/ReadCountryEnvParam"),
+                        m("/GetTestBySystem"),
+                        m("/GetTestCaseForTest"),
+                        m("/GetEnvironmentsPerBuildRevision"),
+                        m("/GetEnvironmentsLastChangePerCountry"),
+                        m("/ReadAppService"),
+                        m("/ReadInvariant"),
+                        m("/ReadTestCaseExecution"),
+                        m("/ReadTag"),
+                        m("/ReadParameter"),
+                        m("/GetExecutionsInQueue"),
+                        m("/ReadDocumentation"),
+                        m("/ReadLabel")
                 ).authenticated()
 
-                .requestMatchers(m.matcher("/api/**")).authenticated()
+                .requestMatchers(m("/api/**")).authenticated()
 
                 .anyRequest().authenticated()
 

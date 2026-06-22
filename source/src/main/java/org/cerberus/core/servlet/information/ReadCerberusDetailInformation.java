@@ -54,7 +54,7 @@ import org.cerberus.core.engine.scheduler.SchedulerInit;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.version.Infos;
-import org.cerberus.core.websocket.ExecutionMonitor;
+import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

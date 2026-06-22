@@ -51,12 +51,19 @@ function executionV2() {
         queueRefreshTimer: null,
 
         // WebSocket / Live refresh
-        ws: null,
+        // WebSocket / Live refresh
         wsConnected: false,
+        _wsSessionID: null,
+        _wsSubscribedExecutionId: null,
+        _wsHandlerBound: false,
+        _onWsConnectedHandler: null,
+        _onWsDisconnectedHandler: null,
+        _onWsExecutionMessageHandler: null,
+
         _pollingTimer: null,
         _pollErrorCount: 0,
         liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
-        _spinDone: false,     // true for 5s after PE→done transition
+        _spinDone: false,
         _spinDoneTimer: null,
 
         // Navigation
@@ -130,6 +137,8 @@ function executionV2() {
             const tabURL = GetURLParameter('tabactive');
             if (tabURL) this.tab = tabURL;
 
+            this._bindWebSocketEvents();
+
             // Load feature flags from sessionStorage cache (non-blocking)
             // getParameterString uses sync AJAX which can freeze the page — read cache directly instead
             try {
@@ -183,11 +192,19 @@ function executionV2() {
 
         // ═══ LIVE CLEANUP ═══
         _stopLive() {
-            if (this._pollingTimer) { clearTimeout(this._pollingTimer); this._pollingTimer = null; }
-            if (this.ws) { try { this.ws.close(); } catch(e) {} this.ws = null; }
-            this.wsConnected = false;
+            if (this._pollingTimer) {
+                clearTimeout(this._pollingTimer);
+                this._pollingTimer = null;
+            }
+
+            // Ne jamais fermer Alpine.store('ws') ici :
+            // c'est une socket globale partagée par les autres modules.
+            this._wsSubscribedExecutionId = null;
             this._pollErrorCount = 0;
-            if (this.liveStatus !== 'idle') this.liveStatus = 'done';
+
+            if (this.liveStatus !== 'idle') {
+                this.liveStatus = 'done';
+            }
         },
 
         // ═══ DATA LOADING ═══
@@ -274,9 +291,11 @@ function executionV2() {
                     // Live updates if PE — always poll + try WS for instant notifications
                     if (tce.controlStatus === 'PE') {
                         this.$nextTick(() => {
+                            // On garde le polling comme fallback.
                             this._startPolling(tce.id);
+
                             if (this.paramActivateWebSocket === 'Y') {
-                                this._connectWebSocket(tce.id);
+                                this._subscribeExecutionPage(tce.id);
                             }
                         });
                     }
@@ -422,47 +441,158 @@ function executionV2() {
         },
 
         // ═══ WEBSOCKET ═══
-        _connectWebSocket(executionId) {
-            const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-            // Build WS URL the same way legacy code does (TestCaseExecution.js line 332-333)
-            var parser = document.createElement('a');
-            parser.href = window.location.href;
-            var path = parser.pathname.split('TestCaseExecution')[0];
-            const wsUrl = protocol + '://' + parser.host + path + 'api/ws/execution/' + executionId;
-            console.info('[ExeV2] Connecting WebSocket:', wsUrl);
+        _bindWebSocketEvents() {
+            if (this._wsHandlerBound) return;
+            this._wsHandlerBound = true;
 
-            var self = this;
-            var fallbackDone = false; // Guard: onerror + onclose both fire — only fall back once
+            this._onWsConnectedHandler = () => {
+                this.wsConnected = true;
 
-            function fallbackToPolling() {
-                if (fallbackDone) return;
-                fallbackDone = true;
-                self.wsConnected = false;
-                self.liveStatus = 'polling';
-                console.info('[ExeV2] WS closed — polling continues');
-                // Polling is already running alongside, no need to restart
+                if (this.exe && this.exe.id && this.exe.controlStatus === 'PE') {
+                    this._subscribeExecutionPage(this.exe.id);
+                }
+            };
+
+            this._onWsDisconnectedHandler = () => {
+                this.wsConnected = false;
+                this._wsSubscribedExecutionId = null;
+
+                if (this.exe && this.exe.controlStatus === 'PE') {
+                    this.liveStatus = 'polling';
+                }
+            };
+
+            this._onWsExecutionMessageHandler = (event) => {
+                this._onExecutionPageWsMessage(event.detail);
+            };
+
+            document.addEventListener(CerberusWs.Event.CONNECTED, this._onWsConnectedHandler);
+            document.addEventListener(CerberusWs.Event.DISCONNECTED, this._onWsDisconnectedHandler);
+            document.addEventListener(
+                CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_TESTCASEEXECUTION),
+                this._onWsExecutionMessageHandler
+            );
+        },
+
+        _subscribeExecutionPage(executionId) {
+            if (!executionId) return;
+
+            const wsStore = Alpine.store('ws');
+            if (!wsStore) {
+                console.warn('[ExeV2] Alpine ws store not available');
+                this.liveStatus = 'polling';
+                return;
             }
 
-            try {
-                this.ws = new WebSocket(wsUrl);
-                this.ws.onopen = () => {
-                    this.wsConnected = true;
-                    this.liveStatus = 'ws';
-                    this._pollErrorCount = 0;
-                    console.info('[ExeV2] WebSocket connected (polling continues alongside)');
-                };
-                this.ws.onmessage = (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-                        this._onWebSocketMessage(data);
-                    } catch(e) { console.warn('[ExeV2] WS message parse error:', e); }
-                };
-                this.ws.onerror = () => { fallbackToPolling(); };
-                this.ws.onclose = () => { fallbackToPolling(); };
-            } catch(e) {
-                console.warn('[ExeV2] WebSocket not available — polling continues');
-                this.liveStatus = 'polling';
-                // Polling is already running, no need to start
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            const sender = user.login || user.user || 'anonymous';
+
+            // Important: session stable pour cette page/exécution.
+            this._wsSessionID = 'testcaseexecution-' + executionId + '-' + sender;
+
+            wsStore.whenConnected()
+                .then(() => {
+                    const ok = wsStore.send({
+                        sender: sender,
+                        subject: CerberusWs.Subject.SUBSCRIBE,
+                        channel: CerberusWs.Channel.PAGE_TESTCASEEXECUTION,
+                        sessionID: this._wsSessionID
+                    });
+
+                    if (ok) {
+                        this.wsConnected = true;
+                        this._wsSubscribedExecutionId = executionId;
+                        this.liveStatus = 'ws';
+                        console.info('[ExeV2] Subscribed to execution page channel:', this._wsSessionID);
+                    } else {
+                        this.wsConnected = false;
+                        this.liveStatus = 'polling';
+                    }
+                })
+                .catch((e) => {
+                    console.warn('[ExeV2] WS subscribe failed — polling continues:', e);
+                    this.wsConnected = false;
+                    this.liveStatus = 'polling';
+                });
+        },
+
+        _onExecutionPageWsMessage(message) {
+            if (!message) return;
+
+            const type = message.type || '';
+            const payload = message.payload || {};
+
+            if (
+                type !== CerberusWs.Type.EXECUTION_UPDATE &&
+                type !== CerberusWs.Type.EXECUTION_START &&
+                type !== CerberusWs.Type.EXECUTION_END
+            ) {
+                return;
+            }
+
+            // Supporte les deux formats :
+            // 1) payload = { testCaseExecution: {...full...} }
+            // 2) payload = {...light...}
+            const tce = payload.testCaseExecution || payload;
+
+            const pushedExecutionId =
+                tce.id ||
+                tce.testcaseExecutionId ||
+                tce.testCaseExecutionId ||
+                payload.testcaseExecutionId ||
+                payload.testCaseExecutionId;
+
+            if (!pushedExecutionId || !this.exe || String(pushedExecutionId) !== String(this.exe.id)) {
+                return;
+            }
+
+            this.wsConnected = true;
+            this.liveStatus = 'ws';
+
+            // Si le backend envoie l'exécution complète, on réutilise ton merge existant.
+            if (payload.testCaseExecution || tce.testCaseStepExecutionList || tce.testCaseExecutionDataList) {
+                this._onWebSocketMessage({ testCaseExecution: tce });
+                return;
+            }
+
+            // Si le backend envoie seulement un DTO light, on met à jour le header,
+            // puis on recharge complètement quand l'exécution est terminée.
+            this._applyExecutionLightUpdate(tce);
+        },
+
+        _applyExecutionLightUpdate(light) {
+            if (!light || !this.exe) return;
+
+            const prevStatus = this.exe.controlStatus;
+
+            if (light.controlStatus !== undefined) this.exe.controlStatus = light.controlStatus;
+            if (light.controlMessage !== undefined) this.exe.controlMessage = light.controlMessage;
+            if (light.progressPercent !== undefined) this.exe.progressPercent = light.progressPercent;
+            if (light.doneCount !== undefined) this.exe.doneCount = light.doneCount;
+            if (light.totalCount !== undefined) this.exe.totalCount = light.totalCount;
+            if (light.environment !== undefined) this.exe.environment = light.environment;
+            if (light.country !== undefined) this.exe.country = light.country;
+            if (light.application !== undefined) this.exe.application = light.application;
+            if (light.tag !== undefined) this.exe.tag = light.tag;
+
+            this.exe = Object.assign({}, this.exe);
+
+            if (light.controlStatus && light.controlStatus !== prevStatus) {
+                this._updateFavicon(light.controlStatus);
+            }
+
+            if (light.controlStatus && light.controlStatus !== 'PE') {
+                this._stopLive();
+                this.liveStatus = 'done';
+
+                if (prevStatus === 'PE') {
+                    this._spinDone = true;
+                    if (this._spinDoneTimer) clearTimeout(this._spinDoneTimer);
+                    this._spinDoneTimer = setTimeout(() => { this._spinDone = false; }, 5000);
+                }
+
+                // Recharge finale pour récupérer steps/actions/controls/files.
+                this._loadExecution(this.exe.id);
             }
         },
 

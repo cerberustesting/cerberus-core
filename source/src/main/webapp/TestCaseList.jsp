@@ -56,7 +56,13 @@
                 <jsp:include page="include/transversal/TestCaseListMassActionLabel.html"/>
                 <jsp:include page="include/templates/selectDropdown.html"/>
 
-                <h1 class="page-title-line" id="title">Test Case</h1>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h1 class="page-title-line mb-0" id="title">Test Case</h1>
+
+                    <div class="shrink-0">
+                        <jsp:include page="include/global/notificationBar.html"/>
+                    </div>
+                </div>
 
                 <div class="">
                     <form id="massActionForm" name="massActionForm"  title="" role="form">

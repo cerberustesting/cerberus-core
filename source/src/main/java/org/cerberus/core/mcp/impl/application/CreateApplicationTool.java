@@ -22,12 +22,18 @@ package org.cerberus.core.mcp.impl.application;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.dto.application.ApplicationMapperV001;
+import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,12 +54,19 @@ public class CreateApplicationTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_application_create";
 
     private final IApplicationService applicationService;
-    private final ApplicationMapperV001 mapper;
+    private final IInvariantService invariantService;
+    private final ApplicationMapperV001 applicationMapper;
+    private final InvariantMapperV001 invariantMapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public CreateApplicationTool(IApplicationService applicationService, ApplicationMapperV001 mapper, MCPLogUtils mcpLogUtils) {
+    @Autowired
+    private WebSocketEventSender webSocketEventSender;
+
+    public CreateApplicationTool(IApplicationService applicationService, IInvariantService invariantService, ApplicationMapperV001 applicationMapper, InvariantMapperV001 invariantMapper, MCPLogUtils mcpLogUtils) {
         this.applicationService = applicationService;
-        this.mapper = mapper;
+        this.invariantService = invariantService;
+        this.applicationMapper = applicationMapper;
+        this.invariantMapper = invariantMapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -71,9 +84,8 @@ public class CreateApplicationTool implements MCPTool {
     /**
      * Builds the MCP {@link McpSchema.Tool} descriptor that is advertised to MCP clients.
      *
-     * <p>Declares {@code application} as the only required parameter; all other
-     * fields ({@code description}, {@code type}, {@code system}) are optional and
-     * default to an empty string when omitted.</p>
+     * <p>Declares {@code application}, {@code type} and {@code system} as required parameters.
+     * If the given {@code system} does not exist as a SYSTEM invariant, it is created automatically.</p>
      *
      * @return the fully configured tool descriptor
      */
@@ -89,7 +101,7 @@ public class CreateApplicationTool implements MCPTool {
                 ),
                 "type", Map.of(
                         "type", "string",
-                        "description", "Optional type of the application.",
+                        "description", "Type of the application.",
                         "enum", List.of(
                                 Application.TYPE_GUI, Application.TYPE_BAT, Application.TYPE_SRV,
                                 Application.TYPE_APK, Application.TYPE_IPA, Application.TYPE_FAT,
@@ -98,7 +110,11 @@ public class CreateApplicationTool implements MCPTool {
                 ),
                 "system", Map.of(
                         "type", "string",
-                        "description", "Optional system linked to the application."
+                        "description", "System (workspace) linked to the application. If it does not exist as a SYSTEM invariant, the tool will ask for confirmation before creating it."
+                ),
+                "confirmSystemCreation", Map.of(
+                        "type", "boolean",
+                        "description", "Set to true to confirm the automatic creation of the SYSTEM invariant when it does not exist yet. Only needed when the system is new."
                 )
         );
 
@@ -109,12 +125,14 @@ public class CreateApplicationTool implements MCPTool {
                 Creates a new application in Cerberus.
 
                 Call this tool whenever the user asks to create or add a new application.
-                Requires an application name.
+                Requires an application name, a type, and a system.
+                If the given system does not exist as a SYSTEM invariant, the tool returns an error.
+                Ask the user to confirm, then re-call with confirmSystemCreation=true.
                 """,
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        List.of("application"),
+                        List.of("application", "type", "system"),
                         null,
                         null,
                         null
@@ -126,12 +144,9 @@ public class CreateApplicationTool implements MCPTool {
     }
 
     /**
-     * Validates the arguments, checks for a pre-existing application, builds the
-     * entity, and delegates creation to {@link IApplicationService#create(Application)}.
-     *
-     * <p>The existence check uses {@link IApplicationService#exist(String)} rather
-     * than relying on a database unique-constraint violation so that the error
-     * returned to the MCP client is meaningful rather than a raw SQL exception.</p>
+     * Validates the arguments, ensures the SYSTEM invariant exists (creating it if needed),
+     * checks for a pre-existing application, builds the entity, and delegates creation
+     * to {@link IApplicationService#create(Application)}.
      *
      * @param args the raw MCP argument map from the client request
      * @return a success result containing {@code status} and {@code application},
@@ -142,11 +157,57 @@ public class CreateApplicationTool implements MCPTool {
         String description = MCPToolUtils.getString(args, "description", "");
         String type = MCPToolUtils.getString(args, "type", "");
         String system = MCPToolUtils.getString(args, "system", "");
+        String appSessionID = MCPToolUtils.getString(args, "appSessionID", "");
+        String user = MCPToolUtils.getString(args, "user", "MCPTool");
+        boolean confirmSystemCreation = MCPToolUtils.getBoolean(args, "confirmSystemCreation", false);
 
-        mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s", TOOL_NAME, applicationName));
+        //Send tool start through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME ));
+        }
+
+        mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s type=%s system=%s", TOOL_NAME, applicationName, type, system));
 
         if (applicationName.isBlank()) {
             return MCPToolUtils.errorText("Missing required parameter: application");
+        }
+        if (type.isBlank()) {
+            return MCPToolUtils.errorText("Missing required parameter: type");
+        }
+        if (system.isBlank()) {
+            return MCPToolUtils.errorText("Missing required parameter: system");
+        }
+        if (!system.matches("[a-zA-Z0-9_\\-]+")) {
+            return MCPToolUtils.errorText("Invalid system name '" + system + "': only letters, digits, hyphens and underscores are allowed.");
+        }
+
+        // If the SYSTEM invariant does not exist, require explicit user confirmation before creating it.
+        if (!invariantService.isInvariantExist(Invariant.IDNAME_SYSTEM, system)) {
+            if (!confirmSystemCreation) {
+                return MCPToolUtils.errorText(
+                        "System '" + system + "' does not exist as a SYSTEM invariant. " +
+                        "Ask the user to confirm its creation, then re-call with confirmSystemCreation=true."
+                );
+            }
+            Invariant systemInvariant = new Invariant();
+            systemInvariant.setIdName(Invariant.IDNAME_SYSTEM);
+            systemInvariant.setValue(system);
+            systemInvariant.setDescription(system);
+            systemInvariant.setSort(10);
+            Answer invariantAnswer = invariantService.create(systemInvariant);
+            if (!invariantAnswer.isCodeStringEquals("OK")) {
+                return MCPToolUtils.errorText("Unable to create SYSTEM invariant '" + system + "': " + invariantAnswer.getMessageDescription());
+            } else {
+                Invariant invariantCreated = invariantService.readByKey(Invariant.IDNAME_SYSTEM, system).getItem();
+                //Send tool end through Websocket if request provide from GUI
+                if ("".equals(appSessionID)) {
+                    webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION, WebSocketStatic.CHANNEL_AI_CHAT,
+                            Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
+                    webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION,
+                            Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
+                }
+            }
         }
 
         // Guard against duplicate names before hitting the DB unique constraint.
@@ -160,8 +221,7 @@ public class CreateApplicationTool implements MCPTool {
         application.setType(type);
         application.setSystem(system);
         application.setSubsystem("");
-        // Tag the creator as "MCP" so audit trails distinguish tool-driven creation from UI creation.
-        application.setUsrCreated("MCP");
+        application.setUsrCreated(user);
 
         Answer answer = applicationService.create(application);
 
@@ -169,9 +229,24 @@ public class CreateApplicationTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to create Application " + applicationName + ": " + answer.getMessageDescription());
         }
 
+        //Send tool end through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME, "application", applicationMapper.toDTO(application) ));
+            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION,
+                    Map.of("toolName", TOOL_NAME, "application", applicationMapper.toDTO(application) ));
+        }
+
+
+        //Send tool end through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME ));
+        }
+
         return MCPToolUtils.successJson(Map.of(
                 "status", "created",
-                "application", mapper.toDTO(application)
+                "application", applicationMapper.toDTO(application)
         ));
     }
 

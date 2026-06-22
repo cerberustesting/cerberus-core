@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.invariant;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
@@ -28,6 +29,9 @@ import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -68,10 +72,15 @@ public class CreateInvariantTool implements MCPTool {
     );
 
     private final IInvariantService invariantService;
+    private final InvariantMapperV001 invariantMapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public CreateInvariantTool(IInvariantService invariantService, MCPLogUtils mcpLogUtils) {
+    @Autowired
+    private WebSocketEventSender webSocketEventSender;
+
+    public CreateInvariantTool(IInvariantService invariantService, InvariantMapperV001 invariantMapper, MCPLogUtils mcpLogUtils) {
         this.invariantService = invariantService;
+        this.invariantMapper = invariantMapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -162,7 +171,14 @@ public class CreateInvariantTool implements MCPTool {
         String type = MCPToolUtils.getString(args, "type", "");
         String value = MCPToolUtils.getString(args, "value", "");
         String description = MCPToolUtils.getString(args, "description", "");
+        String appSessionID = MCPToolUtils.getString(args, "appSessionID", "");
+        String user = MCPToolUtils.getString(args, "user", "MCPTool");
 
+        //Send tool start through Websocket if request provide from GUI
+        if("".equals(appSessionID)){
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+                    Map.of("toolName", TOOL_NAME ));
+        }
         mcpLogUtils.call(TOOL_NAME, "invariant_create", String.format("MCP tool %s called with type=%s value=%s", TOOL_NAME, type, value));
 
         if (type.isBlank()) {
@@ -194,13 +210,25 @@ public class CreateInvariantTool implements MCPTool {
 
         if (!answer.isCodeStringEquals("OK")) {
             return MCPToolUtils.errorText("Unable to create invariant type=" + type + " value=" + value + ": " + answer.getMessageDescription());
+        } else {
+            Invariant invariantCreated = invariantService.readByKey(type, value).getItem();
+            //Send tool end through Websocket if request provide from GUI
+            if ("".equals(appSessionID)) {
+                webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_INVARIANT, WebSocketStatic.CHANNEL_AI_CHAT,
+                        Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_INVARIANT,
+                        Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
+            }
         }
+
+
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "created",
                 "type", type,
                 "value", value
         ));
+
     }
 
 }

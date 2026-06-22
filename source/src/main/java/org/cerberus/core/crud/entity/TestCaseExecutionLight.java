@@ -55,6 +55,7 @@ public class TestCaseExecutionLight {
 
     private String tag;
     private String campaign;
+    private long queueId;
     private long start;
     private long end;
 

@@ -319,6 +319,20 @@ public interface ITestCaseExecutionDAO {
 
     /**
      *
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    public List<TestCaseExecutionLight> ReadRunningExecutionByUser(String User) throws CerberusException;
+
+    /**
+     *
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    public List<TestCaseExecutionLight> ReadLastExecutionByUser(String User) throws CerberusException;
+
+    /**
+     *
      * @param fromDate
      * @param toDate
      * @param systems

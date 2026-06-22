@@ -541,6 +541,16 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return ja;
     }
 
+    @Override
+    public List<TestCaseExecutionLight> readRunningExecutionLightByUser(String user) throws CerberusException {
+        return testCaseExecutionDao.ReadRunningExecutionByUser(user);
+    }
+
+    @Override
+    public List<TestCaseExecutionLight> readLastExecutionLightByUser(String user) throws CerberusException {
+        return testCaseExecutionDao.ReadLastExecutionByUser(user);
+    }
+
     private void addElementToMap(Map<String, List<String>> map, String key, String value) {
         List<String> element = new ArrayList<>();
         element.add(value);

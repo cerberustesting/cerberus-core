@@ -17,26 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.ai;
+package org.cerberus.core.websocket;
 
-public interface IAIService {
+import java.time.Instant;
 
-    void chatWithAI(String user, String sessionID, String newQuestion);
+public record WebSocketEnvelope<T>(
+        String sender,
+        String type,
+        String channel,
+        String sessionID,
+        String user,
+        T payload,
+        String timestamp
+) {
 
+    public static <T> WebSocketEnvelope<T> of(
+            String type,
+            String channel,
+            String sessionID,
+            String user,
+            T payload
+    ) {
+        return new WebSocketEnvelope<>(
+                "system",
+                type,
+                channel,
+                sessionID,
+                user,
+                payload,
+                Instant.now().toString()
+        );
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

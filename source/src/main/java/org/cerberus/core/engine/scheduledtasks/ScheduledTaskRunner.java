@@ -21,8 +21,6 @@ package org.cerberus.core.engine.scheduledtasks;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.TimeZone;
 import org.cerberus.core.crud.service.IMyVersionService;
@@ -32,7 +30,8 @@ import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.engine.scheduler.SchedulerInit;
 import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
+import org.cerberus.core.websocket.WebSocketEventSender;
+import org.cerberus.core.websocket.WebSocketStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -58,7 +57,7 @@ public class ScheduledTaskRunner {
     @Autowired
     private IMyVersionService myVersionService;
     @Autowired
-    private ExecutionMonitorWebSocket executionMonitorWebSocket;
+    private WebSocketEventSender webSocketEventSender;
 
     private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
@@ -81,7 +80,10 @@ public class ScheduledTaskRunner {
      */
     @Scheduled(fixedRate = 10000, initialDelay = 30000 /* Every minute */)
     public void triggerStep() {
-        executionMonitorWebSocket.send(false);
+        webSocketEventSender.flushPendingToChannel(
+                WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
+                WebSocketStatic.TYPE_EXECUTION_END
+        );
     }
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
