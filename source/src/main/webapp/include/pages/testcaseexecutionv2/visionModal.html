@@ -1,90 +1,144 @@
 <!-- TestCaseExecution V2 - Vision Modal (Live / Video) -->
-<!-- Transversal modal for watching live execution via iframe or replaying video -->
+<!-- Follows crb_modal transversal charter (same DNA as TestCaseStep.html / TestCaseProperty.html) -->
 
 <template x-if="visionModal.open">
-    <div class="v2-vision-overlay" @click.self="closeVisionModal()" @keydown.escape.window="closeVisionModal()" x-transition.opacity.duration.200ms>
-        <div class="v2-vision-modal" @click.stop
-             :style="visionModal.fullscreen ? 'width:100vw;height:100vh;max-width:none;max-height:none;border-radius:0' : ''">
+<div class="crb_modal" id="visionLiveModal">
 
-            <!-- Header -->
-            <div class="v2-vision-header">
-                <div class="flex items-center gap-3">
-                    <!-- Mode indicator -->
-                    <div class="v2-vision-mode-badge"
-                         :class="{
-                             'v2-vision-mode--live': visionModal.mode === 'live',
-                             'v2-vision-mode--control': visionModal.mode === 'control',
-                             'v2-vision-mode--video': visionModal.mode === 'video'
-                         }">
-                        <span class="v2-vision-mode-dot"
-                              :class="visionModal.mode !== 'video' ? 'v2-pulse' : ''"></span>
-                        <i :data-lucide="visionModal.mode === 'video' ? 'film' : visionModal.mode === 'control' ? 'monitor-smartphone' : 'monitor-play'"
-                           class="w-4 h-4"></i>
-                        <span x-text="visionModal.mode === 'video' ? 'Video Replay'
-                                    : visionModal.mode === 'control' ? 'Live Control'
-                                    : 'Live Execution'"></span>
-                    </div>
-                    <!-- Execution info -->
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline"
-                          x-text="'#' + (exe.id || '') + ' — ' + (exe.test || '') + ' / ' + (exe.testcase || exe.testCase || '')"></span>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]"
+         @click="closeVisionModal()"
+         @keydown.escape.window="closeVisionModal()"></div>
+
+    <!-- Modal Card -->
+    <div :class="visionModal.fullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full rounded-2xl'"
+         :style="visionModal.fullscreen ? ''
+                 : 'max-width: 85vw; max-height: calc(100vh - 4rem); margin: 2rem 1rem; width: 1400px; height: 80vh;'"
+         class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10 overflow-hidden"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- ═══ HEADER ═══ -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <!-- Icon box — matches crb_modal pattern -->
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center"
+                     :style="visionModal.mode === 'video'
+                         ? 'background: color-mix(in srgb, #6366f1 12%, transparent)'
+                         : 'background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent)'">
+                    <svg x-show="visionModal.mode === 'live'" class="w-5 h-5" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg x-show="visionModal.mode === 'video'" class="w-5 h-5" style="color: #6366f1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <!-- Open in new tab -->
-                    <button @click="window.open(visionModal.url, '_blank')"
-                            class="v2-vision-toolbar-btn"
-                            data-tip="Open in new tab">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                    </button>
-                    <!-- Toggle fullscreen -->
-                    <button @click="visionModal.fullscreen = !visionModal.fullscreen"
-                            class="v2-vision-toolbar-btn"
-                            data-tip="Toggle fullscreen">
-                        <i :data-lucide="visionModal.fullscreen ? 'minimize-2' : 'maximize-2'" class="w-4 h-4"></i>
-                    </button>
-                    <!-- Close -->
-                    <button @click="closeVisionModal()"
-                            class="v2-vision-close-btn">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0"
+                        x-text="visionModal.mode === 'video' ? 'Video Replay' : 'Live Execution'"
+                        :style="visionModal.mode === 'video' ? 'color: #6366f1' : ''"></h2>
+                    <p class="text-xs text-slate-500 !mb-0"
+                       x-text="'#' + (exe.id || '') + ' — ' + (exe.test || '') + ' / ' + (exe.testcase || exe.testCase || '')"></p>
                 </div>
             </div>
 
-            <!-- Content: iframe for live or video player -->
-            <div class="v2-vision-body">
-                <!-- Live / Live Control: iframe -->
-                <template x-if="visionModal.mode === 'live' || visionModal.mode === 'control'">
-                    <iframe :src="visionModal.url"
-                            class="v2-vision-iframe"
-                            allow="autoplay; clipboard-write; clipboard-read"
-                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                            referrerpolicy="no-referrer"></iframe>
+            <div class="flex items-center gap-1">
+                <!-- Live pulsing dot (only during live) -->
+                <template x-if="visionModal.mode === 'live'">
+                    <span class="flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full font-semibold"
+                          style="background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent); color: var(--crb-blue-color)">
+                        <span class="w-2 h-2 rounded-full v2-pulse" style="background: var(--crb-blue-color)"></span>
+                        LIVE
+                    </span>
                 </template>
 
-                <!-- Video: native HTML5 player -->
-                <template x-if="visionModal.mode === 'video'">
-                    <div class="v2-vision-video-container">
-                        <video controls autoplay
-                               class="v2-vision-video"
-                               :src="visionModal.url"
-                               :poster="'images/loading_2.gif'">
-                            Your browser does not support the video tag.
-                        </video>
-                        <!-- Multi-part video navigation -->
-                        <template x-if="exe.videos && exe.videos.length > 1">
-                            <div class="v2-vision-video-parts">
-                                <template x-for="(vid, vIdx) in exe.videos" :key="vIdx">
-                                    <button @click="visionModal.url = 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(vid) + '&filedesc=Video&filetype=MP4'"
-                                            class="v2-vision-video-part-btn"
-                                            :class="visionModal.url.indexOf(vid) !== -1 ? 'v2-vision-video-part-btn--active' : ''"
-                                            x-text="'Part ' + (vIdx + 1) + '/' + exe.videos.length">
-                                    </button>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
+                <!-- Take Control button (only during live + if URL available) -->
+                <template x-if="visionModal.mode === 'live' && exe.remoteControlLiveUrl">
+                    <button @click="window.open(exe.remoteControlLiveUrl, '_blank')"
+                            class="h-8 px-3 rounded-lg flex items-center gap-1.5 text-[11px] font-semibold transition"
+                            style="background: color-mix(in srgb, #8b5cf6 12%, transparent); color: #8b5cf6; border: 1px solid color-mix(in srgb, #8b5cf6 25%, transparent);"
+                            data-tip="Take remote control of the session">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        Take Control
+                    </button>
                 </template>
+
+                <!-- Open in new tab -->
+                <button @click="window.open(visionModal.url, '_blank')"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        data-tip="Open in new tab">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </button>
+                <!-- Fullscreen toggle -->
+                <button @click="visionModal.fullscreen = !visionModal.fullscreen"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <svg x-show="!visionModal.fullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7"/></svg>
+                    <svg x-show="visionModal.fullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 14h6m0 0v6m0-6L3 21M20 10h-6m0 0V4m0 6l7-7"/></svg>
+                </button>
+                <!-- Close -->
+                <button @click="closeVisionModal()"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
             </div>
         </div>
+
+        <!-- ═══ BODY ═══ -->
+        <div class="flex-1 min-h-0 flex" style="background: #0a0a0a">
+            <!-- Live: iframe — if server blocks embedding, fallback message appears -->
+            <template x-if="visionModal.mode === 'live'">
+                <div class="relative w-full h-full">
+                    <iframe :src="visionModal.url"
+                            class="w-full h-full border-none"
+                            style="background: #000"
+                            allow="autoplay; clipboard-write; clipboard-read"
+                            @load="$el.dataset.loaded = 'true'; $el.nextElementSibling && ($el.nextElementSibling.style.display = 'none')"
+                            @error="$el.nextElementSibling && ($el.nextElementSibling.style.display = 'flex')"></iframe>
+                    <!-- Fallback: shown if iframe is blocked by X-Frame-Options / CSP -->
+                    <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0f172a; color:#e2e8f0; text-align:center; padding:32px;">
+                        <svg class="w-12 h-12 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p style="font-size:14px; max-width:400px; line-height:1.6; opacity:0.8">
+                            The remote server does not allow embedding in an iframe.<br>
+                            Click below to open the live view in a new tab.
+                        </p>
+                        <button @click="window.open(visionModal.url, '_blank')"
+                                class="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition"
+                                style="background: var(--crb-blue-color, #2c7be5)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            Open Live View
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Video: native HTML5 player -->
+            <template x-if="visionModal.mode === 'video'">
+                <div class="flex flex-col w-full h-full">
+                    <video controls autoplay
+                           class="flex-1 w-full min-h-0 object-contain"
+                           style="background: #000"
+                           :src="visionModal.url"
+                           :poster="'images/loading_2.gif'">
+                        Your browser does not support the video tag.
+                    </video>
+                    <!-- Multi-part video navigation -->
+                    <template x-if="exe.videos && exe.videos.length > 1">
+                        <div class="flex gap-1.5 px-4 py-2.5 overflow-x-auto border-t border-slate-200 dark:border-slate-700"
+                             style="background: var(--crb-new-bg, #fff)">
+                            <template x-for="(vid, vIdx) in exe.videos" :key="vIdx">
+                                <button @click="visionModal.url = 'ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(vid) + '&filedesc=Video&filetype=MP4'"
+                                        class="px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition whitespace-nowrap"
+                                        :class="visionModal.url.indexOf(vid) !== -1
+                                            ? 'bg-indigo-500 text-white border-indigo-500'
+                                            : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'"
+                                        x-text="'Part ' + (vIdx + 1) + '/' + exe.videos.length">
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
     </div>
+</div>
 </template>

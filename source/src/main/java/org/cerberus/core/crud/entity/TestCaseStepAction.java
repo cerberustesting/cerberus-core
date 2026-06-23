@@ -134,6 +134,7 @@ public class TestCaseStepAction {
     public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
     public static final String ACTION_INDEXNETWORKTRAFFIC = "indexNetworkTraffic";
     public static final String ACTION_SETCONSOLECONTENT = "setConsoleContent";
+    public static final String ACTION_SETACCESSIBILITYCONTENT = "setAccessibilityContent";
     public static final String ACTION_SETCONTENT = "setContent";
     public static final String ACTION_SETSERVICECALLCONTENT = "setServiceCallContent";
     public static final String ACTION_SWITCHTOCONTEXT = "switchToContext";

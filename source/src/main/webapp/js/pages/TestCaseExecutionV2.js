@@ -62,6 +62,7 @@ function executionV2() {
 
         _pollingTimer: null,
         _pollErrorCount: 0,
+        _wsHeartbeatTimer: null,  // Safety: if no WS push in 5s, do one API poll
         liveStatus: 'idle',   // 'idle' | 'ws' | 'polling' | 'error' | 'done'
         _spinDone: false,
         _spinDoneTimer: null,
@@ -74,6 +75,7 @@ function executionV2() {
 
         // Lightbox
         lightboxUrl: null,
+        lightboxLabel: '',
 
         // Vision modal (Live / Video)
         visionModal: { open: false, mode: 'live', url: '', fullscreen: false },
@@ -127,6 +129,13 @@ function executionV2() {
                 });
             });
             return total > 0 ? Math.round((done / total) * 100) : 0;
+        },
+
+        // Progress for the visual bar: 100% when execution finished (any status except PE/NE/QU)
+        get progressBar() {
+            var status = this.exe ? this.exe.controlStatus : '';
+            if (!status || status === 'PE' || status === 'NE' || status === 'QU') return this.progress;
+            return 100;
         },
 
         // ═══ INIT ═══
@@ -288,15 +297,12 @@ function executionV2() {
                     // Update page title
                     document.title = 'Execution #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
-                    // Live updates if PE — always poll + try WS for instant notifications
-                    if (tce.controlStatus === 'PE') {
+                    // Live updates if PE — WebSocket only (no API polling)
+                    if (tce.controlStatus === 'PE' && this.paramActivateWebSocket === 'Y') {
                         this.$nextTick(() => {
                             // On garde le polling comme fallback.
                             this._startPolling(tce.id);
-
-                            if (this.paramActivateWebSocket === 'Y') {
-                                this._subscribeExecutionPage(tce.id);
-                            }
+                            this._subscribeExecutionPage(tce.id);
                         });
                     }
 
@@ -597,9 +603,11 @@ function executionV2() {
         },
 
         _onWebSocketMessage(data) {
-            if (!data.testCaseExecution) return;
-            var tce = data.testCaseExecution;
+            // WS sends execution flat (type='testCaseExecution'), API wraps it in { testCaseExecution: {...} }
+            var tce = data.testCaseExecution || (data.type === 'testCaseExecution' ? data : null);
+            if (!tce) return;
             var prevStatus = this.exe.controlStatus;
+
 
             // Update top-level exe fields without full replace (keeps Alpine reactivity smooth)
             Object.keys(tce).forEach(function(k) {
@@ -746,51 +754,7 @@ function executionV2() {
             }
         },
 
-        _startPolling(executionId) {
-            var self = this;
-            if (this._pollingTimer) clearTimeout(this._pollingTimer);
-
-            // Backoff: base × 2^errors, capped at 30s
-            var delay = Math.min(this.paramWebSocketPeriod * Math.pow(2, this._pollErrorCount), 30000);
-            if (this._pollErrorCount === 0) {
-                console.info('[ExeV2] Polling every', delay, 'ms');
-            }
-            this.liveStatus = this._pollErrorCount >= 3 ? 'error' : 'polling';
-
-            this._pollingTimer = setTimeout(function() {
-                if (!self.exe || self.exe.controlStatus !== 'PE') {
-                    self.liveStatus = 'done';
-                    return;
-                }
-                $.ajax({
-                    url: 'ReadTestCaseExecution',
-                    data: { executionId: executionId, executionWithDependency: true },
-                    dataType: 'json',
-                    timeout: 15000,  // 15s timeout to avoid hanging requests
-                    success: function(data) {
-                        self._pollErrorCount = 0;  // Reset on success
-                        if (self.wsConnected) self.liveStatus = 'ws'; else self.liveStatus = 'polling';
-                        if (data.testCaseExecution) {
-                            self._onWebSocketMessage(data);
-                        }
-                        // Keep polling if still PE
-                        if (self.exe && self.exe.controlStatus === 'PE') {
-                            self._startPolling(executionId);
-                        } else {
-                            self.liveStatus = 'done';
-                        }
-                    },
-                    error: function() {
-                        self._pollErrorCount++;
-                        console.warn('[ExeV2] Poll error #' + self._pollErrorCount + ', next retry in ' + Math.min(self.paramWebSocketPeriod * Math.pow(2, self._pollErrorCount), 30000) + 'ms');
-                        // Retry with backoff if still PE
-                        if (self.exe && self.exe.controlStatus === 'PE') {
-                            self._startPolling(executionId);
-                        }
-                    }
-                });
-            }, delay);
-        },
+        // No more heartbeat or polling — all live data comes through WebSocket only
 
         // ═══ MANUAL EXECUTION ═══
         setActionStatus(stepIdx, actionIdx, status) {
@@ -1116,11 +1080,33 @@ function executionV2() {
             return this.networkIndexFilter.indexOf(index) !== -1;
         },
 
+        // Request table filters
+        netReqUrlFilter: '',
+        netReqStatusFilter: 'all',
+        netReqSelected: null,
+
         get networkRequests() {
             if (!this.networkStat || !this.networkStat.requests) return [];
             var self = this;
             return this.networkStat.requests.filter(function(r) {
                 return self._isNetworkIndexSelected(r.index);
+            });
+        },
+
+        get networkRequestsFiltered() {
+            var self = this;
+            return this.networkRequests.filter(function(r) {
+                // URL filter
+                if (self.netReqUrlFilter && (r.url || '').toLowerCase().indexOf(self.netReqUrlFilter.toLowerCase()) < 0) return false;
+                // Status filter
+                if (self.netReqStatusFilter !== 'all') {
+                    var s = '' + (r.httpStatus || '');
+                    if (self.netReqStatusFilter === '2xx' && !s.startsWith('2')) return false;
+                    if (self.netReqStatusFilter === '3xx' && !s.startsWith('3')) return false;
+                    if (self.netReqStatusFilter === '4xx' && !s.startsWith('4')) return false;
+                    if (self.netReqStatusFilter === '5xx' && !s.startsWith('5')) return false;
+                }
+                return true;
             });
         },
 
@@ -1389,8 +1375,9 @@ function executionV2() {
                 }
             });
         },
-        openLightbox(url) {
+        openLightbox(url, label) {
             this.lightboxUrl = url;
+            this.lightboxLabel = label || '';
         },
         openFileModal(file) {
             if (!file) return;
@@ -1447,7 +1434,6 @@ function executionV2() {
             this.visionModal.fullscreen = false;
             this.visionModal.open = true;
             document.body.style.overflow = 'hidden';
-            this.$nextTick(function() { if (window.lucide) lucide.createIcons(); }.bind(this));
         },
 
         closeVisionModal() {

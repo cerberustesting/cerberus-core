@@ -163,13 +163,14 @@
                                   }"
                                   x-text="'A' + (aIdx + 1)"></span>
 
-                            <!-- Action name -->
-                            <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 shrink-0"
-                                  x-text="action.action || 'Unknown'"></span>
-
                             <!-- Description -->
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 truncate flex-1 min-w-0"
-                                  x-text="action.description || ''"></span>
+                            <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate flex-1 min-w-0"
+                                  x-text="action.description || action.action || '-'"></span>
+
+                            <!-- Action type badge -->
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                                  style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); color: var(--crb-blue-color)"
+                                  x-text="action.action || ''"></span>
 
                             <!-- Duration (color coded: >5s orange, >30s red) -->
                             <span class="text-[10px] shrink-0 font-mono tabular-nums"
@@ -248,14 +249,48 @@
                         <template x-if="action.fileList && action.fileList.length > 0">
                             <div class="px-3 pb-2 space-y-2">
                                 <!-- Screenshots inline -->
+                                <!-- Screenshots: Before / After with labels -->
                                 <template x-if="_getScreenshots(action.fileList).length > 0">
-                                    <div class="v2-exe-media-grid" style="padding:4px 0">
-                                        <template x-for="file in _getScreenshots(action.fileList)" :key="file.fileName">
-                                            <img :src="getMediaUrl(file, 140, 90)"
-                                                 class="v2-exe-media-thumb"
-                                                 style="width:80px;height:52px"
-                                                 @click.stop="openLightbox(getMediaFullUrl(file))"
-                                                 loading="lazy">
+                                    <div class="flex items-start gap-3 px-1" style="padding:4px 0">
+                                        <!-- Before screenshots -->
+                                        <template x-for="file in _getScreenshots(action.fileList).filter(f => (f.fileDesc || '').toLowerCase().indexOf('before') >= 0)" :key="file.fileName">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                                                      style="background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); color: var(--crb-blue-color)">Before</span>
+                                                <img :src="getMediaUrl(file, 140, 90)"
+                                                     class="v2-exe-media-thumb"
+                                                     style="width:80px;height:52px"
+                                                     @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
+                                                     :title="file.fileDesc || 'Screenshot'"
+                                                     loading="lazy">
+                                            </div>
+                                        </template>
+                                        <!-- After screenshots -->
+                                        <template x-for="file in _getScreenshots(action.fileList).filter(f => (f.fileDesc || '').toLowerCase().indexOf('after') >= 0)" :key="file.fileName">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                                                      style="background: color-mix(in srgb, var(--crb-green-color) 10%, transparent); color: var(--crb-green-color)">After</span>
+                                                <img :src="getMediaUrl(file, 140, 90)"
+                                                     class="v2-exe-media-thumb"
+                                                     style="width:80px;height:52px"
+                                                     @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
+                                                     :title="file.fileDesc || 'Screenshot'"
+                                                     loading="lazy">
+                                            </div>
+                                        </template>
+                                        <!-- Other screenshots (neither before nor after) -->
+                                        <template x-for="file in _getScreenshots(action.fileList).filter(f => (f.fileDesc || '').toLowerCase().indexOf('before') < 0 && (f.fileDesc || '').toLowerCase().indexOf('after') < 0)" :key="file.fileName">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                                                      style="background: var(--crb-grey-lighter-color); color: var(--crb-grey-color)"
+                                                      x-text="file.fileDesc || 'Screenshot'"></span>
+                                                <img :src="getMediaUrl(file, 140, 90)"
+                                                     class="v2-exe-media-thumb"
+                                                     style="width:80px;height:52px"
+                                                     @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
+                                                     :title="file.fileDesc || 'Screenshot'"
+                                                     loading="lazy">
+                                            </div>
                                         </template>
                                     </div>
                                 </template>
@@ -401,13 +436,14 @@
                                                   }"
                                                   x-text="'C' + (cIdx + 1)"></span>
 
-                                            <!-- Control type -->
-                                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400"
-                                                  x-text="ctrl.controlType || ctrl.control || 'Verify'"></span>
-
                                             <!-- Description -->
-                                            <span class="text-[10px] text-slate-400 truncate flex-1 min-w-0"
-                                                  x-text="ctrl.description || ''"></span>
+                                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 truncate flex-1 min-w-0"
+                                                  x-text="ctrl.description || ctrl.controlType || ctrl.control || '-'"></span>
+
+                                            <!-- Control type badge -->
+                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                                                  style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); color: var(--crb-blue-color)"
+                                                  x-text="ctrl.controlType || ctrl.control || 'Verify'"></span>
 
                                             <!-- Duration (color coded like actions) -->
                                             <span class="text-[9px] shrink-0 font-mono tabular-nums"
@@ -581,9 +617,21 @@
 <!--  Lightbox Overlay                              -->
 <!-- ══════════════════════════════════════════════ -->
 <template x-if="lightboxUrl">
-    <div class="v2-exe-lightbox" @click="lightboxUrl = null" x-transition.opacity.duration.200ms>
+    <div class="v2-exe-lightbox" @click="lightboxUrl = null; lightboxLabel = ''" x-transition.opacity.duration.200ms>
+        <!-- Label badge at top -->
+        <template x-if="lightboxLabel">
+            <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50" @click.stop>
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-[12px] font-bold shadow-lg"
+                      :style="lightboxLabel.toLowerCase().indexOf('before') >= 0
+                          ? 'background: rgba(44,123,229,0.9); color: #fff'
+                          : lightboxLabel.toLowerCase().indexOf('after') >= 0
+                          ? 'background: rgba(0,210,122,0.9); color: #fff'
+                          : 'background: rgba(100,116,139,0.9); color: #fff'"
+                      x-text="lightboxLabel"></span>
+            </div>
+        </template>
         <img :src="lightboxUrl" @click.stop>
-        <button class="v2-exe-lightbox-close" @click="lightboxUrl = null">
+        <button class="v2-exe-lightbox-close" @click="lightboxUrl = null; lightboxLabel = ''">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
     </div>

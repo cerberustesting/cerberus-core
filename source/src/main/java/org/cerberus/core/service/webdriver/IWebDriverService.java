@@ -31,6 +31,7 @@ import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -112,6 +113,8 @@ public interface IWebDriverService {
     List<String> getConsoleLog(Session session);
 
     JSONArray getJSONConsoleLog(Session session);
+
+    JSONObject getJSONAxeCoreLog(Session session);
 
     MessageEvent scrollTo(Session session, Identifier identifier, String text, String offsets);
 

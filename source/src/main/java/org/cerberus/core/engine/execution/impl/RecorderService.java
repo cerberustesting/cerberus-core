@@ -950,6 +950,46 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public List<TestCaseExecutionFile> recordAccessibilityContent(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, JSONObject accessibilityContent) {
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (actionExecution != null) {
+            test = execution.getTest();
+            testCase = execution.getTestCase();
+            step = String.valueOf(actionExecution.getStepId());
+            index = String.valueOf(actionExecution.getIndex());
+            sequence = String.valueOf(actionExecution.getSequence());
+        }
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = execution.getId();
+        int propertyIndex = 0;
+        if (!(StringUtil.isEmptyOrNull(property))) {
+            propertyIndex = 1;
+        }
+        try {
+
+            // Full Network Traffic.
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "accessibility", "json", false);
+                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), accessibilityContent.toString(1), execution.getSecrets());
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Accessibility", recorderResponse.getRelativeFilenameURL(), TestCaseExecutionFile.FILETYPE_JSON, "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
+
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return objectFileList;
+    }
+
+    @Override
     public List<TestCaseExecutionFile> recordContent(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, String content, String contentType) {
         List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         TestCaseExecutionFile object = null;
@@ -1288,7 +1328,7 @@ public class RecorderService implements IRecorderService {
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution execution) {
         TestCaseExecutionFile object = null;
 
-        if (execution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+        if (execution.getApplicationObj().getType().equals(Application.TYPE_GUI) && "chrome".equalsIgnoreCase(execution.getBrowser())) {
 
             if (execution.getRobotLog() == 2 || (execution.getRobotLog() == 1 && !execution.getControlStatus().equals("OK"))) {
                 LOG.debug("Starting to save Selenium log file.");
@@ -1336,7 +1376,7 @@ public class RecorderService implements IRecorderService {
                 }
             }
         } else {
-            LOG.debug("Selenium Log not recorded because test on non GUI application");
+            LOG.debug("Selenium Log not recorded because test on non GUI application or Browser is not Chrome");
         }
         return object;
     }

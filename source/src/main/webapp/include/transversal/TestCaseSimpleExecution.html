@@ -390,7 +390,7 @@
                 this.open = true;
                 this.application = data.application;
                 this.test = data.test;
-                this.testcase = data.testcase;
+                this.testcase = data.testcase || data.testCase;
                 this.description = data.description || '';
 
                 this.lastDispatchedTag = data.tag || null;

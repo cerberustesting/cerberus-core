@@ -170,6 +170,7 @@ async function subscribeToQueueStatus() {
         console.error("Unable to subscribe to page.homepage", e);
         queueStatusSubscribed = false;
     }
+
 }
 
 function displayPageLabel() {
@@ -343,9 +344,6 @@ function updatePageQueueStatus(data) {
 
 
 function loadExeCurrentlyRunning() {
-    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_HOMEPAGE), handleHomepageWsMessage);
-    document.addEventListener(CerberusWs.Event.CONNECTED, subscribeToQueueStatus);
-    document.addEventListener(CerberusWs.Event.DISCONNECTED, handleQueueStatusDisconnected);
 
     if (Alpine.store('ws').connected) {
         subscribeToQueueStatus();
@@ -885,7 +883,7 @@ function computeCampaignStats(tags) {
 
     const tot_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? getResponseTime(obj.DateStartExe, obj.DateEndQueue) : 0), 0);
     const nb_duration = tags.reduce((acc, obj) => acc + (getResponseTime(obj.DateStartExe, obj.DateEndQueue) > 0 ? 1 : 0), 0);
-    
+
     const ok = tags.reduce((acc, obj) => acc + (obj.nbOK || 0), 0);
     const ko = executions - ok;
 
@@ -895,7 +893,7 @@ function computeCampaignStats(tags) {
         lastResults: tags.slice(-5).map(t => t.ciResult),
         history: tags.map(t => t.ciScore || 0),
         responseTime: tags.map(t =>
-            (getResponseTime(t.DateStartExe, t.DateEndQueue) > 0 ? getResponseTime(t.DateStartExe, t.DateEndQueue) : (tot_duration/nb_duration))
+            (getResponseTime(t.DateStartExe, t.DateEndQueue) > 0 ? getResponseTime(t.DateStartExe, t.DateEndQueue) : (tot_duration / nb_duration))
         ),
         status: tags.map(t => t.ciResult === "" ? "PE" : t.ciResult),
         ok,
@@ -909,6 +907,7 @@ function getResponseTime(startStr, endStr) {
 
     const start = new Date(startStr.replace(" ", "T"));
     const end = new Date(endStr.replace(" ", "T"));
+console.info(" TOTO " + Math.round((end - start) / 1000));
     return Math.round((end - start) / 1000); // en secondes
 }
 
@@ -1137,6 +1136,7 @@ function readLastTagExec(searchString, reportArea) {
     if (tagFilterList.trim().length > 0) {
         myUrl += "&sSearch_2=" + encodeURIComponent(tagFilterList);
     }
+    document.getElementById("refreshTags").classList.add("spin");
 
     // === Appel AJAX ===
     $.ajax({
@@ -1173,6 +1173,7 @@ function readLastTagExec(searchString, reportArea) {
             tagListResult.tagLists = tagAgregated;
 
             refreshTagList(tagListResult, reportArea);
+            document.getElementById("refreshTags").classList.remove("spin");
         }
     });
 
@@ -1205,7 +1206,7 @@ function readNextTagScheduled() {
                         nextRunLabel:
                                 "will trigger in " +
                                 getHumanReadableDuration(
-                                        Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000)
+                                        Math.round(t.triggerNextFiretimeDurationToTriggerInMs / 1000), 2
                                         ),
                         nextFireDate: new Date(t.triggerNextFiretimeTimestamp),
                         durationMs: t.triggerNextFiretimeDurationToTriggerInMs,
@@ -1229,7 +1230,7 @@ function updateNextFireTime() {
     let nbAlreadyTriggered = 0;
     for (var s = 0; s < futureCampaigns.length; s++) {
         if ((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) > 0) {
-            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
+            $("#futurTag_" + toSafeId(futureCampaigns[s])).text("▶ will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000), 2));
         } else {
             $("#futurTag_" + toSafeId(futureCampaigns[s])).text("already triggered");
             nbAlreadyTriggered++;
