@@ -140,7 +140,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function initExecutionMonitorWebSocket() {
-    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_EXECUTIONMONITOR), handleExecutionMonitorPush);
+    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_MONITOR), handleExecutionMonitorPush);
 
 
     document.addEventListener(CerberusWs.Event.CONNECTED, function () {
@@ -195,7 +195,9 @@ function subscribeToExecutionMonitor() {
         sender: user.login,
         sessionID: 'executionmonitor-' + user.login,
         subject: CerberusWs.Subject.SUBSCRIBE,
-        channel: CerberusWs.Channel.PAGE_EXECUTIONMONITOR
+        channels: [
+            CerberusWs.Channel.EXECUTION_MONITOR
+        ]
     });
 
     if (sent) {

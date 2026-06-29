@@ -75,16 +75,6 @@ public class ScheduledTaskRunner {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
-    /**
-     * This is to send any remaining websocket that may not be sent.
-     */
-    @Scheduled(fixedRate = 10000, initialDelay = 30000 /* Every minute */)
-    public void triggerStep() {
-        webSocketEventSender.flushPendingToChannel(
-                WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
-                WebSocketStatic.TYPE_EXECUTION_END
-        );
-    }
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {

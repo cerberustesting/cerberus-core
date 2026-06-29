@@ -159,7 +159,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             // ######### queueStats #########
             JSONObject queueObject = new JSONObject();
             queueObject.put("globalLimit", euuid.getGlobalLimit());
-            queueObject.put("running", euuid.getRunning());
+            queueObject.put("running", euuid.getExecutionUUIDList().size());
             queueObject.put("queueSize", euuid.getQueueSize());
             jsonResponse.put("queueStats", queueObject);
 

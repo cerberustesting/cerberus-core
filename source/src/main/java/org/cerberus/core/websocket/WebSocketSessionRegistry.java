@@ -24,6 +24,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 public class WebSocketSessionRegistry {
@@ -115,6 +116,40 @@ public class WebSocketSessionRegistry {
         return Optional.of(session);
     }
 
+    public Set<String> getUsersByChannel(String channel) {
+        if (channel == null || channel.isBlank()) {
+            return Set.of();
+        }
+
+        Set<String> wsIds = wsIdsByChannel.getOrDefault(channel, Set.of());
+
+        return wsIds.stream()
+                .map(metaByWsId::get)
+                .filter(Objects::nonNull)
+                .map(SessionMeta::user)
+                .filter(user -> user != null && !user.isBlank())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public List<WebSocketSession> getByUserAndChannel(String user, String channel) {
+        if (user == null || user.isBlank() || channel == null || channel.isBlank()) {
+            return List.of();
+        }
+
+        Set<String> userWsIds = wsIdsByUser.getOrDefault(user, Set.of());
+        Set<String> channelWsIds = wsIdsByChannel.getOrDefault(channel, Set.of());
+
+        if (userWsIds.isEmpty() || channelWsIds.isEmpty()) {
+            return List.of();
+        }
+
+        Set<String> matchingWsIds = new LinkedHashSet<>(userWsIds);
+        matchingWsIds.retainAll(channelWsIds);
+
+        return getMany(matchingWsIds);
+    }
+
+
     private List<WebSocketSession> getMany(Set<String> wsIds) {
         return wsIds.stream()
                 .map(this::getByWsId)
@@ -129,6 +164,28 @@ public class WebSocketSessionRegistry {
 
         unregisterByWsId(session.getId());
     }
+
+    public void unregister(WebSocketSession session, String channel) {
+        if (session == null || channel == null || channel.isBlank()) {
+            return;
+        }
+
+        String wsId = session.getId();
+
+        Set<String> wsIds = wsIdsByChannel.get(channel);
+        if (wsIds != null) {
+            wsIds.remove(wsId);
+            if (wsIds.isEmpty()) {
+                wsIdsByChannel.remove(channel);
+            }
+        }
+
+        SessionMeta meta = metaByWsId.get(wsId);
+        if (meta != null) {
+            meta.channels().remove(channel);
+        }
+    }
+
 
     public List<SessionDetail> getSessions() {
         return sessionsByWsId.entrySet().stream()

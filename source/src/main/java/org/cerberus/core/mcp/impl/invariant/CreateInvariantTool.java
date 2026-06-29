@@ -176,7 +176,7 @@ public class CreateInvariantTool implements MCPTool {
 
         //Send tool start through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START,
                     Map.of("toolName", TOOL_NAME ));
         }
         mcpLogUtils.call(TOOL_NAME, "invariant_create", String.format("MCP tool %s called with type=%s value=%s", TOOL_NAME, type, value));
@@ -214,9 +214,7 @@ public class CreateInvariantTool implements MCPTool {
             Invariant invariantCreated = invariantService.readByKey(type, value).getItem();
             //Send tool end through Websocket if request provide from GUI
             if ("".equals(appSessionID)) {
-                webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_INVARIANT, WebSocketStatic.CHANNEL_AI_CHAT,
-                        Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_INVARIANT,
+                webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_OBJECTCREATION_INVARIANT,
                         Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
             }
         }

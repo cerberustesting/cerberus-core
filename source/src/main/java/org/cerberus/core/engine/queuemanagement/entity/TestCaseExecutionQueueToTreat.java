@@ -19,9 +19,30 @@
  */
 package org.cerberus.core.engine.queuemanagement.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.sql.Timestamp;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class TestCaseExecutionQueueToTreat {
 
+    /**
+     * Invariant Constraints.
+     */
+    public static final String CONSTRAIN1_GLOBAL = "constrain1_global";
+    public static final String CONSTRAIN2_APPLIENV = "constrain2_applienvironment";
+    public static final String CONSTRAIN3_APPLICATION = "constrain3_application";
+    public static final String CONSTRAIN4_ROBOT = "constrain4_robot";
+    public static final String CONSTRAIN5_EXECUTOREXTENSION = "constrain5_proxyservice";
+
     private long id;
+    private String tag;
+    private String test;
+    private String testCase;
     private String debugFlag;
     private String manualExecution;
     private String system;
@@ -37,161 +58,8 @@ public class TestCaseExecutionQueueToTreat {
     private String selectedRobotHost;
     private String selectedRobotExtensionHost;
     private String usrCreated;
+    private Timestamp dateCreated;
     private int queuePosition;
     private int nbEntryBefore;
-
-
-    /**
-     * Invariant Constrains.
-     */
-    public static final String CONSTRAIN1_GLOBAL = "constrain1_global";
-    public static final String CONSTRAIN2_APPLIENV = "constrain2_applienvironment";
-    public static final String CONSTRAIN3_APPLICATION = "constrain3_application";
-    public static final String CONSTRAIN4_ROBOT = "constrain4_robot";
-    public static final String CONSTRAIN5_EXECUTOREXTENSION = "constrain5_proxyservice";
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getSelectedRobotExtensionHost() {
-        return selectedRobotExtensionHost;
-    }
-
-    public void setSelectedRobotExtensionHost(String selectedRobotExtensionHost) {
-        this.selectedRobotExtensionHost = selectedRobotExtensionHost;
-    }
-
-    public String getDebugFlag() {
-        return debugFlag;
-    }
-
-    public String getAppType() {
-        return appType;
-    }
-
-    public void setAppType(String appType) {
-        this.appType = appType;
-    }
-
-    public String getSelectedRobotHost() {
-        return selectedRobotHost;
-    }
-
-    public void setSelectedRobotHost(String selectedRobotHost) {
-        this.selectedRobotHost = selectedRobotHost;
-    }
-
-    public void setDebugFlag(String debugFlag) {
-        this.debugFlag = debugFlag;
-    }
-
-    public String getManualExecution() {
-        return manualExecution;
-    }
-
-    public void setManualExecution(String manualExecution) {
-        this.manualExecution = manualExecution;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getQueueRobot() {
-        return queueRobot;
-    }
-
-    public void setQueueRobot(String queueRobot) {
-        this.queueRobot = queueRobot;
-    }
-
-    public String getQueueRobotHost() {
-        return queueRobotHost;
-    }
-
-    public void setQueueRobotHost(String robot) {
-        this.queueRobotHost = robot;
-    }
-
-    public String getQueueRobotPort() {
-        return queueRobotPort;
-    }
-
-    public void setQueueRobotPort(String queueRobotPort) {
-        this.queueRobotPort = queueRobotPort;
-    }
-
-    public int getPoolSizeAppEnvironment() {
-        return poolSizeAppEnvironment;
-    }
-
-    public void setPoolSizeAppEnvironment(int poolSizeAppEnvironment) {
-        this.poolSizeAppEnvironment = poolSizeAppEnvironment;
-    }
-
-    public int getPoolSizeApplication() {
-        return poolSizeApplication;
-    }
-
-    public void setPoolSizeApplication(int poolSizeApplication) {
-        this.poolSizeApplication = poolSizeApplication;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public int getQueuePosition() {
-        return queuePosition;
-    }
-
-    public void setQueuePosition(int queuePosition) {
-        this.queuePosition = queuePosition;
-    }
-
-    public int getNbEntryBefore() {
-        return nbEntryBefore;
-    }
-
-    public void setNbEntryBefore(int nbEntryBefore) {
-        this.nbEntryBefore = nbEntryBefore;
-    }
 
 }

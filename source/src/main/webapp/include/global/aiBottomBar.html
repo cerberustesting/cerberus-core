@@ -553,18 +553,32 @@
             init() {
                 this.restorePanelHeight();
 
-                if (this._wsChatHandler) {
-                    document.removeEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODULE_CHAT), this._wsChatHandler);
-                }
-
-                this._wsChatHandler = (e) => this.handleWsMessage(e.detail);
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODULE_CHAT), this._wsChatHandler);
-
-
-                document.addEventListener("open-debug-assistant", (e) => {
-                    const { subject, content } = e.detail;
-                    this.openWithSubject(subject, content);
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
+                    var message = e.detail;
+                    this.appendAI(message.payload.data || "", false, false);
                 });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DONE), (e) => {
+                    this.finalizeCurrentAI();
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
+                    var message = e.detail;
+                    this.appendAI(message.payload.data || "", false, false);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_TITLE), (e) => {
+                    var message = e.detail;
+                    const title = this.cleanTitle(message.title || "");
+
+                    const sessionID =
+                        message.sessionID ||
+                        this.sessionID;
+
+                    if (sessionID) {
+                        this.sessionID = sessionID;
+                    }
+
+                    this.updateCurrentSessionTitle(title, sessionID);
+                });
+
 
                 document.addEventListener("click", (e) => {
                     const btn = e.target.closest(".question-suggest");
@@ -600,14 +614,7 @@
                     const payload = message.payload || {};
 
                     switch (type) {
-                        //Chat Delta >> Append Text
-                        case "chat.delta":
-                            this.appendAI(payload.data || payload.text || "", false, false);
-                            return;
-                        //Chat Done >> Finalize
-                        case "chat.done":
-                            this.finalizeCurrentAI();
-                            return;
+
 
                         //Chat Delta >> Append Error
                         case "chat.error":
@@ -617,25 +624,6 @@
                                 true
                             );
                             return;
-
-                        //Chat Title >> Add Title to history
-                        case "chat.title": {
-                            const title = this.cleanTitle(
-                                message.title || payload.title || message.data || ""
-                            );
-
-                            const sessionID =
-                                message.sessionID ||
-                                payload.sessionID ||
-                                this.sessionID;
-
-                            if (sessionID) {
-                                this.sessionID = sessionID;
-                            }
-
-                            this.updateCurrentSessionTitle(title, sessionID);
-                            return;
-                        }
 
                         //Tool Started >> Notify Tool Usage
                         case "tool.start":
@@ -807,8 +795,13 @@
                     Alpine.store('ws').send({
                         sender: getUser().login,
                         sessionID: this.sessionID,
-                        subject: "subscribe",
-                        channel: "ai.chat"
+                        subject: CerberusWs.Subject.SUBSCRIBE,
+                        channels: [
+                            CerberusWs.Channel.CHAT_DELTA,
+                            CerberusWs.Channel.CHAT_DONE,
+                            CerberusWs.Channel.CHAT_TITLE,
+                            CerberusWs.Channel.CHAT_ERROR,
+                        ]
                     });
 
                 } catch (e) {
@@ -834,8 +827,10 @@
                 const payload = {
                     sender: getUser().login,
                     sessionID: this.sessionID,
-                    subject: "message",
-                    channel: "ai.chat",
+                    subject: CerberusWs.Subject.MESSAGE,
+                    channels: [
+                        CerberusWs.Channel.CHAT_SEND
+                    ],
                     content: msg
                 };
 
@@ -1413,37 +1408,6 @@
                 if (diffDays < 7) return `Il y a ${diffDays} jours`;
 
                 return date.toLocaleDateString();
-            },
-
-            async openWithSubject(channel, content) {
-                this.open = true;
-                this.showWelcomeSuggestions = false;
-
-                if (!this.sessionID) {
-                    this.sessionID = crypto.randomUUID();
-                }
-
-                const payload = {
-                    subject: "message",
-                    channel: channel,
-                    sender: getUser().login,
-                    sessionID: this.sessionID,
-                    content: content || ""
-                };
-
-                this.appendAI("", true, false);
-
-                try {
-                    await Alpine.store('ws').whenConnected();
-                    await this.subscribeChat();
-
-                    Alpine.store('ws').send(payload);
-
-                } catch (e) {
-                    console.error("AI WebSocket is not connected", e);
-                    this.finalizeCurrentAI();
-                    this.addMessage("ai", "Impossible de contacter l'assistant IA. Merci de réessayer.");
-                }
             },
 
             setHeaderButtons(buttons = []) {

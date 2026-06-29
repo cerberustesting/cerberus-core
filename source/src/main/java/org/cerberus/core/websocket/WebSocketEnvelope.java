@@ -23,29 +23,21 @@ import java.time.Instant;
 
 public record WebSocketEnvelope<T>(
         String sender,
-        String type,
         String channel,
         String sessionID,
         String user,
         T payload,
-        String timestamp
+        Instant timestamp
 ) {
 
-    public static <T> WebSocketEnvelope<T> of(
-            String type,
-            String channel,
-            String sessionID,
-            String user,
-            T payload
-    ) {
+    public static <T> WebSocketEnvelope<T> of(String channel, String sessionID, String user, T payload) {
         return new WebSocketEnvelope<>(
                 "system",
-                type,
                 channel,
                 sessionID,
                 user,
                 payload,
-                Instant.now().toString()
+                Instant.now()
         );
     }
 }

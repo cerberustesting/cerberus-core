@@ -21,62 +21,87 @@ package org.cerberus.core.websocket;
 
 public final class WebSocketStatic {
 
-    /**  SUBJECTS  **/
+    private WebSocketStatic() {
+    }
+
+    /** SUBJECTS **/
     public static final String SUBJECT_SUBSCRIBE = "subscribe";
     public static final String SUBJECT_UNSUBSCRIBE = "unsubscribe";
     public static final String SUBJECT_MESSAGE = "message";
 
-    /**  CHANNELS  **/
-    public static final String CHANNEL_AI_CHAT = "module.chat";
-    public static final String CHANNEL_NOTIFICATION= "module.notification";
-    public static final String CHANNEL_PAGE_TESTCASEEXECUTION = "page.testcaseexecution";
-    public static final String CHANNEL_PAGE_EXECUTIONMONITOR = "page.executionmonitor";
-    public static final String CHANNEL_PAGE_HOMEPAGE = "page.homepage";
-    /**  CHANNELS LEGACY **/
-    // OLD CHANNELS TO REMOVE TO USE CHAT AND MCP
-    public static final String CHANNEL_TESTCASE_CREATE = "modal.testcasecreate";
-    public static final String CHANNEL_TESTCASE_PROPOSAL = "modal.testcaseproposal";
-    public static final String CHANNEL_EXECUTION_DEBUG = "modal.executiondebug";
-    public static final String CHANNEL_AO_GENERATE = "modal.aogenerate";
-    public static final String CHANNEL_AO_GENERATECONTINUE = "modal.aogeneratecontinue";
+    /** CHAT EVENTS **/
+    public static final String CHANNEL_CHAT_DELTA = "chat.delta";
+    public static final String CHANNEL_CHAT_DONE = "chat.done";
+    public static final String CHANNEL_CHAT_TITLE = "chat.title";
+    public static final String CHANNEL_CHAT_ERROR = "chat.error";
 
-    /**  TYPE CHAT  **/
-    public static final String TYPE_CHAT_DELTA = "chat.delta";
-    public static final String TYPE_CHAT_DONE = "chat.done";
-    public static final String TYPE_CHAT_TITLE = "chat.title";
-    public static final String TYPE_CHAT_ERROR = "chat.error";
-    /**  TYPE MCP USAGE  **/
-    public static final String TYPE_TOOL_START = "tool.start";
-    public static final String TYPE_TOOL_RESULT = "tool.result";
-    public static final String TYPE_TOOL_END = "tool.done";
-    public static final String TYPE_TOOL_ERROR = "tool.error";
-    /**  TYPE EXECUTION AND QUEUE  **/
-    public static final String TYPE_QUEUE_CHANGE = "queue.change";
-    public static final String TYPE_EXECUTION_START = "execution.start";
-    public static final String TYPE_EXECUTION_UPDATE = "execution.update";
-    public static String TYPE_EXECUTION_UPDATE_ID(long executionId){return TYPE_EXECUTION_UPDATE + "." + executionId;}
-    public static final String TYPE_EXECUTION_END = "execution.end";
-    public static final String TYPE_EXECUTION_DECLAREFALSENEGATIVE = "execution.declarefalsenegative";
-    public static final String TYPE_EXECUTION_UNDECLAREFALSENEGATIVE = "execution.undeclarefalsenegative";
-    /**  TYPE CAMPAIGN  **/
-    public static final String TYPE_CAMPAIGN_START = "campaign.start";
-    public static final String TYPE_CAMPAIGN_UPDATE = "campaign.update";
-    public static final String TYPE_CAMPAIGN_END = "campaign.end";
-    public static final String TYPE_CAMPAIGN_FAIL = "campaign.fail";
-    public static final String TYPE_CAMPAIGN_SUCCESS = "campaign.success";
-    /**  TYPE OBJECT CREATION  **/
-    public static final String TYPE_OBJECTCREATION_APPLICATION = "objectcreation.application";
-    public static final String TYPE_OBJECTCREATION_INVARIANT = "objectcreation.invariant";
-    public static final String TYPE_OBJECTCREATION_TESTCASE = "objectcreation.testcase";
-    public static final String TYPE_OBJECTCREATION_TESTCASESTEP = "objectcreation.testcasestep";
-    /**  TYPE OBJECT PROPOSAL  **/
-    public static final String TYPE_AO_PROPOSALS = "ao.proposals";
-    public static final String TYPE_TESTCASE_PROPOSALS = "testcase.proposals";
+    /** MCP / TOOL EVENTS **/
+    public static final String CHANNEL_TOOL_START = "tool.start"; //Notify when MCP tool start
+    public static final String CHANNEL_TOOL_RESULT = "tool.result"; //Notify MCP tool result
+    public static final String CHANNEL_TOOL_DONE = "tool.done"; //Notify when MCP tool end
+    public static final String CHANNEL_TOOL_ERROR = "tool.error"; //Notify when MCP tool has error
 
-    public static final String TYPE_NOTIFICATION_EXECUTING_INIT = "notification.initexecuting";
-    public static final String TYPE_NOTIFICATION_QUEUED_INIT = "notification.initqueued";
-    public static final String TYPE_NOTIFICATION_LASTEXECUTION_INIT = "notification.initlastexecution";
+    /** EXECUTION EVENTS **/
+    public static final String CHANNEL_EXECUTION_START = "execution.start";
+    public static final String CHANNEL_EXECUTION_LIGHT_START = "execution.light.start";
+    public static final String CHANNEL_EXECUTION_UPDATE = "execution.update";
+    public static final String CHANNEL_EXECUTION_LIGHT_UPDATE = "execution.light.update";
+    public static final String CHANNEL_EXECUTION_DELTA = "execution.delta";
+    public static final String CHANNEL_EXECUTION_DONE = "execution.done";
+    public static final String CHANNEL_EXECUTION_LIGHT_DONE = "execution.light.done";
+    public static String CHANNEL_EXECUTION_START_ID(long executionId){return CHANNEL_EXECUTION_START + "." + executionId;}
+    public static String CHANNEL_EXECUTION_UPDATE_ID(long executionId){return CHANNEL_EXECUTION_UPDATE + "." + executionId;}
+    public static String CHANNEL_EXECUTION_DELTA_ID(long executionId){return CHANNEL_EXECUTION_DELTA + "." + executionId;}
+    public static String CHANNEL_EXECUTION_DONE_ID(long executionId){return CHANNEL_EXECUTION_DONE + "." + executionId;}
+    public static final String CHANNEL_EXECUTION_DECLAREFALSENEGATIVE = "execution.declarefalsenegative";
+    public static final String CHANNEL_EXECUTION_UNDECLAREFALSENEGATIVE = "execution.undeclarefalsenegative";
 
-    private WebSocketStatic() {
-    }
+
+    /** MY EXECUTION EVENTS **/
+    public static final String CHANNEL_MYEXECUTION_START = "myexecution.start";
+    public static final String CHANNEL_MYEXECUTION_LIGHT_START = "myexecution.light.start";
+    public static final String CHANNEL_MYEXECUTION_UPDATE = "myexecution.update";
+    public static final String CHANNEL_MYEXECUTION_LIGHT_UPDATE = "myexecution.light.update";
+    public static final String CHANNEL_MYEXECUTION_DONE = "myexecution.done";
+    public static final String CHANNEL_MYEXECUTION_LIGHT_DONE = "myexecution.light.done";
+
+    /** EXECUTION LIST **/
+    public static final String CHANNEL_EXECUTION_LIST_RUNNING = "execution.list.running";
+    public static final String CHANNEL_EXECUTION_LIST_QUEUED = "execution.list.queued";
+    public static final String CHANNEL_EXECUTION_LIST_LASTEXECUTION = "execution.list.lastexecution";
+
+    /** MY EXECUTION LIST **/
+    public static final String CHANNEL_MYEXECUTION_LIST_RUNNING = "myexecution.list.running";
+    public static final String CHANNEL_MYEXECUTION_LIST_QUEUED = "myexecution.list.queued";
+    public static final String CHANNEL_MYEXECUTION_LIST_LASTEXECUTION = "myexecution.list.lastexecution";
+
+    /** QUEUE EVENTS **/
+    public static final String CHANNEL_QUEUE_CHANGE = "queue.change";
+
+    /** CAMPAIGN EVENTS **/
+    public static final String CHANNEL_CAMPAIGN_START = "campaign.start";
+    public static final String CHANNEL_CAMPAIGN_UPDATE = "campaign.update";
+    public static final String CHANNEL_CAMPAIGN_END = "campaign.end";
+    public static final String CHANNEL_CAMPAIGN_FAIL = "campaign.fail";
+    public static final String CHANNEL_CAMPAIGN_SUCCESS = "campaign.success";
+
+    /** OBJECT CREATION EVENTS **/
+    public static final String CHANNEL_OBJECTCREATION_APPLICATION = "objectcreation.application";
+    public static final String CHANNEL_OBJECTCREATION_INVARIANT = "objectcreation.invariant";
+    public static final String CHANNEL_OBJECTCREATION_TESTCASE = "objectcreation.testcase";
+    public static final String CHANNEL_OBJECTCREATION_TESTCASESTEP = "objectcreation.testcasestep";
+
+    /** OBJECT PROPOSAL EVENTS **/
+    public static final String CHANNEL_AO_PROPOSALS = "ao.proposals";
+    public static final String CHANNEL_TESTCASE_PROPOSALS = "testcase.proposals";
+
+
+    /** CLIENT REQUEST CHANNELS **/
+    public static final String CHANNEL_CHAT_SEND = "chat.send";
+    public static final String CHANNEL_EXECUTION_MONITOR = "execution.monitor";
+    public static final String CHANNEL_TESTCASE_PROPOSAL_REQUEST = "testcase.proposal.request";
+    public static final String CHANNEL_TESTCASE_CREATE_REQUEST = "testcase.create.request";
+    public static final String CHANNEL_AO_GENERATE_REQUEST = "ao.generate.request";
+    public static final String CHANNEL_AO_GENERATECONTINUE_REQUEST = "ao.generatecontinue.request";
+    public static final String CHANNEL_EXECUTION_DEBUG_REQUEST = "execution.debug.request";
 }

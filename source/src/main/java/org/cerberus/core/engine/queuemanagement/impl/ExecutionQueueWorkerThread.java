@@ -312,7 +312,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     /**
      * Request the queue job to be executed calling the corresponding servlet.
      *
-     * @return the execution answer from the {@link RunTestCase} servlet
+     * @return the execution answer from the {@link RunTestCaseV002} servlet
      * @throws RunQueueProcessException if an error occurred during request
      * execution
      * @see #run()
@@ -352,9 +352,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
     /**
      * Request execution of the inner {@link TestCaseExecutionQueue} to the
-     * {@link RunTestCase} servlet
+     * {@link RunTestCaseV002} servlet
      *
-     * @return the execution answer from the {@link RunTestCase} servlet
+     * @return the execution answer from the {@link RunTestCaseV002} servlet
      * @throws RunQueueProcessException if an error occurred during request
      * execution
      * @see #run()
@@ -395,9 +395,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
     }
 
     /**
-     * Parse the answer given by the {@link RunTestCase}
+     * Parse the answer given by the {@link RunTestCaseV002}
      * <p>
-     * @param answer the {@link RunTestCase}'s answer
+     * @param answer the {@link RunTestCaseV002}'s answer
      * @throws RunQueueProcessException if an error occurred if execution was on
      * failure or if answer cannot be parsed
      * @see #run()

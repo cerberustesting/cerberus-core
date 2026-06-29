@@ -179,7 +179,7 @@ public class ListApplicationTool implements MCPTool {
 
         //Send tool start through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START,
                     Map.of("toolName", TOOL_NAME ));
         }
         mcpLogUtils.call(TOOL_NAME, intent, String.format("MCP tool %s called with intent=%s", TOOL_NAME, intent));
@@ -204,14 +204,14 @@ public class ListApplicationTool implements MCPTool {
 
         //Send tool end through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_RESULT, WebSocketStatic.CHANNEL_AI_CHAT,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_RESULT,
                     Map.of("toolName", TOOL_NAME,"intent", intent, "count", applications.size(),"application", applications ));
         }
 
 
         //Send tool end through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_DONE,
                     Map.of("toolName", TOOL_NAME ));
         }
 

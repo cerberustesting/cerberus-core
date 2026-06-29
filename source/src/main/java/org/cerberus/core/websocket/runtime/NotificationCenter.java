@@ -57,7 +57,7 @@ public class NotificationCenter {
     }
 
 
-    private List<TestcaseExecutionLightDTOV001> readRunningExecutions(String user) {
+    private List<TestcaseExecutionLightDTOV001> readMyRunningExecutions(String user) {
         try {
             List<TestCaseExecutionLight> executions =
                     testCaseExecutionService.readRunningExecutionLightByUser(user);
@@ -75,7 +75,7 @@ public class NotificationCenter {
         }
     }
 
-    private List<TestCaseExecutionQueueToTreat> readQueuedExecutions(String user) {
+    private List<TestCaseExecutionQueueToTreat> readMyQueuedExecutions(String user) {
         try {
             AnswerList<TestCaseExecutionQueueToTreat> answer =
                     testCaseExecutionQueueService.readQueueToTreat();
@@ -94,7 +94,7 @@ public class NotificationCenter {
         }
     }
 
-    private List<TestcaseExecutionLightDTOV001> readLatestExecutions(String user) {
+    private List<TestcaseExecutionLightDTOV001> readMyLatestExecutions(String user) {
         try {
             List<TestCaseExecutionLight> executions =
                     testCaseExecutionService.readLastExecutionLightByUser(user);
@@ -112,21 +112,26 @@ public class NotificationCenter {
         }
     }
 
-    public void sendInitStatus(String sender) {
-        webSocketEventSender.sendToUser(
-                sender,
-                WebSocketStatic.TYPE_NOTIFICATION_EXECUTING_INIT,
-                WebSocketStatic.CHANNEL_NOTIFICATION,
-                readRunningExecutions(sender));
-        webSocketEventSender.sendToUser(
-                sender,
-                WebSocketStatic.TYPE_NOTIFICATION_QUEUED_INIT,
-                WebSocketStatic.CHANNEL_NOTIFICATION,
-                readQueuedExecutions(sender));
-        webSocketEventSender.sendToUser(
-                sender,
-                WebSocketStatic.TYPE_NOTIFICATION_LASTEXECUTION_INIT,
-                WebSocketStatic.CHANNEL_NOTIFICATION,
-                readLatestExecutions(sender));
+
+    public void sendInitExecutionsRunning(String sender, String appSessionID) {
+        webSocketEventSender.sendToAppSession(
+                appSessionID,
+                WebSocketStatic.CHANNEL_MYEXECUTION_LIST_RUNNING,
+                readMyRunningExecutions(sender));
     }
+
+    public void sendInitExecutionsQueued(String sender, String appSessionID) {
+        webSocketEventSender.sendToAppSession(
+                appSessionID,
+                WebSocketStatic.CHANNEL_MYEXECUTION_LIST_QUEUED,
+                readMyQueuedExecutions(sender));
+    }
+
+    public void sendInitExecutionsLastExecutions(String sender, String appSessionID) {
+        webSocketEventSender.sendToAppSession(
+                appSessionID,
+                WebSocketStatic.CHANNEL_MYEXECUTION_LIST_LASTEXECUTION,
+                readMyLatestExecutions(sender));
+    }
+
 }

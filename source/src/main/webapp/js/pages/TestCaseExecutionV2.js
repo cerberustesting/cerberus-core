@@ -468,16 +468,8 @@ function executionV2() {
                 }
             };
 
-            this._onWsExecutionMessageHandler = (event) => {
-                this._onExecutionPageWsMessage(event.detail);
-            };
-
             document.addEventListener(CerberusWs.Event.CONNECTED, this._onWsConnectedHandler);
             document.addEventListener(CerberusWs.Event.DISCONNECTED, this._onWsDisconnectedHandler);
-            document.addEventListener(
-                CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_TESTCASEEXECUTION),
-                this._onWsExecutionMessageHandler
-            );
         },
 
         _subscribeExecutionPage(executionId) {
@@ -490,10 +482,26 @@ function executionV2() {
                 return;
             }
 
+            const channel = CerberusWs.Channel.EXECUTION_UPDATE_ID(executionId);
+            const eventName = CerberusWs.Event.forChannel(channel);
+
+            // Nettoyage ancien listener si changement d'exécution
+            if (this._wsExecutionEventName && this._onWsExecutionMessageHandler) {
+                document.removeEventListener(this._wsExecutionEventName, this._onWsExecutionMessageHandler);
+            }
+
+            this._wsExecutionEventName = eventName;
+
+            this._onWsExecutionMessageHandler = (event) => {
+                console.debug('[ExeV2] WS event received:', eventName, event.detail);
+                this._onExecutionPageWsMessage(event.detail, executionId);
+            };
+
+            document.addEventListener(eventName, this._onWsExecutionMessageHandler);
+
             const user = JSON.parse(sessionStorage.getItem('user') || '{}');
             const sender = user.login || user.user || 'anonymous';
 
-            // Important: session stable pour cette page/exécution.
             this._wsSessionID = 'testcaseexecution-' + executionId + '-' + sender;
 
             wsStore.whenConnected()
@@ -501,7 +509,9 @@ function executionV2() {
                     const ok = wsStore.send({
                         sender: sender,
                         subject: CerberusWs.Subject.SUBSCRIBE,
-                        channel: CerberusWs.Channel.PAGE_TESTCASEEXECUTION,
+                        channels: [
+                            channel
+                        ],
                         sessionID: this._wsSessionID
                     });
 
@@ -509,7 +519,7 @@ function executionV2() {
                         this.wsConnected = true;
                         this._wsSubscribedExecutionId = executionId;
                         this.liveStatus = 'ws';
-                        console.info('[ExeV2] Subscribed to execution page channel:', this._wsSessionID);
+                        console.info('[ExeV2] Subscribed to execution page channel:', channel, this._wsSessionID);
                     } else {
                         this.wsConnected = false;
                         this.liveStatus = 'polling';
@@ -522,16 +532,14 @@ function executionV2() {
                 });
         },
 
-        _onExecutionPageWsMessage(message) {
+        _onExecutionPageWsMessage(message, executionId) {
             if (!message) return;
 
-            const type = message.type || '';
+            const channel = message.channel || '';
             const payload = message.payload || {};
 
             if (
-                type !== CerberusWs.Type.EXECUTION_UPDATE &&
-                type !== CerberusWs.Type.EXECUTION_START &&
-                type !== CerberusWs.Type.EXECUTION_END
+                channel !== CerberusWs.Channel.EXECUTION_UPDATE_ID(executionId)
             ) {
                 return;
             }

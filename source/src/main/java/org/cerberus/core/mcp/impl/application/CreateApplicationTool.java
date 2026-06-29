@@ -163,8 +163,7 @@ public class CreateApplicationTool implements MCPTool {
 
         //Send tool start through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
-                    Map.of("toolName", TOOL_NAME ));
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START, Map.of("toolName", TOOL_NAME ));
         }
 
         mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s type=%s system=%s", TOOL_NAME, applicationName, type, system));
@@ -202,9 +201,7 @@ public class CreateApplicationTool implements MCPTool {
                 Invariant invariantCreated = invariantService.readByKey(Invariant.IDNAME_SYSTEM, system).getItem();
                 //Send tool end through Websocket if request provide from GUI
                 if ("".equals(appSessionID)) {
-                    webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION, WebSocketStatic.CHANNEL_AI_CHAT,
-                            Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
-                    webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION,
+                    webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_OBJECTCREATION_APPLICATION,
                             Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
                 }
             }
@@ -231,16 +228,14 @@ public class CreateApplicationTool implements MCPTool {
 
         //Send tool end through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION, WebSocketStatic.CHANNEL_AI_CHAT,
-                    Map.of("toolName", TOOL_NAME, "application", applicationMapper.toDTO(application) ));
-            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_NOTIFICATION, WebSocketStatic.TYPE_OBJECTCREATION_APPLICATION,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_OBJECTCREATION_APPLICATION,
                     Map.of("toolName", TOOL_NAME, "application", applicationMapper.toDTO(application) ));
         }
 
 
         //Send tool end through Websocket if request provide from GUI
         if("".equals(appSessionID)){
-            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+            webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_DONE,
                     Map.of("toolName", TOOL_NAME ));
         }
 

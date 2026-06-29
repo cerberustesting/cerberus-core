@@ -335,7 +335,7 @@
                     }
                 });
 
-                window.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODAL_AOGENERATE), (e) => {
+                window.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.AO_GENERATE_REQUEST), (e) => {
                     this.handleWebSocketMessage(e.detail);
                 });
             },
@@ -344,7 +344,9 @@
                 Alpine.store('ws').send({
                     sender: getUser().login,
                     subject: CerberusWs.Subject.SUBSCRIBE,
-                    channel: CerberusWs.Channel.MODAL_AOGENERATE,
+                    channels: [
+                        CerberusWs.Channel.AO_GENERATE_REQUEST
+                    ],
                     sessionID: this.sessionID
                 });
             },

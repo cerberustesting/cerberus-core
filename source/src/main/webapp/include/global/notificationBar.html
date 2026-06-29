@@ -21,13 +21,6 @@
         </span>
     </button>
 
-    <!-- Overlay invisible pour fermeture -->
-    <div x-show="openNotificationCenter"
-         x-transition.opacity
-         @click="close()"
-         class="fixed inset-0 z-[70] bg-transparent">
-    </div>
-
     <!-- Panel -->
     <section x-show="openNotificationCenter"
              x-transition:enter="transition ease-out duration-200"
@@ -36,12 +29,13 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-             @click.stop
+             @click.outside="close()"
              class="absolute right-0 mt-3 w-[min(92vw,430px)]
-                    rounded-2xl border border-slate-200 dark:border-slate-700
-                    bg-white dark:bg-slate-950
-                    text-slate-950 dark:text-slate-100
-                    shadow-2xl overflow-hidden z-[80]">
+                max-h-[calc(100vh-6rem)] overflow-y-auto
+                rounded-2xl border border-slate-200 dark:border-slate-700
+                bg-white dark:bg-slate-950
+                text-slate-950 dark:text-slate-100
+                shadow-2xl z-[80]">
 
         <!-- Live activity -->
         <div class="p-5 bg-slate-50 dark:bg-slate-900/70">
@@ -481,8 +475,23 @@
                     }
                 });
 
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MODULE_NOTIFICATION), (e) => {
-                    this.handleWsMessage(e.detail);
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_LASTEXECUTION), (e) => {
+                    this.initLatestExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_RUNNING), (e) => {
+                    this.initRunningExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_QUEUED), (e) => {
+                    this.initQueuedExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIGHT_UPDATE), (e) => {
+                    this.upsertRunningExecution(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIGHT_DONE), (e) => {
+                    this.finishExecution(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_LIST_QUEUED), (e) => {
+                    this.updateQueueCounters(e.detail.payload);
                 });
 
                 document.addEventListener(CerberusWs.Event.CONNECTED, () => {
@@ -539,7 +548,15 @@
                     sender: login,
                     sessionID: this.queueSessionID,
                     subject: CerberusWs.Subject.SUBSCRIBE,
-                    channel: CerberusWs.Channel.MODULE_NOTIFICATION
+                    channels: [
+                        CerberusWs.Channel.MYEXECUTION_LIST_LASTEXECUTION,
+                        CerberusWs.Channel.MYEXECUTION_LIST_RUNNING,
+                        CerberusWs.Channel.MYEXECUTION_LIST_QUEUED,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_START,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_UPDATE,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_DONE,
+                        CerberusWs.Channel.EXECUTION_LIST_QUEUED
+                        ]
                 };
 
                 ws.whenConnected()
@@ -556,67 +573,25 @@
                     });
             },
 
-            handleWsMessage(message) {
-                if (!message) {
-                    return;
-                }
-
-                const type = message.type;
-                const payload = message.payload;
-
-                switch (type) {
-                    case "notification.initlastexecution":
-                    case CerberusWs.Type.INIT_LAST_EXECUTION:
-                        this.initLatestExecutions(payload);
-                        return;
-
-                    case "notification.initexecuting":
-                    case CerberusWs.Type.INIT_EXECUTING:
-                        this.initRunningExecutions(payload);
-                        return;
-
-                    case "notification.initqueued":
-                    case CerberusWs.Type.INIT_QUEUED:
-                        this.initQueuedExecutions(payload);
-                        return;
-
-                    case "execution.update":
-                    case CerberusWs.Type.EXECUTION_UPDATE:
-                        this.upsertRunningExecution(payload);
-                        return;
-
-                    case "execution.end":
-                    case CerberusWs.Type.EXECUTION_END:
-                        this.finishExecution(payload);
-                        return;
-
-                    case "queue.change":
-                    case CerberusWs.Type.QUEUE_UPDATE:
-                        this.applyQueueChange(payload);
-                        return;
-
-                    default:
-                        return;
-                }
-            },
-
-            applyQueueChange(payload) {
+            updateQueueCounters(payload) {
                 if (!payload) {
-                    this.queuedExecutions = [];
                     this.queueCount = 0;
+                    this.globalLimit = 0;
                     this.refreshIcons();
                     return;
                 }
 
-                const queuedExecutions = payload.executionsInQueue || [];
+                const stats = payload.queueStats || payload;
 
-                this.queuedExecutions = Array.isArray(queuedExecutions)
-                    ? queuedExecutions
-                        .map(e => this.normalizeQueuedExecution(e))
-                        .filter(Boolean)
-                    : [];
+                this.queueCount = Number(
+                    payload.queueTotal
+                    || stats.queueTotal
+                    || stats.queueSize
+                    || stats.queueCount
+                    || 0
+                );
 
-                this.queueCount = Number(payload.queueTotal || this.queuedExecutions.length || 0);
+                this.globalLimit = Number(stats.globalLimit || 0);
 
                 this.refreshIcons();
             },
@@ -696,13 +671,19 @@
             },
 
             initQueuedExecutions(payload) {
-                const list = Array.isArray(payload) ? payload : [];
+                const list = Array.isArray(payload)
+                    ? payload
+                    : (payload?.executionsInQueue ?? []);
 
                 this.queuedExecutions = list
                     .map(e => this.normalizeQueuedExecution(e))
                     .filter(Boolean);
 
-                this.queueCount = this.queuedExecutions.length;
+                this.queueCount = Number(
+                    payload?.queueTotal
+                    ?? this.queuedExecutions.length
+                    ?? 0
+                );
 
                 this.refreshIcons();
             },

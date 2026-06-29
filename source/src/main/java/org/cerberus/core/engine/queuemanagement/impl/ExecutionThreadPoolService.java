@@ -50,6 +50,7 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.WebSocketSessionRegistry;
 import org.cerberus.core.websocket.WebSocketStatic;
 import org.cerberus.core.websocket.runtime.QueueStatus;
 import org.cerberus.core.websocket.WebSocketEventSender;
@@ -109,6 +110,10 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IQueueStatService queueStatService;
     @Autowired
     private WebSocketEventSender webSocketEventSender;
+    @Autowired
+    private QueueStatus queueStatus;
+    @Autowired
+    private WebSocketSessionRegistry webSocketSessionRegistry;
 
     @Override
     public boolean isInstanceActive() {
@@ -293,8 +298,14 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             return;
         }
 
-        // Flag in database that job is already running.
-        if (myVersionService.flagMyVersionString("queueprocessingjobrunning") || forceExecution) {
+        boolean lockAcquired = myVersionService.flagMyVersionString("queueprocessingjobrunning");
+
+        if (!lockAcquired && !forceExecution) {
+            LOG.debug("Queue_Processing_Job not triggered (already running.)");
+            return;
+        }
+
+        try {
 
             // Saving the timestamps when the job start in database.
             myVersionService.updateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
@@ -322,9 +333,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 LOG.debug("Starting Queue_Processing_Job.");
 
                 // Getting all executions to be treated.
-                AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
-                answer = tceiqService.readQueueToTreat();
-                List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
+                //AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
+                //answer = tceiqService.readQueueToTreat();
+                //List<TestCaseExecutionQueueToTreat> executionsInQueue = answer.getDataList();
+                queueStatus.refreshQueueToTreat();
+                List<TestCaseExecutionQueueToTreat> executionsInQueue = queueStatus.getQueueToTreat();
 
                 int poolSizeGeneral = 12;
                 int poolSizeRobot = 10;
@@ -669,47 +682,42 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 }
                 LOG.debug("Stats : GlobalContrain=" + poolSizeGeneral + " - nbRunning=" + const01_current + " - NbQueued=" + executionsInQueue.size());
 
-                if (nbqueuedexe == 0) { // Websocket of queue status is sent only if no new execution was submitted. In case a new execution is submitted, the websocket is refreshed only when execution has been created on database.
-                    executionUUIDObject.setQueueCounters(poolSizeGeneral, const01_current, executionsInQueue.size());
-                    QueueStatus queueS = QueueStatus.builder()
-                            .executionHashMap(executionUUIDObject.getExecutionUUIDList())
-                            .globalLimit(poolSizeGeneral)
-                            .running(const01_current)
-                            .queueSize(executionsInQueue.size()).build();
+                executionUUIDObject.setQueueCounters(poolSizeGeneral, executionsInQueue.size());
 
-                    webSocketEventSender.sendToChannels(List.of(WebSocketStatic.CHANNEL_PAGE_HOMEPAGE, WebSocketStatic.CHANNEL_NOTIFICATION), WebSocketStatic.TYPE_QUEUE_CHANGE, queueS.toJson(true).toMap());
-                }
+                /* SEND to CHANNEL_EXECUTION_LIST_QUEUED all execution Queued */
+                queueStatus.refreshQueueToTreat();
+                queueStatus.setExecutionHashMap(executionUUIDObject.getExecutionUUIDList());
+                queueStatus.updateRunning(executionUUIDObject.getExecutionUUIDList().size());
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIST_QUEUED,queueStatus.toJson(true).toMap());
 
+                /* SEND to CHANNEL_MYEXECUTION_LIST_QUEUED all execution Queued per User */
+                // 1 - group all execution in queue per user
+                List<TestCaseExecutionQueueToTreat> refreshedExecutionsInQueue = queueStatus.getQueueToTreat();
                 Map<String, List<TestCaseExecutionQueueToTreat>> executionsInQueueByUser =
-                        executionsInQueue.stream()
+                        refreshedExecutionsInQueue.stream()
                                 .filter(execution -> !StringUtil.isEmptyOrNull(execution.getUsrCreated()))
-                                .collect(Collectors.groupingBy(
-                                        TestCaseExecutionQueueToTreat::getUsrCreated,
-                                        LinkedHashMap::new,
-                                        Collectors.toList()
-                                ));
-                executionsInQueueByUser.forEach((user, userExecutionsInQueue) ->
-                        webSocketEventSender.sendToUser(
-                                user,
-                                WebSocketStatic.TYPE_QUEUE_CHANGE,
-                                WebSocketStatic.CHANNEL_NOTIFICATION,
-                                Map.of(
-                                        "queueTotal", userExecutionsInQueue.size(),
-                                        "executionsInQueue", userExecutionsInQueue
-                                )
-                        )
-                );
+                                .collect(Collectors.groupingBy(TestCaseExecutionQueueToTreat::getUsrCreated,LinkedHashMap::new,Collectors.toList()));
+
+                // 2 - Get all user to notify with their execution in queue (Necessary in case of 0 execution in the queue)
+                Set<String> usersToNotify = new LinkedHashSet<>();
+                usersToNotify.addAll(webSocketSessionRegistry.getUsersByChannel(WebSocketStatic.CHANNEL_MYEXECUTION_LIST_QUEUED));
+                usersToNotify.addAll(executionsInQueueByUser.keySet());
+
+                // 3 - Notify all user with their execution in queue
+                usersToNotify.forEach(user -> {
+                    List<TestCaseExecutionQueueToTreat> userExecutionsInQueue =executionsInQueueByUser.getOrDefault(user, Collections.emptyList());
+                    webSocketEventSender.sendToUser(user,WebSocketStatic.CHANNEL_MYEXECUTION_LIST_QUEUED,
+                            Map.of("queueTotal", userExecutionsInQueue.size(),"executionsInQueue", userExecutionsInQueue)
+                    );
+                });
 
 
                 queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));
 
             } while (nbqueuedexe > 0);
 
-            // Flag in database that job is finished.
+        } finally {
             myVersionService.updateMyVersionString("queueprocessingjobrunning", "N");
-
-        } else {
-            LOG.debug("Queue_Processing_Job not triggered (already running.)");
         }
     }
 

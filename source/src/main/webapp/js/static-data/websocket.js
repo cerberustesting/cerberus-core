@@ -28,53 +28,100 @@
         }),
 
         Channel: Object.freeze({
-            MODULE_CHAT: 'module.chat',
-            MODULE_NOTIFICATION: 'module.notification',
-            PAGE_HOMEPAGE: 'page.homepage',
-            PAGE_TESTCASEEXECUTION: 'page.testcaseexecution',
-            PAGE_EXECUTIONMONITOR: 'page.executionmonitor',
-            MODAL_TESTCASECREATE: 'modal.testcasecreate',
-            MODAL_TESTCASEPROPOSAL: 'modal.testcaseproposal',
-            MODAL_EXECUTIONDEBUG: 'modal.executiondebug',
-            MODAL_AOGENERATE: 'modal.aogenerate',
-            MODAL_AOGENERATECONTINUE:' modal.aogeneratecontinue'
-        }),
-
-        Type: Object.freeze({
+            // Chat events
             CHAT_DELTA: 'chat.delta',
             CHAT_DONE: 'chat.done',
             CHAT_TITLE: 'chat.title',
             CHAT_ERROR: 'chat.error',
+
+            // MCP / tool events
             TOOL_START: 'tool.start',
             TOOL_RESULT: 'tool.result',
-            TOOL_END: 'tool.done',
+            TOOL_DONE: 'tool.done',
             TOOL_ERROR: 'tool.error',
-            QUEUE_UPDATE: 'queue.change',
-            EXECUTION_UPDATE: 'execution.update',
-            NOTIFICATION: 'notification',
-            CHAT_MESSAGE: 'chat.message',
+
+            // Execution events
             EXECUTION_START: 'execution.start',
-            EXECUTION_UPDATED: 'execution.update',
-            EXECUTION_UPDATE_ID: function (executionId) {
-                return 'execution.update' + executionId;
+            EXECUTION_LIGHT_START: 'execution.light.start',
+            EXECUTION_UPDATE: 'execution.update',
+            EXECUTION_LIGHT_UPDATE: 'execution.light.update',
+            EXECUTION_DELTA: 'execution.delta',
+            EXECUTION_DONE: 'execution.done',
+            EXECUTION_LIGHT_DONE: 'execution.light.done',
+
+            EXECUTION_START_ID: function (executionId) {
+                return 'execution.start.' + executionId;
             },
-            EXECUTION_END: 'execution.end',
+            EXECUTION_UPDATE_ID: function (executionId) {
+                return 'execution.update.' + executionId;
+            },
+            EXECUTION_DELTA_ID: function (executionId) {
+                return 'execution.delta.' + executionId;
+            },
+            EXECUTION_DONE_ID: function (executionId) {
+                return 'execution.done.' + executionId;
+            },
+
             EXECUTION_DECLAREFALSENEGATIVE: 'execution.declarefalsenegative',
             EXECUTION_UNDECLAREFALSENEGATIVE: 'execution.undeclarefalsenegative',
+
+            // My execution events
+            MYEXECUTION_START: 'myexecution.start',
+            MYEXECUTION_LIGHT_START: 'myexecution.light.start',
+            MYEXECUTION_UPDATE: 'myexecution.update',
+            MYEXECUTION_LIGHT_UPDATE: 'myexecution.light.update',
+            MYEXECUTION_DONE: 'myexecution.done',
+            MYEXECUTION_LIGHT_DONE: 'myexecution.light.done',
+
+            // Execution lists
+            EXECUTION_LIST_RUNNING: 'execution.list.running',
+            EXECUTION_LIST_QUEUED: 'execution.list.queued',
+            EXECUTION_LIST_UPDATE: 'execution.list.update',
+            EXECUTION_LIST_LASTEXECUTION: 'execution.list.lastexecution',
+
+            // My execution lists
+            MYEXECUTION_LIST_RUNNING: 'myexecution.list.running',
+            MYEXECUTION_LIST_QUEUED: 'myexecution.list.queued',
+            MYEXECUTION_LIST_UPDATE: 'myexecution.list.update',
+            MYEXECUTION_LIST_LASTEXECUTION: 'myexecution.list.lastexecution',
+
+            // Queue events
+            QUEUE_CHANGE: 'queue.change',
+
+            // Campaign events
             CAMPAIGN_START: 'campaign.start',
             CAMPAIGN_UPDATE: 'campaign.update',
             CAMPAIGN_END: 'campaign.end',
             CAMPAIGN_FAIL: 'campaign.fail',
             CAMPAIGN_SUCCESS: 'campaign.success',
+
+            // Object creation events
             OBJECTCREATION_APPLICATION: 'objectcreation.application',
             OBJECTCREATION_INVARIANT: 'objectcreation.invariant',
             OBJECTCREATION_TESTCASE: 'objectcreation.testcase',
             OBJECTCREATION_TESTCASESTEP: 'objectcreation.testcasestep',
+
+            // Object proposal events
             AO_PROPOSALS: 'ao.proposals',
             TESTCASE_PROPOSALS: 'testcase.proposals',
-            INIT_LAST_EXECUTION: "notification.initlastexecution",
-            INIT_EXECUTING: "notification.initexecuting",
-            INIT_QUEUED: "notification.initqueued"
+
+            // Client request channels
+            CHAT_SEND: 'chat.send',
+            EXECUTION_MONITOR: 'execution.monitor',
+            TESTCASE_PROPOSAL_REQUEST: 'testcase.proposal.request',
+            TESTCASE_CREATE_REQUEST: 'testcase.create.request',
+            AO_GENERATE_REQUEST: 'ao.generate.request',
+            AO_GENERATECONTINUE_REQUEST: 'ao.generatecontinue.request',
+            EXECUTION_DEBUG_REQUEST: 'execution.debug.request'
+        }),
+
+        Pattern: Object.freeze({
+            CHAT: 'chat.*',
+            TOOL: 'tool.*',
+            EXECUTION: 'execution.*',
+            QUEUE: 'queue.*',
+            CAMPAIGN: 'campaign.*',
+            OBJECTCREATION: 'objectcreation.*'
         }),
 
         Event: Object.freeze({

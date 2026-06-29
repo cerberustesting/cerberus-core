@@ -322,9 +322,11 @@ async function subscribeToExecutionPending(executionId, steps) {
         var sent = Alpine.store('ws').send({
             sender: getUser().login,
             sessionID: sessionID,
-            subject: "subscribe",
-            channel: "page.testcaseexecution",
-            content: String(executionId)
+            subject: CerberusWs.Subject.SUBSCRIBE,
+            channels: [
+                CerberusWs.Channel.EXECUTION_UPDATE_ID(executionId),
+                CerberusWs.Channel.EXECUTION_DELTA_ID(executionId)
+            ]
         });
 
         if (sent) {
@@ -348,36 +350,43 @@ async function subscribeToExecutionPending(executionId, steps) {
     }
 }
 
-function registerExecutionPendingListener() {
+function registerExecutionPendingListener(executionId) {
     if (executionPendingListenerRegistered) {
         return;
     }
 
     executionPendingListenerRegistered = true;
 
-    document.addEventListener("cerberus:ws:page.testcaseexecution", function (e) {
-        var message = e.detail || {};
+    document.addEventListener(
+        CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_UPDATE_ID(executionId)),
+        function (e) {
+            var message = e.detail || {};
 
-        if (message.channel !== "page.testcaseexecution") {
-            return;
+            var expectedSessionID = currentExecutionPending ? currentExecutionPending.sessionID : null;
+
+            if (expectedSessionID && message.sessionID && message.sessionID !== expectedSessionID) {
+                return;
+            }
+
+            var payload = message.payload || message.data || {};
+
+            if (!payload) {
+                return;
+            }
+
+            updatePage(payload, currentExecutionSteps || []);
         }
+    );
 
-        var expectedSessionID = currentExecutionPending ? currentExecutionPending.sessionID : null;
-
-        if (expectedSessionID && message.sessionID && message.sessionID !== expectedSessionID) {
-            return;
+    //For future refactoring
+    document.addEventListener(
+        CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_DELTA_ID(executionId)),
+        function (e) {
+            console.log(e.detail.message.payload);
         }
+    );
 
-        var payload = message.payload || message.data || {};
-
-        if (!payload) {
-            return;
-        }
-
-        updatePage(payload, currentExecutionSteps || []);
-    });
-
-    document.addEventListener("cerberus:ws:connected", function () {
+    document.addEventListener(CerberusWs.Event.CONNECTED, function () {
         executionPendingSubscribed = {};
         executionPendingSubscribing = {};
 
@@ -386,7 +395,7 @@ function registerExecutionPendingListener() {
         }
     });
 
-    document.addEventListener("cerberus:ws:disconnected", function () {
+    document.addEventListener(CerberusWs.Event.DISCONNECTED, function () {
         executionPendingSubscribed = {};
         executionPendingSubscribing = {};
     });
@@ -417,7 +426,7 @@ function loadExecutionInformation(executionId, steps) {
 
             if (tce.controlStatus === "PE") {
                 if (paramActivatewebsocketpush === "Y") {
-                    registerExecutionPendingListener();
+                    registerExecutionPendingListener(executionId);
                     subscribeToExecutionPending(executionId, steps);
                 } else {
                     setTimeout(function () {

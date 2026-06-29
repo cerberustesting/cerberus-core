@@ -20,9 +20,9 @@
 package org.cerberus.core.engine.execution.impl;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
@@ -55,6 +55,7 @@ import org.cerberus.core.engine.execution.IConditionService;
 import org.cerberus.core.engine.execution.IExecutionCheckService;
 import org.cerberus.core.engine.execution.IExecutionStartService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusException;
@@ -110,6 +111,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IEventService eventService;
     @Autowired
     private WebSocketEventSender webSocketEventSender;
+    @Autowired
+    private QueueStatus queueStatus;
     @Autowired
     private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
 
@@ -590,18 +593,24 @@ public class ExecutionStartService implements IExecutionStartService {
             if (runID != 0) {
                 execution.setId(runID);
                 executionUUIDObject.setExecutionUUID(execution.getExecutionUUID(), execution);
-                QueueStatus queueS = QueueStatus.builder()
-                        .executionHashMap(executionUUIDObject.getExecutionUUIDList())
-                        .globalLimit(executionUUIDObject.getGlobalLimit())
-                        .running(executionUUIDObject.getRunning())
-                        .queueSize(executionUUIDObject.getQueueSize()).build();
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_PAGE_HOMEPAGE, WebSocketStatic.TYPE_QUEUE_CHANGE, queueS.toJson(true).toMap());
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_START, execution.toJson(true));
+
+                /* Push notification to user that suscribed on the testcaseexecution page */
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_START_ID(execution.getId()), execution.toJson(true).toMap());
+                /* Push light execution to user who execute the testcase */
                 TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-                webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_START, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
+                webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_START, executionLight);
+                /* Push light execution to channel Execution */
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_UPDATE, executionLight);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);
                 }
+
+                executionUUIDObject.setQueueCounters(executionUUIDObject.getGlobalLimit(), executionUUIDObject.getQueueSize());
+                queueStatus.refreshQueueToTreat();
+                queueStatus.setExecutionHashMap(executionUUIDObject.getExecutionUUIDList());
+                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIST_QUEUED, queueStatus.toJson(true).toMap());
 
                 tagService.manageCampaignStartOfExecution(execution.getTag(), new Timestamp(executionStart));
                 

@@ -144,9 +144,9 @@ public class ExecutionPrivateController {
             executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, true);
             webSocketEventSender.sendToChannel(
-                    WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
-                    WebSocketStatic.TYPE_EXECUTION_DECLAREFALSENEGATIVE,
+                    WebSocketStatic.CHANNEL_EXECUTION_DECLAREFALSENEGATIVE,
                     executionMonitor.toJson(true).toMap(),
+                    true,
                     true
             );
         } catch (Exception ex) {
@@ -169,9 +169,9 @@ public class ExecutionPrivateController {
             executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
             executionMonitor.updateExecutionToMonitor(executionId, false);
             webSocketEventSender.sendToChannel(
-                    WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
-                    WebSocketStatic.TYPE_EXECUTION_UNDECLAREFALSENEGATIVE,
+                    WebSocketStatic.CHANNEL_EXECUTION_UNDECLAREFALSENEGATIVE,
                     executionMonitor.toJson(true).toMap(),
+                    true,
                     true
             );
         } catch (Exception ex) {

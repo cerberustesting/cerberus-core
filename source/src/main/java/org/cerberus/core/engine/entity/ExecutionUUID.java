@@ -35,13 +35,8 @@ import org.springframework.stereotype.Component;
 public class ExecutionUUID {
 
     private HashMap<String, TestCaseExecution> executionHashMap;
-    private int running;
     private int queueSize;
     private int globalLimit;
-
-    public int getRunning() {
-        return running;
-    }
 
     public int getQueueSize() {
         return queueSize;
@@ -51,16 +46,14 @@ public class ExecutionUUID {
         return globalLimit;
     }
 
-    public void setQueueCounters(int globalLimit, int running, int queueSize) {
+    public void setQueueCounters(int globalLimit, int queueSize) {
         this.globalLimit = globalLimit;
-        this.running = running;
         this.queueSize = queueSize;
     }
 
     @PostConstruct
     public void init() {
         executionHashMap = new HashMap<>();
-        running = 0;
         queueSize = 0;
         globalLimit = 0;
     }
@@ -116,7 +109,7 @@ public class ExecutionUUID {
             JSONObject queueStatus = new JSONObject();
             queueStatus.put("queueSize", queueSize);
             queueStatus.put("globalLimit", globalLimit);
-            queueStatus.put("running", running);
+            queueStatus.put("running", executionHashMap.size());
             jsonResponse.put("queueStats", queueStatus);
 
             return jsonResponse;

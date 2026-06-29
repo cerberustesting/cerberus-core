@@ -969,10 +969,16 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             executionMonitor.addNewExecutionToMonitor(execution.toLight());
             webSocketEventSender.sendToChannel(
-                        WebSocketStatic.CHANNEL_PAGE_EXECUTIONMONITOR,
-                        WebSocketStatic.TYPE_EXECUTION_END,
+                        WebSocketStatic.CHANNEL_EXECUTION_MONITOR,
                         executionMonitor.toJson(true).toMap(),
-                        true
+                        true,
+                    true
+            );
+            webSocketEventSender.sendToChannel(
+                    WebSocketStatic.CHANNEL_EXECUTION_LIGHT_DONE,
+                    execution.toLight(),
+                    true,
+                    true
             );
 
 
@@ -1001,24 +1007,18 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private void updateExecutionWebSocketOnly(TestCaseExecution execution, boolean forcePush) {
-        if (forcePush){
-            webSocketEventSender.sendToChannel(
-                    WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
-                    WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
-                    execution.toJson(true).toMap()
-            );
-        } else {
-            webSocketEventSender.sendToChannel(
-                    WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
-                    WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
-                    execution.toJson(true).toMap(),
-                    true
-            );
-        }
-        //Push light execution to user who execute the testcase
-        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_UPDATE, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
 
+        // TODO : Send diff only
+        /* Push delta to user that suscribed on the testcaseexecution page */
+        // webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DELTA_ID(execution.getId()), execution.toJson(true).toMap(), !forcePush, false);
+
+        /* Push notification to user that suscribed on the testcaseexecution page */
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_UPDATE_ID(execution.getId()), execution.toJson(true).toMap(), !forcePush, true);
+        /* Push light execution to user who execute the testcase */
+        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
+        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_UPDATE, executionLight);
+        /* Push light execution to channel Execution */
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_UPDATE, executionLight);
     }
 
     @Override
@@ -1048,16 +1048,13 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.warn("Exception updating Execution : {} Exception: {}", execution.getId(), ex.toString());
         }
 
-        //Push notification to user that suscribed on the testcaseexecution page
-        webSocketEventSender.sendToChannel(
-                WebSocketStatic.CHANNEL_PAGE_TESTCASEEXECUTION,
-                WebSocketStatic.TYPE_EXECUTION_UPDATE_ID(execution.getId()),
-                execution.toJson(true).toMap()
-            );
-
-        //Push light execution to user who execute the testcase
+        /* Push notification to user that suscribed on the testcaseexecution page */
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DONE_ID(execution.getId()), execution.toJson(true).toMap());
+        /* Push light execution to user who execute the testcase */
         TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.TYPE_EXECUTION_END, WebSocketStatic.CHANNEL_NOTIFICATION, executionLight);
+        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_DONE, executionLight);
+        /* Push light execution to channel execution */
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_DONE, executionLight);
 
         return execution;
     }

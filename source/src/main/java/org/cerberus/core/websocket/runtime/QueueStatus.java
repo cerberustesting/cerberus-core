@@ -19,137 +19,152 @@
  */
 package org.cerberus.core.websocket.runtime;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.crud.service.impl.ParameterService;
+import org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-/**
- * @author bcivel
- */
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+@Component
 @Getter
 @Setter
-@Builder
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
 public class QueueStatus {
 
-    // Websocket data content
-    private HashMap<String, TestCaseExecution> executionHashMap;
+    private static final Logger LOG = LogManager.getLogger(QueueStatus.class);
+
+    private final ITestCaseExecutionQueueService testCaseExecutionQueueService;
+
+    @Autowired
+    ParameterService parameterService;
+
+    // Websocket data content / runtime state
+    private List<TestCaseExecutionQueueToTreat> queueToTreat = Collections.emptyList();
+    private Map<String, TestCaseExecution> executionHashMap = new ConcurrentHashMap<>();
     private int running;
     private int queueSize;
     private int globalLimit;
 
-    private long lastWebsocketPush;
+    public QueueStatus(ITestCaseExecutionQueueService testCaseExecutionQueueService) {
+        this.testCaseExecutionQueueService = testCaseExecutionQueueService;
+    }
 
-    /**
-     * Not included in table.
-     */
-    private static final Logger LOG = LogManager.getLogger(QueueStatus.class);
+    public int getRunning(){
+        return executionHashMap.size();
+    }
 
-    public void setQueueCounters(int globalLimit, int running, int queueSize) {
-        this.globalLimit = globalLimit;
+    @PostConstruct
+    public void init() {
+
+        refreshQueueToTreat();
+        globalLimit = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
+        queueSize = queueToTreat.size();
+    }
+
+    public void refreshQueueToTreat() {
+        try {
+            LOG.info("Retrieve tests in queue.");
+
+            AnswerList<TestCaseExecutionQueueToTreat> answer =
+                    testCaseExecutionQueueService.readQueueToTreat();
+
+            if (answer == null || answer.getDataList() == null) {
+                queueToTreat = Collections.emptyList();
+            } else {
+                queueToTreat = answer.getDataList();
+            }
+
+            queueSize = queueToTreat.size();
+
+        } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
+            queueToTreat = Collections.emptyList();
+            queueSize = 0;
+        }
+    }
+
+    public List<TestCaseExecutionQueueToTreat> myQueueToTreat(String user){
+        return queueToTreat
+                .stream()
+                .filter(execution -> Objects.equals(user, execution.getUsrCreated()))
+                .collect(Collectors.toList());
+    }
+
+    public void updateRunning(int running) {
         this.running = running;
-        this.queueSize = queueSize;
-    }
-
-    public HashMap<String, TestCaseExecution> getExecutionUUIDList() {
-        return executionHashMap;
-    }
-
-    public void setExecutionUUID(String UUID, TestCaseExecution execution) {
-        executionHashMap.put(UUID, execution);
-    }
-
-    public long getLastWebsocketPush() {
-        return lastWebsocketPush;
-    }
-
-    public void setLastWebsocketPush(long lastWebsocketPush) {
-        this.lastWebsocketPush = lastWebsocketPush;
     }
 
     public JSONObject toJson(boolean fatVersion) {
         JSONObject queueJson = new JSONObject();
+
         try {
             JSONObject queueStats = new JSONObject();
-            queueStats.put("globalLimit", this.getGlobalLimit());
-            queueStats.put("running", this.getRunning());
-            queueStats.put("queueSize", this.getQueueSize());
+            queueStats.put("globalLimit", globalLimit);
+            queueStats.put("running", running);
+            queueStats.put("queueSize", queueToTreat.size());
+
             queueJson.put("queueStats", queueStats);
-            queueJson.put("queueTotal", executionHashMap.size());
+            queueJson.put("queueTotal", queueToTreat.size());
+
+            JSONArray executionsInQueue = new JSONArray();
+            if (queueToTreat != null) {
+                for (TestCaseExecutionQueueToTreat ex : queueToTreat) {
+                    JSONObject object = new JSONObject();
+                    object.put("id", ex.getId());
+                    object.put("tag", ex.getTag());
+                    object.put("test", ex.getTest());
+                    object.put("testCase", ex.getTestCase());
+                    object.put("system", ex.getSystem());
+                    object.put("application", ex.getApplication());
+                    object.put("environment", ex.getEnvironment());
+                    object.put("country", ex.getCountry());
+                    object.put("robotIP", ex.getQueueRobotHost());
+                    object.put("usrCreated", ex.getUsrCreated());
+                    object.put("queuePosition", ex.getQueuePosition());
+                    object.put("nbEntryBefore", ex.getNbEntryBefore());
+                    executionsInQueue.put(object);
+                }
+            }
 
             List<JSONObject> executionArray = new ArrayList<>();
-//            JSONArray executionArray = new JSONArray();
-            for (Object ex : executionHashMap.values()) {
-                TestCaseExecution execution = (TestCaseExecution) ex;
-                JSONObject object = new JSONObject();
-                object.put("id", execution.getId());
-                object.put("test", execution.getTest());
-                object.put("testcase", execution.getTestCase());
-                object.put("system", execution.getApplicationObj().getSystem());
-                object.put("application", execution.getApplication());
-                object.put("environment", execution.getEnvironmentData());
-                object.put("country", execution.getCountry());
-                object.put("robotIP", execution.getSeleniumIP());
-                object.put("tag", execution.getTag());
-                object.put("start", new Timestamp(execution.getStart()));
-                executionArray.add(object);
+            if (executionHashMap != null) {
+                for (Object ex : executionHashMap.values()) {
+                    TestCaseExecution execution = (TestCaseExecution) ex;
+                    JSONObject object = new JSONObject();
+                    object.put("id", execution.getId());
+                    object.put("test", execution.getTest());
+                    object.put("testcase", execution.getTestCase());
+                    object.put("system", execution.getApplicationObj().getSystem());
+                    object.put("application", execution.getApplication());
+                    object.put("environment", execution.getEnvironmentData());
+                    object.put("country", execution.getCountry());
+                    object.put("robotIP", execution.getSeleniumIP());
+                    object.put("tag", execution.getTag());
+                    object.put("start", new Timestamp(execution.getStart()));
+                    executionArray.add(object);
+                }
             }
-            Collections.sort(executionArray, new SortExecutions());
-            JSONArray object1 = new JSONArray(executionArray);
-            queueJson.put("runningExecutionsList", object1);
+            queueJson.put("runningExecutionsList", executionArray);
 
-            //queueStats.queueSize
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
+
         return queueJson;
     }
-
-    class SortExecutions implements Comparator<JSONObject> {
-
-        // Used for sorting Triggers 
-        @Override
-        public int compare(JSONObject a, JSONObject b) {
-
-            if (a != null && b != null) {
-                Date dateA;
-                Date dateB;
-                try {
-                    dateA = (Date) a.get("start");
-                    dateB = (Date) b.get("start");
-                    if (dateA.equals(dateB)) {
-
-                    } else {
-                        return (dateA.compareTo(dateB));
-                    }
-                } catch (JSONException ex) {
-                    LOG.error("Exception on JSON Parse.", ex);
-                }
-
-            } else {
-                return 1;
-            }
-
-            return 1;
-        }
-    }
-
 }

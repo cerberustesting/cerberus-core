@@ -127,7 +127,7 @@ public class AIService implements IAIService {
                             fullResponse.append(text);
                             try {
                                 // Stream response : WebSocket type=chat.delta, channel=ai
-                                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AI_CHAT,Map.of("done", false, "data", text));
+                                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA, Map.of("done", false, "data", text));
                             } catch (Exception e) {
                                 LOG.error("Error during streaming callback:", e);
                                 streamingErrors.add(e.getMessage());
@@ -173,7 +173,7 @@ public class AIService implements IAIService {
                     currentToolUsed = toolUse.name();
 
                     //Send tool start through Websocket
-                    webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_START, WebSocketStatic.CHANNEL_AI_CHAT,
+                    webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_START,
                             Map.of("toolName", currentToolUsed));
 
                     String toolResult;
@@ -182,11 +182,11 @@ public class AIService implements IAIService {
                     try {
                         //Call tool
                         Map<String, Object> arguments = toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
-                        arguments.put("_context", Map.of("source", "GUI","user", user,"appSessionID", currentAiSessionID,"channel", WebSocketStatic.CHANNEL_AI_CHAT));
+                        arguments.put("_context", Map.of("source", "GUI","user", user,"appSessionID", currentAiSessionID,"channel", WebSocketStatic.CHANNEL_CHAT_DELTA));
                         toolResult = aiMcpClientService.callTool(mcpClient, toolUse.name(), arguments);
 
                         //Send result through Websocket
-                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_RESULT, WebSocketStatic.CHANNEL_AI_CHAT,
+                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_RESULT,
                                 Map.of("toolName", currentToolUsed, "data", toolResult));
 
                     } catch (Exception ex) {
@@ -195,7 +195,7 @@ public class AIService implements IAIService {
                         isError = true;
 
                         //Send tool error through Websocket
-                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_ERROR, WebSocketStatic.CHANNEL_AI_CHAT,
+                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_ERROR,
                                 Map.of("toolName", currentToolUsed, "error", ex.toString()));
                     }
 
@@ -203,14 +203,14 @@ public class AIService implements IAIService {
                 }
 
                 //Send tool end through Websocket
-                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_TOOL_END, WebSocketStatic.CHANNEL_AI_CHAT,
+                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_DONE,
                         Map.of("toolName", currentToolUsed));
 
                 messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).contentOfBlockParams(toolResults).build());
             }
 
             // Notify WebSocket type=chat.done
-            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_DONE, WebSocketStatic.CHANNEL_AI_CHAT, Map.of("done", true, "data", ""));
+            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DONE, Map.of("done", true, "data", ""));
 
             //store message and answer
             LOG.debug("New message from :"+user+" in session :"+currentAiSessionID+" - message : "+newMessage);
@@ -220,7 +220,7 @@ public class AIService implements IAIService {
         } catch (Exception e) {
             LOG.error("Error during chatWithAI:", e);
             // Notify WebSocket type=chat.error, channel=ai
-            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.TYPE_CHAT_ERROR,WebSocketStatic.CHANNEL_AI_CHAT,Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         } finally {
             if (mcpClient != null) {
                 try {
@@ -243,7 +243,7 @@ public class AIService implements IAIService {
         aiClientService.streamResponseAndAccumulate(messageParamTitle, null, text -> {
             fullTitle.append(text);
             try {
-                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_TITLE, WebSocketStatic.CHANNEL_AI_CHAT,
+                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_TITLE,
                         Map.of("data", text));
             } catch (Exception e) {
                 LOG.error("Error during streaming callback:", e);
@@ -275,7 +275,7 @@ public class AIService implements IAIService {
                         payload.put("testFolder", testFolderId);
                         payload.put("data", json);
                         fullResponse.append(mapper.writeValueAsString(payload));
-                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_TESTCASE_PROPOSALS, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, payload);
+                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_TESTCASE_PROPOSALS, payload);
                     }
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
@@ -289,15 +289,15 @@ public class AIService implements IAIService {
             //update Title
             aiSessionManager.updateTitle(user, session, featureDescription);
 
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_DONE, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", "Generation complete"));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_DONE, Map.of("message", "Generation complete"));
 
             if (!streamingErrors.isEmpty()) {
-                webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
+                webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
             }
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL, Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         }
     }
 
@@ -322,7 +322,7 @@ public class AIService implements IAIService {
         TestCase testCase = null;
         try {
             testCase = objectFromAiResponse.createTestCase(testCaseJsonObject, testcaseId, user);
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASE, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASE, Map.of("tempId", tempId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -349,7 +349,7 @@ public class AIService implements IAIService {
                         TestCaseStep testCaseStep = objectFromAiResponse.createTestCaseStep(json.toString(), finalTestCase);
                         this.createTestCaseStepActionAndControlAndGenerateContent(user, session, testCaseStep, finalTestCase.getDetailedDescription(), json.get("promptForActionDefinition").toString());
                         fullResponse.append(mapper.writeValueAsString(testCaseStep));
-                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASESTEP, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId));
+                        webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASESTEP, Map.of("tempId", tempId));
                     }
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
@@ -359,15 +359,15 @@ public class AIService implements IAIService {
 
             // Log AI usage
             aiSessionManager.saveMessage(user, session, prompt, fullResponse.toString(), messageAccumulator.message(), "generateTestCase", 0, 0);
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_OBJECTCREATION_TESTCASE, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("tempId", tempId, "test", finalTestCase.getTest(), "testcase", finalTestCase.getTestcase()));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASE, Map.of("tempId", tempId, "test", finalTestCase.getTest(), "testcase", finalTestCase.getTestcase()));
 
             if (!streamingErrors.isEmpty()) {
-                webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
+                webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", "Errors occurred during streaming callback : " + streamingErrors));
             }
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         }
     }
 
@@ -443,7 +443,7 @@ public class AIService implements IAIService {
 
         } catch (Exception e) {
             LOG.error("Error generating test case proposal:", e);
-            webSocketEventSender.sendToAppSession(session, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_TESTCASE_CREATE, Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(session, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         }
     }
 
@@ -476,7 +476,7 @@ public class AIService implements IAIService {
             MessageAccumulator messageAccumulator = aiClientService.streamResponseAndAccumulate(messageParamList, null, text -> {
                 fullResponse.append(text);
                 try {
-                    webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_EXECUTION_DEBUG, Map.of("data", text));
+                    webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA, Map.of("data", text));
                 } catch (Exception e) {
                     LOG.error("Error during streaming callback:", e);
                     streamingErrors.add(e.getMessage());
@@ -487,7 +487,7 @@ public class AIService implements IAIService {
 
         } catch (Exception e) {
             LOG.error("Error during executionDebugWithAI:", e);
-            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_EXECUTION_DEBUG, Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         }
     }
 
@@ -517,7 +517,7 @@ public class AIService implements IAIService {
         Build prompt and context. For first call, generate prompt
          */
         String aoPrompt = prompt;
-        if (WebSocketStatic.CHANNEL_AO_GENERATE.equals(subject)) {
+        if (WebSocketStatic.CHANNEL_AO_GENERATE_REQUEST.equals(subject)) {
             aoPrompt = aiBuildPrompt.buildPromptForApplicationObjectGeneration(applicationId, aoList, pageName, prompt);
         }
         LOG.debug(aoPrompt);
@@ -554,7 +554,7 @@ public class AIService implements IAIService {
         MessageParam.Builder mpBuilder = MessageParam.builder()
                 .role(MessageParam.Role.USER)
                 .content(aoPrompt);
-        if (WebSocketStatic.CHANNEL_AO_GENERATE.equals(subject)) {
+        if (WebSocketStatic.CHANNEL_AO_GENERATE_REQUEST.equals(subject)) {
             mpBuilder.contentOfBlockParams(contentOfBlockParams);
         }
 
@@ -579,7 +579,7 @@ public class AIService implements IAIService {
 
                             String chatPart = current.substring(0, start).trim();
                             if (!chatPart.isEmpty()) {
-                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", chatPart));
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA, Map.of("data", chatPart));
                             }
 
                             insideJsonBlock.set(true);
@@ -589,7 +589,7 @@ public class AIService implements IAIService {
 
                         } else {
                             if (!current.isEmpty()) {
-                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_DELTA, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", current));
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA, Map.of("data", current));
                                 textBuffer.setLength(0);
                             }
                             break;
@@ -605,7 +605,7 @@ public class AIService implements IAIService {
                                 String cleaned = aiClientService.sanitizeJson(jsonPart);
                                 LOG.info("Cleaned JSON: " + cleaned);
                                 ApplicationObject ao = applicationObjectFromAI.parseAndCropAOJson(applicationId, screenshotBase64Final, cleaned, user);
-                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_AO_PROPOSALS,  WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("data", ao));
+                                webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_AO_PROPOSALS,  Map.of("data", ao));
                             } catch (Exception e) {
                                 LOG.error("Failed parsing streamed AO", e);
                             }
@@ -633,7 +633,7 @@ public class AIService implements IAIService {
 
         } catch (Exception e) {
             LOG.error("Error during generateApplicationObjectProposalWithAI:", e);
-            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.TYPE_CHAT_ERROR, WebSocketStatic.CHANNEL_AO_GENERATE, Map.of("message", e.getMessage()));
+            webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
         }
     }
 

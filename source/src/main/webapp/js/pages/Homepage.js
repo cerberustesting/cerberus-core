@@ -160,8 +160,10 @@ async function subscribeToQueueStatus() {
         Alpine.store('ws').send({
             sender: getUser().login,
             sessionID: 'homepage-' + getUser().login,
-            subject: 'subscribe',
-            channel: 'page.homepage'
+            subject: CerberusWs.Subject.SUBSCRIBE,
+            channels: [
+                CerberusWs.Channel.EXECUTION_LIST_QUEUED
+                ]
         });
 
         queueStatusSubscribed = true;
@@ -344,7 +346,7 @@ function updatePageQueueStatus(data) {
 
 
 function loadExeCurrentlyRunning() {
-    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.PAGE_HOMEPAGE), handleHomepageWsMessage);
+    document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_LIST_QUEUED), handleQueueChangeMessage);
     document.addEventListener(CerberusWs.Event.CONNECTED, subscribeToQueueStatus);
     document.addEventListener(CerberusWs.Event.DISCONNECTED, handleQueueStatusDisconnected);
 
@@ -353,14 +355,8 @@ function loadExeCurrentlyRunning() {
     }
 }
 
-function handleHomepageWsMessage(e) {
+function handleQueueChangeMessage(e) {
     var message = e.detail;
-
-    if (!message || message.type !== CerberusWs.Type.QUEUE_UPDATE) {
-        console.debug('Homepage: ignored WS message', message);
-        return;
-    }
-
     handleQueueChange(message.payload || {});
 }
 

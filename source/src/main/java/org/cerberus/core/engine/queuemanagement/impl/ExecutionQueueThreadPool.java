@@ -35,16 +35,10 @@ public class ExecutionQueueThreadPool {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutionQueueThreadPool.class);
 
     private ExecutorService executor;
-//    private Integer totalNumberOfThread;
-//    private Integer size;
-//    private Integer inExecution;
-//    Map<String, List<Future<?>>> map = new HashMap<>();
 
     @PostConstruct
     public void init() {
         executor = Executors.newCachedThreadPool();
-//        totalNumberOfThread = 0;
-//        inExecution = 0;
         LOG.debug("Starting Execution Queueing !! (ExecutionQueueThreadPool).");
     }
 
@@ -56,23 +50,6 @@ public class ExecutionQueueThreadPool {
         this.executor = executor;
     }
 
-//Changer le nombre de tache simultanée...
-//    public void setNumberOfPool(Integer numberOfPool) {
-//        totalNumberOfThread = numberOfPool;
-//    }
-
-//    public Integer getSize() {
-//        return size;
-//    }
-//
-//    public Integer getNumberOfThread() {
-//        return totalNumberOfThread;
-//    }
-
-//    public void setSize(Integer size) {
-//        this.size = size;
-//    }
-//
     public void reset() {
         this.stop();
         init();
@@ -83,21 +60,5 @@ public class ExecutionQueueThreadPool {
             executor.shutdownNow();
         }
     }
-
-//    public Integer getInExecution() {
-//        return inExecution;
-//    }
-//
-//    public void setInExecution(Integer inExecution) {
-//        this.inExecution = inExecution;
-//    }
-//
-//    public void incrementInExecution() {
-//        this.inExecution++;
-//    }
-//
-//    public void decrementInExecution() {
-//        this.inExecution--;
-//    }
 
 }
