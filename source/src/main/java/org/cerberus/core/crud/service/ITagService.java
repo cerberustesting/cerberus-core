@@ -307,9 +307,10 @@ public interface ITagService {
      * 1/ The update of the Execution Start of the tag <br>
      *
      * @param tag
+     * @return Tag object
      * @throws org.cerberus.core.exception.CerberusException
      */
-    void manageCampaignStartOfExecution(String tag, Timestamp startOfExecution) throws CerberusException;
+    Tag manageCampaignStartOfExecution(String tag, Timestamp startOfExecution) throws CerberusException;
 
     /**
      * Format in a nice way the various Control Status values. <br>

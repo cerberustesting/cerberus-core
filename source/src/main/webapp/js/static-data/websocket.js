@@ -91,9 +91,27 @@
             // Campaign events
             CAMPAIGN_START: 'campaign.start',
             CAMPAIGN_UPDATE: 'campaign.update',
-            CAMPAIGN_END: 'campaign.end',
+            CAMPAIGN_DELTA: 'campaign.delta',
+            CAMPAIGN_DONE: 'campaign.done',
             CAMPAIGN_FAIL: 'campaign.fail',
             CAMPAIGN_SUCCESS: 'campaign.success',
+            CHANNEL_CAMPAIGN_START_ID: function (campaign) {
+                return 'campaign.start.' + campaign;
+            },
+            CHANNEL_CAMPAIGN_UPDATE_ID: function (campaign) {
+                return 'campaign.update.' + campaign;
+            },
+            CHANNEL_CAMPAIGN_DELTA_ID: function (campaign) {
+                return 'campaign.delta.' + campaign;
+            },
+            CHANNEL_CAMPAIGN_DONE_ID: function (campaign) {
+                return 'campaign.done.' + campaign;
+            },
+
+            // Testcase events
+            TESTCASE_CREATE: 'testcase.create',
+            TESTCASE_UPDATE: 'testcase.update',
+            TESTCASE_DELETE: 'testcase.delete',
 
             // Object creation events
             OBJECTCREATION_APPLICATION: 'objectcreation.application',

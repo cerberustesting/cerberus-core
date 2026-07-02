@@ -22,8 +22,6 @@ package org.cerberus.core.engine.execution.impl;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
-import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryRobotCapability;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionSysVer;
@@ -73,8 +71,7 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.websocket.WebSocketEventSender;
-import org.cerberus.core.websocket.WebSocketStatic;
+import org.cerberus.core.websocket.WebSocketService;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +93,6 @@ import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
-import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.json.JSONObject;
 
 /**
@@ -110,12 +106,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private static final Logger LOG = LogManager.getLogger(ExecutionRunService.class);
 
     @Autowired
-    ExecutionMonitor executionMonitor;
-
-    @Autowired
-    private WebSocketEventSender webSocketEventSender;
-    @Autowired
-    private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
+    private WebSocketService webSocketService;
 
     private ISikuliService sikuliService;
     private IRobotServerService robotServerService;
@@ -926,8 +917,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Trigger the necessary Event for WebHook and notification management.
             eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END, execution, null, null, null);
+            webSocketService.notifyExecutionDone(execution);
             if (!willBeRetried) {
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY, execution, null, null, null);
+                webSocketService.notifyExecutionEndLastRetry(execution);
             }
 
             // JIRA XRay Connector is triggered at the end of every execution..
@@ -962,26 +955,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(execution);
             }
 
-            /**
-             * Monitor Screen management, At the end of the execution, we save a
-             * light version of the execution and prepare it for sending it to
-             * monitoring screen.
-             */
-            executionMonitor.addNewExecutionToMonitor(execution.toLight());
-            webSocketEventSender.sendToChannel(
-                        WebSocketStatic.CHANNEL_EXECUTION_MONITOR,
-                        executionMonitor.toJson(true).toMap(),
-                        true,
-                    true
-            );
-            webSocketEventSender.sendToChannel(
-                    WebSocketStatic.CHANNEL_EXECUTION_LIGHT_DONE,
-                    execution.toLight(),
-                    true,
-                    true
-            );
-
-
             // Write Execution log to file and make it available as a file on execution.
             execution.addFileList(recorderService.recordExeLog(execution));
 
@@ -1007,18 +980,7 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private void updateExecutionWebSocketOnly(TestCaseExecution execution, boolean forcePush) {
-
-        // TODO : Send diff only
-        /* Push delta to user that suscribed on the testcaseexecution page */
-        // webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DELTA_ID(execution.getId()), execution.toJson(true).toMap(), !forcePush, false);
-
-        /* Push notification to user that suscribed on the testcaseexecution page */
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_UPDATE_ID(execution.getId()), execution.toJson(true).toMap(), !forcePush, true);
-        /* Push light execution to user who execute the testcase */
-        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_UPDATE, executionLight);
-        /* Push light execution to channel Execution */
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_UPDATE, executionLight);
+        webSocketService.notifyExecutionUpdate(execution, forcePush);
     }
 
     @Override
@@ -1047,14 +1009,6 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             LOG.warn("Exception updating Execution : {} Exception: {}", execution.getId(), ex.toString());
         }
-
-        /* Push notification to user that suscribed on the testcaseexecution page */
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DONE_ID(execution.getId()), execution.toJson(true).toMap());
-        /* Push light execution to user who execute the testcase */
-        TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-        webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_DONE, executionLight);
-        /* Push light execution to channel execution */
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_DONE, executionLight);
 
         return execution;
     }

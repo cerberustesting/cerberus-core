@@ -59,6 +59,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -125,6 +126,8 @@ public class TestCaseService implements ITestCaseService {
     private IEventService eventService;
     @Autowired
     private ITestCaseHistoService testCaseHistoService;
+    @Autowired
+    private WebSocketService webSocketService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -533,6 +536,7 @@ public class TestCaseService implements ITestCaseService {
         Answer ans = testCaseDao.update(keyTest, keyTestcase, testcase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_UPDATE, testcase, keyTest, keyTestcase, null);
+            webSocketService.notifyTestCaseUpdate(testcase);
         }
         return ans;
     }
@@ -609,6 +613,7 @@ public class TestCaseService implements ITestCaseService {
         Answer ans = testCaseDao.create(testCase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_CREATE, testCase, null, null, null);
+            webSocketService.notifyTestCaseCreate(testCase);
         }
         return ans;
     }
@@ -627,6 +632,7 @@ public class TestCaseService implements ITestCaseService {
         Answer ans = testCaseDao.delete(testCase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_DELETE, testCase, null, null, null);
+            webSocketService.notifyTestCaseDelete(testCase);
         }
         return ans;
     }

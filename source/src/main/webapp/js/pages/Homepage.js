@@ -162,7 +162,9 @@ async function subscribeToQueueStatus() {
             sessionID: 'homepage-' + getUser().login,
             subject: CerberusWs.Subject.SUBSCRIBE,
             channels: [
-                CerberusWs.Channel.EXECUTION_LIST_QUEUED
+                CerberusWs.Channel.EXECUTION_LIST_QUEUED,
+                CerberusWs.Channel.CHANNEL_CAMPAIGN_DELTA_ID("TEST"),
+                CerberusWs.Channel.CHANNEL_CAMPAIGN_UPDATE_ID("TEST"),
                 ]
         });
 

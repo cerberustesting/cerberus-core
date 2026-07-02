@@ -253,9 +253,13 @@ public class CerberusWebSocket extends TextWebSocketHandler {
 
             case WebSocketStatic.CHANNEL_QUEUE_CHANGE:
 
+            case WebSocketStatic.CHANNEL_TESTCASE_CREATE:
+            case WebSocketStatic.CHANNEL_TESTCASE_UPDATE:
+            case WebSocketStatic.CHANNEL_TESTCASE_DELETE:
+
             case WebSocketStatic.CHANNEL_CAMPAIGN_START:
             case WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE:
-            case WebSocketStatic.CHANNEL_CAMPAIGN_END:
+            case WebSocketStatic.CHANNEL_CAMPAIGN_DONE:
             case WebSocketStatic.CHANNEL_CAMPAIGN_FAIL:
             case WebSocketStatic.CHANNEL_CAMPAIGN_SUCCESS:
 
@@ -265,7 +269,10 @@ public class CerberusWebSocket extends TextWebSocketHandler {
 
             default:
                 if (channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_UPDATE)||
-                        channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_START)) {
+                    channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_DELTA)||
+                    channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_START)||
+                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA)||
+                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE)) {
                     return true;
                 }
                 return false;

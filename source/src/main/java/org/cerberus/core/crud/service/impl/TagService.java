@@ -50,6 +50,7 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.WebSocketService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,6 +90,8 @@ public class TagService implements ITagService {
     private IParameterService parameterService;
     @Autowired
     private ITagStatisticService tagStatisticService;
+    @Autowired
+    private WebSocketService webSocketService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -230,8 +233,10 @@ public class TagService implements ITagService {
             if (!StringUtil.isEmptyOrNull(mytag.getCampaign())) {
                 // We get the campaign here and potencially trigger the event.
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END, mytag, null, null, null);
+                webSocketService.notifyCampaignEnd(mytag);
                 if (mytag.getCiResult().equalsIgnoreCase("KO")) {
                     eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO, mytag, null, null, null);
+                    webSocketService.notifyCampaignEndCIKO(mytag);
                 }
             }
 
@@ -363,6 +368,7 @@ public class TagService implements ITagService {
             // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isEmptyOrNull(campaign)) {
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_START, newTag, null, null, null);
+                webSocketService.notifyCampaignStart(newTag);
             }
             return ans;
         } else {
@@ -470,7 +476,7 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public void manageCampaignStartOfExecution(String tag, Timestamp startOfExecution) throws CerberusException {
+    public Tag manageCampaignStartOfExecution(String tag, Timestamp startOfExecution) throws CerberusException {
 
         try {
             if (!StringUtil.isEmptyOrNull(tag)) {
@@ -482,13 +488,13 @@ public class TagService implements ITagService {
                     } else {
                         LOG.debug("Tag is already flaged with recent start of exe timestamp. {}", currentTag.getDateStartExe());
                     }
-
+                    return currentTag;
                 }
             }
         } catch (Exception e) {
             LOG.error(e, e);
         }
-
+        return null;
     }
 
     @Override

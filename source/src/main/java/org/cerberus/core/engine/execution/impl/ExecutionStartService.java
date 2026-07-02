@@ -25,17 +25,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
-import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.CountryEnvParam;
-import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Invariant;
-import org.cerberus.core.crud.entity.Robot;
-import org.cerberus.core.crud.entity.RobotExecutor;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
@@ -61,9 +51,8 @@ import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
-import org.cerberus.core.websocket.WebSocketStatic;
+import org.cerberus.core.websocket.WebSocketService;
 import org.cerberus.core.websocket.runtime.QueueStatus;
-import org.cerberus.core.websocket.WebSocketEventSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,11 +99,9 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     private IEventService eventService;
     @Autowired
-    private WebSocketEventSender webSocketEventSender;
+    private WebSocketService webSocketService;
     @Autowired
     private QueueStatus queueStatus;
-    @Autowired
-    private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -593,15 +580,7 @@ public class ExecutionStartService implements IExecutionStartService {
             if (runID != 0) {
                 execution.setId(runID);
                 executionUUIDObject.setExecutionUUID(execution.getExecutionUUID(), execution);
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_START, execution.toJson(true));
 
-                /* Push notification to user that suscribed on the testcaseexecution page */
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_START_ID(execution.getId()), execution.toJson(true).toMap());
-                /* Push light execution to user who execute the testcase */
-                TestcaseExecutionLightDTOV001 executionLight = testcaseExecutionLightMapper.toDTO(execution);
-                webSocketEventSender.sendToUser(execution.getExecutor(), WebSocketStatic.CHANNEL_MYEXECUTION_LIGHT_START, executionLight);
-                /* Push light execution to channel Execution */
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_UPDATE, executionLight);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);
@@ -610,14 +589,16 @@ public class ExecutionStartService implements IExecutionStartService {
                 executionUUIDObject.setQueueCounters(executionUUIDObject.getGlobalLimit(), executionUUIDObject.getQueueSize());
                 queueStatus.refreshQueueToTreat();
                 queueStatus.setExecutionHashMap(executionUUIDObject.getExecutionUUIDList());
-                webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIST_QUEUED, queueStatus.toJson(true).toMap());
+                webSocketService.notifyQueueListRefresh(queueStatus);
 
-                tagService.manageCampaignStartOfExecution(execution.getTag(), new Timestamp(executionStart));
+                Tag tagObj = tagService.manageCampaignStartOfExecution(execution.getTag(), new Timestamp(executionStart));
+                execution.setTagObj(tagObj);
                 
                 // Update the testcase with timestamp of last execution.
                 testCaseService.updateLastExecuted(execution.getTest(), execution.getTestCase(), new Timestamp(executionStart));
 
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, execution, null, null, null);
+                webSocketService.notifyExecutionStart(execution);
 
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);

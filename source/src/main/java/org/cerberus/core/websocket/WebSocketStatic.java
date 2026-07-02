@@ -81,9 +81,20 @@ public final class WebSocketStatic {
     /** CAMPAIGN EVENTS **/
     public static final String CHANNEL_CAMPAIGN_START = "campaign.start";
     public static final String CHANNEL_CAMPAIGN_UPDATE = "campaign.update";
-    public static final String CHANNEL_CAMPAIGN_END = "campaign.end";
+    public static final String CHANNEL_CAMPAIGN_DELTA = "campaign.delta";
+    public static final String CHANNEL_CAMPAIGN_DONE = "campaign.done";
     public static final String CHANNEL_CAMPAIGN_FAIL = "campaign.fail";
     public static final String CHANNEL_CAMPAIGN_SUCCESS = "campaign.success";
+    public static String CHANNEL_CAMPAIGN_START_ID(String campaign){return CHANNEL_CAMPAIGN_START + "." + campaign;}
+    public static String CHANNEL_CAMPAIGN_UPDATE_ID(String campaign){return CHANNEL_CAMPAIGN_UPDATE + "." + campaign;}
+    public static String CHANNEL_CAMPAIGN_DELTA_ID(String campaign){return CHANNEL_CAMPAIGN_DELTA + "." + campaign;}
+    public static String CHANNEL_CAMPAIGN_DONE_ID(String campaign){return CHANNEL_CAMPAIGN_DONE + "." + campaign;}
+
+
+    /** TESTCASE EVENTS **/
+    public static final String CHANNEL_TESTCASE_CREATE = "testcase.create";
+    public static final String CHANNEL_TESTCASE_UPDATE = "testcase.update";
+    public static final String CHANNEL_TESTCASE_DELETE = "testcase.delete";
 
     /** OBJECT CREATION EVENTS **/
     public static final String CHANNEL_OBJECTCREATION_APPLICATION = "objectcreation.application";
