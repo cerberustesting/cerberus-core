@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -152,6 +153,18 @@ public interface ITagService {
      * @return
      */
     Answer updateEndOfQueueData(String tag);
+
+    /**
+     * Compute the current TagStatistics (per environment/country) for a tag, without persisting
+     * them. Unlike {@link #updateEndOfQueueData(String)}, this can be called while the campaign
+     * is still running to get a live snapshot of the statistics.
+     *
+     * @param tag
+     * @return a Map of TagStatistic keyed by "environment_country", or an empty Map if the tag
+     * doesn't exist
+     * @throws CerberusException
+     */
+    Map<String, TagStatistic> computeTagStatistics(String tag) throws CerberusException;
 
     /**
      *

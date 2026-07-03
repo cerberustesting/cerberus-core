@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.websocket;
 
+import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionMapperV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
 import org.cerberus.core.crud.entity.Tag;
@@ -48,6 +49,8 @@ public class WebSocketService {
     @Autowired
     private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
     @Autowired
+    private CampaignExecutionMapperV001 campaignExecutionMapper;
+    @Autowired
     private ExecutionMonitor executionMonitor;
 
     /**
@@ -64,7 +67,6 @@ public class WebSocketService {
         /* Push light execution to channel Execution */
         webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_LIGHT_UPDATE, executionLight);
         if (execution.getTagObj() != null && execution.getTagObj().getCampaign() != null) {
-            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE_ID(execution.getTagObj().getCampaign()), execution.getTagObj());
             webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA_ID(execution.getTagObj().getCampaign()), executionLight);
         }
     }
@@ -103,10 +105,11 @@ public class WebSocketService {
         executionMonitor.addNewExecutionToMonitor(execution.toLight());
         webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_MONITOR,executionMonitor.toJson(true).toMap(),true,true);
         /* If execution is part of a campaing, notify channel */
+
         if (execution.getTagObj() != null && execution.getTagObj().getCampaign() != null) {
             webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA_ID(execution.getTagObj().getCampaign()), executionLight);
-            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE_ID(execution.getTagObj().getCampaign()), execution.getTagObj());
         }
+
     }
 
     /**
@@ -131,18 +134,18 @@ public class WebSocketService {
      * A campaign (tag with a non-null campaign) just started.
      */
     public void notifyCampaignStart(Tag tag) {
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_START, tag);
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_START_ID(tag.getCampaign()), tag);
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_START, campaignExecutionMapper.toLightDto(tag));
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_START_ID(tag.getCampaign()), campaignExecutionMapper.toLightDto(tag));
     }
 
     /**
      * A campaign is done (queue empty, CI score computed).
      */
     public void notifyCampaignEnd(Tag tag) {
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DONE, tag);
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DONE_ID(tag.getCampaign()), tag);
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DONE, campaignExecutionMapper.toLightDto(tag));
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DONE_ID(tag.getCampaign()), campaignExecutionMapper.toLightDto(tag));
         if ("OK".equalsIgnoreCase(tag.getCiResult())) {
-            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_SUCCESS, tag);
+            webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_SUCCESS, campaignExecutionMapper.toLightDto(tag));
         }
     }
 
@@ -150,7 +153,16 @@ public class WebSocketService {
      * A campaign is done with a KO CI result (fired in addition to {@link #notifyCampaignEnd}).
      */
     public void notifyCampaignEndCIKO(Tag tag) {
-        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_FAIL, tag);
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_FAIL, campaignExecutionMapper.toLightDto(tag));
+    }
+
+    /**
+     * Campaign counters changed (e.g. live statistics while executions are still running).
+     * Reuses the same channel {@link #notifyExecutionStart}/{@link #notifyExecutionDone} already
+     * push the tag to when an execution starts/ends as part of a campaign.
+     */
+    public void notifyCampaignUpdate(Tag tag) {
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE_ID(tag.getCampaign()), campaignExecutionMapper.toLightDto(tag));
     }
 
     /**

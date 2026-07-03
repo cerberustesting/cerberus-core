@@ -271,8 +271,10 @@ public class CerberusWebSocket extends TextWebSocketHandler {
                 if (channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_UPDATE)||
                     channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_DELTA)||
                     channel.startsWith(WebSocketStatic.CHANNEL_EXECUTION_START)||
+                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_START)||
                     channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA)||
-                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE)) {
+                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_UPDATE)||
+                    channel.startsWith(WebSocketStatic.CHANNEL_CAMPAIGN_DONE)) {
                     return true;
                 }
                 return false;

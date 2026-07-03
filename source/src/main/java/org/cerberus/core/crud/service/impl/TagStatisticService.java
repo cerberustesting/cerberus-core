@@ -95,12 +95,15 @@ public class TagStatisticService implements ITagStatisticService {
     }
 
     /**
-     * Populate TagStatistics objects with aggregated data
+     * Populate TagStatistics objects with aggregated data, without persisting them.
+     * Used to get a snapshot of the statistics while the campaign is still running.
      * @param tagStatistics
      * @param executions
      * @param tag
+     * @return the same map, with each TagStatistic populated
      */
-    public void populateTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag) {
+    @Override
+    public Map<String, TagStatistic> computeTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag) {
         for (Map.Entry<String, TagStatistic> tagStatisticEntry : tagStatistics.entrySet()) {
             TagStatistic tagStatistic = tagStatisticEntry.getValue();
             List<String> systems = new ArrayList<>();
@@ -117,7 +120,7 @@ public class TagStatisticService implements ITagStatisticService {
             tagStatistic.setUsrCreated(tag.getUsrCreated());
             tagStatistic.setExecutions(null);
         }
-        createWithMap(tagStatistics);
+        return tagStatistics;
     }
 
     /**

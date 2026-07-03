@@ -57,4 +57,36 @@ public interface CampaignExecutionMapperV001 {
     @Mapping(source = "nbQE", target = "result.qe")
     @Mapping(source = "executionsNew", target = "executions")
     CampaignExecutionDTOV001 toDto(Tag tag);
+
+
+    @Mapping(source = "tag", target = "campaignExecutionId")
+    @Mapping(source = "campaign", target = "campaignId")
+    @Mapping(source = "dateCreated", target = "startDate")
+    @Mapping(source = "dateEndQueue", target = "endDate")
+    @Mapping(target = "durationInMillis", expression = "java(computeDurationInMillis(tag))")
+    @Mapping(source = "nbExe", target = "result.totalWithRetries")
+    @Mapping(source = "nbExeUsefull", target = "result.total")
+    @Mapping(source = "nbOK", target = "result.ok")
+    @Mapping(source = "nbKO", target = "result.ko")
+    @Mapping(source = "nbFA", target = "result.fa")
+    @Mapping(source = "nbNA", target = "result.na")
+    @Mapping(source = "nbPE", target = "result.pe")
+    @Mapping(source = "nbCA", target = "result.ca")
+    @Mapping(source = "nbQU", target = "result.qu")
+    @Mapping(source = "nbWE", target = "result.we")
+    @Mapping(source = "nbNE", target = "result.ne")
+    @Mapping(source = "nbQE", target = "result.qe")
+    CampaignExecutionDTOV001 toLightDto(Tag tag);
+
+    default long computeDurationInMillis(Tag tag) {
+        if (tag == null || tag.getDateCreated() == null) {
+            return 0L;
+        }
+
+        if (tag.getDateEndQueue() == null || tag.getDateEndQueue().before(java.sql.Timestamp.valueOf("1980-01-01 00:00:00"))) {
+            return System.currentTimeMillis() - tag.getDateCreated().getTime();
+        }
+
+        return tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime();
+    }
 }

@@ -21,6 +21,7 @@ package org.cerberus.core.crud.service.impl;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionMapperV001;
+import org.cerberus.core.api.exceptions.FailedReadOperationException;
 import org.cerberus.core.crud.dao.ITagDAO;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryTag;
@@ -40,6 +43,7 @@ import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.event.IEventService;
+import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.service.notification.INotificationService;
@@ -243,11 +247,7 @@ public class TagService implements ITagService {
             //TagStatistics, only if it's a campaign and if parameter is activated
             if (StringUtil.isNotEmptyOrNull(mytag.getCampaign())) {
                 LOG.info("TagStatistics creation for tag {} started.", tag);
-                tagStatisticService.populateTagStatisticsMap(
-                        tagStatisticService.initTagStatistics(mytag, executions),
-                        executions,
-                        mytag
-                );
+                tagStatisticService.createWithMap(computeTagStatistics(mytag, executions));
                 LOG.info("TagStatistics creation for tag {} finished.", tag);
             }
 
@@ -262,6 +262,65 @@ public class TagService implements ITagService {
             return null;
         }
 
+    }
+
+    @Override
+    public Map<String, TagStatistic> computeTagStatistics(String tag) throws CerberusException {
+        Tag mytag = convert(readByKey(tag));
+        if (mytag == null) {
+            return Collections.emptyMap();
+        }
+
+        List<TestCaseExecution> executions;
+        try {
+            executions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+        } catch (ParseException e) {
+            throw new FailedReadOperationException("An error occurred when retrieving the campaign execution.");
+        }
+
+        return computeTagStatistics(mytag, executions);
+    }
+
+    private Map<String, TagStatistic> computeTagStatistics(Tag tag, List<TestCaseExecution> executions) {
+        return tagStatisticService.computeTagStatisticsMap(tagStatisticService.initTagStatistics(tag, executions),executions,tag);
+    }
+
+    /**
+     * Aggregate a live TagStatistics snapshot (one entry per environment/country) into the
+     * Tag's own counters, the same fields {@link #updateEndOfQueueData(String)} sets from the
+     * CI result at the very end of the campaign.
+     *
+     * @param tag        the Tag to update in place
+     * @param statistics as returned by {@link #computeTagStatistics(String)}
+     */
+    private void applyStatisticsToTag(Tag tag, Map<String, TagStatistic> statistics) {
+        int nbExe = 0, nbExeUsefull = 0, nbOK = 0, nbKO = 0, nbFA = 0, nbNA = 0, nbNE = 0, nbWE = 0, nbPE = 0, nbQU = 0, nbQE = 0, nbCA = 0;
+        for (TagStatistic tagStatistic : statistics.values()) {
+            nbExe += tagStatistic.getNbExe();
+            nbExeUsefull += tagStatistic.getNbExeUseful();
+            nbOK += tagStatistic.getNbOK();
+            nbKO += tagStatistic.getNbKO();
+            nbFA += tagStatistic.getNbFA();
+            nbNA += tagStatistic.getNbNA();
+            nbNE += tagStatistic.getNbNE();
+            nbWE += tagStatistic.getNbWE();
+            nbPE += tagStatistic.getNbPE();
+            nbQU += tagStatistic.getNbQU();
+            nbQE += tagStatistic.getNbQE();
+            nbCA += tagStatistic.getNbCA();
+        }
+        tag.setNbExe(nbExe);
+        tag.setNbExeUsefull(nbExeUsefull);
+        tag.setNbOK(nbOK);
+        tag.setNbKO(nbKO);
+        tag.setNbFA(nbFA);
+        tag.setNbNA(nbNA);
+        tag.setNbNE(nbNE);
+        tag.setNbWE(nbWE);
+        tag.setNbPE(nbPE);
+        tag.setNbQU(nbQU);
+        tag.setNbQE(nbQE);
+        tag.setNbCA(nbCA);
     }
 
     @Override
@@ -455,13 +514,18 @@ public class TagService implements ITagService {
                 currentTag = this.convert(this.readByKey(tag));
                 if ((currentTag != null)) {
                     if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
-                        AnswerList answerListQueue = new AnswerList<>();
-                        answerListQueue = executionQueueService.readQueueOpen(tag);
+                        AnswerList answerListQueue = executionQueueService.readQueueOpen(tag);
                         if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
                             LOG.debug("No More executions (in queue or running) on tag : {} - {} {}", tag, answerListQueue.getDataList().size(), answerListQueue.getMessageCodeString());
+                            // updateEndOfQueueData already computes the final statistics, persists them and notifies
+                            // the campaign end channels with the complete Tag (ciScore, ciResult, ...).
                             this.updateEndOfQueueData(tag);
                         } else {
                             LOG.debug("Still executions in queue on tag : {} - {} {}", tag, answerListQueue.getDataList().size(), answerListQueue.getMessageCodeString());
+                            if (!StringUtil.isEmptyOrNull(currentTag.getCampaign())) {
+                                applyStatisticsToTag(currentTag, computeTagStatistics(tag));
+                                webSocketService.notifyCampaignUpdate(currentTag);
+                            }
                         }
                     } else {
                         LOG.debug("Tag is already flagged with recent timestamp. {}", currentTag.getDateEndQueue());

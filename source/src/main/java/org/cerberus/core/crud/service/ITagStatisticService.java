@@ -51,12 +51,14 @@ public interface ITagStatisticService {
     Map<String, TagStatistic> initTagStatistics(Tag tag, List<TestCaseExecution> executions);
 
     /**
-     * Populate TagStatistics objects with aggregated data
+     * Populate TagStatistics objects with aggregated data, without persisting them.
+     * Used to get a snapshot of the statistics while the campaign is still running.
      * @param tagStatistics
      * @param executions
      * @param tag
+     * @return the same map, with each TagStatistic populated
      */
-    void populateTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag);
+    Map<String, TagStatistic> computeTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag);
 
     AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environment, String minDate, String maxDate);
     Map<String, Map<String, JSONObject>> createMapGroupedByTag(List<TagStatistic> tagStatistics, String aggregateType) throws JSONException;
