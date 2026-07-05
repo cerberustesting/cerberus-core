@@ -21,3 +21,23 @@
     window.appContext = "${pageContext.request.contextPath}";
 </script>
 <script type="text/javascript" src="js/transversalobject/crbDropdown.js?v=${appVersion}"></script>
+<script>
+    // All .crb_modal roots share the same fixed z-index (9999), so when a modal is opened
+    // from inside another one (e.g. editing the Application from the Service Library modal's
+    // pencil icon), plain DOM/include order decides which one paints on top and the nested
+    // modal can end up hidden behind the one that spawned it. Watch each modal's inline
+    // `style` (what x-show mutates) and bring whichever one was just shown above any other
+    // modal that is still open, regardless of include order.
+    (function () {
+        var modals = document.querySelectorAll(".crb_modal");
+        var topZIndex = modals.length ? (parseInt(getComputedStyle(modals[0]).zIndex, 10) || 9999) : 9999;
+        modals.forEach(function (modal) {
+            new MutationObserver(function () {
+                if (getComputedStyle(modal).display !== "none") {
+                    topZIndex += 1;
+                    modal.style.zIndex = topZIndex;
+                }
+            }).observe(modal, {attributes: true, attributeFilter: ["style"]});
+        });
+    })();
+</script>
