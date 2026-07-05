@@ -28,16 +28,23 @@
     // modal can end up hidden behind the one that spawned it. Watch each modal's inline
     // `style` (what x-show mutates) and bring whichever one was just shown above any other
     // modal that is still open, regardless of include order.
+    //
+    // Each observer disconnects itself before writing the z-index bump back onto the same
+    // `style` attribute it watches, otherwise that write would immediately re-trigger the
+    // observer and loop forever.
     (function () {
         var modals = document.querySelectorAll(".crb_modal");
         var topZIndex = modals.length ? (parseInt(getComputedStyle(modals[0]).zIndex, 10) || 9999) : 9999;
         modals.forEach(function (modal) {
-            new MutationObserver(function () {
+            var observer = new MutationObserver(function () {
                 if (getComputedStyle(modal).display !== "none") {
                     topZIndex += 1;
+                    observer.disconnect();
                     modal.style.zIndex = topZIndex;
+                    observer.observe(modal, {attributes: true, attributeFilter: ["style"]});
                 }
-            }).observe(modal, {attributes: true, attributeFilter: ["style"]});
+            });
+            observer.observe(modal, {attributes: true, attributeFilter: ["style"]});
         });
     })();
 </script>
