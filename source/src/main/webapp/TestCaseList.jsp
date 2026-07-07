@@ -42,10 +42,19 @@
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
         <title id="pageTitle">Test Case</title>
     </head>
-    <body x-data x-cloak class="crb_body">
+    <body x-data x-cloak class="crb_body_wrp">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <jsp:include page="include/global/rightPanel.html"/>
+        <main class="crb_main_wrp"
+              :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - '
+                          + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '
+                          + ($store.rightPanel.open ? $store.rightPanel.width : 0)
+                          + 'px)'}"
+        >
             <div>
                 <%@ include file="include/global/messagesArea.html"%>
                 <%@ include file="include/utils/modal-confirmation.html"%>
@@ -58,10 +67,6 @@
 
                 <div class="flex items-start justify-between gap-4 mb-4">
                     <h1 class="page-title-line mb-0" id="title">Test Case</h1>
-
-                    <div class="shrink-0">
-                        <jsp:include page="include/global/notificationBar.html"/>
-                    </div>
                 </div>
 
                 <div class="">

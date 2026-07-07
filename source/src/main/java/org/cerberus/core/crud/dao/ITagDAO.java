@@ -79,6 +79,23 @@ public interface ITagDAO {
     AnswerList<Tag> readByVarious(List<String> campaigns, List<String> systems, Date from, Date to);
 
     /**
+     * Read the campaigns (tags associated to a campaign) that are currently running,
+     * ie whose DateEndQueue has not yet been set.
+     *
+     * @return
+     */
+    AnswerList<Tag> readCampaignsRunning();
+
+    /**
+     * Read the last {@code limit} campaigns (tags associated to a campaign) that
+     * have finished, ordered by end date descending.
+     *
+     * @param limit
+     * @return
+     */
+    AnswerList<Tag> readCampaignsLastFinished(int limit);
+
+    /**
      *
      * @param campaigns
      * @param group1s

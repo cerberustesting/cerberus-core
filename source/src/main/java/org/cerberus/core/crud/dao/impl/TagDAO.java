@@ -136,6 +136,82 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public AnswerList<Tag> readCampaignsRunning() {
+        AnswerList<Tag> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<Tag> objectList = new ArrayList<>();
+
+        final String query = "SELECT * FROM tag WHERE campaign IS NOT NULL AND campaign != '' "
+                + "AND DateEndQueue < '1980-01-01 01:01:01.000001' "
+                + "ORDER BY DateCreated DESC LIMIT 100";
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
+    public AnswerList<Tag> readCampaignsLastFinished(int limit) {
+        AnswerList<Tag> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<Tag> objectList = new ArrayList<>();
+
+        final String query = "SELECT * FROM tag WHERE campaign IS NOT NULL AND campaign != '' "
+                + "AND DateEndQueue >= '1980-01-01 01:01:01.000001' "
+                + "ORDER BY DateEndQueue DESC LIMIT ?";
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.limit : {}", limit);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setInt(1, limit);
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
     public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
         AnswerList<Tag> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

@@ -108,6 +108,10 @@
                 return 'campaign.done.' + campaign;
             },
 
+            // Campaign lists
+            CAMPAIGN_LIST_RUNNING: 'campaign.list.running',
+            CAMPAIGN_LIST_LASTFINISHED: 'campaign.list.lastfinished',
+
             // Testcase events
             TESTCASE_CREATE: 'testcase.create',
             TESTCASE_UPDATE: 'testcase.update',

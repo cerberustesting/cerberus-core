@@ -160,6 +160,12 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_MYEXECUTION_LIST_LASTEXECUTION ->
                     notificationCenter.sendInitExecutionsLastExecutions(incoming.getSender(), incoming.getSessionID());
 
+            case WebSocketStatic.CHANNEL_CAMPAIGN_LIST_RUNNING ->
+                    notificationCenter.sendInitCampaignsRunning(incoming.getSessionID());
+
+            case WebSocketStatic.CHANNEL_CAMPAIGN_LIST_LASTFINISHED ->
+                    notificationCenter.sendInitCampaignsLastFinished(incoming.getSessionID());
+
             case WebSocketStatic.CHANNEL_EXECUTION_LIST_QUEUED -> {
                 queueStatus.refreshQueueToTreat();
                 queueStatus.updateRunning(executionUUIDObject.getExecutionUUIDList().size());
@@ -262,6 +268,8 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_CAMPAIGN_DONE:
             case WebSocketStatic.CHANNEL_CAMPAIGN_FAIL:
             case WebSocketStatic.CHANNEL_CAMPAIGN_SUCCESS:
+            case WebSocketStatic.CHANNEL_CAMPAIGN_LIST_RUNNING:
+            case WebSocketStatic.CHANNEL_CAMPAIGN_LIST_LASTFINISHED:
 
             case WebSocketStatic.CHANNEL_EXECUTION_MONITOR:
                 return true;

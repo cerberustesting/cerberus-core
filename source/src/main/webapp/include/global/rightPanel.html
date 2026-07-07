@@ -1,0 +1,1680 @@
+<!-- Right Panel (Execution / Campaign / Activity) -->
+<div x-data="rightPanel()" class="contents">
+
+    <!-- Trigger buttons -->
+    <div x-show="$store.rightPanel.open==false" class="fixed top-4 z-[70] transition-all duration-300"
+             :style="`right: ${$store.rightPanel.open ? ($store.rightPanel.width + 16) + 'px' : '1rem'};`">
+
+        <div class="flex justify-end">
+            <div class="flex items-center gap-1 rounded-full
+                        bg-white dark:bg-slate-950
+                        border border-slate-200 dark:border-slate-700 px-1.5 shadow-sm">
+
+                <button @click="$store.rightPanel.openTab('execution')"
+                        class="relative h-8 w-8 rounded-full flex items-center justify-center
+                               text-slate-900 dark:text-slate-100
+                               hover:bg-slate-100 dark:hover:bg-slate-800
+                               transition-colors"
+                        :class="$store.rightPanel.open && $store.rightPanel.activeTab === 'execution' ? 'bg-slate-100 dark:bg-slate-800' : ''"
+                        title="Executions">
+
+                    <i data-lucide="square-play" class="w-4 h-4"></i>
+
+                    <span x-show="runningExecutions.length + queuedExecutions.length > 0"
+                          x-text="(runningExecutions.length + queuedExecutions.length) > 9 ? '9+' : (runningExecutions.length + queuedExecutions.length)"
+                          class="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1
+                                 rounded-full bg-blue-500 text-white text-[10px] font-bold
+                                 flex items-center justify-center shadow-sm">
+                    </span>
+                </button>
+
+                <button @click="$store.rightPanel.openTab('campaign')"
+                        class="relative h-8 w-8 rounded-full flex items-center justify-center
+                               text-slate-900 dark:text-slate-100
+                               hover:bg-slate-100 dark:hover:bg-slate-800
+                               transition-colors"
+                        :class="$store.rightPanel.open && $store.rightPanel.activeTab === 'campaign' ? 'bg-slate-100 dark:bg-slate-800' : ''"
+                        title="Campaigns">
+
+                    <i data-lucide="group" class="w-4 h-4"></i>
+
+                    <span x-show="runningCampaigns.length > 0"
+                          x-text="runningCampaigns.length > 9 ? '9+' : runningCampaigns.length"
+                          class="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1
+                                 rounded-full bg-blue-500 text-white text-[10px] font-bold
+                                 flex items-center justify-center shadow-sm">
+                    </span>
+                </button>
+
+                <button @click="$store.rightPanel.openTab('activity')"
+                        class="relative h-8 w-8 rounded-full flex items-center justify-center
+                               text-slate-900 dark:text-slate-100
+                               hover:bg-slate-100 dark:hover:bg-slate-800
+                               transition-colors"
+                        :class="$store.rightPanel.open && $store.rightPanel.activeTab === 'activity' ? 'bg-slate-100 dark:bg-slate-800' : ''"
+                        title="Activity">
+
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Sliding panel -->
+    <aside x-show="$store.rightPanel.open"
+           x-transition:enter="transform transition ease-out duration-200"
+           x-transition:enter-start="translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transform transition ease-in duration-150"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="translate-x-full"
+           :style="`width: ${$store.rightPanel.width}px`"
+           class="fixed inset-y-0 right-0 z-[40] flex
+                  bg-slate-50 dark:bg-slate-950
+                  text-slate-950 dark:text-slate-100
+                  border-l border-slate-200 dark:border-slate-700
+                  ">
+
+        <!-- Resize handle -->
+        <div @pointerdown.prevent.stop="startResize($event)"
+             class="absolute left-0 top-0 h-full w-3 -translate-x-1/2
+            cursor-col-resize z-[45]
+            hover:bg-blue-500/20 transition-colors"
+             :class="$store.rightPanel.isResizing ? 'bg-blue-500/30' : ''"
+             title="Resize panel">
+        </div>
+
+        <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
+                <div class="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-900 p-1 min-w-0">
+                    <button @click="$store.rightPanel.openTab('execution')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0"
+                            :class="$store.rightPanel.activeTab === 'execution'
+                                ? 'bg-white dark:bg-slate-700 text-slate-950 dark:text-slate-100 shadow-sm'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'">
+                        <i data-lucide="square-play" class="w-3.5 h-3.5"></i>
+                        Execution
+                    </button>
+
+                    <button @click="$store.rightPanel.openTab('campaign')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0"
+                            :class="$store.rightPanel.activeTab === 'campaign'
+                                ? 'bg-white dark:bg-slate-700 text-slate-950 dark:text-slate-100 shadow-sm'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'">
+                        <i data-lucide="group" class="w-3.5 h-3.5"></i>
+                        Campaign
+                    </button>
+
+                    <button @click="$store.rightPanel.openTab('activity')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0"
+                            :class="$store.rightPanel.activeTab === 'activity'
+                                ? 'bg-white dark:bg-slate-700 text-slate-950 dark:text-slate-100 shadow-sm'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'">
+                        <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                        Activity
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0">
+                    <div class="flex items-center gap-1.5 text-sm font-medium"
+                         :class="Alpine.store('ws').connected
+                            ? 'text-slate-500 dark:text-slate-400'
+                            : 'text-red-500 dark:text-red-400'">
+
+                        <span class="h-2.5 w-2.5 rounded-full"
+                              :class="Alpine.store('ws').connected
+                                ? 'bg-teal-400 animate-pulse'
+                                : 'bg-red-500'">
+                        </span>
+
+                        <span class="hidden sm:inline" x-text="Alpine.store('ws').connected ? 'live' : 'down'"></span>
+                    </div>
+
+                    <button @click="$store.rightPanel.close()"
+                            class="h-8 w-8 rounded-full flex items-center justify-center
+                                   text-slate-400 dark:text-slate-500
+                                   hover:text-slate-800 dark:hover:text-slate-200
+                                   hover:bg-slate-100 dark:hover:bg-slate-800
+                                   transition-colors"
+                            title="Close">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable content -->
+            <div class="flex-1 overflow-y-auto p-5">
+
+                <!-- ============ Execution tab ============ -->
+                <template x-if="$store.rightPanel.activeTab === 'execution'">
+                    <div>
+                        <!-- Running executions -->
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="circle-play"
+                                       class="w-5 h-5 text-blue-600"></i>
+
+                                    <div class="text-sm font-semibold tracking-tight"
+                                         x-text="`My running executions (${runningExecutions.length})`">
+                                    </div>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500"
+                                          x-text="runningCount + ' total running'">
+                                </span>
+                            </div>
+
+                            <template x-if="runningExecutions.length === 0">
+                                <div class="rounded-xl crb_card_notif px-4 py-2 text-center">
+                                    <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                        No execution
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div x-show="runningExecutions.length > 0"
+                                 class="space-y-4">
+                                <template x-for="execution in runningExecutions" :key="execution.id">
+                                    <div class="w-full text-left group crb_card_notif transition-colors"
+                                            style="margin-bottom: 8px">
+
+                                        <div class="flex items-end justify-between gap-4 mb-1">
+                                            <div @click="openExecution(execution)" class="min-w-0">
+                                                <!-- Main title -->
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    <div>
+                                                         <div class="notification-icon-inner" style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent)">
+                                                              <i data-lucide="loader-2" class="px-2 py-0.5 notification-spin-limited" style="color: var(--crb-blue-color)"></i>
+                                                         </div>
+                                                    </div>
+                                                    <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                         x-text="('#' + execution.id)">
+                                                    </div>
+
+                                                    <template x-if="execution.tag">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-slate-100 dark:bg-slate-800
+                                                             text-slate-600 dark:text-slate-300
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="tag" class="w-3 h-3"></i>
+                                                    <span x-text="execution.tag"></span>
+                                                </span>
+                                                    </template>
+                                                </div>
+
+                                                <!-- Metadata badges -->
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    <template x-if="execution.country">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="flag" class="w-3 h-3"></i>
+                                                    <span x-text="execution.country"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.environment">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="earth" class="w-3 h-3"></i>
+                                                    <span x-text="execution.environment"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.application">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="box" class="w-3 h-3"></i>
+                                                    <span x-text="execution.application"></span>
+                                                </span>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 shrink-0">
+                                                <div class="text-sm font-bold text-blue-500"
+                                                     x-text="(execution.progress || 0) + '%'">
+                                                </div>
+
+                                                <button type="button"
+                                                        @click.stop.prevent="rerunExecution(execution)"
+                                                        :disabled="execution.rerunning === true"
+                                                        class="inline-flex h-6 w-6 items-center justify-center rounded-md
+                                                           text-slate-400 dark:text-slate-500
+                                                           hover:text-blue-600 dark:hover:text-blue-400
+                                                           hover:bg-blue-50 dark:hover:bg-blue-900/20
+                                                           disabled:opacity-40 disabled:cursor-not-allowed
+                                                           transition-colors"
+                                                        title="Rerun">
+                                                    <i :data-lucide="execution.rerunning ? 'loader-2' : 'rotate-cw'"
+                                                       class="w-3.5 h-3.5"
+                                                       :class="execution.rerunning ? 'animate-spin' : ''"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Progress bar -->
+                                        <div class="h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                            <div class="h-full rounded-full bg-blue-500 transition-all duration-500"
+                                                 :style="`width:${Math.min(100, Math.max(0, execution.progress || 0))}%`">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Queued executions -->
+                        <div class="mt-5 pt-5 border-t border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="list-ordered"
+                                       class="w-5 h-5 text-orange-600"></i>
+
+                                    <div class="text-sm font-semibold tracking-tight"
+                                         x-text="`My queued executions (${queuedExecutions.length})`">
+                                    </div>
+                                </div>
+
+                                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500"
+                                      x-text="queueCount + ' total in queue'">
+                                </span>
+                            </div>
+
+                            <template x-if="queuedExecutions.length === 0">
+                                <div class="rounded-xl crb_card_notif px-4 py-2 text-center">
+                                    <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                        No execution
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div x-show="queuedExecutions.length > 0"
+                                 class="space-y-3">
+                                <template x-for="execution in queuedExecutions" :key="execution.id">
+                                    <div class="w-full crb_card_notif transition-colors"
+                                         style="margin-bottom: 8px">
+
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0 flex-1">
+
+                                                <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="inline-flex items-center justify-center h-6 min-w-6 px-2 rounded-full
+                                                         bg-orange-50 dark:bg-orange-900/30
+                                                         text-orange-700 dark:text-orange-400
+                                                         text-xs font-bold">
+                                                #<span x-text="execution.queuePosition || '?'"></span>
+                                            </span>
+
+                                                    <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                         x-text="execution.testcase || ('Queue #' + execution.id)">
+                                                    </div>
+
+                                                    <template x-if="execution.nbEntryBefore > 0">
+                                                <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500"
+                                                      x-text="execution.nbEntryBefore + ' avant'">
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.nbEntryBefore === 0">
+                                                <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                                    prochain
+                                                </span>
+                                                    </template>
+                                                </div>
+
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    <template x-if="execution.country">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="flag" class="w-3 h-3"></i>
+                                                    <span x-text="execution.country"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.environment">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="earth" class="w-3 h-3"></i>
+                                                    <span x-text="execution.environment"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.application">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-sky-50 dark:bg-sky-900/30
+                                                             text-sky-600 dark:text-sky-400
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="box" class="w-3 h-3"></i>
+                                                    <span x-text="execution.application"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.queueRobot">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-slate-100 dark:bg-slate-800
+                                                             text-slate-600 dark:text-slate-300
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="bot" class="w-3 h-3"></i>
+                                                    <span x-text="execution.queueRobot"></span>
+                                                </span>
+                                                    </template>
+
+                                                    <template x-if="execution.usrCreated">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-slate-100 dark:bg-slate-800
+                                                             text-slate-600 dark:text-slate-300
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="user" class="w-3 h-3"></i>
+                                                    <span x-text="execution.usrCreated"></span>
+                                                </span>
+                                                    </template>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 shrink-0">
+                                                <button type="button"
+                                                        @click.stop.prevent="updateQueuedExecution(execution)"
+                                                        :disabled="execution.updating === true"
+                                                        class="inline-flex h-6 w-6 items-center justify-center rounded-md
+                                                   text-slate-400 dark:text-slate-500
+                                                   hover:text-blue-600 dark:hover:text-blue-400
+                                                   hover:bg-blue-50 dark:hover:bg-blue-900/20
+                                                   disabled:opacity-40 disabled:cursor-not-allowed
+                                                   transition-colors"
+                                                        title="Update">
+                                                    <i :data-lucide="'pen'"
+                                                       class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Latest executions -->
+                        <div class="mt-5 pt-5 border-t border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="history"
+                                   class="w-5 h-5 text-emerald-600"></i>
+
+                                <div class="text-sm font-semibold tracking-tight">
+                                    My Latest Executions
+                                </div>
+                            </div>
+
+                            <template x-if="latestExecutions.length === 0">
+                                <div class="rounded-xl crb_card_notif px-4 py-5 text-center">
+                                    <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                        No execution
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div x-show="latestExecutions.length > 0"
+                                 class="space-y-3">
+                                <template x-for="execution in latestExecutions" :key="execution.id">
+                                    <div class="w-full crb_card_notif transition-colors" style="margin-bottom: 8px">
+
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div @click="openExecution(execution)"
+                                                 class="min-w-0 flex-1 cursor-pointer">
+
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                         x-text="('#' + execution.id)">
+                                                    </div>
+                                                    <template x-if="execution.tag">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                         bg-slate-100 dark:bg-slate-800
+                                                                         text-slate-600 dark:text-slate-300
+                                                                         text-[10px] font-semibold shrink-0">
+                                                                <i data-lucide="tag" class="w-3 h-3"></i>
+                                                                <span x-text="execution.tag"></span>
+                                                            </span>
+                                                    </template>
+                                                </div>
+
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    <template x-if="execution.controlStatus">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     text-[10px] font-semibold shrink-0"
+                                                              :class="getStatusBadgeClass(execution)">
+                                                            <i :data-lucide="getStatusIcon(execution)" class="w-3 h-3"></i>
+                                                            <span x-text="execution.controlStatus"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="execution.country">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-sky-50 dark:bg-sky-900/30
+                                                                    text-sky-600 dark:text-sky-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            <i data-lucide="flag" class="w-3 h-3"></i>
+                                                            <span x-text="execution.country"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="execution.environment">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-sky-50 dark:bg-sky-900/30
+                                                                    text-sky-600 dark:text-sky-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            <i data-lucide="earth" class="w-3 h-3"></i>
+                                                            <span x-text="execution.environment"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="execution.application">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-sky-50 dark:bg-sky-900/30
+                                                                                 text-sky-600 dark:text-sky-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            <i data-lucide="box" class="w-3 h-3"></i>
+                                                            <span x-text="execution.application"></span>
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                                <template x-if="execution.controlStatus && execution.controlStatus !== 'OK' && execution.controlMessage">
+                                                    <div class="mt-1 min-w-0">
+                                                        <div class="truncate text-[10px] leading-tight font-normal
+                                                            text-slate-400 dark:text-slate-500"
+                                                             :title="execution.controlMessage"
+                                                             x-text="execution.controlMessage">
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 shrink-0">
+                                                <button type="button"
+                                                        @click.stop.prevent="rerunExecution(execution)"
+                                                        :disabled="execution.rerunning === true"
+                                                        class="inline-flex h-6 w-6 items-center justify-center rounded-md
+                                                           text-slate-400 dark:text-slate-500
+                                                           hover:text-blue-600 dark:hover:text-blue-400
+                                                           hover:bg-blue-50 dark:hover:bg-blue-900/20
+                                                           disabled:opacity-40 disabled:cursor-not-allowed
+                                                           transition-colors"
+                                                        title="Rerun">
+                                                    <i :data-lucide="execution.rerunning ? 'loader-2' : 'rotate-cw'"
+                                                       class="w-3.5 h-3.5"
+                                                       :class="execution.rerunning ? 'animate-spin' : ''"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ============ Campaign tab ============ -->
+                <template x-if="$store.rightPanel.activeTab === 'campaign'">
+                    <div>
+                        <!-- Running campaigns -->
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="circle-play"
+                                       class="w-5 h-5 text-blue-600"></i>
+
+                                    <div class="text-sm font-semibold tracking-tight"
+                                         x-text="`Running campaigns (${runningCampaigns.length})`">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <template x-if="runningCampaigns.length === 0">
+                                <div class="rounded-xl crb_card_notif px-4 py-2 text-center">
+                                    <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                        No campaign running
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div x-show="runningCampaigns.length > 0"
+                                 class="space-y-4">
+                                <template x-for="campaign in runningCampaigns" :key="campaign.campaignExecutionId">
+                                    <div class="w-full text-left group crb_card_notif transition-colors cursor-pointer"
+                                         @click="openCampaign(campaign)"
+                                         style="margin-bottom: 8px">
+
+                                        <div class="flex items-end justify-between gap-4 mb-1">
+                                            <div class="min-w-0">
+                                                <!-- Main title -->
+                                                <div class="flex flex-wrap gap-1.5 items-center">
+                                                    <div>
+                                                         <div class="notification-icon-inner" style="background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent)">
+                                                              <i data-lucide="loader-2" class="px-2 py-0.5 notification-spin-limited" style="color: var(--crb-blue-color)"></i>
+                                                         </div>
+                                                    </div>
+                                                    <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                         x-text="campaign.campaignId">
+                                                    </div>
+
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-slate-100 dark:bg-slate-800
+                                                             text-slate-600 dark:text-slate-300
+                                                             text-[10px] font-semibold shrink-0">
+                                                        <i data-lucide="tag" class="w-3 h-3"></i>
+                                                        <span x-text="campaign.campaignExecutionId"></span>
+                                                    </span>
+                                                </div>
+
+                                                <!-- Result badges -->
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    <template x-if="campaign.result.ok > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-emerald-50 dark:bg-emerald-900/30
+                                                                     text-emerald-700 dark:text-emerald-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            OK <span x-text="campaign.result.ok"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="campaign.result.ko > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-red-50 dark:bg-red-900/30
+                                                                     text-red-700 dark:text-red-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            KO <span x-text="campaign.result.ko"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="campaign.result.fa > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-orange-50 dark:bg-orange-900/30
+                                                                     text-orange-700 dark:text-orange-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            FA <span x-text="campaign.result.fa"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                 bg-sky-50 dark:bg-sky-900/30
+                                                                 text-sky-600 dark:text-sky-400
+                                                                 text-[10px] font-semibold shrink-0">
+                                                        <i data-lucide="list-checks" class="w-3 h-3"></i>
+                                                        <span x-text="campaign.result.total + ' executed'"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Finished campaigns -->
+                        <div class="mt-5 pt-5 border-t border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="history"
+                                   class="w-5 h-5 text-emerald-600"></i>
+
+                                <div class="text-sm font-semibold tracking-tight">
+                                    Finished campaigns
+                                </div>
+                            </div>
+
+                            <template x-if="finishedCampaigns.length === 0">
+                                <div class="rounded-xl crb_card_notif px-4 py-5 text-center">
+                                    <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                        No campaign
+                                    </p>
+                                </div>
+                            </template>
+
+                            <div x-show="finishedCampaigns.length > 0"
+                                 class="space-y-3">
+                                <template x-for="campaign in finishedCampaigns" :key="campaign.campaignExecutionId">
+                                    <div class="w-full crb_card_notif transition-colors cursor-pointer"
+                                         @click="openCampaign(campaign)"
+                                         style="margin-bottom: 8px">
+
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0 flex-1">
+
+                                                <div class="flex flex-wrap gap-1.5 items-center">
+                                                    <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                         x-text="campaign.campaignId">
+                                                    </div>
+
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                 bg-slate-100 dark:bg-slate-800
+                                                                 text-slate-600 dark:text-slate-300
+                                                                 text-[10px] font-semibold shrink-0">
+                                                        <i data-lucide="tag" class="w-3 h-3"></i>
+                                                        <span x-text="campaign.campaignExecutionId"></span>
+                                                    </span>
+                                                </div>
+
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                 text-[10px] font-semibold shrink-0"
+                                                          :class="getCiResultBadgeClass(campaign)">
+                                                        <i :data-lucide="getCiResultIcon(campaign)" class="w-3 h-3"></i>
+                                                        <span x-text="campaign.ciResult || 'DONE'"></span>
+                                                    </span>
+
+                                                    <template x-if="campaign.result.ok > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-emerald-50 dark:bg-emerald-900/30
+                                                                     text-emerald-700 dark:text-emerald-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            OK <span x-text="campaign.result.ok"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="campaign.result.ko > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-red-50 dark:bg-red-900/30
+                                                                     text-red-700 dark:text-red-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            KO <span x-text="campaign.result.ko"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <template x-if="campaign.result.fa > 0">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                     bg-orange-50 dark:bg-orange-900/30
+                                                                     text-orange-700 dark:text-orange-400
+                                                                     text-[10px] font-semibold shrink-0">
+                                                            FA <span x-text="campaign.result.fa"></span>
+                                                        </span>
+                                                    </template>
+
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                 bg-slate-100 dark:bg-slate-800
+                                                                 text-slate-600 dark:text-slate-300
+                                                                 text-[10px] font-semibold shrink-0">
+                                                        <i data-lucide="timer" class="w-3 h-3"></i>
+                                                        <span x-text="formatDuration(campaign.durationInMillis)"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- ============ Activity tab ============ -->
+                <template x-if="$store.rightPanel.activeTab === 'activity'">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="activity"
+                               class="w-5 h-5 text-purple-600"></i>
+
+                            <div class="text-sm font-semibold tracking-tight">
+                                Recent activity
+                            </div>
+                        </div>
+
+                        <template x-if="activityEvents.length === 0">
+                            <div class="rounded-xl crb_card_notif px-4 py-5 text-center">
+                                <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                                    No activity
+                                </p>
+                            </div>
+                        </template>
+
+                        <div x-show="activityEvents.length > 0"
+                             class="space-y-3">
+                            <template x-for="event in activityEvents" :key="event.id">
+                                <div class="w-full crb_card_notif transition-colors cursor-pointer"
+                                     @click="openActivityEvent(event)"
+                                     style="margin-bottom: 8px">
+
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-wrap gap-1.5 items-center">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             text-[10px] font-semibold shrink-0"
+                                                      :class="getActivityBadgeClass(event)">
+                                                    <i :data-lucide="getActivityIcon(event)" class="w-3 h-3"></i>
+                                                    <span x-text="getActivityLabel(event)"></span>
+                                                </span>
+
+                                                <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
+                                                     x-text="event.testcase ? (event.test + ' - ' + event.testcase) : event.test">
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-1 flex flex-wrap gap-1.5">
+                                                <template x-if="event.application">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                                 bg-sky-50 dark:bg-sky-900/30
+                                                                 text-sky-600 dark:text-sky-400
+                                                                 text-[10px] font-semibold shrink-0">
+                                                        <i data-lucide="box" class="w-3 h-3"></i>
+                                                        <span x-text="event.application"></span>
+                                                    </span>
+                                                </template>
+
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+                                                             bg-slate-100 dark:bg-slate-800
+                                                             text-slate-600 dark:text-slate-300
+                                                             text-[10px] font-semibold shrink-0">
+                                                    <i data-lucide="clock" class="w-3 h-3"></i>
+                                                    <span x-text="formatActivityTime(event.receivedAt)"></span>
+                                                </span>
+                                            </div>
+
+                                            <template x-if="event.description">
+                                                <div class="mt-1 min-w-0">
+                                                    <div class="truncate text-[10px] leading-tight font-normal
+                                                        text-slate-400 dark:text-slate-500"
+                                                         :title="event.description"
+                                                         x-text="event.description">
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<script>
+    function rightPanel() {
+        return {
+            // ---- Execution state ----
+            executionSessionID: null,
+            executionSubscribed: false,
+            executionSubscribing: false,
+
+            runningCount: 0,
+            queueCount: 0,
+
+            queuedExecutions: [],
+            runningExecutions: [],
+
+            latestExecutions: [],
+            latestExecutionsLimit: 10,
+
+            // ---- Campaign state ----
+            campaignSessionID: null,
+            campaignSubscribed: false,
+            campaignSubscribing: false,
+
+            runningCampaigns: [],
+            finishedCampaigns: [],
+            finishedCampaignsLimit: 10,
+
+            // ---- Activity state ----
+            activitySessionID: null,
+            activitySubscribed: false,
+            activitySubscribing: false,
+
+            activityEvents: [],
+            activityEventsLimit: 30,
+
+            // ---- Resize state ----
+            resizeStartX: 0,
+            resizeStartWidth: 0,
+
+            init() {
+                const login = this.getCurrentLogin();
+
+                this.executionSessionID = "right-panel-execution-" + login;
+                this.campaignSessionID = "right-panel-campaign-" + login;
+                this.activitySessionID = "right-panel-activity-" + login;
+
+                this.$watch("$store.rightPanel.open", (open) => {
+                    if (open) {
+                        this.refreshIcons();
+                    }
+                });
+
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") {
+                        this.$store.rightPanel.close();
+                    }
+                });
+
+                // Execution listeners
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_LASTEXECUTION), (e) => {
+                    this.initLatestExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_RUNNING), (e) => {
+                    this.initRunningExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIST_QUEUED), (e) => {
+                    this.initQueuedExecutions(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIGHT_UPDATE), (e) => {
+                    this.upsertRunningExecution(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.MYEXECUTION_LIGHT_DONE), (e) => {
+                    this.finishExecution(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.EXECUTION_LIST_QUEUED), (e) => {
+                    this.updateQueueCounters(e.detail.payload);
+                });
+
+                // Campaign listeners
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CAMPAIGN_LIST_RUNNING), (e) => {
+                    this.initRunningCampaigns(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CAMPAIGN_LIST_LASTFINISHED), (e) => {
+                    this.initFinishedCampaigns(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CAMPAIGN_START), (e) => {
+                    this.upsertRunningCampaign(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CAMPAIGN_UPDATE), (e) => {
+                    this.upsertRunningCampaign(e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CAMPAIGN_DONE), (e) => {
+                    this.finishCampaign(e.detail.payload);
+                });
+
+                // Activity listeners
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_CREATE), (e) => {
+                    this.addActivityEvent("create", e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_UPDATE), (e) => {
+                    this.addActivityEvent("update", e.detail.payload);
+                });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_DELETE), (e) => {
+                    this.addActivityEvent("delete", e.detail.payload);
+                });
+
+                document.addEventListener(CerberusWs.Event.CONNECTED, () => {
+                    this.subscribeExecutionChannels();
+                    this.subscribeCampaignChannels();
+                    this.subscribeActivityChannels();
+                });
+
+                document.addEventListener(CerberusWs.Event.DISCONNECTED, () => {
+                    this.executionSubscribed = false;
+                    this.executionSubscribing = false;
+                    this.campaignSubscribed = false;
+                    this.campaignSubscribing = false;
+                    this.activitySubscribed = false;
+                    this.activitySubscribing = false;
+                });
+
+                this.subscribeExecutionChannels();
+                this.subscribeCampaignChannels();
+                this.subscribeActivityChannels();
+
+                this.refreshIcons();
+            },
+
+            getCurrentLogin() {
+                if (typeof getUser === "function" && getUser()) {
+                    return getUser().login || getUser().name || "anonymous";
+                }
+
+                const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+                return user.login || user.name || "anonymous";
+            },
+
+            // ---- Subscriptions ----
+
+            subscribeExecutionChannels() {
+                if (this.executionSubscribed || this.executionSubscribing) {
+                    return;
+                }
+
+                const ws = Alpine.store("ws");
+                if (!ws) {
+                    return;
+                }
+
+                this.executionSubscribing = true;
+
+                const message = {
+                    sender: this.getCurrentLogin(),
+                    sessionID: this.executionSessionID,
+                    subject: CerberusWs.Subject.SUBSCRIBE,
+                    channels: [
+                        CerberusWs.Channel.MYEXECUTION_LIST_LASTEXECUTION,
+                        CerberusWs.Channel.MYEXECUTION_LIST_RUNNING,
+                        CerberusWs.Channel.MYEXECUTION_LIST_QUEUED,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_START,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_UPDATE,
+                        CerberusWs.Channel.MYEXECUTION_LIGHT_DONE,
+                        CerberusWs.Channel.EXECUTION_LIST_QUEUED
+                    ]
+                };
+
+                ws.whenConnected()
+                    .then(() => {
+                        const sent = ws.send(message);
+                        this.executionSubscribed = !!sent;
+                    })
+                    .catch((err) => {
+                        this.executionSubscribed = false;
+                        console.warn("Unable to subscribe rightPanel to execution channels", err);
+                    })
+                    .finally(() => {
+                        this.executionSubscribing = false;
+                    });
+            },
+
+            subscribeCampaignChannels() {
+                if (this.campaignSubscribed || this.campaignSubscribing) {
+                    return;
+                }
+
+                const ws = Alpine.store("ws");
+                if (!ws) {
+                    return;
+                }
+
+                this.campaignSubscribing = true;
+
+                const message = {
+                    sender: this.getCurrentLogin(),
+                    sessionID: this.campaignSessionID,
+                    subject: CerberusWs.Subject.SUBSCRIBE,
+                    channels: [
+                        CerberusWs.Channel.CAMPAIGN_LIST_RUNNING,
+                        CerberusWs.Channel.CAMPAIGN_LIST_LASTFINISHED,
+                        CerberusWs.Channel.CAMPAIGN_START,
+                        CerberusWs.Channel.CAMPAIGN_UPDATE,
+                        CerberusWs.Channel.CAMPAIGN_DONE
+                    ]
+                };
+
+                ws.whenConnected()
+                    .then(() => {
+                        const sent = ws.send(message);
+                        this.campaignSubscribed = !!sent;
+                    })
+                    .catch((err) => {
+                        this.campaignSubscribed = false;
+                        console.warn("Unable to subscribe rightPanel to campaign channels", err);
+                    })
+                    .finally(() => {
+                        this.campaignSubscribing = false;
+                    });
+            },
+
+            subscribeActivityChannels() {
+                if (this.activitySubscribed || this.activitySubscribing) {
+                    return;
+                }
+
+                const ws = Alpine.store("ws");
+                if (!ws) {
+                    return;
+                }
+
+                this.activitySubscribing = true;
+
+                const message = {
+                    sender: this.getCurrentLogin(),
+                    sessionID: this.activitySessionID,
+                    subject: CerberusWs.Subject.SUBSCRIBE,
+                    channels: [
+                        CerberusWs.Channel.TESTCASE_CREATE,
+                        CerberusWs.Channel.TESTCASE_UPDATE,
+                        CerberusWs.Channel.TESTCASE_DELETE
+                    ]
+                };
+
+                ws.whenConnected()
+                    .then(() => {
+                        const sent = ws.send(message);
+                        this.activitySubscribed = !!sent;
+                    })
+                    .catch((err) => {
+                        this.activitySubscribed = false;
+                        console.warn("Unable to subscribe rightPanel to activity channels", err);
+                    })
+                    .finally(() => {
+                        this.activitySubscribing = false;
+                    });
+            },
+
+            // ---- Resize ----
+
+            startResize(event) {
+                event.preventDefault();
+
+                this.$store.rightPanel.isResizing = true;
+                this.resizeStartX = event.clientX;
+                this.resizeStartWidth = this.$store.rightPanel.width;
+
+                document.body.classList.add("select-none");
+                document.body.style.cursor = "col-resize";
+
+                const onPointerMove = (e) => {
+                    if (!this.$store.rightPanel.isResizing) {
+                        return;
+                    }
+
+                    const delta = this.resizeStartX - e.clientX;
+                    this.$store.rightPanel.setWidth(this.resizeStartWidth + delta);
+                };
+
+                const onPointerUp = () => {
+                    this.$store.rightPanel.isResizing = false;
+
+                    document.body.classList.remove("select-none");
+                    document.body.style.cursor = "";
+
+                    window.removeEventListener("pointermove", onPointerMove);
+                    window.removeEventListener("pointerup", onPointerUp);
+                    window.removeEventListener("pointercancel", onPointerUp);
+
+                    this.$store.rightPanel.persistWidth();
+                };
+
+                window.addEventListener("pointermove", onPointerMove);
+                window.addEventListener("pointerup", onPointerUp);
+                window.addEventListener("pointercancel", onPointerUp);
+            },
+
+            // ---- Execution logic ----
+
+            updateQueueCounters(payload) {
+                if (!payload) {
+                    this.queueCount = 0;
+                    this.refreshIcons();
+                    return;
+                }
+
+                const stats = payload.queueStats || payload;
+
+                this.queueCount = Number(
+                    payload.queueTotal
+                    || stats.queueTotal
+                    || stats.queueSize
+                    || stats.queueCount
+                    || 0
+                );
+
+                this.refreshIcons();
+            },
+
+            initLatestExecutions(payload) {
+                const list = Array.isArray(payload) ? payload : [];
+
+                this.latestExecutions = list
+                    .map(e => this.normalizeExecution(e))
+                    .filter(Boolean)
+                    .slice(0, this.latestExecutionsLimit);
+
+                this.refreshIcons();
+            },
+
+            initRunningExecutions(payload) {
+                const list = Array.isArray(payload) ? payload : [];
+
+                this.runningExecutions = list
+                    .map(e => this.normalizeExecution(e))
+                    .filter(Boolean);
+
+                this.runningCount = this.runningExecutions.length;
+
+                this.refreshIcons();
+            },
+
+            initQueuedExecutions(payload) {
+                const list = Array.isArray(payload)
+                    ? payload
+                    : (payload?.executionsInQueue ?? []);
+
+                this.queuedExecutions = list
+                    .map(e => this.normalizeQueuedExecution(e))
+                    .filter(Boolean);
+
+                this.queueCount = Number(
+                    payload?.queueTotal
+                    ?? this.queuedExecutions.length
+                    ?? 0
+                );
+
+                this.refreshIcons();
+            },
+
+            getNormalizedStatus(execution) {
+                return String(
+                    execution?.controlStatus
+                    || execution?.status
+                    || ""
+                ).toUpperCase();
+            },
+
+            isKoStatus(execution) {
+                const status = this.getNormalizedStatus(execution);
+
+                return status === "KO"
+                    || status === "FAIL"
+                    || status === "FAILED"
+                    || status === "NOK";
+            },
+
+            isFaStatus(execution) {
+                const status = this.getNormalizedStatus(execution);
+
+                return status === "FA"
+                    || status === "FATAL"
+                    || status === "FATAL ERROR";
+            },
+
+            getStatusBadgeClass(execution) {
+                if (this.isKoStatus(execution)) {
+                    return "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400";
+                }
+
+                if (this.isFaStatus(execution)) {
+                    return "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400";
+                }
+
+                return "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+            },
+
+            getStatusIcon(execution) {
+                if (this.isKoStatus(execution)) {
+                    return "x-circle";
+                }
+
+                if (this.isFaStatus(execution)) {
+                    return "alert-triangle";
+                }
+
+                return "check-circle";
+            },
+
+            normalizeExecution(payload) {
+                if (!payload) {
+                    return null;
+                }
+
+                const id = payload.testcaseExecutionId
+                    || payload.executionId
+                    || payload.id
+                    || payload.ID
+                    || payload.executionID;
+
+                if (!id) {
+                    return null;
+                }
+
+                const progress = Number(
+                    payload.progressPercent
+                    || payload.progress
+                    || payload.percentage
+                    || 0
+                );
+
+                return {
+                    id: id,
+
+                    queueId: payload.queueId
+                        || payload.executionQueueId
+                        || payload.testCaseExecutionQueueId
+                        || payload.testCaseExecutionQueueID
+                        || payload.queueID
+                        || payload.idQueue
+                        || null,
+
+                    testcase: payload.testcase
+                        || payload.testCase
+                        || payload.testCaseName
+                        || payload.testcaseName
+                        || ("Execution #" + id),
+
+                    test: payload.test || "",
+                    application: payload.application || "",
+                    environment: payload.environment || "",
+                    country: payload.country || "",
+                    system: payload.system || "",
+                    tag: payload.tag || payload.campaign || "",
+
+                    controlStatus: payload.controlStatus || payload.status || payload.control || "",
+                    controlMessage: payload.controlMessage || payload.message || "",
+                    progress: Math.min(100, Math.max(0, progress)),
+
+                    doneCount: Number(payload.doneCount || 0),
+                    totalCount: Number(payload.totalCount || 0),
+
+                    start: payload.start || payload.startDate || payload.startTime || null,
+                    end: payload.end || payload.endDate || payload.endTime || null,
+
+                    rerunning: false,
+                    raw: payload
+                };
+            },
+
+            normalizeQueuedExecution(payload) {
+                if (!payload) {
+                    return null;
+                }
+
+                const id = payload.id
+                    || payload.queueId
+                    || payload.testCaseExecutionQueueId
+                    || payload.testCaseExecutionQueueID
+                    || payload.queueID;
+
+                if (!id) {
+                    return null;
+                }
+
+                return {
+                    id: id,
+                    queueId: id,
+
+                    testcase: payload.testcase
+                        || payload.testCase
+                        || payload.testCaseName
+                        || payload.testcaseName
+                        || ("Queue #" + id),
+
+                    application: payload.application || "",
+                    environment: payload.environment || "",
+                    country: payload.country || "",
+                    system: payload.system || "",
+                    tag: payload.tag || payload.campaign || "",
+
+                    queueRobot: payload.queueRobot || "",
+                    queueRobotHost: payload.queueRobotHost || "",
+                    queueRobotPort: payload.queueRobotPort || "",
+                    appType: payload.appType || "",
+
+                    usrCreated: payload.usrCreated || payload.user || "",
+
+                    queuePosition: Number(payload.queuePosition || 0),
+                    nbEntryBefore: Number(payload.nbEntryBefore || 0),
+
+                    updating: false,
+                    bypassing: false,
+
+                    raw: payload
+                };
+            },
+
+            upsertRunningExecution(payload) {
+                const execution = this.normalizeExecution(payload);
+                if (!execution) {
+                    return;
+                }
+
+                const index = this.runningExecutions
+                    .findIndex(e => String(e.id) === String(execution.id));
+
+                if (index >= 0) {
+                    this.runningExecutions[index] = {
+                        ...this.runningExecutions[index],
+                        ...execution
+                    };
+                } else {
+                    this.runningExecutions.unshift(execution);
+                }
+
+                this.runningCount = this.runningExecutions.length;
+                this.refreshIcons();
+            },
+
+            finishExecution(payload) {
+                const execution = this.normalizeExecution(payload);
+                if (!execution) {
+                    return;
+                }
+
+                const existing = this.runningExecutions
+                    .find(e => String(e.id) === String(execution.id));
+
+                const finishedExecution = {
+                    ...(existing || {}),
+                    ...execution,
+                    progress: 100,
+                    finishedAt: new Date().toISOString()
+                };
+
+                this.runningExecutions = this.runningExecutions
+                    .filter(e => String(e.id) !== String(execution.id));
+
+                this.runningCount = this.runningExecutions.length;
+
+                this.addLatestExecution(finishedExecution);
+                this.refreshIcons();
+            },
+
+            addLatestExecution(execution) {
+                if (!execution || !execution.id) {
+                    return;
+                }
+
+                this.latestExecutions = this.latestExecutions
+                    .filter(e => String(e.id) !== String(execution.id));
+
+                this.latestExecutions.unshift({
+                    ...execution,
+                    rerunning: false
+                });
+
+                this.latestExecutions = this.latestExecutions.slice(0, this.latestExecutionsLimit);
+            },
+
+            openExecution(execution) {
+                if (!execution || !execution.id) {
+                    return;
+                }
+
+                window.location.href = getCerberusBasePath()
+                    + "TestCaseExecution.jsp?executionId="
+                    + encodeURIComponent(execution.id);
+            },
+
+            updateQueuedExecution(execution) {
+                openModalTestCaseExecutionQueue(execution.queueId, "EDIT");
+            },
+
+            rerunExecution(execution) {
+                if (!execution) {
+                    return;
+                }
+
+                const queueId = execution.queueId;
+
+                if (!queueId) {
+                    showMessageMainPage(
+                        "warning",
+                        "Unable to rerun execution: missing queue id.",
+                        false,
+                        60000
+                    );
+                    return;
+                }
+
+                execution.rerunning = true;
+
+                $.ajax({
+                    url: getCerberusBasePath() + "CreateTestCaseExecutionQueue",
+                    async: true,
+                    method: "POST",
+                    data: {
+                        id: queueId,
+                        actionState: "toQUEUED",
+                        actionSave: "save",
+                        tag: execution.tag || ""
+                    },
+                    success: function (data) {
+                        const alertType = getAlertType(data.messageType);
+
+                        showMessageMainPage(alertType, data.message, false, 60000);
+
+                        if (alertType === "success"
+                            && data.testCaseExecutionQueueList
+                            && data.testCaseExecutionQueueList.length > 0) {
+
+                            execution.lastRerunQueueId = data.testCaseExecutionQueueList[0].id;
+                        }
+                    },
+                    error: showUnexpectedError,
+                    complete: function () {
+                        execution.rerunning = false;
+                    }
+                });
+            },
+
+            // ---- Campaign logic ----
+
+            normalizeCampaign(payload) {
+                if (!payload) {
+                    return null;
+                }
+
+                const id = payload.campaignExecutionId;
+                if (!id) {
+                    return null;
+                }
+
+                const result = payload.result || {};
+
+                return {
+                    campaignExecutionId: id,
+                    campaignId: payload.campaignId || id,
+
+                    ciResult: payload.ciResult || "",
+                    startDate: payload.startDate || null,
+                    endDate: payload.endDate || null,
+                    durationInMillis: Number(payload.durationInMillis || 0),
+
+                    result: {
+                        total: Number(result.total || 0),
+                        totalWithRetries: Number(result.totalWithRetries || 0),
+                        ok: Number(result.ok || 0),
+                        ko: Number(result.ko || 0),
+                        fa: Number(result.fa || 0)
+                    },
+
+                    raw: payload
+                };
+            },
+
+            initRunningCampaigns(payload) {
+                const list = Array.isArray(payload) ? payload : [];
+
+                this.runningCampaigns = list
+                    .map(c => this.normalizeCampaign(c))
+                    .filter(Boolean);
+
+                this.refreshIcons();
+            },
+
+            initFinishedCampaigns(payload) {
+                const list = Array.isArray(payload) ? payload : [];
+
+                this.finishedCampaigns = list
+                    .map(c => this.normalizeCampaign(c))
+                    .filter(Boolean)
+                    .slice(0, this.finishedCampaignsLimit);
+
+                this.refreshIcons();
+            },
+
+            upsertRunningCampaign(payload) {
+                const campaign = this.normalizeCampaign(payload);
+                if (!campaign) {
+                    return;
+                }
+
+                const index = this.runningCampaigns
+                    .findIndex(c => String(c.campaignExecutionId) === String(campaign.campaignExecutionId));
+
+                if (index >= 0) {
+                    this.runningCampaigns[index] = {
+                        ...this.runningCampaigns[index],
+                        ...campaign
+                    };
+                } else {
+                    this.runningCampaigns.unshift(campaign);
+                }
+
+                this.refreshIcons();
+            },
+
+            finishCampaign(payload) {
+                const campaign = this.normalizeCampaign(payload);
+                if (!campaign) {
+                    return;
+                }
+
+                this.runningCampaigns = this.runningCampaigns
+                    .filter(c => String(c.campaignExecutionId) !== String(campaign.campaignExecutionId));
+
+                this.finishedCampaigns = this.finishedCampaigns
+                    .filter(c => String(c.campaignExecutionId) !== String(campaign.campaignExecutionId));
+
+                this.finishedCampaigns.unshift(campaign);
+                this.finishedCampaigns = this.finishedCampaigns.slice(0, this.finishedCampaignsLimit);
+
+                this.refreshIcons();
+            },
+
+            getCiResultBadgeClass(campaign) {
+                const result = String(campaign.ciResult || "").toUpperCase();
+
+                if (result === "KO") {
+                    return "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400";
+                }
+
+                if (result === "OK") {
+                    return "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+                }
+
+                return "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+            },
+
+            getCiResultIcon(campaign) {
+                const result = String(campaign.ciResult || "").toUpperCase();
+
+                if (result === "KO") {
+                    return "x-circle";
+                }
+
+                if (result === "OK") {
+                    return "check-circle";
+                }
+
+                return "circle";
+            },
+
+            formatDuration(durationInMillis) {
+                const totalSeconds = Math.max(0, Math.round(Number(durationInMillis || 0) / 1000));
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+
+                return minutes + "m " + String(seconds).padStart(2, "0") + "s";
+            },
+
+            openCampaign(campaign) {
+                if (!campaign || !campaign.campaignExecutionId) {
+                    return;
+                }
+
+                window.location.href = getCerberusBasePath()
+                    + "TestCaseExecutionQueueList.jsp?tag="
+                    + encodeURIComponent(campaign.campaignExecutionId);
+            },
+
+            // ---- Activity logic ----
+
+            normalizeActivityEvent(type, payload) {
+                if (!payload) {
+                    return null;
+                }
+
+                return {
+                    id: type + "|" + (payload.test || "") + "|" + (payload.testcase || "") + "|" + Date.now() + "|" + Math.random(),
+                    type: type,
+
+                    test: payload.test || "",
+                    testcase: payload.testcase || "",
+                    application: payload.application || "",
+                    description: payload.description || "",
+
+                    receivedAt: new Date()
+                };
+            },
+
+            addActivityEvent(type, payload) {
+                const event = this.normalizeActivityEvent(type, payload);
+                if (!event) {
+                    return;
+                }
+
+                this.activityEvents.unshift(event);
+                this.activityEvents = this.activityEvents.slice(0, this.activityEventsLimit);
+
+                this.refreshIcons();
+            },
+
+            getActivityBadgeClass(event) {
+                if (event.type === "create") {
+                    return "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+                }
+
+                if (event.type === "delete") {
+                    return "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400";
+                }
+
+                return "bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400";
+            },
+
+            getActivityIcon(event) {
+                if (event.type === "create") {
+                    return "plus-circle";
+                }
+
+                if (event.type === "delete") {
+                    return "trash-2";
+                }
+
+                return "pencil";
+            },
+
+            getActivityLabel(event) {
+                if (event.type === "create") {
+                    return "CREATED";
+                }
+
+                if (event.type === "delete") {
+                    return "DELETED";
+                }
+
+                return "UPDATED";
+            },
+
+            formatActivityTime(receivedAt) {
+                if (!receivedAt) {
+                    return "";
+                }
+
+                return receivedAt.toLocaleTimeString();
+            },
+
+            openActivityEvent(event) {
+                if (!event || !event.test || event.type === "delete") {
+                    return;
+                }
+
+                window.location.href = getCerberusBasePath()
+                    + "TestCaseScript.jsp?test="
+                    + encodeURIComponent(event.test)
+                    + "&testcase="
+                    + encodeURIComponent(event.testcase);
+            },
+
+            refreshIcons() {
+                this.$nextTick(() => {
+                    requestAnimationFrame(() => {
+                        if (window.lucide && typeof lucide.createIcons === "function") {
+                            lucide.createIcons();
+                        }
+                    });
+                });
+            }
+        };
+    }
+</script>

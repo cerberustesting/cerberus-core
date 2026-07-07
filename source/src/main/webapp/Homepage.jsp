@@ -44,7 +44,7 @@
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="js/pages/Homepage.js?v=${appVersion}"></script>
     </head>
-    <body x-data x-cloak class="crb_body">
+    <body x-data x-cloak class="crb_body_wrp">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <jsp:include page="include/templates/card-with-tabs.html"/>
@@ -64,17 +64,23 @@
 
         <% }
         %>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <jsp:include page="include/global/rightPanel.html"/>
+        <main class="crb_main_wrp"
+              :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{
+                      marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - '
+                          + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '
+                          + ($store.rightPanel.open ? $store.rightPanel.width : 0)
+                          + 'px)'}"
+        >
             <div>
                 <%@ include file="include/global/messagesArea.html" %>
                 <div class="flex items-start justify-between gap-4 mb-4">
                     <h1 class="page-title-line mb-0" id="title">
                         Welcome to Cerberus
                     </h1>
-
-                    <div class="shrink-0">
-                        <jsp:include page="include/global/notificationBar.html"/>
-                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">

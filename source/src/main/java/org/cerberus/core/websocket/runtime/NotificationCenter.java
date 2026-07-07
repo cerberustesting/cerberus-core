@@ -22,9 +22,13 @@ package org.cerberus.core.websocket.runtime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionDTOV001;
+import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionMapperV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
+import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
+import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
@@ -44,16 +48,22 @@ public class NotificationCenter {
     private final ITestCaseExecutionService testCaseExecutionService;
     private final ITestCaseExecutionQueueService testCaseExecutionQueueService;
     private final TestcaseExecutionLightMapperV001 testcaseExecutionLightMapperV001;
+    private final ITagService tagService;
+    private final CampaignExecutionMapperV001 campaignExecutionMapperV001;
     @Autowired
     private WebSocketEventSender webSocketEventSender;
 
     public NotificationCenter(
             ITestCaseExecutionService testCaseExecutionService,
             ITestCaseExecutionQueueService testCaseExecutionQueueService,
-            TestcaseExecutionLightMapperV001 testcaseExecutionLightMapperV001) {
+            TestcaseExecutionLightMapperV001 testcaseExecutionLightMapperV001,
+            ITagService tagService,
+            CampaignExecutionMapperV001 campaignExecutionMapperV001) {
         this.testCaseExecutionService = testCaseExecutionService;
         this.testCaseExecutionQueueService = testCaseExecutionQueueService;
         this.testcaseExecutionLightMapperV001 = testcaseExecutionLightMapperV001;
+        this.tagService = tagService;
+        this.campaignExecutionMapperV001 = campaignExecutionMapperV001;
     }
 
 
@@ -113,6 +123,40 @@ public class NotificationCenter {
     }
 
 
+    private List<CampaignExecutionDTOV001> readCampaignsRunning() {
+        try {
+            List<Tag> campaigns = tagService.convert(tagService.readCampaignsRunning());
+
+            List<CampaignExecutionDTOV001> result = new ArrayList<>();
+
+            for (Tag campaign : campaigns) {
+                result.add(campaignExecutionMapperV001.toLightDto(campaign));
+            }
+
+            return result;
+
+        } catch (CerberusException e) {
+            throw new IllegalStateException("Unable to read running campaigns", e);
+        }
+    }
+
+    private List<CampaignExecutionDTOV001> readCampaignsLastFinished() {
+        try {
+            List<Tag> campaigns = tagService.convert(tagService.readCampaignsLastFinished(10));
+
+            List<CampaignExecutionDTOV001> result = new ArrayList<>();
+
+            for (Tag campaign : campaigns) {
+                result.add(campaignExecutionMapperV001.toLightDto(campaign));
+            }
+
+            return result;
+
+        } catch (CerberusException e) {
+            throw new IllegalStateException("Unable to read last finished campaigns", e);
+        }
+    }
+
     public void sendInitExecutionsRunning(String sender, String appSessionID) {
         webSocketEventSender.sendToAppSession(
                 appSessionID,
@@ -132,6 +176,20 @@ public class NotificationCenter {
                 appSessionID,
                 WebSocketStatic.CHANNEL_MYEXECUTION_LIST_LASTEXECUTION,
                 readMyLatestExecutions(sender));
+    }
+
+    public void sendInitCampaignsRunning(String appSessionID) {
+        webSocketEventSender.sendToAppSession(
+                appSessionID,
+                WebSocketStatic.CHANNEL_CAMPAIGN_LIST_RUNNING,
+                readCampaignsRunning());
+    }
+
+    public void sendInitCampaignsLastFinished(String appSessionID) {
+        webSocketEventSender.sendToAppSession(
+                appSessionID,
+                WebSocketStatic.CHANNEL_CAMPAIGN_LIST_LASTFINISHED,
+                readCampaignsLastFinished());
     }
 
 }

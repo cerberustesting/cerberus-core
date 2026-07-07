@@ -335,16 +335,25 @@
             </template>
         </div>
 
-        <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
+
             <button @click="close()"
-                     class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                 Close
             </button>
 
-            <button @click="submit()"
-                     class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition flex items-center gap-1.5">
-                <i data-lucide="play" class="w-3.5 h-3.5"></i> Run
+            <button @click="submit(false)"
+                    :disabled="loading"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                Run
+            </button>
+
+            <button @click="submit(true)"
+                    :disabled="loading"
+                    class="px-4 py-2 rounded-md bg-blue-600 !text-white text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1.5">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                Run and see result
             </button>
         </div>
     </div>
@@ -589,7 +598,7 @@
 
             /* ---------------- SUBMIT ---------------- */
 
-            async submit() {
+            async submit(redirectAfterRun = true) {
 
                 if (this.selectedEnvs.length === 0) {
                     this.error = 'Select at least one environment';
@@ -640,20 +649,32 @@
                     const text = await r.text();
                     const data = JSON.parse(text);
 
-                    if (data.messageType === 'OK' && data.nbExe === 1) {
-                        var isV2 = window.location.href.indexOf('V2.jsp') > -1;
-                        var exePage = isV2 ? 'TestCaseExecutionV2.jsp' : 'TestCaseExecution.jsp';
-                        window.location.href =
+                    if (data.messageType === 'OK') {
+
+                        // Nouveau comportement : Run simple
+                        // On lance l'exécution puis on ferme la popup.
+                        if (!redirectAfterRun) {
+                            this.close();
+                            return;
+                        }
+
+                        // Comportement actuel : Run and see result
+                        if (data.nbExe === 1) {
+                            var isV2 = window.location.href.indexOf('V2.jsp') > -1;
+                            var exePage = isV2 ? 'TestCaseExecutionV2.jsp' : 'TestCaseExecution.jsp';
+
+                            window.location.href =
                                 exePage + '?executionQueueId=' +
                                 data.queueList[0].queueId;
-                        return;
-                    }
+                            return;
+                        }
 
-                    if (data.messageType === 'OK' && data.nbExe > 1) {
-                        window.location.href =
+                        if (data.nbExe > 1) {
+                            window.location.href =
                                 'ReportingExecutionByTag.jsp?Tag=' +
                                 encodeURIComponent(data.tag);
-                        return;
+                            return;
+                        }
                     }
 
                     this.error = data.message || 'Execution failed';

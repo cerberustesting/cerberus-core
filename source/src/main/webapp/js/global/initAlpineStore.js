@@ -81,6 +81,56 @@ document.addEventListener('alpine:init', () => {
         }
     });
 
+    Alpine.store('rightPanel', {
+        open: JSON.parse(localStorage.getItem('rightPanel.open') || 'false'),
+        activeTab: localStorage.getItem('rightPanel.activeTab') || 'execution',
+
+        defaultWidth: 420,
+        minWidth: 320,
+        maxWidth: 720,
+        width: 420,
+        isResizing: false,
+
+        init() {
+            const saved = Number(localStorage.getItem('rightPanel.width'));
+            this.width = saved
+                ? Math.min(this.maxWidth, Math.max(this.minWidth, saved))
+                : this.defaultWidth;
+        },
+
+        openTab(tab) {
+            if (this.open && this.activeTab === tab) {
+                this.close();
+                return;
+            }
+            this.activeTab = tab;
+            this.open = true;
+            localStorage.setItem('rightPanel.open', 'true');
+            localStorage.setItem('rightPanel.activeTab', tab);
+
+            Alpine.nextTick(() => {
+                requestAnimationFrame(() => {
+                    if (window.lucide && typeof lucide.createIcons === "function") {
+                        lucide.createIcons();
+                    }
+                });
+            });
+        },
+
+        close() {
+            this.open = false;
+            localStorage.setItem('rightPanel.open', 'false');
+        },
+
+        setWidth(width) {
+            this.width = Math.min(this.maxWidth, Math.max(this.minWidth, width));
+        },
+
+        persistWidth() {
+            localStorage.setItem('rightPanel.width', String(this.width));
+        }
+    });
+
     Alpine.store('branding', window.__CERBERUS_BRANDING__ || {
         appName: 'Cerberus',
         showAppName: true,

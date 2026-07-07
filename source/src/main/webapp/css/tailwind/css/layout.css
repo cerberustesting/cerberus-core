@@ -5,6 +5,7 @@
     =========================== */
     .crb_sidebar {
         background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        z-index: 60;
 
         @apply fixed top-0 left-0 h-screen text-white transition-all duration-500 ease-in-out flex flex-col shadow-2xl;
     }
@@ -33,6 +34,10 @@
         @apply h-full flex bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900;
     }
 
+    .crb_body_wrp {
+        @apply h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900;
+    }
+
 
     /* ===========================
        Main content
@@ -40,6 +45,15 @@
     .crb_main {
         color: var(--crb-black-color);
         @apply flex-1 p-6 overflow-auto;
+    }
+
+    .crb_main_wrp {
+        color: var(--crb-black-color);
+        min-width: 0;
+        box-sizing: border-box;
+        width: auto;
+
+        @apply min-h-screen p-6 overflow-auto;
     }
 
     /*  body.alpine-ready .crb_main {

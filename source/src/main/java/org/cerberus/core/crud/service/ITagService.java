@@ -75,6 +75,22 @@ public interface ITagService {
     AnswerList<Tag> readByVarious(List<String> campaigns, List<String> systems, Date from, Date to);
 
     /**
+     * Read the campaigns currently running (ie not yet finished).
+     *
+     * @return
+     */
+    AnswerList<Tag> readCampaignsRunning();
+
+    /**
+     * Read the last {@code limit} campaigns that have finished, ordered by end
+     * date descending.
+     *
+     * @param limit
+     * @return
+     */
+    AnswerList<Tag> readCampaignsLastFinished(int limit);
+
+    /**
      *
      * @param campaigns
      * @param group1s

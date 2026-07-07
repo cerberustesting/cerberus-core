@@ -127,6 +127,16 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public AnswerList<Tag> readCampaignsRunning() {
+        return tagDAO.readCampaignsRunning();
+    }
+
+    @Override
+    public AnswerList<Tag> readCampaignsLastFinished(int limit) {
+        return tagDAO.readCampaignsLastFinished(limit);
+    }
+
+    @Override
     public AnswerList<Tag> readByVarious(List<String> campaigns, List<String> group1s, List<String> group2s, List<String> group3s, List<String> environments, List<String> countries, List<String> robotDeclis, Date from, Date to) {
         return tagDAO.readByVarious(campaigns, group1s, group2s, group3s, environments, countries, robotDeclis, from, to);
     }

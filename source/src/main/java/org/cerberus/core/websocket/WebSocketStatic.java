@@ -90,6 +90,10 @@ public final class WebSocketStatic {
     public static String CHANNEL_CAMPAIGN_DELTA_ID(String campaign){return CHANNEL_CAMPAIGN_DELTA + "." + campaign;}
     public static String CHANNEL_CAMPAIGN_DONE_ID(String campaign){return CHANNEL_CAMPAIGN_DONE + "." + campaign;}
 
+    /** CAMPAIGN LIST **/
+    public static final String CHANNEL_CAMPAIGN_LIST_RUNNING = "campaign.list.running";
+    public static final String CHANNEL_CAMPAIGN_LIST_LASTFINISHED = "campaign.list.lastfinished";
+
 
     /** TESTCASE EVENTS **/
     public static final String CHANNEL_TESTCASE_CREATE = "testcase.create";
