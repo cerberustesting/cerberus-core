@@ -143,8 +143,8 @@ public class TagDAO implements ITagDAO {
         List<Tag> objectList = new ArrayList<>();
 
         final String query = "SELECT * FROM tag WHERE campaign IS NOT NULL AND campaign != '' "
-                + "AND DateEndQueue < '1980-01-01 01:01:01.000001' "
-                + "ORDER BY DateCreated DESC LIMIT 100";
+                + "AND CIResult = '' "
+                + "ORDER BY DateCreated DESC LIMIT 10";
 
         LOG.debug("SQL : {}", query);
 
@@ -180,7 +180,7 @@ public class TagDAO implements ITagDAO {
         List<Tag> objectList = new ArrayList<>();
 
         final String query = "SELECT * FROM tag WHERE campaign IS NOT NULL AND campaign != '' "
-                + "AND DateEndQueue >= '1980-01-01 01:01:01.000001' "
+                + "AND CIResult != '' "
                 + "ORDER BY DateEndQueue DESC LIMIT ?";
 
         LOG.debug("SQL : {}", query);

@@ -70,11 +70,10 @@
            x-transition:leave-start="translate-x-0"
            x-transition:leave-end="translate-x-full"
            :style="`width: ${$store.rightPanel.width}px`"
-           class="fixed inset-y-0 right-0 z-[40] flex
-                  bg-slate-50 dark:bg-slate-950
-                  text-slate-950 dark:text-slate-100
-                  border-l border-slate-200 dark:border-slate-700
-                  ">
+           class="crb_right_panel
+              bg-slate-50 dark:bg-slate-950
+              text-slate-950 dark:text-slate-100
+              border-l border-slate-200 dark:border-slate-700">
 
         <!-- Resize handle -->
         <div @pointerdown.prevent.stop="startResize($event)"
@@ -85,10 +84,10 @@
              title="Resize panel">
         </div>
 
-        <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+        <div class="crb_right_panel_inner">
 
             <!-- Header -->
-            <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
+            <div class="crb_right_panel_header flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800">
                 <div class="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-900 p-1 min-w-0">
                     <button @click="$store.rightPanel.openTab('execution')"
                             class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0"
@@ -146,7 +145,7 @@
             </div>
 
             <!-- Scrollable content -->
-            <div class="flex-1 overflow-y-auto p-5">
+            <div class="crb_right_panel_body p-5" @wheel.stop @touchmove.stop>
 
                 <!-- ============ Execution tab ============ -->
                 <template x-if="$store.rightPanel.activeTab === 'execution'">
@@ -1574,7 +1573,7 @@
                 }
 
                 window.location.href = getCerberusBasePath()
-                    + "TestCaseExecutionQueueList.jsp?tag="
+                    + "ReportingExecutionByTag.jsp?Tag="
                     + encodeURIComponent(campaign.campaignExecutionId);
             },
 
