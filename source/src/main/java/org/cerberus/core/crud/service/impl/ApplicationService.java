@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.ApplicationMapperV001;
 import org.cerberus.core.crud.dao.IApplicationDAO;
 import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.core.crud.entity.Application;
@@ -37,6 +38,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,10 @@ public class ApplicationService implements IApplicationService {
     private IApplicationDAO applicationDAO;
     @Autowired
     private ICountryEnvironmentParametersDAO countryEnvironnementParametersDAO;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
+    @Autowired
+    private ApplicationMapperV001 applicationMapper;
 
     private static final Logger LOG = LogManager.getLogger("ApplicationService");
 
@@ -111,17 +117,29 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public Answer create(Application object) {
-        return applicationDAO.create(object);
+        Answer result = applicationDAO.create(object);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("create", "Application", object.getApplication(), applicationMapper.toDTO(object));
+        }
+        return result;
     }
 
     @Override
     public Answer delete(Application object) {
-        return applicationDAO.delete(object);
+        Answer result = applicationDAO.delete(object);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("delete", "Application", object.getApplication(), applicationMapper.toDTO(object));
+        }
+        return result;
     }
 
     @Override
     public Answer update(String application, Application object) {
-        return applicationDAO.update(application, object);
+        Answer result = applicationDAO.update(application, object);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("update", "Application", object.getApplication(), applicationMapper.toDTO(object));
+        }
+        return result;
     }
 
     @Override

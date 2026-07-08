@@ -21,6 +21,7 @@ package org.cerberus.core.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.crud.dao.IInvariantDAO;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCaseCountry;
@@ -37,6 +38,7 @@ import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +62,10 @@ public class InvariantService implements IInvariantService {
     ITestCaseCountryService testCaseCountryService;
     @Autowired
     ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
+    @Autowired
+    private InvariantMapperV001 invariantMapper;
 
     private static final Logger LOG = LogManager.getLogger(InvariantService.class);
 
@@ -249,17 +255,29 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public Answer create(Invariant invariant) {
-        return invariantDao.create(invariant);
+        Answer result = invariantDao.create(invariant);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("create", "Invariant", invariant.getIdName(), invariantMapper.toDTO(invariant));
+        }
+        return result;
     }
 
     @Override
     public Answer delete(Invariant invariant) {
-        return invariantDao.delete(invariant);
+        Answer result = invariantDao.delete(invariant);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("delete", "Invariant", invariant.getIdName(), invariantMapper.toDTO(invariant));
+        }
+        return result;
     }
 
     @Override
     public Answer update(String idname, String value, Invariant invariant) {
-        return invariantDao.update(idname, value, invariant);
+        Answer result = invariantDao.update(idname, value, invariant);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("update", "Invariant", invariant.getIdName(), invariantMapper.toDTO(invariant));
+        }
+        return result;
     }
 
     @Override

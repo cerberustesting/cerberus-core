@@ -29,6 +29,7 @@ import org.cerberus.core.service.ai.impl.MessageAI;
 import org.cerberus.core.service.ai.impl.MessageTestCreationAI;
 import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.cerberus.core.websocket.runtime.NotificationCenter;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.cerberus.core.websocket.runtime.QueueStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,6 +62,8 @@ public class CerberusWebSocket extends TextWebSocketHandler {
     private NotificationCenter notificationCenter;
     @Autowired
     private QueueStatus queueStatus;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -184,6 +187,9 @@ public class CerberusWebSocket extends TextWebSocketHandler {
                 );
             }
 
+            case WebSocketStatic.CHANNEL_OBJECT_CHANGE ->
+                    objectChangeHistory.sendInit(incoming.getSessionID());
+
             default -> {
                 // No channel-specific init.
             }
@@ -233,6 +239,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_AO_PROPOSALS:
             case WebSocketStatic.CHANNEL_TESTCASE_PROPOSALS:
 
+            case WebSocketStatic.CHANNEL_OBJECT_CHANGE:
             case WebSocketStatic.CHANNEL_OBJECTCREATION_APPLICATION:
             case WebSocketStatic.CHANNEL_OBJECTCREATION_INVARIANT:
             case WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASE:

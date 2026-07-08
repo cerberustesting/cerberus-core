@@ -3,21 +3,70 @@
     /* ===========================
         Sidebar
     =========================== */
-    .crb_sidebar {
+    .crb_left_navbar {
         background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+
+        height: 100vh !important;
+        height: 100dvh !important;
+
+        color: white;
         z-index: 60;
 
-        @apply fixed top-0 left-0 h-screen text-white transition-all duration-500 ease-in-out flex flex-col shadow-2xl;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) auto !important;
+
+        transition: all 0.5s ease-in-out;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
     }
 
-    .crb_sidebar-expanded {
-        @apply w-72;
+    .crb_left_navbar_header {
+        grid-row: 1 !important;
+
+        position: relative !important;
+        z-index: 2 !important;
+
+        min-height: 0 !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
     }
 
-    .crb_sidebar-collapsed {
-        @apply w-20;
+    .crb_left_navbar_body {
+        grid-row: 2 !important;
+
+        position: relative !important;
+        z-index: 1 !important;
+
+        min-height: 0 !important;
+
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        box-sizing: border-box !important;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
     }
 
+    .crb_left_navbar_footer {
+        grid-row: 3 !important;
+
+        position: relative !important;
+        z-index: 2 !important;
+
+        min-height: 0 !important;
+
+        background: rgb(30 41 59 / 0.95);
+        border-top: 1px solid rgb(51 65 85);
+
+        box-sizing: border-box !important;
+    }
 
     /* ===========================
         HTML

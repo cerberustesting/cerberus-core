@@ -71,7 +71,7 @@
            x-transition:leave-end="translate-x-full"
            :style="`width: ${$store.rightPanel.width}px`"
            class="crb_right_panel
-              bg-slate-50 dark:bg-slate-950
+              bg-slate-50 dark:bg-slate-900
               text-slate-950 dark:text-slate-100
               border-l border-slate-200 dark:border-slate-700">
 
@@ -88,7 +88,7 @@
 
             <!-- Header -->
             <div class="crb_right_panel_header flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-800">
-                <div class="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-900 p-1 min-w-0">
+                <div class="flex items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-950 p-1 min-w-0">
                     <button @click="$store.rightPanel.openTab('execution')"
                             class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shrink-0"
                             :class="$store.rightPanel.activeTab === 'execution'
@@ -751,7 +751,7 @@
                                                 </span>
 
                                                 <div class="font-bold text-sm text-slate-950 dark:text-slate-100 truncate"
-                                                     x-text="event.testcase ? (event.test + ' - ' + event.testcase) : event.test">
+                                                     x-text="event.title">
                                                 </div>
                                             </div>
 
@@ -891,14 +891,8 @@
                 });
 
                 // Activity listeners
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_CREATE), (e) => {
-                    this.addActivityEvent("create", e.detail.payload);
-                });
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_UPDATE), (e) => {
-                    this.addActivityEvent("update", e.detail.payload);
-                });
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TESTCASE_DELETE), (e) => {
-                    this.addActivityEvent("delete", e.detail.payload);
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.OBJECT_CHANGE), (e) => {
+                    this.handleObjectChangeEvent(e.detail.payload);
                 });
 
                 document.addEventListener(CerberusWs.Event.CONNECTED, () => {
@@ -1031,9 +1025,7 @@
                     sessionID: this.activitySessionID,
                     subject: CerberusWs.Subject.SUBSCRIBE,
                     channels: [
-                        CerberusWs.Channel.TESTCASE_CREATE,
-                        CerberusWs.Channel.TESTCASE_UPDATE,
-                        CerberusWs.Channel.TESTCASE_DELETE
+                        CerberusWs.Channel.OBJECT_CHANGE
                     ]
                 };
 
@@ -1578,37 +1570,6 @@
             },
 
             // ---- Activity logic ----
-
-            normalizeActivityEvent(type, payload) {
-                if (!payload) {
-                    return null;
-                }
-
-                return {
-                    id: type + "|" + (payload.test || "") + "|" + (payload.testcase || "") + "|" + Date.now() + "|" + Math.random(),
-                    type: type,
-
-                    test: payload.test || "",
-                    testcase: payload.testcase || "",
-                    application: payload.application || "",
-                    description: payload.description || "",
-
-                    receivedAt: new Date()
-                };
-            },
-
-            addActivityEvent(type, payload) {
-                const event = this.normalizeActivityEvent(type, payload);
-                if (!event) {
-                    return;
-                }
-
-                this.activityEvents.unshift(event);
-                this.activityEvents = this.activityEvents.slice(0, this.activityEventsLimit);
-
-                this.refreshIcons();
-            },
-
             getActivityBadgeClass(event) {
                 if (event.type === "create") {
                     return "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
@@ -1633,17 +1594,6 @@
                 return "pencil";
             },
 
-            getActivityLabel(event) {
-                if (event.type === "create") {
-                    return "CREATED";
-                }
-
-                if (event.type === "delete") {
-                    return "DELETED";
-                }
-
-                return "UPDATED";
-            },
 
             formatActivityTime(receivedAt) {
                 if (!receivedAt) {
@@ -1654,15 +1604,15 @@
             },
 
             openActivityEvent(event) {
-                if (!event || !event.test || event.type === "delete") {
+                if (!event || event.action === "delete") {
                     return;
                 }
 
-                window.location.href = getCerberusBasePath()
-                    + "TestCaseScript.jsp?test="
-                    + encodeURIComponent(event.test)
-                    + "&testcase="
-                    + encodeURIComponent(event.testcase);
+                const url = this.getObjectUrl(event);
+
+                if (url) {
+                    window.location.href = url;
+                }
             },
 
             refreshIcons() {
@@ -1673,6 +1623,147 @@
                         }
                     });
                 });
+            },
+
+            handleObjectChangeEvent(payload) {
+                const event = this.normalizeObjectActivityEvent(payload);
+
+                if (!event) {
+                    return;
+                }
+
+                this.activityEvents.unshift(event);
+                this.activityEvents = this.activityEvents.slice(0, this.activityEventsLimit);
+
+                this.handleObjectSideEffects(event);
+
+                this.refreshIcons();
+            },
+
+            normalizeObjectActivityEvent(payload) {
+                if (!payload) {
+                    return null;
+                }
+
+                const object = payload.object || {};
+                const objectName = payload.objectName || "";
+                const action = payload.action || "update";
+                const objectId = payload.objectId || "";
+
+                if (!objectName) {
+                    return null;
+                }
+
+                const eventTimestamp = payload.eventTimestamp || payload.timestamp || Date.now();
+
+                return {
+                    id: action + "|" + objectName + "|" + objectId + "|" + eventTimestamp,
+
+                    action: action,
+                    type: action,
+
+                    objectName: objectName,
+                    objectId: objectId,
+                    object: object,
+
+                    title: payload.title || this.buildObjectTitle(objectName, objectId, object),
+                    description: payload.description || "",
+
+                    application: object.application || "",
+
+                    receivedAt: new Date(eventTimestamp),
+
+                    raw: payload
+                };
+            },
+
+            getObjectUrl(event) {
+                const basePath = getCerberusBasePath();
+
+                if (event.objectName === "Invariant" && event.objectId) {
+                    return basePath
+                        + "Invariant.jsp";
+                }
+
+                if (event.objectName === "TestCase") {
+                    const object = event.object || {};
+                    const test = object.test || "";
+                    const testcase = object.testcase || object.testCase || "";
+
+                    if (test) {
+                        return basePath
+                            + "TestCaseScript.jsp?test="
+                            + encodeURIComponent(test)
+                            + "&testcase="
+                            + encodeURIComponent(testcase);
+                    }
+                }
+
+                if (event.objectName === "Application" && event.objectId) {
+                    return basePath
+                        + "Application.jsp?application="
+                        + encodeURIComponent(event.objectId);
+                }
+
+                return null;
+            },
+
+            buildObjectTitle(objectName, objectId, object) {
+                if (objectName === "TestCase") {
+                    const test = object.test || "";
+                    const testcase = object.testcase || object.testCase || "";
+
+                    if (test || testcase) {
+                        return test + (testcase ? " - " + testcase : "");
+                    }
+                }
+
+                return objectName + (objectId ? " - " + objectId : "");
+            },
+
+            handleObjectSideEffects(event) {
+                if (!event || event.action !== "create") {
+                    return;
+                }
+
+                if (event.objectName === "Invariant") {
+                    this.cleanInvariantSessionStorage(event);
+                }
+            },
+
+            cleanInvariantSessionStorage(event) {
+                if (!event || !event.objectId) {
+                    return;
+                }
+
+                const key = "INVARIANT_" + event.objectId;
+
+                sessionStorage.removeItem(key);
+
+                if (event.objectId === "SYSTEM") {
+                    sessionStorage.removeItem("user");
+                    getUser();
+                }
+
+                console.debug("Removed sessionStorage key:", key);
+            },
+
+            getActivityLabel(event) {
+                const action = String(event.action || event.type || "").toUpperCase();
+
+                if (action === "CREATE") {
+                    return "CREATED";
+                }
+
+                if (action === "DELETE") {
+                    return "DELETED";
+                }
+
+                if (action === "UPDATE") {
+                    return "UPDATED";
+                }
+
+                return action || "CHANGED";
             }
         };
     }

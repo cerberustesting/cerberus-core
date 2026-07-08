@@ -1,10 +1,11 @@
 <!-- Sidebar -->
 <aside id="crb_sidebar"
-       class="crb_sidebar transition-all duration-300 ease-in-out overflow-hidden"
+       class="crb_left_navbar transition-all duration-300 ease-in-out overflow-hidden"
        :class="$store.sidebar.expanded ? 'w-72' : 'w-20'"
        x-show="!$store.sidebar.hidden">
 
     <!-- Logo & Header -->
+    <div class="crb_left_navbar_header">
     <div :class="$store.sidebar.expanded
          ? 'flex flex-row items-center justify-between p-6'
          : 'flex flex-col items-center p-6 gap-2'"
@@ -193,9 +194,11 @@
             </template>
         </div>
     </div>
+    </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 px-4 py-6 space-y-3 overflow-y-auto overflow-x-visible no-scrollbar">
+    <nav class="crb_left_navbar_body px-4 py-6 space-y-3 no-scrollbar"
+         :class="$store.sidebar.expanded ? '' : 'w-20'">
 
         <!-- Automate -->
         <div class="space-y-2" id="navMenuAutomate">
@@ -844,160 +847,150 @@
         </div>
 
     </nav>
-    <!-- Quick History Shortcut -->
-    <div class="border-t border-slate-700 hover:bg-slate-700/50  sticky bottom-[4.5rem] z-50 px-4"
-         x-data="quickHistoryMenu()"
-         @mouseenter="open()"
-         @mouseleave="close()">
 
-        <!-- Bouton raccourci -->
-        <div id="quick_history_button"
-             class="flex items-center w-full gap-4 px-4 py-3 rounded-xl group transition-all duration-200 relative">
-            <!-- Icône horloge -->
-            <i data-lucide="clock" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
-            <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','history')"></span>
-        </div>
+    <div class="crb_left_navbar_footer">
+        <!-- Quick History Shortcut -->
+        <div class="border-t border-slate-700 hover:bg-slate-700/50 px-4"
+             x-data="quickHistoryMenu()"
+             @mouseenter="open()"
+             @mouseleave="close()">
 
-        <!-- Popin téléportée -->
-        <template x-teleport="body">
-            <div
-                x-bind="$data"
-                x-show="openMenu"
-                x-transition.opacity.duration.150ms
-                x-ref="dropdown"
-                class="fixed w-[900px] max-h-[420px]
-                rounded-xl border border-slate-600
-                bg-slate-800 text-white shadow-xl
-                overflow-hidden z-50"
-                @mouseenter="open()"
-                @mouseleave="close()"
-                >
+            <!-- Bouton raccourci -->
+            <div id="quick_history_button"
+                 class="flex items-center w-full gap-4 px-4 py-3 rounded-xl group transition-all duration-200 relative">
+                <!-- Icône horloge -->
+                <i data-lucide="clock" class="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"></i>
+                <span x-show="$store.sidebar.expanded" x-transition class="text-sm" x-text="$store.labels.getLabel('header','history')"></span>
+            </div>
 
-                <!-- Header -->
-                <div class="px-5 py-3 border-b border-slate-700 font-semibold text-slate-300">
-                    <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseen')"></span>
-                </div>
+            <!-- Popin téléportée -->
+            <template x-teleport="body">
+                <div
+                    x-bind="$data"
+                    x-show="openMenu"
+                    x-transition.opacity.duration.150ms
+                    x-ref="dropdown"
+                    class="fixed w-[900px] max-h-[420px]
+                    rounded-xl border border-slate-600
+                    bg-slate-800 text-white shadow-xl
+                    overflow-hidden z-50"
+                    @mouseenter="open()"
+                    @mouseleave="close()"
+                    >
 
-                <!-- 3 colonnes -->
-                <div class="grid grid-cols-3 divide-x divide-slate-700 max-h-[360px] overflow-auto">
-
-                    <!-- Testcases -->
-                    <div class="p-4 space-y-2">
-                        <div class="text-xs font-semibold text-slate-400">
-                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseentestcases')"></span>
-                        </div>
-
-                        <template x-for="tc in testcases" :key="tc.href">
-                            <a :href="tc.href"
-                               class="block px-2 py-1 !text-slate-300 rounded hover:bg-slate-700">
-                                <div class="text-sm" x-text="tc.name"></div>
-                                <div class="text-xs text-slate-400"
-                                     x-show="tc.desc"
-                                     x-text="tc.desc"></div>
-                            </a>
-                        </template>
+                    <!-- Header -->
+                    <div class="px-5 py-3 border-b border-slate-700 font-semibold text-slate-300">
+                        <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseen')"></span>
                     </div>
 
-                    <!-- Executions -->
-                    <div class="p-4 space-y-2">
-                        <div class="text-xs font-semibold text-slate-400">
-                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseenexecutions')"></span>
-                        </div>
+                    <!-- 3 colonnes -->
+                    <div class="grid grid-cols-3 divide-x divide-slate-700 max-h-[360px] overflow-auto">
 
-                        <template x-for="exec in executions" :key="exec.href">
-                            <a :href="exec.href"
-                               class="flex !text-slate-300 items-start gap-2 px-2 py-1 rounded hover:bg-slate-700">
-                                <span class="text-xs font-mono text-slate-400 w-10"
-                                      x-text="exec.id"></span>
+                        <!-- Testcases -->
+                        <div class="p-4 space-y-2">
+                            <div class="text-xs font-semibold text-slate-400">
+                                <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseentestcases')"></span>
+                            </div>
 
-                                <div class="flex-1">
-                                    <div class="text-sm" x-text="exec.name"></div>
+                            <template x-for="tc in testcases" :key="tc.href">
+                                <a :href="tc.href"
+                                   class="block px-2 py-1 !text-slate-300 rounded hover:bg-slate-700">
+                                    <div class="text-sm" x-text="tc.name"></div>
                                     <div class="text-xs text-slate-400"
-                                         x-text="exec.env"></div>
-                                </div>
-
-                                <span class="text-xs font-semibold px-2 py-0.5 rounded"
-                                      :class="exec.status === 'OK'
-                                      ? 'bg-green-500/20 text-green-400'
-                                      : 'bg-red-500/20 text-red-400'"
-                                      x-text="exec.status"></span>
-                            </a>
-                        </template>
-                    </div>
-
-                    <!-- Campaigns -->
-                    <div class="p-4 space-y-2">
-                        <div class="text-xs font-semibold text-slate-400">
-                            <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseencampaigns')"></span>
+                                         x-show="tc.desc"
+                                         x-text="tc.desc"></div>
+                                </a>
+                            </template>
                         </div>
 
-                        <template x-for="camp in campaigns" :key="camp.href">
-                            <a :href="camp.href"
-                               class="block !text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
-                               x-text="camp.tag"></a>
-                        </template>
+                        <!-- Executions -->
+                        <div class="p-4 space-y-2">
+                            <div class="text-xs font-semibold text-slate-400">
+                                <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseenexecutions')"></span>
+                            </div>
+
+                            <template x-for="exec in executions" :key="exec.href">
+                                <a :href="exec.href"
+                                   class="flex !text-slate-300 items-start gap-2 px-2 py-1 rounded hover:bg-slate-700">
+                                    <span class="text-xs font-mono text-slate-400 w-10"
+                                          x-text="exec.id"></span>
+
+                                    <div class="flex-1">
+                                        <div class="text-sm" x-text="exec.name"></div>
+                                        <div class="text-xs text-slate-400"
+                                             x-text="exec.env"></div>
+                                    </div>
+
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded"
+                                          :class="exec.status === 'OK'
+                                          ? 'bg-green-500/20 text-green-400'
+                                          : 'bg-red-500/20 text-red-400'"
+                                          x-text="exec.status"></span>
+                                </a>
+                            </template>
+                        </div>
+
+                        <!-- Campaigns -->
+                        <div class="p-4 space-y-2">
+                            <div class="text-xs font-semibold text-slate-400">
+                                <span x-transition class="text-sm" x-text="$store.labels.getLabel('header','lastseencampaigns')"></span>
+                            </div>
+
+                            <template x-for="camp in campaigns" :key="camp.href">
+                                <a :href="camp.href"
+                                   class="block !text-slate-300 px-2 py-1 rounded hover:bg-slate-700"
+                                   x-text="camp.tag"></a>
+                            </template>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
-        </template>
-    </div>
-
-    <!-- User Menu -->
-    <div class="mt-auto sticky bottom-0 z-50 bg-slate-800/90 border-t border-slate-700"
-         x-data="userMenu()" @click.outside="close()">
-
-        <!-- Avatar / bouton user -->
-        <div id="header_user_button" @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors"
-             x-ref="userBtn">
-            <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center">
-                <span class="text-white font-semibold text-sm" x-text="initials"></span>
-            </div>
-            <div x-show="$store.sidebar.expanded">
-                <p class="text-sm font-medium" x-text="username"></p>
-                <p class="text-xs text-slate-400" x-text="roleText"></p>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto transition-transform duration-200"
-                 :class="userMenuOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                 x-show="$store.sidebar.expanded">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
+            </template>
         </div>
 
-        <!-- Dropdown téléporté dans le body -->
-        <template x-teleport="body">
-            <div x-show="userMenuOpen"
+        <!-- User Menu -->
+        <div class="bg-slate-800/90 border-t border-slate-700 relative"
+             x-data="userMenu()"
+             @click.outside="close()">
+
+            <!-- Avatar / bouton user -->
+            <div id="header_user_button"
+                 @click.stop="userMenuOpen = !userMenuOpen"
+                 class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors"
+                 x-ref="userBtn">
+
+                <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center shrink-0">
+                    <span class="text-white font-semibold text-sm" x-text="initials"></span>
+                </div>
+
+                <div x-show="$store.sidebar.expanded" x-transition.opacity.duration.200ms class="min-w-0">
+                    <p class="text-sm font-medium truncate" x-text="username"></p>
+                    <p class="text-xs text-slate-400 truncate" x-text="roleText"></p>
+                </div>
+
+                <i data-lucide="chevron-up"
+                   x-show="$store.sidebar.expanded"
+                   :class="userMenuOpen ? 'rotate-180' : ''"
+                   class="w-4 h-4 ml-auto transition-transform duration-200 text-slate-300"></i>
+            </div>
+
+            <!-- Dropdown inline quand sidebar expanded -->
+            <div x-show="$store.sidebar.expanded && userMenuOpen"
                  x-transition.opacity.duration.200ms
-                 x-ref="navUserDropdown"
-                 class="fixed w-72 h-[250px] rounded-md border border-slate-600 bg-slate-800 text-white shadow-lg overflow-auto z-50"
-                 style="left:0; top:0;"
-                 @click.outside="userMenuOpen = false"
+                 class="absolute bottom-full
+                w-72 h-[250px]
+                rounded-md border border-slate-600
+                bg-slate-800 text-white shadow-lg
+                overflow-auto z-[9999]"
                  @click.stop
-                 x-init="
-                 $watch('userMenuOpen', value => {
-                 if (value) {
-                 // On attend que le dropdown soit rendu et visible
-                 requestAnimationFrame(() => {
-                 const btn = document.getElementById('header_user_button').getBoundingClientRect();
-                 const dropdown = $refs.navUserDropdown;
-                 if (!dropdown) return;
-
-                 const h = dropdown.offsetHeight;
-                 let top = btn.top - h - 1;
-                 if (top < 0) top = btn.bottom + 1;
-
-                 dropdown.style.left = btn.left + 'px';
-                 dropdown.style.top = top + 'px';
-                 });
-                 }
-                 });
-                 ">
+                 x-effect="$nextTick(() => lucide.createIcons($el))">
 
                 <ul class="py-2 text-sm space-y-1 px-2">
 
                     <!-- Logout -->
                     <li x-show="logoutHref" x-transition>
-                        <a id="header_user_logout" :href="logoutHref"
+                        <a id="header_user_logout"
+                           :href="logoutHref"
                            class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
                             --> Logout
                         </a>
@@ -1006,31 +999,35 @@
                     <!-- Theme Switch -->
                     <li class="px-4 py-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-300 text-sm" x-text="$store.labels.getLabel('header','theme')"></span>
+                    <span class="text-gray-300 text-sm"
+                          x-text="$store.labels.getLabel('header','theme')"></span>
+
                             <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+
                                 <button id="header_user_themelight_button"
+                                        type="button"
                                         @click.stop="applyTheme('light')"
-                                        :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'light',
-                                        'bg-slate-600 text-gray-300': $store.user.theme !== 'light'}"
+                                        :class="{
+                                    'bg-slate-300 text-slate-800': $store.user.theme === 'light',
+                                    'bg-slate-600 text-gray-300 hover:bg-slate-500': $store.user.theme !== 'light'
+                                }"
                                         class="p-2 rounded-full transition-colors flex items-center justify-center"
                                         aria-label="Light Theme">
-                                    <!-- Icône Soleil (Lucide) -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" />
-                                    </svg>
+                                    <i data-lucide="sun" class="w-5 h-5"></i>
                                 </button>
-                                <button id="header_user_themedark_button" @click.stop="applyTheme('dark')"
-                                        :class="{'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
-                                        'bg-slate-600 text-gray-300': $store.user.theme !== 'dark'}"
-                                        class="p-2 rounded-full transition-colors flex items-center justify-center" aria-label="Dark Theme">
-                                    <!-- Icône Lune (Lucide) -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" />
-                                    </svg>
+
+                                <button id="header_user_themedark_button"
+                                        type="button"
+                                        @click.stop="applyTheme('dark')"
+                                        :class="{
+                                    'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
+                                    'bg-slate-600 text-gray-300 hover:bg-slate-500': $store.user.theme !== 'dark'
+                                }"
+                                        class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                        aria-label="Dark Theme">
+                                    <i data-lucide="moon" class="w-5 h-5"></i>
                                 </button>
+
                             </div>
                         </div>
                     </li>
@@ -1038,18 +1035,149 @@
                     <!-- Language -->
                     <li class="px-4 py-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-300 text-sm" x-text="$store.labels.getLabel('header','lang')"></span>
+                    <span class="text-gray-300 text-sm"
+                          x-text="$store.labels.getLabel('header','lang')"></span>
+
                             <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
-                                <select x-model="$store.user.language" id="header_user_language" @change="changeLanguage($store.user.language)" class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
+                                <select id="header_user_language"
+                                        x-model="$store.user.language"
+                                        @click.stop
+                                        @change.stop="changeLanguage($store.user.language)"
+                                        class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
                                     <option value="fr">FR</option>
                                     <option value="en">EN</option>
                                 </select>
                             </div>
                         </div>
                     </li>
+
                 </ul>
             </div>
-        </template>
+
+            <!-- Dropdown téléporté uniquement quand sidebar collapsed -->
+            <template x-if="!$store.sidebar.expanded">
+                <template x-teleport="body">
+                    <div x-show="userMenuOpen"
+                         x-transition.opacity.duration.200ms
+                         x-ref="navUserDropdownCollapsed"
+                         class="fixed w-72 h-[250px]
+                        rounded-md border border-slate-600
+                        bg-slate-800 text-white shadow-lg
+                        overflow-auto z-[9999]"
+                         style="left: -9999px; top: -9999px;"
+                         @click.stop
+                         x-effect="$nextTick(() => lucide.createIcons($el))"
+                         x-init="
+                    const positionCollapsedUserDropdown = () => {
+                        requestAnimationFrame(() => {
+                            const btn = document.getElementById('header_user_button');
+                            const dropdown = $refs.navUserDropdownCollapsed;
+
+                            if (!btn || !dropdown) return;
+
+                            const btnRect = btn.getBoundingClientRect();
+                            const dropdownHeight = dropdown.offsetHeight || 250;
+                            const gap = 8;
+
+                            let top = btnRect.bottom - dropdownHeight;
+
+                            if (top < 8) {
+                                top = btnRect.top;
+                            }
+
+                            if (top + dropdownHeight > window.innerHeight - 8) {
+                                top = window.innerHeight - dropdownHeight;
+                            }
+
+                            dropdown.style.left = '80px';
+                            dropdown.style.top = top + 'px';
+                        });
+                    };
+
+                    $watch('userMenuOpen', value => {
+                        if (value && !$store.sidebar.expanded) {
+                            positionCollapsedUserDropdown();
+                        }
+                    });
+
+                    window.addEventListener('resize', () => {
+                        if (userMenuOpen && !$store.sidebar.expanded) {
+                            positionCollapsedUserDropdown();
+                        }
+                    });
+                 ">
+
+                        <ul class="py-2 text-sm space-y-1 px-2">
+
+                            <!-- Logout -->
+                            <li x-show="logoutHref" x-transition>
+                                <a id="header_user_logout_collapsed"
+                                   :href="logoutHref"
+                                   class="block px-4 py-2 hover:bg-slate-700 text-red-600 rounded transition-colors">
+                                    --> Logout
+                                </a>
+                            </li>
+
+                            <!-- Theme Switch -->
+                            <li class="px-4 py-2">
+                                <div class="flex items-center justify-between">
+                            <span class="text-gray-300 text-sm"
+                                  x-text="$store.labels.getLabel('header','theme')"></span>
+
+                                    <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+
+                                        <button id="header_user_themelight_button_collapsed"
+                                                type="button"
+                                                @click.stop="applyTheme('light')"
+                                                :class="{
+                                            'bg-slate-300 text-slate-800': $store.user.theme === 'light',
+                                            'bg-slate-600 text-gray-300 hover:bg-slate-500': $store.user.theme !== 'light'
+                                        }"
+                                                class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                                aria-label="Light Theme">
+                                            <i data-lucide="sun" class="w-5 h-5"></i>
+                                        </button>
+
+                                        <button id="header_user_themedark_button_collapsed"
+                                                type="button"
+                                                @click.stop="applyTheme('dark')"
+                                                :class="{
+                                            'bg-slate-300 text-slate-800': $store.user.theme === 'dark',
+                                            'bg-slate-600 text-gray-300 hover:bg-slate-500': $store.user.theme !== 'dark'
+                                        }"
+                                                class="p-2 rounded-full transition-colors flex items-center justify-center"
+                                                aria-label="Dark Theme">
+                                            <i data-lucide="moon" class="w-5 h-5"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!-- Language -->
+                            <li class="px-4 py-2">
+                                <div class="flex items-center justify-between">
+                            <span class="text-gray-300 text-sm"
+                                  x-text="$store.labels.getLabel('header','lang')"></span>
+
+                                    <div class="inline-flex rounded-full bg-slate-600 p-1 gap-1">
+                                        <select id="header_user_language_collapsed"
+                                                x-model="$store.user.language"
+                                                @click.stop
+                                                @change.stop="changeLanguage($store.user.language)"
+                                                class="bg-slate-700 text-slate-300 rounded px-2 py-1 text-xs">
+                                            <option value="fr">FR</option>
+                                            <option value="en">EN</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                </template>
+            </template>
+        </div>
     </div>
 </aside>
 <div class="hidden ml-72 ml-20 w-72 w-20 dark:text-white"></div>

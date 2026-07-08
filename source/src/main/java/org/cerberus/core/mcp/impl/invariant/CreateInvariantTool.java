@@ -210,13 +210,6 @@ public class CreateInvariantTool implements MCPTool {
 
         if (!answer.isCodeStringEquals("OK")) {
             return MCPToolUtils.errorText("Unable to create invariant type=" + type + " value=" + value + ": " + answer.getMessageDescription());
-        } else {
-            Invariant invariantCreated = invariantService.readByKey(type, value).getItem();
-            //Send tool end through Websocket if request provide from GUI
-            if ("".equals(appSessionID)) {
-                webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_OBJECTCREATION_INVARIANT,
-                        Map.of("toolName", TOOL_NAME, "invariant", invariantMapper.toDTO(invariantCreated)));
-            }
         }
 
 

@@ -101,6 +101,7 @@ public final class WebSocketStatic {
     public static final String CHANNEL_TESTCASE_DELETE = "testcase.delete";
 
     /** OBJECT CREATION EVENTS **/
+    public static final String CHANNEL_OBJECT_CHANGE = "object.change";
     public static final String CHANNEL_OBJECTCREATION_APPLICATION = "objectcreation.application";
     public static final String CHANNEL_OBJECTCREATION_INVARIANT = "objectcreation.invariant";
     public static final String CHANNEL_OBJECTCREATION_TESTCASE = "objectcreation.testcase";

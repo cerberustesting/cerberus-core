@@ -118,6 +118,7 @@
             TESTCASE_DELETE: 'testcase.delete',
 
             // Object creation events
+            OBJECT_CHANGE: 'object.change',
             OBJECTCREATION_APPLICATION: 'objectcreation.application',
             OBJECTCREATION_INVARIANT: 'objectcreation.invariant',
             OBJECTCREATION_TESTCASE: 'objectcreation.testcase',
