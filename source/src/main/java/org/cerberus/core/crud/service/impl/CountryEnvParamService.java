@@ -22,6 +22,8 @@ package org.cerberus.core.crud.service.impl;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
+import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.crud.dao.ICountryEnvParamDAO;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
@@ -36,6 +38,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,10 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     IFactoryCountryEnvironmentParameters countryEnvironmentParametersFactory;
     @Autowired
     ICountryEnvironmentParametersService countryEnvironmentParametersService;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
+    @Autowired
+    private CountryEnvParamMapperV001 countryEnvParamMapper;
 
     @Override
     public List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException {
@@ -139,17 +146,29 @@ public class CountryEnvParamService implements ICountryEnvParamService {
 
     @Override
     public Answer create(CountryEnvParam cep) {
-        return countryEnvParamDao.create(cep);
+        Answer result = countryEnvParamDao.create(cep);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("create", "CountryEnvParam", cep.getCountry()+"|"+cep.getEnvironment(), countryEnvParamMapper.toDTO(cep));
+        }
+        return result;
     }
 
     @Override
     public Answer delete(CountryEnvParam cep) {
-        return countryEnvParamDao.delete(cep);
+        Answer result = countryEnvParamDao.delete(cep);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("delete", "CountryEnvParam", cep.getCountry()+"|"+cep.getEnvironment(), countryEnvParamMapper.toDTO(cep));
+        }
+        return result;
     }
 
     @Override
     public Answer update(CountryEnvParam cep) {
-        return countryEnvParamDao.update(cep);
+        Answer result = countryEnvParamDao.update(cep);
+        if (result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+            objectChangeHistory.record("update", "CountryEnvParam", cep.getCountry()+"|"+cep.getEnvironment(), countryEnvParamMapper.toDTO(cep));
+        }
+        return result;
     }
 
     @Override

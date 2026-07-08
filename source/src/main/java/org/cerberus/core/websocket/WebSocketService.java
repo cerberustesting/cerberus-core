@@ -26,6 +26,7 @@ import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.websocket.runtime.ExecutionMonitor;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.cerberus.core.websocket.runtime.QueueStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,8 @@ public class WebSocketService {
     private CampaignExecutionMapperV001 campaignExecutionMapper;
     @Autowired
     private ExecutionMonitor executionMonitor;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
 
     /**
      * Execution just got its RunID and started.

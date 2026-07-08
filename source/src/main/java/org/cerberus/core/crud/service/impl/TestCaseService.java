@@ -24,6 +24,8 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
+import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.FailedInsertOperationException;
 import org.cerberus.core.api.exceptions.InvalidRequestException;
@@ -60,6 +62,7 @@ import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.websocket.WebSocketService;
+import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -128,6 +131,10 @@ public class TestCaseService implements ITestCaseService {
     private ITestCaseHistoService testCaseHistoService;
     @Autowired
     private WebSocketService webSocketService;
+    @Autowired
+    private ObjectChangeHistory objectChangeHistory;
+    @Autowired
+    private TestcaseMapperV001 testcaseMapper;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -614,6 +621,7 @@ public class TestCaseService implements ITestCaseService {
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_CREATE, testCase, null, null, null);
             webSocketService.notifyTestCaseCreate(testCase);
+            objectChangeHistory.record("create", "TestCase", testCase.getKey(), testcaseMapper.toDTO(testCase));
         }
         return ans;
     }

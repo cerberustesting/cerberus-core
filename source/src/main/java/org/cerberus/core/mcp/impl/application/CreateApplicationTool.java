@@ -128,6 +128,21 @@ public class CreateApplicationTool implements MCPTool {
                 Requires an application name, a type, and a system.
                 If the given system does not exist as a SYSTEM invariant, the tool returns an error.
                 Ask the user to confirm, then re-call with confirmSystemCreation=true.
+
+                Onboarding a brand-new application end-to-end (e.g. "create a test on
+                https://qa.auchan.fr") requires four layers, in this order:
+                1. Verify/create the COUNTRY and ENVIRONMENT invariants (cerberus_invariant_list,
+                   cerberus_invariant_create) — e.g. an "QA" ENVIRONMENT value must exist.
+                2. Create the application itself (this tool) — application name, type, system.
+                3. Activate the environment for that system (cerberus_country_env_param_create) —
+                   system + country + environment, typically type "STD".
+                4. Configure the application on that environment (cerberus_country_environment_parameters_create) —
+                   system + country + environment + application, with endPoint/contextRoot set to
+                   the application's URL on that environment, and a poolSize (e.g. 3 for a QA environment).
+
+                When given a URL such as https://qa.auchan.fr, infer environment from the leading
+                subdomain (here "QA") and application from the next domain label (here "auchan").
+                Confirm this inference with the user before creating anything if it is ambiguous.
                 """,
                 new McpSchema.JsonSchema(
                         "object",
