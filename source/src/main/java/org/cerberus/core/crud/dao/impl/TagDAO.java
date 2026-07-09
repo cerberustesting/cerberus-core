@@ -144,6 +144,7 @@ public class TagDAO implements ITagDAO {
 
         final String query = "SELECT * FROM tag WHERE campaign IS NOT NULL AND campaign != '' "
                 + "AND CIResult = '' "
+                + "AND DateStartExe >= DATE_SUB(NOW(), INTERVAL 1 MONTH) "
                 + "ORDER BY DateCreated DESC LIMIT 10";
 
         LOG.debug("SQL : {}", query);
