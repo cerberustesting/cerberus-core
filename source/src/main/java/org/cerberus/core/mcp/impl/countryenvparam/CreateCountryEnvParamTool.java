@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvparam;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.mcp.MCPTool;
@@ -44,7 +45,8 @@ import java.util.Map;
  * <p>The country and environment values referenced here must already exist as invariants
  * (types COUNTRY and ENVIRONMENT) — this tool does not create them.</p>
  *
- * <p>Delegates all persistence operations to {@link ICountryEnvParamService}.</p>
+ * <p>Delegates all persistence operations to {@link ICountryEnvParamService} and converts the
+ * result via {@link CountryEnvParamMapperV001}.</p>
  */
 @Component
 public class CreateCountryEnvParamTool implements MCPTool {
@@ -52,10 +54,14 @@ public class CreateCountryEnvParamTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_country_env_param_create";
 
     private final ICountryEnvParamService countryEnvParamService;
+    private final CountryEnvParamMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public CreateCountryEnvParamTool(ICountryEnvParamService countryEnvParamService, MCPLogUtils mcpLogUtils) {
+    public CreateCountryEnvParamTool(ICountryEnvParamService countryEnvParamService,
+                                     CountryEnvParamMapperV001 mapper,
+                                     MCPLogUtils mcpLogUtils) {
         this.countryEnvParamService = countryEnvParamService;
+        this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -217,9 +223,7 @@ public class CreateCountryEnvParamTool implements MCPTool {
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "created",
-                "system", system,
-                "country", country,
-                "environment", environment
+                "entry", mapper.toDTO(cep)
         ));
     }
 

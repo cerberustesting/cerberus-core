@@ -77,6 +77,8 @@ public class AIService implements IAIService {
     AIMcpClientService aiMcpClientService;
     @Autowired
     private WebSocketEventSender webSocketEventSender;
+    @Autowired
+    private AIToolResultHandler aIToolResultHandler;
 
     private static final int MAX_TOOL_ITERATIONS = 20;
 
@@ -90,8 +92,11 @@ public class AIService implements IAIService {
         final String currentAiSessionID = aiSessionID == null || aiSessionID.isBlank()
                         ? UUID.randomUUID().toString() : aiSessionID;
 
+        //clear suggestions
+        aIToolResultHandler.clearSuggestions(currentAiSessionID);
+
         //Get all message of session and add the new message
-        List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(aiSessionID);
+        List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(currentAiSessionID);
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(newMessage).build());
 
         //For the first question (request N°1), generate a title to retrieve conversation
@@ -115,6 +120,9 @@ public class AIService implements IAIService {
                 tools = aiMcpClientService.listAnthropicTools(mcpClient);
                 LOG.debug("MCP enabled for chat session {} — {} tools available", currentAiSessionID, tools.size());
             }
+            // Always available, regardless of MCP: lets Claude offer quick-reply buttons
+            // phrased in the conversation's own language instead of hardcoding them in tools.
+            tools.add(aiMcpClientService.buildQuickReplyTool());
 
             MessageAccumulator messageAccumulator = null;
             //Agentic loop : stream a turn, and while Claude requests tool calls,
@@ -122,7 +130,7 @@ public class AIService implements IAIService {
             for (int iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
 
                 messageAccumulator = aiClientService.streamResponseAndAccumulate(
-                        messageParamList,null,tools,
+                        messageParamList, aiBuildPrompt.buildSystemContextForChatWithAI(), tools,
                         text -> {
                             fullResponse.append(text);
                             try {
@@ -147,15 +155,18 @@ public class AIService implements IAIService {
                 }
 
                 // Replay Claude's turn (text + tool_use blocks) in the conversation history.
+                // A tool called with no arguments can come back with a missing (not empty) input,
+                // which the API rejects on the next turn ("tool_use.input: Field required") — default it to {}.
                 messageParamList.add(MessageParam.builder()
                         .role(MessageParam.Role.ASSISTANT)
                         .contentOfBlockParams(response.content().stream()
+                                .map(this::normalizeToolUseInput)
                                 .map(ContentBlock::toParam)
                                 .collect(Collectors.toList()))
                         .build());
 
-                boolean wantsTool = mcpClient != null
-                        && response.stopReason().isPresent()
+                // Note: the quick-reply pseudo-tool is always usable, even without MCP enabled.
+                boolean wantsTool = response.stopReason().isPresent()
                         && response.stopReason().get().equals(StopReason.TOOL_USE);
                 if (!wantsTool) {
                     break;
@@ -180,14 +191,24 @@ public class AIService implements IAIService {
                     boolean isError = false;
 
                     try {
-                        //Call tool
-                        Map<String, Object> arguments = toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
-                        arguments.put("_context", Map.of("source", "GUI","user", user,"appSessionID", currentAiSessionID,"channel", WebSocketStatic.CHANNEL_CHAT_DELTA));
-                        toolResult = aiMcpClientService.callTool(mcpClient, toolUse.name(), arguments);
+                        // A tool with no required parameters can be called with a missing (not
+                        // just empty) input — convert() would throw on that JsonMissing sentinel.
+                        Map<String, Object> arguments = toolUse._input().isMissing()
+                                ? new HashMap<>()
+                                : toolUse._input().convert(new TypeReference<Map<String, Object>>() {});
 
-                        //Send result through Websocket
-                        webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_RESULT,
-                                Map.of("toolName", currentToolUsed, "data", toolResult));
+                        if (AIMcpClientService.QUICK_REPLY_TOOL_NAME.equals(currentToolUsed)) {
+                            // Client-side-only pseudo-tool: never forwarded to the MCP server.
+                            toolResult = aIToolResultHandler.handleQuickReplies(currentAiSessionID, currentToolUsed, arguments);
+                        } else {
+                            //Call tool
+                            arguments.put("_context", Map.of("source", "GUI","user", user,"appSessionID", currentAiSessionID,"channel", WebSocketStatic.CHANNEL_CHAT_DELTA));
+                            toolResult = aiMcpClientService.callTool(mcpClient, toolUse.name(), arguments);
+
+                            //Send result through Websocket
+                            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_TOOL_RESULT,
+                                    Map.of("toolName", currentToolUsed, "data", toolResult));
+                        }
 
                     } catch (Exception ex) {
                         LOG.error("MCP tool call '{}' failed:", toolUse.name(), ex);
@@ -228,6 +249,21 @@ public class AIService implements IAIService {
                 } catch (Exception ignored) {}
             }
         }
+    }
+
+    /**
+     * A tool called with no arguments can come back from the streaming accumulator with a
+     * missing (not empty) input, which the Anthropic API rejects if replayed as-is on the next
+     * turn ("tool_use.input: Field required"). Defaults it to an empty object in that case.
+     */
+    private ContentBlock normalizeToolUseInput(ContentBlock block) {
+        if (block.toolUse().isPresent() && block.toolUse().get()._input().isMissing()) {
+            ToolUseBlock fixed = block.toolUse().get().toBuilder()
+                    .input(JsonValue.from(Map.of()))
+                    .build();
+            return ContentBlock.ofToolUse(fixed);
+        }
+        return block;
     }
 
 

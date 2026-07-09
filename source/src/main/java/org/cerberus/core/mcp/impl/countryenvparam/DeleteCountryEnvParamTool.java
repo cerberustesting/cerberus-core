@@ -21,6 +21,8 @@ package org.cerberus.core.mcp.impl.countryenvparam;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvParamDTOV001;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.mcp.MCPTool;
@@ -44,7 +46,9 @@ import java.util.Map;
  * may reject the deletion — the resulting error is surfaced as-is.</p>
  *
  * <p>Delegates to {@link ICountryEnvParamService} for both the existence check
- * ({@code readByKey}) and the deletion ({@code delete}).</p>
+ * ({@code readByKey}) and the deletion ({@code delete}). A DTO snapshot is captured before
+ * deletion via {@link CountryEnvParamMapperV001} so the confirmation response can include the
+ * deleted entry's data even though the entity is gone after the service call.</p>
  */
 @Component
 public class DeleteCountryEnvParamTool implements MCPTool {
@@ -52,10 +56,14 @@ public class DeleteCountryEnvParamTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_country_env_param_delete";
 
     private final ICountryEnvParamService countryEnvParamService;
+    private final CountryEnvParamMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public DeleteCountryEnvParamTool(ICountryEnvParamService countryEnvParamService, MCPLogUtils mcpLogUtils) {
+    public DeleteCountryEnvParamTool(ICountryEnvParamService countryEnvParamService,
+                                     CountryEnvParamMapperV001 mapper,
+                                     MCPLogUtils mcpLogUtils) {
         this.countryEnvParamService = countryEnvParamService;
+        this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -147,7 +155,11 @@ public class DeleteCountryEnvParamTool implements MCPTool {
             return MCPToolUtils.errorText("Country environment parameter does not exist: system=" + system + " country=" + country + " environment=" + environment);
         }
 
-        Answer deleteAnswer = countryEnvParamService.delete(readAnswer.getItem());
+        CountryEnvParam cep = readAnswer.getItem();
+        // Snapshot the DTO before deletion — the entity is gone after the service call.
+        CountryEnvParamDTOV001 dto = mapper.toDTO(cep);
+
+        Answer deleteAnswer = countryEnvParamService.delete(cep);
 
         if (!deleteAnswer.isCodeStringEquals("OK")) {
             return MCPToolUtils.errorText("Unable to delete country environment parameter: " + deleteAnswer.getMessageDescription());
@@ -155,9 +167,7 @@ public class DeleteCountryEnvParamTool implements MCPTool {
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "deleted",
-                "system", system,
-                "country", country,
-                "environment", environment
+                "entry", dto
         ));
     }
 

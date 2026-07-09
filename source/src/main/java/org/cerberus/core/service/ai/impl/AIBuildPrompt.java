@@ -45,6 +45,10 @@ public class AIBuildPrompt {
         }
     }
 
+    public String buildSystemContextForChatWithAI(){
+        return readResourcesAsText("prompts/chatwithai_systemcontext.prompt");
+    }
+
     public String buildPromptForSessionTitle(String newMessage){
 
         String template = readResourcesAsText("prompts/chatwithai_generate_title.prompt");

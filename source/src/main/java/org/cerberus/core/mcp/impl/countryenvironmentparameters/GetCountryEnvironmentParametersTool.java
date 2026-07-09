@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvironmentparameters;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
 import org.cerberus.core.api.dto.application.CountryEnvironmentParametersMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
@@ -152,7 +153,12 @@ public class GetCountryEnvironmentParametersTool implements MCPTool {
             return MCPToolUtils.errorText("Country environment parameter does not exist: system=" + system + " country=" + country + " environment=" + environment + " application=" + application);
         }
 
-        return MCPToolUtils.successJson(mapper.toDTO(answer.getItem()));
+        CountryEnvironmentParametersDTOV001 dto = mapper.toDTO(answer.getItem());
+        // Strip secret1/secret2 before returning the entry to the MCP client.
+        dto.setSecret1(null);
+        dto.setSecret2(null);
+
+        return MCPToolUtils.successJson(dto);
     }
 
 }

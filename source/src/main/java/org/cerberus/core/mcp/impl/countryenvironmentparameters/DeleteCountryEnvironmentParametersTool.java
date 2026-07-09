@@ -161,6 +161,9 @@ public class DeleteCountryEnvironmentParametersTool implements MCPTool {
         CountryEnvironmentParameters cep = readAnswer.getItem();
         // Snapshot the DTO before deletion — the entity is gone after the service call.
         CountryEnvironmentParametersDTOV001 dto = mapper.toDTO(cep);
+        // Strip secret1/secret2 before returning the entry to the MCP client.
+        dto.setSecret1(null);
+        dto.setSecret2(null);
 
         Answer deleteAnswer = countryEnvironmentParametersService.delete(cep);
 

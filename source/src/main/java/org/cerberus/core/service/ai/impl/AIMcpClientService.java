@@ -49,6 +49,13 @@ public class AIMcpClientService {
     private static final String API_KEY_HEADER = "X-API-KEY";
     private static final String MCP_ENDPOINT = "/mcp";
 
+    /**
+     * Name of the client-side-only pseudo-tool used to let Claude propose quick-reply
+     * buttons phrased in whatever language the conversation is currently in. It is never
+     * sent to the MCP server — {@link AIService} intercepts calls to it directly.
+     */
+    public static final String QUICK_REPLY_TOOL_NAME = "propose_quick_replies";
+
     @Autowired
     AIConfig aiConfig;
 
@@ -124,6 +131,67 @@ public class AIMcpClientService {
     private Map<String, JsonValue> toJsonValueMap(Map<String, Object> source) {
         return source.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> JsonValue.from(e.getValue())));
+    }
+
+    /**
+     * Builds the client-side {@code propose_quick_replies} tool definition. Claude calls it
+     * to offer clickable quick-reply buttons after a tool result (e.g. confirm/cancel a
+     * pending action, or a natural follow-up) — always phrased in the user's current language,
+     * since only Claude (not the Java tool that produced the result) knows what that language is.
+     */
+    public Tool buildQuickReplyTool() {
+        Map<String, Object> suggestionItemProperties = Map.of(
+                "id", Map.of(
+                        "type", "string",
+                        "description", "Short stable identifier for this suggestion, e.g. \"confirm\" or \"cancel\"."
+                ),
+                "label", Map.of(
+                        "type", "string",
+                        "description", "Button text shown to the user. Must be written in the exact same language the user is currently chatting in."
+                ),
+                "value", Map.of(
+                        "type", "string",
+                        "description", "Message resent as the next user turn when this button is clicked, as if the user had typed it. Phrase it naturally, in the same language as label."
+                ),
+                "type", Map.of(
+                        "type", "string",
+                        "description", "Kind of suggestion.",
+                        "enum", List.of("confirm", "cancel", "prompt", "action")
+                )
+        );
+
+        Map<String, Object> properties = Map.of(
+                "suggestions", Map.of(
+                        "type", "array",
+                        "description", "Ordered list of quick-reply buttons to show to the user right now.",
+                        "items", Map.of(
+                                "type", "object",
+                                "properties", suggestionItemProperties,
+                                "required", List.of("label", "value")
+                        )
+                )
+        );
+
+        Tool.InputSchema inputSchema = Tool.InputSchema.builder()
+                .properties(Tool.InputSchema.Properties.builder()
+                        .additionalProperties(toJsonValueMap(properties))
+                        .build())
+                .required(List.of("suggestions"))
+                .build();
+
+        return Tool.builder()
+                .name(QUICK_REPLY_TOOL_NAME)
+                .description("""
+                        Call this right after a tool result, or at the end of your answer, whenever there is a
+                        short list of obvious next steps for the user (confirming/cancelling a pending action, or
+                        a natural follow-up). Skip it entirely when there is nothing meaningful to suggest.
+
+                        Write "label" and "value" in the exact same language the user is currently chatting in —
+                        never default to English or French. "value" is resent verbatim as the user's next message
+                        when the button is clicked, so phrase it as something the user would naturally say.
+                        """)
+                .inputSchema(inputSchema)
+                .build();
     }
 
     /**

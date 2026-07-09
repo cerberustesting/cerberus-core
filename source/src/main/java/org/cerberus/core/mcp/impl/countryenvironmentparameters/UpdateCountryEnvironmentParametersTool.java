@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvironmentparameters;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
 import org.cerberus.core.api.dto.application.CountryEnvironmentParametersMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
@@ -276,9 +277,14 @@ public class UpdateCountryEnvironmentParametersTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to update country environment parameter: " + answer.getMessageDescription());
         }
 
+        CountryEnvironmentParametersDTOV001 dto = mapper.toDTO(cep);
+        // Strip secret1/secret2 before returning the entry to the MCP client.
+        dto.setSecret1(null);
+        dto.setSecret2(null);
+
         return MCPToolUtils.successJson(Map.of(
                 "status", "updated",
-                "entry", mapper.toDTO(cep)
+                "entry", dto
         ));
     }
 

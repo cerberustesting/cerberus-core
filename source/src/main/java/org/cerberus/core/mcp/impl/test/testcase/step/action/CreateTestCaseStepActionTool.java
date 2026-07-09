@@ -272,6 +272,9 @@ public class CreateTestCaseStepActionTool implements MCPTool {
                 .value2(value2)
                 .value3(value3)
                 .description(description)
+                // Empty condition operator is treated as "always" at execution time, but setting it
+                // explicitly avoids the field showing up blank in the UI.
+                .conditionOperator(TestCaseStepAction.CONDITIONOPERATOR_ALWAYS)
                 .isFatal(isFatal)
                 .doScreenshotBefore(false)
                 .doScreenshotAfter(false)

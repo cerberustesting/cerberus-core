@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvparam;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.mcp.MCPTool;
@@ -43,7 +44,8 @@ import java.util.Map;
  * deployment chain, and maintenance window. It is the parent of the per-application
  * {@code CountryEnvironmentParameters} rows (see {@code cerberus_country_environment_parameters_list}).</p>
  *
- * <p>Delegates to {@link ICountryEnvParamService#readByVarious(String, String, String, String, String, String)}.</p>
+ * <p>Delegates to {@link ICountryEnvParamService#readByVarious(String, String, String, String, String, String)}
+ * and converts results via {@link CountryEnvParamMapperV001}.</p>
  */
 @Component
 public class ListCountryEnvParamsTool implements MCPTool {
@@ -51,10 +53,14 @@ public class ListCountryEnvParamsTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_country_env_param_list";
 
     private final ICountryEnvParamService countryEnvParamService;
+    private final CountryEnvParamMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public ListCountryEnvParamsTool(ICountryEnvParamService countryEnvParamService, MCPLogUtils mcpLogUtils) {
+    public ListCountryEnvParamsTool(ICountryEnvParamService countryEnvParamService,
+                                    CountryEnvParamMapperV001 mapper,
+                                    MCPLogUtils mcpLogUtils) {
         this.countryEnvParamService = countryEnvParamService;
+        this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -157,10 +163,11 @@ public class ListCountryEnvParamsTool implements MCPTool {
 
         List<CountryEnvParam> raw = countryEnvParamService.readByVarious(system, country, environment, "", "", "").getDataList();
 
-        List<Map<String, Object>> entries = raw.stream()
+        List<Object> entries = raw.stream()
                 .filter(cep -> active == null || cep.isActive() == active)
                 .filter(cep -> matchesSearch(cep, search))
-                .map(this::toMap)
+                .map(mapper::toDTO)
+                .map(Object.class::cast)
                 .toList();
 
         return MCPToolUtils.successJson(Map.of(
@@ -184,30 +191,6 @@ public class ListCountryEnvParamsTool implements MCPTool {
                 || MCPToolUtils.containsIgnoreCase(cep.getBuild(), search)
                 || MCPToolUtils.containsIgnoreCase(cep.getRevision(), search)
                 || MCPToolUtils.containsIgnoreCase(cep.getChain(), search);
-    }
-
-    /**
-     * Converts a {@link CountryEnvParam} entity into a plain map suitable for JSON serialisation.
-     *
-     * @param cep the entity to convert
-     * @return an ordered map with the entry's public fields
-     */
-    private Map<String, Object> toMap(CountryEnvParam cep) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("system", cep.getSystem());
-        map.put("country", cep.getCountry());
-        map.put("environment", cep.getEnvironment());
-        map.put("description", cep.getDescription());
-        map.put("type", cep.getType());
-        map.put("build", cep.getBuild());
-        map.put("revision", cep.getRevision());
-        map.put("active", cep.isActive());
-        map.put("chain", cep.getChain());
-        map.put("distribList", cep.getDistribList());
-        map.put("maintenanceAct", cep.isMaintenanceAct());
-        map.put("maintenanceStr", cep.getMaintenanceStr());
-        map.put("maintenanceEnd", cep.getMaintenanceEnd());
-        return map;
     }
 
 }

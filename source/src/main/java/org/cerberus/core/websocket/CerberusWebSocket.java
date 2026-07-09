@@ -227,6 +227,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
     private boolean isSupportedSubscriptionChannel(String channel) {
         switch (channel) {
             case WebSocketStatic.CHANNEL_CHAT_DELTA:
+            case WebSocketStatic.CHANNEL_CHAT_SUGGESTIONS:
             case WebSocketStatic.CHANNEL_CHAT_DONE:
             case WebSocketStatic.CHANNEL_CHAT_TITLE:
             case WebSocketStatic.CHANNEL_CHAT_ERROR:

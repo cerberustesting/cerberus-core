@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvironmentparameters;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
 import org.cerberus.core.api.dto.application.CountryEnvironmentParametersMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
@@ -159,6 +160,7 @@ public class ListCountryEnvironmentParametersTool implements MCPTool {
         List<Object> entries = raw.stream()
                 .filter(cep -> matchesSearch(cep, search))
                 .map(mapper::toDTO)
+                .map(this::withoutSecrets)
                 .map(Object.class::cast)
                 .toList();
 
@@ -183,6 +185,19 @@ public class ListCountryEnvironmentParametersTool implements MCPTool {
                 || MCPToolUtils.containsIgnoreCase(cep.getIp(), search)
                 || MCPToolUtils.containsIgnoreCase(cep.getDomain(), search)
                 || MCPToolUtils.containsIgnoreCase(cep.getUrl(), search);
+    }
+
+    /**
+     * Strips the secret1/secret2 credential fields from a DTO before it is returned to the
+     * MCP client.
+     *
+     * @param dto the DTO to sanitize
+     * @return the same DTO instance, with secret1/secret2 cleared
+     */
+    private CountryEnvironmentParametersDTOV001 withoutSecrets(CountryEnvironmentParametersDTOV001 dto) {
+        dto.setSecret1(null);
+        dto.setSecret2(null);
+        return dto;
     }
 
 }

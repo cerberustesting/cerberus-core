@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvparam;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.mcp.MCPTool;
@@ -43,7 +44,8 @@ import java.util.Map;
  * fields retain their current values. Only the fields provided in the {@code updates} map
  * are modified.</p>
  *
- * <p>Delegates persistence to {@link ICountryEnvParamService#update(CountryEnvParam)}.</p>
+ * <p>Delegates persistence to {@link ICountryEnvParamService#update(CountryEnvParam)} and converts
+ * the result via {@link CountryEnvParamMapperV001}.</p>
  */
 @Component
 public class UpdateCountryEnvParamTool implements MCPTool {
@@ -51,10 +53,14 @@ public class UpdateCountryEnvParamTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_country_env_param_update";
 
     private final ICountryEnvParamService countryEnvParamService;
+    private final CountryEnvParamMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public UpdateCountryEnvParamTool(ICountryEnvParamService countryEnvParamService, MCPLogUtils mcpLogUtils) {
+    public UpdateCountryEnvParamTool(ICountryEnvParamService countryEnvParamService,
+                                     CountryEnvParamMapperV001 mapper,
+                                     MCPLogUtils mcpLogUtils) {
         this.countryEnvParamService = countryEnvParamService;
+        this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -207,7 +213,6 @@ public class UpdateCountryEnvParamTool implements MCPTool {
         }
 
         CountryEnvParam cep = readAnswer.getItem();
-        Map<String, Object> modifiedFields = new LinkedHashMap<>();
 
         try {
             for (Map.Entry<String, Object> entry : updates.entrySet()) {
@@ -247,7 +252,6 @@ public class UpdateCountryEnvParamTool implements MCPTool {
                     default:
                         return MCPToolUtils.errorText("Unsupported field for country environment parameter update: " + field);
                 }
-                modifiedFields.put(field, value);
             }
         } catch (IllegalArgumentException e) {
             return MCPToolUtils.errorText(e.getMessage());
@@ -261,10 +265,7 @@ public class UpdateCountryEnvParamTool implements MCPTool {
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "updated",
-                "system", system,
-                "country", country,
-                "environment", environment,
-                "updatedFields", modifiedFields
+                "entry", mapper.toDTO(cep)
         ));
     }
 

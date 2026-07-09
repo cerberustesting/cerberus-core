@@ -31,6 +31,7 @@ public final class WebSocketStatic {
 
     /** CHAT EVENTS **/
     public static final String CHANNEL_CHAT_DELTA = "chat.delta";
+    public static final String CHANNEL_CHAT_SUGGESTIONS = "chat.suggestions";
     public static final String CHANNEL_CHAT_DONE = "chat.done";
     public static final String CHANNEL_CHAT_TITLE = "chat.title";
     public static final String CHANNEL_CHAT_ERROR = "chat.error";

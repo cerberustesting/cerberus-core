@@ -180,7 +180,6 @@ public class CreateApplicationTool implements MCPTool {
         if("".equals(appSessionID)){
             webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START, Map.of("toolName", TOOL_NAME ));
         }
-
         mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s type=%s system=%s", TOOL_NAME, applicationName, type, system));
 
         if (applicationName.isBlank()) {
@@ -199,10 +198,15 @@ public class CreateApplicationTool implements MCPTool {
         // If the SYSTEM invariant does not exist, require explicit user confirmation before creating it.
         if (!invariantService.isInvariantExist(Invariant.IDNAME_SYSTEM, system)) {
             if (!confirmSystemCreation) {
-                return MCPToolUtils.errorText(
-                        "System '" + system + "' does not exist as a SYSTEM invariant. " +
-                        "Ask the user to confirm its creation, then re-call with confirmSystemCreation=true."
-                );
+                return MCPToolUtils.successJson(Map.of(
+                        "status", "confirmation_required",
+                        "message", "System '" + system + "' does not exist as a SYSTEM invariant.",
+                        "data", Map.of(
+                                "application", applicationName,
+                                "type", type,
+                                "system", system
+                        )
+                ));
             }
             Invariant systemInvariant = new Invariant();
             systemInvariant.setIdName(Invariant.IDNAME_SYSTEM);
@@ -256,6 +260,7 @@ public class CreateApplicationTool implements MCPTool {
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "created",
+                "message", "Application created successfully.",
                 "application", applicationMapper.toDTO(application)
         ));
     }

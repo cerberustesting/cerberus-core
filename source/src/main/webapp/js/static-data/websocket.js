@@ -30,6 +30,7 @@
         Channel: Object.freeze({
             // Chat events
             CHAT_DELTA: 'chat.delta',
+            CHAT_SUGGESTIONS: 'chat.suggestions',
             CHAT_DONE: 'chat.done',
             CHAT_TITLE: 'chat.title',
             CHAT_ERROR: 'chat.error',

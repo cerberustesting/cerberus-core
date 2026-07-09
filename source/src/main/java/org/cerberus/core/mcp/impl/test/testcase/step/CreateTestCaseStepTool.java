@@ -201,6 +201,9 @@ public class CreateTestCaseStepTool implements MCPTool {
                 .sort(nextStepId)
                 .description(description)
                 .loop(loop)
+                // Empty condition operator is treated as "always" at execution time, but setting it
+                // explicitly avoids the field showing up blank in the UI.
+                .conditionOperator("always")
                 .isLibraryStep(isLibraryStep)
                 .isUsingLibraryStep(false)
                 // Must be 0 not null: DAO does getLibraryStepStepId() >= 0 which auto-unboxes the Integer — null causes NullPointerException.

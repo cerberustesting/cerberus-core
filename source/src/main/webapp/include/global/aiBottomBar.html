@@ -121,7 +121,7 @@
                 <div x-show="sidebarOpen && sidebarMode === 'suggestions'"
                      class="flex-1 overflow-y-auto py-1">
 
-                    <template x-for="group in suggestions" :key="group.category">
+                    <template x-for="group in suggestionGroups" :key="group.category">
                         <div class="mb-3">
                             <div class="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 px-4 py-1.5"
                                  x-text="group.category"></div>
@@ -269,6 +269,21 @@
                         </div>
                     </template>
                 </div>
+                <div x-show="actionSuggestions && actionSuggestions.length"
+                     x-transition.opacity
+                     class="flex flex-wrap gap-2 mt-3 mb-2">
+
+                    <template x-for="suggestion in actionSuggestions"
+                              :key="suggestion.id || suggestion.label + suggestion.value">
+                        <button type="button"
+                                class="px-3 py-1.5 rounded-xl text-sm transition
+                                bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:hover:bg-blue-800"
+                                @click="applySuggestion(suggestion)">
+                            <span x-text="suggestion.label"></span>
+                        </button>
+                    </template>
+
+                </div>
 
                 <!-- Welcome suggestions : compact avec Lucide -->
                 <div x-show="showWelcomeSuggestions"
@@ -386,29 +401,6 @@
 
     function aiAssistant(options = {}) {
 
-        function makeQuestionsClickable(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            const candidates = doc.querySelectorAll("li, p, strong, em");
-
-            candidates.forEach(el => {
-                const text = el.textContent.trim();
-                const cleanText = text.replace(/^"+|"+$/g, "").trim();
-
-                if (cleanText.endsWith("?")) {
-                    const btn = document.createElement("button");
-                    btn.className =
-                        "question-suggest bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded-xl hover:bg-blue-500 transition my-1 block text-left mt-2";
-                    btn.dataset.question = cleanText;
-                    btn.textContent = cleanText;
-
-                    el.textContent = "";
-                    el.appendChild(btn);
-                }
-            });
-
-            return doc.body.innerHTML;
-        }
 
         return {
             open: false,
@@ -453,7 +445,15 @@
                 session: null
             },
 
-            suggestions: [
+            actionSuggestions: [],
+            suggestionContext: null,
+            suggestionMode: null,
+
+            pendingActionSuggestions: [],
+            pendingSuggestionContext: null,
+            pendingSuggestionMode: null,
+
+            suggestionGroups: [
                 {
                     category: "Créer",
                     items: [
@@ -543,7 +543,7 @@
             ],
 
             get flatSuggestions() {
-                return this.suggestions.flatMap(group => group.items);
+                return this.suggestionGroups.flatMap(group => group.items);
             },
 
             get connected() {
@@ -557,12 +557,12 @@
                     var message = e.detail;
                     this.appendAI(message.payload.data || "", false, false);
                 });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_SUGGESTIONS), (e) => {
+                    const message = e.detail || {};
+                    this.handleChatSuggestions(message);
+                });
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DONE), (e) => {
                     this.finalizeCurrentAI();
-                });
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
-                    var message = e.detail;
-                    this.appendAI(message.payload.data || "", false, false);
                 });
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_TITLE), (e) => {
                     var message = e.detail;
@@ -669,6 +669,11 @@
                     }
             },
 
+            setSuggestions(suggestions = [], context = null) {
+                this.actionSuggestions = suggestions;
+                this.suggestionContext = context;
+            },
+
             async openAssistant() {
                 this.open = true;
 
@@ -767,6 +772,10 @@
                 this.aiCurrentBubble = null;
                 this.isCurrentFinalized = false;
 
+                this.actionSuggestions = [];
+                this.suggestionContext = null;
+                this.suggestionMode = null;
+
                 this.showWelcomeSuggestions = true;
                 this.contextMenu.open = false;
 
@@ -798,6 +807,7 @@
                         subject: CerberusWs.Subject.SUBSCRIBE,
                         channels: [
                             CerberusWs.Channel.CHAT_DELTA,
+                            CerberusWs.Channel.CHAT_SUGGESTIONS,
                             CerberusWs.Channel.CHAT_DONE,
                             CerberusWs.Channel.CHAT_TITLE,
                             CerberusWs.Channel.CHAT_ERROR,
@@ -812,6 +822,14 @@
             async sendUserMessage() {
                 this.aiBuffer = "";
                 this.showWelcomeSuggestions = false;
+
+                this.actionSuggestions = [];
+                this.suggestionContext = null;
+                this.suggestionMode = null;
+
+                this.pendingActionSuggestions = [];
+                this.pendingSuggestionContext = null;
+                this.pendingSuggestionMode = null;
 
                 const input = this.$refs.aiInput;
                 const msg = input.value.trim();
@@ -920,36 +938,105 @@
                 }
             },
 
+            handleChatSuggestions(message) {
+                const payload = message.payload || {};
+
+                // Sécurité : ignorer les suggestions d'une autre session
+                if (message.sessionID && this.sessionID && message.sessionID !== this.sessionID) {
+                    return;
+                }
+
+                const suggestions = Array.isArray(payload.suggestions)
+                    ? payload.suggestions
+                    : [];
+
+                if (payload.mode === "replace") {
+                    this.pendingActionSuggestions = suggestions;
+                } else if (payload.mode === "append") {
+                    this.pendingActionSuggestions = [
+                        ...this.pendingActionSuggestions,
+                        ...suggestions
+                    ];
+                } else if (payload.mode === "clear") {
+                    this.pendingActionSuggestions = [];
+                } else {
+                    this.pendingActionSuggestions = suggestions;
+                }
+
+                this.pendingSuggestionContext = payload.context || null;
+                this.pendingSuggestionMode = payload.mode || null;
+            },
+
+            async applySuggestion(suggestion) {
+                if (!suggestion) return;
+
+                const value =
+                    suggestion.value ||
+                    suggestion.prompt ||
+                    suggestion.label ||
+                    "";
+
+                if (!value.trim()) return;
+
+                // Option simple : la suggestion devient un message utilisateur
+                const input = this.$refs.aiInput;
+
+                if (input) {
+                    input.value = value;
+                }
+
+                // On nettoie les boutons après clic pour éviter double confirmation
+                this.actionSuggestions = [];
+
+                await this.sendUserMessage();
+            },
+
             finalizeCurrentAI() {
                 if (!this.aiCurrentBubble) return;
-                if (this.isCurrentFinalized) return; // guard against double finalization
+                if (this.isCurrentFinalized) return;
 
                 try {
                     const finalHtml = marked.parse(this.aiBuffer);
 
-                        const clean = DOMPurify.sanitize(finalHtml, {
-                            ALLOWED_TAGS: [
-                                "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
-                                "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
-                                "table", "thead", "tbody", "tr", "th", "td",
-                                "button"
-                            ],
-                            ALLOWED_ATTR: [
-                                "class", "style", "data-question"
-                            ]
-                        });
+                    const clean = DOMPurify.sanitize(finalHtml, {
+                        ALLOWED_TAGS: [
+                            "b", "i", "strong", "em", "ul", "ol", "li", "p", "div", "span",
+                            "code", "pre", "br", "hr", "h1", "h2", "h3", "h4",
+                            "table", "thead", "tbody", "tr", "th", "td"
+                        ],
+                        ALLOWED_ATTR: [
+                            "class", "style"
+                        ]
+                    });
 
-                        if (clean.trim()) {
-                            this.aiCurrentBubble.innerHTML = clean;
-                            this.aiCurrentBubble.innerHTML = makeQuestionsClickable(this.aiCurrentBubble.innerHTML);
-                        }
-                    } catch (e) {
-                        this.aiCurrentBubble.textContent = this.aiBuffer;
+                    if (clean.trim()) {
+                        this.aiCurrentBubble.innerHTML = clean;
                     }
+                } catch (e) {
+                    this.aiCurrentBubble.textContent = this.aiBuffer;
+                }
 
                 this.aiCurrentBubble.removeAttribute("data-streaming");
                 this.isCurrentFinalized = true;
                 this.aiBuffer = "";
+
+                this.flushPendingSuggestions();
+            },
+
+            flushPendingSuggestions() {
+                this.actionSuggestions = this.pendingActionSuggestions || [];
+                this.suggestionContext = this.pendingSuggestionContext || null;
+                this.suggestionMode = this.pendingSuggestionMode || null;
+
+                this.pendingActionSuggestions = [];
+                this.pendingSuggestionContext = null;
+                this.pendingSuggestionMode = null;
+
+                this.$nextTick(() => {
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                });
             },
 
             handleToolStarted(payload) {
@@ -1117,6 +1204,14 @@
                     this.sessionID = sessionID;
                     this.currentSessionTitle = session ? this.cleanTitle(session.title) : "Conversation";
                     this.showWelcomeSuggestions = false;
+
+                    this.actionSuggestions = [];
+                    this.suggestionContext = null;
+                    this.suggestionMode = null;
+
+                    this.pendingActionSuggestions = [];
+                    this.pendingSuggestionContext = null;
+                    this.pendingSuggestionMode = null;
 
                     await this.subscribeChat();
 

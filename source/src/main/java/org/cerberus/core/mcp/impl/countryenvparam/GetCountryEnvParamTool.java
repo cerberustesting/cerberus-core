@@ -21,6 +21,7 @@ package org.cerberus.core.mcp.impl.countryenvparam;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.cerberus.core.api.dto.application.CountryEnvParamMapperV001;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.mcp.MCPTool;
@@ -29,7 +30,6 @@ import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,8 @@ import java.util.Map;
  *
  * <p>Exposed MCP tool name: {@code cerberus_country_env_param_get}.</p>
  *
- * <p>Delegates to {@link ICountryEnvParamService#readByKey(String, String, String)}.</p>
+ * <p>Delegates to {@link ICountryEnvParamService#readByKey(String, String, String)} and converts
+ * the result via {@link CountryEnvParamMapperV001}.</p>
  */
 @Component
 public class GetCountryEnvParamTool implements MCPTool {
@@ -47,10 +48,14 @@ public class GetCountryEnvParamTool implements MCPTool {
     private static final String TOOL_NAME = "cerberus_country_env_param_get";
 
     private final ICountryEnvParamService countryEnvParamService;
+    private final CountryEnvParamMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
 
-    public GetCountryEnvParamTool(ICountryEnvParamService countryEnvParamService, MCPLogUtils mcpLogUtils) {
+    public GetCountryEnvParamTool(ICountryEnvParamService countryEnvParamService,
+                                  CountryEnvParamMapperV001 mapper,
+                                  MCPLogUtils mcpLogUtils) {
         this.countryEnvParamService = countryEnvParamService;
+        this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -141,34 +146,7 @@ public class GetCountryEnvParamTool implements MCPTool {
             return MCPToolUtils.errorText("Country environment parameter does not exist: system=" + system + " country=" + country + " environment=" + environment);
         }
 
-        return MCPToolUtils.successJson(toMap(answer.getItem()));
-    }
-
-    /**
-     * Converts a {@link CountryEnvParam} entity into a plain map suitable for JSON serialisation.
-     *
-     * @param cep the entity to convert
-     * @return an ordered map with the entry's public fields
-     */
-    private Map<String, Object> toMap(CountryEnvParam cep) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("system", cep.getSystem());
-        map.put("country", cep.getCountry());
-        map.put("environment", cep.getEnvironment());
-        map.put("description", cep.getDescription());
-        map.put("type", cep.getType());
-        map.put("build", cep.getBuild());
-        map.put("revision", cep.getRevision());
-        map.put("active", cep.isActive());
-        map.put("chain", cep.getChain());
-        map.put("distribList", cep.getDistribList());
-        map.put("maintenanceAct", cep.isMaintenanceAct());
-        map.put("maintenanceStr", cep.getMaintenanceStr());
-        map.put("maintenanceEnd", cep.getMaintenanceEnd());
-        map.put("eMailBodyRevision", cep.geteMailBodyRevision());
-        map.put("eMailBodyChain", cep.geteMailBodyChain());
-        map.put("eMailBodyDisableEnvironment", cep.geteMailBodyDisableEnvironment());
-        return map;
+        return MCPToolUtils.successJson(mapper.toDTO(answer.getItem()));
     }
 
 }

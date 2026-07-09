@@ -319,6 +319,14 @@ public class CreateTestCaseTool implements MCPTool {
         testCase.setPriority(priority);
         testCase.setComment(comment);
         testCase.setActive(true);
+        // A testcase is runnable on every environment group by default; the UI defaults new
+        // testcases the same way, so a fresh testcase is immediately eligible for execution.
+        testCase.setActiveQA(true);
+        testCase.setActiveUAT(true);
+        testCase.setActivePROD(true);
+        // Empty condition operator is treated as "always" at execution time, but setting it
+        // explicitly avoids the field showing up blank in the UI.
+        testCase.setConditionOperator("always");
         // Tag the creator as "MCP" so audit trails identify AI-originated records
         testCase.setUsrCreated("MCP");
 
