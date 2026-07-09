@@ -3593,3 +3593,77 @@ function toSafeId(str) {
             .replace(/_+/g, "_")              // évite les doublons _
             .toLowerCase();
 }
+
+function getExecutionStatusConfig(status) {
+    const normalizedStatus = status || "";
+
+    const map = {
+        OK: {
+            icon: "check-circle",
+            label: "OK",
+            badgeClass: "bg-green-100 text-green-700 ring-green-600/20 dark:bg-green-950/40 dark:text-green-400 dark:ring-green-500/30",
+            iconClass: ""
+        },
+        KO: {
+            icon: "x-circle",
+            label: "KO",
+            badgeClass: "bg-red-100 text-red-700 ring-red-600/20 dark:bg-red-950/40 dark:text-red-400 dark:ring-red-500/30",
+            iconClass: ""
+        },
+        FA: {
+            icon: "alert-triangle",
+            label: "FA",
+            badgeClass: "bg-amber-100 text-amber-700 ring-amber-600/20 dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-500/30",
+            iconClass: ""
+        },
+        PE: {
+            icon: "loader",
+            label: "PE",
+            badgeClass: "bg-blue-100 text-blue-700 ring-blue-600/20 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-500/30",
+            iconClass: "v2-exe-spin-limited"
+        },
+        NE: {
+            icon: "minus-circle",
+            label: "NE",
+            badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+            iconClass: ""
+        },
+        NA: {
+            icon: "alert-circle",
+            label: "NA",
+            badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+            iconClass: ""
+        },
+        WE: {
+            icon: "help-circle",
+            label: "WE",
+            badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+            iconClass: ""
+        },
+        CA: {
+            icon: "ban",
+            label: "CA",
+            badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+            iconClass: ""
+        },
+        QU: {
+            icon: "clock",
+            label: "QU",
+            badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+            iconClass: ""
+        },
+        QE: {
+            icon: "alert-octagon",
+            label: "QE",
+            badgeClass: "bg-orange-100 text-orange-700 ring-orange-600/20 dark:bg-orange-950/40 dark:text-orange-400 dark:ring-orange-500/30",
+            iconClass: ""
+        }
+    };
+
+    return map[normalizedStatus] || {
+        icon: "help-circle",
+        label: normalizedStatus || "-",
+        badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
+        iconClass: ""
+    };
+}

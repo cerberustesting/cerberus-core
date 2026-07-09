@@ -32,6 +32,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface TestMapperV001 {
 
+    @Mapping(target = "isActive", source = "active")
     TestDTOV001 toDTO(Test test);
 
     Test toEntity(TestDTOV001 testDTO);

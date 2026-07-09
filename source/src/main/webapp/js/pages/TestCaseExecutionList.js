@@ -71,7 +71,21 @@ function loadTable(searchArray) {
     //configure and create the dataTable
     var lengthMenu = [10, 15, 20, 30, 50, 100, 500, 1000];
     var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [2, 'desc'], lengthMenu, (searchArray.length > 0));
-    var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", searchArray, true, undefined, undefined);
+    var table = createDataTableWithPermissionsNew(configurations, undefined, "#testCaseExecution", searchArray, true, undefined, undefined);
+
+    $("#testCaseExecutionTable tbody").on("mouseenter", "tr", function () {
+        $(this).addClass("group");
+    });
+
+    $("#testCaseExecutionTable").on("draw.dt", function () {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 
     if (searchArray.length > 0) {
         applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);
@@ -103,68 +117,159 @@ function aoColumnsFunc() {
 
     var aoColumns = [
         {
-            "data": null,
-            "bSortable": false,
-            "bSearchable": false,
-            "title": doc.getDocOnline("page_global", "columnAction"),
-            "sDefaultContent": "",
-            "sWidth": "150px",
-            "mRender": function (data, type, obj) {
-                var buttons = "";
+            data: null,
+            bSortable: false,
+            bSearchable: false,
+            title: doc.getDocOnline("page_global", "columnAction"),
+            sDefaultContent: "",
+            sWidth: "170px",
+            render: function (data, type, obj, meta) {
+                const row = "row_" + meta.row;
 
-                var viewExecution = '<button id="viewExecution" onclick="window.location = \'./TestCaseExecution.jsp?executionId=' + obj.id + '\';"\n\
-                                class="btn btn-primary btn-xs margin-right25" \n\
-                                data-toggle="tooltip"  title="' + doc.getDocLabel("page_executiondetail", "viewExecution") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var editScript = '<a id="testCaseBetaLink" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "edittc") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
-                                    <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </a>';
-                var runTest = '<a id="runTest" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
-                                    <span class="glyphicon glyphicon-play"></span>\n\
-                                    </a>';
-                var lastExec = '<a id="lastExec" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./TestCaseExecutionList.jsp?Test=' + encodeURIComponent(obj["test"]) + '&TestCase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
-                                    <span class="glyphicon glyphicon-filter"></span>\n\
-                                    </a>';
-                var tag = '<a id="tagExec' + (obj["id"]) + '" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(obj["tag"]) + '">\n\
-                                    <span class="glyphicon glyphicon-tag"></span>\n\
-                                    </a>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                buttons += viewExecution;
-                buttons += editScript;
-                buttons += lastExec;
-                if (!(isEmpty(obj["tag"]))) {
-                    buttons += tag;
+                function actionButtonLink({ id, name, title, link, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed pointer-events-none" : "";
+
+                    return `
+                <a
+                    id="${id}"
+                    name="${name}"
+                    href="${link}"
+                    class="${baseBtnClass} ${extraClass} ${disabledClass}"
+                    title="${title}"
+                    ${disabled ? 'aria-disabled="true"' : ''}
+                >
+                    ${icon}
+                </a>
+            `;
                 }
-                buttons += runTest;
 
-                return '<div class="center btn-group width250">' + buttons + '</div>';
+                function actionButton({ id, name, title, onClick, icon, extraClass = "", disabled = false }) {
+                    const disabledClass = disabled ? "opacity-30 cursor-not-allowed" : "";
+
+                    return `
+                <button
+                    id="${id}"
+                    name="${name}"
+                    type="button"
+                    class="${baseBtnClass} ${extraClass} ${disabledClass}"
+                    title="${title}"
+                    ${disabled ? "disabled" : `onclick="${onClick}"`}
+                >
+                    ${icon}
+                </button>
+            `;
+                }
+
+                const icons = {
+                    viewExecution: `<i data-lucide="eye" class="w-4 h-4"></i>`,
+                    editScript: `<i data-lucide="file-pen-line" class="w-4 h-4"></i>`,
+                    lastExec: `<i data-lucide="list-filter" class="w-4 h-4"></i>`,
+                    tag: `<i data-lucide="tag" class="w-4 h-4"></i>`,
+                    run: `<i data-lucide="play" class="w-4 h-4"></i>`
+                };
+
+                const test = encodeURIComponent(obj["test"]);
+                const testcase = encodeURIComponent(obj["testcase"]);
+                const country = encodeURIComponent(obj["country"]);
+                const environment = encodeURIComponent(obj["environment"]);
+                const executionId = encodeURIComponent(obj["id"]);
+                const tag = encodeURIComponent(obj["tag"]);
+
+                let buttons = [];
+
+                // View execution
+                buttons.push(actionButton({
+                    id: `execution_action_view_${row}`,
+                    name: "viewExecution",
+                    title: doc.getDocLabel("page_executiondetail", "viewExecution"),
+                    onClick: `window.location = './TestCaseExecution.jsp?executionId=${executionId}'`,
+                    icon: icons.viewExecution,
+                    extraClass: "group-hover:!text-blue-500"
+                }));
+
+                // Edit testcase script
+                buttons.push(actionButtonLink({
+                    id: `execution_action_editscript_${row}`,
+                    name: "editScriptTestcase",
+                    title: doc.getDocLabel("page_executiondetail", "edittc"),
+                    link: `./TestCaseScript.jsp?test=${test}&testcase=${testcase}`,
+                    icon: icons.editScript,
+                    extraClass: "group-hover:!text-blue-500"
+                }));
+
+                // Last executions
+                buttons.push(actionButtonLink({
+                    id: `execution_action_lastexec_${row}`,
+                    name: "lastExecution",
+                    title: doc.getDocLabel("page_executiondetail", "lastexecution"),
+                    link: `./TestCaseExecutionList.jsp?Test=${test}&TestCase=${testcase}&country=${country}&environment=${environment}`,
+                    icon: icons.lastExec,
+                    extraClass: "group-hover:!text-purple-500"
+                }));
+
+                // Execution tag
+                if (!isEmpty(obj["tag"])) {
+                    buttons.push(actionButtonLink({
+                        id: `execution_action_tag_${obj["id"]}`,
+                        name: "tagExecution",
+                        title: doc.getDocLabel("page_executiondetail", "see_execution_tag"),
+                        link: `./ReportingExecutionByTag.jsp?Tag=${tag}`,
+                        icon: icons.tag,
+                        extraClass: "group-hover:!text-orange-500"
+                    }));
+                }
+
+                // Run testcase
+                buttons.push(actionButtonLink({
+                    id: `execution_action_runtest_${row}`,
+                    name: "runTest",
+                    title: doc.getDocLabel("page_executiondetail", "runtc"),
+                    link: `./RunTests.jsp?test=${test}&testcase=${testcase}&country=${country}&environment=${environment}`,
+                    icon: icons.run,
+                    extraClass: "group-hover:!text-green-500"
+                }));
+
+                return `<div class="flex items-center justify-center gap-1">${buttons.join("")}</div>`;
             }
         },
         {
-            "data": "controlStatus",
-            "sName": "exe.controlStatus",
-            "title": doc.getDocOnline("page_executiondetail", "controlstatus"),
-            "sWidth": "100px",
-            "sDefaultContent": "",
-            "sClass": "center",
-            "mRender": function (data, type, obj) {
-                if (obj !== "") {
-                    var executionLink = "./TestCaseExecution.jsp?executionId=" + obj.id;
-                    var glyphClass = getRowClass(obj.controlStatus);
-                    var tooltip = generateTooltip(obj);
-                    var cell = '<a href="' + executionLink + '" target="_blank"><div class="progress-bar status' + obj.controlStatus + '" \n\
-                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 20px;" \n\
-                                data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
-                                <span class="' + glyphClass.glyph + ' marginRight5" style="margin-top:0;"></span>\n\
-                                 <span>' + obj.controlStatus + '</span></div></a>';
-                    return cell;
-                } else {
+            data: "controlStatus",
+            sName: "exe.controlStatus",
+            title: doc.getDocOnline("page_executiondetail", "controlstatus"),
+            sWidth: "100px",
+            sDefaultContent: "",
+            sClass: "center",
+            render: function (data, type, obj) {
+                if (!obj || obj === "") {
                     return obj;
                 }
+
+                const executionLink = `./TestCaseExecution.jsp?executionId=${encodeURIComponent(obj.id)}`;
+                const tooltip = generateTooltip(obj);
+                const status = obj.controlStatus || "";
+                const config = getExecutionStatusConfig(status);
+
+                return `
+    <a
+        href="${executionLink}"
+        target="_blank"
+        class="inline-flex no-underline hover:no-underline focus:no-underline"
+        data-toggle="tooltip"
+        data-html="true"
+        title="${tooltip}"
+    >
+        <span
+            class="inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset transition-all duration-200 hover:scale-105 hover:shadow-sm ${config.badgeClass}"
+        >
+            <i data-lucide="${config.icon}" class="h-3.5 w-3.5 ${config.iconClass}"></i>
+            <span>${config.label}</span>
+        </span>
+    </a>
+`;
             }
         },
         {

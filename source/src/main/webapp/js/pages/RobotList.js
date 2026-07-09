@@ -350,8 +350,8 @@ function aoColumnsFunc(tableId) {
             "sWidth": "50px",
             "title": doc.getDocOnline("robot", "version")},
         {
-            "data": "active",
-            "sName": "active",
+            "data": "isActive",
+            "sName": "isActive",
             "sWidth": "50px",
             "title": "Active",
             "orderable": true,
