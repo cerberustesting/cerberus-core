@@ -12,6 +12,7 @@
     </button>
 
     <div x-show="open"
+         x-ref="panel"
          x-transition:enter="transform transition ease-out duration-300"
          x-transition:enter-start="translate-y-full"
          x-transition:enter-end="translate-y-0"
@@ -397,7 +398,7 @@
                 </div>
 
                 <!-- Input fixé en bas du panneau -->
-                <div class="flex items-end gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 focus-within:border-blue-500 transition">
+                <div class="flex items-end gap-2 z-50 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 focus-within:border-blue-500 transition">
                     <input x-ref="aiInput"
                            @keydown.enter="sendUserMessage()"
                            type="text"
@@ -425,6 +426,14 @@
         </button>
     </div>
 </div>
+
+<style>
+    /* Applied briefly while restoring the panel's open state on page load, so it
+       appears instantly instead of replaying the slide-up open animation. */
+    .no-anim, .no-anim * {
+        transition: none !important;
+    }
+</style>
 
 <script>
     function escapeHtmlForPreview(str) {
@@ -719,6 +728,32 @@
             init() {
                 this.restorePanelHeight();
                 this.costDebugEnabled = this.hasCookie("cerberus_ai_show_cost");
+                this.restoreSidebarState();
+
+                // Persist open/session/sidebar state so the assistant reopens on the same
+                // conversation, in the same layout, after a page change (each page reloads
+                // this component).
+                this.$watch("open", (value) => {
+                    localStorage.setItem("aiAssistant.open", value ? "1" : "0");
+                });
+
+                this.$watch("sessionID", (value) => {
+                    if (value) {
+                        localStorage.setItem("aiAssistant.sessionID", value);
+                    } else {
+                        localStorage.removeItem("aiAssistant.sessionID");
+                    }
+                });
+
+                this.$watch("sidebarOpen", (value) => {
+                    localStorage.setItem("aiAssistant.sidebarOpen", value ? "1" : "0");
+                });
+
+                this.$watch("sidebarMode", (value) => {
+                    if (value) {
+                        localStorage.setItem("aiAssistant.sidebarMode", value);
+                    }
+                });
 
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
                     const message = e.detail || {};
@@ -829,6 +864,77 @@
                         lucide.createIcons();
                     }
                 });
+
+                this.restoreSession();
+            },
+
+            restoreSidebarState() {
+                const savedSidebarOpen = localStorage.getItem("aiAssistant.sidebarOpen");
+                const savedSidebarMode = localStorage.getItem("aiAssistant.sidebarMode");
+
+                if (savedSidebarOpen !== null) {
+                    this.sidebarOpen = savedSidebarOpen === "1";
+                }
+
+                if (savedSidebarMode) {
+                    this.sidebarMode = savedSidebarMode;
+                }
+
+                if (this.sidebarOpen && this.sidebarMode === "history") {
+                    this.loadSessions();
+                }
+            },
+
+            async restoreSession() {
+                const wasOpen = localStorage.getItem("aiAssistant.open") === "1";
+                const savedSessionID = localStorage.getItem("aiAssistant.sessionID");
+
+                if (!savedSessionID) {
+                    return;
+                }
+
+                if (this.sessions.length === 0) {
+                    await this.loadSessions();
+                }
+
+                // Open before rendering : #aiConversation is display:none while closed, so
+                // scrollHeight is 0 and the "scroll to last message" below would be a no-op.
+                const panel = this.$refs.panel;
+
+                if (wasOpen) {
+                    // Suppress the slide-up open transition for this restore-on-load open only ;
+                    // manual open()/close() clicks keep the animation.
+                    if (panel) {
+                        panel.classList.add("no-anim");
+                    }
+
+                    this.open = true;
+                }
+
+                await this.loadSession(savedSessionID);
+
+                if (this.sessionID !== savedSessionID) {
+                    // Session no longer exists (e.g. deleted from another tab) : drop the stale reference.
+                    localStorage.removeItem("aiAssistant.sessionID");
+                    return;
+                }
+
+                if (wasOpen) {
+                    this.$nextTick(() => {
+                        if (window.lucide) {
+                            lucide.createIcons();
+                        }
+
+                        const conv = document.getElementById("aiConversation");
+                        if (conv) {
+                            conv.scrollTop = conv.scrollHeight;
+                        }
+
+                        if (panel) {
+                            requestAnimationFrame(() => panel.classList.remove("no-anim"));
+                        }
+                    });
+                }
             },
 
             handleWsMessage(message) {
