@@ -214,6 +214,9 @@ public class CreateCountryEnvParamTool implements MCPTool {
         cep.setMaintenanceAct(MCPToolUtils.getBoolean(args, "maintenanceAct", false));
         cep.setMaintenanceStr(MCPToolUtils.getString(args, "maintenanceStr", "00:00:00"));
         cep.setMaintenanceEnd(MCPToolUtils.getString(args, "maintenanceEnd", "00:00:00"));
+        cep.seteMailBodyChain("");
+        cep.seteMailBodyRevision("");
+        cep.seteMailBodyDisableEnvironment("");
 
         Answer answer = countryEnvParamService.create(cep);
 
