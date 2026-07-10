@@ -28,12 +28,14 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +60,74 @@ public class AIMcpClientService {
 
     @Autowired
     AIConfig aiConfig;
+
+    // Reopening a client (TCP/TLS connection + MCP "initialize" handshake + tools/list) on every
+    // chat message added multiple seconds of dead time before Claude even started streaming.
+    // Instead, one client is kept alive per chat session and reused across messages; idle ones
+    // are swept below.
+    private static final Duration SESSION_CLIENT_IDLE_TIMEOUT = Duration.ofMinutes(30);
+    private final Map<String, SessionMcpClient> clientsBySession = new ConcurrentHashMap<>();
+
+    private static final class SessionMcpClient {
+        final McpSyncClient client;
+        final List<Tool> tools;
+        volatile long lastUsedMillis;
+
+        SessionMcpClient(McpSyncClient client, List<Tool> tools) {
+            this.client = client;
+            this.tools = tools;
+            this.lastUsedMillis = System.currentTimeMillis();
+        }
+    }
+
+    /**
+     * Returns the MCP client for this chat session, opening and initializing one (plus listing
+     * its tools) only on the first call. Subsequent calls for the same session reuse it.
+     */
+    public McpSyncClient getOrOpenSessionClient(String sessionID) {
+        return sessionClientFor(sessionID).client;
+    }
+
+    /**
+     * Anthropic tool definitions for this session's MCP client, fetched once when the client
+     * was opened and cached alongside it.
+     */
+    public List<Tool> getSessionTools(String sessionID) {
+        return sessionClientFor(sessionID).tools;
+    }
+
+    private SessionMcpClient sessionClientFor(String sessionID) {
+        SessionMcpClient sessionClient = clientsBySession.computeIfAbsent(sessionID, id -> {
+            McpSyncClient client = openClient();
+            return new SessionMcpClient(client, listAnthropicTools(client));
+        });
+        sessionClient.lastUsedMillis = System.currentTimeMillis();
+        return sessionClient;
+    }
+
+    /**
+     * Discards and closes the cached client for this session, if any — e.g. after a failure,
+     * so the next message opens a fresh connection instead of reusing a possibly broken one.
+     */
+    public void invalidateSessionClient(String sessionID) {
+        SessionMcpClient sessionClient = clientsBySession.remove(sessionID);
+        if (sessionClient != null) {
+            try {
+                sessionClient.client.closeGracefully();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    @Scheduled(fixedRate = 5, timeUnit = java.util.concurrent.TimeUnit.MINUTES)
+    void closeIdleSessionClients() {
+        long now = System.currentTimeMillis();
+        clientsBySession.forEach((sessionID, sessionClient) -> {
+            if (now - sessionClient.lastUsedMillis >= SESSION_CLIENT_IDLE_TIMEOUT.toMillis()) {
+                invalidateSessionClient(sessionID);
+            }
+        });
+    }
 
     /**
      * Opens an initialized synchronous MCP client on the configured host.

@@ -75,7 +75,7 @@ public class AISessionManager {
      * @param message
      * @return
      */
-    public void saveMessage(String login, String aiSessionID, String prompt, String response, Message message, String type, long in, long out) {
+    public UserPrompt saveMessage(String login, String aiSessionID, String prompt, String response, Message message, String type, long in, long out) {
 
         in = in == 0 ? message.usage().inputTokens() : in;
         out = out == 0 ? message.usage().outputTokens() : out;
@@ -106,6 +106,7 @@ public class AISessionManager {
          */
         iUserPromptDAO.incrementUsage(login, aiSessionID, (int) in, (int) out, costIn + costOut);
 
+        return iUserPromptDAO.readByUserSessionID(login, aiSessionID).getItem();
     }
 
     public List<UserPromptMessage> getAllMessages(String aiSession) {

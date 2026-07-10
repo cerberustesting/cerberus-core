@@ -36,9 +36,45 @@
                     <span class="font-semibold">AI Copilot Assistant</span>
                 </div>
 
-                <div class="hidden lg:block text-xs text-slate-500 truncate max-w-96"
-                     x-show="currentSessionTitle">
-                    <span x-text="currentSessionTitle"></span>
+                <div class="flex max-lg:!hidden items-center gap-3 text-xs text-slate-500 min-w-0"
+                     x-show="currentSessionTitle || usage.totalInputTokens || usage.totalOutputTokens || toolActivity.lastToolName || costDebugEnabled">
+
+    <span class="truncate max-w-96"
+          x-show="currentSessionTitle"
+          x-text="currentSessionTitle"></span>
+
+                    <div class="flex items-center gap-1.5 shrink-0"
+                         x-show="usage.totalInputTokens || usage.totalOutputTokens || toolActivity.lastToolName || costDebugEnabled">
+
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+                     bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+              x-show="toolActivity.lastToolName"
+              :title="toolActivity.active ? 'Outil en cours d\'exécution' : 'Dernier outil utilisé'">
+            <i data-lucide="wrench" class="w-3 h-3" :class="toolActivity.active ? 'animate-pulse' : ''"></i>
+            <span x-text="toolActivity.lastToolName" class="truncate max-w-36"></span>
+        </span>
+
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+                     bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <i data-lucide="arrow-down-to-line" class="w-3 h-3"></i>
+            <span x-text="formatTokenCount(usage.totalInputTokens)"></span>
+        </span>
+
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+                     bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <i data-lucide="arrow-up-from-line" class="w-3 h-3"></i>
+            <span x-text="formatTokenCount(usage.totalOutputTokens)"></span>
+        </span>
+
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+                     bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+              x-show="costDebugEnabled"
+              title="Coût cumulé de la session (debug, cookie cerberus_ai_show_cost)">
+            <i data-lucide="coins" class="w-3 h-3"></i>
+            <span x-text="formatCost(usage.totalCost)"></span>
+        </span>
+
+                    </div>
                 </div>
             </div>
 
@@ -415,6 +451,28 @@
             sessionID: null,
             currentSessionTitle: null,
 
+            usage: {
+                totalInputTokens: 0,
+                totalOutputTokens: 0,
+                totalCalls: 0,
+                iaModel: null,
+                iaMaxTokens: null
+            },
+
+            // tool.start/tool.result/tool.done for one call often arrive within the same
+            // network batch (the MCP call itself is fast), so a transient chat-bubble message
+            // would flash and vanish unseen. Shown in the header instead, next to the token
+            // counters, and left visible (non-pulsing) after tool.done so the user can still see
+            // which tool just ran.
+            toolActivity: {
+                active: false,
+                lastToolName: null
+            },
+
+            // Cost badge is opt-in : only shown when the "cerberus_ai_show_cost" cookie is
+            // present (set it manually in devtools, then reload the page).
+            costDebugEnabled: false,
+
             messages: [],
             welcomeMessage: "Bonjour 👋 Je suis ton assistant IA Cerberus. Que veux-tu faire aujourd’hui ?",
 
@@ -550,26 +608,157 @@
                 return Alpine.store('ws').connected;
             },
 
+            resetUsage() {
+                this.usage = {
+                    totalInputTokens: 0,
+                    totalOutputTokens: 0,
+                    totalCalls: 0,
+                    totalCost: 0,
+                    iaModel: null,
+                    iaMaxTokens: null
+                };
+            },
+
+            setUsageFromPrompt(prompt) {
+                if (!prompt) {
+                    this.resetUsage();
+                    return;
+                }
+
+                this.usage.totalInputTokens = Number(prompt.totalInputTokens || 0);
+                this.usage.totalOutputTokens = Number(prompt.totalOutputTokens || 0);
+                this.usage.totalCalls = Number(prompt.totalCalls || 0);
+                this.usage.totalCost = Number(prompt.totalCost || 0);
+                this.usage.iaModel = prompt.iaModel || null;
+                this.usage.iaMaxTokens = prompt.iaMaxTokens || null;
+            },
+
+            getWsPayload(message) {
+                const payload = message?.payload || {};
+
+                return {
+                    ...payload,
+                    ...message,
+                    payload
+                };
+            },
+
+            updateUsageFromMessage(message) {
+                const source = this.getWsPayload(message);
+
+                if (source.totalInputTokens !== undefined && source.totalInputTokens !== null) {
+                    this.usage.totalInputTokens = Number(source.totalInputTokens || 0);
+                }
+
+                if (source.totalOutputTokens !== undefined && source.totalOutputTokens !== null) {
+                    this.usage.totalOutputTokens = Number(source.totalOutputTokens || 0);
+                }
+
+                if (source.totalCalls !== undefined && source.totalCalls !== null) {
+                    this.usage.totalCalls = Number(source.totalCalls || 0);
+                }
+
+                if (source.totalCost !== undefined && source.totalCost !== null) {
+                    this.usage.totalCost = Number(source.totalCost || 0);
+                }
+
+                if (source.iaModel) {
+                    this.usage.iaModel = source.iaModel;
+                }
+
+                if (source.iaMaxTokens) {
+                    this.usage.iaMaxTokens = source.iaMaxTokens;
+                }
+
+                const sid = source.sessionID || this.sessionID;
+
+                if (sid) {
+                    const existing = this.sessions.find(s => s.sessionID === sid);
+
+                    if (existing) {
+                        existing.totalInputTokens = this.usage.totalInputTokens;
+                        existing.totalOutputTokens = this.usage.totalOutputTokens;
+                        existing.totalCalls = this.usage.totalCalls;
+                        existing.totalCost = this.usage.totalCost;
+                        existing.iaModel = this.usage.iaModel;
+                        existing.iaMaxTokens = this.usage.iaMaxTokens;
+                    }
+                }
+            },
+
+            ensureCurrentSessionInHistory() {
+                if (!this.sessionID) return;
+
+                const existing = this.sessions.find(s => s.sessionID === this.sessionID);
+
+                if (!existing) {
+                    this.sessions.unshift({
+                        sessionID: this.sessionID,
+                        title: this.currentSessionTitle || "Nouvelle conversation",
+                        dateCreated: new Date().toISOString(),
+                        totalInputTokens: this.usage.totalInputTokens,
+                        totalOutputTokens: this.usage.totalOutputTokens,
+                        totalCalls: this.usage.totalCalls,
+                        totalCost: this.usage.totalCost,
+                        iaModel: this.usage.iaModel,
+                        iaMaxTokens: this.usage.iaMaxTokens
+                    });
+                } else {
+                    existing.title = this.currentSessionTitle || existing.title || "Nouvelle conversation";
+                    existing.totalInputTokens = this.usage.totalInputTokens;
+                    existing.totalOutputTokens = this.usage.totalOutputTokens;
+                    existing.totalCalls = this.usage.totalCalls;
+                    existing.totalCost = this.usage.totalCost;
+                    existing.iaModel = this.usage.iaModel;
+                    existing.iaMaxTokens = this.usage.iaMaxTokens;
+                }
+
+                this.groupedSessions = this.groupPromptsByDate(this.sessions);
+            },
+
             init() {
                 this.restorePanelHeight();
+                this.costDebugEnabled = this.hasCookie("cerberus_ai_show_cost");
 
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
-                    var message = e.detail;
-                    this.appendAI(message.payload.data || "", false, false);
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    if (source.sessionID && this.sessionID && source.sessionID !== this.sessionID) {
+                        return;
+                    }
+
+                    this.updateUsageFromMessage(message);
+                    this.appendAI(source.data || source.text || "", false, false);
                 });
+
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DONE), async (e) => {
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    if (source.sessionID && this.sessionID && source.sessionID !== this.sessionID) {
+                        return;
+                    }
+
+                    this.updateUsageFromMessage(message);
+                    this.finalizeCurrentAI();
+
+                    this.ensureCurrentSessionInHistory();
+                });
+
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_SUGGESTIONS), (e) => {
                     const message = e.detail || {};
                     this.handleChatSuggestions(message);
                 });
-                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DONE), (e) => {
-                    this.finalizeCurrentAI();
-                });
+
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_TITLE), (e) => {
-                    var message = e.detail;
-                    const title = this.cleanTitle(message.title || "");
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    const title = this.cleanTitle(source.title || "");
 
                     const sessionID =
-                        message.sessionID ||
+                        source.sessionID ||
                         this.sessionID;
 
                     if (sessionID) {
@@ -579,6 +768,39 @@
                     this.updateCurrentSessionTitle(title, sessionID);
                 });
 
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TOOL_START), (e) => {
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    if (source.sessionID && this.sessionID && source.sessionID !== this.sessionID) {
+                        return;
+                    }
+
+                    this.toolActivity.active = true;
+                    this.toolActivity.lastToolName = this.formatToolName(source.toolName);
+                });
+
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TOOL_DONE), (e) => {
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    if (source.sessionID && this.sessionID && source.sessionID !== this.sessionID) {
+                        return;
+                    }
+
+                    this.toolActivity.active = false;
+                });
+
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.TOOL_ERROR), (e) => {
+                    const message = e.detail || {};
+                    const source = this.getWsPayload(message);
+
+                    if (source.sessionID && this.sessionID && source.sessionID !== this.sessionID) {
+                        return;
+                    }
+
+                    this.toolActivity.active = false;
+                });
 
                 document.addEventListener("click", (e) => {
                     const btn = e.target.closest(".question-suggest");
@@ -767,6 +989,8 @@
             async newChat() {
                 this.sessionID = crypto.randomUUID();
                 this.currentSessionTitle = "Nouvelle conversation";
+                this.resetUsage();
+                this.toolActivity = { active: false, lastToolName: null };
 
                 this.aiBuffer = "";
                 this.aiCurrentBubble = null;
@@ -811,6 +1035,10 @@
                             CerberusWs.Channel.CHAT_DONE,
                             CerberusWs.Channel.CHAT_TITLE,
                             CerberusWs.Channel.CHAT_ERROR,
+                            CerberusWs.Channel.TOOL_START,
+                            CerberusWs.Channel.TOOL_RESULT,
+                            CerberusWs.Channel.TOOL_DONE,
+                            CerberusWs.Channel.TOOL_ERROR,
                         ]
                     });
 
@@ -822,6 +1050,7 @@
             async sendUserMessage() {
                 this.aiBuffer = "";
                 this.showWelcomeSuggestions = false;
+                this.toolActivity = { active: false, lastToolName: null };
 
                 this.actionSuggestions = [];
                 this.suggestionContext = null;
@@ -841,6 +1070,7 @@
                 }
 
                 this.addMessage("user", msg);
+                this.ensureCurrentSessionInHistory();
 
                 const payload = {
                     sender: getUser().login,
@@ -936,6 +1166,11 @@
                 if (isFinal) {
                     this.finalizeCurrentAI();
                 }
+            },
+
+            formatToolName(toolName) {
+                if (!toolName) return "Utilisation d'un outil";
+                return String(toolName).replace(/^cerberus_/, "").replace(/_/g, " ");
             },
 
             handleChatSuggestions(message) {
@@ -1203,6 +1438,7 @@
 
                     this.sessionID = sessionID;
                     this.currentSessionTitle = session ? this.cleanTitle(session.title) : "Conversation";
+                    this.setUsageFromPrompt(session);
                     this.showWelcomeSuggestions = false;
 
                     this.actionSuggestions = [];
@@ -1418,22 +1654,37 @@
             updateCurrentSessionTitle(title, sessionID = null) {
                 const clean = this.cleanTitle(title);
 
-                if (!clean) return;
-
                 const sid = sessionID || this.sessionID;
                 if (!sid) return;
 
-                this.currentSessionTitle = clean;
+                if (clean) {
+                    this.currentSessionTitle = clean;
+                }
 
                 const existing = this.sessions.find(s => s.sessionID === sid);
 
                 if (existing) {
-                    existing.title = clean;
+                    if (clean) {
+                        existing.title = clean;
+                    }
+
+                    existing.totalInputTokens = this.usage.totalInputTokens;
+                    existing.totalOutputTokens = this.usage.totalOutputTokens;
+                    existing.totalCalls = this.usage.totalCalls;
+                    existing.totalCost = this.usage.totalCost;
+                    existing.iaModel = this.usage.iaModel;
+                    existing.iaMaxTokens = this.usage.iaMaxTokens;
                 } else {
                     this.sessions.unshift({
                         sessionID: sid,
-                        title: clean,
-                        dateCreated: new Date().toISOString()
+                        title: clean || this.currentSessionTitle || "Nouvelle conversation",
+                        dateCreated: new Date().toISOString(),
+                        totalInputTokens: this.usage.totalInputTokens,
+                        totalOutputTokens: this.usage.totalOutputTokens,
+                        totalCalls: this.usage.totalCalls,
+                        totalCost: this.usage.totalCost,
+                        iaModel: this.usage.iaModel,
+                        iaMaxTokens: this.usage.iaMaxTokens
                     });
                 }
 
@@ -1503,6 +1754,31 @@
                 if (diffDays < 7) return `Il y a ${diffDays} jours`;
 
                 return date.toLocaleDateString();
+            },
+
+            formatTokenCount(value) {
+                const n = Number(value || 0);
+
+                if (n >= 1_000_000) {
+                    return `${(n / 1_000_000).toFixed(1)}M`;
+                }
+
+                if (n >= 1_000) {
+                    return `${(n / 1_000).toFixed(1)}k`;
+                }
+
+                return String(n);
+            },
+
+            formatCost(value) {
+                const n = Number(value || 0);
+                return `$${n.toFixed(n < 0.01 ? 4 : 2)}`;
+            },
+
+            hasCookie(name) {
+                return document.cookie
+                    .split("; ")
+                    .some(entry => entry === name || entry.startsWith(`${name}=`));
             },
 
             setHeaderButtons(buttons = []) {

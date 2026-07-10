@@ -43,6 +43,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 
@@ -99,9 +100,16 @@ public class AIService implements IAIService {
         List<MessageParam> messageParamList = aiSessionManager.getMessageParamListOfSession(currentAiSessionID);
         messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).content(newMessage).build());
 
+        // Usage already persisted for this session before this exchange — the header must show
+        // the session's cumulative totals, not just this exchange's own tokens, while streaming.
+        UserPrompt sessionUsage = aiSessionManager.initSession(user, currentAiSessionID, "chatWithAI");
+        long baselineInputTokens = sessionUsage.getTotalInputTokens() == null ? 0 : sessionUsage.getTotalInputTokens();
+        long baselineOutputTokens = sessionUsage.getTotalOutputTokens() == null ? 0 : sessionUsage.getTotalOutputTokens();
+        long baselineCalls = sessionUsage.getTotalCalls() == null ? 0 : sessionUsage.getTotalCalls();
+        double baselineCost = sessionUsage.getTotalCost();
+
         //For the first question (request N°1), generate a title to retrieve conversation
         if (messageParamList.size() == 1) {
-            aiSessionManager.initSession(user, currentAiSessionID, "chatWithAI");
             generateTitleForSession(newMessage, user, currentAiSessionID);
         }
 
@@ -111,13 +119,17 @@ public class AIService implements IAIService {
         //If MCP is enabled, open a client to the configured server and expose its tools to Claude.
         McpSyncClient mcpClient = null;
         List<Tool> tools = new ArrayList<>();
-        long totalInputTokens = 0;
-        long totalOutputTokens = 0;
+        // AtomicLong so the running totals can be read from the streaming callback below,
+        // which needs an effectively-final reference even though the totals keep growing.
+        AtomicLong totalInputTokens = new AtomicLong(0);
+        AtomicLong totalOutputTokens = new AtomicLong(0);
 
         try {
             if (aiConfig.useMcp() && aiConfig.mcpHost() != null && !aiConfig.mcpHost().isBlank()) {
-                mcpClient = aiMcpClientService.openClient();
-                tools = aiMcpClientService.listAnthropicTools(mcpClient);
+                // Reused across messages of this session (see AIMcpClientService) instead of
+                // reopening a connection + re-running the MCP handshake on every single message.
+                mcpClient = aiMcpClientService.getOrOpenSessionClient(currentAiSessionID);
+                tools = new ArrayList<>(aiMcpClientService.getSessionTools(currentAiSessionID));
                 LOG.debug("MCP enabled for chat session {} — {} tools available", currentAiSessionID, tools.size());
             }
             // Always available, regardless of MCP: lets Claude offer quick-reply buttons
@@ -135,7 +147,15 @@ public class AIService implements IAIService {
                             fullResponse.append(text);
                             try {
                                 // Stream response : WebSocket type=chat.delta, channel=ai
-                                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA, Map.of("done", false, "data", text));
+                                // Session-cumulative totals (baseline + this exchange so far), matching
+                                // the field names read by the frontend header (usage.total*). totalCalls
+                                // only bumps once this exchange is saved, on chat.done.
+                                webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DELTA,
+                                        Map.of("done", false, "data", text,
+                                                "totalInputTokens", baselineInputTokens + totalInputTokens.get(),
+                                                "totalOutputTokens", baselineOutputTokens + totalOutputTokens.get(),
+                                                "totalCalls", baselineCalls,
+                                                "totalCost", baselineCost + costOf(totalInputTokens.get(), totalOutputTokens.get())));
                             } catch (Exception e) {
                                 LOG.error("Error during streaming callback:", e);
                                 streamingErrors.add(e.getMessage());
@@ -148,10 +168,10 @@ public class AIService implements IAIService {
                 //Increment Usage
                 if (response.usage().isValid()) {
                     Usage usage = response.usage();
-                    totalInputTokens += usage.inputTokens();
-                    totalOutputTokens += usage.outputTokens();
-                    totalInputTokens += usage.cacheCreationInputTokens().orElse(0L);
-                    totalInputTokens += usage.cacheReadInputTokens().orElse(0L);
+                    totalInputTokens.addAndGet(usage.inputTokens());
+                    totalOutputTokens.addAndGet(usage.outputTokens());
+                    totalInputTokens.addAndGet(usage.cacheCreationInputTokens().orElse(0L));
+                    totalInputTokens.addAndGet(usage.cacheReadInputTokens().orElse(0L));
                 }
 
                 // Replay Claude's turn (text + tool_use blocks) in the conversation history.
@@ -230,24 +250,28 @@ public class AIService implements IAIService {
                 messageParamList.add(MessageParam.builder().role(MessageParam.Role.USER).contentOfBlockParams(toolResults).build());
             }
 
-            // Notify WebSocket type=chat.done
-            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DONE, Map.of("done", true, "data", ""));
-
             //store message and answer
             LOG.debug("New message from :"+user+" in session :"+currentAiSessionID+" - message : "+newMessage);
             LOG.debug("New message from :"+user+" in session :"+currentAiSessionID+" - answer : "+fullResponse.toString());
-            aiSessionManager.saveMessage(user, currentAiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI", totalInputTokens, totalOutputTokens);
+            UserPrompt updatedUsage = aiSessionManager.saveMessage(user, currentAiSessionID, newMessage, fullResponse.toString(), messageAccumulator.message(), "chatWithAI", totalInputTokens.get(), totalOutputTokens.get());
+
+            // Notify WebSocket type=chat.done — authoritative post-save totals, straight from the DB.
+            webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_DONE,
+                    Map.of("done", true, "data", "",
+                            "totalInputTokens", updatedUsage.getTotalInputTokens(),
+                            "totalOutputTokens", updatedUsage.getTotalOutputTokens(),
+                            "totalCalls", updatedUsage.getTotalCalls(),
+                            "totalCost", updatedUsage.getTotalCost()));
 
         } catch (Exception e) {
             LOG.error("Error during chatWithAI:", e);
+            // Discard the cached MCP client : it may be the cause of, or left in a bad state by,
+            // the failure — the next message opens a fresh one instead of reusing it.
+            if (mcpClient != null) {
+                aiMcpClientService.invalidateSessionClient(currentAiSessionID);
+            }
             // Notify WebSocket type=chat.error, channel=ai
             webSocketEventSender.sendToAppSession(currentAiSessionID, WebSocketStatic.CHANNEL_CHAT_ERROR, Map.of("message", e.getMessage()));
-        } finally {
-            if (mcpClient != null) {
-                try {
-                    mcpClient.closeGracefully();
-                } catch (Exception ignored) {}
-            }
         }
     }
 
@@ -266,6 +290,14 @@ public class AIService implements IAIService {
         return block;
     }
 
+    /**
+     * Cost of this exchange so far, matching the pricing formula used to persist usage
+     * in {@link AISessionManager#saveMessage}.
+     */
+    private double costOf(long inputTokens, long outputTokens) {
+        return (inputTokens / 1_000_000.0) * aiConfig.priceInput() + (outputTokens / 1_000_000.0) * aiConfig.priceOutput();
+    }
+
 
     /**
      * Generate Session Title, notify user and insert into database.
@@ -279,8 +311,11 @@ public class AIService implements IAIService {
         aiClientService.streamResponseAndAccumulate(messageParamTitle, null, text -> {
             fullTitle.append(text);
             try {
+                // The frontend replaces the displayed title wholesale on each event (it doesn't
+                // append), so it must receive the accumulated title so far under "title", not
+                // just the latest chunk under "data".
                 webSocketEventSender.sendToAppSession(aiSessionID, WebSocketStatic.CHANNEL_CHAT_TITLE,
-                        Map.of("data", text));
+                        Map.of("title", fullTitle.toString()));
             } catch (Exception e) {
                 LOG.error("Error during streaming callback:", e);
             }
