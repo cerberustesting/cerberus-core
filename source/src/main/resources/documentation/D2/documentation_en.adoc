@@ -293,3 +293,7 @@ include::include/en/{file-to-include}[]
 == 4.21
 :file-to-include: changelog_4.21_en.adoc
 include::include/en/{file-to-include}[]
+ 
+== 5.0
+:file-to-include: changelog_5.0_en.adoc
+include::include/en/{file-to-include}[]
