@@ -18,11 +18,13 @@ jobs:
     steps:
     - name: Public IP
       id: ip
-      uses: haythem/public-ip@v1.3
+      run: |
+        echo "ipv4=$(curl -s https://api.ipify.org)" >> "$GITHUB_OUTPUT"
+        echo "ipv6=$(curl -s https://api64.ipify.org)" >> "$GITHUB_OUTPUT"
     - name: Print Public IP
       run: |
-        echo ${{ steps.ip.outputs.ipv4 }}
-        echo ${{ steps.ip.outputs.ipv6 }}
+        echo "${{ steps.ip.outputs.ipv4 }}"
+        echo "${{ steps.ip.outputs.ipv6 }}"
     - uses: actions/checkout@v2
     - name: Set up JDK 17
       uses: actions/setup-java@v3

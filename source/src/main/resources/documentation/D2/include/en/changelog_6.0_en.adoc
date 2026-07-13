@@ -1,0 +1,11 @@
+*Bug fixes*
+[square]
+* none
+
+*Improvements / New features*
+[square]
+* none
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

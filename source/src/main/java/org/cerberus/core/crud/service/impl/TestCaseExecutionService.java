@@ -409,33 +409,38 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public MessageGeneral getResultMessageAgregated(List<MessageGeneral> messageList) {
-//        LOG.debug("Aggate Result message");
-//        LOG.debug("  {}", messageList);
+        LOG.debug("Aggate Result message");
+        LOG.debug("  {}", messageList);
+        List<MessageGeneral> messageListBlocking = new ArrayList<>();
         String finalMessage = "";
         if (messageList.isEmpty()) {
             return new MessageGeneral(MessageGeneralEnum.EXECUTION_OK);
         }
 
-        boolean onlyOK = true;
+//        boolean onlyOK = true;
         for (MessageGeneral messageGeneral : messageList) {
             if (!"OK".equals(messageGeneral.getCodeString())) {
-                onlyOK = false;
+//                onlyOK = false;
+                messageListBlocking.add(messageGeneral);
             } else {
                 finalMessage += messageGeneral.getDescription().split("-- Waited")[0].split("-- Execution forced")[0];
             }
         }
-        if (onlyOK) {
+        if (messageListBlocking.isEmpty()) {
+            // There are only non blocking messages. --> We return OK with a warning message
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_OK);
             mes.setDescription(mes.getDescription() + " with non blocking warnings : " + finalMessage);
             return mes;
         }
-        finalMessage = messageList.get(0).getDescription().split("-- Waited")[0];
+        // Clean list from OK status code.
+        
+        finalMessage = messageListBlocking.get(0).getDescription().split("-- Waited")[0];
         HashMap<String, Integer> hash = new HashMap<>();
-        for (int i = 1; i < messageList.size(); i++) {
-            if (hash.containsKey(messageList.get(i).getCodeString())) {
-                hash.put(messageList.get(i).getCodeString(), hash.get(messageList.get(i).getCodeString()) + 1);
+        for (int i = 1; i < messageListBlocking.size(); i++) {
+            if (hash.containsKey(messageListBlocking.get(i).getCodeString())) {
+                hash.put(messageListBlocking.get(i).getCodeString(), hash.get(messageList.get(i).getCodeString()) + 1);
             } else {
-                hash.put(messageList.get(i).getCodeString(), 1);
+                hash.put(messageListBlocking.get(i).getCodeString(), 1);
             }
         }
         if (!hash.isEmpty()) {
@@ -449,13 +454,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         if (finalMessage.endsWith(",")) {
             finalMessage = StringUtil.removeLastChar(finalMessage);
         }
-        String finalCode = messageList.get(0).getCodeString();
+        String finalCode = messageListBlocking.get(0).getCodeString();
         if ("KO".equals(finalCode)) {
             finalMessage = MessageGeneralEnum.EXECUTION_KO.getDescription() + " " + finalMessage;
         } else {
             finalMessage = MessageGeneralEnum.EXECUTION_FA.getDescription() + " " + finalMessage;
         }
-        return new MessageGeneral(messageList.get(0).getCodeString(), finalMessage);
+        return new MessageGeneral(finalCode, finalMessage);
     }
 
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) {
