@@ -19,13 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%--
-    Document   : ReportingExecutionByTag2
-    Created on : 31 Marsh 2020
-    Author     : cerberus
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html class="h-full">
     <head>
@@ -33,264 +27,294 @@
         <meta name="active-submenu" content="ReportingExecutionOverTime.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
-        <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
-        <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
+
+        <script type="text/javascript" src="js/pages/insightsShared.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js?v=${appVersion}"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
+
         <title id="pageTitle">Execution Trends</title>
     </head>
-    <body x-data x-cloak class="crb_body">
+    <body x-data x-cloak class="crb_body" :class="$store.rightPanel.open ? 'rp-open' : ''">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
-            <jsp:include page="include/templates/datepicker.html"/>
-            <jsp:include page="include/templates/selectMultipleDropdown.html"/>
-            <jsp:include page="include/templates/selectDropdown.html"/>
-            <h1 class="page-title-line" id="title">Execution Trends</h1>
-            <div class="col-lg-9" id="FiltersPanel" x-data="reportingExecutionOverTimeForm()" x-ref="filters" @load-stats.window="loadStatistics()">
-                <div class="panel panel-default">
-                    <div class="panel-heading card">
-                        <span class="fa fa-tag fa-fw"></span>
-                        <label id="filters">Filters</label>
-                    </div>
-                    <div class="panel-body" id="otFilterPanel">
+        <jsp:include page="include/global/rightPanel.html"/>
+        <main class="crb_main_wrp" :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - ' + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
+            <%@ include file="include/global/messagesArea.html" %>
 
-                        <div class="">
+            <div x-data="executionTrends()" x-init="init()" class="v2in-page" id="executionTrendsRoot">
 
-                            <div class="row">
-                                <div class='col-md-3'>
-                                    <div class="form-group">
-                                        <label for="testSelect">Test Folder</label>
-                                        <select class="form-control" id="testSelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-5'>
-                                    <div class="form-group">
-                                        <label for="testCaseSelect">Test Case</label>
-                                        <select multiple="multiple" class="form-control" id="testCaseSelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <label for="envSelect">Environment</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="envSelect"></select>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Page title above the bar, like every list page -->
+                <div class="v2in-pagetitle">
+                    <h1 class="page-title-line">Execution Trends</h1>
+                </div>
 
-                            <div class="row">
-                                <div class='col-sm-4 col-md-4'>
-                                    <div class="form-group">
-                                        <label for="frompicker">From</label>
-                                        <div class='input-group date' id='frompicker'>
-                                            <input type='text' class="form-control" />
-                                            <span class="input-group-addon">
-                                                <span class="glyphicon glyphicon-calendar"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class='col-sm-4 col-md-4'>
-                                    <div class="form-group">
-                                        <label for="topicker">To</label>
-                                        <div class='input-group date' id='topicker'>
-                                            <input type='text' class="form-control" />
-                                            <span class="input-group-addon">
-                                                <span class="glyphicon glyphicon-calendar"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Sticky header: test case picker + period -->
+                <div class="crb_card v2in-card v2in-header" :style="$store.rightPanel.open ? { top: '0px' } : {}">
+                    <div class="flex items-center gap-3 flex-wrap">
 
-                                <div class="col-sm-2 col-md-2 btn-group marginTop20">
-                                    <button id="btnGroupDrop1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Preset Range<span class="caret"></span>
+                        <!-- Test case picker: browse folder then tick test cases -->
+                        <div class="v2in-field relative" @click.outside="tcDdOpen = false">
+                            <span class="v2in-fieldlabel">Test cases to follow</span>
+                            <button type="button" class="v2in-picker" style="min-width: 300px; max-width: 460px"
+                                    :class="[tcDdOpen ? 'v2in-picker--active' : '', selTestcases.length === 0 ? 'v2in-picker--empty' : '']"
+                                    :title="selTestcases.length ? selTestcases.map(tc => tc.test + ' / ' + tc.testCase).join('\n') : 'Browse the test folders and tick the test cases to follow'"
+                                    @click="tcDdOpen = !tcDdOpen; if (tcDdOpen) { tcSearch = ''; $nextTick(() => $refs.tcSearchInput && $refs.tcSearchInput.focus()) }">
+                                <svg class="w-4 h-4 v2in-picker-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                                <span class="v2in-picker-value"
+                                      x-text="selTestcases.length === 0 ? 'Choose test cases...' : selTestcases.slice(0, 2).map(tc => tc.testCase).join(', ') + (selTestcases.length > 2 ? ' +' + (selTestcases.length - 2) : '')"></span>
+                                <span class="flex-1"></span>
+                                <span class="v2in-picker-count" x-show="selTestcases.length" x-text="selTestcases.length"></span>
+                                <svg class="w-3.5 h-3.5 v2in-picker-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="tcDdOpen" x-cloak class="v2in-dd v2in-dd--right" style="min-width: 340px">
+                                <div class="v2in-dd-search">
+                                    <button type="button" class="v2in-btn v2in-btn--xs" x-show="browsedTest" @click="browsedTest = ''; testcasesOfTest = []; tcSearch = ''" title="Back to the folders">
+                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                        <button class="btn btn-default btn-block pull-left" id="last1Week" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last1Week" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(1)"><span class=""></span> Last 30 Days</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(7)"><span class=""></span> This Month</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(8)"><span class=""></span> Last Calendar Month</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(9)"><span class=""></span> Previous Calendar Month</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last3Months" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last6Months" onclick="setTimeRange(3)"><span class=""></span> Previous 6 Months</button>
-                                        <button class="btn btn-default btn-block pull-left" id="last12Months" onclick="setTimeRange(4)"><span class=""></span> Previous Year</button>
-                                    </div>
+                                    <input type="text" x-ref="tcSearchInput" x-model="tcSearch"
+                                           :placeholder="browsedTest ? 'Search test case...' : 'Search test folder...'" class="v2in-input">
                                 </div>
-
-                            </div>
-
-                            <div class="row">
-                                <div class='col-md-3'>
-                                    <div class="form-group">
-                                        <label for="countrySelect">Country</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-3'>
-                                    <div class="form-group">
-                                        <label for="robotSelect">Robot Decli</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="robotSelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-3'>
-                                    <div class="form-group">
-                                        <label for="controlStatusSelect">Result Code</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="controlStatusSelect"></select>
-                                    </div>
-                                </div>
-                                <div class='col-sm-3 col-md-3'>
-                                    <div class="input-group-btn ">
-                                        <button type="button" class="btn btn-primary btn-block marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
-                                    </div>
+                                <div class="v2in-dd-list">
+                                    <!-- Folder level -->
+                                    <template x-if="!browsedTest">
+                                        <div>
+                                            <template x-for="t in filteredTests" :key="t">
+                                                <button type="button" class="v2in-dd-item" @click="browseTest(t); tcSearch = ''">
+                                                    <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--crb-grey-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                                                    <span class="truncate" x-text="t"></span>
+                                                    <span class="flex-1"></span>
+                                                    <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+                                                </button>
+                                            </template>
+                                            <div x-show="filteredTests.length === 0" class="v2in-empty px-3 py-2 text-center">No test folder matches</div>
+                                        </div>
+                                    </template>
+                                    <!-- Test case level -->
+                                    <template x-if="browsedTest">
+                                        <div>
+                                            <div class="v2in-dim text-xs px-3 py-1 font-semibold truncate" x-text="browsedTest"></div>
+                                            <template x-for="tc in filteredTestcases" :key="tc.testCase">
+                                                <button type="button" class="v2in-dd-item" @click="toggleTestcase(tc)">
+                                                    <span class="v2in-check" :class="isSelected(tc) ? 'v2in-check--on' : ''"></span>
+                                                    <span class="v2in-strong" x-text="tc.testCase"></span>
+                                                    <span class="v2in-dim truncate text-xs" x-text="tc.description"></span>
+                                                </button>
+                                            </template>
+                                            <div x-show="filteredTestcases.length === 0" class="v2in-empty px-3 py-2 text-center">No test case matches</div>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
-
-                            <div id="perfFilters" style="display: none;" class="row">
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <label for="units">Units</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="units"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <label for="parties">Third Parties</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="parties"></select>
-                                    </div>
-                                </div>
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <label for="types">Media Types</label>
-                                        <select class="multiselectelement form-control" multiple="multiple" id="types"></select>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
+                        <!-- Period -->
+                        <div class="v2in-field">
+                            <span class="v2in-fieldlabel">Period</span>
+                            <div class="v2in-seg" style="min-height: 42px; align-items: center" title="Analysis period">
+                                <button type="button" class="v2in-seg-item" :class="periodDays === 7 ? 'v2in-seg-item--on' : ''" @click="periodDays = 7">7d</button>
+                                <button type="button" class="v2in-seg-item" :class="periodDays === 30 ? 'v2in-seg-item--on' : ''" @click="periodDays = 30">30d</button>
+                                <button type="button" class="v2in-seg-item" :class="periodDays === 90 ? 'v2in-seg-item--on' : ''" @click="periodDays = 90">90d</button>
+                                <button type="button" class="v2in-seg-item" :class="periodDays === 180 ? 'v2in-seg-item--on' : ''" @click="periodDays = 180">180d</button>
+                            </div>
+                        </div>
+
+                        <div class="flex-1"></div>
+
+                        <div class="v2in-field">
+                            <span class="v2in-fieldlabel">&nbsp;</span>
+                            <button type="button" class="v2in-btn v2in-btn--primary" style="min-height: 42px"
+                                    :class="selTestcases.length ? '' : 'v2in-btn--disabled'" @click="load()">
+                                <svg class="w-3.5 h-3.5" :class="loading ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                Load
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selected test cases + secondary filters -->
+                    <div class="flex items-center gap-2 flex-wrap mt-3" x-show="selTestcases.length > 0">
+                        <template x-for="(tc, i) in selTestcases" :key="tc.test + '|' + tc.testCase">
+                            <span class="v2in-chip v2in-chip--info" :title="tc.test + ' / ' + tc.testCase">
+                                <span x-text="tc.testCase"></span>
+                                <button type="button" class="v2in-chip-x" @click="removeSelected(i)" title="Remove">&times;</button>
+                            </span>
+                        </template>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap mt-2" x-show="loaded" x-cloak>
+                        <template x-for="grp in [
+                                { label: 'Env', map: activeEnvs },
+                                { label: 'Country', map: activeCountries },
+                                { label: 'Robot', map: activeRobots },
+                                { label: 'Status', map: activeStatuses }
+                            ]" :key="grp.label">
+                            <div class="flex items-center gap-1.5 flex-wrap" x-show="Object.keys(grp.map).length > 1">
+                                <span class="v2in-dim text-xs font-semibold" x-text="grp.label"></span>
+                                <template x-for="k in Object.keys(grp.map).sort()" :key="grp.label + '-' + k">
+                                    <button type="button" class="v2in-pill" :class="grp.map[k] ? 'v2in-pill--on' : ''"
+                                            @click="toggleIn(grp.map, k)" x-text="k"></button>
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
+
+                <!-- Empty / error / loading -->
+                <template x-if="!loaded && !loading && !error">
+                    <div class="crb_card v2in-card v2in-hero">
+                        <div class="v2in-hero-icon">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+                        </div>
+                        <div class="v2in-hero-title">Follow your test cases over time</div>
+                        <div class="v2in-hero-sub">
+                            Watch how a handful of test cases behave across days or months: every execution with its duration
+                            and status, the trend of runs per day, and the flaky ones that need attention. Ideal to check that a
+                            fix really stabilised a test.
+                        </div>
+                        <div class="v2in-hero-steps">
+                            <div class="v2in-hero-step"><span class="v2in-hero-stepnum">1</span><span>Open <b>Test cases to follow</b> and browse a test folder</span></div>
+                            <div class="v2in-hero-step"><span class="v2in-hero-stepnum">2</span><span>Tick one or several test cases (mixing folders is fine)</span></div>
+                            <div class="v2in-hero-step"><span class="v2in-hero-stepnum">3</span><span>Choose the period and press <b>Load</b></span></div>
+                        </div>
+                        <div class="v2in-hero-cta">
+                            <button type="button" class="v2in-btn v2in-btn--primary"
+                                    @click="tcDdOpen = true; tcSearch = ''; window.scrollTo({top: 0, behavior: 'smooth'}); $nextTick(() => $refs.tcSearchInput && $refs.tcSearchInput.focus())">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                                Choose test cases
+                            </button>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="error">
+                    <div class="crb_card v2in-card">
+                        <div class="v2in-card-body text-center py-10">
+                            <div class="text-sm font-semibold mb-1" x-text="error"></div>
+                            <div class="text-xs v2in-dim">Adjust the selection above and reload</div>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="loading && !loaded">
+                    <div class="crb_card v2in-card">
+                        <div class="v2in-card-body text-center py-14">
+                            <svg class="w-6 h-6 animate-spin mx-auto mb-2" style="color: var(--crb-blue-color)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
+                            <div class="text-xs v2in-dim">Loading execution trends...</div>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="loaded && !error">
+                    <div class="v2in-page">
+
+                        <!-- KPIs -->
+                        <div class="v2in-kpis">
+                            <div class="crb_card v2in-card v2in-kpi">
+                                <span class="v2in-kpi-label">Executions</span>
+                                <span class="v2in-kpi-value" x-text="kpis.total"></span>
+                                <span class="v2in-kpi-sub" x-text="'over the last ' + periodDays + ' days'"></span>
+                            </div>
+                            <div class="crb_card v2in-card v2in-kpi">
+                                <span class="v2in-kpi-label">OK rate</span>
+                                <span class="v2in-kpi-value" :style="kpis.okRate !== null ? ('color:' + (kpis.okRate >= 90 ? 'var(--crb-green-color)' : (kpis.okRate >= 60 ? 'var(--crb-orange-color)' : 'var(--crb-red-color)'))) : ''"
+                                      x-text="kpis.okRate !== null ? kpis.okRate + '%' : '-'"></span>
+                                <span class="v2in-kpi-sub">of the charted executions</span>
+                            </div>
+                            <div class="crb_card v2in-card v2in-kpi">
+                                <span class="v2in-kpi-label">Avg duration</span>
+                                <span class="v2in-kpi-value" x-text="kpis.avgDur !== null ? fmtDuration(kpis.avgDur) : '-'"></span>
+                                <span class="v2in-kpi-sub">per execution</span>
+                            </div>
+                            <div class="crb_card v2in-card v2in-kpi">
+                                <span class="v2in-kpi-label">Max duration</span>
+                                <span class="v2in-kpi-value" x-text="kpis.maxDur !== null ? fmtDuration(kpis.maxDur) : '-'"></span>
+                                <span class="v2in-kpi-sub">worst execution of the period</span>
+                            </div>
+                            <div class="crb_card v2in-card v2in-kpi">
+                                <span class="v2in-kpi-label">False negative</span>
+                                <span class="v2in-kpi-value" :style="kpis.fn > 0 ? 'color: #b45309' : ''" x-text="kpis.fn"></span>
+                                <span class="v2in-kpi-sub">declared on the period</span>
+                            </div>
+                        </div>
+
+                        <!-- Duration over time -->
+                        <div class="crb_card v2in-card">
+                            <div class="v2in-card-head">
+                                <span class="v2in-card-title">Duration over time</span>
+                                <span class="flex-1"></span>
+                                <span class="v2in-dim text-xs">dots are colored by execution status - click to open</span>
+                            </div>
+                            <div class="v2in-card-body">
+                                <div x-html="durationSvg" @click="chartClick($event)"></div>
+                                <div class="v2in-legend mt-2" x-show="durationSeries.length > 1">
+                                    <template x-for="s in durationSeries" :key="s.id">
+                                        <span class="v2in-legend-item"><span class="v2in-legend-dot" :style="'background:' + s.color"></span><span x-text="s.name"></span></span>
+                                    </template>
+                                </div>
+                                <div class="v2in-empty py-4 text-center" x-show="durationSeries.length === 0">No execution on this period</div>
+                            </div>
+                        </div>
+
+                        <!-- Executions per day -->
+                        <div class="crb_card v2in-card">
+                            <div class="v2in-card-head">
+                                <span class="v2in-card-title">Executions per day</span>
+                                <span class="flex-1"></span>
+                                <span class="v2in-legend">
+                                    <template x-for="s in legendStatuses" :key="s">
+                                        <span class="v2in-legend-item"><span class="v2in-legend-dot" :style="'background:' + statusColor(s)"></span><span x-text="s"></span></span>
+                                    </template>
+                                </span>
+                            </div>
+                            <div class="v2in-card-body" x-html="perDaySvg"></div>
+                        </div>
+
+                        <!-- Executions list -->
+                        <div class="crb_card v2in-card">
+                            <div class="v2in-card-head">
+                                <span class="v2in-card-title">Executions</span>
+                                <span class="v2in-count" x-text="executions.length"></span>
+                                <span class="flex-1"></span>
+                                <span class="v2in-dim text-xs">click an execution to open it</span>
+                            </div>
+                            <div class="v2in-table-scroll">
+                                <table class="v2in-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Test case</th>
+                                            <th>Env / Country</th>
+                                            <th class="v2in-num">Status</th>
+                                            <th class="v2in-num">Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="e in executions" :key="e.exeId">
+                                            <tr class="v2in-row-click" @click="openExe(e.exeId)">
+                                                <td class="v2in-dim" x-text="fmtDateTime(e.t)"></td>
+                                                <td>
+                                                    <div class="v2in-dim text-xs" x-text="e.test"></div>
+                                                    <div class="v2in-strong" x-text="e.testCase"></div>
+                                                </td>
+                                                <td x-text="[e.environment, e.country].filter(Boolean).join(' / ')"></td>
+                                                <td class="v2in-num">
+                                                    <span class="v2in-chip" :style="'background: color-mix(in srgb, ' + statusColor(e.status) + ' 14%, transparent); color:' + statusColor(e.status)"
+                                                          x-text="e.status + (e.fn ? ' (FN)' : '')"></span>
+                                                </td>
+                                                <td class="v2in-num" x-text="fmtDuration(e.durMs)"></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                                <template x-if="executions.length === 0">
+                                    <div class="v2in-empty py-8 text-center">No execution on this period</div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
             </div>
-            <div class="col-lg-3" id="FiltersPanel">
-                <div class="panel panel-default">
-                    <!--                        <div class="panel-heading card">
-                                                <span class="fa fa-bar-chart fa-fw"></span>
-                                                <label id="filters">Availability rates</label>
-                                            </div>-->
-                    <div class="panel-body in" id="availabiltyChart">
-                        <div class="row">
-                            <div class="col-xs-8 paddingRight0" id="ChartAvailabilty1" >
-                                <canvas id="canvasAvailability1"></canvas>
-                            </div>
-                            <div class="col-xs-4 paddingLeft0"  >
-                                <h2 class="statistic-counter" id="ChartAvailabilty1Counter"></h2>
-                                <p class="statistic-counter" id="ChartAvailabilty1CounterDet"></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-8 paddingRight0" id="ChartAvailabilty2" >
-                                <canvas id="canvasAvailability2"></canvas>
-                            </div>
-                            <div class="col-xs-4 paddingLeft0"  >
-                                <h2 class="statistic-counter" id="ChartAvailabilty2Counter"></h2>
-                                <p class="statistic-counter" id="ChartAvailabilty2CounterDet"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row" id="ReportByTestFolderPanel">
-                <div class="col-lg-12">
-                    <div id="panelTestStat" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-target="#perfChart0a">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTestStat">TestCase Stats</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body in" id="perfChart0a">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartTestStat" style="height: 400px">
-                                    <canvas id="canvasTestStat"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelTestStatBar" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-target="#perfChart0b">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblTestStatBar">TestCase Stats Bar</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body in" id="perfChart0b">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartTestStatBar" style="height: 400px">
-                                    <canvas id="canvasTestStatBar"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfRequests" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card"  data-target="#perfChart1">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfRequests">Performance Graph - Requests</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body in" id="perfChart1">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartRequests" style="height: 400px">
-                                    <canvas id="canvasRequests"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfSize" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-target="#perfChart2">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfSize">Performance Graph - Size</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body  in" id="perfChart2">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartSize" style="height: 400px">
-                                    <canvas id="canvasSize"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfTime" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card" data-target="#perfChart3">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfTime">Performance Graph - Time</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body  in" id="perfChart3">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartTime" style="height: 400px">
-                                    <canvas id="canvasTime"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="panelPerfParty" class="panel panel-default" style="display: none">
-                        <div class="panel-heading card"  data-target="#perfChart4">
-                            <span class="fa fa-bar-chart fa-fw"></span>
-                            <label id="lblPerfParty">Performance Graph - nb Third Parties</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body  in" id="perfChart4">
-                            <div class="row">
-                                <div class="col-xs-12" id="ChartParty" style="height: 400px">
-                                    <canvas id="canvasParty"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

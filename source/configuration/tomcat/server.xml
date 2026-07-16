@@ -176,6 +176,10 @@
       <!-- Use the LockOutRealm to prevent attempts to guess user passwords
            via a brute-force attack -->
 
+      <!-- org.apache.catalina.realm.JDBCRealm was removed in Tomcat 10.1/11 (replaced by
+           DataSourceRealm). Disabled on the Tomcat 11 upgrade: Cerberus does not use
+           container-managed auth (no login-config/security-constraint in web.xml), it
+           handles authentication itself, so this container Realm was unused dead config.
       <Realm className="org.apache.catalina.realm.JDBCRealm"
              driverName="com.mysql.jdbc.Driver"
              connectionURL="jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?user=${DATABASE_USER}&amp;password=${DATABASE_PASSWORD}"
@@ -186,6 +190,7 @@
              roleNameCol="Role">
         <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
       </Realm>
+      -->
 
 
       <Host name="localhost"  appBase="webapps"

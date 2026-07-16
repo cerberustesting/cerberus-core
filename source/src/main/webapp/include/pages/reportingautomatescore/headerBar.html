@@ -1,0 +1,109 @@
+<!-- Automate Score - sticky header: live grade, filters, actions -->
+<div class="crb_card v2as-card v2as-header" :style="$store.rightPanel.open ? { top: '0px' } : {}">
+    <div class="flex items-center gap-3 flex-wrap">
+        <div class="flex items-center gap-3">
+            <template x-if="scoreGlobal">
+                <span class="v2as-grade" :style="'background:' + letterColor(scoreGlobal.letter)">
+                    <span x-text="scoreGlobal.letter"></span>
+                    <span class="v2as-grade-score" x-text="scoreGlobal.score + '/100'"></span>
+                </span>
+            </template>
+            <template x-if="scoreGlobal">
+                <span class="v2as-weekchip" x-text="'week ' + scoreGlobal.weekLabel"
+                      title="The current week is never scored: this is the last full week"></span>
+            </template>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <!-- Systems multi select (searchable) -->
+        <div class="relative" @click.outside="sysDdOpen = false" x-show="systems.length > 1">
+            <button type="button" class="v2as-btn" @click="sysDdOpen = !sysDdOpen; if (sysDdOpen) { sysSearch = ''; $nextTick(() => $refs.sysSearchInput && $refs.sysSearchInput.focus()) }">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="17" width="20" height="5" rx="1"/></svg>
+                <span x-text="selSystems.length === 0 ? 'All systems' : (selSystems.length + ' system(s)')"></span>
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="sysDdOpen" x-cloak class="v2as-dd">
+                <div class="v2as-dd-search">
+                    <input type="text" x-ref="sysSearchInput" x-model="sysSearch" placeholder="Search system..." class="v2as-input w-full">
+                    <div class="v2as-dd-quick">
+                        <button type="button" class="v2as-btn v2as-btn--xs" @click="allSystems(true)">All</button>
+                        <button type="button" class="v2as-btn v2as-btn--xs" @click="allSystems(false)">None</button>
+                    </div>
+                </div>
+                <div class="v2as-dd-list">
+                    <template x-for="s in filteredSystems" :key="s">
+                        <button type="button" class="v2as-dd-item" @click="toggleSystem(s)">
+                            <span class="v2as-check" :class="selSystems.includes(s) ? 'v2as-check--on' : ''"></span>
+                            <span x-text="s"></span>
+                        </button>
+                    </template>
+                    <div x-show="filteredSystems.length === 0" class="v2as-empty px-3 py-2 text-center">No system matches</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign picker (searchable) -->
+        <div class="relative" @click.outside="campDdOpen = false">
+            <button type="button" class="v2as-btn" @click="campDdOpen = !campDdOpen; if (campDdOpen) { campSearch = ''; $nextTick(() => $refs.campSearchInput && $refs.campSearchInput.focus()) }"
+                    title="Restrict the score to one campaign">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                <span class="v2as-campname" x-text="selCampaign || 'All campaigns'"></span>
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="campDdOpen" x-cloak class="v2as-dd">
+                <div class="v2as-dd-search">
+                    <input type="text" x-ref="campSearchInput" x-model="campSearch" placeholder="Search campaign..." class="v2as-input w-full">
+                </div>
+                <div class="v2as-dd-list">
+                    <button type="button" class="v2as-dd-item" @click="pickCampaign('')">
+                        <span class="v2as-check" :class="selCampaign === '' ? 'v2as-check--on' : ''"></span>
+                        <span class="v2as-strong">All campaigns</span>
+                    </button>
+                    <template x-for="c in filteredCampaigns" :key="c">
+                        <button type="button" class="v2as-dd-item" @click="pickCampaign(c)">
+                            <span class="v2as-check" :class="selCampaign === c ? 'v2as-check--on' : ''"></span>
+                            <span x-text="c"></span>
+                        </button>
+                    </template>
+                    <div x-show="filteredCampaigns.length === 0" class="v2as-empty px-3 py-2 text-center">No campaign matches</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Period -->
+        <div class="v2as-seg" title="Number of weeks used to compute the score">
+            <button type="button" class="v2as-seg-item" :class="nbWeeks === 4 ? 'v2as-seg-item--on' : ''" @click="nbWeeks = 4">4w</button>
+            <button type="button" class="v2as-seg-item" :class="nbWeeks === 8 ? 'v2as-seg-item--on' : ''" @click="nbWeeks = 8">8w</button>
+            <button type="button" class="v2as-seg-item" :class="nbWeeks === 12 ? 'v2as-seg-item--on' : ''" @click="nbWeeks = 12">12w</button>
+            <button type="button" class="v2as-seg-item" :class="nbWeeks === 26 ? 'v2as-seg-item--on' : ''" @click="nbWeeks = 26">26w</button>
+        </div>
+
+        <button type="button" class="v2as-btn v2as-btn--primary" @click="load()">
+            <svg class="w-3.5 h-3.5" :class="loading ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+            Compute
+        </button>
+        <button type="button" class="v2as-btn" :class="loaded ? '' : 'v2as-btn--disabled'" @click="generatePdf()" title="Generate a PDF report of this dashboard">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF
+        </button>
+    </div>
+
+    <!-- Insights: second header row, integrated with the same sticky card -->
+    <div class="v2as-header-insights" x-show="insights.length > 0">
+        <span class="v2as-insights-head">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.55 1 1.28 1 2.5h6c0-1.22.4-1.95 1-2.5A6 6 0 0012 3z"/></svg>
+            <span>Insights</span>
+        </span>
+        <div class="v2as-insights-list">
+            <template x-for="(ins, i) in insights" :key="i">
+                <div class="v2as-insight" :class="'v2as-insight--' + ins.level">
+                    <svg x-show="ins.level === 'good'" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg x-show="ins.level === 'warn'" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <svg x-show="ins.level === 'info'" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span x-text="ins.text"></span>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>

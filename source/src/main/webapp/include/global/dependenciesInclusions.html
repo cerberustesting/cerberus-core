@@ -27,13 +27,13 @@
 <script src="dependencies/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
 <script src="dependencies/BlockUI-2.70.0/jquery.blockUI.js"></script>
 
-<!-- Alpine.js Core -->
-<script src="dependencies/Alpine-3.15.0/alpine.min.js" defer></script>
-
-<!-- Plugins Alpine -->
+<!-- Plugins Alpine: must be registered before the core so alpine:init picks them up -->
 <script src="dependencies/Alpine-3.15.0/persist.min.js" defer></script>
 <script src="dependencies/Alpine-3.15.0/collapse.min.js" defer></script>
 <script src="dependencies/Alpine-3.15.0/morph.min.js" defer></script>
+
+<!-- Alpine.js Core -->
+<script src="dependencies/Alpine-3.15.0/alpine.min.js" defer></script>
 
 <!-- Init Alpine -->
 <script type="text/javascript" src="js/global/initAlpineStore.js?v=${appVersion}"></script>

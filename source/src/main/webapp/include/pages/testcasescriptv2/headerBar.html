@@ -1,7 +1,7 @@
 <!-- TestCaseScript V2 — Header Bar -->
 <!-- Uses Tailwind + Cerberus design tokens (crb_card, crb_input) -->
 
-<div class="sticky top-0 z-40 mb-4 p-3 rounded-2xl" id="v2Header" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
+<div class="sticky top-0 z-40 mb-4 p-3 rounded-2xl" id="v2Header" :style="$store.rightPanel.open ? { top: '0px', marginTop: '0px' } : {}" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color)">
     <div class="flex items-center gap-2 flex-wrap">
 
         <!-- Back -->
@@ -22,7 +22,7 @@
                         <span class="truncate" x-text="testInfo.test || '-'"></span>
                         <svg class="w-3 h-3 opacity-40 shrink-0 transition-transform" :style="tdOpen ? 'transform:rotate(180deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
-                    <div x-show="tdOpen" x-cloak x-transition.opacity.duration.150ms
+                    <div x-show="tdOpen" x-cloak
                          class="absolute left-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
                          style="min-width: 300px; max-height: 360px; background: white; border-color: var(--crb-grey-light-color)">
                         <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color)">
@@ -62,7 +62,7 @@
                         <span class="truncate" x-text="testInfo.testcase || '-'"></span>
                         <svg class="w-3 h-3 opacity-40 shrink-0 transition-transform" :style="tcOpen ? 'transform:rotate(180deg)' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
-                    <div x-show="tcOpen" x-cloak x-transition.opacity.duration.150ms
+                    <div x-show="tcOpen" x-cloak
                          class="absolute left-0 top-full mt-1 z-50 rounded-xl border shadow-xl"
                          style="min-width: 380px; max-height: 360px; background: white; border-color: var(--crb-grey-light-color)">
                         <div style="padding: 8px 10px; border-bottom: 1px solid var(--crb-grey-light-color)">
@@ -137,7 +137,7 @@
                 <span x-text="testInfo.status || '...'"></span>
                 <svg class="w-3 h-3 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
             </button>
-            <div x-show="statusOpen" x-cloak x-transition
+            <div x-show="statusOpen" x-cloak
                  class="absolute left-0 top-full mt-1 rounded-xl border border-slate-200 dark:border-slate-700
                         bg-white dark:bg-slate-800 shadow-xl p-1 z-50" style="min-width: 200px">
                 <template x-for="s in testInfo.statusList" :key="s">
@@ -219,6 +219,15 @@
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
         </button>
 
+        <!-- Legacy view -->
+        <button @click="window.location.href = 'TestCaseScript.jsp' + window.location.search + (window.location.search ? '&' : '?') + 'v1=1'"
+                class="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700
+                       text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors text-[11px] font-bold shrink-0"
+                data-tip="Open the legacy view (V1)" data-tip-pos="bottom">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            V1
+        </button>
+
         <!-- More actions -->
         <div x-data="{ moreOpen: false }" class="relative shrink-0">
             <button @click="moreOpen = !moreOpen" @click.outside="moreOpen = false"
@@ -226,7 +235,7 @@
                            text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
                 <i data-lucide="more-horizontal" class="w-4 h-4"></i>
             </button>
-            <div x-show="moreOpen" x-cloak x-transition
+            <div x-show="moreOpen" x-cloak
                  class="absolute right-0 top-full mt-1 w-52 rounded-xl border border-slate-200 dark:border-slate-700
                         bg-white dark:bg-slate-800 shadow-lg p-1 z-50">
                 <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300

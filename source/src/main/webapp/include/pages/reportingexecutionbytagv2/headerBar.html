@@ -1,0 +1,215 @@
+<!-- Campaign Report V2 - Sticky header: identity, CI verdict, live indicator, progress, actions -->
+<div class="v2rt-header crb_card" id="v2rtHeader" :style="$store.rightPanel.open ? { top: '0px' } : {}">
+
+    <div class="flex items-center gap-3 flex-wrap">
+
+        <!-- Tag identity + switcher -->
+        <div class="relative" @click.outside="tagDdOpen = false">
+            <button type="button" class="v2rt-tag-btn" :class="tagDdOpen ? 'v2rt-tag-btn--open' : ''"
+                    :title="tag ? tag + ' - click to open another campaign execution' : 'Open the list of campaign executions'"
+                    @click="tagDdOpen = !tagDdOpen; if (tagDdOpen) { tagSearch = ''; _loadTagOptions(''); $nextTick(() => $refs.tagSearchInput && $refs.tagSearchInput.focus()) }">
+                <span class="v2rt-tag-label">Campaign execution</span>
+                <span class="v2rt-tag-name" :class="tag ? '' : 'v2rt-tag-name--empty'" x-text="tag || 'Choose an execution...'"></span>
+                <svg class="w-4 h-4 shrink-0 transition-transform" :class="tagDdOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="tagDdOpen" x-cloak class="v2rt-tag-dd">
+                <!-- Search + integrated filters: campaign and CI verdict -->
+                <div class="v2rt-tag-dd-head">
+                    <input type="text" x-ref="tagSearchInput" x-model="tagSearch" @input="onTagSearchInput()"
+                           placeholder="Search tag..." class="v2rt-input w-full">
+                    <div class="v2rt-tag-dd-filters">
+                        <select class="v2rt-input v2rt-tag-dd-campselect" x-model="tagFilterCampaign" @change="_loadTagOptions(tagSearch)"
+                                title="Only show the executions of one campaign">
+                            <option value="">All campaigns</option>
+                            <template x-for="c in tagCampaigns" :key="c">
+                                <option :value="c" x-text="c"></option>
+                            </template>
+                        </select>
+                        <div class="v2rt-seg">
+                            <button type="button" class="v2rt-seg-item" :class="tagFilterCi === '' ? 'v2rt-seg-item--on' : ''" @click="tagFilterCi = ''">All</button>
+                            <button type="button" class="v2rt-seg-item" :class="tagFilterCi === 'OK' ? 'v2rt-seg-item--on' : ''" @click="tagFilterCi = 'OK'">OK</button>
+                            <button type="button" class="v2rt-seg-item" :class="tagFilterCi === 'KO' ? 'v2rt-seg-item--on' : ''" @click="tagFilterCi = 'KO'">KO</button>
+                            <button type="button" class="v2rt-seg-item" :class="tagFilterCi === 'RUN' ? 'v2rt-seg-item--on' : ''" @click="tagFilterCi = 'RUN'"
+                                    title="Executions without a CI verdict yet">Pending</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Rich list: verdict, date, campaign, stats -->
+                <div class="v2rt-tag-dd-list">
+                    <template x-for="t in filteredTagOptions" :key="t.tag">
+                        <button type="button" class="v2rt-tag-dd-item" :class="t.tag === tag ? 'v2rt-tag-dd-item--current' : ''" @click="pickTag(t.tag)">
+                            <span class="v2rt-tag-dd-line">
+                                <span class="v2rt-tag-dd-ci"
+                                      :class="t.ciResult === 'OK' ? 'v2rt-tag-dd-ci--ok' : (t.ciResult === 'KO' ? 'v2rt-tag-dd-ci--ko' : 'v2rt-tag-dd-ci--run')"
+                                      x-text="t.ciResult || 'PEND'"></span>
+                                <span class="v2rt-tag-dd-name" x-text="t.tag"></span>
+                                <span class="flex-1"></span>
+                                <span class="v2rt-tag-dd-date" x-text="relTime(t.DateCreated)"></span>
+                            </span>
+                            <span class="v2rt-tag-dd-line v2rt-tag-dd-line--sub">
+                                <span class="v2rt-chip v2rt-chip--campaign" x-show="t.campaign" x-text="t.campaign" style="cursor: inherit"></span>
+                                <span class="v2rt-tag-dd-stats" x-show="t.total > 0">
+                                    <span x-text="t.total + ' exe'"></span>
+                                    <span class="v2rt-tag-dd-okpct"
+                                          :style="'color:' + (t.okPct >= 100 ? 'var(--crb-green-color)' : (t.okPct >= 50 ? 'var(--crb-orange-color)' : 'var(--crb-red-color)'))"
+                                          x-text="t.okPct + '% OK'"></span>
+                                    <span class="v2rt-tag-dd-ko" x-show="t.notOk > 0" x-text="t.notOk + ' KO/FA'"></span>
+                                    <span class="v2rt-tag-dd-flaky" x-show="t.flaky > 0" x-text="t.flaky + ' flaky'"></span>
+                                </span>
+                                <span class="v2rt-tag-dd-stats" x-show="t.total === 0">no execution</span>
+                                <span class="v2rt-tag-dd-desc truncate" x-show="t.description" x-text="t.description"></span>
+                            </span>
+                        </button>
+                    </template>
+                    <template x-if="filteredTagOptions.length === 0">
+                        <div class="px-3 py-3 text-xs text-center" style="color: var(--crb-grey-color)">No campaign execution matches these filters</div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executions filters, integrated next to the selector -->
+        <button type="button" class="v2rt-btn v2rt-headerfilter" style="min-height: 46px"
+                :class="[hasActiveFilter ? 'v2rt-btn--toggle-on' : '', loaded ? '' : 'v2rt-btn--disabled']"
+                @click="filtersOpen = true" title="Filter the executions (status, environment, country, robot, application...)">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Filters
+            <span class="v2rt-filterbadge" x-show="activeFilterCount > 0" x-text="activeFilterCount"></span>
+        </button>
+
+        <!-- Campaign chip -->
+        <template x-if="tagObj && tagObj.campaign">
+            <button type="button" class="v2rt-chip v2rt-chip--campaign" @click="editCampaign()" title="Edit campaign">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 12l4-4 4 4 5-5"/></svg>
+                <span x-text="tagObj.campaign"></span>
+            </button>
+        </template>
+
+        <!-- CI verdict -->
+        <template x-if="tagObj && tagObj.ciResult">
+            <span class="v2rt-ci" :class="tagObj.ciResult === 'OK' ? 'v2rt-ci--ok' : 'v2rt-ci--ko'">
+                <span x-text="'CI ' + tagObj.ciResult"></span>
+                <span class="v2rt-ci-score" x-text="tagObj.ciScore !== undefined ? (tagObj.ciScore + ' / ' + tagObj.ciScoreThreshold) : ''"></span>
+            </span>
+        </template>
+        <template x-if="tagObj && !tagObj.ciResult">
+            <span class="v2rt-ci v2rt-ci--running">
+                <span class="v2rt-live-dot"></span> RUNNING
+            </span>
+        </template>
+
+        <!-- False negative flag -->
+        <template x-if="tagObj && tagObj.falseNegative">
+            <span class="v2rt-chip v2rt-chip--fn" title="This campaign execution is declared as a false negative">FALSE NEGATIVE</span>
+        </template>
+
+        <!-- Live indicator -->
+        <span class="v2rt-live" :class="'v2rt-live--' + liveMode"
+              :title="liveMode === 'ws' ? 'Live updates over websocket' : (liveMode === 'polling' ? 'Auto refresh every 20s' : 'No pending execution')">
+            <span class="v2rt-live-dot"></span>
+            <span x-text="liveMode === 'ws' ? 'LIVE' : (liveMode === 'polling' ? 'AUTO' : 'IDLE')"></span>
+        </span>
+
+        <div class="flex-1"></div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-1.5">
+            <button type="button" class="v2rt-btn" @click="loadReport()" title="Reload the report">
+                <svg class="w-3.5 h-3.5" :class="loading ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                Refresh
+            </button>
+            <button type="button" class="v2rt-btn" :class="loaded ? '' : 'v2rt-btn--disabled'"
+                    @click="pdfOpen = true" title="Generate a PDF report">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PDF
+            </button>
+            <button type="button" class="v2rt-btn" title="Open this report in the legacy view (V1)"
+                    @click="window.location.href = './ReportingExecutionByTag.jsp' + window.location.search + (window.location.search ? '&' : '?') + 'v1=1'">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                V1
+            </button>
+            <template x-if="tagObj && tagObj.campaign">
+                <button type="button" class="v2rt-btn v2rt-btn--primary" :class="loaded ? '' : 'v2rt-btn--disabled'"
+                        title="Launch this run again (a new tag is created)"
+                        @click="openRunAgain()">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Run again
+                </button>
+            </template>
+
+            <!-- More menu -->
+            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                <button type="button" class="v2rt-btn v2rt-btn--icon" @click="open = !open" title="More actions">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+                <div x-show="open" x-cloak class="v2rt-menu">
+                    <a class="v2rt-menu-item" :href="'./TestCaseExecutionQueueList.jsp?tag=' + encodeURIComponent(tag)">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        Open queue
+                    </a>
+                    <template x-if="tagObj && tagObj.campaign">
+                        <a class="v2rt-menu-item" :href="'./ReportingCampaignOverTime.jsp?campaigns=' + encodeURIComponent(tagObj.campaign)">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+                            Campaign trends
+                        </a>
+                    </template>
+                    <div class="v2rt-menu-sep" x-show="statusCounts.QU + statusCounts.PA > 0 || (tagObj && tagObj.ciResult && tagObj.ciResult !== 'OK')"></div>
+                    <template x-if="statusCounts.QU > 0">
+                        <button type="button" class="v2rt-menu-item" @click="pauseTag(); open = false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                            Pause queued executions
+                        </button>
+                    </template>
+                    <template x-if="statusCounts.PA > 0">
+                        <button type="button" class="v2rt-menu-item" @click="resumeTag(); open = false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Resume paused executions
+                        </button>
+                    </template>
+                    <template x-if="statusCounts.QU + statusCounts.PA > 0">
+                        <button type="button" class="v2rt-menu-item v2rt-menu-item--danger" @click="cancelTag(); open = false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                            Cancel non started executions
+                        </button>
+                    </template>
+                    <template x-if="tagObj && tagObj.ciResult && tagObj.ciResult !== 'OK'">
+                        <button type="button" class="v2rt-menu-item" @click="toggleFalseNegative(); open = false">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                            <span x-text="tagObj.falseNegative ? 'Remove false negative flag' : 'Declare as false negative'"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global progress -->
+    <template x-if="loaded && statusCounts._total > 0">
+        <div class="v2rt-progress-zone">
+            <div class="flex items-center gap-3 mb-1.5">
+                <span class="v2rt-progress-label" x-text="advancementPct + '% done'"></span>
+                <span class="v2rt-progress-sub" x-text="statusCounts._total + ' executions'"></span>
+                <template x-if="tagObj && tagObj.nbFlaky > 0">
+                    <span class="v2rt-chip v2rt-chip--flaky" x-text="'FLAKY ' + tagObj.nbFlaky"></span>
+                </template>
+                <template x-if="tagObj && tagObj.nbMuted > 0">
+                    <span class="v2rt-chip v2rt-chip--muted" x-text="'MUTED ' + tagObj.nbMuted"></span>
+                </template>
+                <div class="flex-1"></div>
+                <span class="v2rt-progress-sub">
+                    <span x-text="fmtDate(tagObj && tagObj.DateCreated)"></span>
+                    <span> to </span>
+                    <span x-text="fmtDate(tagObj && tagObj.DateEndQueue)"></span>
+                    <span x-text="tagDurationMin !== '-' ? (' (' + tagDurationMin + ')') : ''"></span>
+                </span>
+            </div>
+            <div class="v2rt-progressbar" role="progressbar">
+                <template x-for="seg in progressSegments" :key="seg.status">
+                    <div class="v2rt-progressbar-seg" :class="(seg.status === 'PE' || seg.status === 'QU' || seg.status === 'WE') ? 'v2rt-progressbar-seg--pulse' : ''"
+                         :style="'width:' + seg.pct + '%; background:' + seg.color"
+                         :title="seg.status + ': ' + seg.count + ' (' + Math.round(seg.pct) + '%)'"></div>
+                </template>
+            </div>
+        </div>
+    </template>
+</div>

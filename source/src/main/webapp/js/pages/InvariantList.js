@@ -75,10 +75,6 @@ function displayPageLabel() {
     $("#title").html(doc.getDocLabel("page_invariant", "allInvariants"));
     $("[name='editInvariantField']").html(doc.getDocLabel("page_invariant", "editinvariant_field"));
     $("[name='addInvariantField']").html(doc.getDocLabel("page_invariant", "addinvariant_field"));
-    $("#invariantListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_invariant", "public_invariant"))
-    $("#invariantPrivateListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_invariant", "private_invariant"))
-    $("a[href='#public']").html(doc.getDocLabel("page_invariant", "public"));
-    $("a[href='#private']").html(doc.getDocLabel("page_invariant", "private"));
 
     //displayHeaderLabel(doc);
 
@@ -244,7 +240,7 @@ function aoColumnsFuncPublic(tableId) {
                     extraClass: "group-hover:!text-red-500"
                 }));
 
-                return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;
+                return `<div class="flex items-center justify-start gap-1">${buttons.join("")}</div>`;
             }
         },
         {
@@ -303,14 +299,24 @@ function aoColumnsFuncPrivate(tableId) {
             "bSearchable": false,
             "sWidth": "50px",
             "title": doc.getDocLabel("page_invariant", "button_col"),
-            "mRender": function (data, type, obj) {
-                var viewInvariant = '<button id="editInvariant" onclick="openModalInvariant(\'' + obj["idName"] + '\',\'' + obj["value"] + '\', \'EDIT\');"\n\
-                                    class="btn btn-default btn-xs margin-right5" \n\
-                                    name="viewInvariant" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                return '<div class="center btn-group width150">' + viewInvariant + '</div>';
+                var newValue = escapeHtml(obj["value"]);
+                var viewInvariant = `
+                <button
+                    id="invariant_private_action_view_row_${meta.row}"
+                    type="button"
+                    class="${baseBtnClass} group-hover:!text-blue-500"
+                    title="${doc.getDocLabel("page_invariant", "button_edit")}"
+                    onclick="openModalInvariant('${obj["idName"]}','${newValue}','EDIT')">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+            `;
 
+                return `<div class="flex items-center justify-start gap-1">${viewInvariant}</div>`;
             }
         },
         {

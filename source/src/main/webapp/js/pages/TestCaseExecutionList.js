@@ -233,7 +233,7 @@ function aoColumnsFunc() {
                     extraClass: "group-hover:!text-green-500"
                 }));
 
-                return `<div class="flex items-center justify-center gap-1">${buttons.join("")}</div>`;
+                return `<div class="flex items-center justify-start gap-1">${buttons.join("")}</div>`;
             }
         },
         {

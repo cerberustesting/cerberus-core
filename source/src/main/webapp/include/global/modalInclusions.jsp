@@ -1,3 +1,5 @@
+<%-- Needed by TestCaseStep.html below (moved here so it gets the ?v= cache-buster, which EL can't provide in a static .html include) --%>
+<link rel="stylesheet" type="text/css" href="css/pages/TestCaseScriptV2.css?v=${appVersion}">
 <jsp:include page="../transversal/ApplicationObject.html"/>
 <jsp:include page="../transversal/EventHook.html"/>
 <jsp:include page="../transversal/Parameter.html"/>

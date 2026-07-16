@@ -11,9 +11,11 @@
     </div>
 
     <!-- Step List -->
-    <ul class="v2-step-list flex-1 overflow-y-auto overflow-x-visible p-2 space-y-0.5 list-none m-0" id="v2StepList">
+    <ul class="v2-step-list flex-1 overflow-y-auto overflow-x-visible p-2 space-y-0.5 list-none m-0" id="v2StepList"
+        @dragover.prevent="onStepListDragOver($event)">
         <template x-for="(step, idx) in steps" :key="step._uid">
             <li class="v2-fade-in v2-step-item flex items-center gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-all duration-150"
+                :id="'v2-step-item-' + idx"
                 :class="{
                     'v2-step-item--active': activeStepIndex === idx,
                     'v2-step-item--deleted': step.toDelete
@@ -24,6 +26,11 @@
                 @dragover.prevent="onStepDragOver($event, idx)"
                 @drop="onStepDrop($event, idx)"
                 @dragend="onStepDragEnd()">
+
+                <!-- Drag handle — hover affordance, same grip as action cards -->
+                <span class="v2-step-grip shrink-0" title="Drag to reorder">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                </span>
 
                 <!-- Number badge -->
                 <div class="v2-step-badge shrink-0"
@@ -68,7 +75,7 @@
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                     </button>
                     <!-- Dropdown — positioned fixed via JS to avoid clipping -->
-                    <div x-show="open" x-cloak x-transition.opacity.duration.100ms
+                    <div x-show="open" x-cloak
                          @click.outside="open = false"
                          class="v2-step-menu-dropdown"
                          :style="'position: fixed; z-index: 9999; top: ' + ($el.previousElementSibling.getBoundingClientRect().bottom + 4) + 'px; left: ' + ($el.previousElementSibling.getBoundingClientRect().right - 192) + 'px'">

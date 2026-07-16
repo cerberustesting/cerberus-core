@@ -196,7 +196,7 @@
 
                                     <!-- Bulle -->
                                     <div x-show="m.type !== 'thinking'"  class="max-w-[90%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm"
-                                         :class="m.role==='user' ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-slate-200 dark:bg-slate-800 rounded-bl-sm'">
+                                         :class="m.role==='user' ? 'bg-sky-400 text-white rounded-br-sm' : 'bg-slate-200 dark:bg-slate-800 rounded-bl-sm'">
                                         <span x-html="formatAI(m.text)"></span>
                                     </div>
 
@@ -284,7 +284,7 @@
 
                         <button @click="sendChat()"
                              :disabled="!contextReady"
-                             :class="contextReady ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-400 cursor-not-allowed'"
+                             :class="contextReady ? 'bg-blue-600 hover:bg-sky-500' : 'bg-slate-400 cursor-not-allowed'"
                              class="h-9 w-9 rounded-lg text-white flex items-center justify-center transition">
                              <i data-lucide="send" class="w-4 h-4"></i>
                         </button>

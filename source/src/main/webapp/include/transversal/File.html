@@ -124,8 +124,8 @@
             <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
             <button type="button" id="seeManualFileButton" name="buttonSee" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">See Full File</button>
             <button type="button" id="deleteManualFileButton" name="buttonDelete" class="px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition">Delete</button>
-            <button type="button" id="editManualFileButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
-            <button type="button" id="addManualFileButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Add</button>
+            <button type="button" id="editManualFileButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Save</button>
+            <button type="button" id="addManualFileButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Add</button>
         </div>
     </div>
 </div>
@@ -289,7 +289,7 @@
 
         $("#editEntryModalLabel").text("Edit Execution File")
 
-        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition');
         $('#editManualFileButton').removeProp('hidden');
 
         $('#deleteManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition');
@@ -313,7 +313,7 @@
 
         $("#editEntryModalLabel").text("Execution File")
 
-        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#editManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition');
         $('#editManualFileButton').removeProp('hidden');
 
         $('#deleteManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-red-500 text-white text-sm hover:bg-red-600 transition');
@@ -346,7 +346,7 @@
         $('#deleteManualFileButton').attr('class', 'hidden');
         $('#deleteManualFileButton').attr('hidden', 'hidden');
 
-        $('#addManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition');
+        $('#addManualFileButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition');
         $('#addManualFileButton').removeProp('hidden');
 
         $('#editManualFileModalForm select[name="idname"]').off("change");

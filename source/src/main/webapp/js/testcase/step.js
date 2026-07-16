@@ -667,15 +667,14 @@ function showImportStepDetail(element) {
         $(element).find("[name='idx']").remove();
         $("#" + generateImportInfoId(stepInfo)).remove();
     } else {
-        importInfoIdx++;
         $(element).addClass("selected");
-        $(element).append('<span class="badge" name="idx">' + importInfoIdx + ' </span>');
+        $(element).append('<span class="badge" name="idx"></span>');
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
             '<div id="' + importInfoId + '" class="grid gap-1 p-3 mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" style="grid-template-columns: 1fr auto; align-items: center;">' +
             '   <div class="flex items-center gap-2 min-w-0">' +
-            '       <span class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full text-[11px] font-semibold text-white bg-blue-500 shrink-0">' + importInfoIdx + '</span>' +
+            '       <span name="importIdx" class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full text-[11px] font-semibold text-white bg-blue-500 shrink-0"></span>' +
             '       <span class="truncate font-medium text-slate-800 dark:text-slate-200">' + stepInfo.description + '</span>' +
             '   </div>' +
             '   <div class="flex items-center gap-1.5 shrink-0">' +
@@ -687,10 +686,33 @@ function showImportStepDetail(element) {
 
         $("#importDetail").append(importInfo);
         $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
+        // Link the detail entry back to its library-list element so renumbering can update both
+        $("#" + importInfoId).data("listElement", $(element));
 
         $("#importDetail[name='useStep']").prop("checked", true);
 
         $("#importDetail").show();
+    }
+
+    renumberImportSteps();
+}
+
+/**
+ * Numbers always mirror the current selection order (1..N, no gaps): the DOM order of the
+ * #importDetail entries IS the selection order. A global ever-incrementing counter was used
+ * before, so deselecting + reselecting kept increasing the number (1, 2, 3...) and removing
+ * a middle selection left holes.
+ */
+function renumberImportSteps() {
+    var n = 0;
+    $("#importDetail > div").each(function () {
+        n++;
+        $(this).find("[name='importIdx']").text(n);
+        var listEl = $(this).data("listElement");
+        if (listEl) listEl.find("[name='idx']").text(n + ' ');
+    });
+    if (n === 0) {
+        $("#importDetail").hide();
     }
 }
 

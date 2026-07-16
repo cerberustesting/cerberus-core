@@ -76,7 +76,7 @@ function initPage() {
 
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [2, 'desc'], [10, 15, 20, 30, 50, 100, 200, 500, 1000]);
-    var table = createDataTableWithPermissions(configurations, renderOptionsForExeQueue, "#executionList", undefined, true);
+    var table = createDataTableWithPermissionsNew(configurations, renderOptionsForExeQueue, "#executionList", undefined, true);
 
     if (searchS !== null) {
         table.search(searchS).draw();
@@ -91,9 +91,22 @@ function initPage() {
             'draw.dt',
             function () {
                 // Un-check the select all checkbox
-                $('#selectAll')[0].checked = false;
+                if ($('#selectAll').length) {
+                    $('#selectAll')[0].checked = false;
+                }
+                // action buttons reveal on row hover + lucide icons in cells
+                $('#executionsTable tbody tr').addClass('group');
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
             }
     );
+    $('#followUpTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
 
     // React on select all click
     $("#selectAll").click(selectAll);
@@ -108,42 +121,36 @@ function initPage() {
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
     window.addEventListener('massaction-modal-close', massActionModalCloseHandler);
 
-    var tab = sessionStorage.getItem("TestCaseExecutionQueueList-TAB")
-    if (isEmpty(tab)) {
-        tab = "#tabDetails";
+    // Tabs are driven by Alpine buttons in the JSP; keep the last visited one
+    var tab = sessionStorage.getItem("TestCaseExecutionQueueList-TAB");
+    if (isEmpty(tab) || tab.indexOf('#') === 0) {
+        tab = "details";
     }
+    switchQueueTab(tab);
+}
 
-//    if (tab === "#tabDetails") {
-//        refreshTable();
-//    }
-
-    // React on tab changes
-    $('#tabsScriptEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        sessionStorage.setItem("TestCaseExecutionQueueList-TAB", $(e.target).attr("href"));
-
-        switch ($(e.target).attr("href")) {
-            case "#tabDetails":
-                if (tabClicked) {
-                    refreshTable();
-                    tabClicked = true;
-                }
-                break;
-            case "#tabFollowUp":
-                displayAndRefresh_followup();
-                tabClicked = true;
-                break;
-            case "#tabJobStatus":
-                displayAndRefresh_jobStatus();
-                tabClicked = true;
-                break;
-            case "#tabQueueHistory":
-                loadStatGraph();
-                tabClicked = true;
-                break;
-        }
-    });
-    $('.nav-tabs a[href="' + tab + '"]').tab('show');
-
+// Called by the Alpine tab buttons of the page
+function switchQueueTab(name) {
+    sessionStorage.setItem("TestCaseExecutionQueueList-TAB", name);
+    switch (name) {
+        case "details":
+            if (tabClicked) {
+                refreshTable();
+            }
+            break;
+        case "followup":
+            displayAndRefresh_followup();
+            tabClicked = true;
+            break;
+        case "jobstatus":
+            displayAndRefresh_jobStatus();
+            tabClicked = true;
+            break;
+        case "history":
+            loadStatGraph();
+            tabClicked = true;
+            break;
+    }
 }
 
 function displayAndRefresh_followup() {
@@ -171,7 +178,7 @@ function displayAndRefresh_followup() {
             $("#followUpTableList #followUpTable").DataTable().rows.add(array).draw();
         } else {
             var configurations1 = new TableConfigurationsClientSide("followUpTable", array, aoColumnsFunc_followUp(), true, [1, 'asc']);
-            createDataTableWithPermissions(configurations1, undefined, "#followUpTableList", undefined, true);
+            createDataTableWithPermissionsNew(configurations1, undefined, "#followUpTableList", undefined, true);
         }
 
         hideLoader('#followUpTableList');
@@ -193,14 +200,14 @@ function displayAndRefresh_jobStatus() {
         $("#jobActive").val(data["jobActive"].toString());
         $("#instanceJobActive").val(data["executionThreadPoolInstanceActive"].toString());
         if (data["jobActive"]) {
-            $("#jobActiveStatus").removeClass("glyphicon-pause blink");
-            $("#jobActiveStatus").addClass("glyphicon-refresh spin");
-            $("#modifyParambutton").html("<span class='glyphicon glyphicon-pause'></span> Stop Queue Job");
+            $("#jobActiveStatus").html('<i data-lucide="refresh-cw" class="w-7 h-7 animate-spin" style="color: var(--crb-green-color, #00d27a); animation-duration: 3s"></i>');
+            $("#modifyParambutton").html('<i data-lucide="pause" class="w-4 h-4"></i><span>Stop Queue Job</span>');
         } else {
-            $("#jobActiveStatus").removeClass("glyphicon-refresh spin");
-            $("#jobActiveStatus").addClass("glyphicon-pause blink");
-            $("#modifyParambutton").html("<span class='glyphicon glyphicon-play'></span> Start Queue Job");
-
+            $("#jobActiveStatus").html('<i data-lucide="pause" class="w-7 h-7" style="color: var(--crb-orange-color, #f5803e)"></i>');
+            $("#modifyParambutton").html('<i data-lucide="play" class="w-4 h-4"></i><span>Start Queue Job</span>');
+        }
+        if (window.lucide) {
+            lucide.createIcons();
         }
 
         if (data["jobActiveHasPermissionsUpdate"]) {
@@ -227,18 +234,40 @@ function forceExecution() {
 }
 
 function renderOptionsForExeQueue(data) {
-    if ($("#blankSpace").length === 0) {
+    if ($("#createBrpMassButton").length === 0) {
         var doc = new Doc();
-        var contentToAdd = "<div class='marginBottom10' id='blankSpace'>";
-        contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default margin-right5'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
-        contentToAdd += "<button id='selectDepButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPendingWithDep") + "</button>";
-        contentToAdd += "<button id='selectPendingButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPending") + "</button>";
-        contentToAdd += "<button id='selectRunningButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterExecuting") + "</button>";
-        contentToAdd += "</div>";
+        var secondaryBtnClass = "flex items-center gap-1.5 px-3 py-1 rounded-md mr-2 h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition";
+        var contentToAdd = `
+            <button id='createBrpMassButton' type='button'
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
+                <i data-lucide="list-checks" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_global", "button_massAction") + `</span>
+            </button>
+            <button id='selectDepButton' type='button' class='` + secondaryBtnClass + `'>
+                <i data-lucide="git-branch" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPendingWithDep") + `</span>
+            </button>
+            <button id='selectPendingButton' type='button' class='` + secondaryBtnClass + `'>
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPending") + `</span>
+            </button>
+            <button id='selectRunningButton' type='button' class='` + secondaryBtnClass + `'>
+                <i data-lucide="play" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterExecuting") + `</span>
+            </button>
+        `;
 
-        $("#executionsTable_wrapper div#executionsTable_length").before(contentToAdd);
+        var $wrapper = $("#executionsTable_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.prepend(contentToAdd);
+        } else {
+            $("#executionsTable_wrapper div#executionsTable_length").before("<div id='executionsTable_buttonWrapper'>" + contentToAdd + "</div>");
+        }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
         $('#executionList #createBrpMassButton').click(massActionClick);
-        $('#executionList #refreshExecutionButton').click(refreshTable);
         $('#executionList #selectDepButton').click(filterQueuedWithDep);
         $('#executionList #selectPendingButton').click(filterQueued);
         $('#executionList #selectRunningButton').click(filterERunning);
@@ -489,13 +518,13 @@ function aoColumnsFunc(tableId) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var selectBrp = '<input id="selectLine" \n\
-                                class="selectBrp margin-right5" \n\
+                                class="selectBrp h-4 w-4 accent-sky-500 cursor-pointer" \n\
                                 name="id" value=' + obj["id"] + ' data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
                                 </input>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
+                    return '<div class="flex items-center justify-start">' + selectBrp + '</div>';
                 }
-                return '<div class="center btn-group width50"></div>';
+                return '';
 
             }
         },
@@ -508,27 +537,31 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editElement = '<button id="editExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewElement = '<button id="viewExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="viewExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_viewentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var duplicateElement = '<button id="dupExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'DUPLICATE\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="duplicateExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_dupentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-duplicate"></span></button>';
 
-                var buttons = "";
-                if ((hasPermissions) && ((oObj.state === "WAITING") || (oObj.state === "ERROR") || (oObj.state === "CANCELLED") || (oObj.state === "QUEUED"))) {
-                    buttons += editElement;
-                } else {
-                    buttons += viewElement;
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton(id, title, onClick, icon, extraClass) {
+                    return '<button id="' + id + '" type="button" class="' + baseBtnClass + ' ' + (extraClass || '') + '" title="' + title + '" onclick="' + onClick + '">' +
+                        '<i data-lucide="' + icon + '" class="w-4 h-4"></i></button>';
                 }
-                buttons += duplicateElement;
-                return '<div class="center btn-group width100">' + buttons + '</div>';
+
+                var canEdit = (hasPermissions) && ((oObj.state === "WAITING") || (oObj.state === "ERROR") || (oObj.state === "CANCELLED") || (oObj.state === "QUEUED"));
+                var buttons = "";
+                buttons += actionButton(
+                    (canEdit ? 'editExeQ' : 'viewExeQ') + data,
+                    doc.getDocLabel("page_testcaseexecutionqueue", canEdit ? "tooltip_editentry" : "tooltip_viewentry"),
+                    "openModalTestCaseExecutionQueue(" + data + ",'EDIT');",
+                    canEdit ? 'pencil' : 'eye',
+                    'group-hover:!text-blue-500');
+                buttons += actionButton(
+                    'dupExeQ' + data,
+                    doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_dupentry"),
+                    "openModalTestCaseExecutionQueue(" + data + ",'DUPLICATE');",
+                    'copy',
+                    'group-hover:!text-purple-500');
+                return '<div class="flex items-center justify-start gap-1">' + buttons + '</div>';
             }
         },
         {
@@ -539,9 +572,9 @@ function aoColumnsFunc(tableId) {
             "sWidth": "40px",
             "mRender": function (data, type, oObj) {
                 if (oObj["exeId"] <= 0) {
-                    return '<a href="TestCaseExecution.jsp?executionQueueId=' + oObj["id"] + '">' + oObj["id"] + '</a>';
+                    return '<a href="TestCaseExecutionV2.jsp?executionQueueId=' + oObj["id"] + '">' + oObj["id"] + '</a>';
                 } else {
-                    return '<a href="TestCaseExecution.jsp?executionId=' + oObj["exeId"] + '">' + oObj["id"] + '</a>';
+                    return '<a href="TestCaseExecutionV2.jsp?executionId=' + oObj["exeId"] + '">' + oObj["id"] + '</a>';
                 }
             }
         },
@@ -587,7 +620,7 @@ function aoColumnsFunc(tableId) {
                 if (isEmpty(obj["tag"])) {
                     return "";
                 } else {
-                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(obj["tag"]) + '">' + obj["tag"] + '</a>';
+                    return '<a href="ReportingExecutionByTagV2.jsp?Tag=' + encodeURIComponent(obj["tag"]) + '">' + obj["tag"] + '</a>';
                 }
             }
         },
@@ -605,7 +638,23 @@ function aoColumnsFunc(tableId) {
             "data": "state",
             "sName": "state",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col"),
-            "sWidth": "70px"
+            "sWidth": "110px",
+            "mRender": function (data, type, obj) {
+                var state = obj["state"] || "";
+                var chip = {
+                    QUEUED: "bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300",
+                    QUEUED_PAUSED: "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300",
+                    QUWITHDEP: "bg-sky-50 text-sky-600 ring-sky-600/20 dark:bg-sky-900/20 dark:text-sky-400",
+                    QUWITHDEP_PAUSED: "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300",
+                    WAITING: "bg-violet-50 text-violet-700 ring-violet-600/20 dark:bg-violet-900/30 dark:text-violet-300",
+                    STARTING: "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-300",
+                    EXECUTING: "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-300",
+                    DONE: "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-300",
+                    CANCELLED: "bg-slate-50 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300",
+                    ERROR: "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300"
+                }[state] || "bg-slate-50 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300";
+                return '<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ' + chip + '">' + escapeHtml(state) + '</span>';
+            }
         },
         {
             "data": "comment",
@@ -834,38 +883,21 @@ function aoColumnsFunc_followUp() {
             "sName": "action",
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {
-                var editGlobalParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_global_threadpoolsize\',\'' + getSys() + '\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_defaultrobothost_threadpoolsize\',\'' + getSys() + '\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var addRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-plus"></span></button>';
-                var editRobotExtParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize\',\'' + getSys() + '\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-plus"></span></button>';
-                var editApplication = '<button id="editApplication' + data + '"  onclick="openModalApplication(\'' + data[4] + '\', \'EDIT\', \'ApplicationList\');" \n\
-                                class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4 group-hover:!text-blue-500";
+                function fuButton(title, onClick, icon) {
+                    return '<button type="button" class="' + baseBtnClass + '" title="' + title + '" onclick="' + onClick + '">' +
+                        '<i data-lucide="' + icon + '" class="w-4 h-4"></i></button>';
+                }
+                var editGlobalParam = fuButton(doc.getDocLabel("page_parameter", "editparameter_field"), 'openModalParameter(\'cerberus_queueexecution_global_threadpoolsize\',\'' + getSys() + '\');', 'pencil');
+                var editRobotParam = fuButton(doc.getDocLabel("page_parameter", "editparameter_field"), 'openModalParameter(\'cerberus_queueexecution_defaultrobothost_threadpoolsize\',\'' + getSys() + '\');', 'pencil');
+                var editRobotInvariant = fuButton(doc.getDocLabel("page_invariant", "button_edit"), 'openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');', 'pencil');
+                var addRobotInvariant = fuButton(doc.getDocLabel("page_invariant", "button_create"), 'openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');', 'plus');
+                var editRobotExtParam = fuButton(doc.getDocLabel("page_parameter", "editparameter_field"), 'openModalParameter(\'cerberus_queueexecution_defaultexecutorexthost_threadpoolsize\',\'' + getSys() + '\');', 'pencil');
+                var editRobotExtInvariant = fuButton(doc.getDocLabel("page_invariant", "button_edit"), 'openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');', 'pencil');
+                var addRobotExtInvariant = fuButton(doc.getDocLabel("page_invariant", "button_create"), 'openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');', 'plus');
+                var editApplication = fuButton(doc.getDocLabel("page_invariant", "button_edit"), 'openModalApplication(\'' + data[4] + '\', \'EDIT\', \'ApplicationList\');', 'pencil');
 
                 var buttons = "";
                 if ((data[0] === "constrain1_global") && (data[9])) {
@@ -900,7 +932,7 @@ function aoColumnsFunc_followUp() {
                         buttons += addRobotExtInvariant;
                     }
                 }
-                return '<div class="center btn-group width100">' + buttons + '</div>';
+                return '<div class="flex items-center justify-start gap-1">' + buttons + '</div>';
             }
         }
         ,

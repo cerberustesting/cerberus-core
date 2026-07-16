@@ -154,7 +154,7 @@
                 <div class="flex justify-end mt-4">
                     <button @click="submitTest()"
                             :disabled="loading"
-                            :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'"
+                            :class="loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-sky-500'"
                             class="text-white px-4 py-2 rounded transition">
                         <span x-show="!loading" x-text="$store.labels.getLabel('pageQuickStart','copilotmodalgeneratebutton')">Créer</span>
                         <span x-show="loading" class="flex items-center space-x-2">
@@ -251,7 +251,7 @@
                                             <!-- Bouton Redirection -->
                                             <button x-show="res.redirectUrl"
                                                     @click="window.location.href = res.redirectUrl"
-                                                    class="px-2 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                    class="px-2 py-1 text-sm bg-sky-400 text-white rounded hover:bg-sky-500"
                                                     title="Open Test Case">
                                                 Open
                                             </button>

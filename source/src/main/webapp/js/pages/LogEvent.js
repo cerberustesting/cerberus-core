@@ -34,23 +34,24 @@ function initPage() {
 
     displayPageLabel();
 
-//    showLoader('#logViewerTable');
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc(), [1, 'desc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForLogViewer, "#logViewer");
-//    hideLoader('#logViewerTable');
+    var table = createDataTableWithPermissionsNew(configurations, undefined, "#logViewer", undefined, true);
 
-    //var api = table.api();
+    // action buttons reveal on row hover + lucide icons in cells
+    $('#logViewerTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
+
     // if test and testcase parameter are sent, we filter the logs on it.
-    if (test !== null && testCase !== null) {
+    if (test !== null && testCase !== null && table && table.search) {
         var searchString = "'" + test + "'|'" + testCase + "'";
         table.search(searchString).draw();
     }
-}
-
-function renderOptionsForLogViewer() {
-    $("#logViewerTable_paginate").parent().addClass("col-md-12").addClass("paddingRight0");
 }
 
 function displayPageLabel() {
@@ -103,13 +104,23 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": "50px",
-            "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["LogEventID"] + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                return '<div class="center btn-group width150">' + editEntry + '</div>';
+                var viewEntry = `
+                <button
+                    id="logevent_action_view_row_${meta.row}"
+                    type="button"
+                    class="${baseBtnClass} group-hover:!text-blue-500"
+                    title="${doc.getDocLabel("page_logviewer", "button_view")}"
+                    onclick="editEntryClick('${obj["logEventID"]}')">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+            `;
+
+                return `<div class="flex items-center justify-start gap-1">${viewEntry}</div>`;
             }
         },
         {
@@ -132,18 +143,22 @@ function aoColumnsFunc() {
         {
             "data": "status",
             "sName": "Status",
-            "sWidth": "30px",
+            "sWidth": "90px",
             "title": doc.getDocOnline("logevent", "status"),
             "mRender": function (data, type, obj) {
-                let statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
-                if (obj["status"] === "WARN") {
-                    statusEntry = '<span class="alert-warning">' + obj["status"] + '</span>';
-                } else if (obj["status"] === "INFO") {
-                    statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
-                } else if (obj["status"] === "ERROR") {
-                    statusEntry = '<span class="alert-danger">' + obj["status"] + '</span>';
-                }
-                return statusEntry;
+                var status = obj["status"] || "";
+                var chip = {
+                    INFO: { cls: "bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300", icon: "info" },
+                    WARN: { cls: "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300", icon: "triangle-alert" },
+                    ERROR: { cls: "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300", icon: "circle-x" }
+                }[status] || { cls: "bg-slate-50 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300", icon: "circle" };
+
+                return `
+    <span class="inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${chip.cls}">
+        <i data-lucide="${chip.icon}" class="h-3.5 w-3.5"></i>
+        <span>${escapeHtml(status)}</span>
+    </span>
+`;
             }
         },
         {

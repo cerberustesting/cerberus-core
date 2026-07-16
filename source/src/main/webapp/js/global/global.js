@@ -1148,10 +1148,13 @@ function clearResponseMessage(dialog) {
  * Clears the messages added in the main page.
  */
 function clearResponseMessageMainPage() {
+    // Legacy bootstrap alert (markup still present on old pages)
     $("#mainAlert").removeClass("alert-success");
     $("#mainAlert").removeClass("alert-danger");
     $("#alertDescription").html("");
     $("#mainAlert").slideUp(0);
+    // Modern toasts
+    $("#crbToastContainer .crb-toast").remove();
 }
 
 /**
@@ -1237,36 +1240,63 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
         // Automatically fadeout after n second.
         waitinMs = 10000; // Default wait to 10 seconds.
         if (type === "success") {
-            waitinMs = 2000;
+            waitinMs = 2500;
         } else if (type === "error") {
-            waitinMs = 5000;
+            waitinMs = 6000;
         }
     }
     // Only display if not success in silent mode.
-    if (!((type === "success") && (silentMode))) {
-        // We stop the previous delayed slide up (if any) and hide the alert.
-        $("#mainAlert").stop();
-        $("#mainAlert").slideUp(10);
-
-        // We feed the new content and disply the alert.
-        $("#mainAlert").removeClass("alert-success");
-        $("#mainAlert").removeClass("alert-warning");
-        $("#mainAlert").removeClass("alert-danger");
-        $("#mainAlert").removeClass("alert-error");
-        $("#mainAlert").removeClass("alert-info");
-        $("#mainAlert").addClass("alert-" + type);
-        $("#alertDescription").html(message);
-        $("#mainAlert").slideDown(10);
-
-        // We slowly hide it after waitinMs ms delay.
-        $("#mainAlert").fadeTo(500, 1, function () {
-            setTimeout(function () {
-                $("#mainAlert").slideUp(500);
-            }, waitinMs);
-        });
-
-
+    if ((type === "success") && (silentMode)) {
+        return;
     }
+
+    // Normalize the legacy bootstrap type names to the four toast kinds.
+    var kind = (type === 'danger' || type === 'error') ? 'error'
+        : (type === 'warning') ? 'warning'
+        : (type === 'success') ? 'success'
+        : 'info';
+
+    var container = document.getElementById('crbToastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'crbToastContainer';
+        container.className = 'crb-toast-container';
+        document.body.appendChild(container);
+    }
+
+    var icons = {
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>',
+        error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M18 6L6 18M6 6l12 12"/></svg>',
+        warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 9v4m0 4h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 16v-4m0-4h.01"/></svg>'
+    };
+
+    var toast = document.createElement('div');
+    toast.className = 'crb-toast crb-toast--' + kind;
+    toast.innerHTML =
+        '<span class="crb-toast__icon">' + icons[kind] + '</span>' +
+        '<span class="crb-toast__msg"></span>' +
+        '<button type="button" class="crb-toast__close" aria-label="Close">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M18 6L6 18M6 6l12 12"/></svg></button>';
+    // Server messages may carry markup — same behavior as the legacy .html() feed.
+    toast.querySelector('.crb-toast__msg').innerHTML = message;
+
+    var hideTimer = null;
+    var dismissed = false;
+    function dismiss() {
+        if (dismissed) return;
+        dismissed = true;
+        if (hideTimer) clearTimeout(hideTimer);
+        toast.classList.add('crb-toast--out');
+        toast.addEventListener('animationend', function () { toast.remove(); });
+    }
+    toast.querySelector('.crb-toast__close').addEventListener('click', dismiss);
+    // Hovering pauses the auto-dismiss so long messages can be read or copied.
+    toast.addEventListener('mouseenter', function () { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } });
+    toast.addEventListener('mouseleave', function () { if (!hideTimer && !dismissed) hideTimer = setTimeout(dismiss, 1500); });
+
+    container.appendChild(toast);
+    hideTimer = setTimeout(dismiss, waitinMs);
 }
 
 /*****************************************************************************/

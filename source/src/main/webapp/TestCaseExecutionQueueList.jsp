@@ -37,7 +37,11 @@
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <jsp:include page="include/global/rightPanel.html"/>
+        <main class="crb_main_wrp" :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - ' + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
@@ -45,183 +49,171 @@
             <%@ include file="include/transversal/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions Queue</h1>
+            <p class="page-subtitle-line">Follow and manage the executions waiting in the queue, the robot pools and the queue job.</p>
 
-            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
-                <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
-                <li><a data-toggle="tab" href="#tabQueueHistory" id="editTabQueueHistory" name="tabQueueHistory">Queue History</a></li>
-                <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
-            </ul>
+            <div x-data="{ tab: (function () { var t = sessionStorage.getItem('TestCaseExecutionQueueList-TAB'); return (!t || t[0] === '#') ? 'details' : t; })() }" class="w-full">
 
+                <!-- Tabs -->
+                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                    <button @click="tab = 'details'; switchQueueTab('details');"
+                            :class="tab === 'details' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="list-checks" class="w-4 h-4"></i>Executions in queue
+                    </button>
+                    <button @click="tab = 'followup'; switchQueueTab('followup');"
+                            :class="tab === 'followup' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="layers" class="w-4 h-4"></i>Pools Follow Up
+                    </button>
+                    <button @click="tab = 'history'; switchQueueTab('history');"
+                            :class="tab === 'history' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="chart-column" class="w-4 h-4"></i>Queue History
+                    </button>
+                    <button @click="tab = 'jobstatus'; switchQueueTab('jobstatus');"
+                            :class="tab === 'jobstatus' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                        <i data-lucide="settings-2" class="w-4 h-4"></i>Queue Job Status
+                    </button>
+                </div>
 
-            <div class="tab-content">
+                <!-- ═══════════ Executions in queue ═══════════ -->
+                <div x-show="tab === 'details'" x-transition.opacity id="tabDetails">
+                    <form id="massActionForm" name="massActionForm" title="" role="form">
+                        <div id="executionList">
+                            <table id="executionsTable" class="table table-hover display" name="executionsTable"></table>
+                            <div class="marginBottom20"></div>
+                        </div>
+                    </form>
+                </div>
 
-                <div class="center tab-pane fade" id="tabDetails">
-                    <div class="panel panel-default">
-                        <form id="massActionForm" name="massActionForm"  title="" role="form">
-                            <div class="panel-body" id="executionList">
-                                <table id="executionsTable" class="table table-hover display" name="executionsTable"></table>
-                                <div class="marginBottom20"></div>
-                            </div>
-                        </form>
+                <!-- ═══════════ Pools Follow Up ═══════════ -->
+                <div x-show="tab === 'followup'" x-transition.opacity id="tabFollowUp">
+                    <div class="mb-3">
+                        <button type="button" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"
+                                class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                    <div id="followUpTableList">
+                        <table id="followUpTable" class="table table-hover display" name="followUpTable"></table>
+                        <div class="marginBottom20"></div>
                     </div>
                 </div>
 
-                <div class="center tab-pane fade" id="tabFollowUp">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class='marginBottom10'>
-                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                <!-- ═══════════ Queue History ═══════════ -->
+                <div x-show="tab === 'history'" x-transition.opacity id="tabQueueHistory">
+                    <div class="crb_card p-4 mb-4" id="FiltersPanel">
+                        <div class="flex items-end gap-4 flex-wrap" id="qsFilterPanel">
+                            <div>
+                                <label for="frompicker" class="block mb-1 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">From</label>
+                                <div class='input-group date' id='frompicker' style="max-width: 230px">
+                                    <input type='text' class="form-control h-10 border border-gray-300 dark:border-gray-600 rounded-l-md px-3 bg-white dark:bg-slate-800"/>
+                                    <span class="input-group-addon border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md px-3 cursor-pointer bg-slate-50 dark:bg-slate-700">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </span>
+                                </div>
                             </div>
-                            <div id="followUpTableList">
-                                <table id="followUpTable" class="table table-hover display" name="followUpTable"></table>
-                                <div class="marginBottom20"></div>
+                            <div>
+                                <label for="topicker" class="block mb-1 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">To</label>
+                                <div class='input-group date' id='topicker' style="max-width: 230px">
+                                    <input type='text' class="form-control h-10 border border-gray-300 dark:border-gray-600 rounded-l-md px-3 bg-white dark:bg-slate-800"/>
+                                    <span class="input-group-addon border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md px-3 cursor-pointer bg-slate-50 dark:bg-slate-700">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                <button type="button" @click="open = !open"
+                                        class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                    <i data-lucide="clock" class="w-4 h-4"></i>
+                                    <span>Preset Range</span>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <div x-show="open" x-cloak
+                                     class="absolute left-0 top-full mt-1 w-52 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg p-1 z-50">
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(10); open = false">Previous Hour</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(11); open = false">Previous 6 Hours</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(6); open = false">Current Day</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(5); open = false">Previous Week</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(1); open = false">Previous Month</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(2); open = false">Previous 3 Months</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(3); open = false">Previous 6 Months</button>
+                                    <button type="button" class="flex w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" @click="setTimeRange(4); open = false">Previous Year</button>
+                                </div>
+                            </div>
+
+                            <button type="button" id="loadbutton" onclick="loadStatGraph();"
+                                    class="text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md h-10 w-auto">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                <span>Load</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ReportQueueStatPanel">
+                        <div id="panelQueueStat" class="crb_card p-4" style="display: none">
+                            <div class="flex items-center gap-2 mb-3">
+                                <i data-lucide="chart-column" class="w-4 h-4 text-slate-500"></i>
+                                <span class="text-xs font-bold uppercase tracking-wide text-slate-700 dark:text-slate-200" id="lblQueueStat">Queue Execution Status</span>
+                            </div>
+                            <div id="perfChart1">
+                                <div id="ChartQueueStat" style="height: 400px">
+                                    <canvas id="canvasQueueStat"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="center tab-pane fade" id="tabJobStatus">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class='marginBottom10'>
-                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
-                            </div>
+                <!-- ═══════════ Queue Job Status ═══════════ -->
+                <div x-show="tab === 'jobstatus'" x-transition.opacity id="tabJobStatus">
+                    <div class="mb-3">
+                        <button type="button" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"
+                                class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
 
-                            <div class="panel panel-default"  id="QueueJobActive" style="padding:10px;">
-                                <div class="row">
-                                    <div class="form-group col-sm-6">
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <th class="text-center">
-                                                        <h2 id="jobActiveStatus" class="glyphicon pull-left text-info" style="font-size:2em"></h2>
-                                                    </th>
-                                                    <th class="text-center" >
-                                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span id="playpausebutton" class="glyphicon glyphicon-play"></span> Activate / Desactivate Queue Job</button>
-                                                    </th>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <input type="text" class="hidden form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label for="instanceJobActive" name="jobActiveField">Instance Job Activated</label>
-                                        <input type="text" class="form-control" name="instanceJobActive" id="instanceJobActive" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="panel panel-default" id="QueueJobStatus" style="padding:10px;">
-                                <div class="row">
-                                    <div class="form-group col-sm-6">
-                                        <label for="jobRunning" name="jobRunningField">Is Queue Job currently running ?</label>
-                                        <input type="text" class="form-control" name="jobRunning" id="jobRunning" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label for="jobStart" name="jobStartField">Last Queue Job start</label>
-                                        <input type="text" class="form-control" name="jobStart" id="jobStart" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-12">
-                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshForceExebutton" onclick="forceExecution()"><span class="glyphicon glyphicon-play"></span> Force Execution</button>
-                                    </div>
-                                </div>
+                    <div class="crb_card p-4 mb-4" id="QueueJobActive">
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <span id="jobActiveStatus" class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-slate-100 dark:bg-slate-800"></span>
+                            <button type="button" id="modifyParambutton" onclick="enableDisableJob();"
+                                    class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i data-lucide="play" class="w-4 h-4"></i><span>Activate / Desactivate Queue Job</span>
+                            </button>
+                            <input type="text" class="hidden" name="jobActive" id="jobActive" readonly>
+                            <div class="flex-1 min-w-[220px]">
+                                <label for="instanceJobActive" name="jobActiveField" class="block mb-1 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Instance Job Activated</label>
+                                <input type="text" name="instanceJobActive" id="instanceJobActive" readonly
+                                       class="w-full h-10 border rounded-md px-3 text-sm bg-slate-50 dark:bg-slate-800 border-gray-300 dark:border-gray-600 text-slate-700 dark:text-slate-300">
                             </div>
                         </div>
+                    </div>
+
+                    <div class="crb_card p-4" id="QueueJobStatus">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="jobRunning" name="jobRunningField" class="block mb-1 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Is Queue Job currently running ?</label>
+                                <input type="text" name="jobRunning" id="jobRunning" readonly
+                                       class="w-full h-10 border rounded-md px-3 text-sm bg-slate-50 dark:bg-slate-800 border-gray-300 dark:border-gray-600 text-slate-700 dark:text-slate-300">
+                            </div>
+                            <div>
+                                <label for="jobStart" name="jobStartField" class="block mb-1 text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Last Queue Job start</label>
+                                <input type="text" name="jobStart" id="jobStart" readonly
+                                       class="w-full h-10 border rounded-md px-3 text-sm bg-slate-50 dark:bg-slate-800 border-gray-300 dark:border-gray-600 text-slate-700 dark:text-slate-300">
+                            </div>
+                        </div>
+                        <button type="button" id="refreshForceExebutton" onclick="forceExecution()"
+                                class="text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md h-10 w-auto">
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                            <span>Force Execution</span>
+                        </button>
                     </div>
                 </div>
-
-                <div class="center tab-pane fade" id="tabQueueHistory">
-                    <div class="" id="FiltersPanel">
-
-                        <div class="panel panel-default">
-
-                            <div class="panel-heading card">
-                                <span class="fa fa-tag fa-fw"></span>
-                                <label id="filters">Filters</label>
-                            </div>
-
-                            <div class="panel-body" id="qsFilterPanel">
-
-                                <div class="row">
-                                    <div class='col-sm-4 col-md-4'>
-                                        <div class="form-group">
-                                            <label for="frompicker">From</label>
-                                            <div class='input-group date' id='frompicker'>
-                                                <input type='text' class="form-control" />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class='col-sm-4 col-md-4'>
-                                        <div class="form-group">
-                                            <label for="topicker">To</label>
-                                            <div class='input-group date' id='topicker'>
-                                                <input type='text' class="form-control" />
-                                                <span class="input-group-addon">
-                                                    <span class="glyphicon glyphicon-calendar"></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-2 col-md-2 btn-group marginTop20">
-                                        <button id="btnGroupDrop1" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Preset Range<span class="caret"></span>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                            <button class="btn btn-default pull-left" id="last2Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(10)"><span class=""></span> Previous Hour</button>
-                                            <button class="btn btn-default pull-left" id="last6Hours" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(11)"><span class=""></span> Previous 6 Hours</button>
-                                            <button class="btn btn-default pull-left" id="currentDay" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
-                                            <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
-                                            <button class="btn btn-default pull-left" id="last1Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Previous Month</button>
-                                            <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>
-                                            <button class="btn btn-default pull-left" id="last6Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Previous 6 Months</button>
-                                            <button class="btn btn-default pull-left" id="last12Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(4)"><span class=""></span> Previous Year</button>
-                                        </div>
-                                    </div>
-
-                                    <div class='col-sm-2 col-md-2'>
-                                        <div class="input-group-btn ">
-                                            <button type="button" class="btn btn-primary marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadStatGraph();">Load</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="row" id="ReportQueueStatPanel">
-                        <div class="col-lg-12">
-
-                            <div id="panelQueueStat" class="panel panel-default" style="display: none">
-                                <div class="panel-heading card" data-toggle="" data-target="#perfChart1">
-                                    <span class="fa fa-bar-chart fa-fw"></span>
-                                    <label id="lblQueueStat">Queue Execution Status</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                </div>
-                                <div class="panel-body" id="perfChart1">
-                                    <div class="row">
-                                        <div class="col-xs-12" id="ChartQueueStat" style="height: 400px">
-                                            <canvas id="canvasQueueStat"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-
-                </div>
-
 
             </div>
 

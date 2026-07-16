@@ -17,609 +17,326 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
-        let campaign = GetURLParameter("campaign");
 
-        if (campaign !== null && campaign !== "" && campaign !== undefined) {
-            initDetailedPage();
-        } else {
-            initGlobalPage();
-        }
-
-        //Hide the columns header search bar (searchable activated on specific columns to allow the global search on datatable, but not useful to show the header filter search bar on each column)
-        hideColumnSearchBar();
-
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
-
-        $("#systemSelect").change(function () {
-            if ($(this).val() == null) {
-                $('#applicationSelect').multiselect("deselectAll", false);
-                $('#applicationSelect').multiselect('updateButtonText');
-                $('#applicationSelect').next('div').find('button').prop('disabled', true);
-                $('#loadButton').prop('disabled', true);
-            } else {
-                setApplicationSelectOptions($(this).val());
-                $('#applicationSelect').next('div').find('button').prop('disabled', false);
-            }
-        });
-
-        $("#applicationSelect").change(function () {
-            if ($(this).val() == null) {
-                $('#loadButton').prop('disabled', true);
-            } else {
-                $('#loadButton').prop('disabled', false);
-            }
-        })
-    });
-});
-
-function reportingCampaignStatiticsForm() {
+/**
+ * Campaign Statistics - Alpine dashboard over api/campaignexecutions/statistics.
+ *
+ * Overview level: one row per campaign over the period (runs, OK rate, duration,
+ * reliability). Drill-down level: the same campaign split by environment x country.
+ * URLs stay compatible with the legacy page (?campaign=&from=&to=).
+ */
+function campaignStatistics() {
+    var IN = window.InsightsShared;
     return {
-        form: {
-            system: [],
-            application: [],
-            group1: [],
-            from: '',
-            to: ''
+        // ── State ──
+        loading: false,
+        loaded: false,
+        error: '',
+        rows: [],
+        view: 'overview',      // overview | detail
+        search: '',
+        sortCol: 'campaign',
+        sortAsc: true,
+
+        // ── Filters ──
+        refSystems: [],
+        selSystems: [],
+        refApps: [],
+        selApps: [],
+        appsLoading: false,
+        ddOpen: '',
+        ddSearch: '',
+        from: '',              // yyyy-mm-dd (input type=date)
+        to: '',
+
+        // ── Detail level ──
+        detail: {
+            campaign: '',
+            loading: false,
+            error: '',
+            rows: [],
+            envs: [],          // reference lists sent back by the endpoint
+            countries: [],
+            selEnvs: [],       // empty = all
+            selCountries: []
         },
-        selectedWorkspaces: [],
 
+        IN: IN,
+
+        // ═══════════════════ INIT ═══════════════════
         init() {
-            const campaign = GetURLParameter("campaign");
-            const fromDate = GetURLParameter("from");
-            const toDate = GetURLParameter("to");
+            var self = this;
+            try {
+                var user = JSON.parse(sessionStorage.getItem('user') || '{}');
+                this.refSystems = (Array.isArray(user.system) ? user.system : []).slice().sort();
+            } catch (e) { /* empty */ }
+            this.selSystems = this.refSystems.slice();
 
-            if (fromDate) {
-                this.form.from = fromDate;
+            // default period: the last 30 days
+            var now = new Date();
+            this.to = this._dateStr(now);
+            this.from = this._dateStr(new Date(now.getTime() - 30 * 86400000));
+
+            // legacy-compatible deep link: ?campaign=&from=&to=(&environments=&countries=)
+            var usp = null;
+            try { usp = new URLSearchParams(window.location.search); } catch (e) { /* ignore */ }
+            if (usp) {
+                var f = this._isoToDateStr(usp.get('from'));
+                var t = this._isoToDateStr(usp.get('to'));
+                if (f) this.from = f;
+                if (t) this.to = t;
             }
 
-            if (toDate) {
-                this.form.to = toDate;
-            }
-
-            console.log("URL from =", fromDate);
-            console.log("URL to =", toDate);
-            console.log("FORM from =", this.form.from);
-            console.log("FORM to =", this.form.to);
-
-            window.addEventListener('workspaceSelect-change', e => {
-                this.onWorkspaceChange(e.detail);
+            this._loadApplications().then(function () {
+                var campaign = usp ? usp.get('campaign') : null;
+                if (campaign) {
+                    self.openDetail(campaign);
+                } else {
+                    self.load();
+                }
             });
+        },
+        _dateStr(d) {
+            var p = function (n) { return (n < 10 ? '0' : '') + n; };
+            return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+        },
+        _isoToDateStr(v) {
+            if (!v) return '';
+            var d = new Date(decodeURIComponent(v));
+            return isNaN(d.getTime()) ? '' : this._dateStr(d);
+        },
+        _fromIso() {
+            var d = new Date(this.from + 'T00:00:00');
+            return isNaN(d.getTime()) ? new Date(Date.now() - 30 * 86400000).toISOString() : d.toISOString();
+        },
+        _toIso() {
+            var d = new Date(this.to + 'T23:59:59');
+            return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+        },
+        _loadApplications() {
+            var self = this;
+            this.appsLoading = true;
+            var q = this.selSystems.map(function (s) { return 'system=' + encodeURIComponent(s); }).join('&');
+            return new Promise(function (resolve) {
+                if (!self.selSystems.length) { self.refApps = []; self.selApps = []; self.appsLoading = false; resolve(); return; }
+                $.getJSON('ReadApplication?' + q, function (data) {
+                    self.refApps = ((data && data.contentTable) || []).map(function (a) { return a.application; }).filter(Boolean).sort();
+                    // keep only still-valid selections; default = everything
+                    var prev = self.selApps.filter(function (a) { return self.refApps.indexOf(a) >= 0; });
+                    self.selApps = prev.length ? prev : self.refApps.slice();
+                    self.appsLoading = false;
+                    resolve();
+                }).fail(function () { self.appsLoading = false; resolve(); });
+            });
+        },
 
-            if (campaign && fromDate && toDate) {
-                this.$nextTick(() => {
-                    getStatisticsByEnvCountry(this.form);
+        // ═══════════════════ FILTER DROPDOWNS (same pattern as the monitor) ═══════════════════
+        openDd(name) {
+            this.ddOpen = this.ddOpen === name ? '' : name;
+            this.ddSearch = '';
+            if (this.ddOpen) {
+                this.$nextTick(function () {
+                    var input = document.querySelector('#csFilters .v2in-dd input');
+                    if (input && input.offsetParent !== null) input.focus();
                 });
             }
         },
-
-        loadStatistics() {
-            const campaign = GetURLParameter("campaign");
-
-            if (campaign) {
-                getStatisticsByEnvCountry(this.form);
-            } else {
-                getStatistics(this.form);
-            }
+        ddItems(name) {
+            var q = this.ddSearch.trim().toLowerCase();
+            var match = function (s) { return !q || String(s).toLowerCase().indexOf(q) >= 0; };
+            return (name === 'system' ? this.refSystems : this.refApps).filter(match);
+        },
+        selOf(name) { return name === 'system' ? this.selSystems : this.selApps; },
+        toggleSel(name, v) {
+            var arr = this.selOf(name);
+            var i = arr.indexOf(v);
+            if (i >= 0) arr.splice(i, 1); else arr.push(v);
+            if (name === 'system') this._loadApplications();
+        },
+        allSel(name, on) {
+            var ref = name === 'system' ? this.refSystems : this.refApps;
+            var arr = this.selOf(name);
+            arr.splice(0, arr.length);
+            if (on) ref.forEach(function (v) { arr.push(v); });
+            if (name === 'system') this._loadApplications();
+        },
+        pickerLabel(name) {
+            var arr = this.selOf(name);
+            var ref = name === 'system' ? this.refSystems : this.refApps;
+            var noun = name === 'system' ? 'system' : 'application';
+            if (!arr.length) return 'No ' + noun;
+            if (arr.length === ref.length) return 'All ' + noun + 's (' + ref.length + ')';
+            if (arr.length === 1) return arr[0];
+            return arr.slice(0, 2).join(', ') + (arr.length > 2 ? ' +' + (arr.length - 2) : '');
         },
 
-        onWorkspaceChange(selected) {
-            this.selectedWorkspaces = selected || [];
-
-            window.dispatchEvent(new CustomEvent('refresh-items', {
-                detail: this.selectedWorkspaces
-            }));
-        }
-    }
-}
-
-function createMultiSelect(select) {
-    select.multiselect({
-        maxHeight: 450,
-        checkboxName: name,
-        buttonWidth: "100%",
-        enableFiltering: true,
-        enableCaseInsensitiveFiltering: true,
-        includeSelectAllOption: true,
-        includeSelectAllIfMoreThan: 1
-    });
-}
-
-
-function prepareFilterList(filter) {
-    if (filter !== null) {
-        for (let i = 0; i < filter.length; i++) {
-            filter[i] = encodeURIComponent(filter[i]);
-        }
-    } else {
-        filter = "";
-    }
-    return filter;
-}
-
-function updateDatatable(datatable, data) {
-    datatable.DataTable().clear();
-    datatable.DataTable().rows.add(data.campaignStatistics);
-    datatable.DataTable().columns.adjust().draw();
-}
-
-function clearDatatable(datatable) {
-    datatable.DataTable().clear();
-    datatable.DataTable().columns.adjust().draw();
-}
-
-function setLoadingStatus(datatable) {
-    $("#loading").show();
-    datatable.css("filter", "blur(5px)");
-    datatable.css("pointer-events", "none");
-    datatable.css("user-select", "none");
-}
-
-function removeLoadingStatus(datatable) {
-    $("#loading").hide();
-    datatable.css("filter", "");
-    datatable.css("pointer-events", "");
-    datatable.css("user-select", "");
-}
-
-function setSelectOptions(selectId, options, param) {
-    let select = $(selectId);
-    if (select.val() === null) {
-        let selectOptions = select.html("");
-        $.each(options, function (index, value) {
-            selectOptions += `<option value="${value}">${value}</option>`;
-        });
-        select.html(selectOptions);
-        select.multiselect('rebuild');
-        if (param == "selectAll") {
-            select.multiselect('selectAll', false);
-        }
-        select.multiselect('updateButtonText');
-    }
-}
-
-function setSystemSelectOptions() {
-    let user = JSON.parse(sessionStorage.getItem('user'));
-    let systems = user.system;
-    let options = $("#systemSelect").html("");
-    $.each(systems, function (index, value) {
-        options += `<option value="${value}">${value}</option>`;
-    })
-    $('#systemSelect').html(options);
-    $("#systemSelect").multiselect('rebuild');
-}
-
-function setApplicationSelectOptions(systems) {
-    let systemsQ = "";
-    $("#applicationSelect").html("");
-    $('#applicationSelect').multiselect('refresh');
-    $.each(systems, function (index, value) {
-        systemsQ += "&system=" + encodeURI(systems[index]);
-    });
-    $.ajax
-            ({
-                url: "ReadApplication?" + systemsQ,
-                async: true,
-                dataType: "json",
-                method: 'GET',
-                data: {
-                    system: encodeURI(systems),
-                },
-                success: function (data) {
-                    let result = data.contentTable;
-                    let options = $("#applicationSelect").html();
-                    $.each(result, function (index, value) {
-                        options += `<option value="${result[index].application}">${result[index].application}</option>`;
-                    })
-                    $('#applicationSelect').html(options);
-                    $("#applicationSelect").multiselect('rebuild');
+        // ═══════════════════ OVERVIEW LOAD ═══════════════════
+        load() {
+            var self = this;
+            if (!this.selSystems.length || !this.selApps.length) {
+                showMessageMainPage('warning', 'Pick at least one system and one application first.');
+                return;
+            }
+            this.view = 'overview';
+            this.loading = true;
+            this.error = '';
+            if (typeof InsertURLInHistory === 'function') InsertURLInHistory('./ReportingCampaignStatistics.jsp');
+            $.ajax({
+                url: 'api/campaignexecutions/statistics',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    systems: this.selSystems.map(encodeURIComponent).join(','),
+                    applications: this.selApps.map(encodeURIComponent).join(','),
+                    group1: '',
+                    from: encodeURIComponent(this._fromIso()),
+                    to: encodeURIComponent(this._toIso())
+                })
+            }).done(function (data) {
+                self.loading = false;
+                self.loaded = true;
+                self.rows = (data && data.campaignStatistics) || [];
+            }).fail(function (xhr) {
+                self.loading = false;
+                self.loaded = true;
+                self.rows = [];
+                if (xhr.status === 404) {
+                    // the API answers 404 when nothing matches: that is the empty state, not an error
+                    self.error = '';
+                    return;
                 }
+                var msg = 'Could not load the campaign statistics (' + xhr.status + ').';
+                try { msg = JSON.parse(xhr.responseText).message || msg; } catch (e) { /* keep default */ }
+                self.error = msg;
             });
-}
-
-function initGlobalPage() {
-    createMultiSelect($('#systemSelect'));
-    createMultiSelect($('#applicationSelect'));
-    createMultiSelect($('#group1Select'));
-    //  renderPicker('fromPicker');
-    //renderPicker('toPicker');
-    let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [1, 'asc']);
-    createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
-    displayPageLabel();
-    setSystemSelectOptions();
-    $('#applicationSelect').next('div').find('button').prop('disabled', true);
-    $('#group1Select').next('div').find('button').prop('disabled', true);
-    $('#loadButton').prop('disabled', true);
-
-    $('#loadButton').click(function ()
-    {
-        getStatistics();
-    }
-    );
-}
-
-function initDetailedPage() {
-    displayPageLabel();
-    $('#systemAppGroup1Filters').hide();
-    createMultiSelect($('#environmentSelect'));
-    createMultiSelect($('#countrySelect'));
-    $('#campaign').text('"' + GetURLParameter("campaign") + '"');
-    $('#envCountryFilters').show();
-    $('#tagStatisticList').hide();
-    $('#tagStatisticDetailList').show();
-    $('#loadButton').closest('.input-group-btn').hide()
-    $('#loadDetailButton').closest('.input-group-btn').show()
-    let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [1, 'asc']);
-    createDataTableWithPermissions(config, undefined, "#tagStatisticDetailList", undefined, undefined, undefined, undefined);
-
-}
-
-function getStatistics(form) {
-    // Convert array of objects or strings to CSV string
-    const toCsv = arr => arr
-                .map(i => typeof i === 'string' ? i : (i.value || i.id || i.label || i.name || ''))
-                .join(',');
-
-    $.ajax({
-        url: "api/campaignexecutions/statistics",
-        method: 'POST',
-        contentType: "application/json",
-        data: JSON.stringify({
-            systems: toCsv(form.system),
-            applications: toCsv(form.application),
-            group1: toCsv(form.group1),
-            from: encodeURIComponent(form.from),
-            to: encodeURIComponent(form.to)
-        }),
-        beforeSend: function () {
-            setLoadingStatus($("#tagStatisticList"));
         },
-        success: function (data) {
-            updateDatatable($("#tagStatisticTable"), data);
-            removeLoadingStatus($("#tagStatisticList"));
-        },
-        error: function (jqXHR) {
-            removeLoadingStatus($("#tagStatisticList"));
-            showMessageMainPage("danger", jqXHR.responseText, false);
-        }
-    });
-}
 
-function getPickerIsoValue(id) {
-    const el = document.getElementById(id);
-    if (!el || typeof Alpine === 'undefined') {
-        return '';
-    }
-
-    const data = Alpine.$data(el);
-
-    if (!data || !(data.value instanceof Date) || isNaN(data.value.getTime())) {
-        return '';
-    }
-
-    return data.value.toISOString();
-}
-
-function getStatisticsByEnvCountry(form) {
-    let campaign = GetURLParameter("campaign");
-    let environments = prepareFilterList($('#environmentSelect').val());
-    let countries = prepareFilterList($('#countrySelect').val());
-    const from = form && form.from ? form.from : '';
-    const to = form && form.to ? form.to : '';
-
-    $.ajax
-            ({
-                url: "api/campaignexecutions/statistics/" + GetURLParameter("campaign"),
-                async: true,
-                method: 'GET',
-                data: {
-                    environments: encodeURI(environments),
-                    countries: encodeURI(countries),
-                    from: encodeURIComponent(from),
-                    to: encodeURIComponent(to)
-                },
-                beforeSend: function () {
-                    setLoadingStatus($("#tagStatisticDetailList"));
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    removeLoadingStatus($("#tagStatisticDetailList"));
-                    let response = JSON.parse(jqXHR.responseText);
-                    clearDatatable($("#tagStatisticDetailTable"));
-                    showMessageMainPage("danger", response.message, false);
-                },
-                success: function (data) {
-                    updateDatatable($("#tagStatisticDetailTable"), data);
-                    removeLoadingStatus($("#tagStatisticDetailList"));
-                    setSelectOptions("#environmentSelect", data.environments, "selectAll");
-                    setSelectOptions("#countrySelect", data.countries, "selectAll");
-                    InsertURLInHistory('ReportingCampaignStatistics.jsp?campaign=' + encodeURIComponent(campaign) + '&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&environments=' + encodeURI(environments) + '&countries=' + encodeURI(countries));
-                }
+        // ═══════════════════ OVERVIEW TABLE ═══════════════════
+        get filteredRows() {
+            var q = this.search.trim().toLowerCase();
+            var rows = this.rows;
+            if (q) {
+                rows = rows.filter(function (r) {
+                    return String(r.campaign || '').toLowerCase().indexOf(q) >= 0
+                        || String(r.systemList || '').toLowerCase().indexOf(q) >= 0
+                        || String(r.applicationList || '').toLowerCase().indexOf(q) >= 0
+                        || String(r.campaignGroup1 || '').toLowerCase().indexOf(q) >= 0;
+                });
+            }
+            var col = this.sortCol, asc = this.sortAsc ? 1 : -1;
+            return rows.slice().sort(function (a, b) {
+                var x = a[col], y = b[col];
+                if (x === undefined || x === null) return 1;
+                if (y === undefined || y === null) return -1;
+                if (typeof x === 'number' && typeof y === 'number') return (x - y) * asc;
+                return String(x).localeCompare(String(y)) * asc;
             });
-}
+        },
+        setSort(col) {
+            if (this.sortCol === col) this.sortAsc = !this.sortAsc;
+            else { this.sortCol = col; this.sortAsc = col === 'campaign'; }
+        },
+        get kpis() {
+            var n = this.rows.length;
+            var runs = 0, okW = 0, relW = 0, durW = 0;
+            this.rows.forEach(function (r) {
+                var w = r.nbCampaignExecutions || 0;
+                runs += w;
+                okW += (r.avgOK || 0) * w;
+                relW += (r.avgReliability || 0) * w;
+                durW += (r.avgDuration || 0) * w;
+            });
+            return {
+                campaigns: n,
+                runs: runs,
+                okRate: runs ? Math.round(okW / runs * 10) / 10 : null,
+                reliability: runs ? Math.round(relW / runs * 10) / 10 : null,
+                avgDur: runs ? Math.round(durW / runs) : null
+            };
+        },
 
-function displayPageLabel() {
-    var doc = new Doc();
-    $("#pageTitle").html(doc.getDocLabel("page_campaignstatistics", "title"));
-    $("#title").html(doc.getDocLabel("page_campaignstatistics", "title") + ` <span id="campaign" style="text-transform: none;"></span>`);
-    $("#labelEnvironmentSelect").html(doc.getDocLabel("page_campaignstatistics", "labelEnvironmentSelect"));
-    $("#labelCountrySelect").html(doc.getDocLabel("page_campaignstatistics", "labelCountrySelect"));
-    $("#labelSystemSelect").html(doc.getDocLabel("page_campaignstatistics", "labelSystemSelect"));
-    $("#labelApplicationSelect").html(doc.getDocLabel("page_campaignstatistics", "labelApplicationSelect"));
-    $("#labelGroup1Select").html(doc.getDocLabel("page_campaignstatistics", "labelGroup1Select"));
-    $("#labelFromPicker").html(doc.getDocLabel("page_campaignstatistics", "labelFromPicker"));
-    $("#labelToPicker").html(doc.getDocLabel("page_campaignstatistics", "labelToPicker"));
-    $("#loadButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
-    $("#loadDetailButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
-    //displayHeaderLabel(doc);
-    displayFooter(doc);
-    displayGlobalLabel(doc);
-}
-
-function aoColumnsFunc(tableId) {
-    var doc = new Doc();
-    const aoColumns = [
-        {
-            "data": null,
-            "title": doc.getDocLabel("page_global", "columnAction"),
-            "orderable": false,
-            "searchable": false,
-            "width": "70px",
-            "render": function (data, type, obj) {
-                const fromValue = getPickerIsoValue('fromPicker-input');
-                const toValue = getPickerIsoValue('toPicker-input');
-                const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
-                                        href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${encodeURIComponent(fromValue)}&to=${encodeURIComponent(toValue)}"
-                                        target="_blank"
-                                        class="viewDetailByCountryEnv btn btn-default btn-xs margin-right5"
-                                        title="${doc.getDocLabel("page_campaignstatistics", "buttonDetailByCountryEnv")}"
-                                        type="button">
-                                        <span class="glyphicon glyphicon-zoom-in"></span></a>`;
-                const viewStatCampaign = `<button id="viewStatcampaign" onclick="campaign_viewStatEntryClick('${obj.campaign}');"
-                                                    class="viewStatcampaign btn btn-default btn-xs margin-right5"
-                                                    name="viewStatcampaign" title="${doc.getDocLabel("page_testcampaign", "button_taglist")}" type="button">
-                                                    <span class="glyphicon glyphicon-stats"></span></button>`;
-
-                return `<div class="center btn-group">${viewStatCampaign}${viewDetailByCountryEnv}</div>`;
-
+        // ═══════════════════ DETAIL LEVEL ═══════════════════
+        openDetail(campaign) {
+            this.detail.campaign = campaign;
+            this.detail.rows = [];
+            this.detail.envs = [];
+            this.detail.countries = [];
+            this.detail.selEnvs = [];
+            this.detail.selCountries = [];
+            this.detail.error = '';
+            this.view = 'detail';
+            this.loadDetail();
+        },
+        loadDetail() {
+            var self = this;
+            var d = this.detail;
+            d.loading = true;
+            d.error = '';
+            var params = {
+                environments: d.selEnvs.map(encodeURIComponent).join(','),
+                countries: d.selCountries.map(encodeURIComponent).join(','),
+                from: encodeURIComponent(this._fromIso()),
+                to: encodeURIComponent(this._toIso())
+            };
+            if (typeof InsertURLInHistory === 'function') {
+                InsertURLInHistory('./ReportingCampaignStatistics.jsp?campaign=' + encodeURIComponent(d.campaign)
+                    + '&from=' + encodeURIComponent(this._fromIso()) + '&to=' + encodeURIComponent(this._toIso()));
             }
-        },
-        {
-            "data": "campaign",
-            "name": "campaign",
-            "searchable": true,
-            "width": "80px",
-            "title": doc.getDocLabel("page_campaignstatistics", "campaign_col")
-        },
-        {
-            "data": "systemList",
-            "name": "systems",
-            "searchable": true,
-            "width": "120px",
-            "className": "center",
-            "title": doc.getDocOnline("page_campaignstatistics", "systems_col")
-        },
-        {
-            "data": "applicationList",
-            "name": "applications",
-            "searchable": true,
-            "width": "120px",
-            "title": doc.getDocOnline("page_campaignstatistics", "applications_col")
-        },
-        {
-            "data": "campaignGroup1",
-            "name": "campaignGroup1",
-            "searchable": true,
-            "width": "60px",
-            "title": doc.getDocOnline("page_campaignstatistics", "group1_col")
-        },
-        {
-            "data": "minDateStart",
-            "name": "minDateStart",
-            "searchable": false,
-            "type": "datetime",
-            "width": "125px",
-            "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
-            "mRender": function (data, type, obj) {
-                if (type === 'display') {
-                    return new Date(data).toLocaleString();
-                } else {
-                    return data;
+            $.ajax({
+                url: 'api/campaignexecutions/statistics/' + encodeURIComponent(d.campaign),
+                method: 'GET',
+                data: params
+            }).done(function (data) {
+                d.loading = false;
+                d.rows = (data && data.campaignStatistics) || [];
+                if (data && Array.isArray(data.environments) && data.environments.length) d.envs = data.environments;
+                if (data && Array.isArray(data.countries) && data.countries.length) d.countries = data.countries;
+            }).fail(function (xhr) {
+                d.loading = false;
+                d.rows = [];
+                if (xhr.status === 404) {
+                    // nothing ran for this campaign on the period: empty state, not an error
+                    d.error = '';
+                    return;
                 }
-            }
+                var msg = 'Could not load the detail of ' + d.campaign + ' (' + xhr.status + ').';
+                try { msg = JSON.parse(xhr.responseText).message || msg; } catch (e) { /* keep default */ }
+                d.error = msg;
+            });
         },
-        {
-            "data": "maxDateEnd",
-            "name": "maxDateEnd",
-            "searchable": false,
-            "type": "datetime",
-            "width": "125px",
-            "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
-            "mRender": function (data, type, obj) {
-                if (type === 'display') {
-                    return new Date(data).toLocaleString();
-                } else {
-                    return data;
-                }
-            }
+        closeDetail() {
+            this.view = 'overview';
+            this.detail.campaign = '';
+            if (typeof InsertURLInHistory === 'function') InsertURLInHistory('./ReportingCampaignStatistics.jsp');
+            if (!this.loaded) this.load();
         },
-        {
-            "data": "avgOK",
-            "name": "avgOK",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgOK_col"),
-            "render": function (data, type, obj) {
-                let roundedPercentage = Math.round(obj.avgOK * 10) / 10;
-                let color = getGreenToRed(obj.avgOK);
-                return `<div class="progress-bar" role="progressbar" style="width: ${roundedPercentage}%; background-color: ${color}; color: black;"> ${roundedPercentage} %</div>`;
-            }
+        toggleDetailFilter(kind, v) {
+            var arr = kind === 'env' ? this.detail.selEnvs : this.detail.selCountries;
+            var i = arr.indexOf(v);
+            if (i >= 0) arr.splice(i, 1); else arr.push(v);
+            this.loadDetail();
         },
-        {
-            "data": "avgDuration",
-            "name": "avgDuration",
-            "searchable": false,
-            "width": "110px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgDuration_col"),
-            "render": function (data, type, obj) {
-                let roundedAvgDuration = Math.round(obj.avgDuration);
-                let hours = Math.floor(roundedAvgDuration / 3600);
-                let minutes = Math.floor((roundedAvgDuration % 3600) / 60);
-                let seconds = roundedAvgDuration % 60;
-                return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-            }
-        },
-        {
-            "data": "avgReliability",
-            "name": "avgReliability",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgReliability_col"),
-            "render": function (data, type, obj) {
-                let roundedPercentage = Math.round(obj.avgReliability * 10) / 10;
-                let color = getGreenToRed(roundedPercentage);
-                return `<div class="progress-bar" role="progressbar" style="width: ${roundedPercentage}%; background-color: ${color}; color: black;"> ${roundedPercentage} %</div>`;
-            }
-        },
-        {
-            "data": "nbCampaignExecutions",
-            "name": "nbCampaignExecutions",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocOnline("page_campaignstatistics", "nbCampaignExecutions_col")
-        },
-    ];
-    return aoColumns;
-}
 
-function aoColumnsDetailFunc(tableId) {
-    var doc = new Doc();
-    const aoColumns = [
-        {
-            "data": "environment",
-            "name": "environment",
-            "searchable": true,
-            "width": "90px",
-            "className": "center",
-            "title": doc.getDocLabel("page_campaignstatistics", "environment_col")
+        // ═══════════════════ CROSS NAVIGATION ═══════════════════
+        openTrends(r) {
+            window.open('./ReportingCampaignOverTime.jsp?campaigns=' + encodeURIComponent(r.campaign), '_blank');
         },
-        {
-            "data": "country",
-            "name": "country",
-            "searchable": true,
-            "width": "90px",
-            "className": "center",
-            "title": doc.getDocLabel("page_campaignstatistics", "country_col")
-        },
-        {
-            "data": "systemList",
-            "name": "systems",
-            "searchable": true,
-            "width": "120px",
-            "className": "center",
-            "title": doc.getDocOnline("page_campaignstatistics", "systems_col")
-        },
-        {
-            "data": "applicationList",
-            "name": "applications",
-            "searchable": true,
-            "width": "120px",
-            "title": doc.getDocOnline("page_campaignstatistics", "applications_col")
-        },
-        {
-            "data": "minDateStart",
-            "name": "minDateStart",
-            "searchable": false,
-            "type": "datetime",
-            "width": "125px",
-            "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
-        },
-        {
-            "data": "maxDateEnd",
-            "name": "maxDateEnd",
-            "type": "datetime",
-            "searchable": false,
-            "width": "125px",
-            "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
-            "mRender": function (data, type, obj) {
-                if (type === 'display') {
-                    return new Date(data).toLocaleString();
-                } else {
-                    return data;
-                }
-            }
-        },
-        {
-            "data": "avgOK",
-            "name": "avgOK",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgOK_col"),
-            "render": function (data, type, obj) {
-                let roundedPercentage = Math.round(obj.avgOK * 10) / 10;
-                let color = getGreenToRed(obj.avgOK);
-                return `<div class="progress-bar" role="progressbar" style="width: ${roundedPercentage}%; background-color: ${color}; color: black;"> ${roundedPercentage} %</div>`;
-            }
-        },
-        {
-            "data": "avgDuration",
-            "name": "avgDuration",
-            "searchable": false,
-            "width": "110px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgDuration_col"),
-            "render": function (data, type, obj) {
-                let roundedAvgDuration = Math.round(obj.avgDuration);
-                let hours = Math.floor(roundedAvgDuration / 3600);
-                let minutes = Math.floor((roundedAvgDuration % 3600) / 60);
-                let seconds = roundedAvgDuration % 60;
-                return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-            }
-        },
-        {
-            "data": "avgReliability",
-            "name": "avgReliability",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocOnline("page_campaignstatistics", "avgReliability_col"),
-            "render": function (data, type, obj) {
-                let roundedPercentage = Math.round(obj.avgReliability * 10) / 10;
-                let color = getGreenToRed(roundedPercentage);
-                return `<div class="progress-bar" role="progressbar" style="width: ${roundedPercentage}%; background-color: ${color}; color: black;"> ${roundedPercentage} %</div>`;
-            }
-        },
-        {
-            "data": "nbExeUseful",
-            "name": "nbExeUseful",
-            "searchable": false,
-            "width": "120px",
-            "title": doc.getDocOnline("page_campaignstatistics", "nbExeUseful_col")
-        },
-        {
-            "data": "nbExe",
-            "name": "nbExe",
-            "searchable": false,
-            "width": "120px",
-            "title": doc.getDocOnline("page_campaignstatistics", "nbExe_col")
-        },
-    ];
-    return aoColumns;
-}
 
-function getGreenToRed(percent) {
-    r = percent < 50 ? 255 : Math.floor(255 - (percent * 2 - 100) * 255 / 100);
-    g = percent > 50 ? 255 : Math.floor((percent * 2) * 255 / 100);
-    return 'rgb(' + r + ',' + g + ',0)';
-}
-
-function hideColumnSearchBar() {
-    $(".filterHeader span").hide();
-    $('#tagStatisticTable').on('draw.dt', function () {
-        $(".filterHeader span").hide();
-    });
-    $('#tagStatisticDetailTable').on('draw.dt', function () {
-        $(".filterHeader span").hide();
-    });
+        // ═══════════════════ HELPERS ═══════════════════
+        rateColor(pct) {
+            if (pct === undefined || pct === null) return 'var(--crb-grey-color)';
+            if (pct >= 90) return 'var(--crb-green-color, #00d27a)';
+            if (pct >= 75) return '#84cc16';
+            if (pct >= 50) return 'var(--crb-orange-color, #f5803e)';
+            return 'var(--crb-red-color, #e63757)';
+        },
+        pctF(v) { return (v === undefined || v === null) ? '-' : (Math.round(v * 10) / 10) + '%'; },
+        durF(sec) { return (sec === undefined || sec === null) ? '-' : this.IN.fmtDuration(Math.round(sec) * 1000); },
+        dateF(v) {
+            if (!v) return '-';
+            var d = new Date(v);
+            return isNaN(d.getTime()) ? '-' : d.toLocaleString();
+        },
+        relTime(v) { return this.IN.relTime(v); }
+    };
 }

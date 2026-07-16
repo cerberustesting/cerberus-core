@@ -233,9 +233,9 @@
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
             <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
-            <button type="button" id="saveExecutionQueueButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonSave">Save</button>
-            <button type="button" id="submitExecutionQueueButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonSubmit">Save and submit again</button>
-            <button type="button" id="duplicateExecutionQueueButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonDuplicate">Copy and Submit</button>
+            <button type="button" id="saveExecutionQueueButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonSave">Save</button>
+            <button type="button" id="submitExecutionQueueButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonSubmit">Save and submit again</button>
+            <button type="button" id="duplicateExecutionQueueButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonDuplicate">Copy and Submit</button>
             <button type="button" id="cancelExecutionQueueButton" class="px-4 py-2 rounded-md bg-red-400 text-white text-sm hover:bg-red-700 transition" name="buttonCancel">Cancel execution</button>
         </div>
     </div>
@@ -307,8 +307,8 @@
 
     function exeQueue_editClick(queueID) {
         clearResponseMessage($('#editExecutionQueueModal'));
-        $('#submitExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeProp('hidden');
-        $('#saveExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeProp('hidden');
+        $('#submitExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeProp('hidden');
+        $('#saveExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeProp('hidden');
         $('#cancelExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-red-400 text-white text-sm hover:bg-red-700 transition').removeProp('hidden');
         $('#duplicateExecutionQueueButton').attr('class', 'hidden').attr('hidden', 'hidden');
         exeQueue_feedModal(queueID, "editExecutionQueueModal", "EDIT");
@@ -319,7 +319,7 @@
         $('#submitExecutionQueueButton').attr('class', 'hidden').attr('hidden', 'hidden');
         $('#saveExecutionQueueButton').attr('class', 'hidden').attr('hidden', 'hidden');
         $('#cancelExecutionQueueButton').attr('class', 'hidden').attr('hidden', 'hidden');
-        $('#duplicateExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition').removeProp('hidden');
+        $('#duplicateExecutionQueueButton').attr('class', 'px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition').removeProp('hidden');
         exeQueue_feedModal(queueID, "editExecutionQueueModal", "DUPLICATE");
     }
 

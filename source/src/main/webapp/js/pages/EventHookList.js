@@ -33,8 +33,16 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("eventHooksTable", "ReadEventHook", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForEventHook, "#eventHookList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForEventHook, "#eventHookList", undefined, true);
     refreshPopoverDocumentation("eventHookList");
+
+    // action buttons reveal on row hover + lucide icons in cells
+    $('#eventHooksTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
 }
 
 function displayPageLabel() {
@@ -58,16 +66,26 @@ function renderOptionsForEventHook(data) {
 
     var doc = new Doc();
     if ($("#createEventHookButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><button id='createEventHookButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> "
-                + doc.getDocLabel("page_global", "btn_add") + "</button></div>";
+        var contentToAdd = `
+            <button id='createEventHookButton' type='button'
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_global", "btn_add") + `</span>
+            </button>`;
 
-        $("#eventHooksTable_wrapper div#eventHooksTable_length").before(contentToAdd);
-        $("#eventHookList #createEventHookButton").off("click");
-        $('#eventHookList #createEventHookButton').click(
-                function () {
-                    openModalEventHook(0, "ADD");
-                });
+        var $wrapper = $("#eventHooksTable_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.prepend(contentToAdd);
+        } else {
+            $("#eventHooksTable_wrapper div#eventHooksTable_length").before("<div id='eventHooksTable_buttonWrapper'>" + contentToAdd + "</div>");
+        }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        $("#createEventHookButton").off("click").on("click", function () {
+            openModalEventHook(0, "ADD");
+        });
     }
 
 }
@@ -108,22 +126,27 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "80px",
             "title": doc.getDocLabel("page_global", "columnAction"),
-            "mRender": function (data, type, obj) {
-                var editEH = '<button id="editEventHook" onclick="openModalEventHook(\'' + obj["id"] + '\',\'EDIT\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="editEventHook" title="' + doc.getDocLabel("page_global", "columnAction") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-                var duplicateEH = '<button id="editEventHook" onclick="openModalEventHook(\'' + obj["id"] + '\',\'DUPLICATE\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="editEventHook" title="' + doc.getDocLabel("page_global", "columnAction") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var deleteEH = '<button id="deleteEventHook" onclick="deleteEventHook(\'' + obj["id"] + '\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="deleteEventHook" title="' + doc.getDocLabel("page_global", "columnAction") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                var row = "row_" + meta.row;
 
-                return '<div class="center btn-group width150">' + editEH + duplicateEH + deleteEH + '</div>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
+                function actionButton(id, title, onClick, icon, extraClass) {
+                    return '<button id="' + id + '" type="button" class="' + baseBtnClass + ' ' + (extraClass || '') + '" title="' + title + '" onclick="' + onClick + '">' +
+                        '<i data-lucide="' + icon + '" class="w-4 h-4"></i></button>';
+                }
+
+                var buttons = "";
+                buttons += actionButton('eventhook_action_edit_' + row, doc.getDocLabel("page_global", "btn_edit"),
+                    "openModalEventHook('" + obj["id"] + "','EDIT');", 'pencil', 'group-hover:!text-blue-500');
+                buttons += actionButton('eventhook_action_duplicate_' + row, doc.getDocLabel("page_global", "btn_duplicate"),
+                    "openModalEventHook('" + obj["id"] + "','DUPLICATE');", 'copy', 'group-hover:!text-purple-500');
+                buttons += actionButton('eventhook_action_delete_' + row, doc.getDocLabel("page_global", "btn_delete"),
+                    "deleteEventHook('" + obj["id"] + "');", 'trash-2', 'group-hover:!text-red-500');
+
+                return '<div class="flex items-center justify-start gap-1">' + buttons + '</div>';
             }
         },
         {
@@ -147,14 +170,29 @@ function aoColumnsFunc(tableId) {
         {
             "data": "isActive",
             "sName": "evh.isActive",
-            "sWidth": "50px",
-            "title": doc.getDocLabel("page_eventhook", "isActive")
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_eventhook", "isActive"),
+            "mRender": function (data, type, obj) {
+                var active = (data === true || data === "true" || data === "Y");
+                var chip = active
+                    ? "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-300"
+                    : "bg-slate-50 text-slate-500 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-400";
+                return '<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ' + chip + '">'
+                    + '<i data-lucide="' + (active ? 'circle-check' : 'circle-pause') + '" class="h-3.5 w-3.5"></i>'
+                    + '<span>' + (active ? 'Active' : 'Inactive') + '</span></span>';
+            }
         },
         {
             "data": "hookConnector",
             "sName": "evh.hookConnector",
-            "sWidth": "80px",
-            "title": doc.getDocLabel("page_eventhook", "hookConnector")
+            "sWidth": "100px",
+            "title": doc.getDocLabel("page_eventhook", "hookConnector"),
+            "mRender": function (data, type, obj) {
+                if (isEmpty(data)) {
+                    return "";
+                }
+                return '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">' + escapeHtml(data) + '</span>';
+            }
         },
         {
             "data": "hookRecipient",

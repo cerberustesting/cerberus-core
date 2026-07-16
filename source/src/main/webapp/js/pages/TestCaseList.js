@@ -1074,7 +1074,7 @@ function aoColumnsFunc(countries, tableId) {
                     icon: icons.run
                 }));
 
-                return `<div class="flex items-center justify-center">${buttons.join("")}</div>`;
+                return `<div class="flex items-center justify-start gap-1">${buttons.join("")}</div>`;
             }
         }
         ,

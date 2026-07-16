@@ -31,6 +31,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
     displayParametersTable();
+
+    // action buttons reveal on row hover + lucide icons in cells
+    $('#parametersTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
 }
 
 function displayParametersTable(parameterList) {
@@ -143,20 +151,24 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "50px",
             "title": doc.getDocLabel("page_parameter", "button_col"),
-            "mRender": function (data, type, obj) {
-                var myClass = "glyphicon";
-                if (data.hasPermissionsUpdate) {
-                    myClass += " glyphicon-pencil";
-                } else {
-                    myClass += " glyphicon-eye-open";
-                }
-                var editParameter = '<button id="editParameter" onclick="openModalParameter(\'' + obj["param"] + '\', \'' + getSys() + '\');"\n\
-                                        class="btn btn-default btn-xs margin-right5" \n\
-                                        name="editParameter" title="' + doc.getDocLabel("page_parameter", "button_edit") + '" type="button">\n\
-                                        <span class="' + myClass + '"></span></button>';
+            "mRender": function (data, type, obj, meta) {
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
 
-                return '<div class="center btn-group width150">' + editParameter + '</div>';
+                var icon = data.hasPermissionsUpdate ? "pencil" : "eye";
+                var editParameter = `
+                <button
+                    id="parameter_action_edit_row_${meta.row}"
+                    type="button"
+                    class="${baseBtnClass} group-hover:!text-blue-500"
+                    title="${doc.getDocLabel("page_parameter", "button_edit")}"
+                    onclick="openModalParameter('${obj["param"]}', '${getSys()}')">
+                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                </button>
+            `;
 
+                return `<div class="flex items-center justify-start gap-1">${editParameter}</div>`;
             }
         },
         {

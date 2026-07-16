@@ -1,0 +1,197 @@
+<!-- Automate Score - hero (gauge / radar / history), 4 KPI cards, heatmap + volume -->
+
+<!-- Hero -->
+<div class="v2as-hero">
+
+        <!-- Global score -->
+        <div class="crb_card v2as-card">
+            <div class="v2as-card-head">
+                <span class="v2as-card-title">Global score</span>
+                <span class="flex-1"></span>
+                <span class="v2as-weekchip" x-show="scoreGlobal" x-text="scoreGlobal ? ('week ' + scoreGlobal.weekLabel) : ''"
+                      title="The current week is never scored: this is the last full week"></span>
+            </div>
+            <div class="v2as-card-body v2as-gauge-body">
+                <template x-if="scoreGlobal">
+                    <div class="v2as-gauge-wrap">
+                        <div class="v2as-gauge-box">
+                            <svg viewBox="0 0 200 200" class="v2as-gauge">
+                                <circle cx="100" cy="100" r="80" class="v2as-gauge-track"></circle>
+                                <circle cx="100" cy="100" r="80" class="v2as-gauge-fill"
+                                        :stroke="letterColor(scoreGlobal.letter)"
+                                        :stroke-dasharray="(scoreGlobal.score / 100 * 502.655) + ' 502.655'"
+                                        transform="rotate(-90 100 100)"></circle>
+                            </svg>
+                            <div class="v2as-gauge-center">
+                                <span class="v2as-gauge-score" x-text="scoreGlobal.score"></span>
+                                <span class="v2as-gauge-sub">/ 100</span>
+                            </div>
+                            <span class="v2as-letter v2as-letter--big" :style="'background:' + letterColor(scoreGlobal.letter)"
+                                  x-text="scoreGlobal.letter"></span>
+                        </div>
+                        <div class="v2as-gauge-side">
+                            <template x-if="scoreGlobal.delta !== null">
+                                <span class="v2as-delta" :class="scoreGlobal.delta > 0 ? 'v2as-delta--up' : (scoreGlobal.delta < 0 ? 'v2as-delta--down' : '')">
+                                    <span x-text="(scoreGlobal.delta > 0 ? '+' : '') + scoreGlobal.delta + ' pts'"></span>
+                                    <span class="v2as-dim">vs previous week</span>
+                                </span>
+                            </template>
+                            <p class="v2as-help">
+                                Sum of the four weekly axes (25 pts each): run frequency, campaign duration,
+                                stability and maintenance effort.
+                            </p>
+                            <div class="v2as-scale">
+                                <span class="v2as-scale-item"><b style="color:#00d27a">A</b> &gt; 80</span>
+                                <span class="v2as-scale-item"><b style="color:#84cc16">B</b> &gt; 60</span>
+                                <span class="v2as-scale-item"><b style="color:#f59e0b">C</b> &gt; 40</span>
+                                <span class="v2as-scale-item"><b style="color:#f5803e">D</b> &gt; 20</span>
+                                <span class="v2as-scale-item"><b style="color:#e63757">E</b> &ge; 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="!scoreGlobal">
+                    <div class="v2as-empty py-8 text-center">No fully evaluated week on this period: run some campaigns first</div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Radar breakdown -->
+        <div class="crb_card v2as-card">
+            <div class="v2as-card-head">
+                <span class="v2as-card-title">Score breakdown</span>
+            </div>
+            <div class="v2as-card-body v2as-radar-body">
+                <svg viewBox="-56 -6 332 228" class="v2as-radar">
+                    <polygon :points="radarGrid(1)" class="v2as-radar-grid"></polygon>
+                    <polygon :points="radarGrid(0.75)" class="v2as-radar-grid"></polygon>
+                    <polygon :points="radarGrid(0.5)" class="v2as-radar-grid"></polygon>
+                    <polygon :points="radarGrid(0.25)" class="v2as-radar-grid"></polygon>
+                    <line x1="110" y1="26" x2="110" y2="190" class="v2as-radar-axis"></line>
+                    <line x1="28" y1="108" x2="192" y2="108" class="v2as-radar-axis"></line>
+                    <polygon :points="radarPolygon" class="v2as-radar-data"></polygon>
+                    <!-- 4 static dots (x-for does not render inside inline svg): one per fixed axis -->
+                    <circle :cx="radarDot(0).x" :cy="radarDot(0).y" r="4.5" class="v2as-radar-dot" :style="'fill:' + letterColor(radarKpi(0).letter)">
+                        <title x-text="radarKpi(0).label + ': ' + (radarKpi(0).score !== null ? (radarKpi(0).score + '/25') : 'n/a')"></title>
+                    </circle>
+                    <circle :cx="radarDot(1).x" :cy="radarDot(1).y" r="4.5" class="v2as-radar-dot" :style="'fill:' + letterColor(radarKpi(1).letter)">
+                        <title x-text="radarKpi(1).label + ': ' + (radarKpi(1).score !== null ? (radarKpi(1).score + '/25') : 'n/a')"></title>
+                    </circle>
+                    <circle :cx="radarDot(2).x" :cy="radarDot(2).y" r="4.5" class="v2as-radar-dot" :style="'fill:' + letterColor(radarKpi(2).letter)">
+                        <title x-text="radarKpi(2).label + ': ' + (radarKpi(2).score !== null ? (radarKpi(2).score + '/25') : 'n/a')"></title>
+                    </circle>
+                    <circle :cx="radarDot(3).x" :cy="radarDot(3).y" r="4.5" class="v2as-radar-dot" :style="'fill:' + letterColor(radarKpi(3).letter)">
+                        <title x-text="radarKpi(3).label + ': ' + (radarKpi(3).score !== null ? (radarKpi(3).score + '/25') : 'n/a')"></title>
+                    </circle>
+                    <text x="110" y="14" text-anchor="middle" class="v2as-radar-label">Frequency</text>
+                    <text x="200" y="112" text-anchor="start" class="v2as-radar-label">Stability</text>
+                    <text x="110" y="208" text-anchor="middle" class="v2as-radar-label">Duration</text>
+                    <text x="20" y="112" text-anchor="end" class="v2as-radar-label">Maintenance</text>
+                </svg>
+                <div class="v2as-radar-legend">
+                    <template x-for="i in [0, 1, 2, 3]" :key="i">
+                        <div class="v2as-radar-legrow">
+                            <span class="v2as-letter" :style="'background:' + letterColor(radarKpi(i).letter)" x-text="radarKpi(i).letter"></span>
+                            <span class="v2as-radar-legname" x-text="radarKpi(i).label"></span>
+                            <span class="v2as-radar-legscore" x-text="radarKpi(i).score !== null ? (radarKpi(i).score + '/25') : '-'"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+    <!-- Score history -->
+    <div class="crb_card v2as-card">
+        <div class="v2as-card-head">
+            <span class="v2as-card-title">Score history</span>
+            <span class="v2as-count" x-text="nbWeeks + ' weeks'"></span>
+        </div>
+        <div class="v2as-card-body" x-html="trendChartSvg"></div>
+    </div>
+</div>
+
+<!-- The four axes -->
+<div class="v2as-kpis">
+    <template x-for="k in kpis" :key="k.key">
+        <div class="crb_card v2as-card v2as-kpi" :title="k.help">
+            <div class="v2as-kpi-head">
+                <span class="v2as-kpi-label" x-text="k.label"></span>
+                <span class="flex-1"></span>
+                <span class="v2as-kpi-delta" x-show="k.scoreDelta !== null && k.scoreDelta !== 0"
+                      :class="k.scoreDelta > 0 ? 'v2as-delta--up' : 'v2as-delta--down'"
+                      x-text="(k.scoreDelta > 0 ? '+' : '') + k.scoreDelta"></span>
+                <span class="v2as-letter" :style="'background:' + letterColor(k.letter)" x-text="k.letter"></span>
+            </div>
+            <div class="v2as-kpi-value" x-text="k.valueF"></div>
+            <div class="v2as-kpi-unit" x-text="k.unit"></div>
+            <div class="v2as-kpi-progress" x-show="k.score !== null">
+                <span class="v2as-kpi-progressbar">
+                    <span class="v2as-kpi-progressfill" :style="'width:' + ((k.score || 0) / 25 * 100) + '%; background:' + letterColor(k.letter)"></span>
+                </span>
+                <span class="v2as-kpi-progresstxt" x-text="(k.score || 0) + '/25'"></span>
+            </div>
+            <div class="v2as-kpi-target" x-text="k.target"></div>
+            <div class="v2as-kpi-foot">
+                <span class="v2as-trendtag"
+                      :class="trendMeta(k.trend).good === true ? 'v2as-trendtag--good' : (trendMeta(k.trend).good === false ? 'v2as-trendtag--bad' : '')">
+                    <svg x-show="trendMeta(k.trend).arrow === 'up'" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                    <svg x-show="trendMeta(k.trend).arrow === 'down'" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path d="M7 7l10 10M17 17H8M17 17V8"/></svg>
+                    <svg x-show="trendMeta(k.trend).arrow === 'flat'" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path d="M4 12h16"/></svg>
+                    <span x-text="trendMeta(k.trend).label"></span>
+                </span>
+                <span class="flex-1"></span>
+                <svg viewBox="0 0 92 26" class="v2as-spark"><path :d="sparkPath(k.history)"></path></svg>
+            </div>
+        </div>
+    </template>
+</div>
+
+<!-- Weekly heatmap + activity -->
+<div class="v2as-analytics">
+    <div class="crb_card v2as-card">
+        <div class="v2as-card-head">
+            <span class="v2as-card-title">Weekly heatmap</span>
+            <span class="flex-1"></span>
+            <span class="v2as-dim text-xs">grade per axis and per week</span>
+        </div>
+        <div class="v2as-card-body v2as-heat-scroll">
+            <table class="v2as-heat">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <template x-for="w in weeks" :key="w.val">
+                            <th x-text="w.label"></th>
+                        </template>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="row in heatmap" :key="row.key">
+                        <tr :class="row.key === 'global' ? 'v2as-heat-globalrow' : ''">
+                            <td class="v2as-heat-label" x-text="row.label"></td>
+                            <template x-for="(c, i) in row.cells" :key="i">
+                                <td>
+                                    <span class="v2as-heat-cell"
+                                          :style="'background: color-mix(in srgb, ' + letterColor(c.letter) + (c.letter === 'NA' ? ' 14%' : ' 26%') + ', transparent); color:' + (c.letter === 'NA' ? 'var(--crb-grey-color)' : letterColor(c.letter))"
+                                          :title="row.label + ' - ' + c.week + ': ' + c.valueF"
+                                          x-text="c.letter"></span>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="crb_card v2as-card">
+        <div class="v2as-card-head">
+            <span class="v2as-card-title">Activity &amp; quality</span>
+            <span class="flex-1"></span>
+            <span class="v2as-legend-inline">
+                <span class="v2as-legend-dot" style="background: var(--crb-blue-color)"></span> executions
+                <span class="v2as-legend-dot" style="background: #f5803e; border-radius: 50%"></span> unstable rate
+            </span>
+        </div>
+        <div class="v2as-card-body" x-html="volumeChartSvg"></div>
+    </div>
+</div>

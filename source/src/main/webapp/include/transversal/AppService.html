@@ -6,6 +6,7 @@
      x-cloak
      @appservice-modal-open.window="open = true"
      @appservice-modal-close.window="open = false"
+     @curl-panel-close.window="curlOpen = false"
      class="crb_modal"
      id="editSoapLibraryModal">
 
@@ -260,10 +261,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Service Path -->
+                            <!-- Service Path (with cURL import attached — REST only, toggled by refreshDisplayOnTypeChange) -->
                             <div class="mb-4">
                                 <label for="servicepath" name="servicePathField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">ServicePath</label>
-                                <input type="text" class="w-full h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" name="servicePath" id="servicePath">
+                                <div class="flex">
+                                    <input type="text" class="flex-1 min-w-0 h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" name="servicePath" id="servicePath">
+                                    <button type="button" id="curlImportBtn" @click="curlOpen = !curlOpen" title="Paste a cURL command to fill method, URL, headers and body"
+                                            class="flex items-center gap-1.5 px-3 h-10 -ml-px rounded-r-md border border-slate-300 dark:border-slate-600 text-xs font-semibold shrink-0 transition"
+                                            :class="curlOpen ? 'bg-sky-400 border-sky-400 text-white' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-400'">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                                        cURL
+                                    </button>
+                                </div>
+                                <!-- cURL import panel -->
+                                <div x-show="curlOpen" x-cloak id="curlImportPanel" class="mt-2 p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 space-y-2">
+                                    <textarea id="curlImportInput" rows="4" placeholder="curl -X POST 'https://api.example.com/v1/items' -H 'Content-Type: application/json' -d '{&quot;name&quot;:&quot;value&quot;}'"
+                                              class="w-full px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-xs font-mono"></textarea>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] text-slate-500 dark:text-slate-400">Fills method, URL, headers and body</span>
+                                        <button type="button" @click="if (importServiceFromCurl(document.getElementById('curlImportInput').value)) { curlOpen = false; document.getElementById('curlImportInput').value = ''; }"
+                                                class="px-3 py-1.5 rounded-md bg-sky-400 text-white text-xs font-semibold hover:bg-sky-500 transition">
+                                            Fill from cURL
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="mb-4">
                                 <label for="operation" name="operationField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Operation</label>
@@ -330,7 +351,7 @@
                                 <label for="screenshotfilenameLabel" name="screenshotfilenameField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">FTP File</label>
                                 <label for="Filename" id="dropzone" class="upload-drop-zone">
                                     <h3 id="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
-                                    <label for="Filename" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition cursor-pointer browseFile">Browse Files </label>
+                                    <label for="Filename" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-sky-400 text-white text-sm hover:bg-sky-500 transition cursor-pointer browseFile">Browse Files </label>
                                 </label>
                                 <input type="file" name="Filename" id="Filename" class="hidden"/>
                             </div>
@@ -1194,13 +1215,16 @@
 
                     } else {
                         if (page === "TestCase") {
-                            var Tags = getTags();
-                            for (var i = 0; i < Tags.length; i++) {
-                                if (Tags[i].regex == null) {
-                                    Tags[i].array.push(temp);
+                            // getTags is only defined by TestCaseScript.js (V1); guard so V2 callers don't crash here.
+                            if (typeof getTags === 'function') {
+                                var Tags = getTags();
+                                for (var i = 0; i < Tags.length; i++) {
+                                    if (Tags[i].regex == null) {
+                                        Tags[i].array.push(temp);
+                                    }
                                 }
+                                $("." + temp).parent().find("input").trigger("input", ['first']);
                             }
-                            $("." + temp).parent().find("input").trigger("input", ['first']);
                         } else {
                             var oTable = $("#soapLibrarysTable").dataTable();
                             oTable.fnDraw(false);
@@ -1543,6 +1567,10 @@
         $("label[name='operationField']").html("Operation");
         $("#editSoapLibraryModal #tabAuthor").hide();
 
+        // cURL import only makes sense for REST — hidden by default, shown again in the REST branch
+        $("#editSoapLibraryModal #curlImportBtn").hide();
+        window.dispatchEvent(new CustomEvent('curl-panel-close'));
+
         if (newValueType === "SOAP") {
             // If SOAP service, no need to feed the method.
             $('.upload-drop-zone').hide();
@@ -1709,6 +1737,7 @@
             $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
 
         } else { // REST
+            $("#editSoapLibraryModal #curlImportBtn").show();
             $("#editSoapLibraryModal #srvRequestExtra1Div").hide();
             $("#editSoapLibraryModal #srvRequestDiv").show();
             $("#editSoapLibraryModal #tabAuthor").show();
@@ -2437,6 +2466,110 @@
         appendHeaderRow(newHeader);
     }
 
+    /**
+     * Parse a cURL command line into { method, url, headers[], body, user }.
+     * Handles single/double quotes, escaped characters, backslash line continuations,
+     * and the usual flags (-X/--request, -H/--header, -d/--data*, -F/--form, -u/--user, --url).
+     */
+    function parseCurlCommand(cmd) {
+        if (!cmd) return null;
+        cmd = cmd.trim().replace(/\\\r?\n/g, ' ');
+        if (!/^curl\b/i.test(cmd)) return null;
+
+        var tokens = [];
+        var re = /"((?:\\.|[^"\\])*)"|'((?:\\.|[^'\\])*)'|(\S+)/g;
+        var m;
+        while ((m = re.exec(cmd)) !== null) {
+            if (m[1] !== undefined) tokens.push(m[1].replace(/\\(["\\])/g, '$1'));
+            else if (m[2] !== undefined) tokens.push(m[2]);
+            else tokens.push(m[3]);
+        }
+        tokens.shift(); // drop leading 'curl'
+
+        var out = { method: '', url: '', headers: [], body: '', user: '' };
+        for (var i = 0; i < tokens.length; i++) {
+            var t = tokens[i];
+            switch (t) {
+                case '-X': case '--request':
+                    out.method = (tokens[++i] || '').toUpperCase(); break;
+                case '-H': case '--header': {
+                    var h = tokens[++i] || '';
+                    var sep = h.indexOf(':');
+                    if (sep > 0) out.headers.push({ key: h.slice(0, sep).trim(), value: h.slice(sep + 1).trim() });
+                    break;
+                }
+                case '-d': case '--data': case '--data-raw': case '--data-binary': case '--data-ascii':
+                    out.body = tokens[++i] || ''; break;
+                case '--data-urlencode': case '-F': case '--form': {
+                    var d = tokens[++i] || '';
+                    out.body = out.body ? out.body + '&' + d : d; break;
+                }
+                case '-u': case '--user':
+                    out.user = tokens[++i] || ''; break;
+                case '--url':
+                    out.url = tokens[++i] || ''; break;
+                // no-arg flags we can safely ignore
+                case '--compressed': case '-s': case '--silent': case '-k': case '--insecure':
+                case '-L': case '--location': case '-i': case '--include': case '-v': case '--verbose':
+                case '-G': case '--get':
+                    break;
+                // flags with an argument we ignore
+                case '-o': case '--output': case '--connect-timeout': case '-m': case '--max-time':
+                case '-A': case '--user-agent': case '-e': case '--referer': case '-b': case '--cookie':
+                    i++; break;
+                default:
+                    if (!out.url && t.charAt(0) !== '-') out.url = t;
+            }
+        }
+        if (!out.method) out.method = out.body ? 'POST' : 'GET';
+        if (!out.url && out.headers.length === 0 && !out.body) return null;
+        return out;
+    }
+
+    /**
+     * Fill the service modal fields from a pasted cURL command.
+     * Returns true when something was imported (the caller then closes the panel).
+     */
+    function importServiceFromCurl(cmd) {
+        var parsed = parseCurlCommand(cmd);
+        if (!parsed) {
+            showMessageMainPage('warning', 'Could not parse this cURL command. It must start with "curl".');
+            return false;
+        }
+
+        // A cURL command describes an API call
+        window.dispatchEvent(new CustomEvent('srv-type-preselect', { detail: 'REST' }));
+        $('#editSoapLibraryModal #type').val('REST');
+        window.dispatchEvent(new CustomEvent('method-preselect', { detail: parsed.method }));
+        $('#editSoapLibraryModal #method').val(parsed.method);
+
+        if (parsed.url) {
+            $('#editSoapLibraryModal #servicePath').val(parsed.url);
+        }
+
+        // -u user:password becomes a Basic Authorization header
+        if (parsed.user) {
+            parsed.headers.push({ key: 'Authorization', value: 'Basic ' + btoa(parsed.user) });
+        }
+        parsed.headers.forEach(function (h) {
+            appendHeaderRow({ isActive: true, sort: 10, key: h.key, value: h.value, description: '', toDelete: false });
+        });
+
+        if (parsed.body) {
+            window.dispatchEvent(new CustomEvent('bodytype-preselect', { detail: 'raw' }));
+            $('#editSoapLibraryModal #bodyType').val('raw');
+            var body = parsed.body;
+            try { body = JSON.stringify(JSON.parse(parsed.body), null, 2); } catch (e) { /* body is not JSON, keep as-is */ }
+            try { ace.edit($('#editSoapLibraryModal #srvRequest')[0]).setValue(body, -1); } catch (e) { /* editor not initialized yet */ }
+        }
+
+        if (typeof refreshDisplayOnTypeChange === 'function') refreshDisplayOnTypeChange();
+
+        var summary = parsed.method + ' imported' + (parsed.headers.length ? ', ' + parsed.headers.length + ' header(s)' : '') + (parsed.body ? ', body filled' : '') + '.';
+        showMessageMainPage('success', 'cURL parsed: ' + summary);
+        return true;
+    }
+
     function feedAppServiceModalDataCallProp(callPropList) {
 //    console.info("feed")
         $('#callPropTableBody tr').remove();
@@ -2678,6 +2811,7 @@
         return {
             open: false,
             isFullscreen: false,
+            curlOpen: false,
             showEditTab: 'definition',
             showSimTab: 'params',
             simTabs: [

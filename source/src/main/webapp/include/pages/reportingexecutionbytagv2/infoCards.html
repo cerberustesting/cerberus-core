@@ -1,0 +1,405 @@
+<!-- Campaign Report V2 - Hero row: status donut / tag information / live activity + bugs + manual -->
+<div class="v2rt-hero-grid">
+
+    <!-- ================= Report by status (live donut) ================= -->
+    <div class="crb_card v2rt-card v2rt-hero-status">
+        <div class="v2rt-card-head">
+            <span class="v2rt-card-title">Report by status</span>
+            <span class="v2rt-count" x-text="statusCounts._total + ' executions'"></span>
+            <span class="flex-1"></span>
+            <span class="v2rt-live-dot" :class="'v2rt-live-dot--' + liveMode"
+                  :title="liveMode === 'ws' ? 'Live over websocket' : (liveMode === 'polling' ? 'Auto refresh every 20s' : 'Campaign is not running')"></span>
+        </div>
+        <div class="v2rt-card-body">
+
+            <!-- KPI tiles -->
+            <div class="v2rt-tiles">
+                <div class="v2rt-tile v2rt-tile--total">
+                    <span class="v2rt-tile-value" x-text="statusKpis.total"></span>
+                    <span class="v2rt-tile-label">Total</span>
+                </div>
+                <div class="v2rt-tile v2rt-tile--ok" role="button" tabindex="0" @click="onlyStatus('OK')" title="Show only OK executions (click again to reset)">
+                    <span class="v2rt-tile-value" x-text="statusKpis.ok"></span>
+                    <span class="v2rt-tile-label">OK <span class="v2rt-tile-pct" x-text="statusKpis.okPct + '%'"></span></span>
+                </div>
+                <div class="v2rt-tile v2rt-tile--ko" role="button" tabindex="0" @click="onlyNotOk()" title="Show only failed executions - KO, FA, NA, CA (click again to reset)">
+                    <span class="v2rt-tile-value" x-text="statusKpis.notOk"></span>
+                    <span class="v2rt-tile-label">Not OK <span class="v2rt-tile-pct" x-text="statusKpis.notOkPct + '%'"></span></span>
+                </div>
+                <div class="v2rt-tile v2rt-tile--pending" x-show="statusKpis.pending > 0">
+                    <span class="v2rt-tile-value" x-text="statusKpis.pending"></span>
+                    <span class="v2rt-tile-label">Pending <span class="v2rt-tile-pct" x-text="statusKpis.pendingPct + '%'"></span></span>
+                </div>
+                <div class="v2rt-tile v2rt-tile--flaky" role="button" tabindex="0" x-show="tagObj && tagObj.nbFlaky > 0"
+                     :class="onlyFlaky ? 'v2rt-tile--active' : ''"
+                     @click="onlyFlaky = !onlyFlaky"
+                     title="Executions that needed retries to pass - click to show only those">
+                    <span class="v2rt-tile-value" x-text="(tagObj && tagObj.nbFlaky) || 0"></span>
+                    <span class="v2rt-tile-label">Flaky</span>
+                </div>
+                <div class="v2rt-tile" :class="tagObj && tagObj.ciResult === 'KO' ? 'v2rt-tile--ko' : (tagObj && tagObj.ciResult === 'OK' ? 'v2rt-tile--ok' : '')"
+                     x-show="tagObj && tagObj.ciResult" :title="'Penalty score ' + ((tagObj && tagObj.ciScore) || 0) + ' / threshold ' + ((tagObj && tagObj.ciScoreThreshold) || 100)">
+                    <span class="v2rt-tile-value" x-text="(tagObj && tagObj.ciResult) || '-'"></span>
+                    <span class="v2rt-tile-label">CI result <span class="v2rt-tile-pct" x-text="((tagObj && tagObj.ciScore) || 0) + '/' + ((tagObj && tagObj.ciScoreThreshold) || 100)"></span></span>
+                </div>
+            </div>
+
+            <div class="v2rt-donut-wrap">
+                <div class="v2rt-donut-box">
+                    <svg viewBox="0 0 200 200" class="v2rt-donut">
+                        <circle cx="100" cy="100" r="80" class="v2rt-donut-track"></circle>
+                        <!-- One static circle per status: <template x-for> cannot render inside an
+                             <svg>, and keeping the nodes alive lets CSS animate live transitions -->
+                        <g class="v2rt-donut-segs">
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.OK > 0"
+                                    :class="activeStatuses.OK ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.OK"
+                                    :stroke-dasharray="donutArc('OK').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('OK').offset"
+                                    @click="toggleStatus('OK')"><title x-text="statusLabels.OK + ': ' + statusCounts.OK"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.KO > 0"
+                                    :class="activeStatuses.KO ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.KO"
+                                    :stroke-dasharray="donutArc('KO').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('KO').offset"
+                                    @click="toggleStatus('KO')"><title x-text="statusLabels.KO + ': ' + statusCounts.KO"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.FA > 0"
+                                    :class="activeStatuses.FA ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.FA"
+                                    :stroke-dasharray="donutArc('FA').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('FA').offset"
+                                    @click="toggleStatus('FA')"><title x-text="statusLabels.FA + ': ' + statusCounts.FA"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.NA > 0"
+                                    :class="activeStatuses.NA ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.NA"
+                                    :stroke-dasharray="donutArc('NA').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('NA').offset"
+                                    @click="toggleStatus('NA')"><title x-text="statusLabels.NA + ': ' + statusCounts.NA"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.NE > 0"
+                                    :class="activeStatuses.NE ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.NE"
+                                    :stroke-dasharray="donutArc('NE').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('NE').offset"
+                                    @click="toggleStatus('NE')"><title x-text="statusLabels.NE + ': ' + statusCounts.NE"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.WE > 0"
+                                    :class="activeStatuses.WE ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.WE"
+                                    :stroke-dasharray="donutArc('WE').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('WE').offset"
+                                    @click="toggleStatus('WE')"><title x-text="statusLabels.WE + ': ' + statusCounts.WE"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.PE > 0"
+                                    :class="activeStatuses.PE ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.PE"
+                                    :stroke-dasharray="donutArc('PE').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('PE').offset"
+                                    @click="toggleStatus('PE')"><title x-text="statusLabels.PE + ': ' + statusCounts.PE"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.QU > 0"
+                                    :class="activeStatuses.QU ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.QU"
+                                    :stroke-dasharray="donutArc('QU').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('QU').offset"
+                                    @click="toggleStatus('QU')"><title x-text="statusLabels.QU + ': ' + statusCounts.QU"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.QE > 0"
+                                    :class="activeStatuses.QE ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.QE"
+                                    :stroke-dasharray="donutArc('QE').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('QE').offset"
+                                    @click="toggleStatus('QE')"><title x-text="statusLabels.QE + ': ' + statusCounts.QE"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.PA > 0"
+                                    :class="activeStatuses.PA ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.PA"
+                                    :stroke-dasharray="donutArc('PA').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('PA').offset"
+                                    @click="toggleStatus('PA')"><title x-text="statusLabels.PA + ': ' + statusCounts.PA"></title></circle>
+                            <circle cx="100" cy="100" r="80" class="v2rt-donut-seg"
+                                    x-show="statusCounts.CA > 0"
+                                    :class="activeStatuses.CA ? '' : 'v2rt-donut-seg--off'"
+                                    :stroke="statusColors.CA"
+                                    :stroke-dasharray="donutArc('CA').dash + ' 502.655'"
+                                    :stroke-dashoffset="donutArc('CA').offset"
+                                    @click="toggleStatus('CA')"><title x-text="statusLabels.CA + ': ' + statusCounts.CA"></title></circle>
+                        </g>
+                    </svg>
+                    <div class="v2rt-donut-center">
+                        <div class="v2rt-donut-pct" :style="'color:' + (okPct >= 100 ? statusColors.OK : 'var(--crb-dark-color)')">
+                            <span x-text="okPct"></span><span class="v2rt-donut-pct-unit">%</span>
+                        </div>
+                        <div class="v2rt-donut-sub">OK rate</div>
+                    </div>
+                </div>
+                <div class="v2rt-donut-legend">
+                    <template x-for="seg in donut" :key="'l' + seg.status">
+                        <div class="v2rt-legend-row" role="button" tabindex="0"
+                             :class="activeStatuses[seg.status] ? '' : 'v2rt-legend-row--off'"
+                             @click="toggleStatus(seg.status)"
+                             @dblclick.prevent="onlyStatus(seg.status)"
+                             :title="statusLabels[seg.status] + ' - click to toggle, double-click to isolate'">
+                            <span class="v2rt-legend-dot" :style="'background:' + seg.color"></span>
+                            <span class="v2rt-legend-code" x-text="seg.status"></span>
+                            <span class="v2rt-legend-label" x-text="statusLabels[seg.status]"></span>
+                            <span class="v2rt-legend-count" x-text="seg.count"></span>
+                            <span class="v2rt-legend-pct" x-text="seg.pct + '%'"></span>
+                        </div>
+                    </template>
+                    <template x-if="donut.length === 0">
+                        <div class="v2rt-empty py-4">No execution on this tag</div>
+                    </template>
+                </div>
+            </div>
+            <div class="v2rt-donut-foot" x-show="isRunning" x-cloak>
+                <span class="v2rt-chip v2rt-chip--info">
+                    <span class="v2rt-pulse-dot"></span>
+                    <span x-text="advancementPct + '% done'"></span>
+                </span>
+                <span class="v2rt-dim text-xs" x-text="pendingCount + ' execution(s) still pending'"></span>
+            </div>
+            <!-- Live view can drift from the official campaign result when executions are
+                 submitted again: keep the frozen verdict visible (legacy behaviour) -->
+            <div class="v2rt-donut-foot v2rt-official" x-show="liveDiffersFromOfficial" x-cloak>
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 001 1h12a1 1 0 001-1V8"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
+                <span>
+                    Live view - the official campaign result is kept:
+                    <b x-text="officialSummary"></b>
+                    <span class="v2rt-dim" x-text="'(' + officialCounts.okPct + '% OK on ' + officialCounts._total + ' executions)'"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Tag information ================= -->
+    <div class="crb_card v2rt-card v2rt-hero-info">
+        <div class="v2rt-card-head">
+            <span class="v2rt-card-title">Tag information</span>
+            <span class="flex-1"></span>
+            <template x-if="tagObj && tagObj.campaign">
+                <button type="button" class="v2rt-chip v2rt-chip--campaign" @click="editCampaign()"
+                        title="Open the campaign definition">
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <span x-text="tagObj.campaign"></span>
+                </button>
+            </template>
+            <template x-if="tagObj && tagObj.falseNegative">
+                <span class="v2rt-chip v2rt-chip--warn" title="This campaign result was declared as a false negative">FALSE NEGATIVE</span>
+            </template>
+        </div>
+        <div class="v2rt-card-body">
+
+            <div class="v2rt-info-cols">
+                <div class="v2rt-info-col">
+                    <div class="v2rt-kv"><span class="v2rt-k">Launched by</span><span class="v2rt-v" x-text="(tagObj && tagObj.UsrCreated) || '-'"></span></div>
+                    <div class="v2rt-kv"><span class="v2rt-k">Submitted</span><span class="v2rt-v" x-text="fmtDate(tagObj && tagObj.DateCreated)"></span></div>
+                    <div class="v2rt-kv"><span class="v2rt-k">Started</span><span class="v2rt-v" x-text="fmtDate(tagObj && tagObj.DateStartExe)"></span></div>
+                    <div class="v2rt-kv"><span class="v2rt-k">Ended</span><span class="v2rt-v" x-text="fmtDate(tagObj && tagObj.DateEndQueue)"></span></div>
+                    <div class="v2rt-kv"><span class="v2rt-k">Duration</span><span class="v2rt-v" x-text="tagDurationMin"></span></div>
+                </div>
+                <div class="v2rt-info-col">
+                    <div class="v2rt-kv">
+                        <span class="v2rt-k">Executions</span>
+                        <span class="v2rt-v">
+                            <span x-text="(tagObj && tagObj.nbExe) || 0"></span>
+                            <span class="v2rt-dim" x-show="tagObj && tagObj.nbExe !== tagObj.nbExeUsefull" x-text="'(' + ((tagObj && tagObj.nbExeUsefull) || 0) + ' useful)'"></span>
+                        </span>
+                    </div>
+                    <div class="v2rt-kv">
+                        <span class="v2rt-k">Flaky</span>
+                        <span class="v2rt-v">
+                            <span :class="tagObj && tagObj.nbFlaky > 0 ? 'v2rt-strong-warn' : ''" x-text="(tagObj && tagObj.nbFlaky) || 0"></span>
+                        </span>
+                    </div>
+                    <div class="v2rt-kv"><span class="v2rt-k">Muted</span><span class="v2rt-v" x-text="(tagObj && tagObj.nbMuted) || 0"></span></div>
+                    <div class="v2rt-kv">
+                        <span class="v2rt-k">CI score</span>
+                        <span class="v2rt-v v2rt-ciscore">
+                            <span class="v2rt-cigauge" :title="'Penalty points: ' + ((tagObj && tagObj.ciScore) || 0) + ' / threshold ' + ((tagObj && tagObj.ciScoreThreshold) || 100)">
+                                <span class="v2rt-cigauge-fill"
+                                      :class="tagObj && tagObj.ciResult === 'KO' ? 'v2rt-cigauge-fill--ko' : ''"
+                                      :style="'width:' + ciScorePct + '%'"></span>
+                            </span>
+                            <span x-text="((tagObj && tagObj.ciScore) || 0) + ' / ' + ((tagObj && tagObj.ciScoreThreshold) || 100)"></span>
+                        </span>
+                    </div>
+                    <template x-if="tagObj && tagObj.xRayTestExecution">
+                        <div class="v2rt-kv">
+                            <span class="v2rt-k">JIRA Xray</span>
+                            <template x-if="tagObj.xRayTestExecution !== 'PENDING' && tagObj.xRayTestExecution !== 'ERROR'">
+                                <a class="v2rt-v v2rt-link" target="_blank"
+                                   :href="(tagObj.xRayURL || '') + '/browse/' + tagObj.xRayTestExecution"
+                                   x-text="tagObj.xRayTestExecution"></a>
+                            </template>
+                            <template x-if="tagObj.xRayTestExecution === 'PENDING' || tagObj.xRayTestExecution === 'ERROR'">
+                                <span class="v2rt-v" x-text="tagObj.xRayTestExecution"></span>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Campaign scope -->
+            <div class="v2rt-scope">
+                <template x-for="grp in [
+                        { label: 'Environments', list: tagScope.environments },
+                        { label: 'Countries', list: tagScope.countries },
+                        { label: 'Robots', list: tagScope.robots },
+                        { label: 'Applications', list: tagScope.applications }
+                    ]" :key="grp.label">
+                    <div class="v2rt-scope-row" x-show="grp.list.length > 0">
+                        <span class="v2rt-k v2rt-scope-label" x-text="grp.label"></span>
+                        <span class="v2rt-scope-chips">
+                            <template x-for="item in grp.list" :key="item">
+                                <span class="v2rt-chip v2rt-chip--scope" x-text="item"></span>
+                            </template>
+                        </span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Description / Comment -->
+            <div class="v2rt-info-notes">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="v2rt-k">Description</span>
+                        <button type="button" class="v2rt-btn v2rt-btn--xs" x-show="!editDesc" @click="editDesc = true; draftDesc = (tagObj && tagObj.description) || ''">Edit</button>
+                        <div class="flex gap-1" x-show="editDesc" x-cloak>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="editDesc = false">Cancel</button>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs v2rt-btn--primary" @click="saveDesc()">Save</button>
+                        </div>
+                    </div>
+                    <div x-show="!editDesc" class="v2rt-richtext" x-html="(tagObj && tagObj.description) || '<span class=\'v2rt-empty\'>No description</span>'"></div>
+                    <textarea x-show="editDesc" x-cloak x-model="draftDesc" rows="3" class="v2rt-input w-full"></textarea>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="v2rt-k">Comment</span>
+                        <button type="button" class="v2rt-btn v2rt-btn--xs" x-show="!editComment" @click="editComment = true; draftComment = (tagObj && tagObj.comment) || ''">Edit</button>
+                        <div class="flex gap-1" x-show="editComment" x-cloak>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="editComment = false">Cancel</button>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs v2rt-btn--primary" @click="saveComment()">Save</button>
+                        </div>
+                    </div>
+                    <div x-show="!editComment && (tagObj && tagObj.comment)" class="v2rt-richtext" x-text="(tagObj && tagObj.comment) || ''"></div>
+                    <div x-show="!editComment && !(tagObj && tagObj.comment)" class="v2rt-empty">No comment</div>
+                    <textarea x-show="editComment" x-cloak x-model="draftComment" rows="3" class="v2rt-input w-full"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Side column: live activity / bugs / manual ================= -->
+    <div class="v2rt-hero-side">
+
+        <!-- Live activity -->
+        <div class="crb_card v2rt-card" x-show="isRunning || liveFeed.length > 0" x-cloak>
+            <div class="v2rt-card-head">
+                <span class="v2rt-card-title">Live activity</span>
+                <span class="flex-1"></span>
+                <span class="v2rt-livebadge" :class="'v2rt-livebadge--' + liveMode" x-cloak>
+                    <span class="v2rt-pulse-dot" x-show="liveMode !== 'idle'"></span>
+                    <span x-text="liveMode === 'ws' ? 'LIVE' : (liveMode === 'polling' ? 'AUTO' : 'ENDED')"></span>
+                </span>
+            </div>
+            <div class="v2rt-feed">
+                <template x-for="(f, i) in liveFeed" :key="f.ts + '-' + i">
+                    <div class="v2rt-feed-item" :class="f.executionId ? 'v2rt-feed-item--link' : ''"
+                         @click="f.executionId && window.open('./TestCaseExecutionV2.jsp?executionId=' + f.executionId, '_blank')">
+                        <span class="v2rt-feed-time" x-text="fmtTime(f.ts)"></span>
+                        <span class="v2rt-feed-dot" :style="'background:' + (statusColors[f.status] || 'var(--crb-grey-color)')"></span>
+                        <span class="v2rt-feed-body">
+                            <template x-if="f.kind === 'exe'">
+                                <span>
+                                    <span class="v2rt-feed-tc" x-text="f.testCase"></span>
+                                    <span class="v2rt-feed-status" :style="'color:' + (statusColors[f.status] || 'inherit')" x-text="f.status"></span>
+                                    <span class="v2rt-dim" x-show="f.status === 'PE' && f.progress !== undefined" x-text="(f.progress || 0) + '%'"></span>
+                                    <span class="v2rt-feed-ctx" x-text="f.env + (f.country ? ' - ' + f.country : '')"></span>
+                                </span>
+                            </template>
+                            <template x-if="f.kind !== 'exe'">
+                                <span x-text="f.text"></span>
+                            </template>
+                        </span>
+                    </div>
+                </template>
+                <template x-if="liveFeed.length === 0">
+                    <div class="v2rt-empty py-4 text-center">Waiting for live events...</div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Bugs -->
+        <div class="crb_card v2rt-card">
+            <div class="v2rt-card-head v2rt-card-head--toggle" role="button" tabindex="0"
+                 @click="sections.bugs = !sections.bugs" @keydown.enter.prevent="sections.bugs = !sections.bugs">
+                <span class="v2rt-card-title">Bugs</span>
+                <span class="v2rt-count" x-text="bugs.length"></span>
+                <span class="flex-1"></span>
+                <svg class="w-3.5 h-3.5 transition-transform" :class="sections.bugs ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </div>
+            <div x-show="sections.bugs" class="v2rt-card-body">
+                <template x-if="bugs.length === 0">
+                    <div class="v2rt-empty py-4 text-center">No bug linked to this campaign</div>
+                </template>
+                <template x-if="bugs.length > 0">
+                    <div>
+                        <div class="v2rt-minitable-head">
+                            <span style="width: 90px">Bug</span>
+                            <span class="flex-1">Test case</span>
+                            <span style="width: 110px; text-align: right">Status</span>
+                        </div>
+                        <div class="v2rt-minitable-body">
+                            <template x-for="(b, i) in bugs" :key="i">
+                                <div class="v2rt-minitable-row">
+                                    <span style="width: 90px" class="v2rt-mono truncate" :title="b.bug" x-text="b.bug || '-'"></span>
+                                    <span class="flex-1 truncate" :title="b.test + ' / ' + b.testCase" x-text="b.testCase"></span>
+                                    <span style="width: 110px; text-align: right">
+                                        <span class="v2rt-chip" :class="(b.status || '').indexOf('CLEAN') >= 0 ? 'v2rt-chip--warn' : ((b.status || '').indexOf('RUNNING') >= 0 ? 'v2rt-chip--info' : 'v2rt-chip--danger')" x-text="b.status || 'OPEN'"></span>
+                                    </span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Manual executors -->
+        <div class="crb_card v2rt-card">
+            <div class="v2rt-card-head v2rt-card-head--toggle" role="button" tabindex="0"
+                 @click="sections.manual = !sections.manual" @keydown.enter.prevent="sections.manual = !sections.manual">
+                <span class="v2rt-card-title">Manual executors</span>
+                <span class="v2rt-count" x-text="manualList.length"></span>
+                <span class="flex-1"></span>
+                <svg class="w-3.5 h-3.5 transition-transform" :class="sections.manual ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </div>
+            <div x-show="sections.manual" class="v2rt-card-body">
+                <template x-if="manualList.length === 0">
+                    <div class="v2rt-empty py-4 text-center">No manual execution in this campaign</div>
+                </template>
+                <template x-if="manualList.length > 0">
+                    <div class="space-y-2">
+                        <template x-for="(m, i) in manualList" :key="i">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="v2rt-v truncate" x-text="m.executor || 'Unassigned'"></span>
+                                    <span class="flex-1"></span>
+                                    <span class="v2rt-k" x-text="(m.total - m.stillToDo) + ' / ' + m.total"></span>
+                                </div>
+                                <div class="v2rt-progressbar v2rt-progressbar--thin">
+                                    <div class="v2rt-progressbar-seg" :style="'width:' + ((m.total - m.stillToDo) / (m.total || 1) * 100) + '%; background: var(--crb-green-color)'"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>

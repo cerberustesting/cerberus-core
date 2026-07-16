@@ -1,0 +1,150 @@
+<!-- Campaign Report V2 - PDF export modal (transversal modal charter) -->
+<div x-show="pdfOpen" x-cloak class="crb_modal" @keydown.escape.window="pdfOpen = false">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="pdfOpen = false"></div>
+
+    <!-- Modal Card -->
+    <div class="crb_card w-full max-w-3xl rounded-2xl relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+         style="max-height: calc(100vh - 4rem); margin: 2rem 1rem;"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         @click.stop>
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between px-6 py-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="!text-lg !font-semibold !mb-0 !mt-0">PDF report</h2>
+                    <p class="text-xs text-slate-500 !mb-0">Pick a template for <span class="font-semibold" x-text="tag"></span></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button @click="pdfOpen = false"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SCROLLABLE BODY -->
+        <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-1">
+
+                <!-- Executive summary -->
+                <button type="button" class="v2rt-tpl" :class="pdfTemplate === 'executive' ? 'v2rt-tpl--on' : ''"
+                        @click="pdfTemplate = 'executive'">
+                    <span class="v2rt-tpl-preview">
+                        <span class="v2rt-tplp-band"></span>
+                        <span class="v2rt-tplp-row">
+                            <span class="v2rt-tplp-verdict"></span>
+                            <span class="v2rt-tplp-tile"></span>
+                            <span class="v2rt-tplp-tile v2rt-tplp-tile--g"></span>
+                            <span class="v2rt-tplp-tile v2rt-tplp-tile--r"></span>
+                        </span>
+                        <span class="v2rt-tplp-row">
+                            <span class="v2rt-tplp-donut"></span>
+                            <span class="v2rt-tplp-lines"><i></i><i></i><i></i><i></i></span>
+                        </span>
+                        <span class="v2rt-tplp-table"><i></i><i></i><i></i></span>
+                    </span>
+                    <span class="v2rt-tpl-name">Executive summary</span>
+                    <span class="v2rt-tpl-desc">One page, straight to the point: CI verdict, status donut, KPIs and per environment / country results. Perfect to share with stakeholders.</span>
+                    <span class="v2rt-tpl-badge v2rt-tpl-badge--new">NEW</span>
+                </button>
+
+                <!-- Detailed report -->
+                <button type="button" class="v2rt-tpl" :class="pdfTemplate === 'detailed' ? 'v2rt-tpl--on' : ''"
+                        @click="pdfTemplate = 'detailed'">
+                    <span class="v2rt-tpl-preview">
+                        <span class="v2rt-tplp-band"></span>
+                        <span class="v2rt-tplp-row">
+                            <span class="v2rt-tplp-donut v2rt-tplp-donut--sm"></span>
+                            <span class="v2rt-tplp-lines"><i></i><i></i><i></i></span>
+                        </span>
+                        <span class="v2rt-tplp-table"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                        <span class="v2rt-tplp-table"><i></i><i></i><i></i><i></i></span>
+                    </span>
+                    <span class="v2rt-tpl-name">Detailed report</span>
+                    <span class="v2rt-tpl-desc">Everything in the summary plus every breakdown, the full execution grid, flaky flags and the bug list. The complete audit trail.</span>
+                    <span class="v2rt-tpl-badge v2rt-tpl-badge--new">NEW</span>
+                </button>
+
+                <!-- Trend -->
+                <button type="button" class="v2rt-tpl" :class="[pdfTemplate === 'trend' ? 'v2rt-tpl--on' : '', (tagObj && tagObj.campaign) ? '' : 'v2rt-tpl--disabled']"
+                        @click="(tagObj && tagObj.campaign) && (pdfTemplate = 'trend')"
+                        :title="(tagObj && tagObj.campaign) ? '' : 'Needs a campaign: trends compare the runs of the same campaign'">
+                    <span class="v2rt-tpl-preview">
+                        <span class="v2rt-tplp-band"></span>
+                        <span class="v2rt-tplp-chart">
+                            <i style="height: 40%"></i><i style="height: 55%"></i><i style="height: 35%" class="v2rt-tplp-bar--r"></i><i style="height: 70%"></i><i style="height: 85%"></i>
+                        </span>
+                        <span class="v2rt-tplp-table"><i></i><i></i><i></i><i></i></span>
+                    </span>
+                    <span class="v2rt-tpl-name">Trend</span>
+                    <span class="v2rt-tpl-desc">Compares this run with the previous executions of the same campaign: OK rate history, run by run results and deltas.</span>
+                    <span class="v2rt-tpl-badge v2rt-tpl-badge--new">NEW</span>
+                    <span class="v2rt-tpl-badge" x-show="!(tagObj && tagObj.campaign)" style="top: 26px">NEEDS A CAMPAIGN</span>
+                </button>
+
+                <!-- Legacy PDF -->
+                <button type="button" class="v2rt-tpl" :class="[pdfTemplate === 'legacy' ? 'v2rt-tpl--on' : '', pdfHref ? '' : 'v2rt-tpl--disabled']"
+                        @click="pdfHref && (pdfTemplate = 'legacy')"
+                        :title="pdfHref ? '' : 'Available once the campaign is finished'">
+                    <span class="v2rt-tpl-preview v2rt-tpl-preview--legacy">
+                        <span class="v2rt-tplp-doctitle"></span>
+                        <span class="v2rt-tplp-lines"><i></i><i></i><i></i><i></i><i></i></span>
+                        <span class="v2rt-tplp-table"><i></i><i></i><i></i><i></i></span>
+                    </span>
+                    <span class="v2rt-tpl-name">Classic PDF</span>
+                    <span class="v2rt-tpl-desc">The original server-side PDF report, unchanged. Generated by the Cerberus engine once the campaign is finished.</span>
+                    <span class="v2rt-tpl-badge" x-show="!pdfHref">CAMPAIGN NOT FINISHED</span>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-4 !mb-0">
+                <span x-show="pdfTemplate !== 'legacy'">The report opens in a new tab: review it, then print or save it as PDF (popup must be allowed).</span>
+                <span x-show="pdfTemplate === 'legacy'">The classic PDF downloads directly from the Cerberus API.</span>
+            </p>
+
+            <!-- Send by email (campaign end-of-run notification) -->
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <i data-lucide="mail" class="w-4 h-4 text-blue-600"></i>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Send the report by email</label>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 !mb-2">
+                    Sends the Cerberus end-of-campaign notification email (same content as the campaign event hooks) to the recipients below.
+                </p>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <input type="text" x-model="emailRecipient" placeholder="email@company.com; other@company.com"
+                           class="flex-1 min-w-48 h-9 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                           @keydown.enter.prevent="sendReportEmail()">
+                    <button type="button" @click="sendReportEmail()" :disabled="emailSending"
+                            class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition disabled:opacity-50">
+                        <span x-show="!emailSending">Send</span>
+                        <span x-show="emailSending" x-cloak>Sending...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="flex items-center gap-2 px-6 py-3 shrink-0">
+            <span class="flex-1"></span>
+            <button type="button" @click="pdfOpen = false"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
+            <button type="button" @click="generatePdf()"
+                    class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">
+                Generate report
+            </button>
+        </div>
+    </div>
+</div>

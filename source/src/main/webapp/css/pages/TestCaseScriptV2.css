@@ -498,6 +498,15 @@
 .v2-step-item--deleted {
     text-decoration: line-through;
 }
+/* Drag handle — always in flow (no layout shift), revealed on hover */
+.v2-step-grip {
+    display: flex; align-items: center; justify-content: center;
+    width: 10px; margin-left: -4px; color: var(--crb-grey-color);
+    opacity: 0; transition: opacity 0.15s; cursor: grab;
+}
+.v2-step-item:hover .v2-step-grip { opacity: 0.6; }
+.v2-step-grip:hover { opacity: 1 !important; }
+.v2-step-item.v2-dnd-dragging { cursor: grabbing; }
 /* Apply opacity to content only, NOT to the menu button or dropdown */
 .v2-step-item--deleted > .v2-step-badge,
 .v2-step-item--deleted > .flex-1 {
@@ -1656,12 +1665,12 @@
 
 /* Inherited card */
 .v2-prop-inh-card {
-    padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s; position: relative; cursor: default;
+    padding: 8px 12px; border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s; position: relative; cursor: pointer;
 }
 .v2-prop-inh-card:hover { background: #f8fafc; }
 .v2-prop-inh-card:last-child { border-bottom: none; }
-.v2-prop-inh-card--overridden { opacity: 0.45; }
+.v2-prop-inh-card--overridden { opacity: 0.55; }
 .v2-prop-inh-card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
 .v2-prop-inh-name { font-size: 12px; font-weight: 700; color: #1e293b; }
 .v2-prop-inh-card-val {
@@ -1687,14 +1696,15 @@
     padding: 1px 6px; border-radius: 3px;
 }
 
-/* Source link */
+/* Source link — always visible: answers "where does this come from" without any tooltip */
 .v2-prop-inh-card-meta { margin-top: 5px; }
 .v2-prop-inh-source-link {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10px; color: var(--crb-blue-color); text-decoration: none;
+    display: flex; align-items: center; gap: 4px; margin-top: 6px;
+    font-size: 10px; color: #94a3b8; text-decoration: none; min-width: 0;
     transition: color 0.15s;
 }
-.v2-prop-inh-source-link:hover { color: #1d4ed8; text-decoration: underline; }
+.v2-prop-inh-source-link:hover { color: var(--crb-blue-color); text-decoration: underline; }
+.v2-prop-inh-source-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Overridden badge */
 .v2-prop-inh-badge-overridden {
@@ -1702,15 +1712,21 @@
     background: #fef3c7; padding: 1px 6px; border-radius: 3px;
 }
 
-/* Action buttons */
-.v2-prop-inh-actions {
-    display: flex; gap: 3px; opacity: 0; transition: opacity 0.15s;
-    margin-top: 6px;
+/* Right-side action stack of an inherited card (Override / Overridden badge on top, View below) */
+.v2-prop-inh-btns {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+    margin-left: auto; flex-shrink: 0;
 }
-.v2-prop-inh-actions--visible { opacity: 1; }
-.v2-prop-inh-card:hover .v2-prop-inh-actions { opacity: 1; }
-.v2-prop-action-btn--blue { color: var(--crb-blue-color); }
-.v2-prop-action-btn--blue:hover { background: rgba(59, 130, 246, 0.1); color: var(--crb-blue-color); }
+
+/* Override action — labeled pill (icon-only buttons needed tooltips, which this scroll container clips) */
+.v2-prop-inh-override-btn {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px;
+    border: 1px solid #e2e8f0; background: #fff; color: #64748b;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.v2-prop-inh-override-btn:hover { border-color: var(--crb-blue-color); color: var(--crb-blue-color); background: #eff6ff; }
+.v2-prop-inh-override-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* Empty state */
 .v2-prop-inh-empty {
@@ -1718,24 +1734,57 @@
     display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
 
-/* Card list */
-.v2-prop-list { display: flex; flex-direction: column; gap: 6px; overflow: visible; padding: 12px 16px; }
+/* Card list — scrolls horizontally as a whole (header + rows move together) instead of reflowing,
+   so the Countries/Actions columns never wrap onto their own line when the panel is narrow. */
+.v2-prop-list { display: flex; flex-direction: column; gap: 6px; overflow-x: auto; padding: 12px 16px; }
+/* Add button in the panel header (visible without scrolling, unlike the footer one) */
+.v2-prop-header-add-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 6px; border: none; cursor: pointer;
+    background: var(--crb-blue-color); color: #fff; transition: filter 0.15s;
+}
+.v2-prop-header-add-btn:hover { filter: brightness(1.1); }
+.v2-prop-header-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Column labels — same grid template as .v2-prop-card-header, padded to line up with card content.
+   Fixed min-width (not "flex-wrap at N px": that reflowed Actions onto its own line below Countries
+   whenever the LOCAL panel — narrower than the viewport once the Inherited sidebar takes its 320px —
+   ran out of room). Under that width the whole list scrolls horizontally instead, header and rows
+   together, so columns never wrap and Actions always stays on the same line, at the end, after Countries. */
+.v2-prop-list-header {
+    display: grid;
+    grid-template-columns: 22px 170px 135px minmax(220px, 1fr) 165px 130px;
+    gap: 8px; padding: 0 13px; margin-bottom: -2px; min-width: 920px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--crb-grey-color);
+}
 .v2-prop-card {
     border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
-    transition: all 0.2s; overflow: visible;
+    transition: all 0.2s; overflow: visible; min-width: 920px;
 }
 .v2-prop-card:hover { border-color: #cbd5e1; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
 .v2-prop-card--deleted { opacity: 0.4; border-color: var(--crb-red-color); background: #fef2f2; }
 .v2-prop-card--inherited { border-style: dashed; border-color: #c4b5fd; background: #faf5ff; }
 
-/* Card header */
+/* Card header — fixed grid columns so every card lines up (name | type | value | countries | actions).
+   Column widths must be fixed (not minmax-to-content): each card is its own grid, so content-based
+   sizing would resolve differently per card and break the cross-card alignment. Countries and Actions
+   get explicit widths (not "auto") for the same reason — "auto" would size each card to its own
+   content (e.g. however many country chips that one property has) and misalign every row again. */
 .v2-prop-card-header {
-    display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 40px;
+    display: grid;
+    grid-template-columns: 22px 170px 135px minmax(220px, 1fr) 165px 130px;
+    align-items: center; gap: 8px; padding: 8px 12px; min-height: 40px;
+}
+.v2-prop-card-desc {
+    padding: 0 12px 8px 42px; margin-top: -2px;
+    font-size: 11px; color: #64748b;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .v2-prop-name-area { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .v2-prop-name {
     font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; max-width: 200px;
+    overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
 .v2-prop-name:hover { color: var(--crb-blue-color); }
 .v2-prop-badge-inh {
@@ -1743,12 +1792,15 @@
     background: #ede9fe; color: #7c3aed; letter-spacing: 0.5px;
 }
 .v2-prop-type-badge {
-    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
+    display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
     border: 1px solid currentColor; white-space: nowrap; opacity: 0.8;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+    justify-self: start;
 }
 .v2-prop-nature-badge {
-    font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
     background: #ecfdf5; color: #059669; letter-spacing: 0.3px;
+    white-space: nowrap; justify-self: start;
 }
 .v2-prop-status-badge {
     display: inline-flex; align-items: center; justify-content: center;
@@ -1757,8 +1809,8 @@
 .v2-prop-status-badge--unused { background: #fef3c7; color: #d97706; }
 .v2-prop-status-badge--used { background: #d1fae5; color: #059669; }
 .v2-prop-value-preview {
-    font-size: 11px; font-family: monospace; color: #94a3b8; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; max-width: 250px;
+    font-size: 12px; font-family: 'JetBrains Mono', 'Courier New', monospace; color: #475569; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; min-width: 0; max-width: 100%;
 }
 /* Country inline chips */
 .v2-prop-country-inline { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
@@ -2085,3 +2137,9 @@
 :root.dark .v2-prop-inh-detail-tag { background: #1e2533; color: #94a3b8; }
 :root.dark .v2-prop-copy-syntax:hover { background: #1e3a5f; color: #60a5fa; }
 :root.dark .v2-prop-copy-syntax--copied { background: #064e3b; color: #6ee7b7; }
+
+
+/* Room for the floating right-panel triggers above the sticky header; the gap
+   collapses when the panel is open (the triggers are hidden then) */
+#v2Header { top: 32px; margin-top: 32px; transition: top 0.2s ease, margin-top 0.2s ease; }
+.rp-open #v2Header { top: 0; margin-top: 0; }

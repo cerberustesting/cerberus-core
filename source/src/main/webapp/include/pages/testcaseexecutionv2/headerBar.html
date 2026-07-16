@@ -1,6 +1,6 @@
 <!-- TestCaseExecution V2 - Header Bar -->
 
-<div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader"
+<div class="sticky top-0 z-40 mb-4 rounded-2xl" id="v2ExeHeader" :style="$store.rightPanel.open ? { top: '0px', marginTop: '0px' } : {}"
      style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); overflow: hidden">
 
     <!-- Progress Bar - integrated flush with header border-radius -->
@@ -310,6 +310,15 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Legacy view -->
+            <button @click="window.location.href = 'TestCaseExecution.jsp' + window.location.search + (window.location.search ? '&' : '?') + 'v1=1'"
+                    class="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700
+                           text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors text-[11px] font-bold shrink-0"
+                    data-tip="Open the legacy view (V1)" data-tip-pos="bottom">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                V1
+            </button>
 
             <!-- More actions -->
             <div x-data="{ moreOpen: false }" class="relative shrink-0" @click.outside="moreOpen = false">

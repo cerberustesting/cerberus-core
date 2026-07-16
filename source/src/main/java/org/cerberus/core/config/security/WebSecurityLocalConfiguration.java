@@ -74,7 +74,9 @@
 					new AntPathRequestMatcher("/img/**"),
 					new AntPathRequestMatcher("/fonts/**"),
 					new AntPathRequestMatcher("/favicon.ico"),
-					new AntPathRequestMatcher("/webjars/**")
+					new AntPathRequestMatcher("/webjars/**"),
+					new AntPathRequestMatcher("/dependencies/**"),
+					new AntPathRequestMatcher("/images/**")
 			);
 		}
 

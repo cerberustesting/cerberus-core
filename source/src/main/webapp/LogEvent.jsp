@@ -29,30 +29,25 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/LogEvent.js?v=${appVersion}"></script>
         <title id="pageTitle">Log Viewer</title>
-        <script>
-            <%
-                if (request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
-                    String search = request.getParameter("Test") + "'|'" + request.getParameter("TestCase");
-            %>$("#logViewerTable_filter input[type='search']").delay(1000).val("<%=search%>").trigger("change");<%
-                }
-            %>
-        </script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+        <jsp:include page="include/global/rightPanel.html"/>
+        <main class="crb_main_wrp" :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - ' + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/logevent/editLogEvent.html"%> 
 
             <h1 class="page-title-line" id="title">Log Viewer</h1>
+            <p class="page-subtitle-line">Audit trail of every action performed on this instance.</p>
 
-            <div class="crb_card">
-                <div id="logViewer">
-                    <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+            <div id="logViewer">
+                <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
+                <div class="marginBottom20"></div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

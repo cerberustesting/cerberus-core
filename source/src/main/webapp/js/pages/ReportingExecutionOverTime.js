@@ -17,1048 +17,265 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* global handleErrorAjaxAfterTimeout */
-// ChartJS Config Graphs
-var configRequests = {};
-var configSize = {};
-var configTime = {};
-var configParty = {};
-var configTcTime = {};
-var configTcBar = {};
-var configAvailability1 = {};
-var configAvailability2 = {};
-// Counters of different countries, env and robotdecli (used to shorten the labels)
-var nbCountries = 0;
-var nbEnv = 0;
-var nbRobot = 0;
-var nbcontrolStatus = 0;
 
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
-
-        initPage();
-        bindToggleCollapse();
-        var urlTest = GetURLParameter('Test');
-        var urlTestCase = GetURLParameter('TestCase');
-        //open Run navbar Menu
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
-
-        $('#frompicker').datetimepicker({
-            showTodayButton: true,
-            sideBySide: true,
-            keepOpen: false,
-            useCurrent: false //Important! See issue #1075
-        });
-        $('#topicker').datetimepicker({
-            showTodayButton: true,
-            sideBySide: true,
-            keepOpen: false,
-            useCurrent: false //Important! See issue #1075
-        });
-
-//        $("#frompicker").on("dp.change", function (e) {
-//            $('#topicker').data("DateTimePicker").minDate(e.date);
-//        });
-//        $("#topicker").on("dp.change", function (e) {
-//            $('#frompicker').data("DateTimePicker").maxDate(e.date);
-//        });
-
-
-        var tests = GetURLParameters("tests");
-        var testcases = GetURLParameters("testcases");
-        var from = GetURLParameter("from");
-        var to = GetURLParameter("to");
-        var parties = GetURLParameters("parties");
-        var types = GetURLParameters("types");
-        var units = GetURLParameters("units");
-        var environments = GetURLParameters("environments");
-        var countries = GetURLParameters("countries");
-        var robotDeclis = GetURLParameters("robotDeclis");
-        var controlStatuss = GetURLParameters("controlStatuss");
-
-        let fromD;
-        let toD;
-        if (from === null) {
-            fromD = new Date();
-            fromD.setMonth(fromD.getMonth() - 1);
-        } else {
-            fromD = new Date(from);
-        }
-        if (to === null) {
-            toD = new Date();
-        } else {
-            toD = new Date(to);
-        }
-        $('#frompicker').data("DateTimePicker").date(moment(fromD));
-        $('#topicker').data("DateTimePicker").date(moment(toD));
-
-
-
-        $("#testSelect").empty();
-        $("#testCaseSelect").empty();
-
-        $("#testSelect").bind("change", function (event) {
-            feedPerfTestCase($(this).val(), "#testCaseSelect");
-        });
-
-        $("#testCaseSelect").select2({width: "100%"});
-
-
-        var jqxhr = $.getJSON("ReadTest", "");
-        $.when(jqxhr).then(function (data) {
-            var testList = $("#testSelect");
-
-            for (var index = 0; index < data.contentTable.length; index++) {
-                testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
-            }
-            $("#testSelect").prop("value", tests[0]);
-
-            $("#testSelect").select2({width: "100%"});
-
-            feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis, controlStatuss);
-
-        }).fail(handleErrorAjaxAfterTimeout);
-
-
-        var select = $("#parties");
-        select.multiselect(new multiSelectConfPerf("parties"));
-
-        var select = $("#types");
-        select.multiselect(new multiSelectConfPerf("types"));
-
-        var select = $("#units");
-        select.multiselect(new multiSelectConfPerf("units"));
-
-
-    });
-});
-
-function multiSelectConfPerf(name) {
-    this.maxHeight = 450;
-    this.checkboxName = name;
-    this.buttonWidth = "100%";
-    this.enableFiltering = true;
-    this.enableCaseInsensitiveFiltering = true;
-    this.includeSelectAllOption = true;
-    this.includeSelectAllIfMoreThan = 4;
-    this.numberDisplayed = 10;
-}
-
-
-/***
- * Feed the TestCase select with all the testcase from test defined.
- * @param {String} test - test in order to filter the testcase values.
- * @param {String} selectElement - id of select to refresh.
- * @param {String} defaultTestCases - id of testcase to select.
- * @param {String} types 
- * @param {String} units 
- * @param {String} countries 
- * @param {String} environments 
- * @param {String} robotDeclis 
- * @param {String} parties 
- * @returns {null}
+/**
+ * Execution Trends - Alpine dashboard over ReadExecutionStat.
+ *
+ * Pick one or several test cases and follow them over time: duration of every
+ * execution (dots colored by status, click opens the execution), executions per
+ * day stacked by status, and the plain list of the executions of the period.
  */
-function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis, controlStatuss) {
-    showLoader($("#otFilterPanel"));
+function executionTrends() {
+    var IN = window.InsightsShared;
+    return {
+        // ── State ──
+        loading: false,
+        loaded: false,
+        error: '',
+        raw: null,
 
-    var testCList = $(selectElement);
-    testCList.empty();
+        // ── Test case picker ──
+        tests: [],             // test folders
+        testcasesOfTest: [],   // test cases of the browsed folder
+        browsedTest: '',
+        selTestcases: [],      // [{test, testCase}]
+        tcDdOpen: false,
+        tcSearch: '',
 
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + test);
-    $.when(jqxhr).then(function (data) {
+        // ── Filters ──
+        periodDays: 30,
+        activeCountries: {},
+        activeEnvs: {},
+        activeRobots: {},
+        activeStatuses: {},
 
-        for (var index = 0; index < data.contentTable.length; index++) {
-            testCList.append($('<option></option>').text(data.contentTable[index].testcase + " - " + data.contentTable[index].description).val(data.contentTable[index].testcase));
-        }
-        $('#testCaseSelect').val(defaultTestCases);
-        $('#testCaseSelect').trigger('change');
-        loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis, controlStatuss);
-    }).fail(handleErrorAjaxAfterTimeout);
-}
+        // ── Data ──
+        durationSeries: [],
+        executions: [],        // flat list: {t, exeId, status, durMs, serie}
+        statusPerDay: [],      // stacked bars items
 
+        IN: IN,
 
-/*
- * Loading functions
- */
-
-function initPage() {
-    var doc = new Doc();
-    //displayHeaderLabel(doc);
-    displayPageLabel(doc);
-    displayFooter(doc);
-    initGraph();
-}
-
-function displayPageLabel(doc) {
-    $("#pageTitle").html(doc.getDocLabel("page_reportovertime", "title"));
-    $("#title").html(doc.getDocOnline("page_reportovertime", "title"));
-    $("#loadbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
-    $("#filters").html(doc.getDocOnline("page_global", "filters"));
-    $("#lblPerfRequests").html(doc.getDocLabel("page_reportovertime", "lblPerfRequests"));
-    $("#lblPerfSize").html(doc.getDocLabel("page_reportovertime", "lblPerfSize"));
-    $("#lblPerfTime").html(doc.getDocLabel("page_reportovertime", "lblPerfTime"));
-    $("#lblTestStat").html(doc.getDocLabel("page_reportovertime", "lblTestStat"));
-    $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
-}
-
-function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, environments, robotDeclis, controlStatuss) {
-    showLoader($("#otFilterPanel"));
-
-    if (parties === null || parties === undefined) {
-        parties = [];
-    }
-    if (types === null || types === undefined) {
-        types = [];
-    }
-    if (units === null || units === undefined) {
-        units = [];
-    }
-    if (countries === null || countries === undefined) {
-        countries = [];
-    }
-    if (environments === null || environments === undefined) {
-        environments = [];
-    }
-    if (robotDeclis === null || robotDeclis === undefined) {
-        robotDeclis = [];
-    }
-    if (controlStatuss === null || controlStatuss === undefined) {
-        controlStatuss = [];
-    }
-
-    let from = new Date($('#frompicker').data("DateTimePicker").date());
-
-    let to = new Date($('#topicker').data("DateTimePicker").date());
-
-    if ($("#parties").val() !== null) {
-        parties = $("#parties").val();
-    }
-
-    if ($("#types").val() !== null) {
-        types = $("#types").val();
-    }
-
-    if ($("#units").val() !== null) {
-        units = $("#units").val();
-    }
-
-    if ($("#countrySelect").val() !== null) {
-        countries = $("#countrySelect").val();
-    }
-    let len = countries.length;
-    var countriesQ = "";
-    for (var i = 0; i < len; i++) {
-        countriesQ += "&countries=" + encodeURI(countries[i]);
-    }
-
-    if ($("#envSelect").val() !== null) {
-        environments = $("#envSelect").val();
-    }
-    len = environments.length;
-    var environmentsQ = "";
-    for (var i = 0; i < len; i++) {
-        environmentsQ += "&environments=" + encodeURI(environments[i]);
-    }
-
-    if ($("#robotSelect").val() !== null) {
-        robotDeclis = $("#robotSelect").val();
-    }
-    len = robotDeclis.length;
-    var robotDeclisQ = "";
-    for (var i = 0; i < len; i++) {
-        robotDeclisQ += "&robotDeclis=" + encodeURI(robotDeclis[i]);
-    }
-
-    if ($("#controlStatusSelect").val() !== null) {
-        controlStatuss = $("#controlStatusSelect").val();
-    }
-    len = controlStatuss.length;
-    var controlStatussQ = "";
-    for (var i = 0; i < len; i++) {
-        controlStatussQ += "&controlStatuss=" + encodeURI(controlStatuss[i]);
-    }
-
-    len = parties.length;
-    var partiQ = "";
-    for (var i = 0; i < len; i++) {
-        partiQ += "&parties=" + encodeURI(parties[i]);
-    }
-
-    len = types.length;
-    var typeQ = "";
-    for (var i = 0; i < len; i++) {
-        typeQ += "&types=" + encodeURI(types[i]);
-    }
-
-    len = units.length;
-    var unitQ = "";
-    for (var i = 0; i < len; i++) {
-        unitQ += "&units=" + encodeURI(units[i]);
-    }
-
-    let test = $("#testSelect").val();
-    let testcase = $("#testCaseSelect").val();
-    var tcString = "";
-    if ($("#testCaseSelect").val() !== null) {
-        for (var i = 0; i < $("#testCaseSelect").val().length; i++) {
-            var tcString = tcString + "&tests=" + encodeURI(test) + "&testcases=" + encodeURI($("#testCaseSelect").val()[i]);
-        }
-    }
-
-    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + countriesQ + environmentsQ + robotDeclisQ + controlStatussQ + partiQ + typeQ + unitQ + tcString;
-    if (saveURLtoHistory) {
-        InsertURLInHistory("./ReportingExecutionOverTime.jsp?" + qS);
-    }
-
-    $.ajax({
-        url: "ReadExecutionStat?" + qS,
-        method: "GET",
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-            var messageType = getAlertType(data.messageType);
-
-            if (data.messageType === "OK") {
-                updateNbDistinct(data.distinct);
-                buildGraphs(data);
-                buildExeGraphs(data);
-                buildExeBarGraphs(data);
-                buildAvailabilityGraphs(data);
-                loadCombos(data);
-            } else {
-                showMessageMainPage(messageType, data.message, false);
-            }
-            hideLoader($("#otFilterPanel"));
-        },
-        error: showUnexpectedError
-    });
-}
-
-function updateNbDistinct(data) {
-
-    nbCountries = 0;
-    for (var i = 0; i < data.countries.length; i++) {
-        if (data.countries[i].isRequested) {
-            nbCountries++;
-        }
-    }
-    nbEnv = 0;
-    for (var i = 0; i < data.environments.length; i++) {
-        if (data.environments[i].isRequested) {
-            nbEnv++;
-        }
-    }
-    nbRobot = 0;
-    for (var i = 0; i < data.robotDeclis.length; i++) {
-        if (data.robotDeclis[i].isRequested) {
-            nbRobot++;
-        }
-    }
-    nbcontrolStatus = 0;
-    for (var i = 0; i < data.controlStatuss.length; i++) {
-        if (data.controlStatuss[i].isRequested) {
-            nbcontrolStatus++;
-        }
-    }
-}
-
-function loadCombos(data) {
-
-    if (data.hasPerfdata) {
-        $("#perfFilters").show();
-    } else {
-        $("#perfFilters").hide();
-    }
-    var select = $("#parties");
-    select.multiselect('destroy');
-    var array = data.distinct.parties;
-    $("#parties option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#parties").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#parties option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("parties"));
-
-
-    var select = $("#types");
-    select.multiselect('destroy');
-    var array = data.distinct.types;
-    $("#types option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#types").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#types option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("types"));
-
-
-    var select = $("#units");
-    select.multiselect('destroy');
-    var array = data.distinct.units;
-    $("#units option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#units").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#units option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("units"));
-
-    var select = $("#countrySelect");
-    select.multiselect('destroy');
-    var array = data.distinct.countries;
-    $("#countrySelect option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#countrySelect").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#countrySelect option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("countrySelect"));
-
-    var select = $("#envSelect");
-    select.multiselect('destroy');
-    var array = data.distinct.environments;
-    $("#envSelect option").remove();
-    for (var i = 0; i < array.length; i++) {
-        $("#envSelect").append($('<option></option>').text(array[i].name).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#envSelect option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("envSelect"));
-
-    var select = $("#robotSelect");
-    select.multiselect('destroy');
-    var array = data.distinct.robotDeclis;
-    $("#robotSelect option").remove();
-    for (var i = 0; i < array.length; i++) {
-        let n = array[i].name;
-        if (isEmpty(n)) {
-            n = "[Empty]";
-        }
-        $("#robotSelect").append($('<option></option>').text(n).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#robotSelect option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("robotSelect"));
-
-    var select = $("#controlStatusSelect");
-    select.multiselect('destroy');
-    var array = data.distinct.controlStatuss;
-    $("#controlStatusSelect option").remove();
-    for (var i = 0; i < array.length; i++) {
-        let n = array[i].name;
-        if (isEmpty(n)) {
-            n = "[Empty]";
-        }
-        $("#controlStatusSelect").append($('<option></option>').text(n).val(array[i].name));
-    }
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].isRequested) {
-            $("#controlStatusSelect option[value='" + array[i].name + "']").attr("selected", "selected");
-        }
-    }
-    select.multiselect(new multiSelectConfPerf("controlStatusSelect"));
-
-}
-
-function getOptions(title, unit) {
-    let option = {
-        responsive: true,
-        maintainAspectRatio: false,
-        hover: {
-            mode: 'nearest',
-            intersect: true
-        },
-        tooltips: {
-            callbacks: {
-                label: function (t, d) {
-                    var xLabel = d.datasets[t.datasetIndex].label;
-                    if (unit === "size") {
-                        return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb";
-                    } else if (unit === "time") {
-                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " ms";
-                    } else {
-                        return xLabel + ': ' + t.yLabel;
+        // ═══════════════════ INIT ═══════════════════
+        init() {
+            try {
+                var saved = JSON.parse(localStorage.getItem('et.filters') || 'null');
+                if (saved && typeof saved === 'object') {
+                    if ([7, 30, 90, 180].indexOf(saved.periodDays) >= 0) this.periodDays = saved.periodDays;
+                    if (Array.isArray(saved.selTestcases)) {
+                        this.selTestcases = saved.selTestcases.filter(function (tc) {
+                            return tc && typeof tc.test === 'string' && typeof tc.testCase === 'string';
+                        });
                     }
                 }
-            },
+            } catch (e) { /* defaults */ }
+            // deep link: ?tests=X&testcases=Y (repeated, paired)
+            try {
+                var usp = new URLSearchParams(window.location.search);
+                var ts = usp.getAll('tests'), tcs = usp.getAll('testcases');
+                if (ts.length && ts.length === tcs.length) {
+                    this.selTestcases = ts.map(function (t, i) { return { test: t, testCase: tcs[i] }; });
+                }
+            } catch (e) { /* ignore */ }
+            this._loadTests();
+            if (this.selTestcases.length) this.load();
         },
-        title: {
-            text: title
+        _loadTests() {
+            var self = this;
+            $.getJSON('ReadTest', function (data) {
+                self.tests = (data.contentTable || []).map(function (t) { return t.test; }).filter(Boolean).sort();
+            });
         },
-        scales: {
-            xAxes: [{
-                    type: 'time',
-                    time: {
-                        tooltipFormat: 'll HH:mm'
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
-                    }
-                }],
-            yAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: title
-                    },
-                    ticks: {
-                        callback: function (value, index, values) {
-                            if (unit === "size") {
-                                return formatNumber(Math.round(value / 1024));
-                            } else if (unit === "time") {
-                                return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ");
-                            } else {
-                                return value;
-                            }
-                        }}
-
-                }]
-        }
-    };
-    return option;
-}
-
-function getOptionsBar(title, unit) {
-    let option = {
-        responsive: true,
-        maintainAspectRatio: false,
-        title: {
-            text: title
+        browseTest(test) {
+            var self = this;
+            this.browsedTest = test;
+            this.testcasesOfTest = [];
+            if (!test) return;
+            $.getJSON('ReadTestCase', 'test=' + encodeURIComponent(test), function (data) {
+                self.testcasesOfTest = (data.contentTable || []).map(function (tc) {
+                    return { test: test, testCase: tc.testcase || tc.testCase, description: tc.description || '' };
+                });
+            });
         },
-        scales: {
-            xAxes: [{
-                    offset: true,
-                    type: 'time',
-                    stacked: true,
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'day',
-                        round: 'day',
-                        displayFormats: {
-                            day: 'MMM D'
-                        }},
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
-                    }
-                }],
-            yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-        }
-    };
-    return option;
-}
+        get filteredTests() {
+            var q = this.tcSearch.trim().toLowerCase();
+            if (!q) return this.tests;
+            return this.tests.filter(function (t) { return t.toLowerCase().indexOf(q) >= 0; });
+        },
+        get filteredTestcases() {
+            var q = this.tcSearch.trim().toLowerCase();
+            if (!q) return this.testcasesOfTest;
+            return this.testcasesOfTest.filter(function (tc) {
+                return tc.testCase.toLowerCase().indexOf(q) >= 0 || tc.description.toLowerCase().indexOf(q) >= 0;
+            });
+        },
+        isSelected(tc) {
+            return this.selTestcases.some(function (s) { return s.test === tc.test && s.testCase === tc.testCase; });
+        },
+        toggleTestcase(tc) {
+            var i = this.selTestcases.findIndex(function (s) { return s.test === tc.test && s.testCase === tc.testCase; });
+            if (i >= 0) this.selTestcases.splice(i, 1);
+            else this.selTestcases.push({ test: tc.test, testCase: tc.testCase });
+        },
+        removeSelected(i) { this.selTestcases.splice(i, 1); },
 
-function formatNumber(num) {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-}
-
-function buildGraphs(data) {
-
-    let curves = data.datasetPerf;
-
-    // Sorting values by nb of requests.
-    sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.party + "-" + a.key.type;
-        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.party + "-" + b.key.type;
-        return b1.localeCompare(a1);
-    });
-
-    var len = sortedCurves.length;
-
-    let reqdatasets = [];
-    let sizedatasets = [];
-    let timedatasets = [];
-    let partydatasets = [];
-
-    for (var i = 0; i < len; i++) {
-
-        let c = sortedCurves[i];
-        let d = [];
-        lend = c.points.length;
-        for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
-            d.push(p);
-        }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type, c.key.testcase.testcase);
-        var dataset = {
-            label: lab,
-            backgroundColor: get_Color_fromindex(i),
-            pointBorderWidth: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-//                console.info(value);
-                return value.falseNegative === true ? 3
-                        : 1;
-            },
-            pointBorderColor: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-//                console.info(value);
-                return value.falseNegative === true ? '#00d27a'
-                        : get_Color_fromindex(i);
-            },
-            pointBackgroundColor: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-                return getExeStatusRowColor(value.controlStatus);
-            },
-            borderColor: get_Color_fromindex(i),
-            pointRadius: 3,
-            pointHoverRadius: 6,
-            hitRadius: 10,
-            fill: false,
-            data: d
-        };
-        if ((c.key.unit === "totalsize") || (c.key.unit === "sizemax")) {
-            sizedatasets.push(dataset);
-        } else if ((c.key.unit === "totaltime") || (c.key.unit === "timemax")) {
-            timedatasets.push(dataset);
-        } else if (c.key.unit === "nbthirdparty") {
-            partydatasets.push(dataset);
-        } else {
-            reqdatasets.push(dataset);
-        }
-    }
-
-    if (reqdatasets.length > 0) {
-        $("#panelPerfRequests").show();
-    } else {
-        $("#panelPerfRequests").hide();
-    }
-    if (sizedatasets.length > 0) {
-        $("#panelPerfSize").show();
-    } else {
-        $("#panelPerfSize").hide();
-    }
-    if (timedatasets.length > 0) {
-        $("#panelPerfTime").show();
-    } else {
-        $("#panelPerfTime").hide();
-    }
-    if (partydatasets.length > 0) {
-        $("#panelPerfParty").show();
-    } else {
-        $("#panelPerfParty").hide();
-    }
-    configRequests.data.datasets = reqdatasets;
-    configSize.data.datasets = sizedatasets;
-    configTime.data.datasets = timedatasets;
-    configParty.data.datasets = partydatasets;
-
-    window.myLineReq.update();
-    window.myLineSize.update();
-    window.myLineTime.update();
-    window.myLineParty.update();
-}
-
-function buildExeGraphs(data) {
-
-    let curves = data.datasetExeTime;
-
-    // Sorting values by nb of requests.
-    sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.testcase.test + "-" + a.key.testcase.testcase + "-" + a.key.unit + "-" + a.key.country + "-" + a.key.environment + "-" + a.key.robotdecli;
-        let b1 = b.key.testcase.test + "-" + b.key.testcase.testcase + "-" + b.key.unit + "-" + b.key.country + "-" + b.key.environment + "-" + a.key.robotdecli;
-        return b1.localeCompare(a1);
-    });
-
-    var len = sortedCurves.length;
-
-    let timedatasets = [];
-
-    for (var i = 0; i < len; i++) {
-
-        let c = sortedCurves[i];
-        let d = [];
-        lend = c.points.length;
-        for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
-            d.push(p);
-        }
-        let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.testcase.testcase);
-        var dataset = {
-            label: lab,
-            backgroundColor: "white",
-            pointBorderWidth: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-//                console.info(value);
-                return value.falseNegative === true ? 3
-                        : 1;
-            },
-            pointBorderColor: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-//                console.info(value);
-                return value.falseNegative === true ? '#00d27a'
-                        : get_Color_fromindex(i);
-            },
-            borderColor: get_Color_fromindex(i),
-            pointBackgroundColor: function (d) {
-                var index = d.dataIndex;
-                var value = d.dataset.data[index];
-                return getExeStatusRowColor(value.controlStatus);
-            },
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            hitRadius: 10,
-            fill: false,
-            data: d
-        };
-        timedatasets.push(dataset);
-    }
-
-    if (timedatasets.length > 0) {
-        $("#panelTestStat").show();
-    } else {
-        $("#panelTestStat").hide();
-    }
-    configTcTime.data.datasets = timedatasets;
-
-    window.myLineTcTime.update();
-}
-
-function buildExeBarGraphs(data) {
-
-    let curves = data.datasetExeStatusNb;
-
-    // Sorting values by nb of requests.
-    sortedCurves = curves.sort(function (a, b) {
-        let a1 = a.key.key;
-        let b1 = b.key.key;
-        return b1.localeCompare(a1);
-    });
-
-
-    var len = sortedCurves.length;
-
-    let timedatasets = [];
-
-    for (var i = 0; i < len; i++) {
-
-        let c = sortedCurves[i];
-        let d = [];
-        lend = c.points.length;
-        for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
-            d.push(p);
-        }
-        let lab = c.key.key;
-        var dataset = {
-            label: lab,
-            categoryPercentage: 1.0,
-            barPercentage: 1.0,
-            backgroundColor: getExeStatusRowColor(c.key.key),
-            borderColor: getExeStatusRowColor(c.key.key),
-            data: c.points
-        };
-        timedatasets.push(dataset);
-    }
-
-    if (timedatasets.length > 0) {
-        $("#panelTestStatBar").show();
-    } else {
-        $("#panelTestStatBar").hide();
-    }
-    configTcBar.data.datasets = timedatasets;
-    configTcBar.data.labels = data.datasetExeStatusNbDates;
-
-//    console.info(configTcBar);
-    window.myLineTcBar.update();
-}
-
-function buildAvailabilityGraphs(data) {
-    let curves = data.datasetExeTime;
-
-    var len = curves.length;
-
-    let nbOK = 0;
-    let nbKO = 0;
-
-    let durOK = 0;
-    let durKO = 0;
-
-    for (var i = 0; i < len; i++) {
-        let newCurve = curves[i];
-//        console.info(newCurve);
-        let lend = newCurve.points.length;
-        for (var j = 0; j < lend; j++) {
-            let dur = 0;
-//            console.info(j + " / " + lend)
-            if (j === (lend - 1)) {
-                dur = 0;
-            } else {
-//                console.info(newCurve.points[j].x)
-//                console.info(newCurve.points[j + 1].x)
-                dur = (new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000;
-//                console.info((new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000)
+        // ═══════════════════ LOAD ═══════════════════
+        load() {
+            var self = this;
+            if (!this.selTestcases.length) {
+                showMessageMainPage('warning', 'Pick at least one test case first.');
+                return;
             }
+            this.loading = true;
+            this.error = '';
+            localStorage.setItem('et.filters', JSON.stringify({ periodDays: this.periodDays, selTestcases: this.selTestcases }));
 
-            if ((newCurve.points[j].exeControlStatus === "OK") || (newCurve.points[j].falseNegative)) {
-                nbOK++;
-                durOK = durOK + dur;
-            } else {
-                nbKO++;
-                durKO = durKO + dur;
-            }
-        }
-    }
+            var to = new Date();
+            var from = new Date(Date.now() - this.periodDays * 86400000);
+            var params = ['from=' + encodeURIComponent(from.toISOString()), 'to=' + encodeURIComponent(to.toISOString())];
+            var urlParams = [];
+            this.selTestcases.forEach(function (tc) {
+                params.push('tests=' + encodeURIComponent(tc.test));
+                params.push('testcases=' + encodeURIComponent(tc.testCase));
+                urlParams.push('tests=' + encodeURIComponent(tc.test));
+                urlParams.push('testcases=' + encodeURIComponent(tc.testCase));
+            });
+            var pushOff = function (map, name) {
+                Object.keys(map).forEach(function (k) { if (map[k]) params.push(name + '=' + encodeURIComponent(k)); });
+            };
+            var offIn = function (map) { return Object.keys(map).some(function (k) { return !map[k]; }); };
+            if (offIn(this.activeCountries)) pushOff(this.activeCountries, 'countries');
+            if (offIn(this.activeEnvs)) pushOff(this.activeEnvs, 'environments');
+            if (offIn(this.activeRobots)) pushOff(this.activeRobots, 'robotDeclis');
+            if (offIn(this.activeStatuses)) pushOff(this.activeStatuses, 'controlStatuss');
 
+            InsertURLInHistory('./ReportingExecutionOverTime.jsp?' + urlParams.join('&'));
 
-    configAvailability1.data.datasets = [];
-    configAvailability1.data.datasets.push({
-        data: [nbOK, nbKO],
-        backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
-    });
-    configAvailability1.data.labels = ["nb OK", "nb Others"];
-
-    configAvailability2.data.datasets = [];
-    configAvailability2.data.datasets.push({
-        data: [durOK, durKO],
-        backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
-    });
-    configAvailability2.data.labels = ["OK duration (s)", "Others duration (s)"];
-    configAvailability2.data.labels.display = false;
-
-    document.getElementById('ChartAvailabilty1Counter').innerHTML = Math.round(nbOK / (nbOK + nbKO) * 100) + " %";
-    document.getElementById('ChartAvailabilty1CounterDet').innerHTML = "<b style='color:lightgrey'>" + nbKO + "</b> / " + (nbOK + nbKO);
-
-    document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
-    document.getElementById('ChartAvailabilty2CounterDet').innerHTML = "<b style='color:lightgrey'>" + getHumanReadableDuration(durKO) + "</b> / " + getHumanReadableDuration((durOK + durKO));
-
-
-//    console.info(configTagBar);
-    window.myAvailability1.update();
-    window.myAvailability2.update();
-}
-
-function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
-    let lab = tcDesc;
-    if (lab.length > 20) {
-        lab = testcaseid;
-    }
-    if ((party !== undefined) && (party !== "total")) {
-        lab += " - " + party;
-    }
-    if ((type !== undefined) && (type !== "total")) {
-        if (lab !== "") {
-            lab += " - ";
-        }
-        lab += type;
-    }
-
-    if (nbCountries > 1) {
-        lab += " - " + country;
-    }
-    if (nbEnv > 1) {
-        lab += " - " + env;
-    }
-    if (nbRobot > 1) {
-        lab += " - " + robot;
-    }
-    if ((unit !== undefined) && (unit === "totalsize") || (unit === "sizemax") || (unit === "totaltime") || (unit === "timemax")) {
-        if (lab !== "") {
-            lab += " [";
-        }
-        lab += unit + "]";
-    }
-
-    return lab;
-}
-
-function initGraph() {
-
-    var reqoption = getOptions("Requests", "request");
-    var sizeoption = getOptions("Size in kb", "size");
-    var timeoption = getOptions("Time in ms", "time");
-    var partyoption = getOptions("nb Third Party", "nbthirdparty");
-    var tctimeoption = getOptions("Test Case Duration", "time");
-    var tcbaroption = getOptionsBar("Test Case Duration", "nb");
-
-    let reqdatasets = [];
-    let sizedatasets = [];
-    let timedatasets = [];
-    let partydatasets = [];
-    let tctimedatasets = [];
-    let tcbardatasets = [];
-    let availability1datasets = [];
-    let availability2datasets = [];
-
-    configRequests = {
-        type: 'line',
-        data: {
-            datasets: reqdatasets
+            $.getJSON('ReadExecutionStat?' + params.join('&'), function (data) {
+                self.loading = false;
+                if (!data || data.messageType !== 'OK') {
+                    self.error = (data && data.message) || 'Could not load the execution statistics.';
+                    self.loaded = false;
+                    return;
+                }
+                self._apply(data);
+            }).fail(function (xhr) {
+                self.loading = false;
+                self.error = 'Could not load the execution statistics (' + xhr.status + ').';
+                self.loaded = false;
+            });
         },
-        options: reqoption
-    };
-    configSize = {
-        type: 'line',
-        data: {
-            datasets: sizedatasets
+        toggleIn(map, k) { map[k] = !map[k]; this.load(); },
+
+        // ═══════════════════ MAPPING ═══════════════════
+        _apply(data) {
+            var self = this;
+            this.raw = data;
+
+            // distinct entries are {hasData, name, isRequested}
+            var syncMap = function (map, list) {
+                (list || []).forEach(function (e) {
+                    var k = typeof e === 'string' ? e : e.name;
+                    if (!k) return;
+                    if (map[k] === undefined) map[k] = true;
+                });
+            };
+            var dist = data.distinct || {};
+            syncMap(this.activeCountries, dist.countries);
+            syncMap(this.activeEnvs, dist.environments);
+            syncMap(this.activeRobots, dist.robotDeclis);
+            syncMap(this.activeStatuses, dist.controlStatuss);
+
+            // Duration curves: one serie per testcase x combination
+            this.durationSeries = [];
+            this.executions = [];
+            (data.datasetExeTime || []).forEach(function (curve, ci) {
+                var key = curve.key || {};
+                var tcId = (key.testcase && (key.testcase.testcase || key.testcase.testCase)) || '';
+                var serieName = [tcId, key.country, key.environment, key.robotdecli].filter(Boolean).join(' / ');
+                // key.key is the server-side composite (test|testcase|country|env|robot|), unique per curve
+                var serie = { id: key.key || ('serie-' + ci), name: serieName || ('serie ' + (ci + 1)), color: IN.seriesPalette[ci % IN.seriesPalette.length], points: [] };
+                (curve.points || []).forEach(function (p) {
+                    var t = new Date(p.x).getTime();
+                    if (isNaN(t)) return;
+                    var st = p.exeControlStatus || '';
+                    serie.points.push({
+                        t: t, v: p.y || 0,
+                        title: serieName + ' - ' + IN.fmtDateTime(t) + ' - ' + st + ' - ' + IN.fmtDuration(p.y || 0),
+                        dotColor: IN.statusColor(st),
+                        attr: 'data-exe="' + p.exe + '"'
+                    });
+                    self.executions.push({
+                        t: t, exeId: p.exe, status: st, fn: !!p.falseNegative,
+                        durMs: p.y || 0, serie: serieName,
+                        test: key.testcase ? key.testcase.test : '', testCase: tcId,
+                        country: key.country || '', environment: key.environment || ''
+                    });
+                });
+                if (serie.points.length) self.durationSeries.push(serie);
+            });
+            this.executions.sort(function (a, b) { return b.t - a.t; });
+
+            // Executions per day, stacked by status (dates come unsorted from the server)
+            var dates = (data.datasetExeStatusNbDates || []).slice();
+            var perDay = {};
+            dates.forEach(function (d) { perDay[d] = []; });
+            (data.datasetExeStatusNb || []).forEach(function (curve) {
+                var st = curve.key && curve.key.key ? curve.key.key : curve.key;
+                (curve.points || []).forEach(function (v, i) {
+                    if (!v || dates[i] === undefined) return;
+                    perDay[dates[i]].push({ status: String(st), value: v });
+                });
+            });
+            this.statusPerDay = Object.keys(perDay).sort().map(function (d) {
+                return { label: IN.fmtShortDate(d), title: d, segments: perDay[d] };
+            });
+
+            this.loaded = true;
         },
-        options: sizeoption
-    };
-    configTime = {
-        type: 'line',
-        data: {
-            datasets: timedatasets
+
+        // ═══════════════════ COMPUTED ═══════════════════
+        get kpis() {
+            var n = this.executions.length;
+            var ok = 0, flakyish = 0, durSum = 0, durMax = 0;
+            this.executions.forEach(function (e) {
+                if (e.status === 'OK') ok++;
+                if (e.fn) flakyish++;
+                durSum += e.durMs;
+                if (e.durMs > durMax) durMax = e.durMs;
+            });
+            return {
+                total: n,
+                okRate: n ? Math.round(ok * 100 / n) : null,
+                avgDur: n ? Math.round(durSum / n) : null,
+                maxDur: n ? durMax : null,
+                fn: flakyish
+            };
         },
-        options: timeoption
-    };
-    configParty = {
-        type: 'line',
-        data: {
-            datasets: partydatasets
+        get durationSvg() {
+            return this.IN.timeLines(this.durationSeries, { W: 900, H: 240, unit: 'duration' });
         },
-        options: partyoption
-    };
-    configTcTime = {
-        type: 'line',
-        data: {
-            datasets: tctimedatasets
+        get perDaySvg() {
+            return this.IN.stackedBars(this.statusPerDay, { W: 900, H: 200 });
         },
-        options: tctimeoption
-    };
-    configTcBar = {
-        type: 'bar',
-        data: {
-            datasets: tcbardatasets
+        get legendStatuses() {
+            var present = {};
+            this.executions.forEach(function (e) { present[e.status] = true; });
+            return this.IN.statusOrder.filter(function (s) { return present[s]; });
         },
-        options: tcbaroption
-    };
 
-    configAvailability1 = {
-        type: 'pie',
-        data: {
-            datasets: availability1datasets
+        // ═══════════════════ ACTIONS ═══════════════════
+        openExe(id) {
+            if (id) window.open('./TestCaseExecutionV2.jsp?executionId=' + encodeURIComponent(id), '_blank');
         },
-        options: {
-            circumference: Math.PI,
-            rotation: Math.PI,
-            responsive: true,
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: "Execution Availability (Nb)"
-            }
-        }
-    };
-    configAvailability2 = {
-        type: 'pie',
-        data: {
-            datasets: availability2datasets
+        chartClick(ev) {
+            var el = ev.target.closest('[data-exe]');
+            if (el) this.openExe(el.getAttribute('data-exe'));
         },
-        options: {
-            circumference: Math.PI,
-            rotation: Math.PI,
-            responsive: true,
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: "Execution Availability (Time)"
-            }
-        }
+
+        // ═══════════════════ HELPERS ═══════════════════
+        fmtDuration(ms) { return this.IN.fmtDuration(ms); },
+        fmtDateTime(v) { return this.IN.fmtDateTime(v); },
+        statusColor(s) { return this.IN.statusColor(s); }
     };
-
-    var ctx = document.getElementById('canvasRequests').getContext('2d');
-    window.myLineReq = new Chart(ctx, configRequests);
-
-    var ctx = document.getElementById('canvasSize').getContext('2d');
-    window.myLineSize = new Chart(ctx, configSize);
-
-    var ctx = document.getElementById('canvasTime').getContext('2d');
-    window.myLineTime = new Chart(ctx, configTime);
-
-    var ctx = document.getElementById('canvasParty').getContext('2d');
-    window.myLineParty = new Chart(ctx, configParty);
-
-    var ctx = document.getElementById('canvasTestStat').getContext('2d');
-    window.myLineTcTime = new Chart(ctx, configTcTime);
-
-    var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
-    window.myLineTcBar = new Chart(ctx, configTcBar);
-
-    var ctx = document.getElementById('canvasAvailability1').getContext('2d');
-    window.myAvailability1 = new Chart(ctx, configAvailability1);
-
-    var ctx = document.getElementById('canvasAvailability2').getContext('2d');
-    window.myAvailability2 = new Chart(ctx, configAvailability2);
-
-
-    document.getElementById('canvasRequests').onclick = function (evt) {
-        var activePoints = window.myLineReq.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineReq.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasSize').onclick = function (evt) {
-        var activePoints = window.myLineSize.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineSize.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasTime').onclick = function (evt) {
-        var activePoints = window.myLineTime.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasParty').onclick = function (evt) {
-        var activePoints = window.myLineParty.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineParty.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
-    document.getElementById('canvasTestStat').onclick = function (evt) {
-        var activePoints = window.myLineTcTime.getElementAtEvent(event);
-        // make sure click was on an actual point
-        if (activePoints.length > 0) {
-            let exe = window.myLineTcTime.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
-    };
-
 }

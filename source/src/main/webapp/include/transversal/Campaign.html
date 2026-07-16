@@ -577,8 +577,8 @@
             <!-- FOOTER -->
             <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
                 <button type="button" @click="open = false" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" name="buttonClose">Close</button>
-                <button type="button" id="editTestcampaignButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonEdit">Save</button>
-                <button type="button" id="addTestcampaignButton" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonAdd">Create</button>
+                <button type="button" id="editTestcampaignButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonEdit">Save</button>
+                <button type="button" id="addTestcampaignButton" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonAdd">Create</button>
             </div>
         </div>
 
@@ -923,7 +923,7 @@ function campaign_editEntryClick(param) {
     //Store the campaign name
     $("#campaignKey").val(param);
 
-    $('#editTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition').removeAttr('hidden');
     $('#addTestcampaignButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     // handle the click for specific action buttons
@@ -1178,7 +1178,7 @@ function campaign_editEntryModalCloseHandler() {
 function campaign_addEntryClick() {
     clearResponseMessageMainPage();
 
-    $('#addTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#addTestcampaignButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition').removeAttr('hidden');
     $('#editTestcampaignButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
     // handle the click for specific action buttons

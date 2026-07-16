@@ -1,0 +1,115 @@
+<!-- Campaign Report V2 - Breakdown: one card, one tab per dimension, always as a table -->
+<div class="crb_card v2rt-card" x-show="statusCounts._total > 0">
+    <div class="v2rt-card-head" style="flex-wrap: wrap; row-gap: 8px">
+        <div class="v2rt-card-head v2rt-card-head--toggle v2rt-card-head--bare" role="button" tabindex="0"
+             @click="sections.breakdown = !sections.breakdown" @keydown.enter.prevent="sections.breakdown = !sections.breakdown">
+            <span class="v2rt-card-title">Breakdown</span>
+            <svg class="w-3.5 h-3.5 transition-transform" :class="sections.breakdown ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <span class="flex-1"></span>
+        <div class="v2rt-tabs" x-show="sections.breakdown">
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'environment' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'environment'">Environment</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'country' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'country'">Country</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'robot' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'robot'">Robot</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'application' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'application'">Application</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'combination' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'combination'"
+                    title="One line per environment / country / robot / application combination">Combination</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'folder' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'folder'">Test folder</button>
+            <button type="button" class="v2rt-tab" :class="breakdownTab === 'label' ? 'v2rt-tab--active' : ''" @click="breakdownTab = 'label'"
+                    x-show="labelStickers.length > 0 || labelRequirements.length > 0">Labels</button>
+        </div>
+    </div>
+
+    <div x-show="sections.breakdown">
+
+        <!-- Dimension tables -->
+        <template x-if="breakdownTab !== 'label'">
+            <div class="v2rt-table-scroll">
+                <table class="v2rt-table">
+                    <thead>
+                        <tr>
+                            <th x-text="breakdownDimLabel(breakdownTab)"></th>
+                            <template x-for="s in breakdownStatusCols" :key="s">
+                                <th class="v2rt-th-num" :title="statusLabels[s]">
+                                    <span class="v2rt-th-statusdot" :style="'background:' + statusColor(s)"></span>
+                                    <span x-text="s"></span>
+                                </th>
+                            </template>
+                            <th class="v2rt-th-num">Total</th>
+                            <th class="v2rt-th-num" style="min-width: 130px">% OK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(e, i) in breakdownRows" :key="breakdownTab + '-' + i">
+                            <tr>
+                                <td class="v2rt-bd-label" :title="e.label" x-text="e.label"></td>
+                                <template x-for="s in breakdownStatusCols" :key="s">
+                                    <td class="v2rt-th-num">
+                                        <span x-show="(e[s] || 0) > 0" class="v2rt-numchip"
+                                              :style="'color:' + statusColor(s) + '; background: color-mix(in srgb, ' + statusColor(s) + ' 12%, transparent)'"
+                                              x-text="e[s]"></span>
+                                        <span x-show="!(e[s] > 0)" class="v2rt-dim">-</span>
+                                    </td>
+                                </template>
+                                <td class="v2rt-th-num font-semibold" x-text="e.total"></td>
+                                <td class="v2rt-th-num">
+                                    <span class="v2rt-okcell">
+                                        <span class="v2rt-okgauge"><span class="v2rt-okgauge-fill" :style="'width:' + pct(e.OK || 0, e.total) + '%'"></span></span>
+                                        <span class="v2rt-okcell-val" x-text="pct(e.OK || 0, e.total) + '%'"></span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </template>
+                        <template x-if="breakdownTab === 'combination' && statsTotal">
+                            <tr class="v2rt-table-totalrow">
+                                <td>Total</td>
+                                <template x-for="s in breakdownStatusCols" :key="'t' + s">
+                                    <td class="v2rt-th-num" x-text="statsTotal[s] || 0"></td>
+                                </template>
+                                <td class="v2rt-th-num" x-text="statsTotal.total"></td>
+                                <td class="v2rt-th-num" x-text="pct(statsTotal.OK || 0, statsTotal.total) + '%'"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <template x-if="breakdownRows.length === 0">
+                    <div class="v2rt-empty py-6 text-center">Nothing to break down on this dimension</div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Labels tree -->
+        <template x-if="breakdownTab === 'label'">
+            <div class="v2rt-card-body">
+                <div class="v2rt-tabs mb-3" style="display: inline-flex">
+                    <button type="button" class="v2rt-tab" :class="labelTab === 'stickers' ? 'v2rt-tab--active' : ''" @click="labelTab = 'stickers'">
+                        Stickers <span class="v2rt-count" x-text="labelStickers.length"></span>
+                    </button>
+                    <button type="button" class="v2rt-tab" :class="labelTab === 'requirements' ? 'v2rt-tab--active' : ''" @click="labelTab = 'requirements'">
+                        Requirements <span class="v2rt-count" x-text="labelRequirements.length"></span>
+                    </button>
+                </div>
+                <template x-if="labelTab === 'stickers'">
+                    <div class="v2rt-labeltree">
+                        <template x-for="(node, i) in labelStickers" :key="'s' + i">
+                            <div class="v2rt-labeltree-root" x-html="renderLabelNode(node, 0)"></div>
+                        </template>
+                        <template x-if="labelStickers.length === 0">
+                            <div class="v2rt-empty py-3 text-center">No sticker label on this campaign</div>
+                        </template>
+                    </div>
+                </template>
+                <template x-if="labelTab === 'requirements'">
+                    <div class="v2rt-labeltree">
+                        <template x-for="(node, i) in labelRequirements" :key="'q' + i">
+                            <div class="v2rt-labeltree-root" x-html="renderLabelNode(node, 0)"></div>
+                        </template>
+                        <template x-if="labelRequirements.length === 0">
+                            <div class="v2rt-empty py-3 text-center">No requirement label on this campaign</div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</div>

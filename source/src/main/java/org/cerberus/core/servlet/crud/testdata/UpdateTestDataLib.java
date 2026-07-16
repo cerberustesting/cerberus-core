@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,6 +66,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author FNogueira
  */
 @WebServlet(name = "UpdateTestDataLib", urlPatterns = {"/UpdateTestDataLib"})
+@MultipartConfig(
+        fileSizeThreshold = 0,
+        maxFileSize = 50 * 1024 * 1024,
+        maxRequestSize = 100 * 1024 * 1024
+)
 public class UpdateTestDataLib extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestDataLib.class);

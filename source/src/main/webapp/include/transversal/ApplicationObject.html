@@ -189,8 +189,8 @@
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
             <button type="button" @click="open = false" name="buttonClose" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
-            <button type="button" id="editApplicationObjectButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Save</button>
-            <button type="button" id="addApplicationObjectButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition">Add</button>
+            <button type="button" id="editApplicationObjectButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Save</button>
+            <button type="button" id="addApplicationObjectButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Add</button>
         </div>
     </div>
 </div>
@@ -297,7 +297,7 @@
 
         clearResponseMessage($('#editApplicationObjectModal'));
 
-        $('#editApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#editApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition').removeAttr('hidden');
         $('#addApplicationObjectButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
 
@@ -312,7 +312,7 @@
 
         clearResponseMessage($('#editApplicationObjectModal'));
 
-        $('#addApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+        $('#addApplicationObjectButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition').removeAttr('hidden');
         $('#editApplicationObjectButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
         $('#editApplicationObjectModalForm select[name="idname"]').off("change");
@@ -374,14 +374,16 @@
 
                     } else if (page == "testCaseScript") {
 
-                        //TestCaseScript.js must be loaded so getTags exist
-                        var Tags = getTags();
-                        for (var i = 0; i < Tags.length; i++) {
-                            if (Tags[i].regex == "%object\\.") {
-                                Tags[i].array.push(formData.get("object"));
+                        // getTags is only defined by TestCaseScript.js (V1); guard so V2 callers don't crash here.
+                        if (typeof getTags === 'function') {
+                            var Tags = getTags();
+                            for (var i = 0; i < Tags.length; i++) {
+                                if (Tags[i].regex == "%object\\.") {
+                                    Tags[i].array.push(formData.get("object"));
+                                }
                             }
+                            $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
                         }
-                        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
 
                     }
                     $('#editApplicationObjectModal').data("Saved", true);

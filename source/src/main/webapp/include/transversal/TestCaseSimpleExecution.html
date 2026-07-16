@@ -59,7 +59,7 @@
             <div id="modalNotify"></div>
 
             <!-- TEST INFO -->
-            <div class="mb-4">
+            <div class="mb-4" x-show="!campaign">
                 <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <i data-lucide="play" class="w-4 h-4"></i>
                     <span>Testcase to launch</span>
@@ -69,6 +69,22 @@
                     <span x-text="testcase"></span> :
                     <span class="font-thin text-slate-600 dark:text-slate-400" x-text="description"></span>
                 </div>
+            </div>
+
+            <!-- CAMPAIGN INFO -->
+            <div class="mb-4" x-show="campaign" x-cloak>
+                <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <i data-lucide="tag" class="w-4 h-4"></i>
+                    <span>Campaign to launch</span>
+                </div>
+                <div class="text-lg font-medium text-slate-900 dark:text-slate-100">
+                    <span x-text="campaign"></span>
+                    <span class="font-thin text-slate-600 dark:text-slate-400" x-text="'- relaunches the ' + campaignTestcases.length + ' test case(s) of this run'"></span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0 mt-1">
+                    The environments and robots of the source run are preselected below - adjust them if needed.
+                    A new tag is created for this launch (leave the tag setting empty to auto-generate it).
+                </p>
             </div>
 
             <div class="grid grid-cols-3 gap-6">
@@ -351,7 +367,7 @@
 
             <button @click="submit(true)"
                     :disabled="loading"
-                    class="px-4 py-2 rounded-md bg-blue-600 !text-white text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1.5">
+                    class="px-4 py-2 rounded-md bg-blue-600 !text-white text-sm hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1.5">
                 <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 Run and see result
             </button>
@@ -368,6 +384,8 @@
             application: null,
             test: null,
             testcase: null,
+            campaign: '',           // campaign mode: relaunch a whole campaign run instead of one test case
+            campaignTestcases: [],  // campaign mode: the {test, testCase} pairs of the run being relaunched
             description: '',
             lastDispatchedTag: null,
 
@@ -397,12 +415,34 @@
                 this.reset();
 
                 this.open = true;
+                this.campaign = data.campaign || '';
                 this.application = data.application;
-                this.test = data.test;
-                this.testcase = data.testcase || data.testCase;
+                this.test = data.test || '';
+                this.testcase = data.testcase || data.testCase || '';
                 this.description = data.description || '';
 
                 this.lastDispatchedTag = data.tag || null;
+
+                if (this.campaign) {
+                    // campaign mode: relaunch what this run really executed. The envs / countries /
+                    // robots of the source run are offered and preselected; the test case pairs are
+                    // sent silently with the launch.
+                    this.campaignTestcases = Array.isArray(data.testcases) ? data.testcases : [];
+                    this.envs = (Array.isArray(data.envCountries) ? data.envCountries : []).map((e, index) => ({
+                        country: e.country,
+                        environment: e.environment,
+                        application: this.campaign,
+                        ip: e.environment + ' - ' + e.country,
+                        uiId: e.country + '|' + e.environment + '|' + index
+                    }));
+                    this.selectedEnvs = this.envs.slice();
+                    await this.loadRobots();
+                    var wanted = (Array.isArray(data.robots) ? data.robots : []).filter(Boolean);
+                    this.selectedRobots = this.robots
+                        .map(function (r) { return r.robot; })
+                        .filter(function (name) { return wanted.indexOf(name) >= 0; });
+                    return;
+                }
 
                 await Promise.all([
                     this.loadEnvs(),
@@ -605,6 +645,68 @@
                     return;
                 }
 
+                if (this.campaign) {
+                    // campaign mode: relaunch exactly what the source run executed. Everything is
+                    // fed explicitly to the V003 servlet (test cases, environments, countries,
+                    // robots), so it works even when the campaign definition is incomplete.
+                    this.loading = true;
+                    this.error = '';
+                    try {
+                        const params = new URLSearchParams();
+                        params.append('campaign', this.campaign);
+                        params.append('tag', this.settings.tag || '');
+
+                        this.campaignTestcases.forEach(tc => {
+                            params.append('test', tc.test);
+                            params.append('testcase', tc.testCase || tc.testcase);
+                        });
+                        this.selectedEnvs.forEach(e => {
+                            params.append('country', e.country);
+                            params.append('environment', e.environment);
+                        });
+                        this.selectedRobots.forEach(r =>
+                            params.append('robot', r)
+                        );
+
+                        const v = this.settings.verbose;
+                        params.append('screenshot', v);
+                        params.append('video', v);
+                        params.append('verbose', v);
+                        params.append('pagesource', v);
+                        params.append('seleniumlog', v);
+                        params.append('consolelog', v);
+
+                        params.append('timeout', this.settings.timeout || '');
+                        params.append('manualexecution', this.settings.manual);
+                        params.append('retries', this.settings.retries);
+                        params.append('priority', this.settings.priority);
+                        params.append('outputformat', 'json');
+
+                        const r = await fetch('AddToExecutionQueueV003', {
+                            method: 'POST',
+                            body: params
+                        });
+                        const data = JSON.parse(await r.text());
+
+                        if (data.messageType === 'OK') {
+                            if (!redirectAfterRun) {
+                                this.close();
+                                showMessageMainPage('success', (data.nbExe || 0) + ' execution(s) queued on tag ' + data.tag + '.', false, 10000);
+                                return;
+                            }
+                            window.location.href = 'ReportingExecutionByTagV2.jsp?Tag=' + encodeURIComponent(data.tag);
+                            return;
+                        }
+                        this.error = data.message || 'Campaign launch failed';
+                    } catch (e) {
+                        console.error("Campaign submit error", e);
+                        this.error = 'Unexpected server error';
+                    } finally {
+                        this.loading = false;
+                    }
+                    return;
+                }
+
                 this.loading = true;
                 this.error = '';
 
@@ -671,7 +773,7 @@
 
                         if (data.nbExe > 1) {
                             window.location.href =
-                                'ReportingExecutionByTag.jsp?Tag=' +
+                                'ReportingExecutionByTagV2.jsp?Tag=' +
                                 encodeURIComponent(data.tag);
                             return;
                         }

@@ -29,6 +29,15 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
+        <script>
+            // The V2 page is now the default view: redirect unless the legacy view
+            // is explicitly requested with ?v1=1 (the V2 header has a button for that).
+            (function () {
+                if (new URLSearchParams(window.location.search).get('v1') !== '1') {
+                    window.location.replace('ReportingExecutionByTagV2.jsp' + window.location.search);
+                }
+            })();
+        </script>
         <meta name="active-menu" content="insights">
         <meta name="active-submenu" content="ReportingExecutionByTag.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -50,7 +59,22 @@
 
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html" %>
 
-            <h1 class="page-title-line" id="title">Campaign Report</h1>
+            <!-- The legacy js rewrites #title html on load: keep the V2 switch button outside of it -->
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <h1 class="page-title-line" id="title" style="margin-bottom: 0;">Campaign Report</h1>
+                <a id="switchToReportV2" href="./ReportingExecutionByTagV2.jsp"><button class="btn btn-default" style="background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; font-size: 13px; vertical-align: middle;" title="Switch to Beta V2"><span class="glyphicon glyphicon-flash"></span> Beta V2</button></a>
+            </div>
+            <script>
+                // Keep the current tag when switching to the V2 page
+                document.addEventListener('DOMContentLoaded', function () {
+                    var link = document.getElementById('switchToReportV2');
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        var tag = new URLSearchParams(window.location.search).get('Tag') || (document.getElementById('selectTag') ? document.getElementById('selectTag').value : '');
+                        window.location.href = './ReportingExecutionByTagV2.jsp' + (tag ? ('?Tag=' + encodeURIComponent(tag)) : '');
+                    });
+                });
+            </script>
             <div class="row">
 
                 <div class="col-lg-6" id="FiltersPanel">

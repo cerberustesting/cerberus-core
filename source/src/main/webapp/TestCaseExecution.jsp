@@ -23,6 +23,15 @@
 <!DOCTYPE html>
 <html class="h-full">
     <head>
+        <script>
+            // The V2 page is now the default view: redirect unless the legacy view
+            // is explicitly requested with ?v1=1 (the V2 header has a button for that).
+            (function () {
+                if (new URLSearchParams(window.location.search).get('v1') !== '1') {
+                    window.location.replace('TestCaseExecutionV2.jsp' + window.location.search);
+                }
+            })();
+        </script>
         <meta name="active-menu" content="reporting">
         <meta name="active-submenu" content="TestCaseExecution.jsp">
         <meta name="active-page" content="TestCaseExecution.jsp">

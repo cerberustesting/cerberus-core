@@ -1,7 +1,7 @@
 # DOCKERFILE FOR LOCAL DEVELOPMENT
 # this dockerfile creates an tomcat image packaged with all the necessary configuration for Cerberus
 
-FROM tomcat:8.5-jre11-temurin
+FROM tomcat:11-jre17-temurin
 
 ENV LOG_ROOT_PATH /usr/local/tomcat/logs/
 
@@ -15,7 +15,7 @@ ENV DATABASE_USER cerberus
 ENV DATABASE_PASSWORD toto
 
 ARG CERBERUS_NAME=cerberus-core
-ARG CERBERUS_VERSION=4.21-SNAPSHOT
+ARG CERBERUS_VERSION=6.0-SNAPSHOT
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
 ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.47

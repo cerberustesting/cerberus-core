@@ -24,7 +24,7 @@ services:
   # build cerberus java project using the specified maven image
   # volumes are shared with the local repository, meaning built artifact can be found in 'target' folder
   maven:
-    image: maven:3.9-eclipse-temurin-11
+    image: maven:3.9-eclipse-temurin-17
     container_name: cerberus-local-build
     environment:
       - MAVEN_CONFIG=/var/maven/.m2

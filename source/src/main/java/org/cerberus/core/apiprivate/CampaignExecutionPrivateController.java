@@ -43,8 +43,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.core.service.notifications.email.IEmailGenerationService;
+import org.cerberus.core.service.notifications.email.IEmailService;
+import org.cerberus.core.service.notifications.email.entity.Email;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.servlet.ServletUtil;
 
@@ -59,6 +63,10 @@ public class CampaignExecutionPrivateController {
     private ITagStatisticService tagStatisticService;
     @Autowired
     private ITagService tagService;
+    @Autowired
+    private IEmailGenerationService emailGenerationService;
+    @Autowired
+    private IEmailService emailService;
 
     @Operation(hidden=true)
     @PostMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -373,6 +381,43 @@ public class CampaignExecutionPrivateController {
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
             return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Send the end-of-campaign email notification (same content as the one sent by the
+     * CAMPAIGN_END event hooks) to an explicit list of recipients, on demand.
+     */
+    @Operation(hidden = true)
+    @PostMapping(path = "{executionId}/notify", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper notifyTagByEmail(
+            @PathVariable("executionId") String tagName,
+            @RequestParam("recipient") String recipient,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        if (request.getUserPrincipal() == null) {
+            return new ResponseWrapper(HttpStatus.UNAUTHORIZED, "No user provided in the request, please refresh the page or login again.");
+        }
+        if (StringUtil.isEmptyOrNull(recipient)) {
+            return new ResponseWrapper(HttpStatus.BAD_REQUEST, "Please provide at least one recipient email address.");
+        }
+        try {
+            Tag tag = tagService.convert(tagService.readByKey(tagName));
+            if (tag == null) {
+                return new ResponseWrapper(HttpStatus.NOT_FOUND, "Tag '" + tagName + "' does not exist.");
+            }
+            Email email = emailGenerationService.generateNotifyEndTagExecution(tag, recipient);
+            emailService.sendHtmlMail(email);
+            return new ResponseWrapper(HttpStatus.OK, "Campaign report sent to " + recipient + ".");
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+            return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        } catch (Exception ex) {
+            // typically smtp configuration / connection issues
+            LOG.error("Could not send the campaign report email", ex);
+            return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, "Could not send the email: " + ex.getMessage(), ex);
         }
     }
 

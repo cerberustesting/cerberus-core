@@ -2091,3 +2091,9 @@
     }
 }
 
+
+
+/* Room for the floating right-panel triggers above the sticky header; the gap
+   collapses when the panel is open (the triggers are hidden then) */
+#v2ExeHeader { top: 32px; margin-top: 32px; transition: top 0.2s ease, margin-top 0.2s ease; }
+.rp-open #v2ExeHeader { top: 0; margin-top: 0; }

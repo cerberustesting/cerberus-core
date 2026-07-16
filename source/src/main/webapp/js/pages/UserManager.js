@@ -192,7 +192,15 @@ function initPage() {
     });
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&roles=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList", undefined, true);
+    createDataTableWithPermissionsNew(configurations, renderOptionsForUser, "#userList", undefined, true);
+
+    // action buttons reveal on row hover + lucide icons in cells
+    $('#usersTable').on('draw.dt', function () {
+        $(this).find('tbody tr').addClass('group');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    });
 }
 
 function displayPageLabel() {
@@ -223,26 +231,39 @@ function displayPageLabel() {
 
 function renderOptionsForUser(data) {
     var doc = new Doc();
-    var contentToAdd = "<div class='marginBottom10'><button id='createUserButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "button_create") + "</button>";
 
-    if (data.isKeycloakManaged) {
-        if ($("#manageUserButton").length === 0) {
-            var contentToAdd = contentToAdd + "<button id='manageUserButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "manage_user") + "</button>";
-            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd + "</div>");
+    if ($("#createUserButton").length === 0) {
+        var contentToAdd = `
+            <button id='createUserButton' type='button'
+                class='text-white bg-sky-400 hover:bg-sky-500 flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto'>
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_user", "button_create") + `</span>
+            </button>`;
+
+        if (data.isKeycloakManaged) {
+            contentToAdd += `
+            <button id='manageUserButton' type='button'
+                class='flex items-center space-x-1 px-3 py-1 rounded-md mr-2 h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition'>
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span>` + doc.getDocLabel("page_user", "manage_user") + `</span>
+            </button>`;
             kcRealm = data.keycloakRealm;
             kcUrl = data.keycloakUrl;
-            $('#userList #manageUserButton').click(manageUserClick);
-            $('#userList #createUserButton').click(addEntryClick);
         }
-    } else {
-        if ($("#createUserButton").length === 0) {
-            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd + "</div>");
-            $('#userList #createUserButton').click(addEntryClick);
-        }
-    }
 
+        var $wrapper = $("#usersTable_buttonWrapper");
+        if ($wrapper.length) {
+            $wrapper.prepend(contentToAdd);
+        } else {
+            $("#usersTable_wrapper div#usersTable_length").before("<div id='usersTable_buttonWrapper'>" + contentToAdd + "</div>");
+        }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        $("#createUserButton").off("click").on("click", addEntryClick);
+        $("#manageUserButton").off("click").on("click", manageUserClick);
+    }
 }
 
 function manageUserClick(data) {
@@ -698,27 +719,53 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "button_col"),
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+            "mRender": function (data, type, obj, meta) {
+                var row = "row_" + meta.row;
+                var login = escapeHtml(obj["login"]);
 
-                var editUser = '<button id="editUser" onclick="editEntryClick(\'' + obj["login"] + '\');"\n\
-                                        class="editUser btn btn-default btn-xs margin-right5" \n\
-                                        name="editUser" title="' + doc.getDocLabel("page_user", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-                var removeUser = '<button id="removeUser" onclick="removeEntryClick(\'' + obj["login"] + '\');"\n\
-                                        class="removeUser btn btn-default btn-xs margin-right5" \n\
-                                        name="removeUser" title="' + doc.getDocLabel("page_user", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
-                var passwordUser = '';
-                if (!(obj.isKeycloakManaged)) {
-                    passwordUser = '<button id="editPassUser" onclick="editEntryPassClick(\'' + obj["login"] + '\');"\n\
-                                        class="editUserPass btn btn-default btn-xs margin-right5" \n\
-                                        name="editUserPass" title="' + doc.getDocLabel("page_user", "button_password_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-lock"></span></button>';
+                const baseBtnClass = "inline-flex aspect-square h-8 w-8 items-center justify-center rounded-md transition-all duration-200 " +
+                    "text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 " +
+                    "opacity-20 group-hover:opacity-100 [&_svg]:size-4";
+
+                function actionButton({ id, title, onClick, icon, extraClass = "" }) {
+                    return `
+                <button
+                    id="${id}"
+                    type="button"
+                    class="${baseBtnClass} ${extraClass}"
+                    title="${title}"
+                    onclick="${onClick}">
+                    ${icon}
+                </button>
+            `;
                 }
 
-                return '<div class="center btn-group width150">' + editUser + removeUser + passwordUser + '</div>';
+                let buttons = [];
+                buttons.push(actionButton({
+                    id: `user_action_edit_${row}`,
+                    title: doc.getDocLabel("page_user", "button_edit"),
+                    onClick: `editEntryClick('${login}')`,
+                    icon: `<i data-lucide="pencil" class="w-4 h-4"></i>`,
+                    extraClass: "group-hover:!text-blue-500"
+                }));
+                if (!(obj.isKeycloakManaged)) {
+                    buttons.push(actionButton({
+                        id: `user_action_password_${row}`,
+                        title: doc.getDocLabel("page_user", "button_password_edit"),
+                        onClick: `editEntryPassClick('${login}')`,
+                        icon: `<i data-lucide="key-round" class="w-4 h-4"></i>`,
+                        extraClass: "group-hover:!text-amber-500"
+                    }));
+                }
+                buttons.push(actionButton({
+                    id: `user_action_remove_${row}`,
+                    title: doc.getDocLabel("page_user", "button_remove"),
+                    onClick: `removeEntryClick('${login}')`,
+                    icon: `<i data-lucide="trash-2" class="w-4 h-4"></i>`,
+                    extraClass: "group-hover:!text-red-500"
+                }));
 
+                return `<div class="flex items-center justify-start gap-1">${buttons.join("")}</div>`;
             },
             "width": "100px"
         },
@@ -742,16 +789,10 @@ function aoColumnsFunc(tableId) {
             "sWidth": "100px",
             "title": doc.getDocLabel("page_user", "groups_col"),
             "mRender": function (data, type, obj) {
-                var systems = "";
-                for (var i = 0; i < obj["roles"].length; i++) {
-                    if (i > 0) {
-                        systems += ", ";
-                    }
-                    systems += obj["roles"][i].role;
-                }
-
-                return '<div class="center btn-group width150">' + systems + '</div>';
-
+                var chips = (obj["roles"] || []).map(function (r) {
+                    return '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">' + escapeHtml(r.role) + '</span>';
+                });
+                return '<div class="flex flex-wrap gap-1">' + chips.join("") + '</div>';
             }
         },
         {
@@ -761,16 +802,10 @@ function aoColumnsFunc(tableId) {
             "sWidth": "100px",
             "title": doc.getDocLabel("page_user", "systems_col"),
             "mRender": function (data, type, obj) {
-                var systems = "";
-                for (var i = 0; i < obj["systems"].length; i++) {
-                    if (i > 0) {
-                        systems += ", ";
-                    }
-                    systems += obj["systems"][i].system;
-                }
-
-                return '<div class="center btn-group width150">' + systems + '</div>';
-
+                var chips = (obj["systems"] || []).map(function (s) {
+                    return '<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">' + escapeHtml(s.system) + '</span>';
+                });
+                return '<div class="flex flex-wrap gap-1">' + chips.join("") + '</div>';
             }
         },
         {

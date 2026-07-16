@@ -87,6 +87,7 @@ function scriptV2() {
 
         _dragIdx: -1,
         _dragControlInfo: null,
+        allControlsExpanded: true,  // header toggle: collapse/expand every Controls section at once
         lastRunCountry: '',
         lastRunEnvironment: '',
         lastRunRobot: '',
@@ -127,7 +128,8 @@ function scriptV2() {
                 const s = this.propertySearch.toLowerCase();
                 list = list.filter(p => (p.property || '').toLowerCase().includes(s) || (p.type || '').toLowerCase().includes(s) || (p.value1 || '').toLowerCase().includes(s));
             }
-            return list;
+            // alphabetical order keeps large lists scannable
+            return list.slice().sort((a, b) => (a.property || '').localeCompare(b.property || '', undefined, { sensitivity: 'base' }));
         },
         get filteredInheritedProperties() {
             var { localNames } = this._propCrossRef();
@@ -141,7 +143,8 @@ function scriptV2() {
             if (q) {
                 list = list.filter(p => (p.property || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q) || (p.value1 || '').toLowerCase().includes(q));
             }
-            return list;
+            // alphabetical order keeps large lists scannable
+            return list.slice().sort((a, b) => (a.property || '').localeCompare(b.property || '', undefined, { sensitivity: 'base' }));
         },
         // Keep filteredProperties for backward compat (modal indexing uses it)
         get filteredProperties() {
@@ -395,6 +398,8 @@ function scriptV2() {
         // ── Step Selection ──
         selectStep(idx) {
             this.activeStepIndex = idx;
+            // Freshly rendered Controls sections start expanded — keep the header toggle in sync
+            this.allControlsExpanded = true;
             InsertURLInHistory('./TestCaseScriptV2.jsp?' + ReplaceURLParameters('stepId', this.steps[idx]?.stepId || ''));
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
@@ -728,41 +733,43 @@ function scriptV2() {
         copyProperty(pIdx, $event) {
             var self = this;
             var evt = $event || window.event || null;
-            var prop = this.filteredProperties[pIdx];
-            var payload = JSON.stringify({ type: 'property', data: prop });
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(payload).then(function() {
-                    self.clipboardType = 'property';
-                    v2CopyToast(evt, 'Property copied!');
-                });
-            }
+            // Same clipboard format as steps/actions/controls, so _checkClipboard (which re-parses
+            // the clipboard on every window focus) keeps recognizing it and the Paste button survives.
+            var prop = this._cleanForExport(this.filteredProperties[pIdx]);
+            var yamlContent = this._toYaml(prop);
+            var header = '# cerberus:property\n# Copied from: ' + (this.testInfo.test || '') + ' / ' + (this.testInfo.testCase || '') + '\n---\n';
+            var jsonBackup = '\n# __json__: ' + JSON.stringify(prop);
+            navigator.clipboard.writeText(header + yamlContent + jsonBackup).then(function() {
+                self.clipboardType = 'property';
+                v2CopyToast(evt, 'Property copied!');
+            }).catch(function() {
+                showMessageMainPage('warning', 'Could not access clipboard');
+            });
         },
         pasteProperty() {
             if (navigator.clipboard) {
                 var self = this;
                 navigator.clipboard.readText().then(function(text) {
-                    try {
-                        var parsed = JSON.parse(text);
-                        if (parsed && parsed.type === 'property' && parsed.data) {
-                            self._mutate(function() {
-                                var clone = JSON.parse(JSON.stringify(parsed.data));
-                                clone._uid = v2uid();
-                                clone.toDelete = false;
-                                clone._isInherited = false;
-                                // Generate unique name with Copy-N suffix
-                                var baseName = (clone.property || 'PROP').replace(/-Copy-\d+$/, '');
-                                var existingNames = self.properties.map(function(p) { return p.property; });
-                                var copyNum = 1;
-                                var newName = baseName + '-Copy-' + copyNum;
-                                while (existingNames.indexOf(newName) >= 0) {
-                                    copyNum++;
-                                    newName = baseName + '-Copy-' + copyNum;
-                                }
-                                clone.property = newName;
-                                self.properties.push(clone);
-                            });
-                        }
-                    } catch(e) { console.warn('Paste property: invalid clipboard'); }
+                    var parsed = self._parseClipboardText(text);
+                    if (parsed && parsed.type === 'property' && parsed.data) {
+                        self._mutate(function() {
+                            var clone = JSON.parse(JSON.stringify(parsed.data));
+                            clone._uid = v2uid();
+                            clone.toDelete = false;
+                            clone._isInherited = false;
+                            // Generate unique name with Copy-N suffix
+                            var baseName = (clone.property || 'PROP').replace(/-Copy-\d+$/, '');
+                            var existingNames = self.properties.map(function(p) { return p.property; });
+                            var copyNum = 1;
+                            var newName = baseName + '-Copy-' + copyNum;
+                            while (existingNames.indexOf(newName) >= 0) {
+                                copyNum++;
+                                newName = baseName + '-Copy-' + copyNum;
+                            }
+                            clone.property = newName;
+                            self.properties.push(clone);
+                        });
+                    }
                 });
             }
         },
@@ -775,7 +782,9 @@ function scriptV2() {
                 detail: {
                     property: prop,                         // live reference
                     countries: self.tcCountries,
-                    canUpdate: self.canUpdate,
+                    // Inherited properties open read-only: they belong to the source test case,
+                    // editing them here would only corrupt local state. Override creates a local copy.
+                    canUpdate: self.canUpdate && !prop._isInherited,
                     onField: function(key, val) {
                         self._mutate(function() { prop[key] = val; });
                     },
@@ -866,14 +875,27 @@ function scriptV2() {
         filterProperties() { /* reactive via x-model */ },
         _isPropertyUnused(propName) {
             if (!propName) return false;
-            const needle = '%property.' + propName + '%';
+            // Both syntaxes resolve at execution: modern %property.NAME% and legacy %NAME%
+            const needles = ['%property.' + propName + '%', '%' + propName + '%'];
+            const hit = (s) => { s = s || ''; return needles.some(n => s.includes(n)); };
+            // Usage can sit in values or in condition values, at step, action and control level
+            const inFields = (o) => hit(o.value1) || hit(o.value2) || hit(o.value3)
+                || hit(o.conditionValue1) || hit(o.conditionValue2) || hit(o.conditionValue3);
             for (const step of this.steps) {
+                if (inFields(step)) return false;
                 for (const a of (step.actions || [])) {
-                    if ((a.value1 || '').includes(needle) || (a.value2 || '').includes(needle) || (a.value3 || '').includes(needle)) return false;
+                    if (inFields(a)) return false;
+                    // calculateProperty takes property names as raw arguments (no % syntax)
+                    if (a.action === 'calculateProperty' && ((a.value1 || '') === propName || (a.value2 || '') === propName)) return false;
                     for (const c of (a.controls || [])) {
-                        if ((c.value1 || '').includes(needle) || (c.value2 || '').includes(needle) || (c.value3 || '').includes(needle)) return false;
+                        if (inFields(c)) return false;
                     }
                 }
+            }
+            // Property chaining: referenced from another property's value (local or inherited)
+            for (const p of [...this.properties, ...this.inheritedProperties]) {
+                if (p.property === propName) continue;
+                if (hit(p.value1) || hit(p.value2) || hit(p.value3)) return false;
             }
             return true;
         },
@@ -965,10 +987,19 @@ function scriptV2() {
         _parseClipboardText(text) {
             if (!text) return null;
             text = text.trim();
+            // Legacy property copy format: raw JSON payload {type:'property', data:{...}}
+            if (text[0] === '{') {
+                try {
+                    var legacy = JSON.parse(text);
+                    if (legacy && legacy.type === 'property' && legacy.data) return { type: 'property', data: legacy.data };
+                } catch(e) { /* not a cerberus payload */ }
+                return null;
+            }
             var type = null;
             if (text.indexOf('# cerberus:step') === 0) { type = 'step'; }
             else if (text.indexOf('# cerberus:action') === 0) { type = 'action'; }
             else if (text.indexOf('# cerberus:control') === 0) { type = 'control'; }
+            else if (text.indexOf('# cerberus:property') === 0) { type = 'property'; }
             else return null;
             // Extract embedded JSON from last line
             var lines = text.split('\n');
@@ -1154,26 +1185,141 @@ function scriptV2() {
             // This is a placeholder for future right-click menu enhancement
         },
 
-        // ── Drag & Drop Steps ──
-        onStepDragStart(e, idx) { this._dragIdx = idx; e.dataTransfer.effectAllowed = 'move'; },
-        onStepDragOver(e, idx) { e.preventDefault(); },
+        // ── Drag & Drop Steps — same UX as actions (ghost, insertion indicator) + auto-scroll ──
+        _stepDragY: null,      // last known cursor Y while dragging, consumed by the auto-scroll loop
+        _stepScrollRAF: null,
+        _stepIndicator: { idx: -1, pos: '' },
+        onStepDragStart(e, idx) {
+            this._dragIdx = idx;
+            e.dataTransfer.effectAllowed = 'move';
+            const ghost = document.createElement('div');
+            ghost.className = 'v2-drag-ghost';
+            ghost.textContent = (idx + 1) + '. ' + (this.steps[idx].description || 'Untitled step');
+            document.body.appendChild(ghost);
+            e.dataTransfer.setDragImage(ghost, 0, 0);
+            setTimeout(() => ghost.remove(), 0);
+            const item = e.target.closest('.v2-step-item');
+            if (item) item.classList.add('v2-dnd-dragging');
+            this._startStepAutoScroll();
+        },
+        onStepDragOver(e, idx) {
+            e.preventDefault();
+            if (this._dragIdx < 0) return;
+            this._stepDragY = e.clientY;
+            if (this._dragIdx === idx) { this._stepClearIndicator(); return; }
+            const item = document.getElementById('v2-step-item-' + idx);
+            if (!item) return;
+            const rect = item.getBoundingClientRect();
+            const pos = e.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+            if (this._stepIndicator.idx === idx && this._stepIndicator.pos === pos) return;
+            this._stepClearIndicator();
+            this._stepIndicator = { idx, pos };
+            item.classList.add(pos === 'before' ? 'v2-dnd-indicator-top' : 'v2-dnd-indicator-bottom');
+        },
+        // On the list itself: keeps auto-scroll alive over paddings/gaps where no item is hovered
+        onStepListDragOver(e) {
+            if (this._dragIdx < 0) return;
+            this._stepDragY = e.clientY;
+        },
         onStepDrop(e, idx) {
             e.preventDefault();
-            if (this._dragIdx === idx) return;
-            this._mutate(() => {
-                const item = this.steps.splice(this._dragIdx, 1)[0];
-                this.steps.splice(idx, 0, item);
-                this.activeStepIndex = idx;
+            if (this._dragIdx < 0) return;
+            const from = this._dragIdx;
+            let to = this._stepIndicator.pos === 'after' ? idx + 1 : idx;
+            if (from < to) to--;
+            if (from !== to && to >= 0) {
+                this._mutate(() => {
+                    const item = this.steps.splice(from, 1)[0];
+                    this.steps.splice(to, 0, item);
+                    this.activeStepIndex = to;
+                });
+            }
+            this._stepDndCleanup();
+        },
+        onStepDragEnd() { this._stepDndCleanup(); },
+        _stepClearIndicator() {
+            this._stepIndicator = { idx: -1, pos: '' };
+            document.querySelectorAll('#v2StepList .v2-dnd-indicator-top, #v2StepList .v2-dnd-indicator-bottom').forEach(el => {
+                el.classList.remove('v2-dnd-indicator-top', 'v2-dnd-indicator-bottom');
             });
         },
-        onStepDragEnd() { this._dragIdx = -1; },
+        _stepDndCleanup() {
+            this._dragIdx = -1;
+            this._stepClearIndicator();
+            this._stopStepAutoScroll();
+            document.querySelectorAll('#v2StepList .v2-dnd-dragging').forEach(el => el.classList.remove('v2-dnd-dragging'));
+        },
+        // Auto-scroll the step list while dragging near its top/bottom edge. rAF loop instead of
+        // scrolling from dragover events: those only fire ~every 350ms when the cursor is still,
+        // which makes the scroll stutter; the loop reads the last known Y every frame.
+        _startStepAutoScroll() {
+            if (this._stepScrollRAF) return;
+            const tick = () => {
+                const list = document.getElementById('v2StepList');
+                if (list && this._stepDragY !== null) {
+                    const rect = list.getBoundingClientRect();
+                    const zone = 48, maxSpeed = 14;
+                    if (this._stepDragY < rect.top + zone) {
+                        list.scrollTop -= maxSpeed * Math.min(1, (rect.top + zone - this._stepDragY) / zone);
+                    } else if (this._stepDragY > rect.bottom - zone) {
+                        list.scrollTop += maxSpeed * Math.min(1, (this._stepDragY - (rect.bottom - zone)) / zone);
+                    }
+                }
+                this._stepScrollRAF = requestAnimationFrame(tick);
+            };
+            this._stepScrollRAF = requestAnimationFrame(tick);
+        },
+        _stopStepAutoScroll() {
+            if (this._stepScrollRAF) cancelAnimationFrame(this._stepScrollRAF);
+            this._stepScrollRAF = null;
+            this._stepDragY = null;
+        },
 
         // ── Drag & Drop — Modern 2026 ──
         _dnd: { type: null, fromIdx: -1, fromAIdx: -1, fromCIdx: -1, indicatorIdx: -1, indicatorPos: '' },
 
+        // Auto-scroll of the main content area (.crb_main, the actions scroller) while dragging an
+        // action/control near the top/bottom edge. Cursor Y is tracked with a document-level dragover
+        // listener (fires wherever the drag goes, including gaps between cards); a rAF loop applies
+        // the scroll so it stays smooth even when dragover throttles with a still cursor.
+        _mainDragY: null,
+        _mainScrollRAF: null,
+        _mainDragOverDoc: null,
+        _startMainAutoScroll() {
+            if (this._mainScrollRAF) return;
+            this._mainDragOverDoc = (e) => { this._mainDragY = e.clientY; };
+            document.addEventListener('dragover', this._mainDragOverDoc);
+            const tick = () => {
+                const scroller = document.querySelector('.crb_main') || document.scrollingElement;
+                if (scroller && this._mainDragY !== null) {
+                    const isDoc = scroller === document.scrollingElement;
+                    const top = isDoc ? 0 : scroller.getBoundingClientRect().top;
+                    const bottom = isDoc ? window.innerHeight : scroller.getBoundingClientRect().bottom;
+                    const zone = 80, maxSpeed = 18;
+                    if (this._mainDragY < top + zone) {
+                        scroller.scrollTop -= maxSpeed * Math.min(1, (top + zone - this._mainDragY) / zone);
+                    } else if (this._mainDragY > bottom - zone) {
+                        scroller.scrollTop += maxSpeed * Math.min(1, (this._mainDragY - (bottom - zone)) / zone);
+                    }
+                }
+                this._mainScrollRAF = requestAnimationFrame(tick);
+            };
+            this._mainScrollRAF = requestAnimationFrame(tick);
+        },
+        _stopMainAutoScroll() {
+            if (this._mainScrollRAF) cancelAnimationFrame(this._mainScrollRAF);
+            this._mainScrollRAF = null;
+            this._mainDragY = null;
+            if (this._mainDragOverDoc) {
+                document.removeEventListener('dragover', this._mainDragOverDoc);
+                this._mainDragOverDoc = null;
+            }
+        },
+
         // — Actions —
         onActionDragStart(e, idx) {
             this._dnd = { type: 'action', fromIdx: idx, fromAIdx: -1, fromCIdx: -1, indicatorIdx: -1, indicatorPos: '' };
+            this._startMainAutoScroll();
             e.dataTransfer.effectAllowed = 'move';
             // Minimal ghost
             const ghost = document.createElement('div');
@@ -1222,10 +1368,11 @@ function scriptV2() {
         // — Controls —
         onControlDragStart(e, aIdx, cIdx) {
             this._dnd = { type: 'control', fromIdx: -1, fromAIdx: aIdx, fromCIdx: cIdx, indicatorIdx: -1, indicatorPos: '' };
+            this._startMainAutoScroll();
             e.dataTransfer.effectAllowed = 'move';
             const ghost = document.createElement('div');
             ghost.className = 'v2-drag-ghost v2-drag-ghost--green';
-            ghost.textContent = (aIdx+1) + '.' + (cIdx+1) + ' ' + (this.getControlLabel(this.activeStep.actions[aIdx].controls[cIdx].control) || 'Verification');
+            ghost.textContent = (aIdx+1) + '.' + (cIdx+1) + ' ' + (this.getControlLabel(this.activeStep.actions[aIdx].controls[cIdx].control) || 'Control');
             document.body.appendChild(ghost);
             e.dataTransfer.setDragImage(ghost, 0, 0);
             setTimeout(() => ghost.remove(), 0);
@@ -1278,6 +1425,7 @@ function scriptV2() {
         },
         _dndCleanup() {
             this._dndClearIndicator();
+            this._stopMainAutoScroll();
             document.querySelectorAll('.v2-dnd-dragging').forEach(el => el.classList.remove('v2-dnd-dragging'));
             this._dnd = { type: null, fromIdx: -1, fromAIdx: -1, fromCIdx: -1, indicatorIdx: -1, indicatorPos: '' };
         },

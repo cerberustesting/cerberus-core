@@ -1,0 +1,348 @@
+<!-- Campaign Report V2 - Execution list: filters, mass actions, one row per testcase, one column per env/country/robot -->
+<div class="crb_card v2rt-card" x-show="loaded">
+
+    <!-- Head: title / search / filters / row mode -->
+    <div class="v2rt-card-head" style="flex-wrap: wrap; row-gap: 8px">
+        <span class="v2rt-card-title">Executions</span>
+        <span class="v2rt-count" x-text="visibleRows.length + ' / ' + rows.length + ' test cases'"></span>
+        <span class="flex-1"></span>
+
+        <button type="button" class="v2rt-btn v2rt-btn--xs" x-show="hasActiveFilter" x-cloak @click="resetFilters()" title="Clear every active filter">
+            Reset
+        </button>
+
+        <!-- Search -->
+        <div class="v2rt-search">
+            <svg class="v2rt-search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" x-model="search" placeholder="Search test, description, application..." class="v2rt-search-input">
+        </div>
+
+        <!-- Advanced filters -->
+        <button type="button" class="v2rt-btn" :class="hasActiveFilter ? 'v2rt-btn--toggle-on' : ''" @click="filtersOpen = true">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Filters
+            <span class="v2rt-filterbadge" x-show="activeFilterCount > 0" x-text="activeFilterCount"></span>
+        </button>
+
+        <!-- Row visibility mode -->
+        <div class="v2rt-seg" title="Choose which rows are listed">
+            <button type="button" class="v2rt-seg-item" :class="rowsMode === 'all' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'all'">All</button>
+            <button type="button" class="v2rt-seg-item" :class="rowsMode === 'hideOk' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'hideOk'"
+                    title="Hide fully OK test cases but keep flaky and bugged ones">Hide OK</button>
+            <button type="button" class="v2rt-seg-item" :class="rowsMode === 'hideOkFlaky' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'hideOkFlaky'"
+                    title="Hide fully OK test cases, including flaky ones">Hide OK &amp; flaky</button>
+        </div>
+    </div>
+
+    <!-- Quick filters: status + country -->
+    <div class="v2rt-filterbar">
+        <div class="v2rt-filtergroup">
+            <span class="v2rt-filterlabel">Status</span>
+            <template x-for="s in statusOrder" :key="s">
+                <button type="button" class="v2rt-statuspill"
+                        x-show="statusCounts[s] > 0"
+                        :class="activeStatuses[s] ? '' : 'v2rt-statuspill--off'"
+                        :style="activeStatuses[s] ? ('background: color-mix(in srgb, ' + statusColor(s) + ' 14%, transparent); color:' + statusColor(s) + '; border-color: color-mix(in srgb, ' + statusColor(s) + ' 35%, transparent)') : ''"
+                        @click="toggleStatus(s)"
+                        @dblclick.prevent="onlyStatus(s)"
+                        :title="statusLabels[s] + ' - click to toggle, double-click to isolate'">
+                    <span x-text="s"></span>
+                    <span class="v2rt-statuspill-count" x-text="statusCounts[s]"></span>
+                </button>
+            </template>
+            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allStatuses(true)">All</button>
+        </div>
+        <div class="v2rt-filtergroup" x-show="Object.keys(activeCountries).length > 1">
+            <span class="v2rt-filterlabel">Country</span>
+            <template x-for="c in Object.keys(activeCountries).sort()" :key="c">
+                <button type="button" class="v2rt-statuspill"
+                        :class="activeCountries[c] ? 'v2rt-countrypill--on' : 'v2rt-statuspill--off'"
+                        @click="toggleCountry(c)" x-text="c"></button>
+            </template>
+            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allCountries(true)">All</button>
+        </div>
+    </div>
+
+    <!-- Selection / mass action bar -->
+    <div class="v2rt-selectionbar" x-show="loaded" x-cloak>
+        <span class="v2rt-filterlabel">Select</span>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('OK')">OK</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('KO')">KO</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('FA')">FA</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('NA')">NA</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('QEERROR')">QE errors</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('KO', 'Y')">KO manual</button>
+        <button type="button" class="v2rt-btn v2rt-btn--xs" @click="selectByStatus('FA', 'Y')">FA manual</button>
+        <span class="v2rt-selectionbar-sep"></span>
+        <template x-if="selectedCount > 0">
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="v2rt-chip v2rt-chip--info"><span x-text="selectedCount"></span>&nbsp;selected</span>
+                <button type="button" class="v2rt-btn v2rt-btn--primary" @click="submitAgain(false)">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Submit again
+                </button>
+                <button type="button" class="v2rt-btn" @click="submitAgain(true)">Submit again with dependencies</button>
+                <button type="button" class="v2rt-btn v2rt-btn--xs" @click="clearSelection()">Clear</button>
+            </div>
+        </template>
+        <template x-if="selectedCount === 0">
+            <span class="v2rt-dim text-xs">Tick executions in the grid (or use the shortcuts) then submit them again</span>
+        </template>
+    </div>
+
+    <!-- Grid -->
+    <div class="v2rt-grid-scroll">
+        <table class="v2rt-grid">
+            <thead>
+                <tr>
+                    <th class="v2rt-grid-th v2rt-grid-th--prio v2rt-th-sort" x-show="showCols.prio" @click="setSort('priority')" title="Test case priority - click to sort">
+                        P
+                        <span class="v2rt-sort-arrow" x-show="sortBy === 'priority'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
+                    </th>
+                    <th class="v2rt-grid-th v2rt-grid-th--test v2rt-th-sort" @click="setSort('test')" title="Click to sort by test folder / test case">
+                        Test case
+                        <span class="v2rt-sort-arrow" x-show="sortBy === 'test'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
+                    </th>
+                    <th class="v2rt-grid-th v2rt-grid-th--app v2rt-th-sort" x-show="showCols.app" @click="setSort('app')" title="Click to sort by application">
+                        Application
+                        <span class="v2rt-sort-arrow" x-show="sortBy === 'app'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
+                    </th>
+                    <th class="v2rt-grid-th v2rt-grid-th--lastrun v2rt-th-sort" x-show="showCols.lastRun" @click="setSort('lastRun')" title="Click to sort by last execution date">
+                        Last run
+                        <span class="v2rt-sort-arrow" x-show="sortBy === 'lastRun'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
+                    </th>
+                    <template x-for="col in visibleColumns" :key="col.key">
+                        <th class="v2rt-grid-th v2rt-grid-th--exec">
+                            <div x-text="col.environment + ' ' + col.country"></div>
+                            <div class="v2rt-grid-th-sub" x-text="col.robotDecli || ''"></div>
+                        </th>
+                    </template>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="row in visibleRows" :key="row.test + '|' + row.testCase">
+                    <tr class="v2rt-grid-row">
+                        <td class="v2rt-grid-td v2rt-grid-td--prio" x-show="showCols.prio">
+                            <template x-if="row.priority && row.priority > 0">
+                                <span class="v2rt-prio" :class="'v2rt-prio--' + row.priority" x-text="'P' + row.priority" :title="'Priority ' + row.priority"></span>
+                            </template>
+                        </td>
+                        <td class="v2rt-grid-td v2rt-grid-td--test">
+                            <div class="v2rt-grid-folder" :title="row.test" x-text="row.test"></div>
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <a class="v2rt-grid-tc truncate" :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(row.test) + '&testcase=' + encodeURIComponent(row.testCase)"
+                                   target="_blank" :title="row.test + ' / ' + row.testCase" x-text="row.testCase"></a>
+                                <template x-if="row.isMuted">
+                                    <span class="v2rt-chip v2rt-chip--muted" title="This test case is muted">M</span>
+                                </template>
+                                <template x-if="rowBugs(row).length > 0">
+                                    <span class="v2rt-chip v2rt-chip--danger" :title="'Active bugs: ' + rowBugs(row).map(b => b.id).join(', ')" x-text="rowBugs(row).length + ' bug'"></span>
+                                </template>
+                            </div>
+                            <div class="v2rt-grid-desc truncate" :title="row.shortDesc" x-text="row.shortDesc"></div>
+                        </td>
+                        <td class="v2rt-grid-td v2rt-grid-td--app" x-show="showCols.app">
+                            <span class="truncate" x-text="row.application"></span>
+                        </td>
+                        <td class="v2rt-grid-td v2rt-grid-td--lastrun" x-show="showCols.lastRun">
+                            <div x-text="relTime(row.lastExeEnd)"></div>
+                            <div class="v2rt-grid-desc" x-show="row.DurationMsMax" x-text="fmtDuration(row.DurationMsMax)"></div>
+                        </td>
+                        <template x-for="col in visibleColumns" :key="col.key">
+                            <td class="v2rt-grid-td v2rt-grid-td--exec">
+                                <template x-if="cellFor(row, col) && cellVisible(cellFor(row, col))">
+                                    <div class="v2rt-cell"
+                                         :class="[isSelected(cellFor(row, col)) ? 'v2rt-cell--selected' : '', cellFor(row, col).isFalseNegative ? 'v2rt-cell--fn' : '']"
+                                         :style="'--cell-color:' + statusColor(cellFor(row, col).ControlStatus)"
+                                         :title="cellTitle(cellFor(row, col))"
+                                         @click="openCell(cellFor(row, col))">
+                                        <template x-if="cellSelectable(cellFor(row, col))">
+                                            <input type="checkbox" class="v2rt-cell-check" :checked="isSelected(cellFor(row, col))"
+                                                   @click.stop="toggleSelect(cellFor(row, col))">
+                                        </template>
+                                        <template x-if="cellFor(row, col).previousExeControlStatus">
+                                            <span class="v2rt-cell-prev" :style="'background:' + statusColor(cellFor(row, col).previousExeControlStatus)"
+                                                  :title="'Previous execution: ' + cellFor(row, col).previousExeControlStatus + ' (click to open)'"
+                                                  @click.stop="openPrevious(cellFor(row, col))"></span>
+                                        </template>
+                                        <span class="v2rt-cell-status" x-text="cellFor(row, col).ControlStatus"></span>
+                                        <template x-if="cellFor(row, col).ControlStatus === 'PE' && cellFor(row, col).progressPercent !== undefined">
+                                            <span class="v2rt-cell-progress" x-text="cellFor(row, col).progressPercent + '%'"></span>
+                                        </template>
+                                        <template x-if="cellFor(row, col).QueueState">
+                                            <span class="v2rt-cell-queue" x-text="cellFor(row, col).QueueState"></span>
+                                        </template>
+                                        <template x-if="cellFor(row, col).isFlaky">
+                                            <span class="v2rt-cell-flaky" title="Flaky: this execution needed retries to pass">FLAKY</span>
+                                        </template>
+                                        <template x-if="cellFor(row, col).NbExecutions && String(cellFor(row, col).NbExecutions) !== '1'">
+                                            <span class="v2rt-cell-retry" :title="cellFor(row, col).NbExecutions + ' executions (retries)'" x-text="'x' + cellFor(row, col).NbExecutions"></span>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template x-if="cellFor(row, col) && !cellVisible(cellFor(row, col))">
+                                    <div class="v2rt-cell v2rt-cell--filtered" :title="'Filtered out: ' + cellFor(row, col).ControlStatus">
+                                        <span class="v2rt-cell-status" x-text="cellFor(row, col).ControlStatus"></span>
+                                    </div>
+                                </template>
+                                <template x-if="!cellFor(row, col)">
+                                    <div class="v2rt-cell v2rt-cell--none">-</div>
+                                </template>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+        <template x-if="visibleRows.length === 0">
+            <div class="v2rt-empty py-10 text-center">
+                <div class="text-sm font-semibold mb-1">No execution matches the current filters</div>
+                <div class="text-xs">Adjust the filters or the search</div>
+            </div>
+        </template>
+    </div>
+
+    <!-- ================= Advanced filters modal (transversal modal charter) ================= -->
+    <div x-show="filtersOpen" x-cloak class="crb_modal" @keydown.escape.window="filtersOpen = false">
+
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-slate-900/60" @click="filtersOpen = false"></div>
+
+        <!-- Modal Card -->
+        <div class="crb_card w-full max-w-3xl rounded-2xl relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
+             style="max-height: calc(100vh - 4rem); margin: 2rem 1rem;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             @click.stop>
+
+            <!-- HEADER -->
+            <div class="flex items-center justify-between px-6 py-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                        <i data-lucide="filter" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="!text-lg !font-semibold !mb-0 !mt-0">Filters</h2>
+                        <p class="text-xs text-slate-500 !mb-0">
+                            Refine the executions list<span x-show="activeFilterCount > 0"> - <span x-text="activeFilterCount"></span> active filter(s)</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button @click="filtersOpen = false"
+                            class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCROLLABLE BODY -->
+            <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
+
+                <!-- Executions scope -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-1 space-y-4">
+
+                    <!-- Status -->
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">Status</label>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allStatuses(true)">All</button>
+                            <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allStatuses(false)">None</button>
+                        </div>
+                        <div class="v2rt-fgroup-items">
+                            <template x-for="s in statusOrder" :key="'f' + s">
+                                <button type="button" class="v2rt-fpill"
+                                        :class="activeStatuses[s] ? 'v2rt-fpill--on' : ''"
+                                        :style="activeStatuses[s] ? ('--fpill-color:' + statusColor(s)) : ''"
+                                        @click="toggleStatus(s)">
+                                    <span class="v2rt-fpill-dot" :style="'background:' + statusColor(s)"></span>
+                                    <span x-text="s"></span>
+                                    <span class="v2rt-fpill-label" x-text="statusLabels[s]"></span>
+                                    <span class="v2rt-fpill-count" x-text="statusCounts[s]"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Environment / Country / Robot / Application -->
+                    <template x-for="grp in [
+                            { key: 'env', title: 'Environment', map: activeEnvs },
+                            { key: 'country', title: 'Country', map: activeCountries },
+                            { key: 'robot', title: 'Robot', map: activeRobots },
+                            { key: 'app', title: 'Application', map: activeApps }
+                        ]" :key="grp.key">
+                        <div x-show="Object.keys(grp.map).length > 0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400" x-text="grp.title"></label>
+                                <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allIn(grp.map, true)">All</button>
+                                <button type="button" class="v2rt-btn v2rt-btn--xs" @click="allIn(grp.map, false)">None</button>
+                            </div>
+                            <div class="v2rt-fgroup-items">
+                                <template x-for="k in Object.keys(grp.map).sort()" :key="grp.key + '-' + k">
+                                    <button type="button" class="v2rt-fpill" :class="grp.map[k] ? 'v2rt-fpill--on v2rt-fpill--blue' : ''"
+                                            @click="toggleIn(grp.map, k)" x-text="k"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Special filters -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Special</label>
+                        <div class="v2rt-fgroup-items">
+                            <button type="button" class="v2rt-fpill" :class="onlyFlaky ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="onlyFlaky = !onlyFlaky"
+                                    title="Only executions that needed retries to pass">
+                                Flaky only
+                            </button>
+                            <button type="button" class="v2rt-fpill" :class="onlyBugged ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="onlyBugged = !onlyBugged"
+                                    title="Only test cases with at least one active bug">
+                                With bugs only
+                            </button>
+                            <button type="button" class="v2rt-fpill" :class="onlyManual ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="onlyManual = !onlyManual"
+                                    title="Only manual executions">
+                                Manual only
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display options -->
+                <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mt-3 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Rows</label>
+                            <div class="v2rt-seg">
+                                <button type="button" class="v2rt-seg-item" :class="rowsMode === 'all' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'all'">All</button>
+                                <button type="button" class="v2rt-seg-item" :class="rowsMode === 'hideOk' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'hideOk'">Hide OK</button>
+                                <button type="button" class="v2rt-seg-item" :class="rowsMode === 'hideOkFlaky' ? 'v2rt-seg-item--on' : ''" @click="rowsMode = 'hideOkFlaky'">Hide OK &amp; flaky</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Columns</label>
+                            <div class="v2rt-fgroup-items">
+                                <button type="button" class="v2rt-fpill" :class="showCols.prio ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.prio = !showCols.prio">Priority</button>
+                                <button type="button" class="v2rt-fpill" :class="showCols.app ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.app = !showCols.app">Application</button>
+                                <button type="button" class="v2rt-fpill" :class="showCols.lastRun ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.lastRun = !showCols.lastRun">Last run</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="flex items-center gap-2 px-6 py-3 shrink-0">
+                <span class="text-xs text-slate-500 dark:text-slate-400" x-text="visibleRows.length + ' / ' + rows.length + ' test cases match'"></span>
+                <span class="flex-1"></span>
+                <button type="button" @click="resetFilters()"
+                        class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Reset all</button>
+                <button type="button" @click="filtersOpen = false"
+                        class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Done</button>
+            </div>
+        </div>
+    </div>
+</div>

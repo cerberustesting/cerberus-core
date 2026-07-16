@@ -428,9 +428,9 @@
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
             <button type="button" @click="open = false" name="buttonClose" id="closeButton" class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Close</button>
-            <button type="button" id="editDataLibButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Save</button>
-            <button type="button" id="addDataLibButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Add</button>
-            <button type="button" id="duplicateDataLibButton" name="buttonDuplicate" class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">Duplicate</button>
+            <button type="button" id="editDataLibButton" name="buttonEdit" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Save</button>
+            <button type="button" id="addDataLibButton" name="buttonAdd" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Add</button>
+            <button type="button" id="duplicateDataLibButton" name="buttonDuplicate" class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition">Duplicate</button>
         </div>
     </div>
 </div>
@@ -677,7 +677,7 @@ function editDataLibClick(dataLibEntry) {
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
 
-    $('#editDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition').removeAttr('hidden');
+    $('#editDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition').removeAttr('hidden');
     $('#duplicateDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#addDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
 
@@ -691,7 +691,7 @@ function editDataLibClick(dataLibEntry) {
  */
 function duplicateDataLibClick(dataLibEntry) {
 
-    $('#duplicateDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition')
+    $('#duplicateDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition')
         .removeAttr('hidden');
     $('#editDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#addDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
@@ -708,7 +708,7 @@ function addDataLibClick(dataLibEntry, dataLibName) {
 
     // Prepare all Events handler of the modal.
 
-    $('#addDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-blue-400 text-white hover:bg-blue-700 transition')
+    $('#addDataLibButton').attr('class', 'px-3 py-2 rounded-md bg-sky-400 text-white hover:bg-sky-500 transition')
         .removeAttr('hidden');
     $('#editDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
     $('#duplicateDataLibButton').attr('class', 'hidden').attr('hidden', 'hidden');
@@ -815,13 +815,16 @@ function confirmDataLibModalHandler(mode, page, aceElementId, dataLibName) {
                         var editor = ace.edit($("#" + aceElementId)[0])
                         editor.setValue($("#tdlname").val());
                     } else if (page === "TestCaseScript_Steps") {
-                        var Tags = getTags();
-                        for (var i = 0; i < Tags.length; i++) {
-                            if (Tags[i].name === "datalib") {
-                                Tags[i].array.push(formData.get("name"));
+                        // getTags is only defined by TestCaseScript.js (V1); guard so V2 callers don't crash here.
+                        if (typeof getTags === 'function') {
+                            var Tags = getTags();
+                            for (var i = 0; i < Tags.length; i++) {
+                                if (Tags[i].name === "datalib") {
+                                    Tags[i].array.push(formData.get("name"));
+                                }
                             }
+                            $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
                         }
-                        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
                     }
                 }
 
