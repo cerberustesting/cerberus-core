@@ -91,7 +91,7 @@
                                        class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400">
                             </div>
                             <!-- System dropdown -->
-                            <div class="flex-1" x-data="labelDropdown({id:'edit_system_dd', hiddenInput:'edit_system', preselectEvent:'edit-label-system-preselect', loader: labelLoaders.invariant('SYSTEM')})" @click.stop>
+                            <div class="flex-1" x-data="labelDropdown({id:'edit_system_dd', hiddenInput:'edit_system', preselectEvent:'edit-label-system-preselect', loader: labelLoaders.invariant('SYSTEM'), allowClear:true})" @click.stop>
                                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemField">System</label>
                                 <input type="hidden" id="edit_system" name="system">
                                 <div class="relative w-full">
