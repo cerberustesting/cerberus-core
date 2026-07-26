@@ -37,6 +37,7 @@ import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.cerberus.core.websocket.ExecutionMonitor;
 import org.cerberus.core.websocket.ExecutionMonitorWebSocket;
@@ -189,6 +190,35 @@ public class ExecutionPrivateController {
 
     }
 
+    
+    @Operation(hidden = true)
+    @GetMapping("/search")
+    public String getExecutionFromTestCase(
+            @RequestParam(name = "testFolderId", value = "testFolderId", required = true) String testFolderId,
+            @RequestParam(name = "testcaseId", value = "testcaseId", required = true) String testcaseId,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+            LOG.debug(testFolderId);
+            LOG.debug(testcaseId);
+
+//             AnswerItem<TestCaseExecution> ans = null;
+//             ans = executionService.readLastByCriteria(testcaseId, testcaseId, null, null, null);
+//            return jsonResponse.put("iTotalRecords", .getItem()getNbExecutions(systems)).toString();
+            return null;
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return "error " + ex.getMessage();
+        }
+    }
+
+    
+    
     @Operation(hidden = true)
     @GetMapping("/monthlyStats")
     public TestCaseExecutionMonthlyStatsDTOV001 getMonthlyStats(
