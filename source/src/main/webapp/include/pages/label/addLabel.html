@@ -62,7 +62,7 @@
                 <!-- Row 1: System + Type -->
                 <div class="flex gap-3 mb-3">
                     <!-- System dropdown -->
-                    <div class="flex-1" x-data="labelDropdown({id:'add_system_dd', hiddenInput:'add_system', preselectEvent:'add-label-system-preselect', loader: labelLoaders.invariant('SYSTEM')})" @click.stop>
+                    <div class="flex-1" x-data="labelDropdown({id:'add_system_dd', hiddenInput:'add_system', preselectEvent:'add-label-system-preselect', loader: labelLoaders.invariant('SYSTEM'), allowClear:true})" @click.stop>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="systemField">System</label>
                         <input type="hidden" id="add_system" name="system">
                         <div class="relative w-full">
@@ -333,7 +333,16 @@
             init: function() {
                 var self = this;
                 if (config.loader) {
-                    config.loader(function(items) { self.items = items; });
+                    config.loader(function(items) {
+                        var loadedItems = items || [];
+                        if (config.allowClear) {
+                            loadedItems = loadedItems.filter(function(item) {
+                                return String(item.value) !== '';
+                            });
+                            loadedItems.unshift({ value: '', label: config.clearLabel || '-- None --' });
+                        }
+                        self.items = loadedItems;
+                    });
                 }
                 if (config.preselectEvent) {
                     window.addEventListener(config.preselectEvent, function(e) {

@@ -43,7 +43,17 @@ function crbDropdown(config) {
             }
 
             if (config.loader) {
-                config.loader(function(items) { self.allItems = items; self.items = items; });
+                config.loader(function(items) {
+                    var loadedItems = items || [];
+                    if (config.allowClear) {
+                        loadedItems = loadedItems.filter(function(item) {
+                            return String(item.value) !== '';
+                        });
+                        loadedItems.unshift({ value: '', label: config.clearLabel || '-- None --' });
+                    }
+                    self.allItems = loadedItems;
+                    self.items = loadedItems;
+                });
             }
             if (config.preselectEvent) {
                 window.addEventListener(config.preselectEvent, function(e) {
