@@ -176,6 +176,9 @@ public class TestCaseExecution {
     private MessageGeneral resultMessage;
     // Defined if execution needs to stop
     private boolean stopExecution;
+    // Runtime only (not persisted) : when true, the execution pauses before each action and
+    // waits for an explicit "next" signal (see DebugSessionRegistry) instead of running straight through.
+    private boolean debugMode;
     // contain all event messages collected during the execution. It will be used at the end of the execution in order to get the final status and message.
     private List<MessageGeneral> resultMessageList;
 
@@ -448,6 +451,7 @@ public class TestCaseExecution {
             result.put("robotPort", this.getRobotPort());
             result.put("remoteLiveUrl", this.getRemoteLiveUrl());
             result.put("remoteControlLiveUrl", this.getRemoteControlLiveUrl());
+            result.put("executionUUID", this.getExecutionUUID());
             result.put("url", StringUtil.secureFromSecrets(this.getUrl(), this.getSecrets()));
             result.put("tag", this.getTag());
             result.put("verbose", this.getVerbose());

@@ -20,11 +20,15 @@
 package org.cerberus.core.websocket;
 
 import org.cerberus.core.api.dto.campaignexecution.CampaignExecutionMapperV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionStatusDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionStatusMapperV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightDTOV001;
 import org.cerberus.core.api.dto.testcaseexecution.TestcaseExecutionLightMapperV001;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseStepAction;
+import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.cerberus.core.websocket.runtime.QueueStatus;
@@ -51,6 +55,8 @@ public class WebSocketService {
     private TestcaseExecutionLightMapperV001 testcaseExecutionLightMapper;
     @Autowired
     private CampaignExecutionMapperV001 campaignExecutionMapper;
+    @Autowired
+    private DebugExecutionStatusMapperV001 debugExecutionStatusMapper;
     @Autowired
     private ExecutionMonitor executionMonitor;
     @Autowired
@@ -113,6 +119,36 @@ public class WebSocketService {
             webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA_ID(execution.getTagObj().getCampaign()), executionLight);
         }
 
+    }
+
+    /**
+     * Debug-mode execution just paused (about to run an action or control) or resumed
+     * (action/control now actually executing). Pushed on the execution's existing "delta"
+     * channel — declared but never used by {@link #notifyExecutionUpdate} — so no new channel
+     * or subscription-authorization change is needed on either side.
+     *
+     * @param waiting        true if pausing (WAITING_FOR_NEXT), false if resuming (RUNNING)
+     * @param pendingAction  the (static) action about to run, or owning the pending control, null if not waiting
+     * @param pendingControl the (static) control about to run, null unless paused on a control specifically
+     * @param pendingFailed  true if the pending action/control already failed once and "retry" is meaningful
+     */
+    public void notifyDebugPending(TestCaseExecution execution, boolean waiting, TestCaseStepAction pendingAction,
+            TestCaseStepActionControl pendingControl, boolean pendingFailed) {
+        DebugExecutionStatusDTOV001 payload = debugExecutionStatusMapper.toDTO(execution, waiting, pendingAction, pendingControl, pendingFailed);
+        // No throttling : debug pauses are infrequent and each one matters (the user is
+        // literally waiting on it to know it's their turn to click "Next").
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DELTA_ID(execution.getId()), payload, false, true);
+    }
+
+    /**
+     * Debug-mode execution just ended for good (normal completion, explicit stop, or a fatal
+     * action/control failure that short-circuited the remaining steps without ever reaching
+     * another pause point). Without this, the debug page's last known state would stay stuck on
+     * "running" until its slow reconciliation poll happens to notice the session is gone.
+     */
+    public void notifyDebugFinished(TestCaseExecution execution) {
+        DebugExecutionStatusDTOV001 payload = debugExecutionStatusMapper.toFinishedDTO(execution);
+        webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_EXECUTION_DELTA_ID(execution.getId()), payload, false, true);
     }
 
     /**

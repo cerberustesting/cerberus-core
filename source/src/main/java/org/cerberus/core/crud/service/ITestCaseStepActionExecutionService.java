@@ -101,4 +101,18 @@ public interface ITestCaseStepActionExecutionService {
      * @return
      */
     public AnswerList<TestCaseStepActionExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int stepId, int index);
+
+    /**
+     * Deletes the execution row for a single action. Used by debug-mode
+     * "retry" right before re-executing (and re-inserting) that same action,
+     * to avoid a PRIMARY key violation.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     */
+    void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence);
 }

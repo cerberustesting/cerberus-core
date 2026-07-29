@@ -38,12 +38,14 @@ public interface IExecutionRunService {
     TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException;
 
     /**
+     * Fire-and-forget : runs the execution on Spring's async executor. Declared {@code void}
+     * because Spring's async proxy rejects any other return type but {@code void}/{@code Future}
+     * when the method is invoked as async (throws IllegalArgumentException otherwise) — any
+     * failure is logged internally rather than propagated to the (non-blocking) caller.
      *
      * @param tCExecution
-     * @return
-     * @throws CerberusException
      */
-    TestCaseExecution executeTestCaseAsynchronously(TestCaseExecution tCExecution) throws CerberusException;
+    void executeTestCaseAsynchronously(TestCaseExecution tCExecution);
     
     /**
      * Stop the Test Case Execution

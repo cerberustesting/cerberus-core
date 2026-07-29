@@ -155,4 +155,9 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
         response = new AnswerList<>(tcsaeList, actions.getTotalRows());
         return response;
     }
+
+    @Override
+    public void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence) {
+        testCaseStepActionExecutionDao.deleteByKey(executionId, test, testcase, stepId, index, sequence);
+    }
 }

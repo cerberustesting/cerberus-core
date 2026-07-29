@@ -41,11 +41,16 @@ import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseExecutionSysVerService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.engine.execution.debug.DebugCommand;
+import org.cerberus.core.engine.execution.debug.DebugSession;
+import org.cerberus.core.engine.execution.debug.DebugSessionRegistry;
 import org.cerberus.core.engine.execution.IConditionService;
 import org.cerberus.core.engine.execution.IExecutionRunService;
 import org.cerberus.core.engine.execution.IRecorderService;
@@ -71,6 +76,7 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.websocket.WebSocketService;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
@@ -148,6 +154,9 @@ public class ExecutionRunService implements IExecutionRunService {
     private IXRayService xRayService;
     private IBugService bugService;
     private IIdentifierService identifierService;
+    private DebugSessionRegistry debugSessionRegistry;
+    private ITestCaseStepActionService testCaseStepActionService;
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution execution) throws CerberusException {
@@ -874,6 +883,20 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.error("{}Exception cleaning Memory: {}", logPrefix, ex.toString(), ex);
             }
 
+            // Clean debug session (no-op if this execution was not started in debug mode).
+            try {
+                if (execution.isDebugMode()) {
+                    // The execution can end here without ever reaching another pause point (e.g.
+                    // a fatal action/control failure short-circuits straight to this finally
+                    // block) — push an explicit "finished" so the debug page updates immediately
+                    // instead of waiting on its slow reconciliation poll.
+                    webSocketService.notifyDebugFinished(execution);
+                }
+                debugSessionRegistry.remove(execution.getExecutionUUID());
+            } catch (Exception ex) {
+                LOG.error("{}Exception cleaning DebugSession: {}", logPrefix, ex.toString(), ex);
+            }
+
             // Credit Limit increase
             sessionCounter.incrementCreditLimitNbExe();
             long durationinSecond = (execution.getEnd() - execution.getStart()) / 1000;
@@ -1028,7 +1051,71 @@ public class ExecutionRunService implements IExecutionRunService {
         LOG.debug("{}Getting list of actions of the step. {} action(s) to perform.", logPrefix, testCaseStepActionList.size());
 
         execution.setTestCaseStepInExecution(stepExecution);
-        for (TestCaseStepAction tcAction : testCaseStepActionList) {
+        int actionIdx = 0;
+        actionLoop:
+        while (actionIdx < testCaseStepActionList.size()) {
+        TestCaseStepAction tcAction = testCaseStepActionList.get(actionIdx);
+        // True once THIS action has already failed once in debug mode : the next pause offers
+        // retry-or-move-on instead of a plain "about to run for the first time" pause.
+        boolean debugOfferingRetry = false;
+
+        actionRetryLoop:
+        while (true) {
+
+            // Debug mode : pause here and wait for an explicit "next"/"retry" (or "stop") command
+            // instead of running straight through, keeping the Selenium/robot session alive.
+            if (execution.isDebugMode()) {
+                DebugSession debugSession = debugSessionRegistry.get(execution.getExecutionUUID());
+                if (debugSession != null) {
+                    debugSession.setPendingAction(tcAction);
+                    debugSession.setPendingFailed(debugOfferingRetry);
+                    webSocketService.notifyDebugPending(execution, true, tcAction, null, debugOfferingRetry);
+                    DebugCommand cmd = DebugCommand.NEXT;
+                    try {
+                        cmd = debugSession.awaitCommand();
+                    } catch (InterruptedException ie) {
+                        execution.setStopExecution(true);
+                        Thread.currentThread().interrupt();
+                    }
+                    // The action is now actually running (not just "about to run") : clear it so
+                    // DebugExecutionService.getStatus() correctly reports RUNNING while it executes.
+                    debugSession.clearPending();
+                    webSocketService.notifyDebugPending(execution, false, null, null, false);
+                    if (execution.isStopExecution()) {
+                        break actionLoop;
+                    }
+                    if (debugOfferingRetry) {
+                        if (cmd == DebugCommand.RETRY) {
+                            // Reload fresh from DB so an edit made elsewhere (e.g. the test case
+                            // editor) is picked up before re-running.
+                            TestCaseStepAction reloaded = reloadTestCaseStepAction(tcAction);
+                            if (reloaded == null) {
+                                // Deleted from the test case definition while this session sat
+                                // paused on it : nothing left to retry, skip it like an accepted
+                                // failure instead of re-running/re-inserting a phantom action.
+                                execution.addExecutionLog(ExecutionLog.STATUS_WARN, "Debug retry : action step " + tcAction.getStepId() + " action " + tcAction.getActionId() + " no longer exists in the test case, skipping it.");
+                                actionIdx++;
+                                continue actionLoop;
+                            }
+                            // About to re-execute (and re-insert) this action with the exact same
+                            // key (executionId/step/index/actionId) as its previous attempt :
+                            // delete that old row first, or the insert below violates the PRIMARY
+                            // key. Its previously recorded controls are cleared too, since they
+                            // are all about to be re-executed (and re-inserted) as well.
+                            testCaseStepActionExecutionService.deleteByKey(stepExecution.getId(), reloaded.getTest(), reloaded.getTestcase(), reloaded.getStepId(), stepExecution.getIndex(), reloaded.getActionId());
+                            testCaseStepActionControlExecutionService.deleteByActionKey(stepExecution.getId(), reloaded.getTest(), reloaded.getTestcase(), reloaded.getStepId(), stepExecution.getIndex(), reloaded.getActionId());
+                            tcAction = reloaded;
+                            debugOfferingRetry = false;
+                            // fall through : re-execute below with the refreshed definition.
+                        } else {
+                            // NEXT after a failure : accept it, move on to the next action.
+                            actionIdx++;
+                            continue actionLoop;
+                        }
+                    }
+                    // else : first-time NEXT for this action -> fall through and execute it.
+                }
+            }
 
             // Start Execution of TestCaseStepAction
             long startAction = new Date().getTime();
@@ -1167,7 +1254,15 @@ public class ExecutionRunService implements IExecutionRunService {
 //                        }
 
                         if (execution.isStopExecution()) {
-                            break;
+                            if (execution.isDebugMode()) {
+                                // Debug mode never lets a single action's own failure end the
+                                // whole session : suppress the auto-stop and re-pause on this
+                                // same action, offering retry-or-move-on instead.
+                                execution.setStopExecution(false);
+                                debugOfferingRetry = true;
+                                continue actionRetryLoop;
+                            }
+                            break actionLoop;
                         }
                     } else {
                         // We don't execute the action and record a generic execution.
@@ -1219,10 +1314,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     actionExecution.setEnd(new Date().getTime());
 
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
+
+                    updateExecutionWebSocketOnly(execution, false);
+
                     LOG.debug("{}Action interrupted due to condition error.", logPrefix);
-                    // We stop any further Action execution.
+                    // We stop any further Action execution. (Condition-evaluation errors are a
+                    // config problem, not an action-execution failure : not offered for retry,
+                    // even in debug mode.)
                     if (execution.isStopExecution()) {
-                        break;
+                        break actionLoop;
                     }
                 }
             } else {
@@ -1232,7 +1332,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
                 LOG.debug("{}Registered Action", logPrefix);
                 if (execution.isStopExecution()) {
-                    break;
+                    break actionLoop;
                 }
             }
 
@@ -1241,6 +1341,9 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.info(actionExecution.toJson(false, true, execution.getSecrets()));
             }
 
+            break actionRetryLoop;
+        }
+        actionIdx++;
         }
         stepExecution.setEnd(new Date().getTime());
 
@@ -1249,6 +1352,52 @@ public class ExecutionRunService implements IExecutionRunService {
         updateExecutionWebSocketOnly(execution, false);
 
         return stepExecution;
+    }
+
+    // Debug mode "retry" : re-fetches the action fresh from DB so an edit made elsewhere (e.g.
+    // the test case editor, in another tab, while the debug session sits paused) is picked up
+    // before re-running it. Returns null (rather than falling back to the stale in-memory copy)
+    // when the action genuinely no longer exists (e.g. deleted while the session sat paused on
+    // it) : silently re-running/re-inserting a phantom action would be misleading. Only a
+    // transient reload failure (exception) falls back to the previous definition, so a retry
+    // never crashes the execution outright.
+    private TestCaseStepAction reloadTestCaseStepAction(TestCaseStepAction original) {
+        try {
+            AnswerList<TestCaseStepAction> answer = testCaseStepActionService.readByVarious1WithDependency(
+                    original.getTest(), original.getTestcase(), original.getStepId());
+            for (TestCaseStepAction candidate : answer.getDataList()) {
+                if (candidate.getActionId() == original.getActionId()) {
+                    return candidate;
+                }
+            }
+            LOG.warn("Retry requested but action {}/{} step {} action {} could not be reloaded (not found) : it was likely deleted from the test case definition, skipping it.",
+                    original.getTest(), original.getTestcase(), original.getStepId(), original.getActionId());
+            return null;
+        } catch (Exception ex) {
+            LOG.warn("Retry requested but reloading action {}/{} step {} action {} failed : reusing previous definition. {}",
+                    original.getTest(), original.getTestcase(), original.getStepId(), original.getActionId(), ex.toString(), ex);
+            return original;
+        }
+    }
+
+    // Same idea as reloadTestCaseStepAction, for a single control.
+    private TestCaseStepActionControl reloadTestCaseStepActionControl(TestCaseStepActionControl original) {
+        try {
+            AnswerList<TestCaseStepActionControl> answer = testCaseStepActionControlService.readByVarious1(
+                    original.getTest(), original.getTestcase(), original.getStepId(), original.getActionId());
+            for (TestCaseStepActionControl candidate : answer.getDataList()) {
+                if (candidate.getControlId() == original.getControlId()) {
+                    return candidate;
+                }
+            }
+            LOG.warn("Retry requested but control {}/{} step {} action {} control {} could not be reloaded (not found) : it was likely deleted from the test case definition, skipping it.",
+                    original.getTest(), original.getTestcase(), original.getStepId(), original.getActionId(), original.getControlId());
+            return null;
+        } catch (Exception ex) {
+            LOG.warn("Retry requested but reloading control {}/{} step {} action {} control {} failed : reusing previous definition. {}",
+                    original.getTest(), original.getTestcase(), original.getStepId(), original.getActionId(), original.getControlId(), ex.toString(), ex);
+            return original;
+        }
     }
 
     private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution actionExecution, TestCaseExecution execution) {
@@ -1306,7 +1455,68 @@ public class ExecutionRunService implements IExecutionRunService {
         MessageEvent actionMessage = actionExecution.getActionResultMessage();
         // Iterate Control
         List<TestCaseStepActionControl> tcsacList = actionExecution.getTestCaseStepAction().getControls();
-        for (TestCaseStepActionControl control : tcsacList) {
+        int controlIdx = 0;
+        controlLoop:
+        while (controlIdx < tcsacList.size()) {
+        TestCaseStepActionControl control = tcsacList.get(controlIdx);
+        // True once THIS control has already failed once in debug mode : the next pause offers
+        // retry-or-move-on instead of a plain "about to run for the first time" pause.
+        boolean debugOfferingRetry = false;
+
+        controlRetryLoop:
+        while (true) {
+
+            // Debug mode : pause here too, so each control also waits for its own "next"/"retry"
+            // instead of all of an action's controls running back-to-back.
+            if (execution.isDebugMode()) {
+                DebugSession debugSession = debugSessionRegistry.get(execution.getExecutionUUID());
+                if (debugSession != null) {
+                    TestCaseStepAction pendingParentAction = actionExecution.getTestCaseStepAction();
+                    debugSession.setPendingAction(pendingParentAction);
+                    debugSession.setPendingControl(control);
+                    debugSession.setPendingFailed(debugOfferingRetry);
+                    webSocketService.notifyDebugPending(execution, true, pendingParentAction, control, debugOfferingRetry);
+                    DebugCommand cmd = DebugCommand.NEXT;
+                    try {
+                        cmd = debugSession.awaitCommand();
+                    } catch (InterruptedException ie) {
+                        execution.setStopExecution(true);
+                        Thread.currentThread().interrupt();
+                    }
+                    debugSession.clearPending();
+                    webSocketService.notifyDebugPending(execution, false, null, null, false);
+                    if (execution.isStopExecution()) {
+                        break controlLoop;
+                    }
+                    if (debugOfferingRetry) {
+                        if (cmd == DebugCommand.RETRY) {
+                            // Reload fresh from DB so an edit made elsewhere is picked up.
+                            TestCaseStepActionControl reloaded = reloadTestCaseStepActionControl(control);
+                            if (reloaded == null) {
+                                // Deleted from the test case definition while this session sat
+                                // paused on it : nothing left to retry, skip it like an accepted
+                                // failure instead of re-running/re-inserting a phantom control.
+                                execution.addExecutionLog(ExecutionLog.STATUS_WARN, "Debug retry : control step " + control.getStepId() + " action " + control.getActionId() + " control " + control.getControlId() + " no longer exists in the test case, skipping it.");
+                                controlIdx++;
+                                continue controlLoop;
+                            }
+                            // About to re-execute (and re-insert) this control with the exact
+                            // same key (executionId/step/index/actionId/controlId) as its
+                            // previous attempt : delete that old row first, or the insert below
+                            // violates the PRIMARY key.
+                            testCaseStepActionControlExecutionService.deleteByKey(actionExecution.getId(), reloaded.getTest(), reloaded.getTestcase(), reloaded.getStepId(), actionExecution.getIndex(), reloaded.getActionId(), reloaded.getControlId());
+                            control = reloaded;
+                            debugOfferingRetry = false;
+                            // fall through : re-execute below with the refreshed definition.
+                        } else {
+                            // NEXT after a failure : accept it, move on to the next control.
+                            controlIdx++;
+                            continue controlLoop;
+                        }
+                    }
+                    // else : first-time NEXT for this control -> fall through and execute it.
+                }
+            }
 
             // Start Execution of TestCAseStepActionControl
             long startControl = new Date().getTime();
@@ -1452,7 +1662,15 @@ public class ExecutionRunService implements IExecutionRunService {
                         }
                         //If Control report stopping the testcase, we stop it.
                         if (execution.isStopExecution()) {
-                            break;
+                            if (execution.isDebugMode()) {
+                                // Debug mode never lets a single control's own failure end the
+                                // whole session : suppress the auto-stop and re-pause on this
+                                // same control, offering retry-or-move-on instead.
+                                execution.setStopExecution(false);
+                                debugOfferingRetry = true;
+                                continue controlRetryLoop;
+                            }
+                            break controlLoop;
                         }
 
                     } else { // We don't execute the control and record a generic execution.
@@ -1502,8 +1720,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
                     LOG.debug("Control interrupted due to condition error.");
-                    // We stop any further Control execution.
-                    break;
+                    // We stop any further Control execution. (Condition-evaluation errors are a
+                    // config problem, not a control-execution failure : not offered for retry,
+                    // even in debug mode — matches the same choice made for actions.)
+                    break controlLoop;
                 }
             } else {
 
@@ -1522,6 +1742,9 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.info(controlExecution.toJson(false, true, execution.getSecrets()));
             }
 
+            break controlRetryLoop;
+        }
+        controlIdx++;
         }
 
         /*
@@ -1650,11 +1873,11 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Override
     @Async
-    public TestCaseExecution executeTestCaseAsynchronously(TestCaseExecution execution) throws CerberusException {
+    public void executeTestCaseAsynchronously(TestCaseExecution execution) {
         try {
-            return executeTestCase(execution);
+            executeTestCase(execution);
         } catch (CerberusException ex) {
-            throw new CerberusException(ex.getMessageError());
+            LOG.error("Asynchronous execution failed : UUID={} causedBy={}", execution.getExecutionUUID(), ex.getMessageError().getDescription(), ex);
         }
     }
 }

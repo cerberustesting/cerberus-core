@@ -465,4 +465,83 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3,
                 fatal, start, end, startlong, endlong, description, null, null);
     }
+
+    @Override
+    public void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence) {
+
+        final String query = "DELETE FROM testcasestepactioncontrolexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ? AND controlsequence = ?";
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setLong(i++, executionId);
+                preStat.setString(i++, test);
+                preStat.setString(i++, testcase);
+                preStat.setInt(i++, stepId);
+                preStat.setInt(i++, index);
+                preStat.setInt(i++, sequence);
+                preStat.setInt(i++, controlSequence);
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+    }
+
+    @Override
+    public void deleteByActionKey(long executionId, String test, String testcase, int stepId, int index, int sequence) {
+
+        final String query = "DELETE FROM testcasestepactioncontrolexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ?";
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setLong(i++, executionId);
+                preStat.setString(i++, test);
+                preStat.setString(i++, testcase);
+                preStat.setInt(i++, stepId);
+                preStat.setInt(i++, index);
+                preStat.setInt(i++, sequence);
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+    }
 }

@@ -47,6 +47,7 @@ src/main/webapp/css/
 @import "./utilities.css";
 @import "./pages/homepage.css";
 @import "./pages/testcaseexecution.css";
+@import "./pages/testcaseexecutiondebug.css";
 
 
 

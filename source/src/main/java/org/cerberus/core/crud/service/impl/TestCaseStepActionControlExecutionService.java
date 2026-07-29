@@ -94,4 +94,14 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
     }
 
+    @Override
+    public void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence) {
+        testCaseStepActionControlExecutionDao.deleteByKey(executionId, test, testcase, stepId, index, sequence, controlSequence);
+    }
+
+    @Override
+    public void deleteByActionKey(long executionId, String test, String testcase, int stepId, int index, int sequence) {
+        testCaseStepActionControlExecutionDao.deleteByActionKey(executionId, test, testcase, stepId, index, sequence);
+    }
+
 }

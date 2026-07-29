@@ -99,4 +99,19 @@ public interface ITestCaseStepActionExecutionDAO {
      * @throws SQLException
      */
     public TestCaseStepActionExecution loadFromResultset(ResultSet resultSet) throws SQLException;
+
+    /**
+     * Deletes the execution row for a single action, identified by its full
+     * primary key. Used by debug-mode "retry" : the same action is about to be
+     * re-executed (and re-inserted) with the exact same key, which would
+     * otherwise violate the PRIMARY constraint.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     */
+    void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence);
 }

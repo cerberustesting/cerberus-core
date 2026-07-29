@@ -121,7 +121,7 @@
           Page Title
     =========================== */
     .page-title-line {
-        @apply !text-3xl !font-bold pb-2 !mb-2 !m-0
+        @apply !text-2xl !font-bold pb-2 !mb-2 !m-0
     }
 
     .page-subtitle-line {

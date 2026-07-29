@@ -72,6 +72,9 @@
             <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
             <%@ include file="include/utils/modal-generic.html"%>
 
+            <!-- Debug launch popover -->
+            <%@ include file="include/pages/testcasescriptv2/debugLaunchPopover.html"%>
+
             <!-- ============================================================ -->
             <!-- REUSABLE TEMPLATES                                           -->
             <!-- ============================================================ -->

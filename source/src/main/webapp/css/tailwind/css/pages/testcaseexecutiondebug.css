@@ -1,0 +1,100 @@
+/* Debug-mode test case execution page (TestCaseExecutionDebug.jsp).
+   Same v2- animation/utility classes as TestCaseExecutionV2.css / TestCaseScriptV2.css —
+   duplicated here rather than shared until those pages migrate into this pipeline too. */
+
+@keyframes v2-fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.v2-fade-in { animation: v2-fadeIn 0.2s ease-out; }
+
+@keyframes v2-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.v2-pulse { animation: v2-pulse 1.5s ease-in-out infinite; }
+
+@keyframes v2-exe-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.v2-exe-spin-limited { animation: v2-exe-spin 1s linear infinite; }
+
+.v2-header-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s, opacity 0.15s;
+}
+.v2-header-action-btn:hover:not(:disabled) {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.v2-header-action-btn:active:not(:disabled) {
+    transform: scale(0.97);
+}
+.v2-header-action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.v2-step-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 4px;
+    border-radius: 7px;
+    background: var(--crb-grey-lighter-color, #f1f5f9);
+    color: var(--crb-grey-color, #64748b);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.v2-exe-step-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--crb-grey-color, #64748b);
+}
+
+/* "Waiting for next" highlight, on the control-bar banner and on the pending action row */
+@keyframes v2-debug-pending-glow {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--crb-blue-color) 35%, transparent); }
+    50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--crb-blue-color) 15%, transparent); }
+}
+.v2-debug-pending {
+    animation: v2-debug-pending-glow 1.6s ease-in-out infinite;
+}
+
+/* Target of an in-progress "run to here" fast-forward */
+.v2-debug-target {
+    outline: 2px dashed color-mix(in srgb, #f59e0b 60%, transparent);
+    outline-offset: 1px;
+    border-radius: 8px;
+}
+
+/* Not-yet-executed status dot : hollow instead of filled, so it's visually distinct from a
+   genuinely skipped/neutral (NE/NA/CA) result. */
+.v2-debug-notrun {
+    background: transparent !important;
+    box-shadow: inset 0 0 0 1.5px var(--crb-grey-color, #94a3b8);
+}
+
+:root.dark .v2-step-badge {
+    background: #1e293b;
+    color: #94a3b8;
+}

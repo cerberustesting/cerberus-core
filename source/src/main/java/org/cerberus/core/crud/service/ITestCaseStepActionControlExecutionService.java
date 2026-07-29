@@ -94,4 +94,33 @@ public interface ITestCaseStepActionControlExecutionService {
      * @return List of testcasestepactioncontrol object
      */
     public AnswerList<TestCaseStepActionControlExecution> readByVarious1WithDependency(long executionId, String test, String testcase, int stepId, int index, int sequence);
+
+    /**
+     * Deletes the execution row for a single control. Used by debug-mode
+     * "retry" on a single control, right before re-executing (and
+     * re-inserting) it, to avoid a PRIMARY key violation.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     * @param controlSequence
+     */
+    void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence);
+
+    /**
+     * Deletes every control execution row recorded under a given action.
+     * Used by debug-mode "retry" on a whole action, right before it
+     * re-executes all its controls, to avoid PRIMARY key violations.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     */
+    void deleteByActionKey(long executionId, String test, String testcase, int stepId, int index, int sequence);
 }

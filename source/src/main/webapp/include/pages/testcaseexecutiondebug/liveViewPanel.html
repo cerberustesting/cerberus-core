@@ -1,0 +1,79 @@
+<!-- TestCaseDebug V2 - Live View (main panel, promoted from the execution page's Vision modal) -->
+
+<div class="flex flex-col rounded-2xl v2-fade-in overflow-hidden"
+     style="background: #0a0a0a; border: 1px solid var(--crb-grey-light-color); min-height: 560px">
+
+    <!-- Panel header -->
+    <div class="flex items-center justify-between px-4 py-2.5 shrink-0"
+         style="background: var(--crb-new-bg); border-bottom: 1px solid var(--crb-grey-light-color)">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full v2-pulse" style="background: var(--crb-blue-color)"></span>
+            <span class="text-[11px] font-bold uppercase tracking-wider" style="color: var(--crb-dark-color)">Live view</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+            <!-- Take Control -->
+            <template x-if="exe.remoteControlLiveUrl">
+                <button @click="window.open(exe.remoteControlLiveUrl, '_blank')"
+                        class="h-8 px-3 rounded-lg flex items-center gap-1.5 text-[11px] font-semibold transition"
+                        style="background: color-mix(in srgb, #8b5cf6 12%, transparent); color: #8b5cf6; border: 1px solid color-mix(in srgb, #8b5cf6 25%, transparent);"
+                        data-tip="Take remote control of the session">
+                    <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i>
+                    Take Control
+                </button>
+            </template>
+            <!-- Open in new tab -->
+            <template x-if="exe.remoteLiveUrl">
+                <button @click="window.open(exe.remoteLiveUrl, '_blank')"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        data-tip="Open in new tab">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                </button>
+            </template>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="flex-1 min-h-0 relative" style="min-height: 500px">
+
+        <!-- No live URL known yet / not available for this robot -->
+        <template x-if="!exe.remoteLiveUrl">
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-8" style="color: #e2e8f0">
+                <i data-lucide="monitor-off" class="w-10 h-10 opacity-50"></i>
+                <p class="text-[13px] opacity-70 max-w-sm">
+                    No live view available for this session yet — it may still be starting, or the robot
+                    does not expose a live remote view.
+                </p>
+            </div>
+        </template>
+
+        <!-- Live iframe -->
+        <template x-if="exe.remoteLiveUrl">
+            <div class="absolute inset-0">
+                <iframe :src="exe.remoteLiveUrl"
+                        class="w-full h-full border-none"
+                        style="background: #000"
+                        allow="autoplay; clipboard-write; clipboard-read"
+                        @load="onLiveViewLoad()"></iframe>
+
+                <!-- Fallback : browsers don't fire iframe 'error' on X-Frame-Options/CSP refusals,
+                     so this is shown via a load-within-timeout heuristic (see _armLiveViewFallbackTimer) -->
+                <template x-if="liveViewFailed">
+                    <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0f172a; color:#e2e8f0; text-align:center; padding:32px;">
+                        <i data-lucide="monitor-x" class="w-10 h-10 opacity-50"></i>
+                        <p style="font-size:13px; max-width:380px; line-height:1.6; opacity:0.8">
+                            The remote server does not allow embedding in an iframe.<br>
+                            Click below to open the live view in a new tab.
+                        </p>
+                        <button @click="window.open(exe.remoteLiveUrl, '_blank')"
+                                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold text-white transition"
+                                style="background: var(--crb-blue-color, #2c7be5)">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            Open Live View
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</div>

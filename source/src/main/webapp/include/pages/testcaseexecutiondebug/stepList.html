@@ -1,0 +1,152 @@
+<!-- TestCaseDebug V2 - Steps / Actions / Controls list -->
+<!-- Full static test case tree (exe.testCaseObj.steps), overlaid with execution results.
+     Steps collapse by default ; only the step currently being debugged, or any step already
+     showing a failure, auto-expands. -->
+
+<div class="flex flex-col rounded-2xl v2-fade-in" style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); max-height: calc(100vh - 220px)">
+
+    <div class="flex items-center justify-between px-4 py-3 shrink-0" style="border-bottom: 1px solid var(--crb-grey-light-color)">
+        <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--crb-dark-color)">Instructions</span>
+        <span class="text-xs font-medium" style="color: var(--crb-grey-color)" x-text="steps.length + ' steps'"></span>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-2 py-2">
+
+        <!-- Loading -->
+        <template x-if="loading">
+            <div class="flex items-center justify-center gap-2 py-8 text-[11px]" style="color: var(--crb-grey-color)">
+                <i data-lucide="loader-2" class="w-3.5 h-3.5 v2-exe-spin-limited"></i>
+                Loading...
+            </div>
+        </template>
+
+        <!-- Pre / Main / Post groups -->
+        <template x-for="group in [
+            {label: 'Pre Testing', icon: 'shield-check', list: preSteps},
+            {label: 'Steps', icon: 'layers', list: mainSteps},
+            {label: 'Post Testing', icon: 'shield-off', list: postSteps}
+        ]" :key="group.label">
+            <template x-if="group.list.length > 0">
+                <div class="pb-2">
+                    <div class="v2-exe-step-section">
+                        <i :data-lucide="group.icon" class="w-3 h-3"></i>
+                        <span x-text="group.label"></span>
+                        <span class="text-[10px] opacity-50" x-text="group.list.length"></span>
+                    </div>
+
+                    <template x-for="step in group.list" :key="step._uid">
+                        <div class="mb-1.5">
+                            <!-- Step header : click to expand/collapse -->
+                            <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+                                 @click="toggleStep(step)">
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 shrink-0 transition-transform duration-150"
+                                   :class="step._expanded ? 'rotate-90' : ''" style="color: var(--crb-grey-color)"></i>
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0"
+                                      :class="{
+                                          'bg-green-500': step.returnCode === 'OK',
+                                          'bg-red-500': step.returnCode === 'KO',
+                                          'bg-amber-500': step.returnCode === 'FA',
+                                          'bg-blue-500 v2-exe-status-pulse': isStepActive(step),
+                                          'bg-slate-200 dark:bg-slate-700 v2-debug-notrun': !step._hasExecuted && !isStepActive(step),
+                                          'bg-slate-300 dark:bg-slate-600': step._hasExecuted && !['OK','KO','FA'].includes(step.returnCode)
+                                      }"></span>
+                                <div class="v2-step-badge shrink-0" x-text="step.sort"></div>
+                                <div class="text-xs font-medium truncate flex-1" style="color: var(--crb-dark-color)"
+                                     x-text="step.description || 'Step ' + step.sort"></div>
+                                <template x-if="step._nbActionsKO > 0 || step._nbControlsKO > 0">
+                                    <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                                          x-text="step._nbActionsKO + step._nbControlsKO"></span>
+                                </template>
+                                <button @click.stop="editStep(step)"
+                                        class="shrink-0 h-6 w-6 rounded-md flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                                        data-tip="Edit this step">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+
+                            <!-- Actions (only rendered when the step is expanded) -->
+                            <template x-if="step._expanded">
+                                <ul class="space-y-0.5 list-none m-0 pl-6">
+                                    <template x-for="action in step.actions" :key="action._uid">
+                                        <li>
+                                            <div class="group flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-150"
+                                                 :class="[
+                                                     isActionPending(step, action) ? 'v2-debug-pending' : '',
+                                                     isAutoRunTarget(step, action, false) ? 'v2-debug-target' : ''
+                                                 ]"
+                                                 :style="isActionPending(step, action) ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent)' : ''">
+                                                <span class="w-2 h-2 rounded-full shrink-0"
+                                                      :class="{
+                                                          'bg-green-500': action.returnCode === 'OK',
+                                                          'bg-red-500': action.returnCode === 'KO',
+                                                          'bg-amber-500': action.returnCode === 'FA',
+                                                          'bg-blue-500': isActionActive(step, action),
+                                                          'bg-slate-200 dark:bg-slate-700 v2-debug-notrun': !action._hasExecuted && !isActionActive(step, action),
+                                                          'bg-slate-300 dark:bg-slate-600': action._hasExecuted && !['OK','KO','FA'].includes(action.returnCode)
+                                                      }"></span>
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="text-[12px] truncate" style="color: var(--crb-dark-color)"
+                                                         x-text="action.description || action.action"></div>
+                                                    <div class="text-[10px] truncate" style="color: var(--crb-grey-color)" x-text="action.action"></div>
+                                                </div>
+                                                <!-- Run to here -->
+                                                <template x-if="!action._hasExecuted">
+                                                    <button @click.stop="runTo(step.stepId, action.actionId, null)"
+                                                            :disabled="autoRunning || busy || !isWaitingForNext"
+                                                            class="opacity-0 group-hover:opacity-100 shrink-0 h-6 w-6 rounded-md flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-200 dark:hover:bg-slate-700 transition disabled:opacity-30"
+                                                            data-tip="Exécuter automatiquement jusqu'ici">
+                                                        <i data-lucide="fast-forward" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </template>
+                                            </div>
+
+                                            <!-- Controls -->
+                                            <ul class="space-y-0.5 list-none m-0 pl-6">
+                                                <template x-for="control in action.controls" :key="control._uid">
+                                                    <li class="group flex items-center gap-2 px-2 py-1 rounded-lg transition-all duration-150"
+                                                        :class="[
+                                                            isControlPending(step, action, control) ? 'v2-debug-pending' : '',
+                                                            isAutoRunTarget(step, control, true) ? 'v2-debug-target' : ''
+                                                        ]"
+                                                        :style="isControlPending(step, action, control) ? 'background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); border: 1px solid color-mix(in srgb, var(--crb-blue-color) 30%, transparent)' : ''">
+                                                        <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                                                              :class="{
+                                                                  'bg-green-500': control.returnCode === 'OK',
+                                                                  'bg-red-500': control.returnCode === 'KO',
+                                                                  'bg-amber-500': control.returnCode === 'FA',
+                                                                  'bg-blue-500': isControlActive(step, action, control),
+                                                                  'bg-slate-200 dark:bg-slate-700 v2-debug-notrun': !control._hasExecuted && !isControlActive(step, action, control),
+                                                                  'bg-slate-300 dark:bg-slate-600': control._hasExecuted && !['OK','KO','FA'].includes(control.returnCode)
+                                                              }"></span>
+                                                        <div class="text-[11px] truncate flex-1" style="color: var(--crb-grey-color)"
+                                                             x-text="control.description || control.controlType"></div>
+                                                        <template x-if="!control._hasExecuted">
+                                                            <button @click.stop="runTo(step.stepId, action.actionId, control.controlId)"
+                                                                    :disabled="autoRunning || busy || !isWaitingForNext"
+                                                                    class="opacity-0 group-hover:opacity-100 shrink-0 h-5 w-5 rounded-md flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-200 dark:hover:bg-slate-700 transition disabled:opacity-30"
+                                                                    data-tip="Exécuter automatiquement jusqu'ici">
+                                                                <i data-lucide="fast-forward" class="w-3 h-3"></i>
+                                                            </button>
+                                                        </template>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+
+        <!-- Empty state -->
+        <template x-if="!loading && steps.length === 0">
+            <div class="flex flex-col items-center justify-center py-8 gap-3">
+                <i data-lucide="list-tree" class="w-8 h-8" style="color: var(--crb-grey-color)"></i>
+                <span class="text-[12px]" style="color: var(--crb-grey-color)">No steps in this test case</span>
+            </div>
+        </template>
+    </div>
+</div>

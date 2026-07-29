@@ -1556,6 +1556,15 @@ function scriptV2() {
                 }
             }));
         },
+        debugTestCase() {
+            window.dispatchEvent(new CustomEvent('open-debug-launch', {
+                detail: {
+                    application: this.testInfo.application,
+                    test: this.testInfo.test,
+                    testcase: this.testInfo.testCase
+                }
+            }));
+        },
         reRunTestCase() {
             // Re-run: duplicate the last queue entry and redirect (legacy pattern)
             if (!this.lastRunQueueId || this.lastRunQueueId <= 0) {

@@ -1,0 +1,247 @@
+<!-- TestCaseScript V2 - Debug launch popover : pick country/environment/robot then start a debug session -->
+
+<div x-data="debugLaunchPopover()"
+     x-show="open"
+     x-cloak
+     @open-debug-launch.window="openModal($event.detail)"
+     @keydown.escape.window="close()"
+     class="crb_modal z-[9999]">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-slate-900/60" @click="close()"></div>
+
+    <!-- Card -->
+    <div class="relative crb_card w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl z-10"
+         style="margin: 2rem 1rem;"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         @click.stop>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="h-9 w-9 rounded-xl flex items-center justify-center"
+                     style="background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent)">
+                    <i data-lucide="bug" class="w-4 h-4" style="color: var(--crb-blue-color)"></i>
+                </div>
+                <div>
+                    <h2 class="!text-base !font-semibold !mb-0 !mt-0">Debug test case</h2>
+                    <p class="text-[11px] text-slate-500 !mb-0" x-text="test + ' / ' + testcase"></p>
+                </div>
+            </div>
+            <button @click="close()" class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="px-5 py-4 space-y-3">
+
+            <template x-if="loading">
+                <div class="flex items-center justify-center gap-2 py-6 text-[12px] text-slate-400">
+                    <i data-lucide="loader-2" class="w-4 h-4 v2-exe-spin-limited"></i>
+                    Loading environments &amp; robots...
+                </div>
+            </template>
+
+            <template x-if="!loading">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Country</label>
+                        <select x-model="selectedCountry" @change="onCountryChange()"
+                                class="w-full mt-1 h-9 px-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
+                            <template x-for="c in countryOptions" :key="c">
+                                <option :value="c" x-text="c"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Environment</label>
+                        <select x-model="selectedEnvironment"
+                                class="w-full mt-1 h-9 px-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
+                            <template x-for="e in environmentOptions" :key="e.environment">
+                                <option :value="e.environment" x-text="e.environment"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Robot</label>
+                        <select x-model="selectedRobot"
+                                class="w-full mt-1 h-9 px-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
+                            <option value="">(any available robot)</option>
+                            <template x-for="r in robots" :key="r.robot">
+                                <option :value="r.robot" x-text="r.robot"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <template x-if="error">
+                        <div class="text-[12px] text-red-600 dark:text-red-400" x-text="error"></div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-slate-200 dark:border-slate-700">
+            <button @click="close()"
+                    class="h-9 px-4 rounded-lg text-[13px] font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                Cancel
+            </button>
+            <button @click="submit()" :disabled="loading || submitting || !selectedCountry || !selectedEnvironment"
+                    class="v2-header-action-btn" style="background: var(--crb-blue-color)">
+                <i data-lucide="play" class="w-3.5 h-3.5" x-show="!submitting"></i>
+                <i data-lucide="loader-2" class="w-3.5 h-3.5 v2-exe-spin-limited" x-show="submitting"></i>
+                Start debug
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function debugLaunchPopover() {
+        return {
+            open: false,
+            application: '',
+            test: '',
+            testcase: '',
+
+            envs: [],
+            robots: [],
+            selectedCountry: '',
+            selectedEnvironment: '',
+            selectedRobot: '',
+
+            loading: false,
+            submitting: false,
+            error: '',
+
+            async openModal(data) {
+                this.open = true;
+                this.application = data.application || '';
+                this.test = data.test || '';
+                this.testcase = data.testcase || data.testCase || '';
+                this.error = '';
+                this.selectedCountry = '';
+                this.selectedEnvironment = '';
+                this.selectedRobot = '';
+                this.loading = true;
+
+                await Promise.all([this.loadEnvs(), this.loadRobots()]);
+
+                this.loading = false;
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            },
+
+            close() {
+                this.open = false;
+            },
+
+            async loadEnvs() {
+                try {
+                    const r = await fetch('ReadCountryEnvironmentParameters?system=&application=' + encodeURIComponent(this.application));
+                    const json = JSON.parse(await r.text());
+                    this.envs = json.contentTable || [];
+                    if (this.envs.length > 0) {
+                        this.selectedCountry = this.envs[0].country;
+                        this.onCountryChange();
+                    }
+                } catch (e) {
+                    console.error('[DebugLaunch] env load error', e);
+                    this.envs = [];
+                    this.error = 'Unable to load environments';
+                }
+            },
+
+            async loadRobots() {
+                try {
+                    const r = await fetch('./api/robots/read?iDisplayStart=0&iDisplayLength=100', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({})
+                    });
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    const json = await r.json();
+                    this.robots = json.contentTable || [];
+                    if (this.robots.length === 1) {
+                        this.selectedRobot = this.robots[0].robot;
+                    }
+                } catch (e) {
+                    console.error('[DebugLaunch] robot load error', e);
+                    this.robots = [];
+                    this.error = 'Unable to load robots';
+                }
+            },
+
+            get countryOptions() {
+                const seen = {};
+                const result = [];
+                this.envs.forEach(e => {
+                    if (!seen[e.country]) { seen[e.country] = true; result.push(e.country); }
+                });
+                return result;
+            },
+
+            get environmentOptions() {
+                return this.envs.filter(e => e.country === this.selectedCountry);
+            },
+
+            onCountryChange() {
+                const first = this.environmentOptions[0];
+                this.selectedEnvironment = first ? first.environment : '';
+            },
+
+            async submit() {
+                if (!this.selectedCountry || !this.selectedEnvironment) {
+                    this.error = 'Please select a country and environment.';
+                    return;
+                }
+
+                this.submitting = true;
+                this.error = '';
+
+                try {
+                    // REST controllers are served by the Spring DispatcherServlet mounted at
+                    // /api/* — the controller's own @RequestMapping is only the remainder of
+                    // the path after that mount point.
+                    const r = await fetch(getCerberusBasePath() + 'api/public/debugexecutions/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-API-VERSION': '1' },
+                        body: JSON.stringify({
+                            test: this.test,
+                            testCase: this.testcase,
+                            country: this.selectedCountry,
+                            environment: this.selectedEnvironment,
+                            robot: this.selectedRobot || null
+                        })
+                    });
+
+                    // Server errors (500, etc.) may come back as an HTML error page (Tomcat's
+                    // default error report), not JSON — parse defensively so the real cause is
+                    // visible instead of a generic "unable to start" message.
+                    const rawText = await r.text();
+                    let json = null;
+                    try { json = JSON.parse(rawText); } catch (parseErr) { /* not JSON */ }
+
+                    if (!r.ok || !json || !json.data) {
+                        console.error('[DebugLaunch] server response (' + r.status + '):', rawText);
+                        this.error = (json && (json.message || json.debugMessage))
+                            || ('Unable to start debug execution (HTTP ' + r.status + '). See console for details.');
+                        this.submitting = false;
+                        return;
+                    }
+
+                    window.location.href = 'TestCaseExecutionDebug.jsp?executionId=' + encodeURIComponent(json.data.executionId)
+                        + '&executionUUID=' + encodeURIComponent(json.data.executionUUID);
+                } catch (e) {
+                    console.error('[DebugLaunch] submit error', e);
+                    this.error = 'Unable to start debug execution.';
+                    this.submitting = false;
+                }
+            }
+        };
+    }
+</script>

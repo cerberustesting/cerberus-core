@@ -1,0 +1,46 @@
+<!-- TestCaseDebug V2 - Page Source panel, embedded below the live view.
+     Debug sessions force pageSource=2 (capture after every action/control) — this shows the
+     HTML source captured after whichever action/control most recently ran, read the same way
+     include/transversal/File.html previews a text file (ReadTestCaseExecutionMedia + ACE),
+     just embedded permanently instead of inside a modal. -->
+
+<div class="flex flex-col rounded-2xl v2-fade-in overflow-hidden"
+     style="background: var(--crb-new-bg); border: 1px solid var(--crb-grey-light-color); min-height: 240px">
+
+    <div class="flex items-center justify-between px-4 py-2.5 shrink-0"
+         style="border-bottom: 1px solid var(--crb-grey-light-color)">
+        <div class="flex items-center gap-2">
+            <i data-lucide="file-code" class="w-4 h-4" style="color: var(--crb-grey-color)"></i>
+            <span class="text-[11px] font-bold uppercase tracking-wider" style="color: var(--crb-dark-color)">Page source</span>
+        </div>
+
+        <template x-if="pageSourceFile">
+            <button @click="window.open('ReadTestCaseExecutionMedia?filename=' + encodeURIComponent(pageSourceFile.fileName) + '&filetype=' + encodeURIComponent(pageSourceFile.fileType) + '&filedesc=' + encodeURIComponent(pageSourceFile.fileDesc) + '&auto=true', '_blank')"
+                    class="h-7 px-2.5 rounded-lg flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                Open
+            </button>
+        </template>
+    </div>
+
+    <div class="flex-1 min-h-0 relative" style="min-height: 200px">
+
+        <template x-if="pageSourceLoading">
+            <div class="absolute inset-0 flex items-center justify-center gap-2 text-[11px]" style="color: var(--crb-grey-color)">
+                <i data-lucide="loader-2" class="w-3.5 h-3.5 v2-exe-spin-limited"></i>
+                Loading...
+            </div>
+        </template>
+
+        <template x-if="!pageSourceLoading && !pageSourceFile">
+            <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-8">
+                <i data-lucide="file-x" class="w-8 h-8" style="color: var(--crb-grey-color)"></i>
+                <span class="text-[12px]" style="color: var(--crb-grey-color)">No page source captured yet</span>
+            </div>
+        </template>
+
+        <!-- x-show (not x-if) : the ACE editor attaches to this exact DOM node and must survive
+             across updates, or it would be re-created (and lose scroll position) every refresh. -->
+        <pre id="v2DbgPageSourceContent" x-show="!pageSourceLoading && pageSourceFile" style="width:100%; min-height:200px"></pre>
+    </div>
+</div>

@@ -212,6 +212,14 @@
             Run
         </button>
 
+        <!-- Debug button -->
+        <button @click="debugTestCase()"
+                class="v2-header-action-btn shrink-0" style="background: var(--crb-blue-color, #2c7be5)"
+                data-tip="Debug test case step by step">
+            <i data-lucide="bug" class="w-3.5 h-3.5"></i>
+            Debug
+        </button>
+
         <!-- Re-run button -->
         <button @click="reRunTestCase()" :disabled="!lastRunQueueId"
                 class="v2-header-rerun-btn shrink-0"

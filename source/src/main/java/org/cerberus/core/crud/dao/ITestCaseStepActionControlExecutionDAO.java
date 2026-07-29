@@ -94,5 +94,35 @@ public interface ITestCaseStepActionControlExecutionDAO {
      * @return
      * @throws SQLException
      */
-    public TestCaseStepActionControlExecution loadFromResultset(ResultSet resultSet) throws SQLException; 
+    public TestCaseStepActionControlExecution loadFromResultset(ResultSet resultSet) throws SQLException;
+
+    /**
+     * Deletes the execution row for a single control, identified by its full
+     * primary key. Used by debug-mode "retry" on a single control : it is
+     * about to be re-executed (and re-inserted) with the exact same key,
+     * which would otherwise violate the PRIMARY constraint.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     * @param controlSequence
+     */
+    void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence, int controlSequence);
+
+    /**
+     * Deletes every control execution row recorded under a given action.
+     * Used by debug-mode "retry" on a whole action : all of its controls are
+     * about to be re-executed (and re-inserted) with the same keys.
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param index
+     * @param sequence
+     */
+    void deleteByActionKey(long executionId, String test, String testcase, int stepId, int index, int sequence);
 }

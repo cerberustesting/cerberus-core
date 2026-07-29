@@ -521,4 +521,43 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
 
     }
 
+    @Override
+    public void deleteByKey(long executionId, String test, String testcase, int stepId, int index, int sequence) {
+
+        final String query = "DELETE FROM testcasestepactionexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ?";
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setLong(i++, executionId);
+                preStat.setString(i++, test);
+                preStat.setString(i++, testcase);
+                preStat.setInt(i++, stepId);
+                preStat.setInt(i++, index);
+                preStat.setInt(i++, sequence);
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+    }
+
 }
