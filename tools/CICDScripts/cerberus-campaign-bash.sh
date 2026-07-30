@@ -62,6 +62,7 @@ TAG=$CAMPAIGN.$TIMESTAMP
 LAUNCH_CALL=$CRBURL$TRIGGER_URL$PARAM_CAMPAIGN$CAMPAIGN'&'$PARAM_TAG$TAG'&'outputformat=json$PARAMEXTRA
 RESULTCI_CALL=$CRBURL$RESULTCI_URL$PARAM_CAMPAIGN$CAMPAIGN'&'$PARAM_TAG$TAG
 REPORT_CALL=$CRBURL$TAGREPORT_URL$TAG
+RESULTCIDETAIL_CALL=$CRBURL/api/public/campaignexecutions/$TAG
 
 
 # check if mandatory parameters are set, if not exit
@@ -173,7 +174,7 @@ while [ $counter == 1 ]; do
 	# logic for timeout
 	elapsed=$((elapsed+CHECKPERIOD))
 
-	printf " (Campaign not yet finished, maybe trying again in 5 seconds... Elapsed : $elapsed/$MAXDURATION)"
+	printf " (Campaign not yet finished, trying again in $CHECKPERIOD seconds... Elapsed : $elapsed/$MAXDURATION)"
 	
 	
 	# get out of the loop if reached timeout 
@@ -191,6 +192,22 @@ if [ "$RESULT" != "OK" ]; then
 	printf "\n\nCampaign failed, see results at: \n"
 	printf $REPORT_CALL
 	printf "\n"
+
+	printf "\nNon OK execution: \n"
+    OUTPUTFILE3=$OUTPUTFILE.detail
+    curl -s -X 'GET' -H 'accept: application/json' -H 'X-API-VERSION: 1'  -H 'X-API-KEY: 54d418a1-c868-762c-baa6-86451e455239-190694551bee4'  -o $OUTPUTFILE3 $RESULTCIDETAIL_CALL
+    jq -r '
+.data.executions[]
+| select(.controlStatus != "OK" and (.testcase.isMuted == false))
+| [
+    .testcaseExecutionId,
+    .testcase.testFolderId,
+    .testcase.testcaseId,
+    .description + "\n   " + .controlMessage
+  ]
+| join(" ")
+' $OUTPUTFILE3
+
 	exit 1
 else
 	printf "\n\nCampaign successfully finished, see results at: \n"
