@@ -5,7 +5,7 @@ Easy to use test automation platform.
 [![Build Status](https://github.com/cerberustesting/cerberus-source/actions/workflows/build_deploy_qa.yml/badge.svg)](https://github.com/cerberustesting/cerberus-source/actions/workflows/build_deploy_qa.yml?query=workflow%3A%22Deploy+%26+QA%22)
 [![Test Status](https://prod.cerberus-testing.com/api/public/campaignexecutions/ci/svg/Cerberus_campaign/last)](https://prod.cerberus-testing.com/)
 
-[![Screenshots](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docs/screenshots/CerberusGitHub.gif)](https://cerberus-testing.com/)
+[![Screenshots](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docs/screenshots/CerberusGitHub2026.gif)](https://cerberus-testing.com/)
 
 # What is it?
 
