@@ -84,6 +84,17 @@ function debugExecutionV2() {
         pageSourceLoading: false,
         _pageSourceEditor: null,
 
+        // "Get elements" : the interactive/notable elements found in the current page source,
+        // each with a short description and an XPath locator (deterministic Jsoup parsing).
+        elements: [],
+        elementsLoading: false,
+        elementsError: '',
+
+        // ApplicationObjects of the current application, loaded once and matched to each
+        // detected element by exact xpath == value equality (see aosForXpath).
+        applicationObjects: [],
+        _applicationObjectsLoadedFor: null,
+
         // Manual expand/collapse overrides, keyed by stepId — survives tree rebuilds (which
         // happen on every WS update) since it lives outside the (rebuilt) steps array.
         _stepExpandOverrides: {},
@@ -181,24 +192,40 @@ function debugExecutionV2() {
             // the execution so the static tree (exe.testCaseObj.steps) reflects the edit, since
             // it can affect an action/control not yet reached by this session.
             window.addEventListener('step-modal-saved', (e) => {
+                if (!e.detail) return;
                 const test = this.exe.test;
                 const testcase = this.exe.testcase || this.exe.testCase;
-                if (e.detail && e.detail.test === test && e.detail.testcase === testcase) {
+                const savedOwnStep = e.detail.test === test && e.detail.testcase === testcase;
+                // Editing a library-linked step opens the modal on the library master's own
+                // (test, testcase) — see editStep — so also reload when what was just saved IS
+                // the master behind one of this tree's library-linked steps.
+                const savedLibraryMaster = this.steps.some(s => s.isUsingLibraryStep
+                    && s.libraryStepTest === e.detail.test
+                    && s.libraryStepTestCase === e.detail.testcase);
+                if (savedOwnStep || savedLibraryMaster) {
                     this._loadExecution();
                 }
             });
+
+            // The ApplicationObject modal (include/transversal/ApplicationObject.html) has no
+            // dedicated "saved" event, only this generic close one — cheap enough to just
+            // reload the whole list on every close rather than track save success separately.
+            window.addEventListener('appobject-modal-close', () => this._loadApplicationObjects());
 
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
         editStep(step) {
-            window.dispatchEvent(new CustomEvent('step-modal-open', {
-                detail: {
-                    test: this.exe.test,
-                    testcase: this.exe.testcase || this.exe.testCase,
-                    stepId: step.stepId
-                }
-            }));
+            // A library-linked step is just a read-only view of its master here : opening the
+            // modal on this step's own (test, testcase, stepId) lets you "save" it, but the
+            // backend never persists actions for isUsingLibraryStep rows (only the master's own
+            // row gets its actions written) — so the edit is silently lost. Target the master's
+            // location instead, same as the normal test case editor's library-step button does.
+            const detail = step.isUsingLibraryStep
+                ? { test: step.libraryStepTest, testcase: step.libraryStepTestCase, stepId: step.libraryStepStepId }
+                : { test: this.exe.test, testcase: this.exe.testcase || this.exe.testCase, stepId: step.stepId };
+
+            window.dispatchEvent(new CustomEvent('step-modal-open', { detail }));
         },
 
         _apiBase() {
@@ -328,6 +355,10 @@ function debugExecutionV2() {
             this._rebuildTree(tce);
             this._refreshPageSource();
 
+            if (this.exe.application && this._applicationObjectsLoadedFor !== this.exe.application) {
+                this._loadApplicationObjects();
+            }
+
             document.title = 'Debug #' + tce.id + ' - ' + (tce.testcase || tce.testCase);
 
             if (tce.controlStatus && tce.controlStatus !== 'PE') {
@@ -389,6 +420,14 @@ function debugExecutionV2() {
                 sort: staticStep.sort,
                 description: staticStep.description,
                 conditionOperator: staticStep.conditionOperator,
+                // Library-step pointer : when isUsingLibraryStep is true, this step's actions
+                // are just a read-only view of the master living at libraryStepTest/TestCase/
+                // StepId — editing must target THAT location (see editStep), or the backend
+                // silently drops the change instead of persisting it anywhere.
+                isUsingLibraryStep: staticStep.isUsingLibraryStep,
+                libraryStepTest: staticStep.libraryStepTest,
+                libraryStepTestCase: staticStep.libraryStepTestCase,
+                libraryStepStepId: staticStep.libraryStepStepId,
                 returnCode: stepExec ? stepExec.returnCode : null,
                 start: stepExec ? stepExec.start : null,
                 end: stepExec ? stepExec.end : null,
@@ -560,11 +599,18 @@ function debugExecutionV2() {
 
         _refreshPageSource() {
             const item = this._lastExecutedItem();
-            const file = item ? (item.fileList || []).find(f => f.fileType === 'HTML') : null;
+            // Some control types (e.g. "Get Page Source") record their own HTML capture AND
+            // get an automatic one from the debug session's forced pageSource=2 — when both are
+            // present, the automatic one is appended last and is the one to show ; picking the
+            // first (as this used to) can show an unrelated, earlier capture instead.
+            const htmlFiles = item ? (item.fileList || []).filter(f => f.fileType === 'HTML') : [];
+            const file = htmlFiles.length > 0 ? htmlFiles[htmlFiles.length - 1] : null;
 
             if (!file) {
                 this.pageSourceFile = null;
                 this.pageSourceContent = '';
+                this.elements = [];
+                this.elementsError = '';
                 return;
             }
 
@@ -574,6 +620,9 @@ function debugExecutionV2() {
 
             this.pageSourceFile = file;
             this.pageSourceLoading = true;
+            // A new source snapshot makes any previously extracted elements list stale.
+            this.elements = [];
+            this.elementsError = '';
 
             $.get('ReadTestCaseExecutionMedia', {
                 filename: file.fileName,
@@ -586,6 +635,9 @@ function debugExecutionV2() {
                     this.pageSourceContent = typeof data === 'string' ? data : JSON.stringify(data);
                     this.pageSourceLoading = false;
                     this.$nextTick(() => this._renderPageSourceEditor());
+                    // Deterministic (Jsoup, no AI call) and near-instant, so it's run
+                    // automatically on every new capture rather than waiting for a manual click.
+                    this.extractElements();
                 })
                 .fail((jqXHR, textStatus, errorThrown) => {
                     console.error('[DebugV2] Unable to load page source:', textStatus, errorThrown);
@@ -605,11 +657,206 @@ function debugExecutionV2() {
             }
 
             const session = this._pageSourceEditor.getSession();
+            let mode = '';
             if (typeof defineAceMode === 'function') {
-                const mode = defineAceMode(this.pageSourceContent);
+                mode = defineAceMode(this.pageSourceContent) || '';
                 if (mode) session.setMode(mode);
             }
             session.setValue(this.pageSourceContent || '');
+
+            // Debug page-source captures come back as a single unindented line per tag (no
+            // pretty-printing) — technically valid, correctly syntax-highlighted HTML, but
+            // unreadable in practice. Re-indent with the same js-beautify convention already
+            // used by include/transversal/File.html / global.js's showTextArea.
+            const jsbOpts = { indent_size: 2 };
+            if (mode.endsWith('json') && typeof js_beautify === 'function') {
+                session.setValue(js_beautify(session.getValue(), jsbOpts));
+            } else if (mode.endsWith('xml') && typeof html_beautify === 'function') {
+                session.setValue(html_beautify(session.getValue(), jsbOpts));
+            }
+        },
+
+        // Extracts the interactive/notable elements of the currently displayed page source, each
+        // with a short description and an XPath locator (see pageSourcePanel.html). Runs
+        // automatically after every new capture (see _refreshPageSource) ; this button is a
+        // manual re-run, e.g. after a transient network failure.
+        async extractElements() {
+            if (!this.pageSourceContent || this.elementsLoading) return;
+
+            this.elementsLoading = true;
+            this.elementsError = '';
+
+            try {
+                const r = await fetch(this._apiBase() + 'elements', {
+                    method: 'POST',
+                    headers: this._apiHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({ pageSource: this.pageSourceContent })
+                });
+
+                const rawText = await r.text();
+                let json = null;
+                try { json = JSON.parse(rawText); } catch (parseErr) { /* not JSON */ }
+
+                if (!r.ok || !json || !json.data) {
+                    console.error('[DebugV2] extractElements server response (' + r.status + '):', rawText);
+                    throw new Error((json && (json.message || json.debugMessage)) || ('HTTP ' + r.status));
+                }
+
+                this.elements = (json.data.elements || []).map(el => Object.assign({ _copied: false, _highlighting: false, _aoExpanded: false }, el));
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            } catch (e) {
+                console.error('[DebugV2] extractElements failed:', e);
+                this.elementsError = 'Unable to retrieve the elements list from the AI.';
+                this.elements = [];
+            } finally {
+                this.elementsLoading = false;
+            }
+        },
+
+        // Copies "xpath=<value>" (the Cerberus locator prefix convention) to the clipboard and
+        // briefly flashes a checkmark on the row's copy button.
+        copyXpath(el) {
+            navigator.clipboard.writeText('xpath=' + (el.xpath || ''))
+                .then(() => {
+                    el._copied = true;
+                    setTimeout(() => { el._copied = false; }, 1500);
+                })
+                .catch(e => {
+                    console.error('[DebugV2] copyXpath failed:', e);
+                    this.errorMessage = 'Unable to copy to clipboard.';
+                });
+        },
+
+        // ═══ APPLICATION OBJECTS ═══
+        // ApplicationObjects matching a detected element (same application, exact xpath ==
+        // value equality) : viewed/edited/deleted via the existing global AO modal
+        // (include/transversal/ApplicationObject.html), created via a lightweight direct POST
+        // (the modal's own create/edit flow needs a screenshot upload that doesn't apply here).
+
+        aosForXpath(xpath) {
+            return this.applicationObjects.filter(ao => ao.value === xpath);
+        },
+
+        toggleAoExpand(el) {
+            el._aoExpanded = !el._aoExpanded;
+            if (el._aoExpanded) {
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            }
+        },
+
+        _loadApplicationObjects() {
+            const application = this.exe.application;
+            if (!application) return;
+            this._applicationObjectsLoadedFor = application;
+
+            $.get('ReadApplicationObject', { application: application })
+                .done((data) => {
+                    if (this._applicationObjectsLoadedFor === application) {
+                        this.applicationObjects = (data && data.contentTable) || [];
+                    }
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                    console.error('[DebugV2] Unable to load application objects:', textStatus, errorThrown);
+                });
+        },
+
+        // PAGENAME_ELEMENTNAME-style suggestion (see generate_applicationobject.prompt), minus
+        // the page name since this page has no notion of one — just a reasonable starting point
+        // for the object-name prompt, not a guaranteed-unique final value.
+        _suggestObjectName(description) {
+            const slug = (description || 'ELEMENT')
+                .toUpperCase()
+                .replace(/[^A-Z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            return (slug || 'ELEMENT').slice(0, 60);
+        },
+
+        addApplicationObject(el) {
+            const application = this.exe.application;
+            if (!application) return;
+
+            const objectName = window.prompt('Object name for this ApplicationObject :', this._suggestObjectName(el.description));
+            if (!objectName) return;
+
+            const formData = new FormData();
+            formData.append('application', application);
+            formData.append('object', objectName);
+            formData.append('value', el.xpath || '');
+
+            $.ajax({
+                url: 'CreateApplicationObject',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false
+            })
+                .done((data) => {
+                    if (getAlertType(data.messageType) !== 'success') {
+                        this.errorMessage = data.message || 'Unable to create the ApplicationObject.';
+                        return;
+                    }
+                    this._loadApplicationObjects();
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                    console.error('[DebugV2] addApplicationObject failed:', textStatus, errorThrown);
+                    this.errorMessage = 'Unable to create the ApplicationObject.';
+                });
+        },
+
+        editApplicationObject(ao) {
+            // Global function from include/transversal/ApplicationObject.html (already loaded
+            // via modalInclusions.jsp) — 'testCaseScript' page mode pre-fills application+object
+            // without requiring the object-list page's own data grid.
+            openModalApplicationObject(ao.application, ao.object, 'EDIT', 'testCaseScript');
+        },
+
+        deleteApplicationObject(ao) {
+            if (!confirm('Delete ApplicationObject "' + ao.object + '" ?')) return;
+
+            $.post('DeleteApplicationObject', { application: ao.application, object: ao.object })
+                .done((data) => {
+                    if (getAlertType(data.messageType) !== 'success') {
+                        this.errorMessage = data.message || 'Unable to delete the ApplicationObject.';
+                        return;
+                    }
+                    this._loadApplicationObjects();
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                    console.error('[DebugV2] deleteApplicationObject failed:', textStatus, errorThrown);
+                    this.errorMessage = 'Unable to delete the ApplicationObject.';
+                });
+        },
+
+        // ═══ HIGHLIGHT ═══
+        // Ad hoc command against the live paused session — outlines the element in yellow/red
+        // for ~2s server-side, bypassing the step/action engine entirely (see
+        // DebugExecutionService.highlightElement).
+        async highlightElement(el) {
+            if (el._highlighting) return;
+            el._highlighting = true;
+            this.errorMessage = '';
+
+            try {
+                const r = await fetch(this._apiBase() + encodeURIComponent(this.executionUUID) + '/highlight', {
+                    method: 'POST',
+                    headers: this._apiHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({ xpath: el.xpath })
+                });
+
+                const rawText = await r.text();
+                let json = null;
+                try { json = JSON.parse(rawText); } catch (parseErr) { /* not JSON */ }
+
+                if (!r.ok) {
+                    console.error('[DebugV2] highlightElement server response (' + r.status + '):', rawText);
+                    throw new Error((json && (json.message || json.debugMessage)) || ('HTTP ' + r.status));
+                }
+            } catch (e) {
+                console.error('[DebugV2] highlightElement failed:', e);
+                this.errorMessage = 'Unable to highlight this element on the live page.';
+            } finally {
+                el._highlighting = false;
+            }
         },
 
         // ═══ LIVE VIEW ═══

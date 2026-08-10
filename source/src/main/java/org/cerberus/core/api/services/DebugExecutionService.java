@@ -22,6 +22,8 @@ package org.cerberus.core.api.services;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionAckDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionElementsRequestDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionElementsResultDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStartDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStartResultDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStatusDTOV001;
@@ -37,14 +39,22 @@ import org.cerberus.core.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
+import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.engine.entity.Session;
+import org.cerberus.core.engine.execution.IIdentifierService;
 import org.cerberus.core.engine.execution.IRunTestCaseService;
 import org.cerberus.core.engine.execution.debug.DebugSession;
 import org.cerberus.core.engine.execution.debug.DebugSessionRegistry;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.FactoryCreationException;
+import org.cerberus.core.service.jsoup.PageElementExtractionService;
+import org.cerberus.core.service.webdriver.IWebDriverService;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.version.Infos;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 
 /**
@@ -68,6 +78,12 @@ public class DebugExecutionService {
     // hang for up to that whole duration instead of failing fast like a normal execution does.
     private static final int MAX_TIMEOUT_MS = 14_400_000; // 4h
 
+    // For highlightElement() only : this looks up an element that should already be on the live
+    // page right now (its HTML was captured moments ago), not one that might still be loading —
+    // unlike a real action/control, there's no reason to wait the session's normal (often much
+    // longer, tuned for async page loads) element-wait timeout before giving up.
+    private static final int HIGHLIGHT_WAIT_ELEMENT_MS = 3_000;
+
     private final IRunTestCaseService runTestCaseService;
     private final IFactoryTestCaseExecution factoryTestCaseExecution;
     private final IFactoryTestCase factoryTestCase;
@@ -76,6 +92,9 @@ public class DebugExecutionService {
     private final DebugSessionRegistry debugSessionRegistry;
     private final IParameterService parameterService;
     private final DebugExecutionStatusMapperV001 debugExecutionStatusMapper;
+    private final PageElementExtractionService pageElementExtractionService;
+    private final IIdentifierService identifierService;
+    private final IWebDriverService webDriverService;
 
     public DebugExecutionStartResultDTOV001 startDebugExecution(DebugExecutionStartDTOV001 request, String login) {
         if (StringUtil.isEmptyOrNull(request.getTest())) {
@@ -204,6 +223,68 @@ public class DebugExecutionService {
         boolean pendingFailed = debugSession != null && debugSession.isPendingFailed();
 
         return debugExecutionStatusMapper.toDTO(execution, waiting, pendingAction, pendingControl, pendingFailed);
+    }
+
+    public DebugExecutionElementsResultDTOV001 extractPageElements(DebugExecutionElementsRequestDTOV001 request) {
+        if (StringUtil.isEmptyOrNull(request.getPageSource())) {
+            throw new IllegalArgumentException("Parameter 'pageSource' is mandatory.");
+        }
+
+        return DebugExecutionElementsResultDTOV001.builder()
+                .elements(pageElementExtractionService.extractPageElements(request.getPageSource()))
+                .build();
+    }
+
+    // Ad hoc, one-off command against the live robot session of a debug execution — bypasses
+    // ExecutionRunService's step/action loop entirely. Safe to run concurrently with it : while
+    // paused (the only time a "Next" button, and so this, is actually clickable), the run's own
+    // worker thread is blocked inside DebugSession.awaitCommand(), not touching the WebDriver.
+    public void highlightElement(String uuid, String xpath) {
+        if (StringUtil.isEmptyOrNull(xpath)) {
+            throw new IllegalArgumentException("Parameter 'xpath' is mandatory.");
+        }
+
+        TestCaseExecution execution = executionUUID.getTestCaseExecution(uuid);
+        if (execution == null) {
+            throw new EntityNotFoundException(TestCaseExecution.class, "executionUUID", uuid);
+        }
+
+        Session session = execution.getSession();
+        if (session == null || session.getDriver() == null) {
+            throw new IllegalStateException("No live browser session available for this debug execution.");
+        }
+
+        Identifier identifier = identifierService.convertStringToIdentifier("xpath=" + xpath);
+
+        // Temporarily override the session's element-wait timeout for this one lookup (see
+        // HIGHLIGHT_WAIT_ELEMENT_MS) and restore it right after — the session is shared with the
+        // paused debug run, but its worker thread only reads this value once resumed by an
+        // explicit Next/Retry click, which can't race a lookup that completes in a few seconds.
+        Integer previousWaitElement = session.getCerberus_selenium_wait_element();
+        AnswerItem<WebElement> answer;
+        session.setCerberus_selenium_wait_element(HIGHLIGHT_WAIT_ELEMENT_MS);
+        try {
+            answer = webDriverService.getWebElement(session, identifier, false, 0);
+        } finally {
+            session.setCerberus_selenium_wait_element(previousWaitElement);
+        }
+
+        WebElement element = answer.getItem();
+        if (element == null) {
+            throw new IllegalArgumentException("Element not found on the current live page for xpath : " + xpath);
+        }
+
+        // Same highlight styling WebDriverService already applies when the
+        // cerberus_selenium_highlightElement option is on for a real action/control (see
+        // WebDriverService.getSeleniumElement) — just triggered on demand here instead.
+        JavascriptExecutor js = (JavascriptExecutor) session.getDriver();
+        js.executeScript("arguments[0].setAttribute('style', 'background: yellow; border: 2px solid red;');", element);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        js.executeScript("arguments[0].removeAttribute('style','');", element);
     }
 
     // Empty string ("") means "no override" — RobotServerService then falls back to the

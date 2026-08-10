@@ -251,6 +251,15 @@
             <artifactId>json-path</artifactId>
             <version>2.10.0</version>
         </dependency>
+
+        <!-- Jsoup Version 1.23.1 : 08/2026 - Usage : Parse HTML
+        https://github.com/jhy/jsoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.23.1</version>
+        </dependency>
+
         <!-- Json Smart Version 2.6.0 : 02/08/2025 - Usage : JSONArray and JSONStyle
         TO REPLACE WITH JACKSON ?
         https://mvnrepository.com/artifact/net.minidev/json-smart -->

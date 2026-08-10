@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryRobotCapability;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionSysVer;
+import org.cerberus.core.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.core.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.core.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.core.crud.factory.IFactoryTestCaseStepExecution;
@@ -131,6 +132,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     private ICountryEnvParamService countryEnvParamService;
     private ILoadTestCaseService loadTestCaseService;
+    private IFactoryTestCaseStep factoryTestCaseStep;
     private IFactoryTestCaseStepExecution factoryTestCaseStepExecution;
     private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
     private IFactoryTestCaseStepActionControlExecution factoryTestCaseStepActionControlExecution;
@@ -1045,6 +1047,7 @@ public class ExecutionRunService implements IExecutionRunService {
         // Initialise the Step Data List.
         List<TestCaseExecutionData> myStepDataList = new ArrayList<>();
         stepExecution.setTestCaseExecutionDataList(myStepDataList);
+
         // Initialise the Data List used to enter the action.
         // Iterate Actions
         List<TestCaseStepAction> testCaseStepActionList = stepExecution.getTestCaseStep().getActions();
@@ -1067,6 +1070,24 @@ public class ExecutionRunService implements IExecutionRunService {
             if (execution.isDebugMode()) {
                 DebugSession debugSession = debugSessionRegistry.get(execution.getExecutionUUID());
                 if (debugSession != null) {
+                    // First time this action is offered (not a retry-after-failure pause) :
+                    // reload it fresh from DB, so an edit made while the session was paused on
+                    // an earlier action/step is picked up when actually run.
+                    if (!debugOfferingRetry) {
+                        TestCaseStepAction reloaded = reloadTestCaseStepAction(tcAction);
+                        if (reloaded != null) {
+                            tcAction = reloaded;
+                        }
+                        // Also refresh EVERY step's actions/controls (not just this one) in the
+                        // live execution.getTestCaseObj() — this is what the debug page's
+                        // WS "update" push serializes for its "Instructions" tree, so an edit to
+                        // a step not yet reached would otherwise stay invisible there (even
+                        // though it WOULD still run correctly once actually reached) until this
+                        // execution ends. Mutates existing step objects in place ; the action
+                        // loop's own local references (tcAction/testCaseStepActionList) are
+                        // untouched by it, so this can't affect what's actually about to run.
+                        reloadAllTestCaseSteps(execution);
+                    }
                     debugSession.setPendingAction(tcAction);
                     debugSession.setPendingFailed(debugOfferingRetry);
                     webSocketService.notifyDebugPending(execution, true, tcAction, null, debugOfferingRetry);
@@ -1354,6 +1375,50 @@ public class ExecutionRunService implements IExecutionRunService {
         return stepExecution;
     }
 
+    // Debug mode : refreshes EVERY step's actions/controls fresh from DB (see
+    // reloadTestCaseStepActions), not just the one about to run. The whole step/action/control
+    // tree is loaded once at the very start of the run and reused by reference for the rest of
+    // it (including for what execution.toJson(true) serializes into every WS "update" push, the
+    // source of the debug page's "Instructions" tree) ; without this, a step not yet reached
+    // would look unedited there even after being saved, until the engine itself reaches it.
+    private void reloadAllTestCaseSteps(TestCaseExecution execution) {
+        List<TestCaseStep> steps = execution.getTestCaseObj().getSteps();
+        if (steps == null) {
+            return;
+        }
+        for (TestCaseStep step : steps) {
+            reloadTestCaseStepActions(step);
+        }
+    }
+
+    // Debug mode : re-fetches a whole step's actions (and their controls) fresh from DB.
+    // Mirrors readByTestTestCaseStepsWithDependencies's library-step handling
+    // (TestCaseStepService) : a library-linked step's actions actually live at
+    // libraryStepTest/Testcase/StepId, not the step's own (local) coordinates. On failure, logs
+    // and leaves the step's previous (stale) actions in place rather than aborting the execution
+    // over what is, at worst, a missed live-edit.
+    private void reloadTestCaseStepActions(TestCaseStep step) {
+        try {
+            // Delegates to the exact same loader used for the initial (correct) load at run
+            // start — readByVarious1WithDependency (used here previously) has no ORDER BY, so
+            // actions/controls could come back in the wrong order ; loadTestCaseStepAction goes
+            // through findActionByTestTestCaseStep/findControlByTestTestCaseStepIdActionId
+            // (both ORDER BY sort), and already rewrites a library-linked step's actions/controls
+            // back to this step's own (local) test/testcase/stepId — required so
+            // TestCaseStepActionExecution/TestCaseStepActionControlExecution rows get recorded
+            // under the execution's real key instead of the library master's.
+            TestCaseStep usedStep = !step.isUsingLibraryStep() ? null
+                    : factoryTestCaseStep.create(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId(),
+                            step.getSort(), null, null, null, null, null, null, null, false, null, null, 0, false, false, null, null, null, null);
+
+            List<TestCaseStepAction> actions = loadTestCaseService.loadTestCaseStepAction(step, usedStep);
+            step.setActions(actions);
+        } catch (Exception ex) {
+            LOG.warn("Debug mode : reloading actions for step {}/{} step {} failed : reusing previous definition. {}",
+                    step.getTest(), step.getTestcase(), step.getStepId(), ex.toString(), ex);
+        }
+    }
+
     // Debug mode "retry" : re-fetches the action fresh from DB so an edit made elsewhere (e.g.
     // the test case editor, in another tab, while the debug session sits paused) is picked up
     // before re-running it. Returns null (rather than falling back to the stale in-memory copy)
@@ -1471,6 +1536,17 @@ public class ExecutionRunService implements IExecutionRunService {
             if (execution.isDebugMode()) {
                 DebugSession debugSession = debugSessionRegistry.get(execution.getExecutionUUID());
                 if (debugSession != null) {
+                    // Same idea as the action pause above : reload this control fresh from DB
+                    // the first time it's offered, so an edit made while paused on an earlier
+                    // control of this same action is picked up ; and refresh every step's
+                    // display-facing tree too (see reloadAllTestCaseSteps).
+                    if (!debugOfferingRetry) {
+                        TestCaseStepActionControl reloaded = reloadTestCaseStepActionControl(control);
+                        if (reloaded != null) {
+                            control = reloaded;
+                        }
+                        reloadAllTestCaseSteps(execution);
+                    }
                     TestCaseStepAction pendingParentAction = actionExecution.getTestCaseStepAction();
                     debugSession.setPendingAction(pendingParentAction);
                     debugSession.setPendingControl(control);

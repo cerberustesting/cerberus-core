@@ -17,26 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.crud.service;
+package org.cerberus.core.api.dto.debugexecution;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
+import org.cerberus.core.api.dto.views.View;
 
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseStep;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
+@ToString
+@Data
+@Builder
+@Jacksonized
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Schema(name = "DebugExecutionElementsRequest")
+public class DebugExecutionElementsRequestDTOV001 {
 
-/**
- * @author bcivel
- */
-public interface ILoadTestCaseService {
-
-    List<TestCaseStep> loadTestCaseStep(TestCase testCase);
-
-    /**
-     * Loads a single step's actions (and their controls), from the library master's location
-     * when usedTestCaseStep is non-null (isUsingLibraryStep), rewriting them back to
-     * testCaseStep's own (local) test/testcase/stepId either way.
-     */
-    List<TestCaseStepAction> loadTestCaseStepAction(TestCaseStep testCaseStep, TestCaseStep usedTestCaseStep);
-
+    @JsonView(View.Public.POST.class)
+    @Schema(description = "Raw HTML page source to analyze", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String pageSource;
 }

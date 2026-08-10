@@ -57,13 +57,16 @@
                 <!-- HEADER / CONTROL BAR -->
                 <%@ include file="include/pages/testcaseexecutiondebug/controlBar.html"%>
 
-                <!-- MAIN LAYOUT : live view + page source (main column) + steps/actions/controls (side) -->
-                <div class="grid grid-cols-[1fr_360px] gap-3 items-start">
+                <!-- MAIN LAYOUT : live view + page source (main column) + instructions/elements (side) -->
+                <div class="grid grid-cols-[1fr_480px] gap-3 items-start">
                     <div class="flex flex-col gap-3">
                         <%@ include file="include/pages/testcaseexecutiondebug/liveViewPanel.html"%>
                         <%@ include file="include/pages/testcaseexecutiondebug/pageSourcePanel.html"%>
                     </div>
-                    <%@ include file="include/pages/testcaseexecutiondebug/stepList.html"%>
+                    <div class="flex flex-col gap-3">
+                        <%@ include file="include/pages/testcaseexecutiondebug/stepList.html"%>
+                        <%@ include file="include/pages/testcaseexecutiondebug/elementsPanel.html"%>
+                    </div>
                 </div>
 
             </div>

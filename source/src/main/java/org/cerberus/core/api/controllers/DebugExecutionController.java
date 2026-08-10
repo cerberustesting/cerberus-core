@@ -31,6 +31,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionAckDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionElementsRequestDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionElementsResultDTOV001;
+import org.cerberus.core.api.dto.debugexecution.DebugExecutionHighlightRequestDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStartDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStartResultDTOV001;
 import org.cerberus.core.api.dto.debugexecution.DebugExecutionStatusDTOV001;
@@ -169,5 +172,51 @@ public class DebugExecutionController {
         this.apiAuthenticationService.authenticateLogin(principal, apiKey);
 
         return ResponseWrapper.wrap(this.debugExecutionService.getStatus(executionUUID));
+    }
+
+    @PostMapping(path = "/elements", headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Analyze a page source and list its elements.",
+            description = "Parses the given HTML page source and returns the notable/interactive elements it detects, each with a short description and an XPath locator (deterministic, no AI call).",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Elements detected", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = DebugExecutionElementsResultDTOV001.class))})
+            }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<DebugExecutionElementsResultDTOV001> extractElements(
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @JsonView(View.Public.POST.class) @RequestBody DebugExecutionElementsRequestDTOV001 elementsRequest,
+            HttpServletRequest request,
+            Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/debugexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /debugexecutions/elements called with URL: %s", request.getRequestURL()), request, login);
+
+        return ResponseWrapper.wrap(this.debugExecutionService.extractPageElements(elementsRequest));
+    }
+
+    @PostMapping(path = "/{executionUUID}/highlight", headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Highlight an element in the live browser session of a debug execution.",
+            description = "Ad hoc, one-off command against the live robot session — locates the element by XPath and briefly outlines it, bypassing the normal step/action loop entirely.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Command accepted", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = DebugExecutionAckDTOV001.class))})
+            }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<DebugExecutionAckDTOV001> highlight(
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @PathVariable("executionUUID") String executionUUID,
+            @JsonView(View.Public.POST.class) @RequestBody DebugExecutionHighlightRequestDTOV001 highlightRequest,
+            HttpServletRequest request,
+            Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/debugexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /debugexecutions/%s/highlight called with URL: %s", executionUUID, request.getRequestURL()), request, login);
+
+        this.debugExecutionService.highlightElement(executionUUID, highlightRequest.getXpath());
+        return ResponseWrapper.wrap(DebugExecutionAckDTOV001.builder().executionUUID(executionUUID).accepted(true).build());
     }
 }
