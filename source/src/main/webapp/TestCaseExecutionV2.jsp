@@ -67,7 +67,7 @@
             <!-- ============================================================ -->
             <!-- MAIN V2 CONTENT — Pure Alpine.js                             -->
             <!-- ============================================================ -->
-            <div x-data="executionV2()" x-init="init()" id="executionV2Root">
+            <div x-data="executionV2()" id="executionV2Root">
 
                 <!-- HEADER BAR -->
                 <%@ include file="include/pages/testcaseexecutionv2/headerBar.html"%>
