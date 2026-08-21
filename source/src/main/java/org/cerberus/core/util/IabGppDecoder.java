@@ -46,12 +46,34 @@ public class IabGppDecoder {
             Map<String, Object> tcfeuV2Data = new HashMap<>();
             if (tcfEuV2Section != null) {
                 tcfeuV2Data.put("version", tcfEuV2Section.getVersion());
-                tcfeuV2Data.put("consentLanguage", tcfEuV2Section.getConsentLanguage());
-                tcfeuV2Data.put("cmpId", tcfEuV2Section.getCmpId());
-                tcfeuV2Data.put("publisherCountryCode", tcfEuV2Section.getPublisherCountryCode());
-                tcfeuV2Data.put("consentString", tcfEuV2Section.getVendorConsents());
+                tcfeuV2Data.put("created", tcfEuV2Section.getCreated());
                 tcfeuV2Data.put("lastUpdated",tcfEuV2Section.getLastUpdated().format(formatter));
+                tcfeuV2Data.put("cmpId", tcfEuV2Section.getCmpId());
+                tcfeuV2Data.put("cmpVersion", tcfEuV2Section.getCmpVersion());
+                tcfeuV2Data.put("consentString", tcfEuV2Section.getConsentScreen());
+                tcfeuV2Data.put("consentLanguage", tcfEuV2Section.getConsentLanguage());
+                tcfeuV2Data.put("vendorListVersion", tcfEuV2Section.getVendorListVersion());
+                tcfeuV2Data.put("policyVersion", tcfEuV2Section.getPolicyVersion());
+                tcfeuV2Data.put("isServiceSpecific", tcfEuV2Section.getIsServiceSpecific());
+                tcfeuV2Data.put("useNonStandardStacks", tcfEuV2Section.getUseNonStandardStacks());
+                tcfeuV2Data.put("specialFeatureOptins", tcfEuV2Section.getSpecialFeatureOptins());
+                tcfeuV2Data.put("purposeConsents", tcfEuV2Section.getPurposeConsents());
+                tcfeuV2Data.put("purposeLegitimateInterests", tcfEuV2Section.getPurposeLegitimateInterests());
+                tcfeuV2Data.put("purposeOneTreatment", tcfEuV2Section.getPurposeOneTreatment());
+                tcfeuV2Data.put("publisherCountryCode", tcfEuV2Section.getPublisherCountryCode());
+                tcfeuV2Data.put("vendorConsents", tcfEuV2Section.getVendorConsents());
+                tcfeuV2Data.put("vendorLegitimateInterests", tcfEuV2Section.getVendorLegitimateInterests());
+                tcfeuV2Data.put("publisherRestrictions", tcfEuV2Section.getPublisherRestrictions());
+                tcfeuV2Data.put("publisherPurposesSegmentType", tcfEuV2Section.getPublisherPurposesSegmentType());
+                tcfeuV2Data.put("publisherConsents", tcfEuV2Section.getPublisherConsents());
+                tcfeuV2Data.put("publisherLegitimateInterests", tcfEuV2Section.getPublisherLegitimateInterests());
+                tcfeuV2Data.put("numCustomPurposes", tcfEuV2Section.getNumCustomPurposes());
+                tcfeuV2Data.put("publisherCustomConsents", tcfEuV2Section.getPublisherCustomConsents());
+                tcfeuV2Data.put("publisherCustomLegitimateInterests", tcfEuV2Section.getPublisherCustomLegitimateInterests());
+                tcfeuV2Data.put("vendorsAllowedSegmentType", tcfEuV2Section.getVendorsAllowedSegmentType());
                 tcfeuV2Data.put("vendorsAllowed", tcfEuV2Section.getVendorsAllowed());
+                tcfeuV2Data.put("vendorsDisclosedSegmentType", tcfEuV2Section.getVendorsDisclosedSegmentType());
+                tcfeuV2Data.put("vendorsDisclosed", tcfEuV2Section.getVendorsDisclosed());
             } else {
                 tcfeuV2Data.put("error", "TCFEuV2 not present");
             }
