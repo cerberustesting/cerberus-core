@@ -78,7 +78,7 @@ public class QueueStatus {
 
     public void refreshQueueToTreat() {
         try {
-            LOG.info("Retrieve tests in queue.");
+            LOG.debug("Retrieve tests in queue.");
 
             AnswerList<TestCaseExecutionQueueToTreat> answer =
                     testCaseExecutionQueueService.readQueueToTreat();
