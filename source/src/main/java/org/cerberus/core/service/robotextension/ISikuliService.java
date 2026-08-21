@@ -75,7 +75,7 @@ public interface ISikuliService {
      * @param executionId
      * @return
      */
-    public MessageEvent doSikuliActionStartVideo(Session session, long executionId);
+    public void doSikuliActionStartVideo(Session session, long executionId);
 
     /**
      *

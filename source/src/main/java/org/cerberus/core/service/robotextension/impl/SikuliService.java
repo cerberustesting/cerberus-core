@@ -545,21 +545,22 @@ public class SikuliService implements ISikuliService {
 
     @Async
     @Override
-    public MessageEvent doSikuliActionStartVideo(Session session, long executionId) {
+    public void doSikuliActionStartVideo(Session session, long executionId) {
 
         AnswerItem<JSONObject> actionResult = null;
         actionResult = doSikuliAction(session, executionId, this.SIKULI_STARTVIDEO, null, null, "", "");
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-            return message;
+//            return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED);
-            return mes;
+            LOG.warn("Failed to start Video on Cerberus extention side ! " + actionResult.getResultMessage().getDescription());
+//            return mes;
         }
 
-        return actionResult.getResultMessage();
+//        return actionResult.getResultMessage();
     }
 
     @Override
