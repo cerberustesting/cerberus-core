@@ -54,7 +54,7 @@ public class IdentifierService implements IIdentifierService {
         String identifier;
         String locator;
 
-        if ((input.startsWith("//")) || (input.startsWith("(//"))) {
+        if ((input.startsWith("//")) || (input.startsWith("(//")) || (input.startsWith("((//"))) {
             identifier = Identifier.IDENTIFIER_XPATH;
             locator = input;
         } else {
