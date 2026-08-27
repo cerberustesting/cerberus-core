@@ -74,6 +74,7 @@ public class RobotProxyService implements IRobotProxyService {
         if (RobotExecutor.PROXY_TYPE_MITMPROXY.equals(proxyType)) {
             url += "&proxyType=mitmproxy";
         }
+        url += "&executionUuid=" + tce.getExecutionUUID();
 
         if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tce.getRobotProvider())) {
             url += "&bsLocalProxyActive=true";

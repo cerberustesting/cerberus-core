@@ -300,8 +300,6 @@ function executionV2() {
                     // Live updates if PE — WebSocket only (no API polling)
                     if (tce.controlStatus === 'PE' && this.paramActivateWebSocket === 'Y') {
                         this.$nextTick(() => {
-                            // On garde le polling comme fallback.
-                            this._startPolling(tce.id);
                             this._subscribeExecutionPage(tce.id);
                         });
                     }
