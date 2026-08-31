@@ -32,10 +32,19 @@
 
         <!-- V2 Scripts -->
         <script type="text/javascript" src="js/testcase/testcaseStatic.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/testcase/condition.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionDebug.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body" :class="$store.rightPanel.open ? 'rp-open' : ''">
         <jsp:include page="include/global/header2.html"/>
+
+        <!-- Step Options modals (Options gear on TestCaseStep.html's action/control rows + step header).
+             Included before modalInclusions.jsp so its z-index-on-open observer (which only scans
+             .crb_modal nodes present in the DOM at that point) picks these up too; otherwise opening
+             one from within TestCaseStep.html's compact step editor renders it behind that modal. -->
+        <%@ include file="include/pages/testcasescript/manageActionControlOptions.html"%>
+        <%@ include file="include/pages/testcasescript/manageStepOptions.html"%>
+
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <jsp:include page="include/global/rightPanel.html"/>
         <main class="crb_main_wrp" x-init="$store.sidebar.expanded = false"

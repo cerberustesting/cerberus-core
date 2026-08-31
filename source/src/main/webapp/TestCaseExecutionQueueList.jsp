@@ -30,7 +30,15 @@
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
-        <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the "Executions in queue" table is js/global/crbTable.js driven
+            by TestCaseExecutionQueueListV2.js. TestCaseExecutionQueueList.js (V1) is
+            NOT loaded. TestCaseExecutionQueueListV1.jsp is the rollback copy.
+            The Pools Follow Up table stays a legacy CLIENT-side DataTable: it is fed
+            from an in-memory array, not from a paginated endpoint, which is not what
+            crbTable does. Untouched by this migration.
+        --%>
+        <script type="text/javascript" src="js/pages/TestCaseExecutionQueueListV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Executions Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css?v=${appVersion}"/>
     </head>
@@ -49,46 +57,45 @@
             <%@ include file="include/transversal/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions Queue</h1>
-            <p class="page-subtitle-line">Follow and manage the executions waiting in the queue, the robot pools and the queue job.</p>
 
             <div x-data="{ tab: (function () { var t = sessionStorage.getItem('TestCaseExecutionQueueList-TAB'); return (!t || t[0] === '#') ? 'details' : t; })() }" class="w-full">
 
-                <!-- Tabs -->
-                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                <%-- Shared tab bar (.crb_tabs, components.css), same component as
+                     Label.jsp / TestCaseScriptV2 / TestCaseExecutionV2. --%>
+                <div class="crb_tabs">
                     <button @click="tab = 'details'; switchQueueTab('details');"
-                            :class="tab === 'details' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'details' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="list-checks" class="w-4 h-4"></i>Executions in queue
                     </button>
                     <button @click="tab = 'followup'; switchQueueTab('followup');"
-                            :class="tab === 'followup' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'followup' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="layers" class="w-4 h-4"></i>Pools Follow Up
                     </button>
                     <button @click="tab = 'history'; switchQueueTab('history');"
-                            :class="tab === 'history' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'history' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="chart-column" class="w-4 h-4"></i>Queue History
                     </button>
                     <button @click="tab = 'jobstatus'; switchQueueTab('jobstatus');"
-                            :class="tab === 'jobstatus' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'jobstatus' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="settings-2" class="w-4 h-4"></i>Queue Job Status
                     </button>
                 </div>
 
                 <!-- ═══════════ Executions in queue ═══════════ -->
-                <div x-show="tab === 'details'" x-transition.opacity id="tabDetails">
-                    <form id="massActionForm" name="massActionForm" title="" role="form">
-                        <div id="executionList">
-                            <table id="executionsTable" class="table table-hover display" name="executionsTable"></table>
-                            <div class="marginBottom20"></div>
-                        </div>
-                    </form>
+                <div x-show="tab === 'details'" x-cloak id="tabDetails">
+                    <%-- The <form> V1 wrapped around the table only existed so that
+                         massActionForm.serialize() could collect the ticked row ids.
+                         The component owns the selection now (exeQV2SelectionParams
+                         builds the same id=..&id=.. payload), so the form is gone. --%>
+                    <div id="executionList"></div>
                 </div>
 
                 <!-- ═══════════ Pools Follow Up ═══════════ -->
-                <div x-show="tab === 'followup'" x-transition.opacity id="tabFollowUp">
+                <div x-show="tab === 'followup'" x-cloak id="tabFollowUp">
                     <div class="mb-3">
                         <button type="button" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"
                                 class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
@@ -103,7 +110,7 @@
                 </div>
 
                 <!-- ═══════════ Queue History ═══════════ -->
-                <div x-show="tab === 'history'" x-transition.opacity id="tabQueueHistory">
+                <div x-show="tab === 'history'" x-cloak id="tabQueueHistory">
                     <div class="crb_card p-4 mb-4" id="FiltersPanel">
                         <div class="flex items-end gap-4 flex-wrap" id="qsFilterPanel">
                             <div>
@@ -169,7 +176,7 @@
                 </div>
 
                 <!-- ═══════════ Queue Job Status ═══════════ -->
-                <div x-show="tab === 'jobstatus'" x-transition.opacity id="tabJobStatus">
+                <div x-show="tab === 'jobstatus'" x-cloak id="tabJobStatus">
                     <div class="mb-3">
                         <button type="button" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"
                                 class="flex items-center gap-1.5 px-3 py-1 rounded-md h-10 w-auto border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition">

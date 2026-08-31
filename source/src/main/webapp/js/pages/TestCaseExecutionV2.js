@@ -21,6 +21,19 @@
 var _v2exe_uid = 0;
 function v2exeuid() { return '__v2exe_' + (++_v2exe_uid); }
 
+/**
+ * Shim for the legacy global saveExecution(), called by include/transversal/File.html's
+ * confirmFileModalHandler() on every successful file create/update/delete (shared with the V1
+ * manual-execution editor, which defines the real one - a big "persist the whole manual execution
+ * form" handler - in TestCaseExecution.js). V2 doesn't load that file, so without this the call threw
+ * a ReferenceError right after the file mutation succeeded. V2 doesn't need that V1-specific save
+ * flow; it reacts to the 'file-modal-close' event dispatched from the same success handler instead
+ * (see executionV2().init()) to reload the execution and pick up the updated file list.
+ */
+if (typeof window.saveExecution !== 'function') {
+    window.saveExecution = function () {};
+}
+
 function executionV2() {
     return {
         // ═══ STATE ═══
@@ -170,6 +183,12 @@ function executionV2() {
             });
             window.addEventListener('beforeunload', (e) => {
                 if (this.saveState === 'dirty') { e.preventDefault(); e.returnValue = ''; }
+            });
+
+            // File.html dispatches this after a file add/edit/delete succeeds (see openFileModal() /
+            // the saveExecution() shim above) - reload so the step/action/control file lists reflect it.
+            window.addEventListener('file-modal-close', () => {
+                if (this.exe && this.exe.id) this._loadExecution(this.exe.id);
             });
 
             // Branch: execution or queue mode

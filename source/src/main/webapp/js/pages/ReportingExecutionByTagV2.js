@@ -63,7 +63,6 @@ function campaignReportV2() {
         onlyBugged: false,     // keep only test cases with an active bug
         onlyManual: false,     // keep only manual executions
         filtersOpen: false,    // advanced filters modal
-        showCols: { prio: true, app: true, lastRun: true },
 
         // ── PDF / report export ──
         pdfOpen: false,
@@ -126,9 +125,12 @@ function campaignReportV2() {
             try {
                 var savedTab = localStorage.getItem('rtv2.breakdownTab');
                 if (savedTab) this.breakdownTab = savedTab;
-                var savedCols = JSON.parse(localStorage.getItem('rtv2.showCols') || 'null');
-                if (savedCols) this.showCols = Object.assign(this.showCols, savedCols);
+                // showCols is gone: the V2 table's Config panel owns column
+                // visibility and persists it per table, including the combination
+                // columns the three old pills could never reach.
             } catch (e) { /* keep defaults */ }
+
+            this._buildGrid();
 
             this.tag = GetURLParameter('Tag') || '';
             this._loadTagOptions('');
@@ -142,15 +144,266 @@ function campaignReportV2() {
 
             this._bindWsLifecycle();
 
+            // Every filter the PAGE owns has to re-push the grid: the component holds
+            // its own copy of the rows, so a change that used to re-run an Alpine
+            // getter now has to be handed over explicitly. Watching the state rather
+            // than patching each toggle means a filter added later cannot be missed.
+            var self = this;
+            var repush = function () { self.refreshGrid(); };
+            ['activeStatuses', 'activeCountries', 'activeEnvs', 'activeRobots', 'activeApps',
+             'rowsMode', 'onlyFlaky', 'onlyBugged', 'onlyManual'].forEach(function (prop) {
+                self.$watch(prop, repush);
+            });
+
             this.$watch('sections', (v) => localStorage.setItem('rtv2.sections', JSON.stringify(v)));
             this.$watch('breakdownTab', (v) => localStorage.setItem('rtv2.breakdownTab', v));
-            this.$watch('showCols', (v) => localStorage.setItem('rtv2.showCols', JSON.stringify(v)));
             this.$watch('pdfOpen', (v) => { if (v) this._prefillEmailFromHooks(); });
 
             window.addEventListener('beforeunload', () => this._teardownLive());
         },
 
         // ═══════════════════ TAG SELECTOR ═══════════════════
+        /* ═══════════════════ EXECUTION GRID (V2 table) ═══════════════════
+         *
+         * The grid is a PIVOT: one row per test case, one column per environment /
+         * country / robot combination. Which combinations exist is data, so the
+         * column set is pushed at runtime with crbTableSetColumns() every time a
+         * report loads.
+         *
+         * Division of labour with the page:
+         *   component -> search, sort, paging, column show/hide, the card body
+         *   page      -> status / country quick filters, the advanced filters modal,
+         *                the row mode, the selection and the mass actions
+         * so the rows handed over are already filtered by everything EXCEPT the
+         * search, which the component applies itself.
+         *
+         * Cells are injected as HTML (the component renders a cell through x-html),
+         * so nothing inside them is Alpine-compiled: every click goes through
+         * crbTableCellCallback(tableId, fn, rowIndex, columnKey), which passes the
+         * row and the column key - never a value from the data - to a global handler.
+         */
+        _buildGrid() {
+            var self = this;
+            createCerberusTable({
+                id: 'rtGridTable',
+                mount: '#rtGridTableMount',
+                clientRows: [],
+                embedded: true,
+                onRefresh: function () { self.loadReport(true); },
+                pageLength: 25,
+                lengthMenu: [25, 50, 100, 200, 500],
+                searchPlaceholder: 'Search test, description, application...',
+                emptyMessage: 'No execution matches the current filters',
+                rowKey: function (row) { return row.test + '|' + row.testCase; },
+                defaultSort: {field: 'sortTest', dir: 'asc'},
+                persistColumns: true,
+                columns: self._gridFixedColumns(),
+                actions: []
+            });
+        },
+
+        /**
+         * The four fixed columns. Their sort keys are precomputed on each row
+         * (sortTest / sortApp / sortPrio / sortLastRun) so the component orders by
+         * exactly what V1's own comparator used - lower-cased "folder testcase" for
+         * the test column, 99 for a missing priority so it sorts last.
+         */
+        _gridFixedColumns() {
+            var self = this;
+            return [
+                {
+                    field: 'sortPrio', title: 'P', width: '70px', configurable: true,
+                    render: function (row) {
+                        if (!(row.priority && row.priority > 0)) {
+                            return '';
+                        }
+                        return '<span class="v2rt-prio v2rt-prio--' + crbTableEscape(row.priority) +
+                            '" title="Priority ' + crbTableEscape(row.priority) + '">P' +
+                            crbTableEscape(row.priority) + '</span>';
+                    }
+                },
+                {
+                    field: 'sortTest', title: 'Test case', width: '300px',
+                    render: function (row) { return self._gridTestCell(row); }
+                },
+                {
+                    field: 'sortApp', title: 'Application', width: '160px',
+                    render: function (row) {
+                        return '<span class="truncate">' + crbTableEscape(row.application || '') + '</span>';
+                    }
+                },
+                {
+                    field: 'sortLastRun', title: 'Last run', width: '150px',
+                    render: function (row) {
+                        var d = row.DurationMsMax
+                            ? '<div class="v2rt-grid-desc">' + crbTableEscape(self.fmtDuration(row.DurationMsMax)) + '</div>'
+                            : '';
+                        return '<div>' + crbTableEscape(self.relTime(row.lastExeEnd)) + '</div>' + d;
+                    }
+                }
+            ];
+        },
+
+        /** Test-case cell: folder, the script link, the muted and bug chips, the description. */
+        _gridTestCell(row) {
+            var bugs = this.rowBugs(row) || [];
+            var html = '<div class="v2rt-grid-folder" title="' + crbTableEscape(row.test) + '">' +
+                crbTableEscape(row.test) + '</div>' +
+                '<div class="flex items-center gap-1.5 min-w-0">' +
+                '<a class="v2rt-grid-tc truncate" target="_blank" title="' +
+                crbTableEscape(row.test + ' / ' + row.testCase) + '" href="./TestCaseScriptV2.jsp?test=' +
+                encodeURIComponent(row.test) + '&testcase=' + encodeURIComponent(row.testCase) + '">' +
+                crbTableEscape(row.testCase) + '</a>';
+            if (row.isMuted) {
+                html += '<span class="v2rt-chip v2rt-chip--muted" title="This test case is muted">M</span>';
+            }
+            if (bugs.length) {
+                html += '<span class="v2rt-chip v2rt-chip--danger" title="' +
+                    crbTableEscape('Active bugs: ' + bugs.map(function (b) { return b.id; }).join(', ')) +
+                    '">' + crbTableEscape(bugs.length + ' bug') + '</span>';
+            }
+            html += '</div><div class="v2rt-grid-desc truncate" title="' +
+                crbTableEscape(row.shortDesc || '') + '">' + crbTableEscape(row.shortDesc || '') + '</div>';
+            return html;
+        },
+
+        /**
+         * One column per combination still worth showing.
+         *
+         * V1 hid a combination whose every cell was filtered out, computed from
+         * visibleRows - which included the search. Here the search belongs to the
+         * component, so the set is computed from the rows filtered by everything
+         * else: a column no longer appears and disappears while you type, which is
+         * the better behaviour anyway.
+         */
+        _gridComboColumns(rowsForColumns) {
+            var self = this;
+            return this.columns
+                .filter(function (col) {
+                    return rowsForColumns.some(function (r) {
+                        return self.cellVisible((r.execTab || {})[col.key]);
+                    });
+                })
+                .map(function (col) {
+                    return {
+                        // The combination key is a data value, so it cannot be sorted
+                        // on: there is no single scalar behind a column of cells.
+                        field: 'combo::' + col.key,
+                        title: (col.environment + ' ' + col.country).trim(),
+                        subtitle: col.robotDecli || '',
+                        sortable: false,
+                        width: '140px',
+                        render: function (row, rowIndex) {
+                            return self._gridCell(row, col, rowIndex);
+                        }
+                    };
+                });
+        },
+
+        /** One execution cell, with every state V1 drew. */
+        _gridCell(row, col, rowIndex) {
+            var cell = (row.execTab || {})[col.key] || null;
+            if (!cell) {
+                return '<div class="v2rt-cell v2rt-cell--none">-</div>';
+            }
+            if (!this.cellVisible(cell)) {
+                return '<div class="v2rt-cell v2rt-cell--filtered" title="' +
+                    crbTableEscape('Filtered out: ' + cell.ControlStatus) + '">' +
+                    '<span class="v2rt-cell-status">' + crbTableEscape(cell.ControlStatus) + '</span></div>';
+            }
+
+            var cls = 'v2rt-cell';
+            if (this.isSelected(cell)) {
+                cls += ' v2rt-cell--selected';
+            }
+            if (cell.isFalseNegative) {
+                cls += ' v2rt-cell--fn';
+            }
+
+            var call = function (fn) {
+                return "crbTableCellCallback('rtGridTable','" + fn + "'," + Number(rowIndex) +
+                    ",'" + crbTableEscape(col.key) + "')";
+            };
+
+            var html = '<div class="' + cls + '" style="--cell-color:' +
+                crbTableEscape(this.statusColor(cell.ControlStatus)) + '" title="' +
+                crbTableEscape(this.cellTitle(cell)) + '" onclick="' + call('rtV2OpenCell') + '">';
+
+            if (this.cellSelectable(cell)) {
+                html += '<input type="checkbox" class="v2rt-cell-check"' +
+                    (this.isSelected(cell) ? ' checked' : '') +
+                    ' onclick="event.stopPropagation();' + call('rtV2ToggleSelect') + '">';
+            }
+            if (cell.previousExeControlStatus) {
+                html += '<span class="v2rt-cell-prev" style="background:' +
+                    crbTableEscape(this.statusColor(cell.previousExeControlStatus)) + '" title="' +
+                    crbTableEscape('Previous execution: ' + cell.previousExeControlStatus + ' (click to open)') +
+                    '" onclick="event.stopPropagation();' + call('rtV2OpenPrevious') + '"></span>';
+            }
+            html += '<span class="v2rt-cell-status">' + crbTableEscape(cell.ControlStatus) + '</span>';
+            if (cell.ControlStatus === 'PE' && cell.progressPercent !== undefined) {
+                html += '<span class="v2rt-cell-progress">' + crbTableEscape(cell.progressPercent + '%') + '</span>';
+            }
+            if (cell.QueueState) {
+                html += '<span class="v2rt-cell-queue">' + crbTableEscape(cell.QueueState) + '</span>';
+            }
+            if (cell.isFlaky) {
+                html += '<span class="v2rt-cell-flaky" title="Flaky: this execution needed retries to pass">FLAKY</span>';
+            }
+            if (cell.NbExecutions && String(cell.NbExecutions) !== '1') {
+                html += '<span class="v2rt-cell-retry" title="' +
+                    crbTableEscape(cell.NbExecutions + ' executions (retries)') + '">' +
+                    crbTableEscape('x' + cell.NbExecutions) + '</span>';
+            }
+            return html + '</div>';
+        },
+
+        /**
+         * Rows for the grid: everything V1's visibleRows did EXCEPT the search and
+         * the sort, which the component owns. The sort keys are stamped here so the
+         * component can order by them.
+         */
+        get gridRows() {
+            var self = this;
+            return this.rows
+                .filter(function (r) {
+                    if (self.activeApps[r.application] === false) return false;
+                    if (self.onlyBugged && self.rowBugs(r).length === 0) return false;
+                    if (self._rowHiddenByMode(r)) return false;
+                    var cells = Object.values(r.execTab || {});
+                    return cells.some(function (c) { return self.cellVisible(c); });
+                })
+                .map(function (r) {
+                    return $.extend({}, r, {
+                        sortTest: ((r.test || '') + ' ' + (r.testCase || '')).toLowerCase(),
+                        sortApp: (r.application || '').toLowerCase(),
+                        sortPrio: r.priority || 99,
+                        sortLastRun: r.lastExeEnd || 0
+                    });
+                });
+        },
+
+        /**
+         * Pushes the current column set AND rows into the grid.
+         *
+         * Called after a report loads, after a live delta patches a cell, and after
+         * any filter or selection change - the cells carry the selection ticks and
+         * the filtered-out state, so they have to be re-rendered.
+         */
+        refreshGrid() {
+            var rows = this.gridRows;
+            crbTableSetColumns('rtGridTable', this._gridFixedColumns().concat(this._gridComboColumns(rows)));
+            crbTableSetRows('rtGridTable', rows);
+        },
+
+        /** Same, without rebuilding the column set - for a selection tick. */
+        repaintGrid() {
+            var t = crbTableInstance('rtGridTable');
+            if (t) {
+                t.fetch();
+            }
+        },
+
         _loadTagOptions(term) {
             var self = this;
             var url = 'ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30'
@@ -336,6 +589,7 @@ function campaignReportV2() {
             try { saveHistory({ id: this.tagObj.id, tag: this.tag }, 'historyCampaigns', 5); } catch (e) { /* non blocking */ }
 
             document.title = this.tag + ' - Campaign Report';
+            this.refreshGrid();
             this._setupLive();
             this.$nextTick(function () { if (window.lucide) lucide.createIcons(); });
         },
@@ -757,6 +1011,8 @@ function campaignReportV2() {
             if (!this.cellSelectable(cell)) return;
             if (this.selected[cell.QueueID]) delete this.selected[cell.QueueID];
             else this.selected[cell.QueueID] = true;
+            // The tick is drawn inside the cell markup, so the table has to repaint.
+            this.repaintGrid();
         },
 
         // ═══════════════════ MASS ACTIONS ═══════════════════
@@ -772,8 +1028,9 @@ function campaignReportV2() {
                     if (stateOk && manualOk) self.selected[c.QueueID] = true;
                 });
             });
+            this.repaintGrid();
         },
-        clearSelection() { this.selected = {}; },
+        clearSelection() { this.selected = {}; this.repaintGrid(); },
         submitAgain(withDep) {
             var self = this;
             var ids = Object.keys(this.selected);
@@ -1433,8 +1690,11 @@ function campaignReportV2() {
             cell.ControlStatus = light.controlStatus || cell.ControlStatus;
             if (light.controlMessage !== undefined) cell.ControlMessage = light.controlMessage;
             if (light.progressPercent !== undefined) cell.progressPercent = light.progressPercent;
-            // Reassign so Alpine recomputes the getters built from this.rows
+            // Reassign so Alpine recomputes the getters built from this.rows, and
+            // push the patched rows into the grid - a live status change that never
+            // reaches the table is the whole point of this page not working.
             this.rows = this.rows.slice();
+            this.refreshGrid();
             this._refreshLiveMode();
         },
         _onCampaignUpdate(dto) {
@@ -1511,4 +1771,59 @@ function campaignReportV2() {
         statusColor(s) { return this.statusColors[s] || '#94a3b8'; },
         rowBugs(r) { return Array.isArray(r.bugs) ? r.bugs.filter(function (b) { return b && b.id; }) : []; }
     };
+}
+
+/* =============================================================================
+ * Cell handlers for the execution grid.
+ *
+ * The grid renders its cells as HTML (the V2 table injects a cell through x-html),
+ * so nothing inside a cell is Alpine-compiled and @click does not bind. These are
+ * reached through crbTableCellCallback('rtGridTable', name, rowIndex, columnKey),
+ * which hands back the row and the column key - never a value from the data, so no
+ * execution status, test name or message ever ends up inside a handler string.
+ *
+ * `row` is the row the table is showing, which is a COPY made by gridRows (the sort
+ * keys are stamped on it), so the cell has to be looked up on the live row to keep
+ * the selection and the live deltas in sync.
+ * ========================================================================== */
+
+/** The page's Alpine component. */
+function rtV2Component() {
+    var el = document.getElementById('campaignReportV2Root');
+    return (el && el._x_dataStack && el._x_dataStack[0]) || null;
+}
+
+/** The live cell behind a (row copy, column key) pair. */
+function rtV2CellOf(cmp, row, columnKey) {
+    if (!cmp || !row) {
+        return null;
+    }
+    var live = cmp.rows.find(function (r) {
+        return r.test === row.test && r.testCase === row.testCase;
+    }) || row;
+    return (live.execTab || {})[columnKey] || null;
+}
+
+function rtV2OpenCell(row, table, columnKey) {
+    var cmp = rtV2Component();
+    var cell = rtV2CellOf(cmp, row, columnKey);
+    if (cmp && cell) {
+        cmp.openCell(cell);
+    }
+}
+
+function rtV2OpenPrevious(row, table, columnKey) {
+    var cmp = rtV2Component();
+    var cell = rtV2CellOf(cmp, row, columnKey);
+    if (cmp && cell) {
+        cmp.openPrevious(cell);
+    }
+}
+
+function rtV2ToggleSelect(row, table, columnKey) {
+    var cmp = rtV2Component();
+    var cell = rtV2CellOf(cmp, row, columnKey);
+    if (cmp && cell) {
+        cmp.toggleSelect(cell);
+    }
 }

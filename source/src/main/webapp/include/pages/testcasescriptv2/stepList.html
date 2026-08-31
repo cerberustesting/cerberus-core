@@ -46,8 +46,7 @@
                               x-text="(step.actions ? step.actions.filter(a => !a.toDelete).length : 0) + ' act.'"></span>
                         <template x-if="step.isUsingLibraryStep">
                             <a class="v2-step-lib-badge v2-step-lib-badge--linked"
-                               :href="'./TestCaseScript.jsp?test=' + encodeURIComponent(step.libraryStepTest) + '&testcase=' + encodeURIComponent(step.libraryStepTestCase) + '&stepId=' + step.libraryStepStepId"
-                               target="_blank"
+                               :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(step.libraryStepTest) + '&testcase=' + encodeURIComponent(step.libraryStepTestCase) + '&stepId=' + step.libraryStepStepId"
                                @click.stop
                                :data-tip="'Open library: ' + step.libraryStepTestCase"
                                data-tip-pos="bottom">

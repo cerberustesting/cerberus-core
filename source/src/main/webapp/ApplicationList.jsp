@@ -30,7 +30,11 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/ApplicationList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by ApplicationListV2.js.
+            ApplicationList.js (V1) is NOT loaded. ApplicationListV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/ApplicationListV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Applications</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -46,12 +50,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
 
             <h1 class="page-title-line" id="title">Application</h1>
-            <div class="">
-                <div id="applicationList">
-                    <table id="applicationsTable" class="table table-hover display" name="applicationsTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
+            <div id="applicationList"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

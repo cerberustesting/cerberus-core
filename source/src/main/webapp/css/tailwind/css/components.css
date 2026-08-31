@@ -141,6 +141,83 @@
         background: var(--crb-new-bg) !important;
         /*background-color: var(--crb-grey-light-color) !important;
         color: var(--crb-dark-color);*/
+
+        /* Modern header label: see modernizeTableHeaderOnce()/syncTableHeaderSortIcons() in
+           cerberusDatatable.js for the icon swap this pairs with. */
+        position: relative;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        @apply font-bold uppercase text-slate-500 dark:text-slate-400;
+    }
+
+    /* Reserves room for the absolutely-positioned .crb_dt_sorticon - only when table-filter.js
+       hasn't ALSO built a `.th-content` flex row for this column (see crb_dt_sorticon--inline
+       above), which already spaces its own icons out via margin instead. */
+    table.dataTable thead th:not(:has(.th-content)) {
+        padding-right: 22px !important;
+    }
+
+    /* The label text's own wrapper (see modernizeTableHeaderOnce() in cerberusDatatable.js) - the
+       one element in a header cell allowed to shrink/truncate, so a narrow column never grows
+       taller than one line or pushes its icons past the cell's own edge into the next column.
+       `display:block` truncates correctly both as a flex child (blockified automatically inside
+       table-filter.js's `.th-content` row) and as a plain child of the non-flex <th> case. */
+    .crb_dt_label {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* DataTables' own sprite-based sort carets (from the vendored
+       dependencies/DataTables-1.10.12/css/dataTables.bootstrap.min.css) - replaced by the Lucide
+       icon syncTableHeaderSortIcons() appends instead. */
+    table.dataTable thead th.sorting,
+    table.dataTable thead th.sorting_asc,
+    table.dataTable thead th.sorting_desc {
+        background-image: none !important;
+    }
+
+    .crb_dt_doclink {
+        display: inline-flex;
+        flex-shrink: 0;
+        vertical-align: middle;
+        margin-left: 4px;
+        transition: color 0.15s ease;
+        @apply text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400;
+    }
+
+    /* table-filter.js gives this only inline-flex/ml-auto (see _buildColumnFilter) - pinning its
+       size here too so it's the label that gives way under pressure, never this button. */
+    .col-filter-trigger {
+        flex-shrink: 0;
+    }
+
+    .crb_dt_sorticon {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        @apply text-slate-300 dark:text-slate-600;
+    }
+
+    /* Used instead of the rule above when js/global/table-filter.js has also built its funnel
+       button for this column: both then live as ordinary children of its `.th-content` flex row
+       (funnel pushed right via `ml-auto`) rather than each independently claiming the same
+       absolutely-positioned top-right corner. */
+    .crb_dt_sorticon.crb_dt_sorticon--inline {
+        position: static;
+        transform: none;
+        flex-shrink: 0;
+        margin: 0 4px;
+    }
+
+    table.dataTable thead th.sorting_asc .crb_dt_sorticon,
+    table.dataTable thead th.sorting_desc .crb_dt_sorticon {
+        @apply text-blue-500 dark:text-blue-400;
     }
 
     table.dataTable thead th input {
@@ -174,6 +251,210 @@
         width: 120%;
         max-width: 500px;
         overflow: auto;
+    }
+
+
+/* ===========================
+    Treeview (dependencies/Bootstrap-treeview-1.2.0, reskinned)
+    See crbTreeviewIconOptions() in js/global/global.js for the option classes this pairs with.
+    The plugin still owns markup/behaviour (expand/collapse, selection, getSelected()/getChecked());
+    everything here is a pure visual override of its Bootstrap 3 defaults, scoped to the .treeview
+    root class the plugin adds to its own container automatically.
+=========================== */
+    .treeview .list-group {
+        margin: 0;
+        padding-left: 0;
+    }
+
+    .treeview .list-group-item {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2px;
+        padding: 5px 8px;
+        margin-bottom: 1px;
+        border-radius: 6px;
+        border: none !important;
+        background: transparent !important;
+        font-size: 13px;
+        @apply text-slate-700 dark:text-slate-300;
+    }
+
+    .treeview .list-group-item:not(.node-disabled):hover {
+        @apply bg-slate-100 dark:bg-slate-800;
+    }
+
+    /* Only ever set on nodes from a multiSelect tree (loadLabel's isSelectable=Y trees) - the
+       hasButtons trees on Label.jsp never mark a node selectable, so this never lights up there. */
+    .treeview .list-group-item.node-selected {
+        @apply bg-sky-50 dark:bg-sky-900/20;
+    }
+
+    .treeview .list-group-item.node-disabled {
+        cursor: not-allowed;
+        @apply text-slate-300 dark:text-slate-600;
+    }
+
+    .treeview span.indent {
+        width: 16px;
+        margin: 0;
+    }
+
+    .treeview span.icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        margin-right: 2px;
+        flex-shrink: 0;
+    }
+
+    .treeview .expand-icon {
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    /* bootstrap-treeview.js rebuilds every node's markup from scratch on each expand/collapse/
+       select, always re-reading these option strings - so unlike the DataTables header icons
+       (synced imperatively after each draw.dt), a plain CSS class here survives every re-render
+       for free, with no JS re-sync needed. Mask-image + currentColor keeps them dark-mode
+       reactive without needing a separate asset per theme. */
+    .crb-tree-icon-expand,
+    .crb-tree-icon-collapse {
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: 13px 13px;
+        mask-size: 13px 13px;
+        background-color: currentColor;
+        @apply text-slate-400 dark:text-slate-500;
+    }
+
+    .crb-tree-icon-expand {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
+    }
+
+    .crb-tree-icon-collapse {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    }
+
+    /* Selection affordance for loadLabel()'s pickable trees (Edit Test Case Header > Label tab,
+       and the test-list mass-action "add label" modal) - swapped via nodeIcon/selectedIcon so
+       clicking anywhere on the row still calls the plugin's own toggleSelectedState()/
+       getSelected(), completely unchanged from before this reskin. */
+    .crb-tree-icon-unchecked {
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: 14px 14px;
+        mask-size: 14px 14px;
+        background-color: currentColor;
+        @apply text-slate-300 dark:text-slate-600;
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='16' height='16' rx='4'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='16' height='16' rx='4'/%3E%3C/svg%3E");
+    }
+
+    .crb-tree-icon-checked {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 14px 14px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='18' height='18' rx='4' fill='%230ea5e9'/%3E%3Cpath d='M7 12.5l3 3 7-7' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+    }
+
+    .treeview .badge {
+        display: inline-block;
+        margin: 0 2px 0 0;
+        padding: 1px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 9999px;
+        @apply bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300;
+    }
+
+    /* Per-label colour (background-color/color) stays inline from ReadLabel.java - it's the
+       label's own user-chosen colour, not a theme concern - this only fixes the shape/spacing. */
+    .treeview .label {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 9999px;
+        padding: 2px 10px;
+        margin-right: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    /* Edit/Delete/Open-in-list buttons (hasButtons=Y trees, built server-side in ReadLabel.java) -
+       icons swapped purely in CSS by targeting the glyphicon-* class the server still emits, so no
+       Lucide re-sync is needed after the plugin's own re-renders (see comment above). */
+    .treeview .btn-tree {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        margin: 0 2px 0 0 !important;
+        border-radius: 6px;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        transition: background-color 0.15s ease;
+    }
+
+    .treeview .btn-tree:hover {
+        @apply bg-slate-200 dark:bg-slate-700;
+    }
+
+    /* Bootstrap's own .btn-default/.btn-primary each set their own `color` (white on the
+       btn-primary "same tab" button) - a mask relying on inherited currentColor picked that up
+       instead of the intended slate tone, rendering as a near-invisible pale icon on that one
+       button. Forcing the icon's own background-color (with Tailwind's `!` important modifier)
+       sidesteps that fight entirely rather than trying to out-specificity it. */
+    .treeview .btn-tree .glyphicon {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        font-size: 0;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        @apply !bg-slate-400 dark:!bg-slate-500;
+    }
+
+    .treeview .btn-tree:hover .glyphicon {
+        @apply !bg-slate-700 dark:!bg-slate-200;
+    }
+
+    .treeview .btn-tree .glyphicon-pencil {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E");
+    }
+
+    .treeview .btn-tree .glyphicon-trash {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cpath d='M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cpath d='M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6'/%3E%3C/svg%3E");
+    }
+
+    /* Same glyphicon-list class server-side on both "open list" buttons - told apart here only by
+       their other Bootstrap class (btn-default = open in new tab, btn-primary = navigate here),
+       exactly as ReadLabel.java already emits them. */
+    .treeview .btn-tree.btn-default .glyphicon-list {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+    }
+
+    .treeview .btn-tree.btn-primary .glyphicon-list {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='8' y1='6' x2='21' y2='6'/%3E%3Cline x1='8' y1='12' x2='21' y2='12'/%3E%3Cline x1='8' y1='18' x2='21' y2='18'/%3E%3Cline x1='3' y1='6' x2='3.01' y2='6'/%3E%3Cline x1='3' y1='12' x2='3.01' y2='12'/%3E%3Cline x1='3' y1='18' x2='3.01' y2='18'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='8' y1='6' x2='21' y2='6'/%3E%3Cline x1='8' y1='12' x2='21' y2='12'/%3E%3Cline x1='8' y1='18' x2='21' y2='18'/%3E%3Cline x1='3' y1='6' x2='3.01' y2='6'/%3E%3Cline x1='3' y1='12' x2='3.01' y2='12'/%3E%3Cline x1='3' y1='18' x2='3.01' y2='18'/%3E%3C/svg%3E");
     }
 
 }
@@ -241,3 +522,1530 @@
     justify-content: center;
     @apply bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md
 }
+
+/* ===========================
+    crbTable (V2 - js/global/crbTable.js)
+
+    NOTE: deliberately OUTSIDE @layer components.
+    Bootstrap 3 is still loaded globally and ships an unlayered `td,th{padding:0}`
+    reset. In the CSS cascade, ANY unlayered rule beats ANY layered one regardless
+    of specificity, so while these rules lived inside @layer components every
+    padding here was silently dropped and the header collapsed to 16px. Keeping
+    this block unlayered puts it on equal footing with Bootstrap, where normal
+    specificity applies and `.crb_table_th` (0,1,0) wins over `td,th` (0,0,1).
+    Revisit once Bootstrap is finally removed.
+    Standalone from the legacy DataTables skin above: the V1 rules target
+    DataTables' own generated markup (table.dataTable, .dataTables_scrollHead...),
+    none of which exists here, so the two can coexist on the same page while
+    pages are migrated one at a time.
+    Charter: action icons h-8/w-8, opacity-20 -> 100 on row hover, left-aligned,
+    per-action hover colour; status chips rounded-full ring-1 ring-inset;
+    borders inherited from --crb-new-border, the shared card border.
+=========================== */
+    /* The table used to hardcode #dbe3ee here because --crb-new-border was a
+       white-alpha value that vanished on a white card. That token is now a solid
+       colour (base.css), so the table follows it and a card and a table can no
+       longer drift apart. The local name stays as the single point of override. */
+    .crb_table_root {
+        --crb-table-border: var(--crb-new-border);
+    }
+
+    /* ---- Control bar (newer chrome: one compact horizontal strip, paging on
+       top like the legacy pages, counters as pills) ---- */
+    .crb_table_bar {
+        background: var(--crb-new-bg);
+        border: 1px solid var(--crb-table-border);
+        border-radius: var(--radius-2xl);
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .crb_table_bar_row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .crb_table_bar_row--meta { justify-content: space-between; }
+    .crb_table_bar_actions { display: flex; align-items: center; gap: 8px; }
+    .crb_table_bar_actions:empty { display: none; }
+    .crb_table_bar_left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .crb_table_bar_search {
+        position: relative;
+        flex: 1 1 220px;
+        min-width: 160px;
+    }
+
+    .crb_table_search_icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        @apply text-slate-400;
+    }
+
+    .crb_table_search_input {
+        width: 100%;
+        height: 2.5rem;
+        padding: 0 12px 0 32px;
+        border-radius: 0.5rem;
+        border: 1px solid var(--crb-table-border);
+        background: transparent;
+        font-size: 13.5px;
+        @apply text-slate-800 dark:text-slate-200;
+    }
+
+    .crb_table_search_input::placeholder { @apply text-slate-400; }
+
+    .crb_table_iconbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 2.5rem;
+        min-width: 2.5rem;
+        padding: 0 10px;
+        border-radius: 0.5rem;
+        border: 1px solid var(--crb-table-border);
+        background: transparent;
+        cursor: pointer;
+        font-size: 13.5px;
+        @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+    }
+
+    .crb_table_meta_label { font-size: 12.5px; @apply text-slate-500 dark:text-slate-400; }
+
+    .crb_table_select {
+        height: 2rem;
+        padding: 0 6px;
+        font-size: 13px;
+        border-radius: 0.375rem;
+        border: 1px solid var(--crb-table-border);
+        background: transparent;
+        @apply text-slate-700 dark:text-slate-200;
+    }
+
+    .crb_table_count {
+        margin-left: 4px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+    }
+
+    .crb_table_pager { display: flex; align-items: center; gap: 2px; }
+
+    /* ---- Active filter chips ---- */
+    .crb_table_activefilters {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        padding-top: 2px;
+    }
+
+    .crb_table_chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        @apply bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300;
+    }
+
+    .crb_table_chip_key { font-weight: 600; }
+
+    .crb_table_chip button {
+        display: inline-flex;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+        color: inherit;
+        opacity: 0.7;
+    }
+
+    .crb_table_chip button:hover { opacity: 1; }
+
+    .crb_table_clearall {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 12px;
+        text-decoration: underline;
+        @apply text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200;
+    }
+
+    /* ---- Popovers (column config + column filter) ---- */
+    .crb_table_popover {
+        z-index: 60;
+        width: 260px;
+        border-radius: 0.75rem;
+        border: 1px solid var(--crb-table-border);
+        padding: 8px;
+        box-shadow: 0 10px 30px rgb(15 23 42 / 0.12);
+        @apply bg-white dark:bg-slate-800;
+    }
+
+    /* Both popovers are placed in fixed coordinates by crbTablePopoverStyle();
+       the inline style carries top/left. Absolute positioning inside the toolbar
+       is what let a host card with overflow:hidden clip the column list. */
+    .crb_table_popover--config { position: fixed; }
+
+    .crb_table_popover_title {
+        padding: 4px 6px 6px;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        @apply font-bold uppercase text-slate-500 dark:text-slate-400;
+    }
+
+    /* Filter popover head: the column name, and the All / None pair that acts on
+       whatever the popover's own search currently lists. */
+    .crb_table_popover_head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .crb_table_popover_head .crb_table_popover_title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .crb_table_popover_quick {
+        display: inline-flex;
+        gap: 4px;
+        flex-shrink: 0;
+        padding-bottom: 2px;
+    }
+
+    .crb_table_popover_quick button {
+        border: 0;
+        border-radius: 4px;
+        padding: 1px 7px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        @apply bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600;
+    }
+
+    /* Shown instead of the value list on a like column, so the empty body does
+       not read as "no values found". */
+    .crb_table_popover_hint {
+        padding: 8px 6px 4px;
+        font-size: 11.5px;
+        @apply text-slate-400 dark:text-slate-500;
+    }
+
+    .crb_table_popover_search {
+        width: 100%;
+        height: 2rem;
+        padding: 0 8px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        border-radius: 0.375rem;
+        border: 1px solid var(--crb-table-border);
+        background: transparent;
+        @apply text-slate-700 dark:text-slate-200;
+    }
+
+    .crb_table_popover_list { max-height: 220px; overflow: auto; }
+
+    .crb_table_popover_item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 6px;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 13px;
+        @apply text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700;
+    }
+
+    .crb_table_popover_item input { margin: 0; height: 1rem; width: 1rem; flex-shrink: 0; }
+    .crb_table_popover_item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .crb_table_popover_empty { padding: 10px 6px; font-size: 12.5px; @apply text-slate-400; }
+
+    .crb_table_popover_footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        padding-top: 8px;
+        margin-top: 6px;
+        border-top: 1px solid var(--crb-table-border);
+    }
+
+    .crb_table_popover_btn {
+        padding: 5px 12px;
+        border-radius: 0.375rem;
+        border: 1px solid var(--crb-table-border);
+        background: transparent;
+        cursor: pointer;
+        font-size: 12.5px;
+        @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700;
+    }
+
+    .crb_table_popover_btn--primary {
+        border-color: transparent;
+        @apply bg-blue-600 !text-white hover:bg-blue-700;
+    }
+
+    .crb_table_filterbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        height: 1.25rem;
+        width: 1.25rem;
+        border: 0;
+        border-radius: 0.25rem;
+        background: transparent;
+        cursor: pointer;
+        @apply text-slate-300 hover:text-slate-600 hover:bg-slate-200 dark:text-slate-600 dark:hover:text-slate-300 dark:hover:bg-slate-700;
+    }
+
+    .crb_table_filterbtn--active { @apply !text-blue-500 dark:!text-blue-400; }
+
+    .crb_table_iconbtn--danger { @apply text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10; }
+
+    .crb_table_selcount {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        @apply bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300;
+    }
+
+    .crb_table_selcount button {
+        display: inline-flex;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.65;
+    }
+
+    .crb_table_selcount button:hover { opacity: 1; }
+
+    /* Page-level cell styles used by TestCaseListV2 renderers. */
+    .crb_tc_pill {
+        border: 0;
+        background: transparent;
+        padding: 2px 8px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 12.5px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        @apply bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
+    }
+
+    .crb_tc_chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        border-radius: 999px;
+        padding: 0.25rem 0.625rem;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        --tw-ring-inset: inset;
+        box-shadow: inset 0 0 0 1px currentColor;
+    }
+
+    .crb_tc_chip--on { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400; }
+    .crb_tc_chip--off { @apply bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400; }
+    .crb_tc_chip--warn { @apply bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400; }
+    .crb_tc_chip--info { @apply bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300; }
+    .crb_tc_chip--neutral { @apply bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400; }
+
+    /* ---- Card head ----
+       The titled first row of a card that holds a table or a chart. The reporting
+       pages each grew their own (.v2in-card-head, .v2as-card-head, .v2rt-card-head);
+       this is the shared one, so a modal can carry the same head without pulling in
+       a page's stylesheet. */
+    .crb_card_head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--crb-new-border);
+    }
+
+    .crb_card_head_title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        @apply text-slate-700 dark:text-slate-200;
+    }
+
+    .crb_card_head_count {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-variant-numeric: tabular-nums;
+        @apply bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400;
+    }
+
+    .crb_card_head_hint { font-size: 11.5px; @apply text-slate-400 dark:text-slate-500; }
+
+    /* ---- Status distribution bar ----
+       One stacked segment per execution status, for a "how did this run go" cell.
+       Replaces the legacy Bootstrap .progress-bar stack, which carried its own
+       font size and line height and rendered as a row of chunky blocks. */
+    .crb_statusbar {
+        display: flex;
+        width: 100%;
+        height: 18px;
+        border-radius: 999px;
+        overflow: hidden;
+        @apply bg-slate-100 dark:bg-slate-800;
+    }
+
+    .crb_statusbar_seg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        font-size: 9.5px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    /* A single-value bar (reliability): a filled track with the figure beside it. */
+    /* display is set explicitly on every part: these are <span> elements so that
+       they can be injected into a table cell, and width/height do nothing on an
+       inline box - the fill was 100% wide and invisible. */
+    .crb_meter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .crb_meter_track {
+        display: block;
+        flex: 1;
+        height: 6px;
+        border-radius: 999px;
+        overflow: hidden;
+        @apply bg-slate-200 dark:bg-slate-700;
+    }
+
+    .crb_meter_fill { display: block; height: 100%; border-radius: 999px; }
+
+    .crb_meter_value {
+        font-size: 11.5px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        min-width: 42px;
+        text-align: right;
+    }
+
+    /* KPI strip at the top of a report modal. */
+    .crb_modal_kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .crb_modal_kpi {
+        border: 1px solid var(--crb-new-border);
+        border-radius: 0.75rem;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        @apply bg-slate-50 dark:bg-slate-800/50;
+    }
+
+    .crb_modal_kpi_label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        @apply text-slate-500 dark:text-slate-400;
+    }
+
+    .crb_modal_kpi_value {
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+        @apply text-slate-900 dark:text-slate-100;
+    }
+
+    .crb_modal_kpi_sub { font-size: 10.5px; @apply text-slate-400 dark:text-slate-500; }
+
+    /* Section title inside a table's toolbar slot.
+       The reporting pages label each of their tables ("Campaigns", "Test cases")
+       where a list page puts its Create button; same slot, different job. */
+    .crb_table_sectiontitle {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        @apply text-slate-700 dark:text-slate-200;
+    }
+
+    .crb_table_sectionhint {
+        font-size: 11.5px;
+        white-space: nowrap;
+        @apply text-slate-400 dark:text-slate-500;
+    }
+
+    /* ---- Cell content primitives ----
+       A link, a placeholder and an inline code span, shared rather than restated
+       as a utility string at each render() that needs one. `no-underline` is not
+       decoration here: Bootstrap styles `a` unlayered, so a cell link arrives
+       underlined and in its own blue unless something says otherwise. */
+    .crb_table_link {
+        font-weight: 500;
+        text-decoration: none;
+        @apply text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300;
+    }
+
+    .crb_table_muted { @apply text-slate-400 dark:text-slate-500; }
+
+    .crb_code {
+        display: inline-block;
+        padding: 1px 6px;
+        border-radius: 5px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 11.5px;
+        @apply bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300;
+    }
+
+    /* Search-term highlight inside a cell (Impact Analysis).
+       A real class rather than utilities on the element: Bootstrap ships an
+       UNLAYERED `mark{padding:.2em;background-color:#fcf8e3}`, and an unlayered
+       rule beats any layered one, so `bg-amber-100` on a <mark> silently rendered
+       in Bootstrap's beige. This block is unlayered too, so it wins on
+       specificity like the rest of the component. */
+    .crb_table_mark {
+        padding: 0 4px;
+        border-radius: 4px;
+        @apply bg-amber-200 text-amber-950 dark:bg-amber-500/30 dark:text-amber-100;
+    }
+
+    /* ---- The mark inside a chip ----
+       Two problems, and which one applies is decided by the chip's SHAPE, not by
+       its name - half the chips in the app are built from Tailwind utilities in a
+       column's render() rather than from a component class, so a list of class
+       names would miss them and be wrong again on the next page written.
+
+       1. Any pill: the amber block fights the chip's own background (amber marked
+          inside an amber STANDBY pill is one smudge) and the mark's horizontal
+          padding widens a pill sized to its own text - "MyFirstLabel" splits into
+          "MyFirst Label". Zero padding plus an underline points at the match
+          without touching the chip's shape.
+
+       2. A pill that is ALSO a flex container with a gap blockifies the mark into
+          a separate flex item, and the gap then opens a real space through the
+          middle of the word - "STANDBY" rendered as "STAND BY". No padding rule
+          fixes that; the gap is between items, not inside them. Those drop the
+          mark's box entirely, so they render exactly as before the search. Little
+          is lost: a chip is already a visual encoding of its own value, and the
+          row is in the result list either way.
+
+       The [class*=] selectors catch the utility-built chips. The signal is
+       `rounded` AND `bg-` together - not the radius alone: EventHookList's
+       connector chip is `inline-flex items-center rounded px-1.5 ... bg-sky-50`,
+       so keying on `rounded-full` missed it and it kept the amber fill. Not `bg-`
+       alone either: a plain `hover:bg-...` on a wrapper would then silence marks
+       in ordinary text. The named component classes are listed because their
+       radius and background come from CSS rather than from utilities.
+       [style*="background"] catches the last family: chips painted by an INLINE
+       style and carrying no bg-* class at all - the report grid's previous-status
+       cell, and every chip built by crbChipStyle() with a user-chosen colour. A
+       cell or row that paints itself inline is caught too, which is correct: a
+       painted surface is a painted surface.
+       To re-audit: run the synthetic harness - drop each chip shape into the page
+       with a mark inside and read back the computed display/padding/background. */
+    [class*="rounded"][class*="bg-"] .crb_table_mark,
+    [style*="background"] .crb_table_mark,
+    .crb_tc_pill .crb_table_mark,
+    .crb_tc_label .crb_table_mark,
+    .crb_ltree_chip .crb_table_mark,
+    .crb_ltree_pill .crb_table_mark {
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 2px;
+        @apply decoration-amber-500 dark:decoration-amber-400;
+    }
+
+    /* Gapped flex pills: no box at all. Higher specificity than the rule above,
+       so the order of the two blocks does not matter. */
+    [class*="rounded"][class*="bg-"][class*="gap-"] .crb_table_mark,
+    [style*="background"][class*="gap-"] .crb_table_mark,
+    .crb_tc_chip .crb_table_mark,
+    .crb_table_chip .crb_table_mark {
+        display: contents;
+    }
+
+    .crb_tc_label {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+/* ===========================
+    crb_tabs - shared page tab bar
+    Used by Label.jsp, TestCaseScriptV2.jsp and TestCaseExecutionV2.jsp.
+
+    Why a real component rather than the copy-pasted markup these three pages had:
+    they repeated the same ~6 utility classes per button and had already drifted
+    apart (Label.jsp used hardcoded colours instead of the charter classes, and a
+    different bottom margin).
+
+    Style: underlined tabs rather than the previous segmented pill. The pill gave
+    every tab a filled slab, which at eight tabs (ExecutionV2) reads as a toolbar
+    rather than as navigation; the underline puts the emphasis on the active label
+    and lets the strip breathe. It also fixes two defects of the pill version:
+      - `flex-1` gave every tab an equal share, squeezing ExecutionV2's eight tabs
+        to ~90px each with the label crowding the icon. Tabs now size to their
+        content and the strip scrolls horizontally when it runs out of room.
+      - a fixed h-10 fighting its own py-3 padding; height comes from the content.
+
+    The rail: the container draws a 1px baseline and each tab overlaps it with a
+    2px bottom border (transparent until active) pulled down by -1px, so the
+    active marker sits ON the rail instead of above it.
+=========================== */
+    .crb_tabs {
+        display: flex;
+        align-items: stretch;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        @apply border-b border-slate-200 dark:border-slate-700;
+    }
+
+    .crb_tabs::-webkit-scrollbar { display: none; }
+
+    .crb_tab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 0 0 auto;
+        margin-bottom: -1px;
+        padding: 0.5rem 0.875rem;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        border-radius: 0.375rem 0.375rem 0 0;
+        background: transparent;
+        font-size: 13.5px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+        @apply text-slate-500 dark:text-slate-400;
+    }
+
+    .crb_tab:hover {
+        @apply text-slate-900 bg-slate-100 dark:text-white dark:bg-slate-800;
+    }
+
+    .crb_tab:focus-visible {
+        outline: 2px solid var(--color-blue-500, #3b82f6);
+        outline-offset: -2px;
+    }
+
+    /* Equal-width variant. Kept for bars that genuinely want it, but the underline
+       style reads better left-aligned, so no page uses it today. */
+    .crb_tabs--fill .crb_tab { flex: 1 1 0; }
+
+    .crb_tab--active {
+        font-weight: 600;
+        background: transparent;
+        @apply text-blue-600 border-blue-600 dark:text-blue-400 dark:border-blue-400;
+    }
+
+    /* Hover must not repaint the active tab's text back to neutral. */
+    .crb_tab--active:hover {
+        @apply text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10;
+    }
+
+    .crb_tab_badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.375rem;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        @apply bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300;
+    }
+
+    .crb_tab--active .crb_tab_badge { @apply bg-blue-600 text-white dark:bg-blue-500; }
+
+    /* Service type logo (Service Library list). */
+    .crb_srv_typelogo {
+        height: 20px;
+        width: auto;
+        max-width: 70px;
+        object-fit: contain;
+    }
+
+    /* Screenshot thumbnail (Application Object list). */
+    .crb_ao_thumb {
+        height: 26px;
+        width: auto;
+        max-width: 90px;
+        object-fit: contain;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+        @apply border border-slate-200 dark:border-slate-700;
+    }
+
+    .crb_ao_thumb:hover { transform: scale(1.08); }
+
+    /* One-line code preview (Data Library script / envelope columns). */
+    .crb_tdl_code {
+        margin: 0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11.5px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+    }
+
+    /* ---- Embedded variant ----
+       For a table that sits INSIDE a card the page already draws - the reporting
+       sections, which have their own titled head ("Campaigns", a count, a hint).
+       Rendering the standard chrome there produced two stacked bordered cards per
+       table and buried the section title in the toolbar. Here the component draws
+       no frame at all: the control strip becomes the card's second head row, and
+       the table fills the rest. The host card must be padding-free and clip its
+       corners (.v2as-card / .v2in-card already are). */
+    .crb_table_root--embedded .crb_table_bar {
+        border: 0;
+        border-bottom: 1px solid var(--crb-table-border);
+        border-radius: 0;
+        background: transparent;
+        margin-bottom: 0;
+        padding: 10px 14px;
+    }
+
+    .crb_table_root--embedded .crb_table_scroll {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        max-height: 52vh;
+    }
+
+    .crb_table_scroll {
+        border: 1px solid var(--crb-table-border);
+        border-radius: var(--radius-2xl);
+        background: var(--crb-new-bg);
+        overflow: auto;
+        /* Caps the sticky-header scroll region so long lists scroll inside the
+           table instead of pushing the pager off-screen. */
+        max-height: 68vh;
+    }
+
+    .crb_table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13.5px;
+    }
+
+    /* ---- Header ---- */
+    .crb_table_th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        text-align: left;
+        padding: 10px 14px;
+        white-space: nowrap;
+        background: var(--crb-new-bg);
+        border-bottom: 1px solid var(--crb-table-border);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        @apply font-bold uppercase text-slate-500 dark:text-slate-400;
+    }
+
+    .crb_table_th--tiny { width: 44px; }
+    .crb_table_th--actions { width: 1%; }
+
+    .crb_table_th_inner {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    /* A header carrying a subtitle wraps, so the qualifier lands on its own line
+       instead of being squeezed next to the title. Scoped with :has() so every
+       other header keeps its single-line layout. */
+    .crb_table_th_inner:has(.crb_table_sublabel) {
+        flex-wrap: wrap;
+        row-gap: 1px;
+    }
+
+    /* Second header line (a column qualifier - the robot a combination ran on). */
+    .crb_table_sublabel {
+        display: block;
+        width: 100%;
+        font-size: 10px;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        @apply text-slate-400 dark:text-slate-500;
+    }
+
+    .crb_table_sortbtn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        width: 100%;
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        letter-spacing: inherit;
+        text-transform: inherit;
+        color: inherit;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .crb_table_sortbtn:hover { @apply text-slate-700 dark:text-slate-200; }
+
+    /* The single element allowed to shrink, so a narrow column truncates its
+       label instead of wrapping to a second line or shoving the sort icon out
+       of the cell into its neighbour (the V1 header-overlap defect). */
+    .crb_table_label {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .crb_table_sorticon {
+        flex-shrink: 0;
+        display: inline-flex;
+        @apply text-slate-300 dark:text-slate-600;
+    }
+
+    .crb_table_sorticon .crb_table_sorticon--active { @apply text-blue-500 dark:text-blue-400; }
+
+    /* ---- Rows ---- */
+    .crb_table_tr > .crb_table_td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--crb-table-border);
+        vertical-align: middle;
+    }
+
+    .crb_table_rowgroup:last-child .crb_table_tr > .crb_table_td { border-bottom: 0; }
+
+    .crb_table_tr { transition: background-color 0.12s ease; }
+    .crb_table_tr:hover { @apply bg-slate-50 dark:bg-slate-900/40; }
+
+    .crb_table_tr--selected { @apply bg-blue-50/70 dark:bg-blue-500/10; }
+    .crb_table_tr--selected:hover { @apply bg-blue-50 dark:bg-blue-500/15; }
+
+    .crb_table_checkbox {
+        height: 1rem;
+        width: 1rem;
+        margin: 0;
+        cursor: pointer;
+        accent-color: var(--color-blue-600);
+    }
+
+    .crb_table_td--tiny { width: 44px; text-align: center; }
+    .crb_table_td--actions { width: 1%; white-space: nowrap; }
+
+    /* ---- Action buttons (charter) ---- */
+    .crb_table_actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.25rem;
+    }
+
+    .crb_table_action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 2rem;
+        width: 2rem;
+        aspect-ratio: 1 / 1;
+        border: 0;
+        border-radius: 0.375rem;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0.2;
+        transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        @apply text-slate-500;
+    }
+
+    .group:hover .crb_table_action,
+    .crb_table_action:focus-visible { opacity: 1; }
+
+    .crb_table_action:hover { @apply bg-slate-200 text-blue-500 dark:bg-slate-800 dark:text-blue-400; }
+    .crb_table_action--danger:hover { @apply bg-slate-200 text-red-500 dark:bg-slate-800 dark:text-red-400; }
+
+    .crb_table_action--disabled { cursor: not-allowed; }
+    .crb_table_action--disabled:hover { background: transparent; @apply text-slate-500; }
+    .group:hover .crb_table_action--disabled { opacity: 0.3; }
+
+    .crb_table_expand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 1.75rem;
+        width: 1.75rem;
+        border: 0;
+        border-radius: 0.375rem;
+        background: transparent;
+        cursor: pointer;
+        @apply text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800;
+    }
+
+    .crb_table_expand i,
+    .crb_table_expand svg { transition: transform 0.2s ease; }
+    .crb_table_expand--open { transform: rotate(90deg); }
+
+    .crb_table_detailrow > td {
+        padding: 0;
+        background: var(--color-slate-50);
+        border-bottom: 1px solid var(--crb-table-border);
+    }
+
+    .dark .crb_table_detailrow > td { background: color-mix(in srgb, var(--color-slate-900) 60%, transparent); }
+
+    /* ---- Empty / error / loading ---- */
+    .crb_table_state {
+        padding: 40px 16px;
+        text-align: center;
+        @apply text-slate-500 dark:text-slate-400;
+    }
+
+    .crb_table_state i,
+    .crb_table_state svg { display: inline-block; vertical-align: middle; margin-right: 6px; }
+    .crb_table_state--error { @apply text-red-600 dark:text-red-400; }
+
+    .crb_table_retry {
+        margin-left: 10px;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--crb-table-border);
+        cursor: pointer;
+        background: transparent;
+        @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+    }
+
+    .crb_table_skeleton {
+        display: block;
+        height: 10px;
+        border-radius: 999px;
+        @apply bg-slate-200 dark:bg-slate-700;
+        animation: crb_table_pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes crb_table_pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.45; }
+    }
+
+    .crb_table_spin { animation: crb_table_rotate 0.8s linear infinite; }
+    @keyframes crb_table_rotate { to { transform: rotate(360deg); } }
+
+    /* ---- Footer / pagination ---- */
+    .crb_table_footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 2px 0;
+    }
+
+    .crb_table_page {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.25rem;
+        min-width: 2.25rem;
+        padding: 0 0.5rem;
+        border: 0;
+        border-radius: 0.375rem;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+    }
+
+    .crb_table_page:disabled { opacity: 0.4; pointer-events: none; }
+    .crb_table_page--active { @apply !bg-blue-600 !text-white hover:!bg-blue-700; }
+
+    .crb_table_root :focus-visible {
+        outline: 2px solid var(--color-blue-500);
+        outline-offset: 2px;
+    }
+
+    /* ---- Responsive: below md each row becomes a stacked card ----
+       Header labels are re-emitted per cell from the data-label attribute the
+       component sets, so no column meaning is lost on a phone - the V1 tables
+       just scrolled sideways with an unreadable frozen-width layout. */
+    @media (max-width: 767px) {
+        .crb_table_scroll { max-height: none; border: 0; background: transparent; }
+        .crb_table, .crb_table tbody, .crb_table tr, .crb_table td { display: block; width: 100%; }
+        .crb_table thead { display: none; }
+
+        .crb_table_rowgroup {
+            display: block;
+            border: 1px solid var(--crb-table-border);
+            border-radius: 12px;
+            background: var(--crb-new-bg);
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .crb_table_tr > .crb_table_td {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 8px 12px;
+            border-bottom: 1px solid color-mix(in srgb, var(--crb-table-border) 55%, transparent);
+        }
+
+        .crb_table_tr > .crb_table_td::before {
+            content: attr(data-label);
+            flex: 0 0 40%;
+            font-size: 10.5px;
+            letter-spacing: 0.04em;
+            @apply font-bold uppercase text-slate-400 dark:text-slate-500;
+        }
+
+        .crb_table_td--tiny,
+        .crb_table_td--actions { width: auto; }
+        .crb_table_td--actions { justify-content: flex-start; }
+
+        /* Icons are the only affordance on a card, so the hover-reveal that
+           makes sense with a mouse would leave them invisible on touch. */
+        .crb_table_action { opacity: 1; }
+
+        .crb_table_footer { justify-content: center; }
+    }
+
+
+/* ===========================
+    LABEL TREE (js/global/crbLabelTree.js)
+    Replaces the .treeview reskin above for the three Label & Tag browse tabs and
+    for every label picker. That block STAYS: bootstrap-treeview still draws the
+    label stats trees on the execution report (ReportingExecutionByTag.js,
+    Style.js) and the V1 rollback pages.
+
+    Deliberately built on the table's own control-bar classes (crb_table_bar,
+    crb_table_search_input, crb_table_iconbtn, crb_table_count...) rather than a
+    parallel set: on Label & Tag the List tab and the three tree tabs sit behind
+    the same tab strip, and a second toolbar vocabulary is exactly what made them
+    look like two different products. --crb-table-border is redeclared here
+    because those classes read it and it is scoped to .crb_table_root.
+=========================== */
+.crb_ltree {
+    --crb-table-border: var(--crb-new-border);
+    --crb-ltree-indent: 22px;
+    /* One step darker than the card border on purpose. Derived from
+       --crb-new-border it came out at #dbe3ee, which is the right weight for a
+       1px frame around a whole card but disappears as a 1px hairline crossing
+       it - the rails were there and unreadable. */
+    --crb-ltree-rail: #cbd5e1;
+}
+
+:root.dark .crb_ltree { --crb-ltree-rail: #475569; }
+
+.crb_ltree_body {
+    border: 1px solid var(--crb-table-border);
+    border-radius: var(--radius-2xl);
+    background: var(--crb-new-bg);
+    padding: 6px;
+    overflow: auto;
+    /* Same cap as .crb_table_scroll, for the same reason: a long hierarchy
+       scrolls inside its own frame instead of pushing the page furniture away. */
+    max-height: 68vh;
+}
+
+/* Host already draws a panel (the Label tab of the Edit Test Case Header modal,
+   the three columns of the mass-action modal). The body keeps its OWN scroll
+   rather than letting the host scroll everything: the host used to carry
+   overflow-auto, which scrolled the control bar out of reach along with the rows. */
+.crb_ltree--embedded .crb_ltree_body {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    max-height: 320px;
+}
+
+.crb_ltree--embedded .crb_table_bar {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0 0 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--crb-table-border);
+}
+
+.crb_ltree--embedded .crb_table_search_input,
+.crb_ltree--embedded .crb_table_iconbtn { height: 2.125rem; }
+.crb_ltree--embedded .crb_table_iconbtn { min-width: 2.125rem; padding: 0 6px; }
+
+/* The mass-action modal puts the three pickers in a 3-column grid, so a column
+   can be ~200px wide. The table bar's 160px search floor pushed the collapse
+   button onto a second row there; embedded, the search gives way first. */
+.crb_ltree--embedded .crb_table_bar_search { flex: 1 1 90px; min-width: 80px; }
+
+/* ---- Row ---- */
+.crb_ltree_row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    min-height: 34px;
+    padding: 2px 8px 2px 0;
+    border-radius: 8px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    @apply text-slate-700 dark:text-slate-300;
+}
+
+.crb_ltree_row:hover { @apply bg-slate-100/80 dark:bg-slate-800/70; }
+
+.crb_ltree_row--pick { cursor: pointer; }
+.crb_ltree_row--on { @apply bg-sky-50 dark:bg-sky-500/10; }
+.crb_ltree_row--on:hover { @apply bg-sky-100 dark:bg-sky-500/20; }
+
+.crb_ltree_row:focus-visible {
+    outline: 2px solid var(--color-blue-500);
+    outline-offset: -2px;
+}
+
+/* ---- Guide rails ----
+   One span per ancestor level, plus the elbow into the row itself. Drawn with
+   pseudo-elements on a stretched span rather than a background-image, so the
+   line follows the row's real height when a chip wraps to two lines. */
+.crb_ltree_rail {
+    position: relative;
+    flex: 0 0 var(--crb-ltree-indent);
+    align-self: stretch;
+}
+
+.crb_ltree_rail--line::before,
+.crb_ltree_rail--elbow::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid var(--crb-ltree-rail);
+}
+
+/* Last child: the vertical stops at the elbow instead of running past it. */
+.crb_ltree_rail--elbow.is-last::before { bottom: 50%; }
+
+.crb_ltree_rail--elbow::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9px;
+    border-top: 1px solid var(--crb-ltree-rail);
+}
+
+/* ---- Twisty ---- */
+.crb_ltree_twisty {
+    flex: 0 0 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    @apply text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-200;
+}
+
+.crb_ltree_twisty svg { transition: transform 0.15s ease; }
+.crb_ltree_twisty--open svg { transform: rotate(90deg); }
+
+.crb_ltree_leafdot {
+    flex: 0 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crb_ltree_leafdot::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--crb-ltree-rail);
+}
+
+/* ---- Selection tick (select mode) ---- */
+.crb_ltree_check {
+    flex: 0 0 1.05rem;
+    height: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 1.5px solid;
+    @apply border-slate-300 text-transparent dark:border-slate-600;
+}
+
+.crb_ltree_check--on {
+    border-color: transparent;
+    @apply bg-sky-500 text-white;
+}
+
+/* ---- Content ---- */
+.crb_ltree_chip {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    max-width: 320px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.crb_ltree_desc {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @apply text-slate-500 dark:text-slate-400;
+}
+
+/* Pushes everything after it to the right edge; the description keeps its
+   natural width instead of stretching, so long ones truncate rather than
+   shoving the metrics off the row. */
+.crb_ltree_spacer { flex: 1 1 auto; min-width: 12px; }
+
+.crb_ltree_pill {
+    flex: 0 0 auto;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    @apply bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700;
+}
+
+.crb_ltree_pill--global {
+    @apply bg-violet-50 text-violet-600 ring-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:ring-violet-500/30;
+}
+
+/* ---- Metrics ----
+   Two at most. V1 showed three anonymous grey badges; these carry an icon, a
+   tooltip spelling out the number in words, and the aggregate as "+n" so it
+   reads as an addition to the number beside it. */
+.crb_ltree_metrics {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+}
+
+.crb_ltree_metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+}
+
+.crb_ltree_metric_icon {
+    display: inline-flex;
+    @apply text-slate-400 dark:text-slate-500;
+}
+
+.crb_ltree_metric_more { @apply text-blue-600 dark:text-blue-400; }
+
+/* ---- Actions ----
+   .crb_table_action is the table's row-action button: h-8/w-8, opacity 0.2 until
+   the row is hovered. Reused as-is so a label row and a table row reveal their
+   actions the same way; .group on the row is what drives it. */
+.crb_ltree_actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 0 0 auto;
+}
+
+.crb_ltree_actions a.crb_table_action { text-decoration: none; }
+
+/* There is deliberately NO .crb_ltree_create rule here. The create button wears
+   the same class string as the 14 other V2 toolbars (CRB_LTREE_CREATE_CLASS in
+   crbLabelTree.js); a local rule in this unlayered block would out-cascade
+   Bootstrap's `button{color:inherit}` and make this the one button in the app
+   with white ink on sky-400. See the comment on that constant. */
+
+/* ---- Empty state ----
+   V1 rendered an empty <div>, so a type with no labels was indistinguishable
+   from a page that failed to load. */
+.crb_ltree_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 44px 16px;
+    text-align: center;
+}
+
+.crb_ltree_empty_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 2px;
+    border-radius: 999px;
+    @apply bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500;
+}
+
+.crb_ltree_empty_title {
+    font-size: 14px;
+    font-weight: 600;
+    @apply text-slate-700 dark:text-slate-200;
+}
+
+.crb_ltree_empty_hint {
+    font-size: 12.5px;
+    max-width: 42ch;
+    @apply text-slate-500 dark:text-slate-400;
+}
+
+/* ---- Responsive ----
+   Below md the description and the requirement pills are the first things to
+   go: the chip, the hierarchy and the counts are what the row is for. */
+@media (max-width: 767px) {
+    .crb_ltree { --crb-ltree-indent: 16px; }
+    .crb_ltree_desc,
+    .crb_ltree_pill { display: none; }
+    .crb_ltree_body { max-height: none; }
+    /* Icons are the only affordance here, so a hover-reveal would leave them
+       invisible on touch. Same call as the table's own mobile rule. */
+    .crb_ltree_row .crb_table_action { opacity: 1; }
+}
+
+
+/* ===========================
+    STATUS TILES + SPEC SHEET (Cerberus Monitoring)
+    Two shapes the charter did not have yet, both born on CerberusInformation.jsp:
+
+    - .crb_stat*  a live-state tile: micro label, one big tabular figure, an
+      optional state chip or meter, one line of context. The page had five of
+      these facts rendered as one-row <table>s with a <th> for a caption - a
+      table whose only job is to caption a single value is a caption with extra
+      steps, and it forced every figure to the same visual weight as the wall of
+      build metadata around it.
+    - .crb_spec*  a definition list for the static facts (versions, drivers,
+      URLs). Same reason: those were seven more one-row tables, and the widest
+      of them overflowed its card, silently clipping the Keycloak URL column.
+
+    Tone lives on the chip, not on the tile: colouring whole tiles turns a status
+    strip into a traffic light where nothing stands out. The one exception is a
+    value that IS the alarm (a database schema behind its target).
+=========================== */
+.crb_stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.crb_stat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--crb-new-border);
+    border-radius: var(--radius-2xl);
+    background: var(--crb-new-bg);
+}
+
+.crb_stat_head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crb_stat_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    flex-shrink: 0;
+    @apply bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400;
+}
+
+.crb_stat--ok .crb_stat_icon { @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400; }
+.crb_stat--warn .crb_stat_icon { @apply bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400; }
+.crb_stat--danger .crb_stat_icon { @apply bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400; }
+.crb_stat--info .crb_stat_icon { @apply bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300; }
+
+.crb_stat_label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    @apply text-slate-500 dark:text-slate-400;
+}
+
+.crb_stat_body {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.crb_stat_value {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    @apply text-slate-900 dark:text-slate-100;
+}
+
+/* Only for a figure that is itself the alarm - see the note above. */
+.crb_stat_value--danger { @apply !text-rose-600 dark:!text-rose-400; }
+
+.crb_stat_unit {
+    font-size: 12px;
+    font-weight: 600;
+    @apply text-slate-400 dark:text-slate-500;
+}
+
+.crb_stat_foot {
+    font-size: 11.5px;
+    @apply text-slate-500 dark:text-slate-400;
+}
+
+/* ---- Spec sheet ---- */
+.crb_spec { display: flex; flex-direction: column; }
+
+.crb_spec_row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 7px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--crb-new-border) 60%, transparent);
+}
+
+.crb_spec_row:last-child { border-bottom: 0; }
+
+.crb_spec_key {
+    flex: 0 0 auto;
+    font-size: 12px;
+    @apply text-slate-500 dark:text-slate-400;
+}
+
+/* min-width 0 so a long value (the JDBC driver string, a Keycloak URL) wraps
+   inside the card instead of widening it - that overflow is what clipped a whole
+   column off the old Cerberus Information table. */
+.crb_spec_val {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    font-size: 12.5px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+    @apply text-slate-800 dark:text-slate-200;
+}
+
+.crb_spec_val--mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.crb_spec_val--muted { @apply text-slate-400 dark:text-slate-500; }
+
+/* ---- Responsive card grid for the spec cards ---- */
+.crb_infogrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+/* .crb_card carries mb-10, which inside a grid adds a gap the grid already
+   handles and leaves the shortest column looking detached. */
+.crb_infogrid > .crb_card { margin-bottom: 0; }

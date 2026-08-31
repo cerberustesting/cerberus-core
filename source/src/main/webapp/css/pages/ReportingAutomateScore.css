@@ -6,12 +6,16 @@
  * colors come from the crb tokens with dark overrides.
  */
 
+/* Structural lines inside a card (card head, table rows, pager, dividers) follow
+   the CARD border, so a card reads as one object; controls (buttons, inputs,
+   pickers) keep the neutral grey they share with the rest of the app. */
+
 /* ═══════════ Layout ═══════════ */
 .v2as-page { display: flex; flex-direction: column; gap: 16px; }
 .v2as-card { padding: 0 !important; overflow: visible; }
 .v2as-card-head {
     display: flex; align-items: center; gap: 8px; width: 100%;
-    padding: 12px 16px; border-bottom: 1px solid var(--crb-grey-light-color);
+    padding: 12px 16px; border-bottom: 1px solid var(--crb-new-border);
 }
 .v2as-card-title {
     font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
@@ -27,8 +31,12 @@
 .v2as-strong { font-weight: 700; color: var(--crb-dark-color); }
 
 /* ═══════════ Page title above the bar (same as every list page) ═══════════ */
+/* These two rules used to zero the title's padding and margin with !important,
+   which glued the heading to the sticky bar right under it - on a list page the
+   same heading breathes before the toolbar. The wrapper now only carries the
+   charter's own spacing, so the header of a reporting page reads like the header
+   of every other page. */
 .v2in-pagetitle { margin-bottom: 0; }
-.v2in-pagetitle .page-title-line { padding-bottom: 0 !important; margin-bottom: 0 !important; }
 
 /* ═══════════ Header ═══════════ */
 .v2as-header {
@@ -241,13 +249,16 @@
 .v2as-spark path { fill: none; stroke: var(--crb-blue-color); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; opacity: 0.75; }
 
 /* ═══════════ Tables ═══════════ */
-.v2as-tables { display: grid; grid-template-columns: minmax(340px, 2fr) minmax(420px, 3fr); gap: 16px; align-items: start; }
-@media (max-width: 1200px) { .v2as-tables { grid-template-columns: 1fr; } }
+/* One column. These two are now the shared V2 table, whose control bar carries a
+   search box, a refresh, a Config button and the pager - at 340px that strip wrapped
+   onto three lines and the table itself had room for two columns. Stacked full width
+   they read like every other V2 table in the app. */
+.v2as-tables { display: flex; flex-direction: column; gap: 16px; }
 .v2as-table-scroll { overflow-x: auto; }
 .v2as-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: var(--crb-dark-color); }
 .v2as-table th {
     text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--crb-grey-color); padding: 9px 14px; border-bottom: 1px solid var(--crb-grey-light-color); white-space: nowrap;
+    color: var(--crb-grey-color); padding: 9px 14px; border-bottom: 1px solid var(--crb-new-border); white-space: nowrap;
 }
 .v2as-table td { padding: 9px 14px; border-bottom: 1px solid color-mix(in srgb, var(--crb-grey-light-color) 55%, transparent); }
 .v2as-table tbody tr:last-child td { border-bottom: none; }

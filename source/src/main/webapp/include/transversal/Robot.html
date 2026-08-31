@@ -478,8 +478,14 @@
             success: function (dataMessage) {
                 hideLoaderInModal('#editRobotModal');
                 if (getAlertType(dataMessage.messageType) === "success") {
+                    // Legacy path: refreshes the DataTable on the V1 page. On a
+                    // migrated page that id no longer exists, so this is a no-op
+                    // there and the notify below is what reloads the V2 table.
                     var oTable = $("#robotsTable").dataTable();
                     oTable.fnDraw(false);
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("robot");
+                    }
                     $('#editRobotModal').data("Saved", true);
                     $('#editRobotModal').data("robot", data);
                     window.dispatchEvent(new CustomEvent('robot-modal-close'));

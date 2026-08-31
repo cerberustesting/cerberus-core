@@ -29,6 +29,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
 
         <script type="text/javascript" src="js/pages/insightsShared.js?v=${appVersion}"></script>
+        <%-- The detail tables on this page are the shared V2 table in client mode. --%>
         <script type="text/javascript" src="js/pages/ReportingCampaignStatistics.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
 
@@ -144,7 +145,13 @@
                 </div>
 
                 <!-- ═══════════ OVERVIEW ═══════════ -->
-                <template x-if="view === 'overview'">
+                <%--
+                    x-show, not x-if, on the two views and on the detail body: a
+                    <template x-if> destroys and recreates its content on every flip,
+                    which would take the mounted V2 tables with it - switching to the
+                    detail and back would leave the registry pointing at dead nodes.
+                --%>
+                <div x-show="view === 'overview'" x-cloak>
                     <div class="v2in-page">
 
                         <template x-if="loading && !rows.length">
@@ -184,8 +191,9 @@
                             </div>
                         </template>
 
-                        <template x-if="loaded && !error && rows.length > 0">
-                            <div class="v2in-page">
+                        <%-- x-show, not x-if: the mounted V2 table has to survive
+                             every load, including one that returns no row. --%>
+                        <div class="v2in-page" x-show="loaded && !error && rows.length > 0" x-cloak>
                                 <!-- KPIs -->
                                 <div class="v2in-kpis">
                                     <div class="crb_card v2in-card v2in-kpi">
@@ -219,69 +227,21 @@
                                 <div class="crb_card v2in-card">
                                     <div class="v2in-card-head">
                                         <span class="v2in-card-title">Campaigns</span>
-                                        <span class="v2in-count" x-text="filteredRows.length"></span>
+                                        <span class="v2in-count" x-text="rows.length"></span>
                                         <span class="flex-1"></span>
-                                        <input type="text" x-model="search" placeholder="Search campaign, system, application..."
-                                               class="v2in-input" style="min-width: 240px">
+                                        <span class="v2in-dim text-xs">click a campaign for its environment / country detail</span>
                                     </div>
-                                    <div class="v2in-table-scroll">
-                                        <table class="v2in-table">
-                                            <thead>
-                                                <tr>
-                                                    <th class="v2q-th-sort" @click="setSort('campaign')">Campaign <span class="v2q-sort" x-show="sortCol === 'campaign'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th>Systems</th>
-                                                    <th>Applications</th>
-                                                    <th class="v2q-th-sort" @click="setSort('minDateStart')">First run <span class="v2q-sort" x-show="sortCol === 'minDateStart'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2q-th-sort" @click="setSort('maxDateEnd')">Last run <span class="v2q-sort" x-show="sortCol === 'maxDateEnd'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2q-th-sort" style="min-width: 130px" @click="setSort('avgOK')">OK rate <span class="v2q-sort" x-show="sortCol === 'avgOK'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2in-num v2q-th-sort" @click="setSort('avgDuration')">Avg duration <span class="v2q-sort" x-show="sortCol === 'avgDuration'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2q-th-sort" style="min-width: 130px" @click="setSort('avgReliability')">Reliability <span class="v2q-sort" x-show="sortCol === 'avgReliability'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2in-num v2q-th-sort" @click="setSort('nbCampaignExecutions')">Runs <span class="v2q-sort" x-show="sortCol === 'nbCampaignExecutions'" x-text="sortAsc ? '&#9650;' : '&#9660;'"></span></th>
-                                                    <th class="v2in-num">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template x-for="r in filteredRows" :key="r.campaign">
-                                                    <tr class="v2in-row-click" @click="openDetail(r.campaign)" :title="'Open the environment / country detail of ' + r.campaign">
-                                                        <td class="v2in-strong" x-text="r.campaign"></td>
-                                                        <td class="v2in-dim text-xs" x-text="r.systemList || '-'"></td>
-                                                        <td class="v2in-dim text-xs" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" :title="r.applicationList" x-text="r.applicationList || '-'"></td>
-                                                        <td class="v2in-dim" :title="dateF(r.minDateStart)" x-text="relTime(r.minDateStart)"></td>
-                                                        <td class="v2in-dim" :title="dateF(r.maxDateEnd)" x-text="relTime(r.maxDateEnd)"></td>
-                                                        <td>
-                                                            <span class="v2cs-bar" :title="pctF(r.avgOK) + ' OK'">
-                                                                <span class="v2cs-bar-track"><span class="v2cs-bar-fill" :style="'width:' + Math.min(100, Math.max(0, r.avgOK || 0)) + '%; background:' + rateColor(r.avgOK)"></span></span>
-                                                                <span class="v2cs-bar-txt" :style="'color:' + rateColor(r.avgOK)" x-text="pctF(r.avgOK)"></span>
-                                                            </span>
-                                                        </td>
-                                                        <td class="v2in-num" x-text="durF(r.avgDuration)"></td>
-                                                        <td>
-                                                            <span class="v2cs-bar" :title="pctF(r.avgReliability) + ' of executions without technical failure'">
-                                                                <span class="v2cs-bar-track"><span class="v2cs-bar-fill" :style="'width:' + Math.min(100, Math.max(0, r.avgReliability || 0)) + '%; background:' + rateColor(r.avgReliability)"></span></span>
-                                                                <span class="v2cs-bar-txt" :style="'color:' + rateColor(r.avgReliability)" x-text="pctF(r.avgReliability)"></span>
-                                                            </span>
-                                                        </td>
-                                                        <td class="v2in-num v2in-strong" x-text="r.nbCampaignExecutions"></td>
-                                                        <td class="v2in-num">
-                                                            <div class="v2q-actions">
-                                                                <button type="button" class="v2in-btn v2in-btn--xs" @click.stop="openDetail(r.campaign)" title="Detail by environment and country">Detail</button>
-                                                                <button type="button" class="v2in-btn v2in-btn--xs" @click.stop="openTrends(r)" title="Open the run-by-run trend of this campaign">Trends</button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
-                                        <div x-show="filteredRows.length === 0 && rows.length > 0" class="v2in-empty py-8 text-center">No campaign matches this search</div>
-                                    </div>
+                                    <%-- Shared V2 table, CLIENT mode (rows built in the
+                                         browser) and EMBEDDED (the card and head above
+                                         are the page's). --%>
+                                    <div id="csCampaignTableMount"></div>
                                 </div>
-                            </div>
-                        </template>
+                        </div>
                     </div>
-                </template>
+                </div>
 
                 <!-- ═══════════ DETAIL: one campaign by environment x country ═══════════ -->
-                <template x-if="view === 'detail'">
+                <div x-show="view === 'detail'" x-cloak>
                     <div class="crb_card v2in-card">
                         <div class="v2in-card-head">
                             <button type="button" class="v2in-btn v2in-btn--xs" @click="closeDetail()" title="Back to every campaign">
@@ -333,57 +293,14 @@
                                 <div class="text-xs v2in-dim">Widen the period or go back to the campaign list</div>
                             </div>
                         </template>
-                        <template x-if="!detail.loading && !detail.error">
-                            <div class="v2in-table-scroll">
-                                <table class="v2in-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Environment</th>
-                                            <th>Country</th>
-                                            <th>Systems</th>
-                                            <th>Applications</th>
-                                            <th>First run</th>
-                                            <th>Last run</th>
-                                            <th style="min-width: 130px">OK rate</th>
-                                            <th class="v2in-num">Avg duration</th>
-                                            <th style="min-width: 130px">Reliability</th>
-                                            <th class="v2in-num">Useful exe</th>
-                                            <th class="v2in-num">Total exe</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <template x-for="(r, i) in detail.rows" :key="i">
-                                            <tr>
-                                                <td class="v2in-strong" x-text="r.environment || '-'"></td>
-                                                <td class="v2in-strong" x-text="r.country || '-'"></td>
-                                                <td class="v2in-dim text-xs" x-text="r.systemList || '-'"></td>
-                                                <td class="v2in-dim text-xs" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" :title="r.applicationList" x-text="r.applicationList || '-'"></td>
-                                                <td class="v2in-dim" :title="dateF(r.minDateStart)" x-text="relTime(r.minDateStart)"></td>
-                                                <td class="v2in-dim" :title="dateF(r.maxDateEnd)" x-text="relTime(r.maxDateEnd)"></td>
-                                                <td>
-                                                    <span class="v2cs-bar">
-                                                        <span class="v2cs-bar-track"><span class="v2cs-bar-fill" :style="'width:' + Math.min(100, Math.max(0, r.avgOK || 0)) + '%; background:' + rateColor(r.avgOK)"></span></span>
-                                                        <span class="v2cs-bar-txt" :style="'color:' + rateColor(r.avgOK)" x-text="pctF(r.avgOK)"></span>
-                                                    </span>
-                                                </td>
-                                                <td class="v2in-num" x-text="durF(r.avgDuration)"></td>
-                                                <td>
-                                                    <span class="v2cs-bar">
-                                                        <span class="v2cs-bar-track"><span class="v2cs-bar-fill" :style="'width:' + Math.min(100, Math.max(0, r.avgReliability || 0)) + '%; background:' + rateColor(r.avgReliability)"></span></span>
-                                                        <span class="v2cs-bar-txt" :style="'color:' + rateColor(r.avgReliability)" x-text="pctF(r.avgReliability)"></span>
-                                                    </span>
-                                                </td>
-                                                <td class="v2in-num" x-text="r.nbExeUseful"></td>
-                                                <td class="v2in-num" x-text="r.nbExe"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                                <div x-show="detail.rows.length === 0" class="v2in-empty py-8 text-center">No execution for this campaign on the period</div>
-                            </div>
-                        </template>
+                        <%-- x-show, not x-if: the mounted V2 table must survive the
+                             loading / error / ready flips. --%>
+                        <div x-show="!detail.loading && !detail.error" x-cloak>
+                            <%-- Shared V2 table, CLIENT mode + EMBEDDED. --%>
+                            <div id="csDetailTableMount"></div>
+                        </div>
                     </div>
-                </template>
+                </div>
 
             </div>
 

@@ -95,6 +95,124 @@ function campaignStatistics() {
                     self.load();
                 }
             });
+            this._buildTables();
+        },
+
+        /**
+         * Both lists are the shared V2 table (js/global/crbTable.js) in CLIENT mode -
+         * the rows come from the statistics endpoint in one go, there is nothing to
+         * page server-side - and EMBEDDED, because each already sits in a card with
+         * its own titled head. Built once; the loaders push each dataset with
+         * crbTableSetRows().
+         */
+        _buildTables() {
+            var self = this;
+            var bar = function (value) {
+                var pct = Math.min(100, Math.max(0, value || 0));
+                var color = self.rateColor(value);
+                return '<span class="v2cs-bar" title="' + crbTableEscape(self.pctF(value)) + '">' +
+                    '<span class="v2cs-bar-track"><span class="v2cs-bar-fill" style="width:' + pct +
+                    '%; background:' + crbTableEscape(color) + '"></span></span>' +
+                    '<span class="v2cs-bar-txt" style="color:' + crbTableEscape(color) + '">' +
+                    crbTableEscape(self.pctF(value)) + '</span></span>';
+            };
+            var relCell = function (v) {
+                return '<span class="v2in-dim" title="' + crbTableEscape(self.dateF(v)) + '">' +
+                    crbTableEscape(self.relTime(v)) + '</span>';
+            };
+
+            createCerberusTable({
+                id: 'csCampaignTable',
+                mount: '#csCampaignTableMount',
+                clientRows: [],
+                embedded: true,
+                onRefresh: function () { self.load(); },
+                pageLength: 15,
+                lengthMenu: [15, 25, 50, 100],
+                searchPlaceholder: 'Search campaign, system, application...',
+                emptyMessage: 'No campaign ran on this period',
+                rowKey: 'campaign',
+                defaultSort: {field: 'campaign', dir: 'asc'},
+                persistColumns: true,
+                columns: [
+                    {field: 'campaign', title: 'Campaign', width: '240px', className: 'font-medium'},
+                    {field: 'systemList', title: 'Systems', width: '160px',
+                     render: function (r) { return '<span class="v2in-dim text-xs">' + crbTableEscape(r.systemList || '-') + '</span>'; }},
+                    {field: 'applicationList', title: 'Applications', width: '220px',
+                     render: function (r) {
+                         return '<span class="v2in-dim text-xs" title="' + crbTableEscape(r.applicationList || '') + '">' +
+                             crbTableEscape(r.applicationList || '-') + '</span>';
+                     }},
+                    {field: 'minDateStart', title: 'First run', width: '150px',
+                     render: function (r) { return relCell(r.minDateStart); }},
+                    {field: 'maxDateEnd', title: 'Last run', width: '150px',
+                     render: function (r) { return relCell(r.maxDateEnd); }},
+                    {field: 'avgOK', title: 'OK rate', width: '160px',
+                     render: function (r) { return bar(r.avgOK); }},
+                    {field: 'avgDuration', title: 'Avg duration', width: '140px',
+                     className: 'text-right tabular-nums',
+                     render: function (r) { return crbTableEscape(self.durF(r.avgDuration)); }},
+                    {field: 'avgReliability', title: 'Reliability', width: '160px',
+                     render: function (r) { return bar(r.avgReliability); }},
+                    {field: 'nbCampaignExecutions', title: 'Runs', width: '100px',
+                     className: 'text-right tabular-nums font-medium'}
+                ],
+                actions: [
+                    {
+                        key: 'detail', icon: 'list', gate: 'always',
+                        title: 'Detail by environment and country',
+                        onClick: function (row) { self.openDetail(row.campaign); }
+                    },
+                    {
+                        key: 'trends', icon: 'trending-up', gate: 'always',
+                        title: 'Open the run-by-run trend of this campaign',
+                        onClick: function (row) { self.openTrends(row); }
+                    }
+                ]
+            });
+
+            createCerberusTable({
+                id: 'csDetailTable',
+                mount: '#csDetailTableMount',
+                clientRows: [],
+                embedded: true,
+                pageLength: 15,
+                lengthMenu: [15, 25, 50, 100],
+                searchPlaceholder: 'Search environment, country, application...',
+                emptyMessage: 'No execution for this campaign on the period',
+                rowKey: function (r) { return JSON.stringify([r.environment, r.country]); },
+                defaultSort: {field: 'environment', dir: 'asc'},
+                persistColumns: true,
+                columns: [
+                    {field: 'environment', title: 'Environment', width: '150px',
+                     className: 'font-medium', filterable: true},
+                    {field: 'country', title: 'Country', width: '120px',
+                     className: 'font-medium', filterable: true},
+                    {field: 'systemList', title: 'Systems', width: '150px',
+                     render: function (r) { return '<span class="v2in-dim text-xs">' + crbTableEscape(r.systemList || '-') + '</span>'; }},
+                    {field: 'applicationList', title: 'Applications', width: '200px',
+                     render: function (r) {
+                         return '<span class="v2in-dim text-xs" title="' + crbTableEscape(r.applicationList || '') + '">' +
+                             crbTableEscape(r.applicationList || '-') + '</span>';
+                     }},
+                    {field: 'minDateStart', title: 'First run', width: '150px',
+                     render: function (r) { return relCell(r.minDateStart); }},
+                    {field: 'maxDateEnd', title: 'Last run', width: '150px',
+                     render: function (r) { return relCell(r.maxDateEnd); }},
+                    {field: 'avgOK', title: 'OK rate', width: '160px',
+                     render: function (r) { return bar(r.avgOK); }},
+                    {field: 'avgDuration', title: 'Avg duration', width: '140px',
+                     className: 'text-right tabular-nums',
+                     render: function (r) { return crbTableEscape(self.durF(r.avgDuration)); }},
+                    {field: 'avgReliability', title: 'Reliability', width: '160px',
+                     render: function (r) { return bar(r.avgReliability); }},
+                    {field: 'nbExeUseful', title: 'Useful exe', width: '120px',
+                     className: 'text-right tabular-nums'},
+                    {field: 'nbExe', title: 'Total exe', width: '110px',
+                     className: 'text-right tabular-nums'}
+                ],
+                actions: []
+            });
         },
         _dateStr(d) {
             var p = function (n) { return (n < 10 ? '0' : '') + n; };
@@ -196,10 +314,12 @@ function campaignStatistics() {
                 self.loading = false;
                 self.loaded = true;
                 self.rows = (data && data.campaignStatistics) || [];
+                crbTableSetRows('csCampaignTable', self.rows);
             }).fail(function (xhr) {
                 self.loading = false;
                 self.loaded = true;
                 self.rows = [];
+                crbTableSetRows('csCampaignTable', []);
                 if (xhr.status === 404) {
                     // the API answers 404 when nothing matches: that is the empty state, not an error
                     self.error = '';
@@ -289,11 +409,13 @@ function campaignStatistics() {
             }).done(function (data) {
                 d.loading = false;
                 d.rows = (data && data.campaignStatistics) || [];
+                crbTableSetRows('csDetailTable', d.rows);
                 if (data && Array.isArray(data.environments) && data.environments.length) d.envs = data.environments;
                 if (data && Array.isArray(data.countries) && data.countries.length) d.countries = data.countries;
             }).fail(function (xhr) {
                 d.loading = false;
                 d.rows = [];
+                crbTableSetRows('csDetailTable', []);
                 if (xhr.status === 404) {
                     // nothing ran for this campaign on the period: empty state, not an error
                     d.error = '';

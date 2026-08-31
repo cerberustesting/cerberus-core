@@ -28,7 +28,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Event Hooks</title>
-        <script type="text/javascript" src="js/pages/EventHookList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by EventHookListV2.js.
+            EventHookList.js (V1) is NOT loaded. EventHookListV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/EventHookListV2.js?v=${appVersion}"></script>
 
     </head>
     <body x-data x-cloak class="crb_body">
@@ -43,12 +47,9 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
 
             <h1 class="page-title-line" id="title">Event Hooks</h1>
-            <p class="page-subtitle-line">Trigger emails, Slack, Teams or Google Chat notifications when Cerberus events happen.</p>
+            <%-- Subtitle dropped: no other migrated list page carries one. --%>
 
-            <div id="eventHookList">
-                <table id="eventHooksTable" class="table table-hover display" name="eventHooksTable"></table>
-                <div class="marginBottom20"></div>
-            </div>
+            <div id="eventHookList"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

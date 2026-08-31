@@ -35,7 +35,11 @@
         <meta name="page" content="Test Folder">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/Test.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by TestV2.js.
+            Test.js (V1) is NOT loaded. TestV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/TestV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Test</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -67,13 +71,7 @@
 
                 <h1 id="title" class="page-title-line">Test Folder</h1>
             </div>
-            <div class="">
-                <div id="testList">
-                    <table id="testTable" class="table table-hover display" name="testTable">
-                    </table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
+            <div id="testList"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

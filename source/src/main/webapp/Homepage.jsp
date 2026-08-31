@@ -325,11 +325,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="homeTableDiv" class="crb_card">
-                    <div class="" id="applicationPanel">
-                        <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
-                        <div class="marginBottom20"></div>
-                    </div>
+                <%-- Shared V2 table, CLIENT mode (the whole grid arrives in one
+                     Homepage call) and EMBEDDED (this card is the frame). One column
+                     per test case status, so the column set is built at runtime from
+                     the TCSTATUS invariants - see Homepage.js#homeV2Columns. --%>
+                <div id="homeTableDiv" class="crb_card" style="padding: 0; overflow: hidden">
+                    <div id="applicationPanel"></div>
                 </div>
 
                 <div class="row hidden">

@@ -78,20 +78,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var jqxhr = $.getJSON("Homepage", "e=1" + getUser().defaultSystemsQuery);
 
         $.when(jqxhr).then(function (result) {
-            var configurations = new TableConfigurationsClientSide("homePageTable", result["aaData"], aoColumnsFunc(), true);
-            configurations.tableWidth = "550px";
-            configurations.showColvis = false;
-            if ($('#homePageTable').hasClass('dataTable') === false) {
-                createDataTableWithPermissions(configurations, undefined, "#applicationPanel");
-                showTitleWhenTextOverflow();
-            } else {
-                var oTable = $("#homePageTable").dataTable();
-                oTable.fnClearTable();
-                if (result["aaData"].length > 0) {
-                    oTable.fnAddData(result["aaData"]);
-                }
-            }
-
+            homeV2EnsureTable();
+            // The status columns are data: one per TCSTATUS invariant flagged as
+            // displayable, so the set is pushed at runtime rather than configured.
+            crbTableSetColumns('homeAppStatusTable', homeV2Columns());
+            crbTableSetRows('homeAppStatusTable', result["aaData"] || []);
         }).fail(handleErrorAjaxAfterTimeout);
 
         loadLastTagResultList();
@@ -1252,57 +1243,74 @@ function getCountryFilter() {
 }
 
 
-function aoColumnsFunc() {
+/**
+ * "Test case status by application", on the shared V2 table (js/global/crbTable.js)
+ * in CLIENT mode - the whole grid arrives in one Homepage call, there is nothing to
+ * page server-side - and EMBEDDED mode, since the card around it is the page's.
+ *
+ * Built once, empty; every refresh pushes a new column set and new rows.
+ */
+function homeV2EnsureTable() {
+    if (crbTableInstance('homeAppStatusTable')) {
+        return;
+    }
+    createCerberusTable({
+        id: 'homeAppStatusTable',
+        mount: '#applicationPanel',
+        clientRows: [],
+        embedded: true,
+        pageLength: 10,
+        lengthMenu: [10, 15, 25, 50, 100],
+        searchPlaceholder: 'Search an application...',
+        emptyMessage: 'No test case on the selected systems',
+        rowKey: 'Application',
+        defaultSort: {field: 'Total', dir: 'desc'},
+        persistColumns: true,
+        columns: homeV2Columns(),
+        actions: []
+    });
+}
+
+/**
+ * Application, Total, then one column per test case status.
+ *
+ * Which statuses exist - and which are worth a column - comes from the TCSTATUS
+ * invariants (gp1 === "N" means "do not display"), exactly as V1 read them.
+ */
+function homeV2Columns() {
     var doc = new Doc();
-    var mDoc = getDoc();
-    var status = readStatus();
-    var statusLen = status.length;
+    var statuses = readStatus() || [];
 
-    var aoColumns = [
+    var columns = [
         {
-            "data": "Application",
-            "bSortable": true,
-            "sName": "Application",
-            "title": doc.getDocOnline("application", "Application"),
-            "sWidth": "50px",
-            "mRender": function (data, type, oObj) {
-                var href = "TestCaseList.jsp?application=" + data;
-
-                return "<a href='" + href + "'>" + data + "</a>";
+            field: 'Application', title: doc.getDocOnline("application", "Application"),
+            width: '200px', className: 'font-medium',
+            render: function (row) {
+                return '<a href="TestCaseList.jsp?application=' +
+                    encodeURIComponent(row.Application) + '">' +
+                    crbTableEscape(row.Application) + '</a>';
             }
         },
-        {
-            "data": "Total",
-            "bSortable": true,
-            "sWidth": "10px",
-            "sClass": "datatable-alignright",
-            "sName": "Total",
-            "title": "Total"
-        }
+        {field: 'Total', title: 'Total', width: '100px', className: 'text-right tabular-nums font-medium'}
     ];
 
-    for (var s = 0; s < statusLen; s++) {
-        if (status[s].gp1 !== "N") {
-            var obj = {
-                "data": status[s].value,
-                "bSortable": true,
-                "sWidth": "10px",
-                "sClass": "datatable-alignright",
-                "sName": status[s].value,
-                "title": status[s].value,
-                "mRender": function (data, type, oObj) {
-                    if ((data) === 0) {
-                        return "";
-                    }
-                    ;
-                    return data;
-                }
-            };
-            aoColumns.push(obj);
+    statuses.forEach(function (st) {
+        if (st.gp1 === "N") {
+            return;
         }
-    }
-
-    return aoColumns;
+        columns.push({
+            field: st.value,
+            title: st.value,
+            width: '110px',
+            className: 'text-right tabular-nums',
+            render: function (row) {
+                // A zero reads as noise in a grid this wide; V1 blanked it too.
+                var n = row[st.value];
+                return (n === 0 || n === undefined || n === null) ? '' : crbTableEscape(n);
+            }
+        });
+    });
+    return columns;
 }
 
 function toggleConfigPanel() {

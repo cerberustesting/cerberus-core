@@ -202,6 +202,12 @@
                 if (getAlertType(data.messageType) === 'success') {
                     var oTable = $("#parametersTable").dataTable();
                     oTable.fnDraw(false);
+                    // The V2 ParameterList replaces #parametersTable with a crbTable,
+                    // which fnDraw above cannot reach; this event is what reloads it.
+                    // No-op on legacy pages, where nothing listens.
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("parameter");
+                    }
                     window.dispatchEvent(new CustomEvent('parameter-modal-close'));
                     showMessage(data);
                 } else {

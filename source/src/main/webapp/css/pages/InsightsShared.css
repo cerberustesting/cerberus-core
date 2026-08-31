@@ -6,12 +6,16 @@
  * Real-time Monitor). Prefix: v2in- ; colors from the crb tokens, dark overrides below.
  */
 
+/* Structural lines inside a card (card head, table rows, pager, dividers) follow
+   the CARD border, so a card reads as one object; controls (buttons, inputs,
+   pickers) keep the neutral grey they share with the rest of the app. */
+
 /* ═══════════ Layout ═══════════ */
 .v2in-page { display: flex; flex-direction: column; gap: 16px; }
 .v2in-card { padding: 0 !important; overflow: visible; }
 .v2in-card-head {
     display: flex; align-items: center; gap: 8px; width: 100%;
-    padding: 12px 16px; border-bottom: 1px solid var(--crb-grey-light-color);
+    padding: 12px 16px; border-bottom: 1px solid var(--crb-new-border);
 }
 .v2in-card-title {
     font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
@@ -27,8 +31,12 @@
 .v2in-strong { font-weight: 700; color: var(--crb-dark-color); }
 
 /* ═══════════ Page title above the bar (same as every list page) ═══════════ */
+/* These two rules used to zero the title's padding and margin with !important,
+   which glued the heading to the sticky bar right under it - on a list page the
+   same heading breathes before the toolbar. The wrapper now only carries the
+   charter's own spacing, so the header of a reporting page reads like the header
+   of every other page. */
 .v2in-pagetitle { margin-bottom: 0; }
-.v2in-pagetitle .page-title-line { padding-bottom: 0 !important; margin-bottom: 0 !important; }
 
 /* ═══════════ Sticky header (charter pattern) ═══════════ */
 .v2in-header {
@@ -145,9 +153,9 @@
 .v2in-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: var(--crb-dark-color); }
 .v2in-table th {
     text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--crb-grey-color); padding: 9px 14px; border-bottom: 1px solid var(--crb-grey-light-color); white-space: nowrap;
+    color: var(--crb-grey-color); padding: 9px 14px; border-bottom: 1px solid var(--crb-new-border); white-space: nowrap;
 }
-.v2in-table td { padding: 9px 14px; border-bottom: 1px solid color-mix(in srgb, var(--crb-grey-light-color) 55%, transparent); }
+.v2in-table td { padding: 9px 14px; border-bottom: 1px solid color-mix(in srgb, var(--crb-new-border) 65%, transparent); }
 .v2in-table tbody tr:last-child td { border-bottom: none; }
 .v2in-num, .v2in-table th.v2in-num { text-align: right; }
 .v2in-row-click { cursor: pointer; transition: background 0.12s; }
@@ -245,7 +253,7 @@
 .v2q-link--tag { font-size: 11.5px; font-weight: 600; color: var(--crb-blue-color); max-width: 220px; display: inline-block; }
 .v2q-comment { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--crb-grey-color); }
 .v2q-actions { display: inline-flex; gap: 4px; }
-.v2q-pager { display: flex; align-items: center; gap: 7px; padding: 10px 16px; border-top: 1px solid var(--crb-grey-light-color); }
+.v2q-pager { display: flex; align-items: center; gap: 7px; padding: 10px 16px; border-top: 1px solid var(--crb-new-border); }
 :root.dark .v2q-massbar-sep { background: #1e293b; }
 :root.dark .v2q-pager { border-color: #1e293b; }
 :root.dark .v2q-row--sel { background: color-mix(in srgb, var(--crb-blue-color) 14%, transparent); }
@@ -280,7 +288,7 @@
 :root.dark .v2in-hero-step { background: transparent; border-color: #1e293b; color: #cbd5e1; }
 
 /* ═══════════ Monitor: filter row, group chips, TV mode ═══════════ */
-.v2mo-filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--crb-grey-light-color, #e2e8f0); }
+.v2mo-filters { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--crb-new-border); }
 /* no stray separator when the filters row is the first thing in the bar (title moved above the card) */
 .v2in-header > .v2mo-filters:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .v2mo-groupchips { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; min-height: 42px; }

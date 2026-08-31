@@ -273,7 +273,7 @@
                                     <div class="relative w-full flex items-center gap-2">
                                         <div @click.stop="toggle()" :id="id+'-btn'" class="flex h-10 items-center justify-between flex-1 rounded-md border px-3 py-2 text-sm gap-2 cursor-pointer select-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 bg-white border-slate-300 text-slate-900 hover:bg-slate-100 transition-all"><span x-text="selectedLabel||'-- Select --'" class="truncate"></span><svg class="h-4 w-4 shrink-0 transition-transform duration-200" :class="isOpen?'rotate-180':''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></div>
                                         <template x-if="selectedValue">
-                                            <button type="button" @click.stop="window.dispatchEvent(new CustomEvent('testdatalib-modal-close')); openModalAppService(selectedValue, 'EDIT')"
+                                            <button type="button" @click.stop="dataLib_editServiceFromHere(selectedValue)"
                                                     class="shrink-0 h-10 w-10 flex items-center justify-center border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-500 hover:text-blue-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                                                     data-tip="Edit Service">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -440,7 +440,7 @@
     // ===== DATALIB MODAL CONTROLLER =====
     function dataLibModal() {
         return {
-            open: false, isFullscreen: false, showTab: 'definition',
+            open: false, isFullscreen: false, showTab: 'definition', pendingServiceEdit: false,
             tabs: [
                 { id: 'definition', label: 'Definition', btnId: 'tab1Text', name: 'tab1Text' },
                 { id: 'subdata', label: 'Sub data', btnId: 'tab2Text', name: 'tab2Text' },
@@ -457,6 +457,16 @@
             init: function() {
                 var self = this;
                 window.addEventListener('testdatalib-modal-close', function() { self.open = false; });
+                // Hides the modal without resetting #editTestLibData - unlike testdatalib-modal-close,
+                // which TestDataLibList.js's buttonCloseHandler also listens for and reacts to by calling
+                // the form's native .reset(). Used when navigating to the "Edit Service" pencil, which
+                // only needs this modal out of the way temporarily, not cleared.
+                window.addEventListener('testdatalib-modal-hide', function() { self.open = false; });
+                // Re-shows this modal (with whatever it already had - not a fresh handleOpen()) once the
+                // Service editor opened from dataLib_editServiceFromHere() below has closed.
+                window.addEventListener('appservice-modal-closed', function() {
+                    if (self.pendingServiceEdit) { self.pendingServiceEdit = false; self.open = true; }
+                });
             }
         }
     }
@@ -480,6 +490,23 @@ function changeAppServiceFromHere() {
 
 function dataLib_emptyService() {
     $("#editTestDataLibModal #service").val("").trigger('change');
+}
+
+
+/**
+ * Opens the Service editor for the currently-selected Service, temporarily hiding this Data
+ * Library modal (its own in-progress form is left untouched, see dataLibModal()'s
+ * testdatalib-modal-hide/appservice-modal-closed listeners) rather than closing it outright.
+ * @param {String} serviceId Service to edit.
+ * @returns {void}
+ */
+function dataLib_editServiceFromHere(serviceId) {
+    var modalEl = document.getElementById('editTestDataLibModal');
+    if (modalEl && window.Alpine) {
+        Alpine.$data(modalEl).pendingServiceEdit = true;
+    }
+    window.dispatchEvent(new CustomEvent('testdatalib-modal-hide'));
+    openModalAppService(serviceId, 'EDIT');
 }
 
 
@@ -808,8 +835,14 @@ function confirmDataLibModalHandler(mode, page, aceElementId, dataLibName) {
             hideLoaderInModal('#editTestDataLibModal');
             if (getAlertType(data.messageType) === "success") {
                 if (page === "TestDataLibList") {
+                    // Legacy path: refreshes the DataTable on the V1 page. On a
+                    // migrated page that id no longer exists, so this is a no-op
+                    // there and the notify below is what reloads the V2 table.
                     var oTable = $("#listOfTestDataLib").dataTable();
                     oTable.fnDraw(false);
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("testdatalib");
+                    }
                 } else {
                     if (page === "TestCaseScript_Props") {
                         var editor = ace.edit($("#" + aceElementId)[0])
@@ -1343,6 +1376,9 @@ function uploadTestDataLibFromXMLFile() {
         hideLoaderInModal("#modalUpload");
         var oTable = $("#listOfTestDataLib").dataTable();
         oTable.fnDraw(false);
+        if (typeof crbNotifyDataChanged === "function") {
+            crbNotifyDataChanged("testdatalib");
+        }
         $('#modalUpload').modal('hide');
         showMessageMainPage(getAlertType(data.messageType), data.message, false);
     }).fail(handleErrorAjaxAfterTimeout);

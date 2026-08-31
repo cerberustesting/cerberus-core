@@ -52,6 +52,16 @@
     </head>
     <body x-data x-cloak class="crb_body" :class="$store.rightPanel.open ? 'rp-open' : ''">
         <jsp:include page="include/global/header2.html"/>
+
+        <!-- V2 Modals - included before modalInclusions.jsp so its z-index-on-open observer
+             (which only scans .crb_modal nodes present in the DOM at that point) picks these up too;
+             otherwise a modal opened on top of another that WAS scanned - e.g. one of these from
+             within TestCaseStep.html's compact step editor - renders behind it. -->
+        <%@ include file="include/pages/testcasescript/manageActionControlOptions.html"%>
+        <%@ include file="include/pages/testcasescript/manageStepOptions.html"%>
+        <%@ include file="include/pages/testcasescript/manageProperties.html"%>
+        <%@ include file="include/pages/testcasescript/addStep.html"%>
+
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <jsp:include page="include/global/rightPanel.html"/>
         <main class="crb_main_wrp" x-init="$store.sidebar.expanded = false"
@@ -63,22 +73,12 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
 
-            <!-- V2 Modals -->
-            <%@ include file="include/pages/testcasescript/manageActionControlOptions.html"%>
-            <%@ include file="include/pages/testcasescript/manageProperties.html"%>
-            <%@ include file="include/pages/testcasescript/addStep.html"%>
-
             <!-- Execution modal -->
             <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
             <%@ include file="include/utils/modal-generic.html"%>
 
             <!-- Debug launch popover -->
             <%@ include file="include/pages/testcasescriptv2/debugLaunchPopover.html"%>
-
-            <!-- ============================================================ -->
-            <!-- REUSABLE TEMPLATES                                           -->
-            <!-- ============================================================ -->
-            <%@ include file="include/templates/selectDropdown.html"%>
 
             <!-- ============================================================ -->
             <!-- MAIN V2 CONTENT — Pure Alpine.js                             -->
@@ -88,17 +88,20 @@
                 <!-- HEADER BAR -->
                 <%@ include file="include/pages/testcasescriptv2/headerBar.html"%>
 
-                <!-- TABS -->
-                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-4 h-10">
+                <!-- TABS - shared tab bar (.crb_tabs, components.css), same component as Label.jsp.
+                     Replaces the segmented pill this page built inline: flex-1 gave every tab
+                     an equal slice regardless of label length, and the fixed h-10 fought its
+                     own py-3 padding. -->
+                <div class="crb_tabs">
                     <button @click="setTab('steps')" id="v2TabSteps"
-                            :class="tab === 'steps' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'steps' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="layers" class="w-4 h-4"></i>
                         <span>Steps</span>
                     </button>
                     <button @click="setTab('properties')" id="v2TabProperties"
-                            :class="tab === 'properties' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'properties' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="variable" class="w-4 h-4"></i>
                         <span>Properties</span>
                         <template x-if="unusedPropertiesCount > 0">

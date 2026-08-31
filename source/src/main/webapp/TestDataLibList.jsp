@@ -19,6 +19,20 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%--
+    Data Library list, on the Alpine table component (js/global/crbTable.js).
+
+    Replaced the DataTables version on 2026-08-29 after validation. The previous
+    implementation is still served at TestDataLibListV1.jsp (loading
+    js/pages/TestDataLibList.js) - to roll back, copy TestDataLibListV1.jsp over
+    this file. Both read the same ReadTestDataLib endpoint, so no data or Java
+    change is involved either way.
+
+    Every <script> and <jsp:include> below mirrors the V1 page. That is not
+    cosmetic: dropping one leaves a button that renders and then does nothing,
+    which is how Run and the mass actions were silently lost on TestCaseList.
+    Re-check with ./check-v2-migration.sh TestDataLibList after any edit here.
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html class="h-full">
@@ -29,9 +43,9 @@
         <meta name="page" content="Data Library List">
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <title id="pageTitle">Data Library</title>        
-        <script type="text/javascript" src="js/pages/TestDataLibList.js?v=${appVersion}"></script>
+        <title id="pageTitle">Data Library</title>
         <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/pages/TestDataLibListV2.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -43,21 +57,21 @@
                           + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
+            <%-- modal-upload: file upload used by the FILE-type data library form --%>
             <%@ include file="include/utils/modal-upload.html"%>
-            <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
-            <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
+            <%-- listTestCase: the "test cases using this entry" panel (list action) --%>
+            <%@ include file="include/pages/testdatalib/listTestCase.html"%>
+            <%-- bulkRename: the Bulk Rename toolbar action's modal --%>
+            <%@ include file="include/pages/testdatalib/bulkRename.html"%>
             <h1 class="page-title-line" id="title">Data Library</h1>
             <div class="">
-                <div id="testDataLibList">
-                    <table id="listOfTestDataLib" class="table table-hover display" name="listOfTestDataLib"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+                <div id="testDataLibList"></div>
+                <div class="marginBottom20"></div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
             <jsp:include page="include/global/aiBottomBar.html"/>
         </main>
-    </body> 
-
+    </body>
 </html>

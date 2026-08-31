@@ -130,6 +130,15 @@
 <!--Custom scripts inclusions-->
 <script type='text/javascript' src='js/global/doc.js?v=${appVersion}'></script>
 <script type="text/javascript" src="js/global/cerberusInformation.js?v=${appVersion}"></script>
+<!-- The V2 table engine. Global, not per page: the transversal modals pulled into
+     every page by modalInclusions.jsp (Application, Environment, Campaign...) now
+     build V2 tables of their own, so any page able to open one needs it - including
+     pages that have no table themselves. Idempotent if a page also loads it. -->
+<script type="text/javascript" src="js/global/crbTable.js?v=${appVersion}"></script>
+<!-- The V2 label tree engine. Global for the same reason as crbTable.js above:
+     TestCase.html#loadLabel() builds the three label pickers of the Edit Test Case
+     Header modal, and that modal is pulled into every page by modalInclusions.jsp. -->
+<script type="text/javascript" src="js/global/crbLabelTree.js?v=${appVersion}"></script>
 <script type="text/javascript" src="js/global/cerberusDatatable.js?v=${appVersion}"></script>
 <script type="text/javascript" src="js/global/table-filter.js?v=${appVersion}"></script>
 <script type="text/javascript" src="js/global/global.js?v=${appVersion}"></script>

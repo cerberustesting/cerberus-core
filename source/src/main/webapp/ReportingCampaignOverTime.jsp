@@ -29,6 +29,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
 
         <script type="text/javascript" src="js/pages/insightsShared.js?v=${appVersion}"></script>
+        <%-- The detail tables on this page are the shared V2 table in client mode. --%>
         <script type="text/javascript" src="js/pages/ReportingCampaignOverTime.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
 
@@ -168,8 +169,12 @@
                     </div>
                 </template>
 
-                <template x-if="loaded && !error && runs.length > 0">
-                    <div class="v2in-page">
+                <%--
+                    x-show, not x-if: <template x-if> destroys and recreates its content
+                    on every condition flip, which would take the mounted V2 table with
+                    it and leave the registry pointing at dead nodes after a reload.
+                --%>
+                <div class="v2in-page" x-show="loaded && !error && runs.length > 0" x-cloak>
 
                         <!-- KPIs -->
                         <div class="v2in-kpis">
@@ -252,46 +257,11 @@
                                 <span class="flex-1"></span>
                                 <span class="v2in-dim text-xs">click a run to open its campaign report</span>
                             </div>
-                            <div class="v2in-table-scroll">
-                                <table class="v2in-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Run</th>
-                                            <th>Campaign</th>
-                                            <th class="v2in-num">Date</th>
-                                            <th class="v2in-num">Executions</th>
-                                            <th class="v2in-num">Flaky</th>
-                                            <th class="v2in-num">CI</th>
-                                            <th class="v2in-num">Duration</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <template x-for="r in tableRuns" :key="r.tag">
-                                            <tr class="v2in-row-click" @click="openRun(r.tag)">
-                                                <td class="v2in-strong" x-text="r.tag"></td>
-                                                <td x-text="r.campaign || '-'"></td>
-                                                <td class="v2in-num v2in-dim" x-text="r.t ? fmtDateTime(r.t) : '-'"></td>
-                                                <td class="v2in-num" x-text="r.nbExeU"></td>
-                                                <td class="v2in-num">
-                                                    <span :class="r.nbFlaky > 0 ? 'v2in-chip v2in-chip--warn' : 'v2in-dim'" x-text="r.nbFlaky"></span>
-                                                </td>
-                                                <td class="v2in-num">
-                                                    <span x-show="r.ciRes" class="v2in-chip" :class="r.ciRes === 'OK' ? 'v2in-chip--ok' : 'v2in-chip--ko'"
-                                                          x-text="r.ciRes + (r.ciSc !== undefined && r.ciSc !== null ? ' ' + r.ciSc + '/' + (r.ciScT || 100) : '')"></span>
-                                                    <span x-show="!r.ciRes" class="v2in-dim">-</span>
-                                                </td>
-                                                <td class="v2in-num" x-text="r.durMs !== null ? fmtDuration(r.durMs) : '-'"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                                <template x-if="tableRuns.length === 0">
-                                    <div class="v2in-empty py-8 text-center">No campaign run on this period</div>
-                                </template>
-                            </div>
+                            <%-- Shared V2 table, CLIENT mode (rows built in the browser)
+                                 and EMBEDDED (the card and head above are the page's). --%>
+                            <div id="ctRunsTableMount"></div>
                         </div>
-                    </div>
-                </template>
+                </div>
 
             </div>
 

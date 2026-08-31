@@ -27,7 +27,11 @@
         <meta name="active-submenu" content="LogEvent.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/LogEvent.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by LogEventV2.js.
+            LogEvent.js (V1) is NOT loaded. LogEventV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/LogEventV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Log Viewer</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -43,12 +47,10 @@
             <%@ include file="include/pages/logevent/editLogEvent.html"%> 
 
             <h1 class="page-title-line" id="title">Log Viewer</h1>
-            <p class="page-subtitle-line">Audit trail of every action performed on this instance.</p>
+            <%-- Subtitle line dropped: none of the other migrated list pages carries
+                 one, and the sentence pushed the toolbar down for no information. --%>
 
-            <div id="logViewer">
-                <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
-                <div class="marginBottom20"></div>
-            </div>
+            <div id="logViewer"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

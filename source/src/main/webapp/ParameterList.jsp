@@ -28,7 +28,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Parameter</title>
-        <script type="text/javascript" src="js/pages/ParameterList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by ParameterListV2.js.
+            ParameterList.js (V1) is NOT loaded. ParameterListV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/ParameterListV2.js?v=${appVersion}"></script>
 
     </head>
     <body x-data x-cloak class="crb_body">
@@ -44,34 +48,33 @@
 
 
             <h1 class="page-title-line" x-text="$store.labels.getLabel('pageParameter','title')">Invariants</h1>
-            <p class="page-subtitle-line" x-text="$store.labels.getLabel('pageParameter','subtitle')">Manage the application’s constants and fixed elements.</p>
+            <%-- Subtitle line dropped: none of the other migrated list pages carries one. --%>
 
             <div x-data="{ tab: 'all' }" class="w-full">
                 <!-- Tabs -->
-                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
+                                <%-- Shared tab bar (.crb_tabs, components.css), same component as
+                     Label.jsp / TestCaseScriptV2 / TestCaseExecutionV2 / the queue page. --%>
+                <div class="crb_tabs">
                     <!-- All -->
                     <button @click="tab = 'all';displayAllParametersTable();"
-                            :class="tab === 'all' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'all' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="list" class="w-4 h-4"></i>All
                     </button>
                     <!-- AI -->
                     <button @click="tab = 'ai';displayFilteredParametersTable('ai');"
-                            :class="tab === 'ai' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'ai' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="bot" class="w-4 h-4"></i>AI
                     </button>
                     <!-- SMTP -->
                     <button @click="tab = 'smtp';displayFilteredParametersTable('smtp');"
-                            :class="tab === 'smtp' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'smtp' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="mail" class="w-4 h-4"></i>SMTP
                     </button>
                 </div>
-                <div id="parameterList">
-                        <table id="parametersTable" class="table table-hover display" name="parametersTable"></table>
-                        <div class="marginBottom20"></div>
-                </div>
+                <div id="parameterList"></div>
 
             </div>
             <footer class="footer">

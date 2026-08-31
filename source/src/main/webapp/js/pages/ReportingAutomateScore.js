@@ -97,7 +97,234 @@ function automateScore() {
                 }
             } catch (e) { /* defaults */ }
             this._loadCampaigns();
+            this._buildTables();
             this.load();
+        },
+
+        /**
+         * The Campaigns and Test cases tables are the shared V2 component
+         * (js/global/crbTable.js) in CLIENT mode: their rows are derived in the
+         * browser from the score payload, so there is no endpoint to page against.
+         * Built once, empty; load() pushes each new dataset with crbTableSetRows().
+         * Everything else - search, sort, per-column filters, column config,
+         * paging, the card chrome - comes from the component, so these two tables
+         * behave exactly like the ones on the list pages.
+         */
+        _buildTables() {
+            var self = this;
+            var refresh = function () { self.load(); };
+
+            createCerberusTable({
+                id: 'asCampaignTable',
+                mount: '#asCampaignTableMount',
+                clientRows: [],
+                onRefresh: refresh,
+                pageLength: 10,
+                lengthMenu: [10, 15, 25, 50, 100],
+                searchPlaceholder: 'Search campaigns...',
+                emptyMessage: 'No campaign execution on this period',
+                rowKey: 'campaign',
+                defaultSort: {field: 'nb', dir: 'desc'},
+                persistColumns: true,
+                // The section title, count and hint stay in the card's own head
+                // (tables.html), where they were - the toolbar slot is for actions.
+                embedded: true,
+                columns: [
+                    {field: 'campaign', title: 'Campaign', width: '260px',
+                     className: 'font-medium', filterable: true},
+                    {field: 'nb', title: 'Runs', width: '90px', className: 'text-right tabular-nums'},
+                    {field: 'nbExe', title: 'Avg executions', width: '140px',
+                     className: 'text-right tabular-nums'},
+                    {
+                        field: 'nbFlaky', title: 'Avg flaky', width: '110px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            var n = row.nbFlaky || 0;
+                            return n > 0
+                                ? '<span class="v2as-flakyval">' + crbTableEscape(n) + '</span>'
+                                : '<span class="v2as-dim">0</span>';
+                        }
+                    },
+                    {
+                        field: 'duration', title: 'Avg duration', width: '150px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            return '<span title="min ' + crbTableEscape(self.fmtDuration(row.durationMin)) +
+                                ' - max ' + crbTableEscape(self.fmtDuration(row.durationMax)) + '">' +
+                                crbTableEscape(self.fmtDuration(row.duration)) + '</span>';
+                        }
+                    },
+                    {field: 'durationMin', title: 'Min duration', width: '130px', visible: false,
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape(self.fmtDuration(row.durationMin)); }},
+                    {field: 'durationMax', title: 'Max duration', width: '130px', visible: false,
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape(self.fmtDuration(row.durationMax)); }}
+                ],
+                actions: []
+            });
+
+            createCerberusTable({
+                id: 'asTeamTable',
+                mount: '#asTeamTableMount',
+                clientRows: [],
+                embedded: true,
+                onRefresh: refresh,
+                pageLength: 10,
+                lengthMenu: [10, 15, 25, 50],
+                searchPlaceholder: 'Search a member...',
+                emptyMessage: 'No test case change on this period',
+                rowKey: 'user',
+                defaultSort: {field: 'impact', dir: 'desc'},
+                persistColumns: true,
+                columns: [
+                    {
+                        field: 'user', title: 'Member', width: '260px',
+                        render: function (row) {
+                            // rank, not the row's position on the current page: the
+                            // podium colours and the crown belong to the impact
+                            // ranking, and the user can re-sort this table.
+                            var rank = row.rank;
+                            var avatarClass = rank < 3 ? ('v2as-avatar--' + (rank + 1)) : 'v2as-avatar--n';
+                            var crown = rank === 0
+                                ? '<svg class="w-4 h-4" style="color:#f59e0b" fill="currentColor" viewBox="0 0 24 24">' +
+                                  '<path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>'
+                                : '';
+                            return '<div class="flex items-center gap-2.5">' +
+                                '<span class="v2as-avatar ' + avatarClass + '">' +
+                                crbTableEscape(row.initials) + '</span>' +
+                                '<span class="v2as-strong">' + crbTableEscape(row.user) + '</span>' +
+                                crown + '</div>';
+                        }
+                    },
+                    {
+                        field: 'impact', title: 'Impact', width: '130px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            return '<span class="v2as-impact">' +
+                                crbTableEscape((row.impact || 0).toLocaleString() + ' pts') + '</span>';
+                        }
+                    },
+                    {field: 'saves', title: 'Changes saved', width: '140px',
+                     className: 'text-right tabular-nums'},
+                    {field: 'timeMs', title: 'Time on scripts', width: '150px',
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape(self.fmtDuration(row.timeMs)); }},
+                    {field: 'weeksActive', title: 'Active weeks', width: '130px',
+                     className: 'text-right tabular-nums'},
+                    {
+                        // Not sortable: a sparkline is a shape, not a value to order by.
+                        title: 'Activity', sortable: false, width: '150px',
+                        render: function (row) {
+                            var delta = row.weekDelta || 0;
+                            var deltaHtml = delta !== 0
+                                ? '<span class="v2as-kpi-delta ' +
+                                  (delta > 0 ? 'v2as-delta--up' : 'v2as-delta--down') + '">' +
+                                  crbTableEscape((delta > 0 ? '+' : '') + delta) + '</span>'
+                                : '';
+                            return '<span class="v2as-useractivity" title="' +
+                                crbTableEscape('Changes per week - this week ' + (delta > 0 ? '+' : '') +
+                                    delta + ' vs previous') + '">' +
+                                '<svg viewBox="0 0 92 22" class="v2as-userspark"><path d="' +
+                                crbTableEscape(self.userSparkPath(row.history)) + '"></path></svg>' +
+                                deltaHtml + '</span>';
+                        }
+                    },
+                    {
+                        field: 'lastActive', title: 'Last activity', width: '150px',
+                        className: 'text-right',
+                        render: function (row) {
+                            return '<span class="v2as-dim">' + crbTableEscape(self.relTime(row.lastActive)) + '</span>';
+                        }
+                    },
+                    {
+                        title: 'Badge', sortable: false, width: '190px',
+                        render: function (row) { return asV2Badges(row.badges); }
+                    },
+                    {field: 'regularityPct', title: 'Regularity', width: '120px', visible: false,
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape((row.regularityPct || 0) + '%'); }},
+                    {field: 'sharePct', title: 'Of team changes', width: '150px', visible: false,
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape((row.sharePct || 0) + '%'); }},
+                    {field: 'avgSession', title: 'Avg time / change', width: '160px', visible: false,
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape(self.fmtDuration(row.avgSession)); }},
+                    // Sort key only: the rank the podium colours are based on.
+                    {field: 'rank', title: 'Rank', width: '90px', visible: false, configurable: false,
+                     className: 'text-right tabular-nums'}
+                ],
+                actions: [
+                    {
+                        key: 'report', icon: 'file-text', gate: 'always',
+                        title: 'Open the detailed activity report',
+                        onClick: function (row) { self.openMember(row); }
+                    }
+                ]
+            });
+
+            createCerberusTable({
+                id: 'asTestcaseTable',
+                mount: '#asTestcaseTableMount',
+                clientRows: [],
+                onRefresh: refresh,
+                pageLength: 10,
+                lengthMenu: [10, 15, 25, 50, 100],
+                searchPlaceholder: 'Search test cases...',
+                emptyMessage: 'No execution on this period',
+                rowKey: function (row) { return JSON.stringify([row.testFolder, row.testcaseId]); },
+                // Same order V1 sorted by: the ones needing attention first.
+                defaultSort: {field: 'attention', dir: 'desc'},
+                persistColumns: true,
+                embedded: true,
+                columns: [
+                    {
+                        field: 'testcaseId', title: 'Test case', width: '280px',
+                        render: function (row) {
+                            return '<div class="v2as-dim text-xs">' + crbTableEscape(row.testFolder) + '</div>' +
+                                '<div class="v2as-strong">' + crbTableEscape(row.testcaseId) + '</div>';
+                        }
+                    },
+                    {field: 'testFolder', title: 'Test folder', width: '200px', visible: false,
+                     filterable: true},
+                    {field: 'application', title: 'Application', width: '150px', filterable: true},
+                    {field: 'nb', title: 'Executions', width: '120px', className: 'text-right tabular-nums'},
+                    {
+                        field: 'nbFlaky', title: 'Flaky', width: '100px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            var n = row.nbFlaky || 0;
+                            return n > 0
+                                ? '<span class="v2as-flakyval">' + crbTableEscape(n) + '</span>'
+                                : '<span class="v2as-dim">0</span>';
+                        }
+                    },
+                    {
+                        field: 'nbFN', title: 'False neg', width: '110px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            var n = row.nbFN || 0;
+                            return n > 0
+                                ? '<span class="v2as-fnval">' + crbTableEscape(n) + '</span>'
+                                : '<span class="v2as-dim">0</span>';
+                        }
+                    },
+                    {field: 'duration', title: 'Avg duration', width: '140px',
+                     className: 'text-right tabular-nums',
+                     render: function (row) { return crbTableEscape(self.fmtDuration(row.duration)); }},
+                    // Sort key for the default "needs attention first" order. Hidden
+                    // from Config too: it is machinery, not information.
+                    {field: 'attention', title: 'Attention', width: '100px', visible: false,
+                     configurable: false, className: 'text-right tabular-nums'}
+                ],
+                actions: [
+                    {
+                        key: 'open', icon: 'external-link', gate: 'always',
+                        title: 'Open the test case script',
+                        onClick: function (row) { self.openTestcase(row); }
+                    }
+                ]
+            });
         },
         _loadCampaigns() {
             var self = this;
@@ -224,7 +451,9 @@ function automateScore() {
                 });
             }
 
-            // Campaign table (average behaviour per campaign over the period)
+            // Campaign table (average behaviour per campaign over the period).
+            // The arrays stay: the PDF export and the hotspot insight read them.
+            // The V2 tables get the same rows through crbTableSetRows().
             this.campaignRows = (data.campaigns || []).slice().sort(function (a, b) { return (b.nb || 0) - (a.nb || 0); });
 
             // Test cases needing attention first (flaky or false negative), then most executed
@@ -234,6 +463,14 @@ function automateScore() {
                 if (pb !== pa) return pb - pa;
                 return (b.nb || 0) - (a.nb || 0);
             });
+
+            // `attention` is derived here rather than in the renderer: the table
+            // sorts on it by default, and a sort key has to be a real field.
+            var tcRowsForTable = this.testcaseRows.map(function (t) {
+                return $.extend({}, t, {attention: (t.nbFlaky || 0) + (t.nbFN || 0)});
+            });
+            crbTableSetRows('asCampaignTable', this.campaignRows);
+            crbTableSetRows('asTestcaseTable', tcRowsForTable);
 
             // Leaderboard: aggregate the per-user-per-week maintenance activity.
             // Each "user | week" entry holds an ARRAY of work sessions (changes grouped
@@ -277,6 +514,11 @@ function automateScore() {
                 if (u.weeksActive === maxWeeks && maxWeeks > 1 && u.badges.length === 0) u.badges.push({ type: 'regular', label: 'Most regular' });
             });
             this.leaderboard = list;
+            // The rank is the position in the impact ranking, stamped before the
+            // rows leave: the table can be re-sorted and the podium must not move.
+            crbTableSetRows('asTeamTable', list.map(function (u, i) {
+                return $.extend({}, u, {rank: i});
+            }));
 
             this.loaded = true;
             this.$nextTick(function () { if (window.lucide) lucide.createIcons(); });
@@ -826,4 +1068,29 @@ function automateScore() {
             window.open('./TestCaseScriptV2.jsp?test=' + encodeURIComponent(t.testFolder) + '&testcase=' + encodeURIComponent(t.testcaseId), '_blank');
         }
     };
+}
+
+/**
+ * Badge chips for the team activity table, with the per-type icon V1 drew inline.
+ * A module-level function rather than a component method: the table injects cell
+ * markup as HTML, so nothing inside it is Alpine-compiled.
+ */
+function asV2Badges(badges) {
+    var list = badges || [];
+    if (!list.length) {
+        return '<span class="v2as-dim text-xs" style="font-style: italic">In progress...</span>';
+    }
+    var icons = {
+        maintainer: '<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>',
+        time: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        regular: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'
+    };
+    return list.map(function (b) {
+        var icon = icons[b.type]
+            ? '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
+              icons[b.type] + '</svg>'
+            : '';
+        return '<span class="v2as-chip v2as-chip--' + crbTableEscape(b.type) + '">' +
+            icon + '<span>' + crbTableEscape(b.label) + '</span></span>';
+    }).join('');
 }

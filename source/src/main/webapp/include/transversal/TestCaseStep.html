@@ -49,6 +49,11 @@
                 <template x-if="saveState === 'saved'">
                     <span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">Saved ✓</span>
                 </template>
+                <button x-show="canUpdate && typeof displayStepOptionsModal === 'function'" @click="openStepOptions()"
+                        class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition"
+                        data-tip="Step options (loop, force execution, condition)">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
                 <button @click="isFullscreen = !isFullscreen"
                         class="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                     <svg x-show="!isFullscreen" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7"/></svg>
@@ -121,6 +126,11 @@
                                                 :data-tip="action.toDelete ? 'Restore' : 'Delete'">
                                             <svg x-show="!action.toDelete" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             <svg x-show="action.toDelete" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                        </button>
+                                        <button x-show="typeof displayOverrideOptionsModal === 'function'" @click="openActionOptions(aIdx)" :disabled="!canUpdate"
+                                                class="v2-btn-colored" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)"
+                                                data-tip="Action options (screenshot, wait, ...)">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                                         </button>
                                     </div>
                                 </div>
@@ -219,10 +229,18 @@
                                                                placeholder="Extra..." :disabled="!canUpdate">
                                                     </div>
                                                 </div>
-                                                <button @click="toggleDeleteControl(aIdx, cIdx)" :disabled="!canUpdate"
-                                                        class="shrink-0 mt-1 w-6 h-6 rounded flex items-center justify-center text-slate-300 hover:text-red-500 transition">
-                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                </button>
+                                                <div class="flex items-center gap-1 shrink-0 mt-1">
+                                                    <button x-show="typeof displayOverrideOptionsModal === 'function'" @click="openControlOptions(aIdx, cIdx)" :disabled="!canUpdate"
+                                                            class="v2-btn-colored-sm" style="background: var(--crb-orange-light-color); color: var(--crb-orange-color)"
+                                                            data-tip="Verification options">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                    </button>
+                                                    <button @click="toggleDeleteControl(aIdx, cIdx)" :disabled="!canUpdate"
+                                                            class="v2-btn-colored-sm" style="background: var(--crb-red-light-color); color: var(--crb-red-color)"
+                                                            data-tip="Delete control">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </template>
                                     </div>
@@ -268,6 +286,95 @@
 <script>
 var _smUid = 0;
 function smUid() { return '__sm_' + (++_smUid); }
+
+/**
+ * manageActionControlOptions.html's save handler calls these 3 legacy globals to repaint
+ * V1-style label badges next to the row it's given. This modal passes a detached, throwaway
+ * div (labels are already reactive from Alpine state), so on pages that don't load
+ * TestCaseScriptV2.js (Execution/Debug) they'd otherwise be undefined and throw, aborting the
+ * handler before it dispatches `modaloptions-close` - leaving the sub-modal stuck open and the
+ * edit silently lost. Same shim TestCaseScriptV2.js defines for its own page; guarded so it's a
+ * no-op override anywhere that already has the real (also no-op) definition.
+ */
+if (typeof window.printLabelForOptions !== 'function') { window.printLabelForOptions = function () {}; }
+if (typeof window.printLabelForCondition !== 'function') { window.printLabelForCondition = function () {}; }
+if (typeof window.printLabel !== 'function') { window.printLabel = function () {}; }
+
+/**
+ * Resolves which "step editor" instance the Options sub-modals (manageActionControlOptions.html /
+ * manageStepOptions.html) should act on: this compact modal when it's the one currently open
+ * (covers Execution/Debug pages, where it's the only option, and also the "edit library step"
+ * trigger from inside TestCaseScriptV2.jsp, where the full editor's #scriptV2Root exists
+ * underneath but isn't the context being edited), otherwise the full script editor. Used by
+ * TestCaseScriptV2.js's setModif()/appendActionsForConditionCombobox() shims so a save from
+ * within this modal never marks the wrong editor dirty or reads the wrong step list.
+ */
+function v2OptionsModalTarget() {
+    var stepModalEl = document.getElementById('editStepModal');
+    if (stepModalEl && window.Alpine) {
+        var stepData = Alpine.$data(stepModalEl);
+        if (stepData && stepData.open) {
+            return { steps: stepData.allSteps, markDirty: function () { stepData.markDirty(); } };
+        }
+    }
+    var scriptRootEl = document.getElementById('scriptV2Root');
+    if (scriptRootEl && window.Alpine) {
+        var rootData = Alpine.$data(scriptRootEl);
+        return { steps: rootData.steps, markDirty: function () { rootData._markDirty(); } };
+    }
+    return null;
+}
+
+/**
+ * Fallback definitions of the same two shims TestCaseScriptV2.js defines for its own page
+ * (both guarded, so whichever script runs first on a given page wins - harmless either way since
+ * both delegate to v2OptionsModalTarget() above). TestCaseScriptV2.js loads in the <head>, before
+ * this file's <script> (included in the <body> via modalInclusions.jsp), so it wins on
+ * TestCaseScriptV2.jsp; on Execution/Debug pages, which never load TestCaseScriptV2.js at all,
+ * these are the only definitions - without them, changing any field in the Options sub-modal
+ * (manageActionControlOptions.html / manageStepOptions.html) threw a ReferenceError on the very
+ * first line of its change handler, aborting the rest of that handler before it reached
+ * setPlaceholderCondition()/appendActionsForConditionCombobox() - silently breaking the
+ * condition-operator dropdown's field switching on these two pages.
+ */
+if (typeof window.setModif !== 'function') {
+    window.setModif = function (val) {
+        if (!val) return;
+        var target = v2OptionsModalTarget();
+        if (target) target.markDirty();
+    };
+}
+if (typeof window.appendActionsForConditionCombobox !== 'function') {
+    window.appendActionsForConditionCombobox = function (combo, operator) {
+        combo.empty();
+        var target = v2OptionsModalTarget();
+        if (!target) return;
+        (target.steps || []).forEach(function (step) {
+            if (operator.startsWith('ifStepStatus')) {
+                if (step.sort !== undefined) {
+                    combo.append($('<option></option>').text('Step ' + step.sort + ' - ' + step.description).attr('stepId', step.stepId).val(step.stepId));
+                }
+                return;
+            }
+            (step.actions || []).forEach(function (action) {
+                if (operator.startsWith('ifActionStatus')) {
+                    if (action.sort !== undefined) {
+                        combo.append($('<option></option>').text('Step ' + step.sort + ' - Action ' + action.sort + ' - ' + action.description)
+                            .attr('actionId', action.actionId).attr('stepId', step.stepId).val(step.stepId + '-' + action.actionId));
+                    }
+                    return;
+                }
+                (action.controls || []).forEach(function (control) {
+                    if (control.sort !== undefined) {
+                        combo.append($('<option></option>').text('Step ' + step.sort + ' - Action ' + action.sort + ' - Control ' + control.sort + ' - ' + control.description)
+                            .attr('actionId', action.actionId).attr('stepId', step.stepId).attr('controlId', control.controlId)
+                            .val(step.stepId + '-' + action.actionId + '-' + control.controlId));
+                    }
+                });
+            });
+        });
+    };
+}
 
 function crbStepModal() {
     return {
@@ -355,6 +462,30 @@ function crbStepModal() {
         },
         moveAction(aIdx, dir) { var a=this.step.actions, n=aIdx+dir; if(n<0||n>=a.length)return; var t=a[aIdx]; a[aIdx]=a[n]; a[n]=t; this.markDirty(); },
         moveControl(aIdx, cIdx, dir) { var a=this.step.actions[aIdx].controls, n=cIdx+dir; if(n<0||n>=a.length)return; var t=a[cIdx]; a[cIdx]=a[n]; a[n]=t; this.markDirty(); },
+
+        openActionOptions(aIdx) {
+            if (typeof displayOverrideOptionsModal !== 'function') return;
+            var self = this;
+            var action = this.step.actions[aIdx];
+            displayOverrideOptionsModal(action, $('<div><div class="boutonGroup"></div></div>'));
+            var handler = function () { self.markDirty(); window.removeEventListener('modaloptions-close', handler); };
+            window.addEventListener('modaloptions-close', handler);
+        },
+        openControlOptions(aIdx, cIdx) {
+            if (typeof displayOverrideOptionsModal !== 'function') return;
+            var self = this;
+            var ctrl = this.step.actions[aIdx].controls[cIdx];
+            displayOverrideOptionsModal(ctrl, $('<div><div class="boutonGroup"></div></div>'));
+            var handler = function () { self.markDirty(); window.removeEventListener('modaloptions-close', handler); };
+            window.addEventListener('modaloptions-close', handler);
+        },
+        openStepOptions() {
+            if (typeof displayStepOptionsModal !== 'function') return;
+            var self = this;
+            displayStepOptionsModal(this.step, $('<div><div class="boutonGroup"></div></div>'));
+            var handler = function () { self.markDirty(); window.removeEventListener('modalstepoptions-close', handler); };
+            window.addEventListener('modalstepoptions-close', handler);
+        },
 
         getActionLabel(val) { for(var g of this.actionGroups){var o=g.options.find(function(x){return x.value===val;}); if(o)return o.label;} return val||''; },
         getControlLabel(val) { for(var g of this.controlGroups){var o=g.options.find(function(x){return x.value===val;}); if(o)return o.label;} return val||''; },

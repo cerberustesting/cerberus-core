@@ -19,6 +19,19 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%--
+    Application Object list, on the Alpine table component (js/global/crbTable.js).
+
+    Replaced the DataTables version on 2026-08-29 after validation. The previous
+    implementation is still served at ApplicationObjectListV1.jsp (loading
+    js/pages/ApplicationObjectList.js) - to roll back, copy
+    ApplicationObjectListV1.jsp over this file. Both read the same
+    ReadApplicationObject endpoint, so no data or Java change is involved.
+
+    Every <script> and <jsp:include> below mirrors the V1 page - dropping one
+    leaves a button that renders and then silently does nothing.
+    Re-check with ./check-v2-migration.sh ApplicationObjectList after any edit.
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html class="h-full">
@@ -29,7 +42,7 @@
         <meta name="page" content="Application Object">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/ApplicationObjectList.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/pages/ApplicationObjectListV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Application Object</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -42,24 +55,19 @@
                           + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
+            <%-- modal-generic: hosts the screenshot preview opened from a thumbnail --%>
             <%@ include file="include/utils/modal-generic.html"%>
 
-
-
             <h1 class="page-title-line" id="title" x-text="$store.labels.getLabel('applicationObject','title')"></h1>
-            <p class="page-subtitle-line" x-text="$store.labels.getLabel('applicationObject','subtitle')"></p>
 
             <div>
-                <div id="applicationObjectList">
-                    <table id="applicationObjectsTable" class="table table-hover display" name="applicationObjectsTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+                <div id="applicationObjectList"></div>
+                <div class="marginBottom20"></div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
             <jsp:include page="include/global/aiBottomBar.html"/>
-        </div>
         </main>
     </body>
 </html>

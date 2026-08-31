@@ -369,8 +369,14 @@
                 if (getAlertType(data.messageType) === "success") {
                     if (page == "applicationObject") {
 
+                        // Legacy path: refreshes the DataTable on the V1 page. On a
+                        // migrated page that id no longer exists, so this is a no-op
+                        // there and the notify below is what reloads the V2 table.
                         var oTable = $("#applicationObjectsTable").dataTable();
                         oTable.fnDraw(false);
+                        if (typeof crbNotifyDataChanged === "function") {
+                            crbNotifyDataChanged("applicationobject");
+                        }
 
                     } else if (page == "testCaseScript") {
 

@@ -28,7 +28,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">User Management</title>
-        <script type="text/javascript" src="js/pages/UserManager.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by UserManagerV2.js.
+            UserManager.js (V1) is NOT loaded. UserManagerV1.jsp is the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/UserManagerV2.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -45,12 +49,10 @@
             <%@ include file="include/pages/usermanager/changePassword.html"%>
 
             <h1 class="page-title-line" id="title">User Management</h1>
-            <p class="page-subtitle-line">Manage the users of this instance: profile, systems and roles.</p>
+            <%-- Subtitle line dropped: none of the other migrated list pages carries
+                 one, and the sentence pushed the toolbar down for no information. --%>
 
-            <div id="userList">
-                <table id="usersTable" class="table table-hover display" name="usersTable"></table>
-                <div class="marginBottom20"></div>
-            </div>
+            <div id="userList"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

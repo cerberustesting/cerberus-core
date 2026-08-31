@@ -2,7 +2,13 @@
 
     :root {
         --crb-new-bg: rgba(255, 255, 255, 0.95);
-        --crb-new-border: rgba(255, 255, 255, 0.2);
+        /* Card border. This used to be rgba(255,255,255,.2) - a 20%-opaque WHITE
+           line on a white card, i.e. invisible in the light theme. Every .crb_card
+           therefore looked borderless, and only the cards that also carried a
+           Tailwind `border-slate-200` utility (the modals) showed an outline. The
+           value is now the same solid colour the V2 tables use for their own
+           border, so a card and a table read as one system. */
+        --crb-new-border: #dbe3ee;
 
         --crb-bg: #f5f6fa;
 
@@ -85,7 +91,9 @@
 
         --crb-new-bg: rgba(30, 41, 59, 0.95);
         /*rgba(19, 30, 48, 0.95);*/
-        --crb-new-border: rgba(71, 85, 105, 0.3);
+        /* Matches the V2 tables' dark border (slate-700) instead of slate-600 at
+           30%, which was too faint to separate a card from the page. */
+        --crb-new-border: #334155;
 
         --crb-bg: #1e222a;
 

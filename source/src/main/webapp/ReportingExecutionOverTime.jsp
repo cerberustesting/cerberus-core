@@ -29,6 +29,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
 
         <script type="text/javascript" src="js/pages/insightsShared.js?v=${appVersion}"></script>
+        <%-- The detail tables on this page are the shared V2 table in client mode. --%>
         <script type="text/javascript" src="js/pages/ReportingExecutionOverTime.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
 
@@ -203,8 +204,15 @@
                     </div>
                 </template>
 
-                <template x-if="loaded && !error">
-                    <div class="v2in-page">
+                <%--
+                    x-show, not x-if. <template x-if> destroys and recreates its content
+                    each time the condition flips, taking the mounted V2 table with it -
+                    after a reload the page would hold fresh, empty DOM while the
+                    component registry still pointed at the old nodes. x-show only
+                    toggles display, so the table is mounted once and keeps its search,
+                    sort and column choices across a reload.
+                --%>
+                <div class="v2in-page" x-show="loaded && !error" x-cloak>
 
                         <!-- KPIs -->
                         <div class="v2in-kpis">
@@ -276,42 +284,13 @@
                                 <span class="flex-1"></span>
                                 <span class="v2in-dim text-xs">click an execution to open it</span>
                             </div>
-                            <div class="v2in-table-scroll">
-                                <table class="v2in-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Test case</th>
-                                            <th>Env / Country</th>
-                                            <th class="v2in-num">Status</th>
-                                            <th class="v2in-num">Duration</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <template x-for="e in executions" :key="e.exeId">
-                                            <tr class="v2in-row-click" @click="openExe(e.exeId)">
-                                                <td class="v2in-dim" x-text="fmtDateTime(e.t)"></td>
-                                                <td>
-                                                    <div class="v2in-dim text-xs" x-text="e.test"></div>
-                                                    <div class="v2in-strong" x-text="e.testCase"></div>
-                                                </td>
-                                                <td x-text="[e.environment, e.country].filter(Boolean).join(' / ')"></td>
-                                                <td class="v2in-num">
-                                                    <span class="v2in-chip" :style="'background: color-mix(in srgb, ' + statusColor(e.status) + ' 14%, transparent); color:' + statusColor(e.status)"
-                                                          x-text="e.status + (e.fn ? ' (FN)' : '')"></span>
-                                                </td>
-                                                <td class="v2in-num" x-text="fmtDuration(e.durMs)"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                                <template x-if="executions.length === 0">
-                                    <div class="v2in-empty py-8 text-center">No execution on this period</div>
-                                </template>
-                            </div>
+                            <%-- The shared V2 table (js/global/crbTable.js) in CLIENT
+                                 mode (rows computed in the browser, pushed with
+                                 crbTableSetRows) and EMBEDDED mode (no card chrome of
+                                 its own - the card and its head above are the page's). --%>
+                            <div id="etExecutionsTableMount"></div>
                         </div>
-                    </div>
-                </template>
+                </div>
 
             </div>
 

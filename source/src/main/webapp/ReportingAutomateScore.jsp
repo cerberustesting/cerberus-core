@@ -28,6 +28,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
 
+        <%-- The detail tables on this page are the shared V2 table in client mode. --%>
         <script type="text/javascript" src="js/pages/ReportingAutomateScore.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/ReportingAutomateScore.css?v=${appVersion}"/>
 
@@ -69,12 +70,19 @@
                     </div>
                 </template>
 
-                <template x-if="loaded && !error">
-                    <div class="v2as-page">
-                        <%@ include file="include/pages/reportingautomatescore/scoreHero.html" %>
-                        <%@ include file="include/pages/reportingautomatescore/tables.html" %>
-                    </div>
-                </template>
+                <%--
+                    x-show, not x-if. <template x-if> DESTROYS and RECREATES its
+                    content every time the condition flips, which takes the mounted
+                    V2 tables with it: after a recompute the page held a fresh, empty
+                    DOM while the component registry still pointed at the old nodes,
+                    and both tables showed "No entries". x-show only toggles display,
+                    so the tables are mounted once and keep their state (search,
+                    sort, column config) across a recompute.
+                --%>
+                <div class="v2as-page" x-show="loaded && !error" x-cloak>
+                    <%@ include file="include/pages/reportingautomatescore/scoreHero.html" %>
+                    <%@ include file="include/pages/reportingautomatescore/tables.html" %>
+                </div>
 
             </div>
 

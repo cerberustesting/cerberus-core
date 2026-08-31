@@ -11,11 +11,8 @@
             Reset
         </button>
 
-        <!-- Search -->
-        <div class="v2rt-search">
-            <svg class="v2rt-search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" x-model="search" placeholder="Search test, description, application..." class="v2rt-search-input">
-        </div>
+        <%-- The search box lives in the V2 table's own control strip below; keeping a
+             second one here would be two inputs filtering the same list. --%>
 
         <!-- Advanced filters -->
         <button type="button" class="v2rt-btn" :class="hasActiveFilter ? 'v2rt-btn--toggle-on' : ''" @click="filtersOpen = true">
@@ -90,118 +87,22 @@
         </template>
     </div>
 
-    <!-- Grid -->
-    <div class="v2rt-grid-scroll">
-        <table class="v2rt-grid">
-            <thead>
-                <tr>
-                    <th class="v2rt-grid-th v2rt-grid-th--prio v2rt-th-sort" x-show="showCols.prio" @click="setSort('priority')" title="Test case priority - click to sort">
-                        P
-                        <span class="v2rt-sort-arrow" x-show="sortBy === 'priority'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
-                    </th>
-                    <th class="v2rt-grid-th v2rt-grid-th--test v2rt-th-sort" @click="setSort('test')" title="Click to sort by test folder / test case">
-                        Test case
-                        <span class="v2rt-sort-arrow" x-show="sortBy === 'test'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
-                    </th>
-                    <th class="v2rt-grid-th v2rt-grid-th--app v2rt-th-sort" x-show="showCols.app" @click="setSort('app')" title="Click to sort by application">
-                        Application
-                        <span class="v2rt-sort-arrow" x-show="sortBy === 'app'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
-                    </th>
-                    <th class="v2rt-grid-th v2rt-grid-th--lastrun v2rt-th-sort" x-show="showCols.lastRun" @click="setSort('lastRun')" title="Click to sort by last execution date">
-                        Last run
-                        <span class="v2rt-sort-arrow" x-show="sortBy === 'lastRun'" x-text="sortDir === 1 ? '&#9650;' : '&#9660;'"></span>
-                    </th>
-                    <template x-for="col in visibleColumns" :key="col.key">
-                        <th class="v2rt-grid-th v2rt-grid-th--exec">
-                            <div x-text="col.environment + ' ' + col.country"></div>
-                            <div class="v2rt-grid-th-sub" x-text="col.robotDecli || ''"></div>
-                        </th>
-                    </template>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="row in visibleRows" :key="row.test + '|' + row.testCase">
-                    <tr class="v2rt-grid-row">
-                        <td class="v2rt-grid-td v2rt-grid-td--prio" x-show="showCols.prio">
-                            <template x-if="row.priority && row.priority > 0">
-                                <span class="v2rt-prio" :class="'v2rt-prio--' + row.priority" x-text="'P' + row.priority" :title="'Priority ' + row.priority"></span>
-                            </template>
-                        </td>
-                        <td class="v2rt-grid-td v2rt-grid-td--test">
-                            <div class="v2rt-grid-folder" :title="row.test" x-text="row.test"></div>
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <a class="v2rt-grid-tc truncate" :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(row.test) + '&testcase=' + encodeURIComponent(row.testCase)"
-                                   target="_blank" :title="row.test + ' / ' + row.testCase" x-text="row.testCase"></a>
-                                <template x-if="row.isMuted">
-                                    <span class="v2rt-chip v2rt-chip--muted" title="This test case is muted">M</span>
-                                </template>
-                                <template x-if="rowBugs(row).length > 0">
-                                    <span class="v2rt-chip v2rt-chip--danger" :title="'Active bugs: ' + rowBugs(row).map(b => b.id).join(', ')" x-text="rowBugs(row).length + ' bug'"></span>
-                                </template>
-                            </div>
-                            <div class="v2rt-grid-desc truncate" :title="row.shortDesc" x-text="row.shortDesc"></div>
-                        </td>
-                        <td class="v2rt-grid-td v2rt-grid-td--app" x-show="showCols.app">
-                            <span class="truncate" x-text="row.application"></span>
-                        </td>
-                        <td class="v2rt-grid-td v2rt-grid-td--lastrun" x-show="showCols.lastRun">
-                            <div x-text="relTime(row.lastExeEnd)"></div>
-                            <div class="v2rt-grid-desc" x-show="row.DurationMsMax" x-text="fmtDuration(row.DurationMsMax)"></div>
-                        </td>
-                        <template x-for="col in visibleColumns" :key="col.key">
-                            <td class="v2rt-grid-td v2rt-grid-td--exec">
-                                <template x-if="cellFor(row, col) && cellVisible(cellFor(row, col))">
-                                    <div class="v2rt-cell"
-                                         :class="[isSelected(cellFor(row, col)) ? 'v2rt-cell--selected' : '', cellFor(row, col).isFalseNegative ? 'v2rt-cell--fn' : '']"
-                                         :style="'--cell-color:' + statusColor(cellFor(row, col).ControlStatus)"
-                                         :title="cellTitle(cellFor(row, col))"
-                                         @click="openCell(cellFor(row, col))">
-                                        <template x-if="cellSelectable(cellFor(row, col))">
-                                            <input type="checkbox" class="v2rt-cell-check" :checked="isSelected(cellFor(row, col))"
-                                                   @click.stop="toggleSelect(cellFor(row, col))">
-                                        </template>
-                                        <template x-if="cellFor(row, col).previousExeControlStatus">
-                                            <span class="v2rt-cell-prev" :style="'background:' + statusColor(cellFor(row, col).previousExeControlStatus)"
-                                                  :title="'Previous execution: ' + cellFor(row, col).previousExeControlStatus + ' (click to open)'"
-                                                  @click.stop="openPrevious(cellFor(row, col))"></span>
-                                        </template>
-                                        <span class="v2rt-cell-status" x-text="cellFor(row, col).ControlStatus"></span>
-                                        <template x-if="cellFor(row, col).ControlStatus === 'PE' && cellFor(row, col).progressPercent !== undefined">
-                                            <span class="v2rt-cell-progress" x-text="cellFor(row, col).progressPercent + '%'"></span>
-                                        </template>
-                                        <template x-if="cellFor(row, col).QueueState">
-                                            <span class="v2rt-cell-queue" x-text="cellFor(row, col).QueueState"></span>
-                                        </template>
-                                        <template x-if="cellFor(row, col).isFlaky">
-                                            <span class="v2rt-cell-flaky" title="Flaky: this execution needed retries to pass">FLAKY</span>
-                                        </template>
-                                        <template x-if="cellFor(row, col).NbExecutions && String(cellFor(row, col).NbExecutions) !== '1'">
-                                            <span class="v2rt-cell-retry" :title="cellFor(row, col).NbExecutions + ' executions (retries)'" x-text="'x' + cellFor(row, col).NbExecutions"></span>
-                                        </template>
-                                    </div>
-                                </template>
-                                <template x-if="cellFor(row, col) && !cellVisible(cellFor(row, col))">
-                                    <div class="v2rt-cell v2rt-cell--filtered" :title="'Filtered out: ' + cellFor(row, col).ControlStatus">
-                                        <span class="v2rt-cell-status" x-text="cellFor(row, col).ControlStatus"></span>
-                                    </div>
-                                </template>
-                                <template x-if="!cellFor(row, col)">
-                                    <div class="v2rt-cell v2rt-cell--none">-</div>
-                                </template>
-                            </td>
-                        </template>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
-
-        <template x-if="visibleRows.length === 0">
-            <div class="v2rt-empty py-10 text-center">
-                <div class="text-sm font-semibold mb-1">No execution matches the current filters</div>
-                <div class="text-xs">Adjust the filters or the search</div>
-            </div>
-        </template>
-    </div>
+    <%--
+        The grid is the shared V2 table (js/global/crbTable.js) in CLIENT mode and
+        EMBEDDED mode. What went where:
+          - search, sort, paging, column show/hide, the card body  -> the component
+          - status / country quick filters, the advanced filters modal, the row mode,
+            the selection bar and the mass actions                 -> still this page
+        The four fixed columns (priority, test case, application, last run) and one
+        column per environment / country / robot combination are declared at runtime
+        with crbTableSetColumns(), because which combinations exist is data: it comes
+        with the report and changes with the tag.
+        Cells keep every state V1 drew - selected, false negative, previous execution
+        dot, PE progress, queue state, flaky, retry count, filtered-out, missing - and
+        their click targets go through crbTableCellCallback(), never through a handler
+        built out of a row value.
+    --%>
+    <div id="rtGridTableMount"></div>
 
     <!-- ================= Advanced filters modal (transversal modal charter) ================= -->
     <div x-show="filtersOpen" x-cloak class="crb_modal" @keydown.escape.window="filtersOpen = false">
@@ -325,9 +226,11 @@
                         <div>
                             <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Columns</label>
                             <div class="v2rt-fgroup-items">
-                                <button type="button" class="v2rt-fpill" :class="showCols.prio ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.prio = !showCols.prio">Priority</button>
-                                <button type="button" class="v2rt-fpill" :class="showCols.app ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.app = !showCols.app">Application</button>
-                                <button type="button" class="v2rt-fpill" :class="showCols.lastRun ? 'v2rt-fpill--on v2rt-fpill--blue' : ''" @click="showCols.lastRun = !showCols.lastRun">Last run</button>
+                                <%-- Column show/hide moved to the table's own Config
+                                     button: one mechanism instead of two competing
+                                     ones, and it also covers the combination columns,
+                                     which these three pills never could. --%>
+                                <span class="v2rt-dim text-xs">Use the <strong>Config</strong> button above the grid to show or hide columns, including the environment / country ones.</span>
                             </div>
                         </div>
                     </div>

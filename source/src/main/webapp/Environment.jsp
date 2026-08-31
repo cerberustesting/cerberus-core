@@ -29,7 +29,13 @@
         <meta name="page" content="Environment List">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/Environment.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by EnvironmentV2.js.
+            Environment.js (V1) is NOT loaded. EnvironmentV1.jsp is the rollback copy.
+            The two tables INSIDE the edit modal (last changes, last events) stay
+            legacy DataTables - they are modal content, not this page's list.
+        --%>
+        <script type="text/javascript" src="js/pages/EnvironmentV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Environment</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -50,12 +56,7 @@
 
             <h1 class="page-title-line" id="title">Environment</h1>
 
-            <div class="">
-                <div id="environmentList">
-                    <table id="environmentsTable" class="table table-hover display" name="environmentsTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
+            <div id="environmentList"></div>
 
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

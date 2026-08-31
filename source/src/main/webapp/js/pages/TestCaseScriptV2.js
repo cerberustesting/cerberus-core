@@ -38,6 +38,90 @@ function v2CopyToast(evt, msg) {
     el.addEventListener('animationend', function() { el.remove(); });
 }
 
+/**
+ * Shim for the legacy global setModif(), called on every field change by
+ * manageActionControlOptions.html and manageStepOptions.html - shared with the V1 script
+ * editor, which defines the real one in TestCaseScript.js. V2 doesn't load that file, so
+ * without this the modals throw a ReferenceError on each edit; route it to whichever editor
+ * (this page's own, or TestCaseStep.html's compact modal if that's the one currently open on
+ * top of it - e.g. editing a library step from here) actually owns the field being edited.
+ * v2OptionsModalTarget() is defined in TestCaseStep.html, always present via modalInclusions.jsp;
+ * only referenced inside this function body (called later, after that script has run), never at
+ * shim-definition time, so load order between the two files doesn't matter.
+ */
+if (typeof window.setModif !== 'function') {
+    window.setModif = function (val) {
+        if (!val || typeof v2OptionsModalTarget !== 'function') return;
+        var target = v2OptionsModalTarget();
+        if (target) target.markDirty();
+    };
+}
+
+/**
+ * Shims for the legacy globals printLabelForOptions/printLabelForCondition/printLabel,
+ * called at the end of manageActionControlOptions.html's save handler (V1's action.js/
+ * control.js define the real ones in TestCaseScript.js) to repaint the small label badges
+ * on the action/control row after saving. On V1, htmlElement is the real DOM row; on V2 it's
+ * a detached throwaway div (openActionOptions/openControlOptions pass a fresh `$('<div>...')`)
+ * since labels are already rendered reactively from Alpine state - so on V2 these calls have
+ * nothing useful to do, but without a definition they threw a ReferenceError that stopped the
+ * handler before it reached its `modaloptions-close` dispatch, leaving the modal stuck open
+ * and the edit never marked dirty (hence "can't save the condition").
+ */
+if (typeof window.printLabelForOptions !== 'function') { window.printLabelForOptions = function () {}; }
+if (typeof window.printLabelForCondition !== 'function') { window.printLabelForCondition = function () {}; }
+if (typeof window.printLabel !== 'function') { window.printLabel = function () {}; }
+
+/**
+ * Shim for the legacy global appendActionsForConditionCombobox(), called on every condition
+ * operator change (both modals) to fill the "which step/action/control" combo for the
+ * ifStepStatus..., ifActionStatus... and ifControlStatus... condition types. The real one (defined in
+ * TestCaseScript.js, V1-only) reads the old jQuery-attached `$("#steps li").data("item")`
+ * model, which doesn't exist on V2 - so unlike the printLabel* shims above this one is ported
+ * against V2's own Alpine `steps` array instead of being a no-op, or combo conditions would
+ * silently have nothing to pick from. Resolved via v2OptionsModalTarget() (TestCaseStep.html) so
+ * it reads the right step list when the compact step modal is the one open - see setModif() above.
+ */
+if (typeof window.appendActionsForConditionCombobox !== 'function') {
+    window.appendActionsForConditionCombobox = function (combo, operator) {
+        combo.empty();
+        if (typeof v2OptionsModalTarget !== 'function') return;
+        var target = v2OptionsModalTarget();
+        if (!target) return;
+        var steps = target.steps || [];
+        steps.forEach(function (step) {
+            if (operator.startsWith('ifStepStatus')) {
+                if (step.sort !== undefined) {
+                    combo.append($('<option></option>')
+                        .text('Step ' + step.sort + ' - ' + step.description)
+                        .attr('stepId', step.stepId)
+                        .val(step.stepId));
+                }
+                return;
+            }
+            (step.actions || []).forEach(function (action) {
+                if (operator.startsWith('ifActionStatus')) {
+                    if (action.sort !== undefined) {
+                        combo.append($('<option></option>')
+                            .text('Step ' + step.sort + ' - Action ' + action.sort + ' - ' + action.description)
+                            .attr('actionId', action.actionId).attr('stepId', step.stepId)
+                            .val(step.stepId + '-' + action.actionId));
+                    }
+                    return;
+                }
+                (action.controls || []).forEach(function (control) {
+                    if (control.sort !== undefined) {
+                        combo.append($('<option></option>')
+                            .text('Step ' + step.sort + ' - Action ' + action.sort + ' - Control ' + control.sort + ' - ' + control.description)
+                            .attr('actionId', action.actionId).attr('stepId', step.stepId).attr('controlId', control.controlId)
+                            .val(step.stepId + '-' + action.actionId + '-' + control.controlId));
+                    }
+                });
+            });
+        });
+    };
+}
+
 var importInfoIdx = 0;
 if (typeof generateImportInfoId === 'undefined') {
     function generateImportInfoId(stepInfo) {
@@ -518,15 +602,13 @@ function scriptV2() {
             });
         },
         openStepOptions(idx) {
-            // Step options use the same modal as action/control options
-            // The step object has conditionOperator, conditionValue1-3, loop, isExecutionForced, conditionOptions
+            // Step-specific modal (Force Execution + Loop + Condition) - not the action/control one
             const step = this.steps[idx];
             const self = this;
-            // We pass the step as an "action-like" object to the existing modal
-            displayOverrideOptionsModal(step, $('<div><div class="boutonGroup"></div></div>'));
+            displayStepOptionsModal(step, $('<div><div class="boutonGroup"></div></div>'));
             // Listen for modal close to mark dirty
-            const handler = () => { self._markDirty(); window.removeEventListener('modaloptions-close', handler); };
-            window.addEventListener('modaloptions-close', handler);
+            const handler = () => { self._markDirty(); window.removeEventListener('modalstepoptions-close', handler); };
+            window.addEventListener('modalstepoptions-close', handler);
         },
         searchLibraryStep() {
             const self = this;
@@ -846,8 +928,8 @@ function scriptV2() {
             if (typeof openModalAppService === 'function') {
                 openModalAppService(serviceName, 'EDIT');
             } else {
-                // Fallback: open in new tab
-                window.open('AppServiceList.jsp?service=' + encodeURIComponent(serviceName), '_blank');
+                // Fallback if the modal script isn't loaded
+                window.location.href = 'AppServiceList.jsp?service=' + encodeURIComponent(serviceName);
             }
         },
         get editingProperty() {
@@ -1621,7 +1703,13 @@ function scriptV2() {
             var map = { 'WORKING': '#10b981', 'STANDBY': '#f59e0b', 'IN PROGRESS': '#3b82f6', 'DEPRECATED': '#ef4444', 'CANCELLED': '#6b7280' };
             return map[s.toUpperCase()] || '#94a3b8';
         },
-        seeLastExec() { window.location.href = './TestCaseExecutionList.jsp?Test=' + encodeURI(this.testInfo.test) + '&TestCase=' + encodeURI(this.testInfo.testcase); },
+        seeLastExec() {
+            if (this.testInfo.lastRunId) {
+                window.location.href = './TestCaseExecutionV2.jsp?executionId=' + this.testInfo.lastRunId;
+            } else {
+                window.location.href = './TestCaseExecutionList.jsp?Test=' + encodeURI(this.testInfo.test) + '&TestCase=' + encodeURI(this.testInfo.testcase);
+            }
+        },
         seeLogs() { window.location.href = './LogEvent.jsp?Test=' + encodeURI(this.testInfo.test) + '&TestCase=' + encodeURI(this.testInfo.testcase); },
         deleteTestCase() {
             var doc = new Doc();
@@ -1894,7 +1982,7 @@ function scriptV2() {
                             openModalAppService(encodeURIComponent(val), mode, 'TestCase');
                         } else {
                             console.warn('[V2] openModalAppService not found!');
-                            window.open('AppServiceList.jsp?service=' + encodeURIComponent(val), '_blank');
+                            window.location.href = 'AppServiceList.jsp?service=' + encodeURIComponent(val);
                         }
                     },
                     error: function(xhr, status, err) {

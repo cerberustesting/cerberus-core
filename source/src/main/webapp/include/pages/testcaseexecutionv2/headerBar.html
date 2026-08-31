@@ -332,7 +332,7 @@
                             bg-white dark:bg-slate-800 shadow-lg p-1">
                     <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
                                    hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                            @click="window.open('TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase), '_blank'); moreOpen = false">
+                            @click="window.location.href = 'TestCaseScriptV2.jsp?test=' + encodeURIComponent(exe.test) + '&testcase=' + encodeURIComponent(exe.testcase || exe.testCase)">
                         <i data-lucide="file-code" class="w-3.5 h-3.5"></i> Edit Test Case Script
                     </button>
                     <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
@@ -342,7 +342,7 @@
                     </button>
                     <button class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-xs text-slate-700 dark:text-slate-300
                                    hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                            @click="if(exe.tag) window.open('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(exe.tag), '_blank'); moreOpen = false">
+                            @click="if(exe.tag) window.location.href = 'ReportingExecutionByTagV2.jsp?Tag=' + encodeURIComponent(exe.tag)">
                         <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i> Campaign Report
                     </button>
                     <div class="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>

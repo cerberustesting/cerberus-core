@@ -7,6 +7,7 @@
      @appservice-modal-open.window="open = true"
      @appservice-modal-close.window="open = false"
      @curl-panel-close.window="curlOpen = false"
+     x-effect="if (!open) { clearAppServiceUrlParam(); window.dispatchEvent(new CustomEvent('appservice-modal-closed')); }"
      class="crb_modal"
      id="editSoapLibraryModal">
 
@@ -763,6 +764,21 @@
         }
     }
 
+    /**
+     * Removes the ?service=... query param feedAppServiceModal() adds (via replaceState, so the
+     * open Edit/Duplicate can be bookmarked/shared) from whichever page currently hosts this modal
+     * - Service Library directly, or Data Library/TestCaseScript/etc. when opened through their own
+     * "Edit Service" shortcut. Nothing ever removed it before: it used to sit in the address bar
+     * after closing the modal, and leak into a following "Add" on the same page load.
+     */
+    function clearAppServiceUrlParam() {
+        var url = new URL(window.location.href);
+        if (url.searchParams.has('service')) {
+            url.searchParams.delete('service');
+            window.history.replaceState({}, '', url.toString());
+        }
+    }
+
     function openModalAppService(service, mode, page = undefined) {
         if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
             initModalAppService();
@@ -837,7 +853,15 @@
             'identifier': "none"
         };
 
-        initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
+        // initAutocompleteWithTags is defined in js/global/autocomplete.js, only loaded on
+        // AppServiceList.jsp/TestDataLibList.jsp/TestCaseScriptV2.jsp - AppService.html itself is
+        // pulled in on ~40 pages via modalInclusions.jsp. Guarded so opening this modal elsewhere
+        // doesn't throw here and permanently break it (initModalAppService() only sets its
+        // "initLabel" done-flag *after* this call, so an unguarded throw here would make every
+        // subsequent open attempt on that page fail the same way).
+        if (typeof initAutocompleteWithTags === 'function') {
+            initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
+        }
 
 
         function modifyAutocomplete(e) {
@@ -850,19 +874,25 @@
         function initAutocompleteElementHeader(e) {
 //            console.log("start feed autocomplete on focus (element).");
             configs.identifier = "header";
-            initAutocompleteWithTags($(this), configs, null);
+            if (typeof initAutocompleteWithTags === 'function') {
+                initAutocompleteWithTags($(this), configs, null);
+            }
         }
 
         function initAutocompleteElementHeaderValue(e) {
 //            console.log("start feed autocomplete on focus (element).");
             configs.identifier = "headervalue";
-            initAutocompleteWithTags($(this), configs, null);
+            if (typeof initAutocompleteWithTags === 'function') {
+                initAutocompleteWithTags($(this), configs, null);
+            }
         }
 
         function initAutocompleteElementVariable(e) {
 //            console.log("start feed autocomplete on focus (element).");
             configs.identifier = "none";
-            initAutocompleteWithTags($(this), configs, null);
+            if (typeof initAutocompleteWithTags === 'function') {
+                initAutocompleteWithTags($(this), configs, null);
+            }
         }
 
         // Adding Autocomplete on all fields. ##### crb-autocomplete-XXXX  #####
@@ -1226,8 +1256,14 @@
                                 $("." + temp).parent().find("input").trigger("input", ['first']);
                             }
                         } else {
+                            // Legacy path: refreshes the DataTable on the V1 page. On a
+                            // migrated page that id no longer exists, so this is a no-op
+                            // there and the notify below is what reloads the V2 table.
                             var oTable = $("#soapLibrarysTable").dataTable();
                             oTable.fnDraw(false);
+                            if (typeof crbNotifyDataChanged === "function") {
+                                crbNotifyDataChanged("appservice");
+                            }
                         }
                         $('#editSoapLibraryModal').data("Saved", true);
                         window.dispatchEvent(new CustomEvent('appservice-modal-close'));
@@ -1870,9 +1906,19 @@
             });
 
         } else {
+            // Add mode: drop any ?service=... left over in the URL from a previous Edit/Duplicate
+            // on this same page load - otherwise it's still sitting there, purely cosmetically,
+            // next to a blank "Add" form.
+            clearAppServiceUrlParam();
+
             var serviceObj1 = {};
             var hasPermissions = true;
-            serviceObj1.service = serviceName;
+            // `|| ''` matters here: serviceName is genuinely undefined for a plain "Add", and
+            // jQuery's `.prop("value", undefined)` (used below via feedAppServiceModalData) is a
+            // getter call, not a setter - it silently leaves the #service input showing whatever
+            // it last held (e.g. the name of the service you just duplicated or edited), so a
+            // fresh "Add" appeared to start pre-filled with a leftover name.
+            serviceObj1.service = serviceName || '';
             serviceObj1.application = "";
             serviceObj1.type = "REST";
             serviceObj1.method = "GET";

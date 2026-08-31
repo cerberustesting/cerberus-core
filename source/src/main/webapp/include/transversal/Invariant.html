@@ -313,8 +313,18 @@
                         notifyInPage('success', notificationMessage);
                         this.open = false;
 
-                        const table = $('#invariantsTable').DataTable();
-                        table.ajax.reload(null, false);
+                        // The V2 InvariantList replaces #invariantsTable with a
+                        // crbTable, so the DataTables call below has no table to talk
+                        // to there - and it sits inside this try/catch, so the throw
+                        // surfaced as "Unexpected error saving invariant" AFTER a
+                        // successful save. Guarded, plus the event the V2 lists listen
+                        // to (no-op on legacy pages, where nothing listens).
+                        if ($.fn.dataTable && $.fn.dataTable.isDataTable('#invariantsTable')) {
+                            $('#invariantsTable').DataTable().ajax.reload(null, false);
+                        }
+                        if (typeof crbNotifyDataChanged === "function") {
+                            crbNotifyDataChanged("invariant");
+                        }
 
                     } else {
                         notifyInPage('error', data.message || 'Error');
