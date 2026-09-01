@@ -755,6 +755,13 @@
                     }
                 });
 
+                // The panel is position:fixed over the page, so it doesn't reduce the
+                // scrollable area of <main> : without this, the bottom of the page content
+                // stays hidden behind the bar once scrolled all the way down.
+                this.$watch("open", () => this.applyMainOffset());
+                this.$watch("panelHeight", () => this.applyMainOffset());
+                this.applyMainOffset();
+
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.CHAT_DELTA), (e) => {
                     const message = e.detail || {};
                     const source = this.getWsPayload(message);
@@ -1056,6 +1063,14 @@
 
                 window.addEventListener("mousemove", onMouseMove);
                 window.addEventListener("mouseup", onMouseUp);
+            },
+
+            applyMainOffset() {
+                const main = this.$el.closest("main");
+                if (!main) return;
+
+                main.style.transition = this.isResizing ? "none" : "padding-bottom 300ms ease";
+                main.style.paddingBottom = this.open ? `${this.panelHeight}px` : "";
             },
 
             restorePanelHeight() {
