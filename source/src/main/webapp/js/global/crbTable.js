@@ -88,8 +88,7 @@
  *    per-column filters; and updateUserPreferences() pushes the whole
  *    localStorage to UpdateMyUser (it fires from bindToggleCollapse on any panel
  *    expand/collapse), so fnStateLoadCallback restores all of it on any browser
- *    the user signs into. persistColumnPrefs() below keeps COLUMN VISIBILITY
- *    ONLY, and only in localStorage. Reopening a V2 page therefore resets sort,
+ *    the user signs into. persistState() below keeps the whole view. Reopening a V2 page therefore resets sort,
  *    page length, search and filters to their defaults.
  *
  * NOT a gap, though legacy appears to offer them:
@@ -893,7 +892,17 @@ function crbTable(cfg) {
             };
         },
 
-        applyState: function (state) {
+        /**
+         * The COLUMN half of a snapshot - visibility and order - applied to
+         * whatever this.columns currently holds.
+         *
+         * Separate from applyState() because crbTableSetColumns() needs exactly
+         * this and nothing else: it runs every time a runtime column set is
+         * rebuilt (the campaign report on each tag, the homepage on each load),
+         * and restoring the search, sort, filters and page at that moment would
+         * throw away the view the user is looking at.
+         */
+        applyColumnPrefs: function (state) {
             if (!state || typeof state !== "object") {
                 return;
             }
@@ -907,9 +916,9 @@ function crbTable(cfg) {
                 });
             }
 
-            // Saved column order. Anything the snapshot does not mention keeps
-            // its declared position at the end, so a column added to the page
-            // since the view was saved appears instead of vanishing.
+            // Anything the snapshot does not mention keeps its declared position
+            // at the end, so a column added since the view was saved appears
+            // instead of vanishing.
             if (Array.isArray(state.order) && state.order.length) {
                 var known = {};
                 state.order.forEach(function (k, i) { known[k] = i; });
@@ -925,6 +934,15 @@ function crbTable(cfg) {
                 placed.sort(function (a, b) { return known[self.colKey(a)] - known[self.colKey(b)]; });
                 this.columns = placed.concat(rest);
             }
+        },
+
+        applyState: function (state) {
+            if (!state || typeof state !== "object") {
+                return;
+            }
+            var self = this;
+
+            this.applyColumnPrefs(state);
 
             // A deep link is an instruction for THIS visit and outranks anything
             // remembered: following "show the test cases labelled X" must not land
@@ -968,9 +986,15 @@ function crbTable(cfg) {
          * the first fetch, so a restored sort or filter is part of that request
          * instead of causing a second one.
          */
-        restoreState: function () {
+        /**
+         * The saved snapshot for this table: whichever of the local and the
+         * server copy is newer, or null. Split out of restoreState() so
+         * crbTableSetColumns() can re-apply the column half without re-running
+         * the whole restore.
+         */
+        readSavedState: function () {
             if (!cfg.persistState) {
-                return;
+                return null;
             }
             var local = null;
             var remote = null;
@@ -1010,7 +1034,11 @@ function crbTable(cfg) {
             if (remote && (!local || (remote.ts || 0) > (local.ts || 0))) {
                 chosen = remote;
             }
-            this.applyState(chosen);
+            return chosen;
+        },
+
+        restoreState: function () {
+            this.applyState(this.readSavedState());
         },
 
         /**
@@ -2195,7 +2223,10 @@ function crbTableSetColumns(tableId, columns) {
         return true;
     }
     table.columns = normalised;
-    table.restoreColumnPrefs();
+    // Column preferences only. restoreState() here would also put back the saved
+    // search, sort, filters and page - and this runs every time a runtime column
+    // set is rebuilt, so it would wipe the view on every tag change.
+    table.applyColumnPrefs(table.readSavedState());
     // A sort on a column that no longer exists would silently order by nothing.
     var stillThere = normalised.some(function (c) { return c.field === table.sortField; });
     if (!stillThere) {

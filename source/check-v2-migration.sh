@@ -379,7 +379,50 @@ fi
 
 echo
 if [ "$FAIL" -eq 0 ]; then
-    echo "RESULT: no problem detected. Still click every action button once in the"
+    
+# ---------------------------------------------------------------------------
+# 4. Component methods called but never defined.
+#
+# Added after a real outage: the persistence rework renamed restoreColumnPrefs()
+# to restoreState(), but crbTableSetColumns() still called the old name. It
+# throws only on the runtime-column path - the campaign report grid and the
+# homepage - so every other page looked fine while those two silently rendered
+# an empty list, because the exception aborted the caller before it could push
+# its rows. Nothing static was checking for it and no page-level test covered a
+# runtime column set.
+# ---------------------------------------------------------------------------
+echo "=== 4. crbTable/crbLabelTree: methods called but not defined ==="
+# NOTE: this script cd'd into src/main/webapp at the top, so paths are relative
+# to THAT. Getting this wrong once already made the check report OK while
+# reading nothing - a missing file is therefore a loud failure below, not a skip.
+python3 - <<'PYEOF'
+import io, re, sys, os
+bad = False
+for path in ["js/global/crbTable.js", "js/global/crbLabelTree.js"]:
+    if not os.path.exists(path):
+        print("  CHECK BROKEN - %s not found from %s" % (path, os.getcwd()))
+        bad = True
+        continue
+    src = io.open(path, encoding="utf-8").read()
+    defined = set(re.findall(r'^\s{8}([a-zA-Z_$][\w$]*): function', src, re.M))
+    defined |= set(re.findall(r'^\s{8}get ([a-zA-Z_$][\w$]*)\(', src, re.M))
+    called = set(re.findall(r'\b(?:table|tree|self|this)\.([a-zA-Z_$][\w$]*)\(', src))
+    builtin = set("""forEach map filter indexOf slice splice push join some every sort concat
+substring substr toLowerCase toUpperCase replace split trim getTime test removeChild appendChild
+querySelector querySelectorAll addEventListener removeEventListener setItem getItem removeItem
+focus select click scrollIntoView getBoundingClientRect matches contains then catch always
+finally find findIndex keys toString charAt apply call bind $nextTick $watch $refs""".split())
+    missing = sorted(c for c in called if c not in defined and c not in builtin)
+    if missing:
+        bad = True
+        print("  %s -> calls undefined: %s" % (path.split('/')[-1], ", ".join(missing)))
+    else:
+        print("  %s OK (%d methods defined)" % (path.split('/')[-1], len(defined)))
+sys.exit(0)
+PYEOF
+echo
+
+echo "RESULT: no problem detected. Still click every action button once in the"
     echo "        browser - this script cannot prove a modal actually opens."
     exit 0
 fi
