@@ -54,6 +54,31 @@ public final class MCPToolUtils {
         return defaultValue;
     }
 
+    /**
+     * Reads a 64-bit identifier from the tool arguments.
+     *
+     * <p>Execution ids exceed the int range on long-lived Cerberus instances, and JSON has no
+     * integer width: a client may send the same id as a Long, an Integer or — some MCP clients
+     * quote large numbers to avoid float precision loss — as a String. All three are accepted.</p>
+     *
+     * @param args         the tool arguments.
+     * @param key          the argument name to read.
+     * @param defaultValue the value returned when the argument is absent or unparseable.
+     * @return the identifier, or {@code defaultValue}.
+     */
+    public static long getLong(Map<String, Object> args, String key, long defaultValue) {
+        Object value = args.get(key);
+        if (value instanceof Number number) return number.longValue();
+        if (value instanceof String stringValue) {
+            try {
+                return Long.parseLong(stringValue.trim());
+            } catch (NumberFormatException e) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
     @SuppressWarnings("unchecked")
     public static List<String> getStringList(Map<String, Object> args, String key, List<String> defaultValue) {
         Object value = args.get(key);

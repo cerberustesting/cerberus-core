@@ -195,7 +195,7 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        List.of("testFolder", "testcase", "stepId", "actionId", "control", "value1"),
+                        List.of("testFolder", "testcase", "stepId", "actionId", "control"),
                         null,
                         null,
                         null
@@ -254,9 +254,11 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: control");
         }
 
-        if (value1.isBlank()) {
-            return MCPToolUtils.errorText("Missing required parameter: value1");
-        }
+        // value1 is deliberately not required. Whether a control needs one depends on the control
+        // itself — getPageSource and the screenshot controls take none — and the column is nullable,
+        // as is the GUI path (UpdateTestCaseWithDependencies performs no such check). Rejecting an
+        // empty value1 here blocked legitimate controls and pushed callers into inventing
+        // placeholder text; the engine reports a missing operand precisely at execution time.
 
         // No direct findByKey service method exists — load the full list then filter in memory.
         AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(testFolder, testcaseId, stepId);

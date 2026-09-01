@@ -206,7 +206,7 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        List.of("testFolder", "testcase", "country", "property", "type", "value1"),
+                        List.of("testFolder", "testcase", "country", "property", "type"),
                         null,
                         null,
                         null
@@ -252,7 +252,15 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
         if (testcaseId.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testcase");
         if (country.isBlank()) return MCPToolUtils.errorText("Missing required parameter: country");
         if (property.isBlank()) return MCPToolUtils.errorText("Missing required parameter: property");
-        if (value1.isBlank()) return MCPToolUtils.errorText("Missing required parameter: value1");
+        // For a "text" property, value1 IS the literal value, and an empty one is legitimate —
+        // a placeholder to be overridden per country, or a deliberately blank input. Every other
+        // type uses value1 to identify what to fetch (a data library, an SQL statement, an element
+        // locator), where an empty value can only ever fail at execution, so it is still required.
+        if (value1.isBlank() && !TestCaseCountryProperties.TYPE_TEXT.equals(type)) {
+            return MCPToolUtils.errorText("Missing required parameter: value1. It is required for type '"
+                    + type + "', which uses it to identify the data to retrieve. Only type '"
+                    + TestCaseCountryProperties.TYPE_TEXT + "' accepts an empty value1.");
+        }
 
         AnswerItem<TestCase> testCaseAnswer = testCaseService.readByKey(testFolder, testcaseId);
         if (!testCaseAnswer.isCodeStringEquals("OK") || testCaseAnswer.getItem() == null) {

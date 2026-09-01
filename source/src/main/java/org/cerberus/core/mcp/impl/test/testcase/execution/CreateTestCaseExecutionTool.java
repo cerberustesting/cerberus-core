@@ -26,9 +26,14 @@ import org.cerberus.core.api.entity.QueuedExecution;
 import org.cerberus.core.api.entity.QueuedExecutionResult;
 import org.cerberus.core.api.entity.QueuedExecutionTestcase;
 import org.cerberus.core.api.services.QueuedExecutionService;
+import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.TestCase;
+import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -57,12 +62,64 @@ public class CreateTestCaseExecutionTool implements MCPTool {
 
     private static final List<String> MANUAL_EXECUTION_VALUES = List.of("N", "Y", "A");
 
+    /**
+     * Placeholder handed to the execution service for applications it does not drive with a robot.
+     * The service refuses an empty robots list, but never resolves the name for these application
+     * types, so the value only has to exist — it is deliberately not a valid robot name.
+     */
+    private static final String ROBOT_NOT_APPLICABLE = "N/A";
+
     private final QueuedExecutionService queuedExecutionService;
+    private final ITestCaseService testCaseService;
+    private final IApplicationService applicationService;
     private final MCPLogUtils mcpLogUtils;
 
-    public CreateTestCaseExecutionTool(QueuedExecutionService queuedExecutionService, MCPLogUtils mcpLogUtils) {
+    public CreateTestCaseExecutionTool(QueuedExecutionService queuedExecutionService,
+                                       ITestCaseService testCaseService,
+                                       IApplicationService applicationService,
+                                       MCPLogUtils mcpLogUtils) {
         this.queuedExecutionService = queuedExecutionService;
+        this.testCaseService = testCaseService;
+        this.applicationService = applicationService;
         this.mcpLogUtils = mcpLogUtils;
+    }
+
+    /**
+     * Returns the application type behind a testcase, or an empty string when it cannot be
+     * resolved.
+     *
+     * <p>A lookup failure is deliberately not an error: the execution service performs its own
+     * validation and reports precisely what was wrong, so a testcase that does not exist should
+     * produce that message rather than one invented here.</p>
+     */
+    private String resolveApplicationType(String testFolder, String testcase) {
+        AnswerItem<TestCase> testCaseAnswer = testCaseService.readByKey(testFolder, testcase);
+        if (!testCaseAnswer.isCodeStringEquals("OK") || testCaseAnswer.getItem() == null) {
+            return "";
+        }
+
+        String applicationName = MCPToolUtils.nullSafe(testCaseAnswer.getItem().getApplication());
+        if (applicationName.isBlank()) {
+            return "";
+        }
+
+        AnswerItem<Application> applicationAnswer = applicationService.readByKey(applicationName);
+        if (!applicationAnswer.isCodeStringEquals("OK") || applicationAnswer.getItem() == null) {
+            return "";
+        }
+
+        return MCPToolUtils.nullSafe(applicationAnswer.getItem().getType());
+    }
+
+    /**
+     * Mirrors the application-type guard in {@code QueuedExecutionService.addToQueue}: only these
+     * four types make the engine look at the robot at all.
+     */
+    private boolean isRobotDriven(String applicationType) {
+        return Application.TYPE_GUI.equalsIgnoreCase(applicationType)
+                || Application.TYPE_APK.equalsIgnoreCase(applicationType)
+                || Application.TYPE_IPA.equalsIgnoreCase(applicationType)
+                || Application.TYPE_FAT.equalsIgnoreCase(applicationType);
     }
 
     @Override
@@ -108,7 +165,16 @@ public class CreateTestCaseExecutionTool implements MCPTool {
         properties.put("robots", Map.of(
                 "type", "array",
                 "items", Map.of("type", "string"),
-                "description", "Robot names to execute on (see cerberus_robot_list). Required even when manualExecution is 'Y' or 'A' — pass a robot whose type matches the application (e.g. its platform/browser robot) even if it will not actually be driven."
+                "description", """
+                        Robot names to execute on. Required for GUI, APK, IPA and FAT applications — the ones the
+                        engine actually drives — including when manualExecution is 'Y' or 'A'.
+
+                        Omit it for SRV, BAT and NONE applications: the engine discards the robot for those, and
+                        this tool supplies the placeholder the underlying service needs. Do not invent a browser
+                        robot for a service test — it would be ignored, and would make a later failure look like
+                        a robot problem.
+
+                        Use cerberus_testcase_execution_targets to get the robots valid for this testcase."""
         ));
         properties.put("tag", Map.of(
                 "type", "string",
@@ -149,16 +215,23 @@ public class CreateTestCaseExecutionTool implements MCPTool {
                 Call this tool whenever the user asks to run, execute, launch, or relaunch a testcase.
                 Relaunching is simply calling this tool again — there is no separate rerun action.
 
-                Country and environment values must already exist as invariants (use cerberus_invariant_list
-                with type COUNTRY / ENVIRONMENT). Robot names must already exist (use cerberus_robot_list).
-                Use cerberus_testcase_get to confirm the testFolder/testcase identifiers beforehand.
+                Before calling this tool, resolve the country, environment and robot with
+                cerberus_testcase_execution_targets unless the user already gave you all three. Do not guess
+                them and do not assume the country matching the market under test: environments are frequently
+                declared under a different country code, and an unconfigured combination queues nothing at all
+                while still returning a tag. If several combinations are valid, ask the user which one to use.
 
-                Do not call this tool to inspect past execution results — this only queues new ones.
+                This tool only starts the run. Read the outcome with cerberus_testcase_execution_list on the tag
+                it returns, then cerberus_testcase_execution_get on an execution id. Always check the result
+                after running a testcase you just created or modified — a queued run is not a passing run.
+
+                A response with nbExecutions = 0 means nothing was queued: the accompanying lists say whether the
+                testcase does not exist, is inactive, is not allowed on that environment, or the robot is missing.
                 """,
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        List.of("testFolder", "testcase", "countries", "environments", "robots"),
+                        List.of("testFolder", "testcase", "countries", "environments"),
                         null,
                         null,
                         null
@@ -192,7 +265,29 @@ public class CreateTestCaseExecutionTool implements MCPTool {
         if (testcase.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testcase");
         if (countries.isEmpty()) return MCPToolUtils.errorText("Missing required parameter: countries");
         if (environments.isEmpty()) return MCPToolUtils.errorText("Missing required parameter: environments");
-        if (robots.isEmpty()) return MCPToolUtils.errorText("Missing required parameter: robots");
+
+        // Only GUI, APK, IPA and FAT applications are driven by a robot. For every other type the
+        // engine discards whatever robot it is given and queues with an empty one — verified by
+        // queuing an SRV testcase with a robot name that does not exist: the entry was still
+        // created, with Robot empty. The underlying service nevertheless rejects an empty robots
+        // list outright, which is why callers used to have to invent a value.
+        String applicationType = resolveApplicationType(testFolder, testcase);
+        boolean robotDriven = isRobotDriven(applicationType);
+        boolean robotIgnored = !applicationType.isBlank() && !robotDriven;
+
+        if (robots.isEmpty()) {
+            if (robotIgnored) {
+                // Satisfies the service-level guard without asking the caller for a value that
+                // would be thrown away. The name is never resolved for these application types.
+                robots = List.of(ROBOT_NOT_APPLICABLE);
+            } else {
+                return MCPToolUtils.errorText(
+                        "Missing required parameter: robots. Application type '"
+                        + (applicationType.isBlank() ? "unknown" : applicationType)
+                        + "' is driven by a robot, so one must be named. Call "
+                        + "cerberus_testcase_execution_targets to list the robots this testcase can run on.");
+            }
+        }
 
         ManualUrlParameters manualUrlParameters = ManualUrlParameters.builder()
                 .host(MCPToolUtils.getString(args, "manualHost", ""))
@@ -236,6 +331,14 @@ public class CreateTestCaseExecutionTool implements MCPTool {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("tag", result.getTag());
         response.put("nbExecutions", result.getNbExecutions());
+        if (robotIgnored) {
+            // Stated explicitly so a failing service test is never blamed on the robot that was
+            // named for it : for these application types the engine never used it.
+            response.put("robotIgnored", true);
+            response.put("robotNote", "Application type '" + applicationType + "' is not driven by a robot. "
+                    + "The execution engine ignored the robots parameter and queued with an empty robot, "
+                    + "so the robot cannot be the cause if this run fails.");
+        }
         response.put("queuedEntries", result.getQueuedEntries());
         if (result.getNbExecutions() == 0) {
             response.put("testcasesNotExist", result.getTestcasesNotExist());
