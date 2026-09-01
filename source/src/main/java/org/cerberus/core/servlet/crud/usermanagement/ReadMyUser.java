@@ -178,6 +178,7 @@ public class ReadMyUser extends HttpServlet {
             JSONArray groups = new JSONArray();
             if (Property.isKeycloak()) {
                 List<String> groupList = new ArrayList<>();
+                groupList.add("AS");
                 groupList.add("Label");
                 groupList.add("RunTest");
                 groupList.add("Test");

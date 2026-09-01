@@ -45,6 +45,7 @@ public class WebSecurityRules {
                         m("/Documentation.jsp"),
                         m("/Login.jsp"),
                         m("/Logout.jsp"),
+                        m("/LoggedOut.jsp"),
                         m("/Error.jsp"),
                         m("/dummy/**"),
                         m("/ChangePassword.jsp"),

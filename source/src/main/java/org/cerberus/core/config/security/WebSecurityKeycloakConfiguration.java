@@ -221,7 +221,7 @@ public class WebSecurityKeycloakConfiguration {
 
 		http.logout(logout -> logout
 						.logoutUrl("/Logout.jsp")
-						.logoutSuccessUrl("/")
+						.logoutSuccessUrl("/LoggedOut.jsp")
 						.permitAll()
 		);
 
