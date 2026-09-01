@@ -464,6 +464,10 @@ public class RobotServerService implements IRobotServerService {
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 execution.setUserAgent(userAgent);
 
+            } else if (appiumDriver != null) {
+                // Mobile (Appium) : capture the real device/app viewport resolution so the
+                // front-end can size the live view / vision modal to its actual aspect-ratio.
+                execution.setScreenSize(getScreenSize(appiumDriver));
             }
 
             // unlock device if deviceLockUnlock is active
@@ -840,6 +844,10 @@ public class RobotServerService implements IRobotServerService {
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 execution.setUserAgent(userAgent);
 
+            } else if (appiumDriver != null) {
+                // Mobile (Appium) : capture the real device/app viewport resolution so the
+                // front-end can size the live view / vision modal to its actual aspect-ratio.
+                execution.setScreenSize(getScreenSize(appiumDriver));
             }
 
             // unlock device if deviceLockUnlock is active

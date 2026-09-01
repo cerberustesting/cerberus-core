@@ -259,7 +259,7 @@
                                                       style="background: color-mix(in srgb, var(--crb-blue-color) 10%, transparent); color: var(--crb-blue-color)">Before</span>
                                                 <img :src="getMediaUrl(file, 140, 90)"
                                                      class="v2-exe-media-thumb"
-                                                     style="width:80px;height:52px"
+                                                     :style="crbIsPortraitApp(exe) ? 'width:52px;height:80px' : 'width:80px;height:52px'"
                                                      @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
                                                      :title="file.fileDesc || 'Screenshot'"
                                                      loading="lazy">
@@ -272,7 +272,7 @@
                                                       style="background: color-mix(in srgb, var(--crb-green-color) 10%, transparent); color: var(--crb-green-color)">After</span>
                                                 <img :src="getMediaUrl(file, 140, 90)"
                                                      class="v2-exe-media-thumb"
-                                                     style="width:80px;height:52px"
+                                                     :style="crbIsPortraitApp(exe) ? 'width:52px;height:80px' : 'width:80px;height:52px'"
                                                      @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
                                                      :title="file.fileDesc || 'Screenshot'"
                                                      loading="lazy">
@@ -286,7 +286,7 @@
                                                       x-text="file.fileDesc || 'Screenshot'"></span>
                                                 <img :src="getMediaUrl(file, 140, 90)"
                                                      class="v2-exe-media-thumb"
-                                                     style="width:80px;height:52px"
+                                                     :style="crbIsPortraitApp(exe) ? 'width:52px;height:80px' : 'width:80px;height:52px'"
                                                      @click.stop="openLightbox(getMediaFullUrl(file), file.fileDesc)"
                                                      :title="file.fileDesc || 'Screenshot'"
                                                      loading="lazy">
@@ -532,7 +532,7 @@
                                                         <template x-for="file in _getScreenshots(ctrl.fileList)" :key="file.fileName">
                                                             <img :src="getMediaUrl(file, 100, 65)"
                                                                  class="v2-exe-media-thumb"
-                                                                 style="width:60px;height:40px"
+                                                                 :style="crbIsPortraitApp(exe) ? 'width:40px;height:60px' : 'width:60px;height:40px'"
                                                                  @click.stop="openLightbox(getMediaFullUrl(file))"
                                                                  loading="lazy">
                                                         </template>
