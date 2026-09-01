@@ -432,16 +432,21 @@ function crbTableMarkup(cfg) {
             </span>
           </div>
           <p class="crb_table_popover_hint">Drag to reorder. Saved automatically.</p>
-          <div class="crb_table_popover_list">
+          <!-- x-ref so the drag can scroll this container when the pointer nears
+               an edge; the list is capped, so without that a column cannot be
+               dragged anywhere that is currently off-screen. -->
+          <div class="crb_table_popover_list" x-ref="configList">
             <!-- configurable:false hides a column from this list. For sort-key or
                  other machinery columns: offering to "show" one is offering noise. -->
             <template x-for="(col, i) in columns" :key="colKey(col)">
               <div class="crb_table_popover_item crb_table_popover_item--draggable"
+                   :class="dropClass(i)"
                    x-show="col.configurable !== false"
                    draggable="true"
                    @dragstart="onColumnDragStart(i, $event)"
-                   @dragover.prevent
-                   @drop.prevent="onColumnDrop(i)">
+                   @dragover.prevent="onColumnDragOver(i, $event)"
+                   @drop.prevent="onColumnDrop()"
+                   @dragend="endColumnDrag()">
                 <!-- The handle is a real button so the reorder is reachable from
                      the keyboard with Up/Down, not only by dragging. -->
                 <button type="button" class="crb_table_drag"
@@ -755,7 +760,13 @@ function crbTable(cfg) {
             '<circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
         configStyle: "",
         _configAnchor: null,
-        _dragFrom: null,
+        // Drag state for the column reorder. Not underscore-private: the
+        // template binds both to draw the drop indicator.
+        dragFrom: null,
+        dropIndex: null,
+        _scrollDir: 0,
+        _scrollStep: 0,
+        _scrollTimer: null,
         expanded: [],
         toolbarHtml: "",
 
@@ -1464,7 +1475,8 @@ function crbTable(cfg) {
         },
 
         onColumnDragStart: function (i, event) {
-            this._dragFrom = i;
+            this.dragFrom = i;
+            this.dropIndex = null;
             if (event.dataTransfer) {
                 event.dataTransfer.effectAllowed = "move";
                 // Firefox refuses to start a drag unless some data is set.
@@ -1472,11 +1484,112 @@ function crbTable(cfg) {
             }
         },
 
-        onColumnDrop: function (i) {
-            if (this._dragFrom !== null && this._dragFrom !== undefined) {
-                this.moveColumn(this._dragFrom, i);
+        /**
+         * Where the row would land, decided by which half of the hovered row the
+         * pointer is in - so the insertion point is between two rows, not "on"
+         * one. Without this the drag gave no feedback at all: you let go and
+         * found out afterwards.
+         */
+        onColumnDragOver: function (i, event) {
+            var rect = event.currentTarget.getBoundingClientRect();
+            var above = (event.clientY - rect.top) < (rect.height / 2);
+            this.dropIndex = above ? i : i + 1;
+            this.autoScrollDuringDrag(event.clientY);
+        },
+
+        onColumnDrop: function () {
+            if (this.dragFrom !== null && this.dropIndex !== null) {
+                this.moveColumnTo(this.dragFrom, this.dropIndex);
             }
-            this._dragFrom = null;
+            this.endColumnDrag();
+        },
+
+        /** Also fires when the drag is abandoned outside the list. */
+        endColumnDrag: function () {
+            this.dragFrom = null;
+            this.dropIndex = null;
+            this.stopAutoScroll();
+        },
+
+        /**
+         * Move `from` to an INSERTION SLOT rather than onto a row index: slot n
+         * means "before the row currently at n". Removing the item first shifts
+         * everything after it down by one, which is why the target is decremented
+         * when the row came from above - off-by-one here silently drops the
+         * column one place short.
+         */
+        moveColumnTo: function (from, slot) {
+            var to = (from < slot) ? slot - 1 : slot;
+            this.moveColumn(from, to);
+        },
+
+        /**
+         * Scroll the list while dragging near its top or bottom edge.
+         *
+         * The list is capped and scrolls, so without this a column simply cannot
+         * be dragged to a position that is off-screen - on a table with twenty
+         * columns that is most of them.
+         *
+         * setInterval rather than requestAnimationFrame: rAF does not fire in a
+         * backgrounded tab, and this has to keep working in one.
+         */
+        autoScrollDuringDrag: function (clientY) {
+            var list = this.$refs.configList;
+            if (!list) {
+                return;
+            }
+            var rect = list.getBoundingClientRect();
+            var zone = 32;
+            var dir = 0;
+            var depth = 0;
+            if (clientY < rect.top + zone) {
+                dir = -1;
+                depth = (rect.top + zone) - clientY;
+            } else if (clientY > rect.bottom - zone) {
+                dir = 1;
+                depth = clientY - (rect.bottom - zone);
+            }
+
+            // Speed grows the deeper the pointer goes into the hot zone: a single
+            // fixed rate is either too slow to cross a long list or too fast to
+            // stop on the row you want. Read fresh on every tick, so easing off
+            // the edge slows the scroll instead of needing a new interval.
+            this._scrollStep = dir * Math.max(4, Math.round((Math.min(depth, zone) / zone) * 18));
+
+            if (dir === this._scrollDir) {
+                return;
+            }
+            this.stopAutoScroll();
+            this._scrollDir = dir;
+            if (!dir) {
+                return;
+            }
+            var self = this;
+            this._scrollTimer = setInterval(function () {
+                list.scrollTop += self._scrollStep;
+            }, 16);
+        },
+
+        stopAutoScroll: function () {
+            if (this._scrollTimer) {
+                clearInterval(this._scrollTimer);
+                this._scrollTimer = null;
+            }
+            this._scrollDir = 0;
+        },
+
+        /** Classes that draw the drop indicator and dim the row being moved. */
+        dropClass: function (i) {
+            var cls = [];
+            if (this.dragFrom === i) {
+                cls.push("is-dragging");
+            }
+            if (this.dropIndex === i) {
+                cls.push("is-drop-before");
+            } else if (this.dropIndex !== null && this.dropIndex > i && i === this.columns.length - 1) {
+                cls.push("is-drop-after");
+            }
+            return cls.join(" ");
         },
 
         /**
