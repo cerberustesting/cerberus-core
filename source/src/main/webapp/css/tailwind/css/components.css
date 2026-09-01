@@ -774,6 +774,53 @@
     }
 
     .crb_table_popover_item input { margin: 0; height: 1rem; width: 1rem; flex-shrink: 0; }
+
+    /* ---- Column reordering (Config panel) ----
+       Legacy dragged the header itself (DataTables colReorder). Here the drag
+       lives in this list, because a header already carries the sort button and
+       the filter funnel and a drag starting on one of those is a coin toss. */
+    .crb_table_popover_item--draggable { gap: 4px; cursor: default; }
+
+    .crb_table_popover_itemlabel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1 1 auto;
+        min-width: 0;
+        cursor: pointer;
+    }
+
+    .crb_table_popover_itemlabel span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .crb_table_drag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 1.25rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        cursor: grab;
+        /* slate-400 at rest, not 300: this is the only affordance for a feature
+           people have to discover, and the hint line above the list is the only
+           other thing pointing at it. */
+        @apply text-slate-400 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-500 dark:hover:text-slate-200 dark:hover:bg-slate-700;
+    }
+
+    .crb_table_drag:active { cursor: grabbing; }
+
+    .crb_table_popover_item--draggable:hover { @apply bg-slate-100 dark:bg-slate-700; }
+
+    /* A little more room than the filter popover: this one carries a handle, a
+       checkbox and a label on the same line. */
+    .crb_table_popover--config { width: 300px; }
     .crb_table_popover_item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .crb_table_popover_empty { padding: 10px 6px; font-size: 12.5px; @apply text-slate-400; }
 

@@ -71,7 +71,9 @@
  * because this block is what the next migration reads before deciding whether a
  * page can move.)
  *
- * 1. Drag column reordering. Legacy turns colReorder on for every table.
+ * 1. Column WIDTH resizing. Legacy loads a colResize plugin ("Z" in its dom
+ *    string). Reordering and visibility live in the Config panel here; width
+ *    does not, and the columns keep the widths their definitions declare.
  * 2. Per-column LIKE box. Legacy gives a column flagged `like` a free-text
  *    popover instead of the distinct-values checklist. Here `filterable` always
  *    means the checklist; four columns are declared both `like` and `filterable`
@@ -94,11 +96,6 @@
  *  - Multi-column sort. DataTables allows shift-click, but
  *    util/datatable/DataTableInformation reads only iSortCol_0 / sSortDir_0, so
  *    it never reached the server for a server-side table anyway.
- *  - The Save / Restore / Reset table-configuration buttons. On the
- *    createDataTableWithPermissionsNew path they are bound to
- *    "#myTable_saveTableConfigurationButton" and friends - a hardcoded id prefix,
- *    and no table on the site is called myTable, so they never fired on any of
- *    the 19 pages that use that path.
  *  - deferLoading and createdRowCallback: config options no page passes.
  * ========================================================================== */
 
@@ -428,15 +425,35 @@ function crbTableMarkup(cfg) {
              a card holding a table legitimately does that. See crbTablePopoverStyle(). -->
         <div x-show="configOpen" x-cloak x-ref="configPopover" :style="configStyle"
              @click.outside="closeConfig()" class="crb_table_popover crb_table_popover--config">
-          <div class="crb_table_popover_title">Columns</div>
+          <div class="crb_table_popover_head">
+            <span class="crb_table_popover_title">Columns</span>
+            <span class="crb_table_popover_quick">
+              <button type="button" @click="resetView()"
+                      title="Back to the default order, columns, sort and filters">Reset view</button>
+            </span>
+          </div>
+          <p class="crb_table_popover_hint">Drag to reorder. Saved automatically.</p>
           <div class="crb_table_popover_list">
             <!-- configurable:false hides a column from this list. For sort-key or
                  other machinery columns: offering to "show" one is offering noise. -->
-            <template x-for="(col, i) in columns" :key="i">
-              <label class="crb_table_popover_item" x-show="col.configurable !== false">
-                <input type="checkbox" :checked="col.visible" @change="toggleColumn(i)">
-                <span x-text="col.title"></span>
-              </label>
+            <template x-for="(col, i) in columns" :key="colKey(col)">
+              <div class="crb_table_popover_item crb_table_popover_item--draggable"
+                   x-show="col.configurable !== false"
+                   draggable="true"
+                   @dragstart="onColumnDragStart(i, $event)"
+                   @dragover.prevent
+                   @drop.prevent="onColumnDrop(i)">
+                <!-- The handle is a real button so the reorder is reachable from
+                     the keyboard with Up/Down, not only by dragging. -->
+                <button type="button" class="crb_table_drag"
+                        :aria-label="'Move ' + col.title"
+                        @keydown="onColumnKey(i, $event)"
+                        x-html="dragIcon"></button>
+                <label class="crb_table_popover_itemlabel">
+                  <input type="checkbox" :checked="col.visible" @change="toggleColumn(i)">
+                  <span x-text="col.title"></span>
+                </label>
+              </div>
             </template>
           </div>
         </div>
@@ -733,8 +750,13 @@ function crbTable(cfg) {
         hasPermissions: Boolean(cfg.hasPermissions),
         response: {},
         configOpen: false,
+        dragIcon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" ' +
+            'class="w-3.5 h-3.5" aria-hidden="true"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/>' +
+            '<circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/>' +
+            '<circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
         configStyle: "",
         _configAnchor: null,
+        _dragFrom: null,
         expanded: [],
         toolbarHtml: "",
 
@@ -834,6 +856,19 @@ function crbTable(cfg) {
             return this.prefsKey() + ":columns";
         },
 
+        /**
+         * Stable identity for a column across reloads.
+         *
+         * `field` where there is one; a presentational column (actions, a chip
+         * built purely by render) has none, so it falls back to its title. Two
+         * untitled presentational columns would collide - they are also the two
+         * that nobody reorders or hides, and `configurable: false` keeps them out
+         * of the panel entirely.
+         */
+        colKey: function (col) {
+            return col.field || ("#" + (col.title || ""));
+        },
+
         captureState: function () {
             var filters = {};
             var self = this;
@@ -848,6 +883,7 @@ function crbTable(cfg) {
                 ts: Date.now(),
                 hidden: this.columns.filter(function (c) { return c.field && !c.visible; })
                                     .map(function (c) { return c.field; }),
+                order: this.columns.map(function (c) { return self.colKey(c); }),
                 search: this.search,
                 sortField: this.sortField,
                 sortDir: this.sortDir,
@@ -869,6 +905,25 @@ function crbTable(cfg) {
                         c.visible = false;
                     }
                 });
+            }
+
+            // Saved column order. Anything the snapshot does not mention keeps
+            // its declared position at the end, so a column added to the page
+            // since the view was saved appears instead of vanishing.
+            if (Array.isArray(state.order) && state.order.length) {
+                var known = {};
+                state.order.forEach(function (k, i) { known[k] = i; });
+                var placed = [];
+                var rest = [];
+                this.columns.forEach(function (c) {
+                    if (known[self.colKey(c)] !== undefined) {
+                        placed.push(c);
+                    } else {
+                        rest.push(c);
+                    }
+                });
+                placed.sort(function (a, b) { return known[self.colKey(a)] - known[self.colKey(b)]; });
+                this.columns = placed.concat(rest);
             }
 
             // A deep link is an instruction for THIS visit and outranks anything
@@ -1352,6 +1407,91 @@ function crbTable(cfg) {
         toggleColumn: function (i) {
             this.columns[i].visible = !this.columns[i].visible;
             this.persistState();
+            this.refreshIcons();
+        },
+
+        /* ---------------------------------------------------------------
+         * Column order.
+         *
+         * Legacy had this through DataTables' colReorder (drag a header). Here
+         * it lives in the Config panel instead: dragging a header would have to
+         * share that surface with the sort button and the filter funnel already
+         * on it, and a drag that starts on a sort control is a coin toss between
+         * reordering and sorting.
+         *
+         * Only the DISPLAY order changes. buildParams() derives sColumns from
+         * cfg.columns, which is untouched, so iSortCol_0 and sSearch_N keep
+         * indexing the same list and the server contract is unaffected.
+         * ------------------------------------------------------------ */
+        moveColumn: function (from, to) {
+            if (to < 0 || to >= this.columns.length || from === to) {
+                return;
+            }
+            var next = this.columns.slice();
+            var moved = next.splice(from, 1)[0];
+            next.splice(to, 0, moved);
+            this.columns = next;
+            this.persistState();
+            this.refreshIcons();
+        },
+
+        onColumnDragStart: function (i, event) {
+            this._dragFrom = i;
+            if (event.dataTransfer) {
+                event.dataTransfer.effectAllowed = "move";
+                // Firefox refuses to start a drag unless some data is set.
+                event.dataTransfer.setData("text/plain", String(i));
+            }
+        },
+
+        onColumnDrop: function (i) {
+            if (this._dragFrom !== null && this._dragFrom !== undefined) {
+                this.moveColumn(this._dragFrom, i);
+            }
+            this._dragFrom = null;
+        },
+
+        /**
+         * Keyboard equivalent of the drag, on the handle itself: a reorder that
+         * only works with a mouse is not a reorder for everyone.
+         */
+        onColumnKey: function (i, event) {
+            if (event.key === "ArrowUp") {
+                event.preventDefault();
+                this.moveColumn(i, i - 1);
+            } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                this.moveColumn(i, i + 1);
+            }
+        },
+
+        /**
+         * Back to the definitions the page declares: order, visibility, sort,
+         * page length, search and filters. Clears the saved view in BOTH stores,
+         * otherwise the next load would restore what was just discarded.
+         *
+         * Legacy offered Save / Reload / Reset in a drawer; saving is automatic
+         * here and reloading is what the browser's own reload does, so Reset is
+         * the one of the three that still has a job.
+         */
+        resetView: function () {
+            try {
+                localStorage.removeItem(this.prefsKey());
+                localStorage.removeItem(this.legacyPrefsKey());
+            } catch (e) {
+                /* storage unavailable - the server copy below still needs clearing */
+            }
+            crbTableSchedulePrefsPush();
+
+            this.columns = this.cfg.columns.map(function (c) { return $.extend({}, c); });
+            this.search = this.cfg.initialSearch || "";
+            this.activeFilters = $.extend({}, this.cfg.initialFilters || {});
+            this.sortField = this.cfg.defaultSort.field || null;
+            this.sortDir = this.cfg.defaultSort.dir || "asc";
+            this.length = this.cfg.pageLength;
+            this.start = 0;
+            this.closeConfig();
+            this.fetch();
             this.refreshIcons();
         },
 
