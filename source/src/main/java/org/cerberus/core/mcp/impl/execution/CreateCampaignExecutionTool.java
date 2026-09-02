@@ -166,10 +166,12 @@ public class CreateCampaignExecutionTool implements MCPTool {
                 whole picture). Only pass a field to override what the campaign is configured with
                 for this one run.
 
-                This tool only starts the run. Read the overall outcome with cerberus_tag_get on the
-                tag it returns (aggregated pass/fail counters and CI score), then
-                cerberus_testcase_execution_get on a specific execution id to see why one testcase
-                failed. Always check the result after running a campaign — a queued run is not a
+                This tool only starts the run. Follow it immediately with cerberus_tag_wait on the tag it
+                returns: that call holds until the campaign is over and comes back with the CI verdict, the
+                per-testcase roll-up and the failing executions — the level to reason at when many testcases
+                ran across several countries. Use cerberus_tag_get instead only for a snapshot of a run you
+                are not waiting on, and cerberus_testcase_execution_get on a specific execution id to see why
+                one testcase failed. Always check the result after running a campaign — a queued run is not a
                 passing run.
 
                 A response with nbExecutions = 0 means nothing was queued: check that the campaign has

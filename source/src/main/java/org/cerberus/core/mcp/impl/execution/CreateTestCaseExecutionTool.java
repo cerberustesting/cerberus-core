@@ -221,9 +221,11 @@ public class CreateTestCaseExecutionTool implements MCPTool {
                 declared under a different country code, and an unconfigured combination queues nothing at all
                 while still returning a tag. If several combinations are valid, ask the user which one to use.
 
-                This tool only starts the run. Read the outcome with cerberus_testcase_execution_list on the tag
-                it returns, then cerberus_testcase_execution_get on an execution id. Always check the result
-                after running a testcase you just created or modified — a queued run is not a passing run.
+                This tool only starts the run. Follow it immediately with cerberus_tag_wait on the tag it
+                returns: that call holds until the run is over and comes back with the verdict, so you neither
+                have to guess when to look nor spend a turn polling. Then use cerberus_testcase_execution_get
+                on a failing execution id to see the step that broke. Always check the result after running a
+                testcase you just created or modified — a queued run is not a passing run.
 
                 A response with nbExecutions = 0 means nothing was queued: the accompanying lists say whether the
                 testcase does not exist, is inactive, is not allowed on that environment, or the robot is missing.
