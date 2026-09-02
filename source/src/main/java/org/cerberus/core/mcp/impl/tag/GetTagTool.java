@@ -27,7 +27,9 @@ import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPTagQueueState;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.stereotype.Component;
@@ -66,11 +68,14 @@ public class GetTagTool implements MCPTool {
 
     private final ITagService tagService;
     private final ITestCaseExecutionService testCaseExecutionService;
+    private final MCPTagQueueState tagQueueState;
     private final MCPLogUtils mcpLogUtils;
 
-    public GetTagTool(ITagService tagService, ITestCaseExecutionService testCaseExecutionService, MCPLogUtils mcpLogUtils) {
+    public GetTagTool(ITagService tagService, ITestCaseExecutionService testCaseExecutionService,
+                      MCPTagQueueState tagQueueState, MCPLogUtils mcpLogUtils) {
         this.tagService = tagService;
         this.testCaseExecutionService = testCaseExecutionService;
+        this.tagQueueState = tagQueueState;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -163,7 +168,21 @@ public class GetTagTool implements MCPTool {
     }
 
     private Map<String, Object> toSummary(Tag tag) {
-        long pending = (long) tag.getNbPE() + tag.getNbQU() + tag.getNbQE() + tag.getNbPA();
+        // Whether the run is over is answered by the queue, not by these counters. The tag row is
+        // created with all of them at zero and they are only recomputed once executions report
+        // back, so between queuing a run and its first completion they are indistinguishable from
+        // a finished run — reporting it as finished sends the caller off to analyse executions
+        // that do not exist yet. The queue knows about an entry from the moment it is requested.
+        MCPTagQueueState.State queueState = null;
+        String queueError = null;
+        try {
+            queueState = tagQueueState.read(MCPToolUtils.nullSafe(tag.getTag()));
+        } catch (CerberusException e) {
+            queueError = e.getMessage();
+        }
+
+        long countersPending = (long) tag.getNbPE() + tag.getNbQU() + tag.getNbQE() + tag.getNbPA();
+        long pending = queueState != null ? queueState.pending() : countersPending;
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("tag", MCPToolUtils.nullSafe(tag.getTag()));
@@ -171,6 +190,24 @@ public class GetTagTool implements MCPTool {
         map.put("description", MCPToolUtils.nullSafe(tag.getDescription()));
         map.put("pending", pending);
         map.put("runFinished", pending == 0);
+        if (queueState != null) {
+            map.put("queueEntries", queueState.total());
+            if (!queueState.hasEntries()) {
+                map.put("note", "No queue entry exists under this tag: nothing was ever queued, or the entries "
+                        + "have been purged. The counters below describe whatever executions remain recorded.");
+            } else if (queueState.settled() && tag.getNbExe() == 0) {
+                map.put("note", "The queue is settled but no execution was recorded: every entry ended without "
+                        + "running — cancelled, or in error. cerberus_testcase_execution_list on this tag "
+                        + "reports the reason held on each queue entry.");
+            }
+        } else {
+            // Falling back to the counters is better than failing outright, but the caller must
+            // know the answer carries the blind spot described above.
+            map.put("pendingSource", "tag counters");
+            map.put("note", "The execution queue could not be read (" + queueError + "), so runFinished is "
+                    + "derived from the tag counters. Those are zero until the first execution reports, so a "
+                    + "run that has just been queued may appear finished. Prefer cerberus_tag_wait.");
+        }
         map.put("nbExecutions", tag.getNbExe());
         map.put("nbExecutionsUsefull", tag.getNbExeUsefull());
         map.put("nbOK", tag.getNbOK());

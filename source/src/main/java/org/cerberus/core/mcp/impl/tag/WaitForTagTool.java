@@ -23,14 +23,13 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPExecutionSignal;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPTagQueueState;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -100,21 +99,6 @@ public class WaitForTagTool implements MCPTool {
     private static final int MAX_LISTED_EXECUTIONS = 100;
 
     /**
-     * Queue states in which an entry still owes a result. Anything else — DONE, CANCELLED, ERROR —
-     * is settled, whether or not it produced an execution.
-     */
-    private static final List<String> PENDING_QUEUE_STATES = List.of(
-            TestCaseExecutionQueue.State.QUTEMP.name(),
-            TestCaseExecutionQueue.State.QUWITHDEP.name(),
-            TestCaseExecutionQueue.State.QUWITHDEP_PAUSED.name(),
-            TestCaseExecutionQueue.State.QUEUED.name(),
-            TestCaseExecutionQueue.State.QUEUED_PAUSED.name(),
-            TestCaseExecutionQueue.State.WAITING.name(),
-            TestCaseExecutionQueue.State.STARTING.name(),
-            TestCaseExecutionQueue.State.EXECUTING.name()
-    );
-
-    /**
      * Control statuses that still owe a result, used to tell a genuine outcome from an execution
      * row that merely stands for something not finished yet.
      */
@@ -143,18 +127,18 @@ public class WaitForTagTool implements MCPTool {
 
     private final ITagService tagService;
     private final ITestCaseExecutionService testCaseExecutionService;
-    private final ITestCaseExecutionQueueService testCaseExecutionQueueService;
+    private final MCPTagQueueState tagQueueState;
     private final MCPExecutionSignal mcpExecutionSignal;
     private final MCPLogUtils mcpLogUtils;
 
     public WaitForTagTool(ITagService tagService,
                           ITestCaseExecutionService testCaseExecutionService,
-                          ITestCaseExecutionQueueService testCaseExecutionQueueService,
+                          MCPTagQueueState tagQueueState,
                           MCPExecutionSignal mcpExecutionSignal,
                           MCPLogUtils mcpLogUtils) {
         this.tagService = tagService;
         this.testCaseExecutionService = testCaseExecutionService;
-        this.testCaseExecutionQueueService = testCaseExecutionQueueService;
+        this.tagQueueState = tagQueueState;
         this.mcpExecutionSignal = mcpExecutionSignal;
         this.mcpLogUtils = mcpLogUtils;
     }
@@ -269,11 +253,11 @@ public class WaitForTagTool implements MCPTool {
         long start = System.currentTimeMillis();
         long deadline = start + TimeUnit.SECONDS.toMillis(timeoutSeconds);
         String wokenBy = "immediate";
-        QueueState queueState;
+        MCPTagQueueState.State queueState;
 
         while (true) {
             try {
-                queueState = readQueueState(tag);
+                queueState = tagQueueState.read(tag);
             } catch (CerberusException e) {
                 return MCPToolUtils.errorText("Unable to read the execution queue of tag " + tag + ": " + e.getMessage());
             }
@@ -312,27 +296,9 @@ public class WaitForTagTool implements MCPTool {
     }
 
     /**
-     * Reads how much of the run is still owed, from the queue rather than from the tag counters.
-     *
-     * <p>The tag row is created with every counter at zero and only recomputed once executions
-     * report back, so a tag read straight after queuing looks exactly like a finished one. The
-     * queue does not have that blind spot: an entry exists from the moment the run is requested.</p>
-     */
-    private QueueState readQueueState(String tag) throws CerberusException {
-        AnswerList<TestCaseExecutionQueue> all = testCaseExecutionQueueService.readByVarious1(tag, null, false);
-        List<TestCaseExecutionQueue> entries = all.getDataList() == null ? List.of() : all.getDataList();
-
-        long pending = entries.stream()
-                .filter(entry -> entry.getState() != null && PENDING_QUEUE_STATES.contains(entry.getState().name()))
-                .count();
-
-        return new QueueState(entries.size(), pending);
-    }
-
-    /**
      * Assembles the answer: the verdict, then as much of the run as the requested detail asks for.
      */
-    private Map<String, Object> buildResult(String tag, String detail, QueueState queueState,
+    private Map<String, Object> buildResult(String tag, String detail, MCPTagQueueState.State queueState,
                                             String wokenBy, long waitedMillis) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("tag", tag);
@@ -554,21 +520,4 @@ public class WaitForTagTool implements MCPTool {
         return ci;
     }
 
-    /**
-     * How much of the run the queue still owes.
-     *
-     * @param total   queue entries created under the tag, whatever their state.
-     * @param pending those that have not settled yet.
-     */
-    private record QueueState(int total, long pending) {
-
-        /**
-         * A run is settled once the queue owes nothing more. A tag with no entry at all is also
-         * settled — there is nothing to wait for — and the caller is told so explicitly rather than
-         * being left to wait out the timeout.
-         */
-        boolean settled() {
-            return pending == 0;
-        }
-    }
 }
