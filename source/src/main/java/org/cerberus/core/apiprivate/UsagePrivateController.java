@@ -27,7 +27,9 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.dto.ai.LogAIUsageMonthlyStatsDTOV001;
 import org.cerberus.core.api.dto.ai.LogAIUsageStatsDTOV001;
 import org.cerberus.core.crud.entity.UserPrompt;
+import org.cerberus.core.crud.entity.UserPromptMessage;
 import org.cerberus.core.crud.entity.stats.UserPromptStats;
+import org.cerberus.core.crud.service.impl.UserPromptMessageService;
 import org.cerberus.core.crud.service.impl.UserPromptService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -65,6 +67,9 @@ public class UsagePrivateController {
 
     @Autowired
     UserPromptService userPromptService;
+
+    @Autowired
+    UserPromptMessageService userPromptMessageService;
 
     @Operation(hidden=true)
     @PostMapping("/aiCallList")
@@ -213,9 +218,9 @@ public class UsagePrivateController {
     @Operation(hidden=true)
     @GetMapping("/usageByDay")
     public ResponseEntity<List<UserPromptStats>> getUsageByDay(
-            @RequestParam(required = false, defaultValue = "ALL") String user,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam(name = "user", required = false, defaultValue = "ALL") String user,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         try {
             LocalDateTime start = startDate != null ? startDate : LocalDateTime.now().minusMonths(1).withHour(0).withMinute(0).withSecond(0);
             LocalDateTime end = endDate != null ? endDate : LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
@@ -258,6 +263,22 @@ public class UsagePrivateController {
                 .startDate(startDate.toString())
                 .endDate(endDate.toString())
                 .build();
+    }
+
+    @Operation(hidden=true)
+    @GetMapping("/messagesFromPrompt/{sessionID}")
+    public ResponseEntity<List<UserPromptMessage>> getMessagesFromPrompt(
+            @PathVariable("sessionID") String sessionID, HttpServletRequest request) {
+        if (!request.isUserInRole("Administrator")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        try {
+            List<UserPromptMessage> messages = userPromptMessageService.readBySessionId(sessionID).getDataList();
+            return ResponseEntity.ok(messages);
+        } catch (Exception e) {
+            LOG.error("Error fetching messages for session", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

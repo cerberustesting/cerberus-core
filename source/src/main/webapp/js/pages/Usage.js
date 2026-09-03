@@ -32,41 +32,94 @@ function initPage() {
     loadAIUsageTable();
 }
 
-function loadLogViewerTable() {
-    if ($.fn.dataTable.isDataTable('#logViewerTable')) {
-        $('#logViewerTable').DataTable();
-    } else {
-        //configure and create the dataTable for Log
-        var configurationsLogViewer = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFuncLogViewer(), [1, 'desc']);
-        createDataTableWithPermissions(configurationsLogViewer, renderOptionsForLogViewer, "#logViewer");
-    }
-}
-
 function loadAIUsageTable(filter) {
-    let table;
-
-    if ($.fn.dataTable.isDataTable('#aiUsageTable')) {
-        table = $('#aiUsageTable').DataTable();
-    } else {
-        // configure and create the dataTable for AI Usage
-        const config = new TableConfigurationsServerSide("aiUsageTable","api/usage/aiCallList","contentTable",aoColumnsFuncAIUsage(),[1, 'desc']);
-        table = createDataTableWithPermissions(config, renderOptionsForAIUsage, "#aiUsage");
+    var existing = crbTableInstance('aiUsageTable');
+    if (existing) {
+        existing.search = (filter && filter !== "ALL") ? filter : "";
+        existing.onSearchInput();
+        return;
     }
 
-    // Filter
-    if (filter && filter !== "ALL") {
-        table.search(filter).draw();
-    } else {
-        table.search("").draw(); // reset search
-    }
+    createCerberusTable({
+        id: 'aiUsageTable',
+        mount: '#aiUsage',
+        embedded: true,
+        endpoint: 'api/usage/aiCallList',
+        rowKey: 'id',
+        defaultSort: {field: 'id', dir: 'desc'},
+        searchPlaceholder: 'Search AI usage calls...',
+        emptyMessage: 'No AI usage call found',
+        initialSearch: filter && filter !== "ALL" ? filter : "",
+        columns: aoColumnsFuncAIUsage(),
+        actions: [
+            {
+                key: 'view', icon: 'eye', gate: 'always', title: 'View Details',
+                onClick: function (row) { viewAIUsage(row); }
+            }
+        ]
+    });
 }
 
-function renderOptionsForLogViewer() {
-    $("#logViewerTable_paginate").parent().addClass("col-md-12").addClass("paddingRight0");
+/**
+ * Opens the message-detail table for one AI usage call, in place of the calls list.
+ */
+function viewAIUsage(row) {
+    $('#aiUsageListSection').addClass('hidden');
+    $('#aiUsageDetailSection').removeClass('hidden');
+    $('#aiUsageDetailTitle').text(
+        'Messages — Session ' + row.sessionID + (row.login ? ' (' + row.login + ')' : '')
+    );
+    loadAIUsageDetailTable(row.sessionID);
 }
 
-function renderOptionsForAIUsage() {
+function closeAIUsageDetail() {
+    $('#aiUsageDetailSection').addClass('hidden');
+    $('#aiUsageListSection').removeClass('hidden');
+}
 
+function loadAIUsageDetailTable(sessionID) {
+    fetch('./api/usage/messagesFromPrompt/' + encodeURIComponent(sessionID))
+        .then(function (res) { return res.json(); })
+        .then(function (rows) {
+            if (crbTableInstance('aiUsageMessagesTable')) {
+                crbTableSetRows('aiUsageMessagesTable', rows);
+                return;
+            }
+
+            createCerberusTable({
+                id: 'aiUsageMessagesTable',
+                mount: '#aiUsageDetail',
+                embedded: true,
+                clientRows: rows,
+                rowKey: 'id',
+                defaultSort: {field: 'id', dir: 'asc'},
+                pageLength: 20,
+                searchPlaceholder: 'Search messages...',
+                emptyMessage: 'No message found for this session',
+                columns: [
+                    {field: 'role', title: 'Role', width: '90px'},
+                    {
+                        field: 'message', title: 'Message', width: '420px',
+                        render: function (row) {
+                            if (!row.message) { return ""; }
+                            var html = DOMPurify.sanitize(marked.parse(row.message));
+                            return '<div class="crb-msg-markdown">' + html + '</div>';
+                        }
+                    },
+                    {field: 'tokens', title: 'Tokens', width: '80px'},
+                    {
+                        field: 'cost', title: 'Cost ($)', width: '80px',
+                        render: function (row) { return row.cost ? row.cost.toFixed(4) : "0.0000"; }
+                    },
+                    {
+                        field: 'dateCreated', title: 'Date', width: '130px',
+                        render: function (row) { return row.dateCreated ? getDate(row.dateCreated) : ""; }
+                    }
+                ],
+                actions: []
+            });
+        })
+        .catch(function (err) { console.error("Erreur fetch messages AI Usage:", err); });
 }
 
 function displayPageLabel() {
@@ -75,216 +128,31 @@ function displayPageLabel() {
     displayGlobalLabel(doc);
 }
 
-function editEntryClick(id) {
-    clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadLogEvent", "logeventid=" + id);
-    $.when(jqxhr).then(function (data) {
-        var obj = data["contentTableLog"];
-
-        var formEdit = $('#editEntryModal');
-
-        formEdit.find("#logeventid").prop("value", id);
-        formEdit.find("#time").prop("value", getDate(obj["time"]));
-        formEdit.find("#remoteip").prop("value", obj["remoteIP"]);
-        formEdit.find("#localip").prop("value", obj["localIP"]);
-        formEdit.find("#page").prop("value", obj["page"]);
-        formEdit.find("#action").prop("value", obj["action"]);
-        formEdit.find("#login").prop("value", obj["login"]);
-        formEdit.find("#log").prop("value", obj["log"]);
-
-        formEdit.modal('show');
-    });
-}
-
-function aoColumnsFuncLogViewer() {
-    var doc = new Doc();
-
-    var aoColumns = [
-        {
-            "data": null,
-            "title": doc.getDocLabel("page_global", "columnAction"),
-            "bSortable": false,
-            "bSearchable": false,
-            "sWidth": "50px",
-            "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["LogEventID"] + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-
-                return '<div class="center btn-group width150">' + editEntry + '</div>';
-            }
-        },
-        {
-            "data": "LogEventID",
-            "like": true,
-            "sName": "LogEventID",
-            "sWidth": "40px",
-            "title": doc.getDocOnline("logevent", "logeventid")
-        },
-        {
-            "data": "time",
-            "like": true,
-            "sName": "Time",
-            "sWidth": "90px",
-            "title": doc.getDocOnline("logevent", "time"),
-            "mRender": function (data, type, oObj) {
-                return getDate(oObj["time"]);
-            }
-        },
-        {
-            "data": "status",
-            "sName": "Status",
-            "sWidth": "30px",
-            "title": doc.getDocOnline("logevent", "status"),
-            "mRender": function (data, type, obj) {
-                let statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
-                if (obj["status"] === "WARN") {
-                    statusEntry = '<span class="alert-warning">' + obj["status"] + '</span>';
-                } else if (obj["status"] === "INFO") {
-                    statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
-                } else if (obj["status"] === "ERROR") {
-                    statusEntry = '<span class="alert-danger">' + obj["status"] + '</span>';
-                }
-                return statusEntry;
-            }
-        },
-        {
-            "data": "login",
-            "sName": "Login",
-            "sWidth": "50px",
-            "title": doc.getDocOnline("logevent", "login")
-        },
-        {
-            "data": "page",
-            "sName": "Page",
-            "sWidth": "100px",
-            "title": doc.getDocOnline("logevent", "page")
-        },
-        {
-            "data": "action",
-            "sName": "Action",
-            "sWidth": "50px",
-            "title": doc.getDocOnline("logevent", "action")
-        },
-        {
-            "data": "log",
-            "like": true,
-            "sName": "Log",
-            "sWidth": "250px",
-            "title": doc.getDocOnline("logevent", "log")
-        }
-    ];
-    return aoColumns;
-}
-
 function aoColumnsFuncAIUsage() {
-    var doc = new Doc();
-
-    var aoColumns = [
+    return [
+        {field: 'id', title: 'ID', width: '40px'},
+        {field: 'login', title: 'User', width: '90px'},
+        {field: 'sessionID', title: 'Session ID', width: '90px'},
+        {field: 'iaModel', title: 'Model', width: '90px'},
+        {field: 'iaMaxTokens', title: 'Max Tokens', width: '80px'},
+        {field: 'type', title: 'Type', width: '80px'},
         {
-            "data": null,
-            "title": doc.getDocLabel("page_global", "columnAction"),
-            "bSortable": false,
-            "bSearchable": false,
-            "sWidth": "50px",
-            "mRender": function (data, type, obj) {
-                return '<div class="center btn-group width150">' +
-                    '<button onclick="viewAIUsage(' + obj["id"] + ');" ' +
-                    'class="btn btn-default btn-xs margin-right5" title="View Details">' +
-                    '<span class="glyphicon glyphicon-eye-open"></span></button>' +
-                    '</div>';
+            field: 'title', title: 'Title', width: '250px', like: true,
+            render: function (row) {
+                return row.title ? crbTableEscape(row.title.substring(0, 80)) + "..." : "";
             }
         },
+        {field: 'totalCalls', title: 'Total Calls', width: '80px'},
+        {field: 'totalInputTokens', title: 'Total Input Tokens', width: '80px'},
+        {field: 'totalOutputTokens', title: 'Total Output Tokens', width: '80px'},
         {
-            "data": "id",
-            "sName": "id",
-            "sWidth": "40px",
-            "title": "ID"
+            field: 'totalCost', title: 'Cost ($)', width: '60px',
+            render: function (row) { return row.totalCost ? row.totalCost.toFixed(2) : "0.00"; }
         },
+        {field: 'usrCreated', title: 'User', width: '90px'},
         {
-            "data": "login",
-            "sName": "login",
-            "sWidth": "90px",
-            "title": "User"
-        },
-        {
-            "data": "sessionID",
-            "sName": "sessionID",
-            "sWidth": "90px",
-            "title": "Session ID"
-        },
-        {
-            "data": "iaModel",
-            "sName": "iaModel",
-            "sWidth": "90px",
-            "title": "Model"
-        },
-        {
-            "data": "iaMaxTokens",
-            "sName": "iaMaxTokens",
-            "sWidth": "80px",
-            "title": "Max Tokens"
-        },
-        {
-            "data": "type",
-            "sName": "type",
-            "sWidth": "80px",
-            "title": "Type"
-        },
-        {
-            "data": "title",
-            "like": true,
-            "sName": "title",
-            "sWidth": "250px",
-            "title": "Title",
-            "mRender": function(data, type, obj) {
-                return data ? data.substring(0, 80) + "..." : "";
-            }
-        },
-        {
-            "data": "totalCalls",
-            "sName": "totalCalls",
-            "sWidth": "80px",
-            "title": "Total Calls"
-        },
-        {
-            "data": "totalInputTokens",
-            "sName": "totalInputTokens",
-            "sWidth": "80px",
-            "title": "Total Input Tokens"
-        },
-        {
-            "data": "totalOutputTokens",
-            "sName": "totalOutputTokens",
-            "sWidth": "80px",
-            "title": "Total Output Tokens"
-        },
-        {
-            "data": "totalCost",
-            "sName": "totalCost",
-            "sWidth": "60px",
-            "title": "Cost ($)",
-            "mRender": function(data) {
-                return data ? data.toFixed(2) : "0.00";
-            }
-        },
-        {
-            "data": "usrCreated",
-            "sName": "usrCreated",
-            "sWidth": "90px",
-            "title": "User"
-        },
-        {
-            "data": "dateCreated",
-            "sName": "dateCreated",
-            "sWidth": "130px",
-            "title": "Created",
-            "mRender": function (data) {
-                return data ? getDate(data) : "";
-            }
+            field: 'dateCreated', title: 'Created', width: '130px',
+            render: function (row) { return row.dateCreated ? getDate(row.dateCreated) : ""; }
         }
     ];
-
-    return aoColumns;
 }
