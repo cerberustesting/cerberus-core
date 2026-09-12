@@ -446,6 +446,18 @@ public abstract class AppiumService implements IAppiumService {
                 break;
             case CUSTOM:
                 direction = action.getCustomDirection();
+                if (direction.isRelative()) {
+                    WebElement element = this.getElement(session, direction.getReferenceElement(), false, false);
+                    Rectangle rect = element.getRect();
+                    direction = SwipeAction.Direction.fromLine(
+                            new Line2D.Double(
+                                    rect.getX() + direction.getX1(),
+                                    rect.getY() + direction.getY1(),
+                                    rect.getX() + direction.getX2(),
+                                    rect.getY() + direction.getY2()
+                            )
+                    );
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unknown direction");
