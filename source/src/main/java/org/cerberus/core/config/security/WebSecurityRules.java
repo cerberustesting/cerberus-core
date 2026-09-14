@@ -36,6 +36,11 @@ public class WebSecurityRules {
     public static void applyRules(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(auth -> auth
+                // Under the "keycloak" profile this is superseded by publicApiSecurityFilterChain
+                // (@Order(0), matched earlier) in WebSecurityKeycloakConfiguration, which also
+                // requires a standard Cerberus role (see PublicApiRoleFilter) for Bearer-authenticated
+                // calls. This rule stays active for the "local" profile, where the legacy X-API-KEY
+                // check is the only mechanism guarding /api/public/**.
                 .requestMatchers(m("/api/public/**")).permitAll()
                 // OAuth Protected Resource Metadata (RFC 9728) : public discovery for MCP clients.
                 // The "/mcp" mapping covers the path-appended discovery form clients probe when
