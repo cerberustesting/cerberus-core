@@ -214,12 +214,19 @@ public class WebSecurityKeycloakConfiguration {
 
 	@Bean
 	@Order(0)
+	// securityMatcher(RequestMatcher) below deliberately bypasses the MVC-aware
+	// PathPatternRequestMatcher that securityMatcher(String...) resolves to by default : that
+	// matcher never matched "/api/public/**" against DispatcherServlet-relative requests in this
+	// app (see the same concern documented on WebSecurityRules.m()), silently sending every
+	// /api/public/** call through the default chain instead. AntPathRequestMatcher is the same
+	// matcher WebSecurityRules already uses for this exact pattern.
+	@SuppressWarnings({"deprecation", "removal"})
 	public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http,
 			PublicApiRoleFilter publicApiRoleFilter,
 			@Qualifier("publicApiJwtDecoder") JwtDecoder publicApiJwtDecoder,
 			@Qualifier("publicApiJwtAuthenticationConverter") JwtAuthenticationConverter publicApiJwtAuthenticationConverter) throws Exception {
 		http
-				.securityMatcher("/api/public/**")
+				.securityMatcher(new AntPathRequestMatcher("/api/public/**"))
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				// permitAll here on purpose : a request with no Bearer token must still reach
