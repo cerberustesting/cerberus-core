@@ -151,6 +151,11 @@ function scriptV2() {
         tab: 'steps',
         steps: [],
         properties: [],
+        // Valid values for a property's database field, from the PROPERTYDATABASE invariant — the
+        // same list the legacy editor builds. Without it a getFromSql property has no way to say
+        // which database it queries, and the engine then finds no connection for the country and
+        // environment it runs in.
+        propertyDatabaseList: [],
         inheritedProperties: [],
         testInfo: { test: '', testcase: '', testCase: '', description: '', application: '', appType: '', system: '', version: 0, usrCreated: '', usrModif: '', dateCreated: '', dateModif: '', lastRunId: 0, status: '', statusList: [] },
         canUpdate: false,
@@ -352,6 +357,10 @@ function scriptV2() {
                     // Load status list from invariants
                     $.ajax({ url: 'FindInvariantByID', data: { idName: 'TCSTATUS' }, dataType: 'json',
                         success: (d) => { this.testInfo.statusList = (d || []).map(i => i.value); }
+                    });
+                    // Databases a getFromSql property can point at
+                    $.ajax({ url: 'FindInvariantByID', data: { idName: 'PROPERTYDATABASE' }, dataType: 'json',
+                        success: (d) => { this.propertyDatabaseList = (d || []).map(i => i.value); }
                     });
                     // Load app info
                     $.ajax({ url: 'ReadApplication', data: { application: tc.application }, success: (d) => { this.testInfo.appType = d.contentTable.type; } });
@@ -982,12 +991,30 @@ function scriptV2() {
             return true;
         },
         /** Returns visible fields config for a given property type, from newPropertyPlaceholder */
-        _getPropertyFields(type) {
+        _getPropertyFields(type, currentDatabase) {
             if (typeof newPropertyPlaceholder === 'undefined') return { value1: { label: { en: 'Value' } } };
             var fields = newPropertyPlaceholder[type];
             if (!fields) {
                 // Type not in schema — provide a default value1 so the textarea always appears
                 return { value1: { label: { en: 'Value' } } };
+            }
+            // The database field is the one field whose valid values are not static: they come from
+            // the PROPERTYDATABASE invariant. Rendered without them it is a free-text box, and a
+            // database typed by hand that does not match the environment's list fails the run with
+            // "no database found" rather than with anything about the typo. Copied rather than
+            // mutated: newPropertyPlaceholder is shared static data.
+            if (fields.database && this.propertyDatabaseList.length > 0) {
+                var known = this.propertyDatabaseList.slice();
+                // Keeps a stored value that has since left the invariant selectable, instead of the
+                // select falling back to blank and the next save quietly dropping the database the
+                // property was querying.
+                if (currentDatabase && known.indexOf(currentDatabase) < 0) { known.push(currentDatabase); }
+                var withOptions = Object.assign({}, fields);
+                withOptions.database = Object.assign({}, fields.database, {
+                    options: [{ value: '', label: { en: '(none)' } }].concat(
+                        known.map(function (db) { return { value: db, label: { en: db } }; }))
+                });
+                return withOptions;
             }
             return fields;
         },

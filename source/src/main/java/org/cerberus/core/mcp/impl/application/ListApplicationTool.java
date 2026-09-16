@@ -27,6 +27,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPProjectionUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.mcp.util.MCPUserContextService;
 import org.cerberus.core.crud.entity.Application;
@@ -36,6 +37,7 @@ import org.cerberus.core.websocket.WebSocketStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +56,9 @@ import java.util.Map;
 public class ListApplicationTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_application_list";
+
+    /** How many applications a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     /** Exhaustive set of DTO field names that can be returned to the caller. */
     private static final List<String> ALL_FIELDS = List.of("application", "description", "sort", "type", "system", "subsystem", "svnurl",
@@ -142,6 +147,11 @@ public class ListApplicationTool implements MCPTool {
                         )
                 )
         );
+
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "applications");
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -239,11 +249,15 @@ public class ListApplicationTool implements MCPTool {
                     Map.of("toolName", TOOL_NAME ));
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "intent", intent,
-                "count", applications.size(),
-                "applications", applications
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Map<String, Object>> page = MCPPagination.slice(applications, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("intent", intent);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, applications.size(), page.size(), "applications");
+        response.put("applications", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

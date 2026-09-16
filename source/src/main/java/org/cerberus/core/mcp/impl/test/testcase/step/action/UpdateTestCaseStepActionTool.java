@@ -26,11 +26,13 @@ import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionMapperV001;
 import org.cerberus.core.crud.entity.TestCaseStepAction;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPActionOptions;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -184,6 +186,8 @@ public class UpdateTestCaseStepActionTool implements MCPTool {
                 "type", "integer",
                 "description", "Wait time in milliseconds after executing the action."
         ));
+        updateProperties.put("options", MCPActionOptions.schema("this action"));
+        updateProperties.put("conditionOptions", MCPActionOptions.schema("the evaluation of this action's condition"));
 
         Map<String, Object> updatesSchema = new LinkedHashMap<>();
         updatesSchema.put("type", "object");
@@ -344,11 +348,20 @@ public class UpdateTestCaseStepActionTool implements MCPTool {
                         existing.setWaitAfter(asInteger(value, field));
                         break;
 
+                    case "options":
+                        existing.setOptions(MCPActionOptions.merge(existing.getOptions(), asMap(value, field)));
+                        break;
+
+                    case "conditionOptions":
+                        existing.setConditionOptions(
+                                MCPActionOptions.merge(existing.getConditionOptions(), asMap(value, field)));
+                        break;
+
                     default:
                         return MCPToolUtils.errorText("Unsupported field for action update: " + field);
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | MCPActionOptions.InvalidOptionException e) {
             return MCPToolUtils.errorText(e.getMessage());
         }
 
@@ -361,17 +374,46 @@ public class UpdateTestCaseStepActionTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to update action: testFolder=" + testFolder + " testcase=" + testcaseId + " stepId=" + stepId + " actionId=" + actionId);
         }
 
-        TestcaseStepActionDTOV001 dto = mapper.toDTO(existing);
-        return MCPToolUtils.successJson(Map.of(
-                "status", "updated",
-                "action", dto
-        ));
+        // Read back from the database instead of echoing the entity that was just written. The DAOs
+        // behind these services log a failed UPDATE and return normally, so a write that never landed
+        // would otherwise be reported as "updated" with the values the caller hoped for — the silent
+        // false positive that costs a whole debugging session to notice.
+        TestCaseStepAction written =
+                testCaseStepActionService.findTestCaseStepActionbyKey(testFolder, testcaseId, stepId, actionId);
+        if (written == null) {
+            return MCPToolUtils.errorText("The update was accepted but the action could not be read back. "
+                    + "Check it with cerberus_testcase_step_action_get before relying on it.");
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "updated");
+        response.put("updatedFields", new ArrayList<>(updates.keySet()));
+        response.put("readBackFromDatabase", true);
+        response.put("action", mapper.toDTO(written));
+        return MCPToolUtils.successJson(response);
     }
 
     /**
      * Coerces {@code value} to a trimmed {@link String}.
      * Returns an empty string for null; throws {@link IllegalArgumentException} for non-string types.
      */
+    /**
+     * Coerces {@code value} to a nested object.
+     *
+     * @throws IllegalArgumentException when the caller sent anything else.
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> asMap(Object value, String field) {
+        if (value == null) {
+            return Map.of();
+        }
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException("Invalid value for field '" + field
+                    + "'. Expected an object naming the settings to change, for example {\"timeout\": \"3000\"}.");
+        }
+        return (Map<String, Object>) value;
+    }
+
     private String asString(Object value, String field) {
         if (value == null) return "";
         if (!(value instanceof String)) {

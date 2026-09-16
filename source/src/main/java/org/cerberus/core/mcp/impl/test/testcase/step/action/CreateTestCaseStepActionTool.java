@@ -28,6 +28,7 @@ import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPOrderingService;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
@@ -65,12 +66,14 @@ public class CreateTestCaseStepActionTool implements MCPTool {
     private final ITestCaseStepActionService testCaseStepActionService;
     private final TestcaseStepActionMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
+    private final MCPOrderingService orderingService;
 
-    public CreateTestCaseStepActionTool(ITestCaseStepService testCaseStepService, ITestCaseStepActionService testCaseStepActionService, TestcaseStepActionMapperV001 mapper, MCPLogUtils mcpLogUtils) {
+    public CreateTestCaseStepActionTool(ITestCaseStepService testCaseStepService, ITestCaseStepActionService testCaseStepActionService, TestcaseStepActionMapperV001 mapper, MCPLogUtils mcpLogUtils, MCPOrderingService orderingService) {
         this.testCaseStepService = testCaseStepService;
         this.testCaseStepActionService = testCaseStepActionService;
         this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
+        this.orderingService = orderingService;
     }
 
     @Override
@@ -171,6 +174,15 @@ public class CreateTestCaseStepActionTool implements MCPTool {
                 "type", "boolean",
                 "description", "If true, a failure on this action stops the testcase execution. Defaults to true."
         ));
+        properties.put("position", Map.of(
+                "type", "integer",
+                "description", "Where the action goes in the step, 1 being first. Omit it to append at the end. "
+                        + "Use it whenever the action belongs somewhere other than last — dismissing a popup "
+                        + "between two existing clicks, waiting before a click rather than after it. The "
+                        + "actions already there shift down; none of them is rewritten, and each keeps its "
+                        + "own controls. Never emulate an insertion by appending and shifting contents by "
+                        + "hand: that rewrites rows you did not mean to touch."
+        ));
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -179,7 +191,9 @@ public class CreateTestCaseStepActionTool implements MCPTool {
                 Adds a new action to an existing step in a Cerberus testcase.
 
                 Call this tool whenever the user asks to add an action, instruction, or operation inside a testcase step.
-                The action ID and sort order are auto-assigned after existing actions in the step.
+                The action ID is auto-assigned. The action is appended at the end of the step unless you pass
+                position, which inserts it there instead — use cerberus_testcase_step_action_reorder to move
+                an action that already exists.
 
                 Use cerberus_testcase_step_action_control_create after this tool to add controls (assertions) on this action.
 
@@ -215,7 +229,11 @@ public class CreateTestCaseStepActionTool implements MCPTool {
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
         String testcaseId = MCPToolUtils.getString(args, "testcase", "");
-        int stepId = MCPToolUtils.getInteger(args, "stepId", 0);
+        // 0 is a legitimate step, action and control id — Cerberus assigns these within their
+        // parent rather than from a sequence, and real testcases do start at 0. The sentinel for
+        // "not supplied" therefore has to be negative: reading it as 0 made every element numbered
+        // 0 unreachable through this tool, with an error blaming the caller.
+        int stepId = MCPToolUtils.getInteger(args, "stepId", -1);
         String action = MCPToolUtils.getString(args, "action", "");
         String value1 = MCPToolUtils.getString(args, "value1", "");
         String value2 = MCPToolUtils.getString(args, "value2", "");
@@ -234,7 +252,7 @@ public class CreateTestCaseStepActionTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: testcase");
         }
 
-        if (stepId <= 0) {
+        if (stepId < 0) {
             return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
         }
 
@@ -289,10 +307,30 @@ public class CreateTestCaseStepActionTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to create action: " + answer.getMessageDescription());
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "status", "created",
-                "action", mapper.toDTO(newAction)
-        ));
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "created");
+        response.put("action", mapper.toDTO(newAction));
+
+        // The row is always written at the end first, then moved: creating it in place would mean
+        // renumbering the rest before it exists, which leaves the step in a broken order if the
+        // insert then fails.
+        int position = MCPToolUtils.getInteger(args, "position", 0);
+        if (position > 0) {
+            MCPOrderingService.Result placement =
+                    orderingService.placeAction(testFolder, testcaseId, stepId, nextActionId, position);
+            if (placement.failed()) {
+                // The action exists; only its position is wrong. Saying so — rather than reporting a
+                // failure — is what stops the caller from creating it a second time.
+                response.put("status", "created_but_not_positioned");
+                response.put("warning", "The action was created at the end of the step but could not be "
+                        + "moved to position " + position + ": " + placement.error()
+                        + " Use cerberus_testcase_step_action_reorder to place it.");
+            } else {
+                response.put("actionIds", placement.order());
+            }
+        }
+
+        return MCPToolUtils.successJson(response);
     }
 
 }

@@ -86,6 +86,13 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
+    public boolean moveTestCaseStepActionToStep(String test, String testcase, int stepId, int actionId,
+                                                int newStepId, int newActionId, int sort, String usrModif) {
+        return testCaseStepActionDAO.moveTestCaseStepActionToStep(test, testcase, stepId, actionId,
+                newStepId, newActionId, sort, usrModif);
+    }
+
+    @Override
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa) {
         try {
             testCaseStepActionDAO.update(tcsa);

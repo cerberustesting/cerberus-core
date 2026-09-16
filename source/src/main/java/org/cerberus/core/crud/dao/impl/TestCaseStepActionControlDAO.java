@@ -73,7 +73,11 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     @Override
     public TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int actionId, int controlId) {
         TestCaseStepActionControl actionControl = null;
-        final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND stepId = ? AND actionId = ? AND control = ?";
+        // Filters on controlId, the identifier, not on control, which holds the control type
+        // (verifyElementPresent and the like). Binding the id against the type column matched
+        // nothing, ever: this lookup always returned null, which is why the REST controller and the
+        // MCP tools built on it could never read a control back by its key.
+        final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND stepId = ? AND actionId = ? AND controlId = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -295,6 +299,40 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
+    }
+
+    @Override
+    public boolean moveTestCaseStepActionControlToAction(String test, String testcase, int stepId, int actionId,
+                                                         int controlId, int newStepId, int newActionId,
+                                                         int newControlId, int sort, String usrModif) {
+        final String query = "update testcasestepactioncontrol set stepId = ?, actionId = ?, controlId = ?, "
+                + "sort = ?, UsrModif = ?, dateModif = CURRENT_TIMESTAMP "
+                + "WHERE test = ? AND testcase = ? AND stepId = ? AND actionId = ? AND controlId = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            preStat.setInt(1, newStepId);
+            preStat.setInt(2, newActionId);
+            preStat.setInt(3, newControlId);
+            preStat.setInt(4, sort);
+            preStat.setString(5, usrModif == null ? "" : usrModif);
+            preStat.setString(6, test);
+            preStat.setString(7, testcase);
+            preStat.setInt(8, stepId);
+            preStat.setInt(9, actionId);
+            preStat.setInt(10, controlId);
+
+            return preStat.executeUpdate() > 0;
+
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+        return false;
     }
 
     @Override

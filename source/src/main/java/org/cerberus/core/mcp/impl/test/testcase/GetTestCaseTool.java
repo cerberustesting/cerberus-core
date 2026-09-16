@@ -30,8 +30,11 @@ import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerItem;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,9 +193,60 @@ public class GetTestCaseTool implements MCPTool {
         map.put("priority", tc.getPriority());
         map.put("isActive", tc.isActive());
         map.put("comment", MCPToolUtils.nullSafe(tc.getComment()));
+        // The bug links live on the testcase, not on its executions, and nothing reported them until
+        // now: an agent looking for "the bug attached to this failure" searched the execution, found
+        // no such field, and concluded there was none. Only the open ones are listed — a closed bug
+        // says nothing about why a run fails today.
+        List<Map<String, Object>> bugs = openBugs(tc);
+        if (!bugs.isEmpty()) {
+            map.put("bugs", bugs);
+        }
+        String ticket = MCPToolUtils.nullSafe(tc.getTicket());
+        if (!ticket.isBlank()) {
+            map.put("ticket", ticket);
+        }
         map.put("usrCreated", MCPToolUtils.nullSafe(tc.getUsrCreated()));
         map.put("usrModif", MCPToolUtils.nullSafe(tc.getUsrModif()));
         return map;
+    }
+
+    /**
+     * The bug links currently open on a testcase.
+     *
+     * <p>Reads {@code getBugsActive}, the same filter the interface applies, and keeps only the
+     * fields worth acting on: the identifier, the link, and what it says. A malformed entry is
+     * skipped rather than failing the whole read — a broken bug link must not make a testcase
+     * unreadable.</p>
+     */
+    private List<Map<String, Object>> openBugs(TestCase tc) {
+        List<Map<String, Object>> bugs = new ArrayList<>();
+        if (tc.getBugs() == null) {
+            return bugs;
+        }
+        JSONArray active;
+        try {
+            active = tc.getBugsActive();
+        } catch (Exception e) {
+            return bugs;
+        }
+        for (int i = 0; i < active.length(); i++) {
+            JSONObject bug = active.optJSONObject(i);
+            if (bug == null) {
+                continue;
+            }
+            Map<String, Object> described = new LinkedHashMap<>();
+            described.put("id", bug.optString("id", ""));
+            String url = bug.optString("url", "");
+            if (!url.isEmpty()) {
+                described.put("url", url);
+            }
+            String desc = bug.optString("desc", "");
+            if (!desc.isEmpty()) {
+                described.put("description", desc);
+            }
+            bugs.add(described);
+        }
+        return bugs;
     }
 
     /**

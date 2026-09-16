@@ -26,9 +26,11 @@ import org.cerberus.core.crud.entity.ApplicationObject;
 import org.cerberus.core.crud.service.IApplicationObjectService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,9 @@ import java.util.Map;
 public class ListApplicationObjectsTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_application_object_list";
+
+    /** How many objects a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     private final IApplicationObjectService applicationObjectService;
     private final ApplicationObjectMapperV001 mapper;
@@ -91,6 +96,11 @@ public class ListApplicationObjectsTool implements MCPTool {
                         "description", "Optional text filter applied on object name or value (case-insensitive)."
                 )
         );
+
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "objects");
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -148,11 +158,15 @@ public class ListApplicationObjectsTool implements MCPTool {
                 .map(Object.class::cast)
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "application", application,
-                "count", objects.size(),
-                "objects", objects
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Object> page = MCPPagination.slice(objects, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("application", application);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, objects.size(), page.size(), "objects");
+        response.put("objects", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

@@ -25,11 +25,13 @@ import org.cerberus.core.api.dto.test.TestMapperV001;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPProjectionUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.service.ITestService;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +51,9 @@ import java.util.Map;
 public class ListTestFoldersTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_test_folders_list";
+
+    /** How many folders a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     /** Exhaustive list of fields the tool can return; used to populate the JSON schema enum. */
     private static final List<String> ALL_FIELDS = List.of("test", "description", "isActive", "parentTest",
@@ -125,6 +130,11 @@ public class ListTestFoldersTool implements MCPTool {
                 )
         );
 
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "folders");
+
         return new McpSchema.Tool(
                 TOOL_NAME,
                 null,
@@ -180,11 +190,15 @@ public class ListTestFoldersTool implements MCPTool {
                 .map(dto -> MCPProjectionUtils.project(dto, fields))
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "intent", intent,
-                "count", folders.size(),
-                "folders", folders
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Map<String, Object>> page = MCPPagination.slice(folders, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("intent", intent);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, folders.size(), page.size(), "folders");
+        response.put("folders", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

@@ -63,5 +63,21 @@ public interface ITestCaseStepActionControlDAO {
      */
     public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int actionId);
 
+    /**
+     * Moves a control to another action of the same testcase.
+     *
+     * <p>A plain update of the key columns. Nothing in the database references a control row, so
+     * unlike an action — whose controls follow it through a cascading foreign key — a control moves
+     * alone, and no other table has to be told.</p>
+     *
+     * @param newControlId the id to take on the destination action; the caller picks one that is
+     *                     free there, since (step, action, control) is the primary key.
+     * @param sort         the position the control takes on the destination action.
+     * @return whether a row was moved.
+     */
+    boolean moveTestCaseStepActionControlToAction(String test, String testcase, int stepId, int actionId,
+                                                  int controlId, int newStepId, int newActionId,
+                                                  int newControlId, int sort, String usrModif);
+
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 }

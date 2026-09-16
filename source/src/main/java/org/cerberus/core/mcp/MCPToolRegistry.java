@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
+import org.cerberus.core.mcp.util.MCPUpdatesPreflight;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -88,6 +89,18 @@ public class MCPToolRegistry {
                 tool,
                 (exchange, request) -> {
                     try {
+                        // Answers the "fields at the top level instead of inside updates" mistake
+                        // with the corrected payload rather than letting each tool return a bare
+                        // "missing parameter: updates". No-op for every other tool and call.
+                        McpSchema.CallToolResult shapeError =
+                                MCPUpdatesPreflight.check(tool, request.arguments());
+                        if (shapeError != null) {
+                            // Logged here because the handler never runs: without this the call would
+                            // be the only kind of rejection missing from the audit trail.
+                            mcpLogUtils.warning(toolName, "bad_request",
+                                    String.format("MCP tool %s called without a valid 'updates' object.", toolName));
+                            return shapeError;
+                        }
                         return specification.callHandler().apply(exchange, request);
                     } catch (Exception | StackOverflowError e) {
                         // StackOverflowError is caught alongside Exception because the recursive

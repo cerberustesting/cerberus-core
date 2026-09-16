@@ -22,6 +22,8 @@ package org.cerberus.core.mcp.impl.testdatalib;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.crud.entity.TestDataLib;
+import org.cerberus.core.crud.entity.TestDataLibData;
+import org.cerberus.core.crud.service.ITestDataLibDataService;
 import org.cerberus.core.crud.service.ITestDataLibService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
@@ -55,11 +57,27 @@ public class ListTestDataLibsTool implements MCPTool {
     private static final int DEFAULT_LIMIT = 50;
 
     private final ITestDataLibService testDataLibService;
+    private final ITestDataLibDataService testDataLibDataService;
     private final MCPLogUtils mcpLogUtils;
 
-    public ListTestDataLibsTool(ITestDataLibService testDataLibService, MCPLogUtils mcpLogUtils) {
+    public ListTestDataLibsTool(ITestDataLibService testDataLibService,
+                                ITestDataLibDataService testDataLibDataService,
+                                MCPLogUtils mcpLogUtils) {
         this.testDataLibService = testDataLibService;
+        this.testDataLibDataService = testDataLibDataService;
         this.mcpLogUtils = mcpLogUtils;
+    }
+
+    /**
+     * Reads the entries of one library, tolerating a failed read as "no entry" — a health report
+     * that could not be produced must not fail the listing it is attached to.
+     */
+    private List<TestDataLibData> readEntries(Integer testDataLibId) {
+        if (testDataLibId == null) {
+            return List.of();
+        }
+        AnswerList<TestDataLibData> answer = testDataLibDataService.readByVarious(testDataLibId, null, null, null);
+        return answer.getDataList() == null ? List.of() : answer.getDataList();
     }
 
     @Override
@@ -98,6 +116,13 @@ public class ListTestDataLibsTool implements MCPTool {
                         TestDataLib.TYPE_SERVICE,
                         TestDataLib.TYPE_FILE
                 )
+        ));
+        properties.put("includeHealth", Map.of(
+                "type", "boolean",
+                "description", "Also report, per library, how many entries it has and whether its key entry is "
+                        + "missing — the defect that makes a library break the executions that read it rather "
+                        + "than simply resolve to nothing. Defaults to false because it costs one query per "
+                        + "library; turn it on to sweep for broken ones."
         ));
         properties.put("limit", Map.of(
                 "type", "integer",
@@ -142,6 +167,7 @@ public class ListTestDataLibsTool implements MCPTool {
         String system = MCPToolUtils.getString(args, "system", "").trim();
         String type = MCPToolUtils.getString(args, "type", "").trim();
         int limit = Math.min(Math.max(MCPToolUtils.getInteger(args, "limit", DEFAULT_LIMIT), 1), MAX_RESULTS);
+        boolean includeHealth = MCPToolUtils.getBoolean(args, "includeHealth", false);
 
         mcpLogUtils.call(TOOL_NAME, "datalib_list",
                 String.format("MCP tool %s called with name=%s system=%s type=%s", TOOL_NAME, name, system, type));
@@ -167,6 +193,7 @@ public class ListTestDataLibsTool implements MCPTool {
         }
 
         List<Map<String, Object>> libraries = new ArrayList<>();
+        List<String> brokenLibraries = new ArrayList<>();
 
         boolean truncated = found.size() > limit;
         for (TestDataLib lib : found.subList(0, Math.min(found.size(), limit))) {
@@ -179,6 +206,17 @@ public class ListTestDataLibsTool implements MCPTool {
             map.put("type", MCPToolUtils.nullSafe(lib.getType()));
             map.put("group", MCPToolUtils.nullSafe(lib.getGroup()));
             map.put("description", MCPToolUtils.nullSafe(lib.getDescription()));
+            if (includeHealth) {
+                List<TestDataLibData> entries = readEntries(lib.getTestDataLibID());
+                boolean keyEntryMissing = entries.stream()
+                        .noneMatch(entry -> MCPToolUtils.nullSafe(entry.getSubData()).isEmpty());
+                map.put("entryCount", entries.size());
+                map.put("keyEntryMissing", keyEntryMissing);
+                if (keyEntryMissing) {
+                    brokenLibraries.add(MCPToolUtils.nullSafe(lib.getName())
+                            + " (id " + lib.getTestDataLibID() + ")");
+                }
+            }
             libraries.add(map);
         }
 
@@ -190,6 +228,12 @@ public class ListTestDataLibsTool implements MCPTool {
                     + ". Narrow the search with name, system or type, or raise limit.");
         }
         response.put("libraries", libraries);
+        if (!brokenLibraries.isEmpty()) {
+            response.put("brokenLibraries", brokenLibraries);
+            response.put("brokenLibrariesNote", "These have no key entry — the sub-data whose subData is an "
+                    + "empty string. Every property reading one of them fails the execution. Repair each with "
+                    + "cerberus_datalib_update, adding {\"subData\": \"\", …} to its subData list.");
+        }
 
         return MCPToolUtils.successJson(response);
     }

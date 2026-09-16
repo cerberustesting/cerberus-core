@@ -20,45 +20,72 @@
 package org.cerberus.core.mcp.impl.appservice;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.appservice.AppServiceMapperV001;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.service.IAppServiceService;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPProjectionUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
+import org.cerberus.core.mcp.util.MCPUserContextService;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * MCP tool that exposes Cerberus {@link AppService} lookup under the tool name {@code cerberus_appservice_list}.
+ * MCP tool that lists the services Cerberus can call, under the tool name
+ * {@code cerberus_appservice_list}.
  *
- * <p>Allows AI agents to browse or search the app services defined in Cerberus.
- * Delegates to {@link IAppServiceService#readByLikeName(String, int)} with an optional
- * search filter and maps each result to {@link AppServiceDTOV001} via {@link AppServiceMapperV001}
- * before returning a JSON response to the MCP client.</p>
+ * <p>This used to return every service of every system, in full, with no way to narrow it. A system
+ * filter passed by a caller was not rejected — it was not declared at all, so it went nowhere and
+ * the answer looked like a successful, complete list of the wrong thing. On a real instance that is
+ * a fifty-thousand-character dump, too large to read and silently mixing systems the caller never
+ * asked about.</p>
  *
- * <p>Use {@code cerberus_appservice_get} to retrieve the full details (including headers and
- * contents) of a specific service once its name is known.</p>
+ * <p>It now filters by system — the caller's active context by default, like the other read tools —
+ * and by application, returns a short projection instead of whole service definitions, and says
+ * when the result was cut. The request body of a service, which is most of its weight, is only
+ * returned when asked for by name or through {@code cerberus_appservice_get}.</p>
  */
 @Component
 public class ListAppServicesTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_appservice_list";
 
+    /** Every field the projection can return. */
+    private static final List<String> ALL_FIELDS = List.of(
+            "service", "application", "type", "method", "servicePath", "group", "description",
+            "operation", "fileName", "kafkaTopic", "kafkaKey", "serviceRequest", "usrModif", "dateModif");
+
+    /**
+     * What a listing returns unless asked otherwise: enough to recognise a service and to decide
+     * which one to open. {@code serviceRequest} is deliberately out — one request body can be
+     * larger than this whole list.
+     */
+    private static final List<String> DEFAULT_FIELDS = List.of(
+            "service", "application", "type", "method", "servicePath", "group", "description");
+
+    private static final int DEFAULT_LIMIT = 50;
+    private static final int MAX_LIMIT = 500;
+
     private final IAppServiceService appServiceService;
     private final AppServiceMapperV001 mapper;
+    private final MCPUserContextService userContext;
     private final MCPLogUtils mcpLogUtils;
 
-    public ListAppServicesTool(IAppServiceService appServiceService,
-                               AppServiceMapperV001 mapper,
-                               MCPLogUtils mcpLogUtils) {
+    public ListAppServicesTool(IAppServiceService appServiceService, AppServiceMapperV001 mapper,
+                               MCPUserContextService userContext, MCPLogUtils mcpLogUtils) {
         this.appServiceService = appServiceService;
         this.mapper = mapper;
+        this.userContext = userContext;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -66,43 +93,60 @@ public class ListAppServicesTool implements MCPTool {
     public McpServerFeatures.SyncToolSpecification toToolSpecification() {
         return new McpServerFeatures.SyncToolSpecification(
                 createTool(),
-                (exchange, request) -> {
-                    Map<String, Object> args = MCPToolUtils.argumentsOrEmpty(request.arguments());
-                    return execute(args);
-                }
+                (exchange, request) -> execute(MCPToolUtils.argumentsOrEmpty(request.arguments()), exchange)
         );
     }
 
-    /**
-     * Builds the MCP {@link McpSchema.Tool} descriptor for this tool.
-     *
-     * <p>Declares the optional {@code search} parameter so MCP clients can pass
-     * a name filter directly to {@link IAppServiceService#readByLikeName(String, int)}.
-     * Passing an empty or absent search string returns all services (up to 100 results).</p>
-     *
-     * @return a fully configured {@link McpSchema.Tool} ready for MCP registration
-     */
     private McpSchema.Tool createTool() {
-        Map<String, Object> properties = Map.of(
-                "search", Map.of(
-                        "type", "string",
-                        "description", "Optional filter applied to the service name. Leave blank to list all services."
-                )
-        );
+        Map<String, Object> properties = new LinkedHashMap<>();
+        properties.put("search", Map.of(
+                "type", "string",
+                "description", "Filter on the service name, matched anywhere in it. Leave it out to list them all."
+        ));
+        properties.put("system", Map.of(
+                "type", "string",
+                "description", "Restrict to the services of one system. Defaults to your active system context "
+                        + "(cerberus_context_system_list). Services attached to no application are always "
+                        + "included: they are shared across systems."
+        ));
+        properties.put("application", Map.of(
+                "type", "string",
+                "description", "Restrict to the services of one application."
+        ));
+        properties.put("fields", Map.of(
+                "type", "array",
+                "items", Map.of("type", "string", "enum", ALL_FIELDS),
+                "description", "Fields to return for each service. Defaults to " + DEFAULT_FIELDS
+                        + ". Ask for serviceRequest only on a narrowed search — one request body can be "
+                        + "longer than an entire list."
+        ));
+        properties.put("limit", Map.of(
+                "type", "integer",
+                "description", "Maximum number of services to return. Defaults to " + DEFAULT_LIMIT
+                        + ", maximum " + MAX_LIMIT + ". The answer says when it was cut."
+        ));
 
         return new McpSchema.Tool(
                 TOOL_NAME,
                 null,
                 """
-                Lists app services defined in Cerberus.
-                Use this tool when the user asks to browse or find available services.
-                Use the search parameter to filter by service name.
-                Use cerberus_appservice_get to retrieve the full details including headers and contents of a specific service.
+                Lists the services Cerberus can call, narrowed to your active system context by default.
+
+                Use it to find a service by name, or to see what an application already calls before writing
+                a new one.
+
+                Narrow before you read: without a search or an application, a real instance holds hundreds of
+                services. The answer returns a short projection of each one, not its full definition — use
+                cerberus_appservice_get for the request body, the headers and the contents of a single
+                service.
+
+                The answer echoes the filters actually applied, so you can tell a filtered result from an
+                unfiltered one.
                 """,
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        null,
+                        List.of(),
                         null,
                         null,
                         null
@@ -113,36 +157,97 @@ public class ListAppServicesTool implements MCPTool {
         );
     }
 
-    /**
-     * Executes the list operation: queries the service layer with the optional search filter,
-     * maps each {@link AppService} entity to a DTO, and returns the result as a JSON response.
-     *
-     * <p>When {@code search} is blank, an empty string is forwarded to
-     * {@link IAppServiceService#readByLikeName(String, int)} which returns all services
-     * (capped at 100 results). When non-blank, the service performs a name-based
-     * {@code LIKE} search in the database before the results are returned.</p>
-     *
-     * @param args the raw MCP tool arguments supplied by the client (may be empty, never null)
-     * @return a {@link McpSchema.CallToolResult} containing the serialised service list,
-     *         or an error result if the service call fails
-     */
-    private McpSchema.CallToolResult execute(Map<String, Object> args) {
-        String search = MCPToolUtils.getString(args, "search", "");
+    private McpSchema.CallToolResult execute(Map<String, Object> args, McpSyncServerExchange exchange) {
+        String search = MCPToolUtils.getString(args, "search", "").trim();
+        String system = MCPToolUtils.getString(args, "system", "").trim();
+        String application = MCPToolUtils.getString(args, "application", "").trim();
+        List<String> fields = MCPToolUtils.getStringList(args, "fields", DEFAULT_FIELDS);
+        int limit = Math.min(Math.max(MCPToolUtils.getInteger(args, "limit", DEFAULT_LIMIT), 1), MAX_LIMIT);
 
+        String login = userContext.getLogin(exchange);
         mcpLogUtils.call(TOOL_NAME, "appservice_list",
-                String.format("MCP tool %s called with search=%s", TOOL_NAME, search));
+                String.format("MCP tool %s called with search=%s system=%s application=%s",
+                        TOOL_NAME, search, system, application), login);
 
-        AnswerList<AppService> answerList = appServiceService.readByLikeName(search, 100);
+        for (String field : fields) {
+            if (!ALL_FIELDS.contains(field)) {
+                return MCPToolUtils.errorText("Unknown field '" + field + "'. Supported fields: " + ALL_FIELDS);
+            }
+        }
 
-        List<AppServiceDTOV001> services = answerList.getDataList()
-                .stream()
-                .map(AppService.class::cast)
-                .map(mapper::toDTO)
-                .toList();
+        // readByCriteria mutates the list it is given (it appends the empty system to let through the
+        // services attached to no application), so it always gets a fresh mutable one.
+        List<String> systems = new ArrayList<>();
+        if (!system.isBlank()) {
+            systems.add(system);
+        } else {
+            if (login == null) {
+                return MCPToolUtils.errorText("Unable to resolve the authenticated MCP user for this call.");
+            }
+            try {
+                systems.addAll(userContext.getContextSystems(userContext.getUser(login)));
+            } catch (CerberusException e) {
+                return MCPToolUtils.errorText("Unable to read system context for '" + login + "': "
+                        + e.getMessageError().getDescription());
+            }
+            if (systems.isEmpty()) {
+                return MCPToolUtils.errorText("No active system in your MCP context, so there is nothing to "
+                        + "list. Call cerberus_context_system_list, then cerberus_context_system_update "
+                        + "(action=add) — or name a system directly with the system parameter.");
+            }
+        }
+        List<String> appliedSystems = List.copyOf(systems);
 
-        return MCPToolUtils.successJson(Map.of(
-                "count", services.size(),
-                "services", services
-        ));
+        Map<String, List<String>> individualSearch = new LinkedHashMap<>();
+        if (!application.isBlank()) {
+            individualSearch.put("srv.application", List.of(application));
+        }
+
+        // One more than the limit, so "there are more" is a fact rather than a guess drawn from a
+        // full page.
+        AnswerList<AppService> answerList = appServiceService.readByCriteria(
+                0, limit + 1, "srv.service", "asc", search, individualSearch, systems);
+
+        List<AppService> found = answerList.getDataList() == null ? List.of() : answerList.getDataList();
+        boolean truncated = found.size() > limit;
+
+        List<Map<String, Object>> services = new ArrayList<>();
+        for (AppService service : found.subList(0, Math.min(found.size(), limit))) {
+            AppServiceDTOV001 dto = mapper.toDTO(service);
+            services.add(MCPProjectionUtils.project(dto, fields));
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("count", services.size());
+        // Echoed so a caller can tell at a glance whether the filter it meant to apply was applied.
+        response.put("appliedFilters", filters(search, appliedSystems, application, system.isBlank()));
+        response.put("fields", fields);
+        if (truncated) {
+            response.put("truncated", true);
+            response.put("message", "More services matched than the requested limit of " + limit
+                    + ". Narrow with search, application or system, or raise limit.");
+        }
+        response.put("services", services);
+
+        if (services.isEmpty()) {
+            response.put("message", "No service matches these filters. Widen the search, or check the system: "
+                    + "a service belongs to a system through its application, and one attached to no "
+                    + "application is shared across all of them.");
+        }
+
+        return MCPToolUtils.successJson(response);
+    }
+
+    /**
+     * Describes the filters that were really applied.
+     */
+    private Map<String, Object> filters(String search, List<String> systems, String application,
+                                        boolean systemFromContext) {
+        Map<String, Object> applied = new LinkedHashMap<>();
+        applied.put("search", search);
+        applied.put("systems", systems);
+        applied.put("systemsFrom", systemFromContext ? "your active context" : "the system parameter");
+        applied.put("application", application);
+        return applied;
     }
 }

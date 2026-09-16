@@ -153,6 +153,11 @@ public class GetTestCaseExecutionTool implements MCPTool {
                 the user asks about the outcome, the logs or the failure of a specific execution.
 
                 Use cerberus_testcase_execution_list first to find the execution id from a tag or a testcase.
+
+                An execution carries no bug or ticket reference: those are attached to the testcase, not to the
+                run. Call cerberus_testcase_get on the testcase to see whether a bug is already open against it
+                before opening a new one.
+
                 Control status values: OK (passed), KO (a control failed — the application is at fault),
                 FA (the test itself failed to run), NA (no data), NE (not executed), PE (still running),
                 QU/QE (still queued), CA (cancelled), WE (waiting for manual testing).

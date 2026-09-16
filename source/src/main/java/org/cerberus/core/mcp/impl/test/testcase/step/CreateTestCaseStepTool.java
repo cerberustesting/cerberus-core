@@ -28,12 +28,14 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPOrderingService;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,12 +66,14 @@ public class CreateTestCaseStepTool implements MCPTool {
     private final ITestCaseStepService testCaseStepService;
     private final TestcaseStepMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
+    private final MCPOrderingService orderingService;
 
-    public CreateTestCaseStepTool(ITestCaseService testCaseService, ITestCaseStepService testCaseStepService, TestcaseStepMapperV001 mapper, MCPLogUtils mcpLogUtils) {
+    public CreateTestCaseStepTool(ITestCaseService testCaseService, ITestCaseStepService testCaseStepService, TestcaseStepMapperV001 mapper, MCPLogUtils mcpLogUtils, MCPOrderingService orderingService) {
         this.testCaseService = testCaseService;
         this.testCaseStepService = testCaseStepService;
         this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
+        this.orderingService = orderingService;
     }
 
     @Override
@@ -121,6 +125,13 @@ public class CreateTestCaseStepTool implements MCPTool {
                 "isLibraryStep", Map.of(
                         "type", "boolean",
                         "description", "Set to true if this step is a reusable library step callable by other testcases. Defaults to false."
+                ),
+                "position", Map.of(
+                        "type", "integer",
+                        "description", "Where the step goes in the testcase, 1 being first. Omit it to append at "
+                                + "the end. Use it whenever the step belongs somewhere other than last — a setup "
+                                + "step the rest of the scenario depends on has to run before them. The steps "
+                                + "already there shift down and keep their own actions, controls and properties."
                 )
         );
 
@@ -131,7 +142,11 @@ public class CreateTestCaseStepTool implements MCPTool {
                 Adds a new step to an existing testcase in Cerberus.
 
                 Call this tool whenever the user asks to add a step to a testcase.
-                The step ID and sort order are auto-assigned after existing steps.
+                The step ID is auto-assigned. The step is appended at the end unless you pass position, which
+                inserts it there instead — use cerberus_testcase_step_reorder to move a step that already exists.
+
+                This tool creates a step with its own actions. To make the new step run an existing library
+                step instead of actions of its own, use cerberus_testcase_step_library_use.
 
                 Use cerberus_testcase_step_action_create after this tool to add actions inside the step.
 
@@ -218,10 +233,30 @@ public class CreateTestCaseStepTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to create step: " + answer.getMessageDescription());
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "status", "created",
-                "step", mapper.toDTO(step)
-        ));
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "created");
+        response.put("step", mapper.toDTO(step));
+
+        // The row is always written at the end first, then moved: creating it in place would mean
+        // renumbering the rest before it exists, which leaves the testcase in a broken order if the
+        // insert then fails.
+        int position = MCPToolUtils.getInteger(args, "position", 0);
+        if (position > 0) {
+            MCPOrderingService.Result placement =
+                    orderingService.placeStep(testFolder, testcaseId, nextStepId, position);
+            if (placement.failed()) {
+                // The step exists; only its position is wrong. Saying so — rather than reporting a
+                // failure — is what stops the caller from creating it a second time.
+                response.put("status", "created_but_not_positioned");
+                response.put("warning", "The step was created at the end of the testcase but could not be "
+                        + "moved to position " + position + ": " + placement.error()
+                        + " Use cerberus_testcase_step_reorder to place it.");
+            } else {
+                response.put("stepIds", placement.order());
+            }
+        }
+
+        return MCPToolUtils.successJson(response);
     }
 
 }

@@ -61,6 +61,14 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
+    public boolean moveTestCaseStepActionControlToAction(String test, String testcase, int stepId, int actionId,
+                                                         int controlId, int newStepId, int newActionId,
+                                                         int newControlId, int sort, String usrModif) {
+        return testCaseStepActionControlDao.moveTestCaseStepActionControlToAction(test, testcase, stepId,
+                actionId, controlId, newStepId, newActionId, newControlId, sort, usrModif);
+    }
+
+    @Override
     public boolean update(TestCaseStepActionControl control) {
         try {
             testCaseStepActionControlDao.updateTestCaseStepActionControl(control);

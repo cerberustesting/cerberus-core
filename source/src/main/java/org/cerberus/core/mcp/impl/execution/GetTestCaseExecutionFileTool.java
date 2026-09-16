@@ -84,7 +84,16 @@ public class GetTestCaseExecutionFileTool implements MCPTool {
      * needs rather than receiving the whole document by accident.
      */
     private static final int DEFAULT_MAX_CHARS = 20_000;
-    private static final int HARD_MAX_CHARS = 200_000;
+    /**
+     * Ceiling on one read, chosen to stay under what a calling agent can carry back.
+     *
+     * <p>Claude Code refuses a tool result above 25 000 tokens — roughly 100 000 characters — and
+     * does not truncate it: it writes the payload to a file and returns an error instead, so the
+     * call yields nothing usable. Asking for 200 000 characters therefore returned less than asking
+     * for 90 000. Paging with {@code offset} costs one extra call; exceeding the limit costs the
+     * whole read.</p>
+     */
+    private static final int HARD_MAX_CHARS = 90_000;
 
     /**
      * Artefact types returned as a viewable image, mapped to the MIME type the MCP client needs

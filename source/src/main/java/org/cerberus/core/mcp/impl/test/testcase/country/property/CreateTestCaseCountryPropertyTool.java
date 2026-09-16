@@ -64,6 +64,9 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_testcase_country_property_create";
 
+    /** Invariant holding the database names a property may point at, as the test case editor uses. */
+    private static final String PROPERTY_DATABASE_INVARIANT = "PROPERTYDATABASE";
+
     private final ITestCaseService testCaseService;
     private final ITestCaseCountryService testCaseCountryService;
     private final ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
@@ -172,7 +175,50 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
         ));
         properties.put("value2", Map.of(
                 "type", "string",
-                "description", "Secondary value. For type=getFromSql: the database name. Meaning depends on type."
+                "description", "Secondary value. Meaning depends on the type. It is NOT the database for "
+                        + "type=getFromSql — that is the separate 'database' field."
+        ));
+        properties.put("database", Map.of(
+                "type", "string",
+                "description", "Which database the query runs on, for type=getFromSql (and the SQL data "
+                        + "libraries). This is a logical name, not a connection: Cerberus resolves it per "
+                        + "country and environment through the environment's database list, so the same "
+                        + "property hits the right server everywhere. Required for type=getFromSql — without "
+                        + "it the property fails at execution with no database found. Call "
+                        + "cerberus_invariant_list with type=PROPERTYDATABASE to see the valid names."
+        ));
+        properties.put("value3", Map.of(
+                "type", "string",
+                "description", "Third value. Meaning depends on the type."
+        ));
+        properties.put("length", Map.of(
+                "type", "integer",
+                "description", "Length of the generated value, for type=text with nature=RANDOM. Ignored "
+                        + "otherwise. A RANDOM text property with length 0 fails at execution."
+        ));
+        properties.put("rowLimit", Map.of(
+                "type", "integer",
+                "description", "Maximum number of rows to fetch, for the types that query a source. 0 means "
+                        + "the system default."
+        ));
+        properties.put("rank", Map.of(
+                "type", "integer",
+                "description", "Rank of this definition when the same property name is defined several times "
+                        + "for the same country. Defaults to 1; leave it alone unless you are adding an "
+                        + "alternative definition on purpose."
+        ));
+        properties.put("retryNb", Map.of(
+                "type", "integer",
+                "description", "How many times to retry when the property resolves to nothing. Use it for a "
+                        + "value that appears with a delay rather than padding the testcase with waits."
+        ));
+        properties.put("retryPeriod", Map.of(
+                "type", "integer",
+                "description", "Milliseconds between retries. Only meaningful with retryNb above 0."
+        ));
+        properties.put("cacheExpire", Map.of(
+                "type", "integer",
+                "description", "Seconds the resolved value stays cached. 0 disables caching."
         ));
         properties.put("description", Map.of(
                 "type", "string",
@@ -241,8 +287,16 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
         String type = MCPToolUtils.getString(args, "type", TestCaseCountryProperties.TYPE_TEXT);
         String value1 = MCPToolUtils.getString(args, "value1", "");
         String value2 = MCPToolUtils.getString(args, "value2", "");
+        String value3 = MCPToolUtils.getString(args, "value3", "");
+        String database = MCPToolUtils.getString(args, "database", "").trim();
         String description = MCPToolUtils.getString(args, "description", "");
         String nature = MCPToolUtils.getString(args, "nature", TestCaseCountryProperties.NATURE_STATIC);
+        int length = MCPToolUtils.getInteger(args, "length", 0);
+        int rowLimit = MCPToolUtils.getInteger(args, "rowLimit", 0);
+        int rank = MCPToolUtils.getInteger(args, "rank", 1);
+        int retryNb = MCPToolUtils.getInteger(args, "retryNb", 0);
+        int retryPeriod = MCPToolUtils.getInteger(args, "retryPeriod", 0);
+        int cacheExpire = MCPToolUtils.getInteger(args, "cacheExpire", 0);
 
         mcpLogUtils.call(TOOL_NAME, "testcase_country_property_create",
                 String.format("MCP tool %s called with testFolder=%s testcase=%s country=%s property=%s",
@@ -260,6 +314,24 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: value1. It is required for type '"
                     + type + "', which uses it to identify the data to retrieve. Only type '"
                     + TestCaseCountryProperties.TYPE_TEXT + "' accepts an empty value1.");
+        }
+
+        if (database.isBlank() && TestCaseCountryProperties.TYPE_GETFROMSQL.equals(type)) {
+            return MCPToolUtils.errorText("Missing required parameter: database. A '"
+                    + TestCaseCountryProperties.TYPE_GETFROMSQL + "' property names the database its query runs "
+                    + "on in 'database', not in value2. Without it the property fails at execution with no "
+                    + "database found for the country and environment. Call cerberus_invariant_list with "
+                    + "type=PROPERTYDATABASE to see the valid names.");
+        }
+        if (!database.isBlank()) {
+            AnswerItem<Invariant> databaseInvariant = invariantService.readByKey(PROPERTY_DATABASE_INVARIANT, database);
+            if (!databaseInvariant.isCodeStringEquals("OK") || databaseInvariant.getItem() == null) {
+                return MCPToolUtils.errorText("Unknown database '" + database
+                        + "'. Valid names come from the " + PROPERTY_DATABASE_INVARIANT + " invariant: "
+                        + loadInvariantValues(PROPERTY_DATABASE_INVARIANT)
+                        + ". Each one still has to be mapped to a connection for the country and environment "
+                        + "the testcase runs in.");
+            }
         }
 
         AnswerItem<TestCase> testCaseAnswer = testCaseService.readByKey(testFolder, testcaseId);
@@ -298,14 +370,17 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
                 .type(type)
                 .value1(value1)
                 .value2(value2)
-                .value3("")
-                .length("0")
-                .rowLimit(0)
+                .value3(value3)
+                // Stored as a string because a RANDOM text property reads it back with
+                // parseIntegerParam, which treats an empty column as zero.
+                .length(String.valueOf(length))
+                .rowLimit(rowLimit)
                 .nature(nature)
-                .cacheExpire(0)
-                .retryNb(0)
-                .retryPeriod(0)
-                .rank(1)
+                .database(database)
+                .cacheExpire(cacheExpire)
+                .retryNb(retryNb)
+                .retryPeriod(retryPeriod)
+                .rank(rank)
                 // Tag created-by as MCP so audit logs can distinguish AI-driven changes from UI changes.
                 .usrCreated("MCP")
                 .build();
@@ -316,14 +391,17 @@ public class CreateTestCaseCountryPropertyTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to create property: " + answer.getMessageDescription());
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "status", "created",
-                "testFolder", testFolder,
-                "testcase", testcaseId,
-                "country", country,
-                "property", property,
-                "type", type
-        ));
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "created");
+        response.put("testFolder", testFolder);
+        response.put("testcase", testcaseId);
+        response.put("country", country);
+        response.put("property", property);
+        response.put("type", type);
+        if (!database.isBlank()) {
+            response.put("database", database);
+        }
+        return MCPToolUtils.successJson(response);
     }
 
     /**

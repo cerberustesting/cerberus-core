@@ -26,6 +26,7 @@ import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.service.IRobotService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,9 @@ import java.util.Map;
 public class ListRobotsTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_robot_list";
+
+    /** How many robots a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     private final IRobotService robotService;
     private final RobotMapperV001 mapper;
@@ -94,6 +98,11 @@ public class ListRobotsTool implements MCPTool {
                 "type", "string",
                 "description", "Optional text filter applied on robot name, platform, browser, or description (case-insensitive)."
         ));
+
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "robots");
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -151,10 +160,14 @@ public class ListRobotsTool implements MCPTool {
                 .map(Object.class::cast)
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "count", robots.size(),
-                "robots", robots
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Object> page = MCPPagination.slice(robots, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, robots.size(), page.size(), "robots");
+        response.put("robots", page);
+        return MCPToolUtils.successJson(response);
     }
 
 }

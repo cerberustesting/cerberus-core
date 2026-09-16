@@ -31,6 +31,7 @@ import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPExecutionTargets;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Principal;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,16 +74,81 @@ public class CreateTestCaseExecutionTool implements MCPTool {
     private final QueuedExecutionService queuedExecutionService;
     private final ITestCaseService testCaseService;
     private final IApplicationService applicationService;
+    private final MCPExecutionTargets executionTargets;
     private final MCPLogUtils mcpLogUtils;
 
     public CreateTestCaseExecutionTool(QueuedExecutionService queuedExecutionService,
                                        ITestCaseService testCaseService,
                                        IApplicationService applicationService,
+                                       MCPExecutionTargets executionTargets,
                                        MCPLogUtils mcpLogUtils) {
         this.queuedExecutionService = queuedExecutionService;
         this.testCaseService = testCaseService;
         this.applicationService = applicationService;
+        this.executionTargets = executionTargets;
         this.mcpLogUtils = mcpLogUtils;
+    }
+
+    /**
+     * Builds one message naming every missing parameter and the values this testcase would accept.
+     *
+     * <p>Resolving the targets costs a few queries on a call that is failing anyway, and it is the
+     * difference between an answer the caller can act on and one that only says a field is empty.
+     * When the resolution itself fails — no application, no live environment — that is the real
+     * problem and it is reported instead of a list of parameters that could not be filled anyway.</p>
+     */
+    private String describeMissing(String testFolder, String testcase, List<String> missing, String applicationType) {
+        StringBuilder message = new StringBuilder();
+        message.append("Missing required parameter(s): ").append(String.join(", ", missing)).append(".\n\n");
+
+        MCPExecutionTargets.Targets targets = executionTargets.resolve(testFolder, testcase);
+        if (targets.failed()) {
+            return message.append(targets.error()).toString();
+        }
+        if (targets.application().isBlank()) {
+            return message.append("This testcase has no application attached, so no country or environment can "
+                    + "be resolved. Attach one with cerberus_testcase_update before executing it.").toString();
+        }
+        if (targets.runnable().isEmpty()) {
+            return message.append(targets.declaredCountries().isEmpty()
+                    ? "This testcase declares no country. Add one with cerberus_testcase_country_create, then "
+                      + "configure an environment for it."
+                    : "The countries this testcase declares (" + targets.declaredCountries() + ") have no active "
+                      + "environment for application '" + targets.application() + "'. Nothing can run until one "
+                      + "is configured — check cerberus_country_environment_parameters_list.").toString();
+        }
+
+        message.append("This testcase can run on:\n");
+        for (Map<String, Object> pair : targets.runnable()) {
+            message.append("  country=").append(pair.get("country"))
+                    .append(" environment=").append(pair.get("environment")).append("\n");
+        }
+
+        if (missing.contains("robots")) {
+            if (targets.robots().isEmpty()) {
+                message.append("\nNo robot matches application type '").append(applicationType)
+                        .append("', so this testcase cannot run automatically. A robot matches when its type "
+                                + "equals the application type exactly, or is left empty. Create one with "
+                                + "cerberus_robot_create, or pass manualExecution='Y'.\n");
+            } else {
+                message.append("\nRobots it accepts: ").append(targets.robotNames()).append("\n");
+            }
+        } else if (!targets.robotRequired()) {
+            message.append("\nApplication type '").append(applicationType)
+                    .append("' is not driven by a robot, so robots is filled in for you.\n");
+        }
+
+        message.append("\nSend them all in one call, as lists: {\"testFolder\": \"").append(testFolder)
+                .append("\", \"testcase\": \"").append(testcase)
+                .append("\", \"countries\": [\"").append(targets.runnable().get(0).get("country"))
+                .append("\"], \"environments\": [\"").append(targets.runnable().get(0).get("environment"))
+                .append("\"]");
+        if (missing.contains("robots") && !targets.robots().isEmpty()) {
+            message.append(", \"robots\": [\"").append(targets.robotNames().get(0)).append("\"]");
+        }
+        message.append("}");
+
+        return message.toString();
     }
 
     /**
@@ -263,10 +330,17 @@ public class CreateTestCaseExecutionTool implements MCPTool {
                 String.format("MCP tool %s called with testFolder=%s testcase=%s countries=%s environments=%s robots=%s",
                         TOOL_NAME, testFolder, testcase, countries, environments, robots));
 
-        if (testFolder.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testFolder");
-        if (testcase.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testcase");
-        if (countries.isEmpty()) return MCPToolUtils.errorText("Missing required parameter: countries");
-        if (environments.isEmpty()) return MCPToolUtils.errorText("Missing required parameter: environments");
+        // The identity of the testcase has to be settled before anything else can be resolved, so
+        // these two are the only checks that answer on their own.
+        List<String> missingIdentity = new ArrayList<>();
+        if (testFolder.isBlank()) missingIdentity.add("testFolder");
+        if (testcase.isBlank()) missingIdentity.add("testcase");
+        if (!missingIdentity.isEmpty()) {
+            return MCPToolUtils.errorText("Missing required parameter(s): " + String.join(", ", missingIdentity)
+                    + ". Call cerberus_testcase_list to find the testcase, then "
+                    + "cerberus_testcase_execution_targets to get the countries, environments and robots it can "
+                    + "run on.");
+        }
 
         // Only GUI, APK, IPA and FAT applications are driven by a robot. For every other type the
         // engine discards whatever robot it is given and queues with an empty one — verified by
@@ -277,18 +351,22 @@ public class CreateTestCaseExecutionTool implements MCPTool {
         boolean robotDriven = isRobotDriven(applicationType);
         boolean robotIgnored = !applicationType.isBlank() && !robotDriven;
 
+        // Everything still missing is reported in one answer, with the values this testcase would
+        // accept. Reporting them one at a time is what turned a first run into four calls: each
+        // rejection named a single parameter and none of them said what to put in it.
+        List<String> missing = new ArrayList<>();
+        if (countries.isEmpty()) missing.add("countries");
+        if (environments.isEmpty()) missing.add("environments");
+        if (robots.isEmpty() && !robotIgnored) missing.add("robots");
+
+        if (!missing.isEmpty()) {
+            return MCPToolUtils.errorText(describeMissing(testFolder, testcase, missing, applicationType));
+        }
+
         if (robots.isEmpty()) {
-            if (robotIgnored) {
-                // Satisfies the service-level guard without asking the caller for a value that
-                // would be thrown away. The name is never resolved for these application types.
-                robots = List.of(ROBOT_NOT_APPLICABLE);
-            } else {
-                return MCPToolUtils.errorText(
-                        "Missing required parameter: robots. Application type '"
-                        + (applicationType.isBlank() ? "unknown" : applicationType)
-                        + "' is driven by a robot, so one must be named. Call "
-                        + "cerberus_testcase_execution_targets to list the robots this testcase can run on.");
-            }
+            // Satisfies the service-level guard without asking the caller for a value that would be
+            // thrown away. The name is never resolved for these application types.
+            robots = List.of(ROBOT_NOT_APPLICABLE);
         }
 
         ManualUrlParameters manualUrlParameters = ManualUrlParameters.builder()

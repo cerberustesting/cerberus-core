@@ -21,24 +21,13 @@ package org.cerberus.core.mcp.impl.execution;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.service.IApplicationService;
-import org.cerberus.core.crud.service.ICountryEnvParamService;
-import org.cerberus.core.crud.service.IRobotService;
-import org.cerberus.core.crud.service.ITestCaseCountryService;
-import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPExecutionTargets;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,33 +50,20 @@ import java.util.Map;
  * omitted: knowing that a country is declared but unusable is what explains a run that queued
  * nothing.</p>
  *
- * <p>Delegation: {@link ITestCaseService}, {@link ITestCaseCountryService},
- * {@link ICountryEnvParamService#findActiveEnvironmentBySystemCountryApplication(String, String, String)}
- * and {@link IRobotService}.</p>
+ * <p>The resolution itself lives in {@link MCPExecutionTargets}, shared with
+ * {@code cerberus_testcase_execution_create} so a run refused for an unusable country or
+ * environment names the valid ones from the same source this tool reports.</p>
  */
 @Component
 public class ListTestCaseExecutionTargetsTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_testcase_execution_targets";
 
-    private final ITestCaseService testCaseService;
-    private final ITestCaseCountryService testCaseCountryService;
-    private final IApplicationService applicationService;
-    private final ICountryEnvParamService countryEnvParamService;
-    private final IRobotService robotService;
+    private final MCPExecutionTargets executionTargets;
     private final MCPLogUtils mcpLogUtils;
 
-    public ListTestCaseExecutionTargetsTool(ITestCaseService testCaseService,
-                                            ITestCaseCountryService testCaseCountryService,
-                                            IApplicationService applicationService,
-                                            ICountryEnvParamService countryEnvParamService,
-                                            IRobotService robotService,
-                                            MCPLogUtils mcpLogUtils) {
-        this.testCaseService = testCaseService;
-        this.testCaseCountryService = testCaseCountryService;
-        this.applicationService = applicationService;
-        this.countryEnvParamService = countryEnvParamService;
-        this.robotService = robotService;
+    public ListTestCaseExecutionTargetsTool(MCPExecutionTargets executionTargets, MCPLogUtils mcpLogUtils) {
+        this.executionTargets = executionTargets;
         this.mcpLogUtils = mcpLogUtils;
     }
 
@@ -171,22 +147,20 @@ public class ListTestCaseExecutionTargetsTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: testcase");
         }
 
-        AnswerItem<TestCase> testCaseAnswer = testCaseService.readByKey(testFolder, testcaseId);
-        if (!testCaseAnswer.isCodeStringEquals("OK") || testCaseAnswer.getItem() == null) {
-            return MCPToolUtils.errorText("Testcase does not exist: testFolder=" + testFolder + " testcase=" + testcaseId);
+        MCPExecutionTargets.Targets targets = executionTargets.resolve(testFolder, testcaseId);
+        if (targets.failed()) {
+            return MCPToolUtils.errorText(targets.error());
         }
 
-        TestCase testCase = testCaseAnswer.getItem();
-        String applicationName = MCPToolUtils.nullSafe(testCase.getApplication());
-
+        TestCase testCase = targets.testCase();
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("testFolder", testFolder);
         response.put("testcase", testcaseId);
-        response.put("application", applicationName);
+        response.put("application", targets.application());
         response.put("testcaseStatus", MCPToolUtils.nullSafe(testCase.getStatus()));
         response.put("testcaseIsActive", testCase.isActive());
 
-        if (applicationName.isBlank()) {
+        if (targets.application().isBlank()) {
             response.put("countries", List.of());
             response.put("robots", List.of());
             response.put("runnable", List.of());
@@ -195,60 +169,26 @@ public class ListTestCaseExecutionTargetsTool implements MCPTool {
             return MCPToolUtils.successJson(response);
         }
 
-        AnswerItem<Application> applicationAnswer = applicationService.readByKey(applicationName);
-        if (!applicationAnswer.isCodeStringEquals("OK") || applicationAnswer.getItem() == null) {
-            return MCPToolUtils.errorText("Application '" + applicationName + "' referenced by the testcase does not exist.");
-        }
+        response.put("system", targets.system());
+        response.put("applicationType", targets.applicationType());
+        response.put("countries", targets.countries());
+        response.put("robotRequired", targets.robotRequired());
+        response.put("robots", targets.robots());
+        response.put("runnable", targets.runnable());
 
-        Application application = applicationAnswer.getItem();
-        String system = MCPToolUtils.nullSafe(application.getSystem());
-        String applicationType = MCPToolUtils.nullSafe(application.getType());
-
-        response.put("system", system);
-        response.put("applicationType", applicationType);
-
-        List<String> declaredCountries = testCaseCountryService.findListOfCountryByTestTestCase(testFolder, testcaseId);
-        List<Map<String, Object>> countries = new ArrayList<>();
-        List<Map<String, Object>> runnable = new ArrayList<>();
-
-        for (String country : declaredCountries) {
-            List<Map<String, Object>> environments = resolveEnvironments(system, country, applicationName);
-
-            Map<String, Object> countryEntry = new LinkedHashMap<>();
-            countryEntry.put("country", country);
-            countryEntry.put("environments", environments);
-            countries.add(countryEntry);
-
-            for (Map<String, Object> environment : environments) {
-                Map<String, Object> pair = new LinkedHashMap<>();
-                pair.put("country", country);
-                pair.put("environment", environment.get("environment"));
-                pair.put("url", environment.get("url"));
-                runnable.add(pair);
-            }
-        }
-
-        boolean requiresRobot = requiresRobot(applicationType);
-        List<Map<String, Object>> robots = requiresRobot ? resolveRobots(applicationType) : List.of();
-
-        response.put("countries", countries);
-        response.put("robotRequired", requiresRobot);
-        response.put("robots", robots);
-        response.put("runnable", runnable);
-
-        if (runnable.isEmpty()) {
-            response.put("message", declaredCountries.isEmpty()
+        if (targets.runnable().isEmpty()) {
+            response.put("message", targets.declaredCountries().isEmpty()
                     ? "No country is declared on this testcase. Add one with cerberus_testcase_country_create before executing it."
-                    : "The countries declared on this testcase (" + declaredCountries + ") have no active environment "
-                            + "configured for application '" + applicationName + "' in system '" + system + "'. "
+                    : "The countries declared on this testcase (" + targets.declaredCountries() + ") have no active environment "
+                            + "configured for application '" + targets.application() + "' in system '" + targets.system() + "'. "
                             + "Check which country the environments are actually declared under with "
                             + "cerberus_country_environment_parameters_list.");
-        } else if (!requiresRobot) {
-            response.put("message", "Application type '" + applicationType + "' is not driven by a robot, so the "
-                    + "execution engine ignores the robot. cerberus_testcase_execution_create still requires the "
-                    + "robots parameter: pass any existing robot name.");
-        } else if (robots.isEmpty()) {
-            response.put("message", "No robot matches application type '" + applicationType + "', so this testcase "
+        } else if (!targets.robotRequired()) {
+            response.put("message", "Application type '" + targets.applicationType() + "' is not driven by a robot, so the "
+                    + "execution engine ignores it. cerberus_testcase_execution_create fills the robot in by itself "
+                    + "for this application type — leave the robots parameter out.");
+        } else if (targets.robots().isEmpty()) {
+            response.put("message", "No robot matches application type '" + targets.applicationType() + "', so this testcase "
                     + "cannot be executed automatically. A robot matches when its type equals the application type "
                     + "exactly (case-sensitive) or is left empty. Create one with cerberus_robot_create, or run with "
                     + "manualExecution set to 'Y'.");
@@ -256,107 +196,4 @@ public class ListTestCaseExecutionTargetsTool implements MCPTool {
 
         return MCPToolUtils.successJson(response);
     }
-
-    /**
-     * Lists the active environments configured for one (system, country, application) triplet.
-     *
-     * <p>An environment is only usable when it is active at both levels: the country/environment
-     * itself, and the per-application parameters that carry the URL. The delegated service
-     * intersects the two, which is exactly the condition the execution engine applies.</p>
-     *
-     * @return one ordered map per usable environment, possibly empty.
-     */
-    private List<Map<String, Object>> resolveEnvironments(String system, String country, String application) {
-        List<Map<String, Object>> environments = new ArrayList<>();
-
-        List<JSONObject> activeEnvironments;
-        try {
-            activeEnvironments = countryEnvParamService
-                    .findActiveEnvironmentBySystemCountryApplication(system, country, application);
-        } catch (CerberusException e) {
-            // A country with no configuration is a normal, expected outcome here — reporting the
-            // country with no environment is more useful than failing the whole lookup.
-            return environments;
-        }
-
-        for (JSONObject activeEnvironment : activeEnvironments) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            try {
-                map.put("environment", activeEnvironment.optString("environment", ""));
-                map.put("build", activeEnvironment.optString("build", ""));
-                map.put("revision", activeEnvironment.optString("revision", ""));
-                map.put("url", activeEnvironment.optString("url", ""));
-            } catch (JSONException e) {
-                continue;
-            }
-            environments.add(map);
-        }
-
-        return environments;
-    }
-
-    /**
-     * Returns whether an application of this type needs a robot at all.
-     *
-     * <p>Mirrors the guard in
-     * {@code QueuedExecutionService.addToQueue}: only GUI, APK, IPA and FAT applications are
-     * driven by a robot. For every other type the engine forces the robot to an empty value, so
-     * offering a robot list would be misleading.</p>
-     */
-    private boolean requiresRobot(String applicationType) {
-        return Application.TYPE_GUI.equalsIgnoreCase(applicationType)
-                || Application.TYPE_APK.equalsIgnoreCase(applicationType)
-                || Application.TYPE_IPA.equalsIgnoreCase(applicationType)
-                || Application.TYPE_FAT.equalsIgnoreCase(applicationType);
-    }
-
-    /**
-     * Lists the robots the execution engine would accept for an application of the given type.
-     *
-     * <p>The matching rule is copied from {@code QueuedExecutionService.addToQueue}:
-     * {@code "".equals(robot.getType()) || app.getType().equals(robot.getType())}. Two details of
-     * that rule matter and are reproduced verbatim rather than rationalised:</p>
-     * <ul>
-     *   <li>a robot with an <em>empty</em> type is a wildcard that matches every application —
-     *       excluding it would report "no robot available" for an instance whose only robot is
-     *       untyped, which is a common setup;</li>
-     *   <li>the comparison is case-sensitive, so a robot typed "gui" genuinely will not run a GUI
-     *       application. Matching case-insensitively here would promise a run that the engine then
-     *       refuses.</li>
-     * </ul>
-     *
-     * <p>Inactive robots are listed rather than filtered out, because the queue lookup does not
-     * filter on the flag either: an inactive robot still queues. The flag is reported so the
-     * caller can prefer an active one.</p>
-     *
-     * @return one ordered map per robot the engine would accept, possibly empty.
-     */
-    private List<Map<String, Object>> resolveRobots(String applicationType) {
-        List<Map<String, Object>> robots = new ArrayList<>();
-
-        List<Robot> allRobots = robotService.readAll().getDataList();
-        if (allRobots == null) {
-            return robots;
-        }
-
-        for (Robot robot : allRobots) {
-            String robotType = robot.getType();
-            boolean accepted = "".equals(robotType) || applicationType.equals(robotType);
-            if (!accepted) {
-                continue;
-            }
-
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("robot", MCPToolUtils.nullSafe(robot.getRobot()));
-            map.put("type", MCPToolUtils.nullSafe(robotType));
-            map.put("active", robot.isActive());
-            map.put("platform", MCPToolUtils.nullSafe(robot.getPlatform()));
-            map.put("browser", MCPToolUtils.nullSafe(robot.getBrowser()));
-            map.put("description", MCPToolUtils.nullSafe(robot.getDescription()));
-            robots.add(map);
-        }
-
-        return robots;
-    }
-
 }

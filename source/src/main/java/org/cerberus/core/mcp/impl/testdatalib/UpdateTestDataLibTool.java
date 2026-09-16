@@ -25,6 +25,8 @@ import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.entity.TestDataLibData;
 import org.cerberus.core.crud.service.ITestDataLibDataService;
 import org.cerberus.core.crud.service.ITestDataLibService;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
@@ -95,9 +97,27 @@ public class UpdateTestDataLibTool implements MCPTool {
         Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("testDataLibId", Map.of(
                 "type", "integer",
-                "description", "Numeric id of the library variant to correct, from cerberus_datalib_get. "
-                        + "Not the name: several variants share a name and only one of them applies to a "
-                        + "given system / environment / country."
+                "description", "Numeric id of the library variant to correct, from cerberus_datalib_get or "
+                        + "cerberus_datalib_list. The precise way to name a variant when several share a name."
+        ));
+        properties.put("name", Map.of(
+                "type", "string",
+                "description", "Name of the library to correct, as an alternative to testDataLibId. Accepted "
+                        + "when it identifies one variant; when several share the name, the answer lists them "
+                        + "with their ids so you can pick one — narrow with system, environment and country "
+                        + "first."
+        ));
+        properties.put("system", Map.of(
+                "type", "string",
+                "description", "Narrows a lookup by name to the variant declared for this system."
+        ));
+        properties.put("environment", Map.of(
+                "type", "string",
+                "description", "Narrows a lookup by name to the variant declared for this environment."
+        ));
+        properties.put("country", Map.of(
+                "type", "string",
+                "description", "Narrows a lookup by name to the variant declared for this country."
         ));
         properties.put("updates", Map.of(
                 "type", "object",
@@ -160,7 +180,8 @@ public class UpdateTestDataLibTool implements MCPTool {
                 new McpSchema.JsonSchema(
                         "object",
                         properties,
-                        List.of("testDataLibId"),
+                        // Either identifier works, so neither can be required on its own.
+                        List.of(),
                         null,
                         null,
                         null
@@ -180,22 +201,37 @@ public class UpdateTestDataLibTool implements MCPTool {
     @SuppressWarnings("unchecked")
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         int testDataLibId = MCPToolUtils.getInteger(args, "testDataLibId", 0);
+        String name = MCPToolUtils.getString(args, "name", "").trim();
         boolean replaceAll = MCPToolUtils.getBoolean(args, "replaceAllSubData", false);
 
         mcpLogUtils.call(TOOL_NAME, "datalib_update",
-                String.format("MCP tool %s called with testDataLibId=%s replaceAllSubData=%s",
-                        TOOL_NAME, testDataLibId, replaceAll));
+                String.format("MCP tool %s called with testDataLibId=%s name=%s replaceAllSubData=%s",
+                        TOOL_NAME, testDataLibId, name, replaceAll));
 
-        if (testDataLibId <= 0) {
-            return MCPToolUtils.errorText("Missing or invalid required parameter: testDataLibId");
+        TestDataLib lib;
+        if (testDataLibId > 0) {
+            AnswerItem<TestDataLib> readAnswer = testDataLibService.readByKey(testDataLibId);
+            if (!readAnswer.isCodeStringEquals("OK") || readAnswer.getItem() == null) {
+                return MCPToolUtils.errorText("Data library does not exist: " + testDataLibId);
+            }
+            lib = readAnswer.getItem();
+        } else if (!name.isBlank()) {
+            // Accepting the name is what makes a broken library repairable from what a caller
+            // actually has in hand. Requiring the numeric id meant a library created a few turns
+            // earlier could not be corrected without first going to look it up again.
+            AnswerItem<TestDataLib> resolved = resolveByName(name,
+                    MCPToolUtils.getString(args, "system", "").trim(),
+                    MCPToolUtils.getString(args, "environment", "").trim(),
+                    MCPToolUtils.getString(args, "country", "").trim());
+            if (!resolved.isCodeStringEquals("OK")) {
+                return MCPToolUtils.errorText(resolved.getMessageDescription());
+            }
+            lib = resolved.getItem();
+            testDataLibId = lib.getTestDataLibID();
+        } else {
+            return MCPToolUtils.errorText("Name the library to correct, either by 'testDataLibId' or by "
+                    + "'name'. cerberus_datalib_list gives both.");
         }
-
-        AnswerItem<TestDataLib> readAnswer = testDataLibService.readByKey(testDataLibId);
-        if (!readAnswer.isCodeStringEquals("OK") || readAnswer.getItem() == null) {
-            return MCPToolUtils.errorText("Data library does not exist: " + testDataLibId);
-        }
-
-        TestDataLib lib = readAnswer.getItem();
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("testDataLibId", testDataLibId);
         response.put("name", MCPToolUtils.nullSafe(lib.getName()));
@@ -270,6 +306,72 @@ public class UpdateTestDataLibTool implements MCPTool {
      *
      * @return {@code null} on success, or the error result to return to the caller.
      */
+    /**
+     * Finds the single library variant a name refers to.
+     *
+     * <p>A name can carry several variants — one per system, environment or country — and picking
+     * one of them silently would edit a library the caller never saw. When more than one matches,
+     * the answer lists them with their ids rather than choosing.</p>
+     *
+     * @return the variant, or a failed answer whose message names what to do instead.
+     */
+    private AnswerItem<TestDataLib> resolveByName(String name, String system, String environment, String country) {
+        AnswerItem<TestDataLib> answer = new AnswerItem<>();
+        AnswerList<TestDataLib> candidates = testDataLibService.readByVariousByCriteria(
+                name, null, null, null, null, 0, 0, "Name", "asc", null, null);
+
+        List<TestDataLib> matching = new ArrayList<>();
+        if (candidates.getDataList() != null) {
+            for (TestDataLib candidate : candidates.getDataList()) {
+                if (!name.equalsIgnoreCase(MCPToolUtils.nullSafe(candidate.getName()))) {
+                    continue;
+                }
+                if (!system.isBlank() && !system.equalsIgnoreCase(MCPToolUtils.nullSafe(candidate.getSystem()))) {
+                    continue;
+                }
+                if (!environment.isBlank()
+                        && !environment.equalsIgnoreCase(MCPToolUtils.nullSafe(candidate.getEnvironment()))) {
+                    continue;
+                }
+                if (!country.isBlank() && !country.equalsIgnoreCase(MCPToolUtils.nullSafe(candidate.getCountry()))) {
+                    continue;
+                }
+                matching.add(candidate);
+            }
+        }
+
+        MessageEvent message = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        if (matching.isEmpty()) {
+            message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            message.setDescription("No data library named '" + name + "' matches"
+                    + (system.isBlank() ? "" : " system='" + system + "'")
+                    + (environment.isBlank() ? "" : " environment='" + environment + "'")
+                    + (country.isBlank() ? "" : " country='" + country + "'")
+                    + ". Call cerberus_datalib_list to see what exists.");
+            answer.setResultMessage(message);
+            return answer;
+        }
+        if (matching.size() > 1) {
+            StringBuilder variants = new StringBuilder();
+            for (TestDataLib candidate : matching) {
+                variants.append("\n  id ").append(candidate.getTestDataLibID())
+                        .append(" system='").append(MCPToolUtils.nullSafe(candidate.getSystem()))
+                        .append("' environment='").append(MCPToolUtils.nullSafe(candidate.getEnvironment()))
+                        .append("' country='").append(MCPToolUtils.nullSafe(candidate.getCountry())).append("'");
+            }
+            message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            message.setDescription("'" + name + "' has " + matching.size() + " variants, so the name alone does "
+                    + "not say which one to correct. Narrow with system, environment or country, or pass "
+                    + "testDataLibId:" + variants);
+            answer.setResultMessage(message);
+            return answer;
+        }
+
+        answer.setItem(matching.get(0));
+        answer.setResultMessage(message);
+        return answer;
+    }
+
     @SuppressWarnings("unchecked")
     private McpSchema.CallToolResult applySubData(TestDataLib lib, List<Object> requested,
                                                   boolean replaceAll, Map<String, Object> response) {

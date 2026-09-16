@@ -266,6 +266,18 @@ public class CreateTestDataLibTool implements MCPTool {
             return MCPToolUtils.errorText("Unsupported type: " + type + ". Supported types: " + supportedTypes);
         }
 
+        // The key entry is checked before anything is written. A library created without it is not
+        // merely incomplete: every read path in the engine reaches for the empty-named entry —
+        // PropertyService takes row.get("") as the property's value, and the "exclude values already
+        // used" path calls .equals on it — so the library breaks the run rather than resolving to
+        // nothing, and it does so from the first execution that touches it.
+        Object requestedSubData = args.get("subData");
+        List<Object> subDataForCheck = requestedSubData instanceof List ? (List<Object>) requestedSubData : List.of();
+        McpSchema.CallToolResult missingKeyEntry = requireKeyEntry(name, type, subDataForCheck);
+        if (missingKeyEntry != null) {
+            return missingKeyEntry;
+        }
+
         // Refuse an exact duplicate of the (name, system, environment, country) key. The lookup the
         // engine uses matches wildcards too, so it cannot tell an existing variant from the one
         // being created; the comparison is done here on the four qualifiers exactly.
@@ -400,6 +412,59 @@ public class CreateTestDataLibTool implements MCPTool {
         }
 
         return null;
+    }
+
+    /**
+     * Refuses a library that would be created without its key entry.
+     *
+     * <p>Named "the key entry" because it is the one the engine reads when a property names the
+     * library without naming a sub-data: it holds the main value for an internal library, and
+     * designates the key column, position or path for the others. Its {@code subData} is the empty
+     * string, which is exactly the part a caller drops without noticing.</p>
+     *
+     * <p>This used to be a warning attached to a successful creation. That is the worst of both
+     * worlds: the call reports success, the caller moves on, and the library only fails much later
+     * from inside an execution, where the message says nothing about a missing entry. Refusing here
+     * costs one call and names the fix.</p>
+     *
+     * @return {@code null} when the request carries a key entry, otherwise the error to return.
+     */
+    @SuppressWarnings("unchecked")
+    private McpSchema.CallToolResult requireKeyEntry(String name, String type, List<Object> requested) {
+        for (Object item : requested) {
+            if (item instanceof Map && ((Map<String, Object>) item).containsKey("subData")
+                    && MCPToolUtils.getString((Map<String, Object>) item, "subData", "#").isEmpty()) {
+                return null;
+            }
+        }
+
+        TestDataLib shape = new TestDataLib();
+        shape.setType(type);
+        String mappingField = TestDataLibMappingUtils.mappingFieldFor(shape);
+
+        StringBuilder message = new StringBuilder();
+        message.append("A data library needs a key entry: one sub-data whose 'subData' is an empty string. ");
+        message.append(requested.isEmpty()
+                ? "You sent no sub-data at all. "
+                : "None of the sub-data you sent has one. ");
+        message.append("Cerberus reads that entry whenever a property names the library without naming a "
+                + "sub-data, and a library without it fails the execution that uses it rather than simply "
+                + "resolving to nothing.\n\n");
+        // "an INTERNAL", "a SQL": the article follows the sound of the type name, and every type
+        // that starts with a vowel here is spelled out letter by letter anyway.
+        String article = "AEIOU".indexOf(type.charAt(0)) >= 0 ? "an" : "a";
+        message.append("For ").append(article).append(" ").append(type)
+                .append(" library the key entry carries its mapping in '")
+                .append(mappingField).append("': ").append(TestDataLibMappingUtils.mappingExplanationFor(shape))
+                .append("\n\n");
+        message.append(requested.isEmpty()
+                ? "Send it in subData, with whatever other entries the library exposes:\n"
+                : "Add it to subData, alongside the entries you already listed:\n");
+        message.append("{\"subData\": \"\", \"").append(mappingField)
+                .append("\": \"…\", \"description\": \"key\"}\n\n");
+        message.append("Nothing was created; send the call again with the key entry included.");
+
+        return MCPToolUtils.errorText(message.toString());
     }
 
     /**

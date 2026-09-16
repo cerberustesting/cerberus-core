@@ -28,6 +28,7 @@ import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPOrderingService;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
@@ -62,12 +63,14 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
     private final ITestCaseStepActionControlService testCaseStepActionControlService;
     private final TestcaseStepActionControlMapperV001 mapper;
     private final MCPLogUtils mcpLogUtils;
+    private final MCPOrderingService orderingService;
 
-    public CreateTestCaseStepActionControlTool(ITestCaseStepActionService testCaseStepActionService, ITestCaseStepActionControlService testCaseStepActionControlService, TestcaseStepActionControlMapperV001 mapper, MCPLogUtils mcpLogUtils) {
+    public CreateTestCaseStepActionControlTool(ITestCaseStepActionService testCaseStepActionService, ITestCaseStepActionControlService testCaseStepActionControlService, TestcaseStepActionControlMapperV001 mapper, MCPLogUtils mcpLogUtils, MCPOrderingService orderingService) {
         this.testCaseStepActionService = testCaseStepActionService;
         this.testCaseStepActionControlService = testCaseStepActionControlService;
         this.mapper = mapper;
         this.mcpLogUtils = mcpLogUtils;
+        this.orderingService = orderingService;
     }
 
     @Override
@@ -178,6 +181,12 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
                 "type", "boolean",
                 "description", "If true, a failure on this control stops the testcase execution. Defaults to true."
         ));
+        properties.put("position", Map.of(
+                "type", "integer",
+                "description", "Where the control goes on the action, 1 being first. Omit it to append at the "
+                        + "end. Order matters beyond readability: a control marked fatal ends the testcase "
+                        + "where it sits, so anything after it never runs."
+        ));
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -186,7 +195,9 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
                 Adds a control (assertion) to an existing action in a Cerberus testcase step.
 
                 Call this tool whenever the user asks to add a verification, assertion, or check on an action result.
-                The control ID and sort order are auto-assigned after existing controls on the action.
+                The control ID is auto-assigned. The control is appended at the end unless you pass position,
+                which inserts it there instead — use cerberus_testcase_step_action_control_reorder to move a
+                control that already exists.
 
                 Controls are used to verify outcomes: HTTP status codes, response body values, element presence, text content, etc.
 
@@ -221,8 +232,12 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
         String testcaseId = MCPToolUtils.getString(args, "testcase", "");
-        int stepId = MCPToolUtils.getInteger(args, "stepId", 0);
-        int actionId = MCPToolUtils.getInteger(args, "actionId", 0);
+        // 0 is a legitimate step, action and control id — Cerberus assigns these within their
+        // parent rather than from a sequence, and real testcases do start at 0. The sentinel for
+        // "not supplied" therefore has to be negative: reading it as 0 made every element numbered
+        // 0 unreachable through this tool, with an error blaming the caller.
+        int stepId = MCPToolUtils.getInteger(args, "stepId", -1);
+        int actionId = MCPToolUtils.getInteger(args, "actionId", -1);
         String control = MCPToolUtils.getString(args, "control", "");
         String value1 = MCPToolUtils.getString(args, "value1", "");
         String value2 = MCPToolUtils.getString(args, "value2", "");
@@ -242,11 +257,11 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
             return MCPToolUtils.errorText("Missing required parameter: testcase");
         }
 
-        if (stepId <= 0) {
+        if (stepId < 0) {
             return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
         }
 
-        if (actionId <= 0) {
+        if (actionId < 0) {
             return MCPToolUtils.errorText("Missing or invalid required parameter: actionId");
         }
 
@@ -310,10 +325,30 @@ public class CreateTestCaseStepActionControlTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to create control: " + answer.getMessageDescription());
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "status", "created",
-                "control", mapper.toDTO(newControl)
-        ));
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "created");
+        response.put("control", mapper.toDTO(newControl));
+
+        // The row is always written at the end first, then moved: creating it in place would mean
+        // renumbering the rest before it exists, which leaves the action in a broken order if the
+        // insert then fails.
+        int position = MCPToolUtils.getInteger(args, "position", 0);
+        if (position > 0) {
+            MCPOrderingService.Result placement = orderingService.placeControl(
+                    testFolder, testcaseId, stepId, actionId, nextControlId, position);
+            if (placement.failed()) {
+                // The control exists; only its position is wrong. Saying so — rather than reporting a
+                // failure — is what stops the caller from creating it a second time.
+                response.put("status", "created_but_not_positioned");
+                response.put("warning", "The control was created at the end of the action but could not be "
+                        + "moved to position " + position + ": " + placement.error()
+                        + " Use cerberus_testcase_step_action_control_reorder to place it.");
+            } else {
+                response.put("controlIds", placement.order());
+            }
+        }
+
+        return MCPToolUtils.successJson(response);
     }
 
 }
