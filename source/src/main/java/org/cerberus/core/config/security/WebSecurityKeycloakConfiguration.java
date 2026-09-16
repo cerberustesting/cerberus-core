@@ -228,7 +228,14 @@ public class WebSecurityKeycloakConfiguration {
 		http
 				.securityMatcher(new AntPathRequestMatcher("/api/public/**"))
 				.csrf(csrf -> csrf.disable())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				// IF_REQUIRED, not STATELESS : STATELESS installs a NullSecurityContextRepository,
+				// which never loads the SecurityContext from the HttpSession. That broke the webapp's
+				// own calls to /api/public/** (e.g. TestCaseSimpleCreation.js), which authenticate via
+				// the classic session cookie set by the @Order(2) login chain, not a Bearer token.
+				// IF_REQUIRED restores the default HttpSessionSecurityContextRepository so an existing
+				// session's Authentication is still picked up here, while Bearer/X-API-KEY callers stay
+				// unaffected : no session is created for anonymous or JWT-authenticated requests.
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 				// permitAll here on purpose : a request with no Bearer token must still reach
 				// the controller so its legacy X-API-KEY check keeps working. Real enforcement
 				// for JWT-authenticated calls happens in publicApiRoleFilter below.
