@@ -246,14 +246,12 @@ public class RobotServerService implements IRobotServerService {
                 session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
                 LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
                 session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
-                String executorExtensionHost = StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getExecutorExtensionHost())
-                        ? execution.getSeleniumIP() : execution.getRobotExecutorObj().getExecutorExtensionHost();
-                LOG.debug("Extension host set: {}", executorExtensionHost);
-                session.setExecutorExtensionHost(executorExtensionHost);
+                LOG.debug("Extension host set: {}", execution.getRobotExecutorObj().getExecutorExtensionHost());
+                session.setExecutorExtensionHost(execution.getRobotExecutorObj().getExecutorExtensionHost());
             } else {
                 session.setExecutorExtensionProxyPort(0);
                 session.setExecutorExtensionPort(0);
-                session.setExecutorExtensionHost(execution.getSeleniumIP());
+                session.setExecutorExtensionHost(null);
             }
             session.setConsoleLogs(new JSONArray());
 
@@ -616,14 +614,12 @@ public class RobotServerService implements IRobotServerService {
                 session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
                 LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
                 session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
-                String executorExtensionHost = StringUtil.isEmptyOrNull(execution.getRobotExecutorObj().getExecutorExtensionHost())
-                        ? execution.getSeleniumIP() : execution.getRobotExecutorObj().getExecutorExtensionHost();
-                LOG.debug("Extension host set: {}", executorExtensionHost);
-                session.setExecutorExtensionHost(executorExtensionHost);
+                LOG.debug("Extension host set: {}", execution.getRobotExecutorObj().getExecutorExtensionHost());
+                session.setExecutorExtensionHost(execution.getRobotExecutorObj().getExecutorExtensionHost());
             } else {
                 session.setExecutorExtensionProxyPort(0);
                 session.setExecutorExtensionPort(0);
-                session.setExecutorExtensionHost(execution.getSeleniumIP());
+                session.setExecutorExtensionHost(null);
             }
             session.setConsoleLogs(new JSONArray());
 
