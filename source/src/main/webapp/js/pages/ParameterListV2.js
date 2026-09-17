@@ -118,7 +118,7 @@ function initPage() {
                     return doc.getDocLabel("page_parameter",
                         row.hasPermissionsUpdate ? "button_edit" : "button_view");
                 },
-                onClick: function (row) { openModalParameter(row.param, getSys()); }
+                onClick: function (row) { openModalParameter(row.param, getSys().toString()); }
             }
         ]
     });
