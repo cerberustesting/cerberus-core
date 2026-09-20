@@ -50,10 +50,8 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     @Override
     public JSONObject generateNotifyStartTagExecution(Tag tag, JSONObject ceberusEventMessage) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         JSONObject body = new JSONObject();
         body.put("text", "Execution Tag '" + tag.getTag() + "' Started.");
@@ -68,10 +66,9 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecution(Tag tag, JSONObject ceberusEventMessage, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+
         prioritiesList = invariantService.readByIdName("PRIORITY");
         countriesList = invariantService.readByIdName("COUNTRY");
         environmentsList = invariantService.readByIdName("ENVIRONMENT");
@@ -89,10 +86,8 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     @Override
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe, JSONObject ceberusEventMessage) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         JSONObject body = new JSONObject();
         body.put("text", "Execution " + exe.getId() + " Started.");
@@ -107,10 +102,8 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     @Override
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe, JSONObject ceberusEventMessage) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         JSONObject body = new JSONObject();
         body.put("text", "Execution " + exe.getId() + " Ended.");

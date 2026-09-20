@@ -129,10 +129,7 @@ public class XRayGenerationService implements IXRayGenerationService {
     @Override
     public JSONObject generateUpdateTestExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 

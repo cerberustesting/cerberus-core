@@ -52,10 +52,7 @@ public class JiraGenerationService implements IJiraGenerationService {
         JSONObject bugObject = new JSONObject();
 
         try {
-            String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-            if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-                cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-            }
+            String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
             cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
             String cerberusUrlExe = cerberusUrl + "TestCaseExecution.jsp?executionId=" + String.valueOf(execution.getId());

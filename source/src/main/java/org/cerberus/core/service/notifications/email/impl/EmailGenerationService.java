@@ -271,14 +271,13 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%NAME%", user.getName());
         body = body.replace("%LOGIN%", user.getLogin());
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+
         StringBuilder sb = new StringBuilder();
         sb.append("<a href='");
         sb.append(cerberusUrl);
-        sb.append("/ChangePassword.jsp?login=");
+        sb.append("ChangePassword.jsp?login=");
         sb.append(user.getLogin());
         sb.append("&confirmationToken=");
         sb.append(user.getResetPasswordToken());
@@ -306,17 +305,15 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         String myEnvironmentList = StringUtil.convertToString(new JSONArray(tag.getReqEnvironmentList()), ",");
         String myCountryList = StringUtil.convertToString(new JSONArray(tag.getReqCountryList()), ",");
 
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
-        urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
+        urlreporttag.append("ReportingExecutionByTag.jsp?Tag=");
         urlreporttag.append(StringUtil.encodeURL(tag.getTag()));
         body = body.replace("%TAG%", tag.getTag());
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
@@ -353,13 +350,11 @@ public class EmailGenerationService implements IEmailGenerationService {
             String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
             boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-            String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-            if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-                cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-            }
+            String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+            cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
             StringBuilder urlreporttag = new StringBuilder();
-            urlreporttag.append(cerberusUrl).append("/ReportingExecutionByTag.jsp?Tag=").append(StringUtil.encodeURL(tag.getTag()));
+            urlreporttag.append(cerberusUrl).append("ReportingExecutionByTag.jsp?Tag=").append(StringUtil.encodeURL(tag.getTag()));
 
             // Body replace.
             body = body.replace("%TAG%", tag.getTag());
@@ -582,14 +577,12 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.getParameterStringByKey("cerberus_notification_executionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_executionstart_body'.");
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         StringBuilder urlTestCase = new StringBuilder();
         urlTestCase.append(cerberusUrl);
-        urlTestCase.append("/TestCaseExecution.jsp?executionId=");
+        urlTestCase.append("TestCaseExecution.jsp?executionId=");
         urlTestCase.append(exe.getId());
 
         body = body.replace("%TAG%", exe.getTag());
@@ -633,14 +626,12 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.getParameterStringByKey("cerberus_notification_executionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_executionend_body'.");
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         StringBuilder urlTestCase = new StringBuilder();
         urlTestCase.append(cerberusUrl);
-        urlTestCase.append("/TestCaseExecution.jsp?executionId=");
+        urlTestCase.append("TestCaseExecution.jsp?executionId=");
         urlTestCase.append(exe.getId());
 
         body = body.replace("%TAG%", exe.getTag());
@@ -688,14 +679,12 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = "";
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         StringBuilder urlTestCase = new StringBuilder();
         urlTestCase.append(cerberusUrl);
-        urlTestCase.append("/TestCaseScript.jsp?test=");
+        urlTestCase.append("TestCaseScript.jsp?test=");
         urlTestCase.append(StringUtil.encodeURL(testCase.getTest()));
         urlTestCase.append("&testcase=");
         urlTestCase.append(StringUtil.encodeURL(testCase.getTestcase()));

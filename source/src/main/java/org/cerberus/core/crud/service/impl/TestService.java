@@ -164,10 +164,7 @@ public class TestService implements ITestService {
             try {
                 final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
                 if (!externallyUsedTestCaseSteps.isEmpty()) {
-                    String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-                    if (StringUtil.isEmptyOrNull(cerberusUrlTemp)) {
-                        cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
-                    }
+                    String cerberusUrlTemp = parameterService.getParameterStringCerberusURLByKey();
                     final String cerberusUrl = cerberusUrlTemp;
 
                     ans.setResultMessage(

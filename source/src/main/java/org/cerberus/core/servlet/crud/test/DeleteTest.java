@@ -67,10 +67,10 @@ public class DeleteTest extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
@@ -118,10 +118,8 @@ public class DeleteTest extends HttpServlet {
                 try {
                     final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
                     if (!externallyUsedTestCaseSteps.isEmpty()) {
-                        String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-                        if (StringUtil.isEmptyOrNull(cerberusUrlTemp)) {
-                            cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
-                        }
+                        String cerberusUrlTemp = parameterService.getParameterStringCerberusURLByKey();
+                        cerberusUrlTemp = StringUtil.addSuffixIfNotAlready(cerberusUrlTemp, "/");
                         final String cerberusUrl = cerberusUrlTemp;
 
 //                        final String cerberusUrl = appContext.getBean(IParameterService.class).findParameterByKey("cerberus_url", "").getValue();
@@ -131,16 +129,16 @@ public class DeleteTest extends HttpServlet {
                                         .resolveDescription("OPERATION", "Delete")
                                         .resolveDescription(
                                                 "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
-                                                        + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
-                                                        "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
-                                                        cerberusUrl,
-                                                        input.getTest(),
-                                                        input.getTestcase(),
-                                                        input.getStepId(),
-                                                        input.getTest(),
-                                                        input.getTestcase(),
-                                                        input.getStepId()
-                                                ))
+                                                + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
+                                                "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
+                                                cerberusUrl,
+                                                input.getTest(),
+                                                input.getTestcase(),
+                                                input.getStepId(),
+                                                input.getTest(),
+                                                input.getTestcase(),
+                                                input.getStepId()
+                                        ))
                                         )
                         );
                     } else {
@@ -177,7 +175,7 @@ public class DeleteTest extends HttpServlet {
      * {@link Test}
      *
      * @param test the {@link Test} from which getting externally used
-     *             {@link TestCaseStep}s
+     * {@link TestCaseStep}s
      * @return a {@link Collection} of {@link TestCaseStep} which are using an
      * other {@link TestCaseStep} from the given {@link Test} but which are NOT
      * included into this {@link Test}
@@ -206,14 +204,13 @@ public class DeleteTest extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -228,10 +225,10 @@ public class DeleteTest extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -281,10 +281,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
             }
 
             // Build Cerberus URL to execution.
-            String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-            if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-                cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-            }
+            String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
             cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
             int exe_count = 0;

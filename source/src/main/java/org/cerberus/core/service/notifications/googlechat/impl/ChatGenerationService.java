@@ -53,10 +53,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
@@ -92,10 +89,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
@@ -138,10 +132,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyEndTagExecutionV2(Tag tag) throws UnsupportedEncodingException, Exception {
 
         int maxlines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_googlechat_maxexelines", "", 20);
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
 
         String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
@@ -231,10 +222,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
 
@@ -275,10 +263,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
 
@@ -338,10 +323,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String eventReference) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseScript.jsp?test=" + testCase.getTest() + "&testcase=" + testCase.getTestcase();
 

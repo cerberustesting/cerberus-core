@@ -52,10 +52,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     @Override
     public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
@@ -93,10 +90,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
@@ -142,10 +136,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     @Override
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
 
@@ -187,10 +178,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     @Override
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
 
@@ -240,10 +228,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     @Override
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String eventReference) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseScript.jsp?test=" + testCase.getTest() + "&testcase=" + testCase.getTestcase();
 

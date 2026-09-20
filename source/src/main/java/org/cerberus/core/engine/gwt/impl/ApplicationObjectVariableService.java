@@ -109,8 +109,8 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                         val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenshotFilename();
                     } else if ("pictureurl".equals(valueA[2])) {
                         try {
-                            val = parameterService.getParameterStringByKey("cerberus_url", system, "")
-                                    + "/ReadApplicationObjectImage?application=" + StringUtil.encodeURL(ao.getApplication())
+                            val = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", system, ""), "/")
+                                    + "ReadApplicationObjectImage?application=" + StringUtil.encodeURL(ao.getApplication())
                                     + "&object=" + StringUtil.encodeURL(ao.getObject())
                                     + "#xoffset=" + ao.getXOffset() + "|yoffset=" + ao.getYOffset();
                         } catch (UnsupportedEncodingException ex) {

@@ -255,7 +255,7 @@ public class ParameterService implements IParameterService {
     public String getParameterStringCerberusURLByKey() {
         String cerberusUrl = this.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = this.getParameterStringByKey("cerberus_url", "", "");
+            cerberusUrl = this.getParameterStringByKey(Parameter.VALUE_cerberus_url, "", "");
         }
         return cerberusUrl;
     }
@@ -511,7 +511,7 @@ public class ParameterService implements IParameterService {
             case "cerberus_notification_newchain_subject":
             case "cerberus_notification_newchain_to":
             case "cerberus_loopstep_max":
-            case "cerberus_url":
+            case Parameter.VALUE_cerberus_url:
             case "cerberus_webperf_ignoredomainlist":
             case "cerberus_accept_unsigned_ssl_certificate":
             case Parameter.VALUE_cerberus_xraycloud_clientid:

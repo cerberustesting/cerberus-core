@@ -51,10 +51,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     public JSONObject generateNotifyStartTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         JSONObject slackMessage = new JSONObject();
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
         slackMessage.put("text", "Execution Tag '" + tag.getTag() + "' Started. <" + cerberusUrl + "|Click here> for details.");
@@ -94,10 +91,7 @@ public class SlackGenerationService implements ISlackGenerationService {
                 + "	\"channel\": \"%CHANNEL%\"\n"
                 + "}";
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
 
@@ -134,10 +128,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe, String channel) throws Exception {
 
         JSONObject slackMessage = new JSONObject();
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
         slackMessage.put("text", "Execution '" + exe.getId() + "' Started. <" + cerberusUrl + "|Click here> for details.");
@@ -154,10 +145,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     @Override
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe, String channel) throws Exception {
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
 
@@ -195,10 +183,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String channel, String eventReference) throws UnsupportedEncodingException, Exception {
 
         JSONObject slackMessage = new JSONObject();
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
-        }
+        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseScript.jsp?test=" + StringUtil.encodeURL(testCase.getTest()) + "&testcase=" + StringUtil.encodeURL(testCase.getTestcase());
         switch (eventReference) {

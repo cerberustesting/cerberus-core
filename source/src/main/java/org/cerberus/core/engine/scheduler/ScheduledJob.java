@@ -67,7 +67,7 @@ public class ScheduledJob implements Job {
 
     private static final Logger LOG = LogManager.getLogger(ScheduledJob.class);
     private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
-    public static final String SERVLET_ADDTOEXECUTION = "/AddToExecutionQueueV003";
+    public static final String SERVLET_ADDTOEXECUTION = "AddToExecutionQueueV003";
 
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -109,7 +109,7 @@ public class ScheduledJob implements Job {
                                 httpclient = httpclientBuilder.build();
                                 String request = new String();
                                 String encodeName = StringUtil.encodeURL(scheduleName);
-                                request = parameterService.getParameterStringByKey("cerberus_url", "", "") + SERVLET_ADDTOEXECUTION + "?campaign=" + encodeName + "&outputformat=json";
+                                request = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", "", ""), "/") + SERVLET_ADDTOEXECUTION + "?campaign=" + encodeName + "&outputformat=json";
                                 HttpGet requesthttp = new HttpGet(request);
                                 requesthttp.setHeader("apikey", apiKeyService.getServiceAccountAPIKey());
                                 HttpResponse responsehttp = httpclient.execute(requesthttp);
