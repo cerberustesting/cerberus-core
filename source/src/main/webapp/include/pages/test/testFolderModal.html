@@ -240,6 +240,12 @@
                             self.open = false;
                             var oTable = $("#testTable").dataTable();
                             oTable.fnDraw(false);
+                            // The V2 Test page replaces #testTable with a crbTable,
+                            // which fnDraw above cannot reach; this event is what
+                            // reloads it. No-op on the legacy page.
+                            if (typeof crbNotifyDataChanged === "function") {
+                                crbNotifyDataChanged("test");
+                            }
                             showMessageMainPage(getAlertType(data.messageType), data.message, false);
                         } else {
                             showMessage(data, $('#testFolderModal'));
@@ -254,6 +260,12 @@
                             self.open = false;
                             var oTable = $("#testTable").dataTable();
                             oTable.fnDraw(false);
+                            // The V2 Test page replaces #testTable with a crbTable,
+                            // which fnDraw above cannot reach; this event is what
+                            // reloads it. No-op on the legacy page.
+                            if (typeof crbNotifyDataChanged === "function") {
+                                crbNotifyDataChanged("test");
+                            }
                             showMessageMainPage(getAlertType(data.messageType), data.message, false);
                         } else {
                             showMessage(data, $('#testFolderModal'));

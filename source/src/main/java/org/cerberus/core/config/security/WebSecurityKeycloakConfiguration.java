@@ -21,6 +21,7 @@ package org.cerberus.core.config.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -68,10 +69,14 @@ public class WebSecurityKeycloakConfiguration {
 
 	private static final Logger LOG = LogManager.getLogger(WebSecurityKeycloakConfiguration.class);
 
+	private static String stripTrailingSlash(String url) {
+		return url != null && url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+	}
+
 	@Bean
 	public ClientRegistrationRepository clientRegistrationRepository() {
 
-		String keycloakUrl  = System.getProperty("org.cerberus.keycloak.url");
+		String keycloakUrl  = stripTrailingSlash(System.getProperty("org.cerberus.keycloak.url"));
 		String realm        = System.getProperty("org.cerberus.keycloak.realm");
 		String clientId     = System.getProperty("org.cerberus.keycloak.client");
 		String clientSecret = System.getProperty("org.cerberus.keycloak.secret");
@@ -145,7 +150,7 @@ public class WebSecurityKeycloakConfiguration {
 
 	@Bean
 	public JwtDecoder mcpJwtDecoder() {
-		String keycloakUrl = System.getProperty("org.cerberus.keycloak.url");
+		String keycloakUrl = stripTrailingSlash(System.getProperty("org.cerberus.keycloak.url"));
 		String realm       = System.getProperty("org.cerberus.keycloak.realm");
 		// Optional : expected audience the token must be issued for (RFC 8707).
 		String audience    = System.getProperty("org.cerberus.keycloak.mcp.audience");
@@ -180,11 +185,78 @@ public class WebSecurityKeycloakConfiguration {
 	}
 
 	@Bean
+	public JwtDecoder publicApiJwtDecoder() {
+		String keycloakUrl = stripTrailingSlash(System.getProperty("org.cerberus.keycloak.url"));
+		String realm       = System.getProperty("org.cerberus.keycloak.realm");
+		String issuer      = keycloakUrl + "/realms/" + realm;
+		String jwkSetUri   = issuer + "/protocol/openid-connect/certs";
+
+		NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+		// Default validators (signature + expiry) + issuer binding. Authorization for this
+		// path is carried by the caller's standard Cerberus role(s) (see PublicApiRoleFilter),
+		// not by an audience restriction, so no audience validator is wired here unlike mcpJwtDecoder().
+		decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuer));
+		return decoder;
+	}
+
+	@Bean
+	public JwtAuthenticationConverter publicApiJwtAuthenticationConverter() {
+		String clientId = System.getProperty("org.cerberus.keycloak.client");
+		JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+		converter.setPrincipalClaimName("preferred_username");
+		// Same mapping used for the web login (keycloakAuthoritiesMapper) and /mcp : every realm
+		// role on the token becomes a ROLE_* authority. PublicApiRoleFilter then only lets through
+		// tokens carrying one of the standard Cerberus roles - no dedicated role is introduced here.
+		converter.setJwtGrantedAuthoritiesConverter(jwt ->
+				new ArrayList<GrantedAuthority>(KeycloakRoleMapper.extractRoles(jwt.getClaims(), clientId)));
+		return converter;
+	}
+
+	@Bean
+	@Order(0)
+	// securityMatcher(RequestMatcher) below deliberately bypasses the MVC-aware
+	// PathPatternRequestMatcher that securityMatcher(String...) resolves to by default : that
+	// matcher never matched "/api/public/**" against DispatcherServlet-relative requests in this
+	// app (see the same concern documented on WebSecurityRules.m()), silently sending every
+	// /api/public/** call through the default chain instead. AntPathRequestMatcher is the same
+	// matcher WebSecurityRules already uses for this exact pattern.
+	@SuppressWarnings({"deprecation", "removal"})
+	public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http,
+			PublicApiRoleFilter publicApiRoleFilter,
+			@Qualifier("publicApiJwtDecoder") JwtDecoder publicApiJwtDecoder,
+			@Qualifier("publicApiJwtAuthenticationConverter") JwtAuthenticationConverter publicApiJwtAuthenticationConverter) throws Exception {
+		http
+				.securityMatcher(new AntPathRequestMatcher("/api/public/**"))
+				.csrf(csrf -> csrf.disable())
+				// IF_REQUIRED, not STATELESS : STATELESS installs a NullSecurityContextRepository,
+				// which never loads the SecurityContext from the HttpSession. That broke the webapp's
+				// own calls to /api/public/** (e.g. TestCaseSimpleCreation.js), which authenticate via
+				// the classic session cookie set by the @Order(2) login chain, not a Bearer token.
+				// IF_REQUIRED restores the default HttpSessionSecurityContextRepository so an existing
+				// session's Authentication is still picked up here, while Bearer/X-API-KEY callers stay
+				// unaffected : no session is created for anonymous or JWT-authenticated requests.
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+				// permitAll here on purpose : a request with no Bearer token must still reach
+				// the controller so its legacy X-API-KEY check keeps working. Real enforcement
+				// for JWT-authenticated calls happens in publicApiRoleFilter below.
+				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+				// Bearer JWT issued by Keycloak, validated against the realm JWK set.
+				.oauth2ResourceServer(oauth2 -> oauth2
+						.jwt(jwt -> jwt
+								.decoder(publicApiJwtDecoder)
+								.jwtAuthenticationConverter(publicApiJwtAuthenticationConverter)))
+				// Rejects an authenticated JWT carrying none of the standard Cerberus roles; lets
+				// anonymous requests through so the controller's X-API-KEY fallback applies.
+				.addFilterBefore(publicApiRoleFilter, AuthorizationFilter.class);
+		return http.build();
+	}
+
+	@Bean
 	@Order(1)
 	public SecurityFilterChain mcpSecurityFilterChain(HttpSecurity http,
 			McpApiKeyAuthFilter mcpApiKeyAuthFilter,
-			JwtDecoder mcpJwtDecoder,
-			JwtAuthenticationConverter mcpJwtAuthenticationConverter) throws Exception {
+			@Qualifier("mcpJwtDecoder") JwtDecoder mcpJwtDecoder,
+			@Qualifier("mcpJwtAuthenticationConverter") JwtAuthenticationConverter mcpJwtAuthenticationConverter) throws Exception {
 		http
 				.securityMatcher("/mcp")
 				.csrf(csrf -> csrf.disable())
@@ -221,7 +293,7 @@ public class WebSecurityKeycloakConfiguration {
 
 		http.logout(logout -> logout
 						.logoutUrl("/Logout.jsp")
-						.logoutSuccessUrl("/")
+						.logoutSuccessUrl("/LoggedOut.jsp")
 						.permitAll()
 		);
 

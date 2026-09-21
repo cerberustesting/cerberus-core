@@ -81,6 +81,7 @@ const headerLabel = {
     // === Section Developer ===
     "dev": { "en": "Developer", "fr": "Développeur" },
     "swagger": { "en": "Swagger API", "fr": "API Swagger" },
+    "mcpinspector": { "en": "MCP Inspector", "fr": "Inspecteur MCP" },
     "eventhooks": { "en": "Event Hooks", "fr": "Hooks d’Événements" },
 
     // === Section Help ===

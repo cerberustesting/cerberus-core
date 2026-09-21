@@ -81,6 +81,15 @@
                                 alt="Katalon Recorder"
                                 class="w-4 h-4 object-contain"/>Katalon
                     </button>
+
+                    <!-- Cerberus JSON export -->
+                    <button
+                            @click="activeTab = 'json'"
+                            :class="activeTab === 'json' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+
+                        <i data-lucide="file-json" class="w-4 h-4 object-contain"></i>Cerberus JSON
+                    </button>
                 </div>
 
                 <!-- Selenium Doc -->
@@ -109,10 +118,50 @@
                         </ol>
                     </div>
                 </div>
+
+                <!-- Cerberus JSON Doc -->
+                <div x-show="activeTab === 'json'" x-transition class="mt-4">
+                    <div class="rounded-lg p-4 text-sm">
+                        <p class="font-semibold mb-2">How to export a test case from Cerberus</p>
+                        <ol class="list-decimal list-inside space-y-1 text-gray-500">
+                            <li>Open the test case you want to export</li>
+                            <li>Use <strong>Export → JSON</strong></li>
+                            <li>Upload the exported .json file(s) below</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Option (Cerberus JSON only) -->
+            <div x-show="activeTab === 'json'">
+                <label class="font-semibold block mb-2">Import option</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button type="button"
+                            @click="importOption = '1'"
+                            class="flex items-start gap-3 rounded-xl border-2 p-3 text-left transition-all duration-200"
+                            :class="importOption === '1' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'">
+                        <span class="mt-0.5 h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                              :class="importOption === '1' ? 'border-blue-500' : 'border-slate-300 dark:border-slate-600'">
+                            <span class="h-2 w-2 rounded-full bg-blue-500" x-show="importOption === '1'"></span>
+                        </span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Import keeping the same folder and Ids</span>
+                    </button>
+
+                    <button type="button"
+                            @click="importOption = '2'"
+                            class="flex items-start gap-3 rounded-xl border-2 p-3 text-left transition-all duration-200"
+                            :class="importOption === '2' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'">
+                        <span class="mt-0.5 h-4 w-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                              :class="importOption === '2' ? 'border-blue-500' : 'border-slate-300 dark:border-slate-600'">
+                            <span class="h-2 w-2 rounded-full bg-blue-500" x-show="importOption === '2'"></span>
+                        </span>
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Import on the same folder with new Ids</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Application + Test Folder (same line) -->
-            <div class="flex space-x-4">
+            <div class="flex space-x-4" x-show="activeTab !== 'json'">
                 <!-- Application -->
                 <div class="w-1/2">
                     <label class="font-semibold block mb-1">
@@ -155,13 +204,49 @@
             <!-- Upload -->
             <div>
                 <label class="font-semibold block mb-1">
-                    Recording file
+                    <span x-text="activeTab === 'json' ? 'Cerberus JSON export file(s)' : 'Recording file'"></span>
                 </label>
-                <input
-                        type="file"
-                        accept=".side,.json"
-                        @change="handleFile"
-                        class="w-full border rounded px-3 py-2"/>
+
+                <div @click="$refs.importFileInput.click()"
+                     @dragenter.prevent.stop="isDragging = true"
+                     @dragover.prevent.stop="isDragging = true"
+                     @dragleave.prevent.stop="isDragging = false"
+                     @drop.prevent.stop="isDragging = false; handleDrop($event)"
+                     class="relative rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer"
+                     :class="isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]' : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'"
+                     style="min-height: 110px;">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-2.5 mb-2"
+                             :class="isDragging ? 'animate-bounce' : ''">
+                            <i data-lucide="upload-cloud" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">
+                            Drop your file<span x-show="activeTab === 'json'">s</span> here
+                        </span>
+                        <span class="text-xs text-slate-400 mt-1">or click to browse</span>
+                    </div>
+                    <input type="file"
+                           x-ref="importFileInput"
+                           :accept="activeTab === 'json' ? '.json' : '.side,.json'"
+                           :multiple="activeTab === 'json'"
+                           @change="handleFile"
+                           class="hidden"/>
+                </div>
+
+                <!-- Selected files preview -->
+                <div class="mt-3 space-y-1" x-show="selectedFiles.length">
+                    <template x-for="(f, idx) in selectedFiles" :key="f.name + f.size">
+                        <div class="flex items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <i :data-lucide="activeTab === 'json' ? 'file-json' : 'file'" class="w-4 h-4 text-blue-500 shrink-0"></i>
+                                <span class="truncate text-slate-700 dark:text-slate-300" x-text="f.name"></span>
+                            </div>
+                            <button type="button" @click="removeFile(idx)" class="text-slate-400 hover:text-red-500 shrink-0">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <!-- Error -->
@@ -200,8 +285,15 @@
             },
 
             file: null,
+            jsonFiles: [],
+            importOption: '1',
+            isDragging: false,
             loading: false,
             errorMessage: '',
+
+            get selectedFiles() {
+                return this.activeTab === 'json' ? this.jsonFiles : (this.file ? [this.file] : []);
+            },
 
             close() {
                 this.open = false;
@@ -209,16 +301,49 @@
                 this.form.application = null;
                 this.form.testFolder = null;
                 this.file = null;
+                this.jsonFiles = [];
+                this.importOption = '1';
+                this.isDragging = false;
                 this.loading = false;
                 this.errorMessage = '';
             },
 
+            setFiles(fileList) {
+                if (this.activeTab === 'json') {
+                    this.jsonFiles = Array.from(fileList || []);
+                } else {
+                    this.file = (fileList && fileList[0]) || null;
+                }
+            },
+
             handleFile(e) {
-                this.file = e.target.files[0] || null;
+                this.setFiles(e.target.files);
+            },
+
+            handleDrop(e) {
+                this.setFiles(e.dataTransfer.files);
+            },
+
+            removeFile(idx) {
+                if (this.activeTab === 'json') {
+                    this.jsonFiles.splice(idx, 1);
+                } else {
+                    this.file = null;
+                }
+                if (this.$refs.importFileInput) {
+                    this.$refs.importFileInput.value = '';
+                }
             },
 
             async submit() {
-                if (!this.form.application || !this.form.testFolder || !this.file) {
+                const isJson = this.activeTab === 'json';
+
+                if (isJson) {
+                    if (!this.jsonFiles.length) {
+                        this.errorMessage = 'Please select at least one file to import.';
+                        return;
+                    }
+                } else if (!this.form.application || !this.form.testFolder || !this.file) {
                     this.errorMessage = 'Please select application, test folder and file.';
                     return;
                 }
@@ -227,12 +352,21 @@
                 this.errorMessage = '';
 
                 const fd = new FormData();
-                fd.append('application', this.form.application);
-                fd.append('test', this.form.testFolder);
-                fd.append('file', this.file);
+                let endpoint;
+
+                if (isJson) {
+                    endpoint = 'ImportTestCase';
+                    fd.append('importOption', this.importOption);
+                    this.jsonFiles.forEach(f => fd.append('file', f));
+                } else {
+                    endpoint = 'ImportTestCaseFromSIDE';
+                    fd.append('application', this.form.application);
+                    fd.append('test', this.form.testFolder);
+                    fd.append('file', this.file);
+                }
 
                 try {
-                    const r = await fetch('ImportTestCaseFromSIDE', {
+                    const r = await fetch(endpoint, {
                         method: 'POST',
                         body: fd
                     });
@@ -247,6 +381,9 @@
                             const url = `TestCaseScript.jsp?test=${encodeURIComponent(testFolder)}&testcase=${encodeURIComponent(testCase)}`;
                             window.location.href = url;
                             return;
+                        }
+                        if (typeof crbNotifyDataChanged === "function") {
+                            crbNotifyDataChanged("testcase");
                         }
                         this.close();
                     } else {

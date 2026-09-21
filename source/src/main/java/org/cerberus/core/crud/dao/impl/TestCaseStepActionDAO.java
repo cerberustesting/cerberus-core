@@ -527,6 +527,37 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
+    public boolean moveTestCaseStepActionToStep(String test, String testcase, int stepId, int actionId,
+                                                int newStepId, int newActionId, int sort, String usrModif) {
+        final String query = "update testcasestepaction set stepId = ?, actionId = ?, sort = ?, "
+                + "UsrModif = ?, dateModif = CURRENT_TIMESTAMP "
+                + "WHERE test = ? AND testcase = ? AND stepId = ? AND actionId = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            preStat.setInt(1, newStepId);
+            preStat.setInt(2, newActionId);
+            preStat.setInt(3, sort);
+            preStat.setString(4, usrModif == null ? "" : usrModif);
+            preStat.setString(5, test);
+            preStat.setString(6, testcase);
+            preStat.setInt(7, stepId);
+            preStat.setInt(8, actionId);
+
+            return preStat.executeUpdate() > 0;
+
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+        return false;
+    }
+
+    @Override
     public Answer create(TestCaseStepAction testCaseStepAction) {
         Answer ans = new Answer();
         MessageEvent msg = null;

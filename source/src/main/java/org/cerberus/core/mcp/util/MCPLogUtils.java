@@ -26,6 +26,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MCPLogUtils {
 
+    /** Actor recorded when the caller's login could not be resolved (should be rare — see MCPUserContextService). */
+    private static final String UNKNOWN_ACTOR = "MCP";
+
     private final ILogEventService logEventService;
 
     public MCPLogUtils(ILogEventService logEventService) {
@@ -33,28 +36,49 @@ public class MCPLogUtils {
     }
 
     public void call(String toolName, String intent, String message) {
-        log(toolName, intent, LogEvent.STATUS_INFO, message);
+        log(toolName, intent, LogEvent.STATUS_INFO, message, UNKNOWN_ACTOR);
+    }
+
+    public void call(String toolName, String intent, String message, String login) {
+        log(toolName, intent, LogEvent.STATUS_INFO, message, login);
     }
 
     public void success(String toolName, String intent, String message) {
-        log(toolName, intent, LogEvent.STATUS_INFO, message);
+        log(toolName, intent, LogEvent.STATUS_INFO, message, UNKNOWN_ACTOR);
+    }
+
+    public void success(String toolName, String intent, String message, String login) {
+        log(toolName, intent, LogEvent.STATUS_INFO, message, login);
     }
 
     public void warning(String toolName, String intent, String message) {
-        log(toolName, intent, LogEvent.STATUS_WARN, message);
+        log(toolName, intent, LogEvent.STATUS_WARN, message, UNKNOWN_ACTOR);
+    }
+
+    public void warning(String toolName, String intent, String message, String login) {
+        log(toolName, intent, LogEvent.STATUS_WARN, message, login);
     }
 
     public void error(String toolName, String intent, String message) {
-        log(toolName, intent, LogEvent.STATUS_ERROR, message);
+        log(toolName, intent, LogEvent.STATUS_ERROR, message, UNKNOWN_ACTOR);
     }
 
-    private void log(String toolName, String action, String status, String message) {
+    public void error(String toolName, String intent, String message, String login) {
+        log(toolName, intent, LogEvent.STATUS_ERROR, message, login);
+    }
+
+    /**
+     * Records the log entry against {@code login} rather than the generic {@value UNKNOWN_ACTOR}
+     * actor, so an MCP audit trail entry can be traced back to the Cerberus user who made the
+     * call (see {@link org.cerberus.core.mcp.util.MCPUserContextService#getLogin}).
+     */
+    private void log(String toolName, String action, String status, String message, String login) {
         logEventService.createForMcpCalls(
                 toolName,
                 action,
                 status,
                 message,
-                "MCP"
+                login == null || login.isBlank() ? UNKNOWN_ACTOR : login
         );
     }
 }

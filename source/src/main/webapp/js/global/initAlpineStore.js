@@ -150,6 +150,17 @@ document.addEventListener('alpine:init', () => {
         theme: localStorage.getItem('theme') || 'light',
     });
 
+    // user.js loads the current user asynchronously (AJAX call to ReadMyUser) and only
+    // dispatches 'user-loaded' once it's done, which can happen after this store was
+    // initialized with an empty {} (e.g. first page load of a session, empty sessionStorage).
+    // Without this listener, role-based menu items (AS, Administrator, ...) stay hidden
+    // until a full page reload re-runs alpine:init with a now-populated sessionStorage.
+    window.addEventListener('user-loaded', (e) => {
+        Alpine.store('user').data = e.detail;
+        Alpine.store('user').language = e.detail.language || 'en';
+        Alpine.store('labels').language = e.detail.language || 'en';
+    });
+
     Alpine.store('labels', {
         language: (JSON.parse(sessionStorage.getItem('user')) || {}).language || 'en',
         // Fonction de traduction

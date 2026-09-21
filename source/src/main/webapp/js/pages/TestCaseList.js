@@ -316,18 +316,15 @@ function massActionModalSaveHandler_addLabel() {
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
 
-    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
-    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
-    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
+    // The three pickers are built by loadLabel() in the SHARED
+    // include/transversal/TestCase.html, which this page pulls in like every
+    // other. That include now builds js/global/crbLabelTree.js pickers rather
+    // than bootstrap-treeview ones, so this rollback page has to read them the
+    // new way too - treeview('getSelected') would throw here. It is the only
+    // edit this V1 file has taken, and it is what keeps the rollback working.
+    loadLabelSelectedIds("#selectLabelAdd").forEach(function (labelId) {
+        paramSerialized = paramSerialized + "&labelid=" + labelId;
+    });
 
     showLoaderInModal('#massActionTestCaseModal');
 
@@ -353,18 +350,15 @@ function massActionModalSaveHandler_removeLabel() {
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
 
-    var table2 = $('#selectLabelAddS').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
-    var table2 = $('#selectLabelAddR').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
-    var table2 = $('#selectLabelAddB').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        paramSerialized = paramSerialized + "&labelid=" + table2[i].id;
-    }
+    // The three pickers are built by loadLabel() in the SHARED
+    // include/transversal/TestCase.html, which this page pulls in like every
+    // other. That include now builds js/global/crbLabelTree.js pickers rather
+    // than bootstrap-treeview ones, so this rollback page has to read them the
+    // new way too - treeview('getSelected') would throw here. It is the only
+    // edit this V1 file has taken, and it is what keeps the rollback working.
+    loadLabelSelectedIds("#selectLabelAdd").forEach(function (labelId) {
+        paramSerialized = paramSerialized + "&labelid=" + labelId;
+    });
 
     showLoaderInModal('#massActionTestCaseModal');
 

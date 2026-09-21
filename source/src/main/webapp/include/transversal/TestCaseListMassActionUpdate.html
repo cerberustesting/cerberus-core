@@ -259,7 +259,13 @@
                     params.append('massExecutor', this.executorValue);
                 }
 
-                const formListParams = $('#massActionForm')
+                // The V1 page wraps its rows in #massActionForm and encodes the
+                // selection in checkbox names. A V2 (crbTable) page has no such
+                // form - selection lives in the component - so it provides the
+                // same test=/testcase= pairs through tcV2SelectionParams().
+                const formListParams = (typeof tcV2SelectionParams === "function")
+                    ? tcV2SelectionParams()
+                    : $('#massActionForm')
                         .serialize()
                         .replace(/=on/g, '')
                         .replace(/test-/g, 'test=')
@@ -271,7 +277,14 @@
                 $.post("UpdateTestCaseMass", params.toString() + "&" + formListParams, "json")
                         .done(data => {
                             if (["success", "warning"].includes(getAlertType(data.messageType))) {
-                                $('#testCaseTable').DataTable().draw();
+                                // Legacy path (V1 page). On a migrated page this id
+                                // is gone, so the notify below is what refreshes.
+                                if ($('#testCaseTable').length) {
+                                    $('#testCaseTable').DataTable().draw();
+                                }
+                                if (typeof crbNotifyDataChanged === "function") {
+                                    crbNotifyDataChanged("testcase");
+                                }
                                 $("#selectAll").prop("checked", false);
                                 showMessage(data);
                                 this.close();

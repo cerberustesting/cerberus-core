@@ -19,6 +19,15 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%--
+    Robot list, on the Alpine table component (js/global/crbTable.js).
+
+    Replaced the DataTables version on 2026-08-29 after validation. The previous
+    implementation is still served at RobotListV1.jsp (loading
+    js/pages/RobotList.js) - to roll back, copy RobotListV1.jsp over this file.
+    Both read the same ./api/robots/read endpoint, so no data or Java change is
+    involved either way.
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html class="h-full">
@@ -29,41 +38,9 @@
     <meta name="page" content="Robot List">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
-    <script type="text/javascript" src="js/pages/RobotList.js?v=${appVersion}"></script>
+    <script type="text/javascript" src="js/pages/RobotListV2.js?v=${appVersion}"></script>
 
     <title id="pageTitle">Robot</title>
-    <style>
-        td.details-control {
-            cursor: pointer;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .executor-chevron {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.2s ease;
-        }
-
-        tr.shown .executor-chevron {
-            transform: rotate(90deg);
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 9999px;
-            background-color: var(--color-blue-500);
-        }
-
-        .status-indicator.active {
-            background-color: var(--color-green-500);
-        }
-
-        .status-indicator.idle {
-            background-color: var(--color-blue-100);
-        }
-    </style>
 </head>
 <body x-data x-cloak class="crb_body">
 <jsp:include page="include/global/header2.html"/>
@@ -76,14 +53,10 @@
         <%@ include file="include/global/messagesArea.html"%>
         <%@ include file="include/utils/modal-confirmation.html"%>
 
-
         <h1 class="page-title-line" id="title">Robot Management</h1>
-        <div class="">
-            <div id="robotList">
-                <table id="robotsTable" class="table table-hover display" name="robotsTable">
-                </table>
-                <div class="marginBottom20"></div>
-            </div>
+        <div>
+            <div id="robotList"></div>
+            <div class="marginBottom20"></div>
         </div>
         <footer class="footer">
             <div class="container-fluid" id="footer"></div>

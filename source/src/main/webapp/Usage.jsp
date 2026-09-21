@@ -29,13 +29,55 @@
     <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
     <%@ include file="include/global/dependenciesInclusions.html" %>
 
+    <style>
+        /* Markdown rendering for AI messages in the detail table (js/pages/Usage.js#loadAIUsageDetailTable). */
+        .crb-msg-markdown {
+            max-width: 420px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .crb-msg-markdown p { margin: 0 0 0.5em; }
+        .crb-msg-markdown p:last-child { margin-bottom: 0; }
+        .crb-msg-markdown ul, .crb-msg-markdown ol { margin: 0 0 0.5em 1.25em; padding: 0; }
+        .crb-msg-markdown h1, .crb-msg-markdown h2, .crb-msg-markdown h3,
+        .crb-msg-markdown h4, .crb-msg-markdown h5, .crb-msg-markdown h6 {
+            font-size: 1em;
+            font-weight: 600;
+            margin: 0.5em 0 0.25em;
+        }
+        .crb-msg-markdown blockquote {
+            border-left: 3px solid #94a3b8;
+            margin: 0 0 0.5em;
+            padding-left: 0.75em;
+            color: #64748b;
+        }
+        .crb-msg-markdown pre {
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 6px;
+            padding: 0.5em 0.75em;
+            overflow-x: auto;
+            max-width: 100%;
+            font-size: 0.85em;
+        }
+        .crb-msg-markdown code {
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 4px;
+            padding: 0.1em 0.3em;
+            font-size: 0.85em;
+        }
+        .crb-msg-markdown pre code { background: none; padding: 0; }
+        .crb-msg-markdown table { border-collapse: collapse; font-size: 0.85em; }
+        .crb-msg-markdown th, .crb-msg-markdown td { border: 1px solid #cbd5e1; padding: 2px 6px; }
+        html.dark .crb-msg-markdown pre,
+        html.dark .crb-msg-markdown code { background: rgba(255, 255, 255, 0.1); }
+        html.dark .crb-msg-markdown blockquote { border-left-color: #64748b; color: #94a3b8; }
+        html.dark .crb-msg-markdown th, html.dark .crb-msg-markdown td { border-color: #475569; }
+    </style>
+
     <!-- Définition de aiUsagePage avant que le DOM ne l'utilise -->
     <script>
         function aiUsagePage() {
             return {
-                // Tabs
-                tab: 'iaUsage',
-
                 // Filters
                 filters: {
                     user: 'ALL',
@@ -149,7 +191,7 @@
                                 labels.push(dayStr);
 
                                 //
-                                const dayData = data.find(item => item.date === dayStr);
+                                const dayData = data.find(item => item.fromDate === dayStr);
 
                                 //
                                 inputTokens.push(dayData ? dayData.totalInputTokens : 0);
@@ -226,27 +268,13 @@
     <jsp:include page="include/global/modalInclusions.jsp"/>
     <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
 
-        <h1 class="page-title-line" id="title">Usage</h1>
+        <h1 class="page-title-line" id="title">AI Usage</h1>
 
         <!-- Conteneur principal Alpine.js -->
         <div x-data="aiUsagePage()" x-init="init()" class="w-full">
 
-            <!-- Tabs -->
-            <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-8 h-10">
-                <button @click="tab = 'iaUsage';"
-                        :class="tab === 'iaUsage' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
-                    <i data-lucide="users" class="w-4 h-4"></i>AI Usage
-                </button>
-                <button @click="tab = 'log';loadLogViewerTable();"
-                        :class="tab === 'log' ? 'bg-slate-50 font-semibold dark:bg-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
-                        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
-                    <i data-lucide="lock" class="w-4 h-4"></i>Logs
-                </button>
-            </div>
-
             <!-- Content Public -->
-            <div x-show="tab === 'iaUsage'" class="space-y-6">
+            <div class="space-y-6">
 
                 <!-- Filters -->
                 <div class="crb_card p-4 grid grid-cols-3 gap-4">
@@ -302,21 +330,32 @@
                     <canvas id="usageChart" height="100"></canvas>
                 </div>
 
-                <!-- Table -->
-                <div class="crb_card">
-                    <h3 class="text-lg font-medium mb-4">Calls</h3>
-                    <div id="aiUsage">
-                        <table id="aiUsageTable" class="table table-hover display" name="aiUsageTable"></table>
+                <!-- Table: Calls list -->
+                <div id="aiUsageListSection">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="flex items-center font-medium text-lg">
+                            <i data-lucide="list" class="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"></i>
+                            <span>AI Sessions</span>
+                        </span>
                     </div>
+                    <div id="aiUsage" class="crb_card" style="padding: 0; overflow: hidden"></div>
                 </div>
 
-            </div>
-
-            <!-- Content Private -->
-            <div x-show="tab === 'log'">
-                <div id="logViewer">
-                    <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
+                <!-- Table: Call detail (individual messages), hidden until a call is opened -->
+                <div id="aiUsageDetailSection" class="hidden">
+                    <div class="flex items-center gap-3 mb-4">
+                        <button type="button" onclick="closeAIUsageDetail()"
+                                class="flex items-center gap-1 px-3 py-1 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>Back
+                        </button>
+                        <span class="flex items-center font-medium text-lg">
+                            <i data-lucide="messages-square" class="w-4 h-4 mr-2 text-blue-600 flex-shrink-0"></i>
+                            <span id="aiUsageDetailTitle">Messages</span>
+                        </span>
+                    </div>
+                    <div id="aiUsageDetail" class="crb_card" style="padding: 0; overflow: hidden"></div>
                 </div>
+
             </div>
 
         </div>

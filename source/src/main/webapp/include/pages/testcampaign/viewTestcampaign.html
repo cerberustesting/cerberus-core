@@ -1,8 +1,16 @@
-<!-- View Testcampaign Modal - Alpine.js/Tailwind -->
+<%--
+    Campaign scope modal ("List of test cases for campaign X").
+
+    Sibling of viewStatcampaign.html and given the same treatment: the legacy
+    client-side DataTable is replaced by the shared V2 table (client mode, embedded)
+    inside the modal's own card, so the two modals opened from the campaign list read
+    as one thing. Rows are pushed by campaign_viewEntryClick() in
+    include/transversal/Campaign.html.
+--%>
 <div x-data="{ open: false, isFullscreen: false }"
      x-show="open"
      x-cloak
-     @viewtestcampaign-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); setTimeout(() => { if ($('#viewTestcampaignsTable_wrapper').length > 0) $('#viewTestcampaignsTable').DataTable().columns.adjust(); }, 300); })"
+     @viewtestcampaign-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
      @viewtestcampaign-modal-close.window="open = false"
      class="crb_modal"
      id="viewTestcampaignModal">
@@ -11,7 +19,7 @@
     <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
     <!-- Modal Card -->
-    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[1200px] rounded-2xl'"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[1100px] rounded-2xl'"
          :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
          class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
@@ -25,12 +33,15 @@
         <!-- HEADER -->
         <div class="flex items-center justify-between px-6 py-3 shrink-0">
             <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <i data-lucide="list" class="w-5 h-5 text-blue-500"></i>
+                <div class="h-10 w-10 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                    <i data-lucide="list-checks" class="w-5 h-5 text-blue-600"></i>
                 </div>
                 <div>
-                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="viewTestcampaignModalLabel" name="viewTestcampaignField">View Testcampaign</h5>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Test cases associated with this campaign</p>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100"
+                        id="viewTestcampaignModalLabel" name="viewTestcampaignField">Campaign scope</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">
+                        The test cases this campaign runs
+                    </p>
                 </div>
             </div>
             <div class="flex items-center gap-1">
@@ -47,18 +58,21 @@
 
         <!-- BODY -->
         <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
-            <div id="tabsCView-1">
-                <div id="viewTestcampaignList" class="overflow-x-auto">
-                    <table id="viewTestcampaignsTable" class="table table-hover display" name="viewTestcampaignsTable" style="width:100%"></table>
-                    <div class="mb-5"></div>
+            <div class="crb_card" style="padding: 0; overflow: hidden; margin-bottom: 0">
+                <div class="crb_card_head">
+                    <span class="crb_card_head_title">Test cases</span>
+                    <span class="crb_card_head_count" id="viewTestcampaignCount">0</span>
+                    <span class="flex-1"></span>
+                    <span class="crb_card_head_hint">open a test case to edit its script</span>
                 </div>
+                <div id="viewTestcampaignTableMount"></div>
             </div>
         </div>
 
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
             <button type="button" @click="open = false"
-                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonClose">Close</button>
+                    class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonClose">Close</button>
         </div>
     </div>
 </div>

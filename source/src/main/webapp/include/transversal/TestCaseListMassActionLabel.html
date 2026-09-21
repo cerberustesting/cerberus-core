@@ -52,12 +52,17 @@
             <div class="grid grid-cols-3 gap-4 mt-3">
 
                 <!-- Stickers -->
+                <!-- The three columns are plain mount points: loadLabel() builds a
+                     js/global/crbLabelTree.js picker in each, and the component owns
+                     its own search bar, scrolling and "n selected" counter. The
+                     max-height/overflow that used to sit here scrolled the search box
+                     away with the rows. -->
                 <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
                     <div class="flex items-center gap-2 mb-3">
                         <i data-lucide="bookmark" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Stickers</span>
                     </div>
-                    <div id="selectLabelAddS" class="space-y-1 max-h-[600px] overflow-auto"></div>
+                    <div id="selectLabelAddS"></div>
                 </div>
 
                 <!-- Requirements -->
@@ -66,7 +71,7 @@
                         <i data-lucide="clipboard-list" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Requirements</span>
                     </div>
-                    <div id="selectLabelAddR" class="space-y-1 max-h-[600px] overflow-auto"></div>
+                    <div id="selectLabelAddR"></div>
                 </div>
 
                 <!-- Batteries -->
@@ -75,7 +80,7 @@
                         <i data-lucide="battery-charging" class="w-4 h-4 text-blue-600"></i>
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Batteries</span>
                     </div>
-                    <div id="selectLabelAddB" class="space-y-1 max-h-[600px] overflow-auto"></div>
+                    <div id="selectLabelAddB"></div>
                 </div>
 
             </div>

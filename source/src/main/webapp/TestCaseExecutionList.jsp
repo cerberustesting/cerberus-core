@@ -30,7 +30,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css?v=${appVersion}" type="text/css"/>
-        <script type="text/javascript" src="js/pages/TestCaseExecutionList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by TestCaseExecutionListV2.js.
+            TestCaseExecutionList.js (V1) is NOT loaded. TestCaseExecutionListV1.jsp is
+            the rollback copy.
+        --%>
+        <script type="text/javascript" src="js/pages/TestCaseExecutionListV2.js?v=${appVersion}"></script>
         
         <title id="pageTitle">Execution</title>
     </head>
@@ -46,12 +51,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             
             <h1 class="page-title-line" id="title">Execution History</h1>
-            <div class="">
-                <div id="testCaseExecution">
-                    <table id="testCaseExecutionTable" class="table table-hover display" name="testCaseExecutionTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
+            <div id="testCaseExecution"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

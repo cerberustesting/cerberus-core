@@ -46,6 +46,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
@@ -174,7 +175,14 @@ public class UpdateApplicationObject extends HttpServlet {
                 if (filePart != null) {
                     ans = applicationObjectService.uploadFile(applicationObject.getID(), filePart);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        fileName = filePart.getName();
+                        // Part.getName() is the FORM FIELD name, always the literal
+                        // "file" here - not the uploaded file's name. It was stored
+                        // as screenshotFilename, while ApplicationObjectDAO.uploadFile()
+                        // writes the file under getSubmittedFileName(), so every image
+                        // added through an EDIT became unreadable: the DAO then looked
+                        // for .../<id>/file and logged "Impossible to read the image".
+                        // CreateApplicationObject already uses getSubmittedFileName().
+                        fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                     }
                 }
 

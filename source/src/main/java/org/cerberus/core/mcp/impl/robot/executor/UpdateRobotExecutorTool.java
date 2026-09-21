@@ -110,6 +110,7 @@ public class UpdateRobotExecutorTool implements MCPTool {
         updateProperties.put("executorBrowserProxyHost", Map.of("type", "string", "description", "New manual browser proxy host."));
         updateProperties.put("executorBrowserProxyPort", Map.of("type", "integer", "description", "New manual browser proxy port."));
         updateProperties.put("executorExtensionPort", Map.of("type", "integer", "description", "New Cerberus browser extension port."));
+        updateProperties.put("executorExtensionHost", Map.of("type", "string", "description", "New host used to reach the Cerberus browser extension, if different from 'host'. Leave empty to fall back to 'host'."));
         updateProperties.put("executorExtensionProxyPort", Map.of("type", "integer", "description", "New proxy port used to reach the extension."));
         updateProperties.put("deviceUdid", Map.of("type", "string", "description", "New mobile device UDID."));
         updateProperties.put("deviceName", Map.of("type", "string", "description", "New mobile device name."));
@@ -242,6 +243,9 @@ public class UpdateRobotExecutorTool implements MCPTool {
                         break;
                     case "executorExtensionPort":
                         entity.setExecutorExtensionPort(asInteger(value, field));
+                        break;
+                    case "executorExtensionHost":
+                        entity.setExecutorExtensionHost(asString(value, field));
                         break;
                     case "executorExtensionProxyPort":
                         entity.setExecutorExtensionProxyPort(asInteger(value, field));

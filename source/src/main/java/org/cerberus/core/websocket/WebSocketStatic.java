@@ -112,6 +112,11 @@ public final class WebSocketStatic {
     public static final String CHANNEL_AO_PROPOSALS = "ao.proposals";
     public static final String CHANNEL_TESTCASE_PROPOSALS = "testcase.proposals";
 
+    /**
+     * USER CONTEXT EVENTS
+     */
+    public static final String CHANNEL_USERCONTEXT_UPDATE = "usercontext.update";
+
 
     /** CLIENT REQUEST CHANNELS **/
     public static final String CHANNEL_CHAT_SEND = "chat.send";

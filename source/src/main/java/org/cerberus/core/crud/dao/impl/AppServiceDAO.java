@@ -520,12 +520,16 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getAttachementURL());
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getFileName());
-            preStat.setString(i++, object.getSimulationParameters().toString());
-            preStat.setString(i++, object.getAuthType());
-            preStat.setString(i++, object.getAuthUser());
-            preStat.setString(i++, object.getAuthPassword());
-            preStat.setString(i++, object.getAuthAddTo());
-            preStat.setString(i, object.getUsrCreated());
+            if (object.getSimulationParameters() != null) {
+                preStat.setString(i++, object.getSimulationParameters().toString());
+            } else {
+                preStat.setString(i++, null);
+            }
+            preStat.setString(i++, defaultIfNull(object.getAuthType(), AppService.AUTHTYPE_NONE));
+            preStat.setString(i++, defaultIfNull(object.getAuthUser(), ""));
+            preStat.setString(i++, defaultIfNull(object.getAuthPassword(), ""));
+            preStat.setString(i++, defaultIfNull(object.getAuthAddTo(), ""));
+            preStat.setString(i, defaultIfNull(object.getUsrCreated(), ""));
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -593,10 +597,18 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getKafkaFilterHeaderPath());
             preStat.setString(i++, object.getKafkaFilterHeaderValue());
             preStat.setString(i++, object.getAttachementURL());
-            preStat.setString(i++, object.getSimulationParameters().toString());
+            if (object.getSimulationParameters() != null) {
+                preStat.setString(i++, object.getSimulationParameters().toString());
+            } else {
+                preStat.setString(i++, null);
+            }
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getMethod());
+            // NOT defaulted here, unlike the INSERT. On an update these columns already hold a
+            // value, so substituting 'none' for a null would silently erase a service's real
+            // authentication instead of failing. Callers that mean to keep it read the entity
+            // first (the GUI and the MCP tool both do), which carries the stored values through.
             preStat.setString(i++, object.getAuthType());
             preStat.setString(i++, object.getAuthUser());
             preStat.setString(i++, object.getAuthPassword());
@@ -761,6 +773,29 @@ public class AppServiceDAO implements IAppServiceDAO {
         if (deleteit) {
             folder.delete();
         }
+    }
+
+    /**
+     * Returns {@code defaultValue} when {@code value} is null.
+     *
+     * <p>Several {@code appservice} columns are declared NOT NULL with a schema default
+     * (AuthType defaults to 'none', the other Auth columns to the empty string). A column
+     * default only applies when the column is omitted from the INSERT — this statement lists
+     * every column explicitly, so passing a null binds a real NULL and the insert is rejected.
+     * Callers that do not care about authentication (the public API and the MCP tools both
+     * build the entity without touching those fields) would otherwise be unable to create any
+     * service at all.</p>
+     *
+     * <p>Used by the INSERT only. On an UPDATE the columns already hold a value, and defaulting
+     * a null would overwrite a real credential with 'none' — silent data loss in place of a
+     * visible failure.</p>
+     *
+     * @param value        the value carried by the entity, possibly null.
+     * @param defaultValue the value to bind instead of null.
+     * @return a value that satisfies the NOT NULL constraint.
+     */
+    private String defaultIfNull(String value, String defaultValue) {
+        return value == null ? defaultValue : value;
     }
 
 }

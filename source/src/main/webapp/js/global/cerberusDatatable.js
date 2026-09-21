@@ -20,6 +20,125 @@
 
 
 
+/**
+ * Modernizes a DataTable's header row, once, right after it's built. The column label's own
+ * typography is handled by CSS (see components.css's "Datatable" section) - this only does what
+ * CSS can't: swap the legacy Bootstrap glyphicon "?" doc-tooltip icon (built by
+ * Doc.prototype.getDocOnline in js/global/doc.js - left untouched everywhere else it's used, e.g.
+ * form field labels, so this fixes it at the point of use in the header instead of at that shared
+ * source) for a Lucide one, repair the accessibility label (DataTables builds aria-label by
+ * string-concatenating the column's *raw* title HTML, so a screen reader was reading out the
+ * doc-icon's entire attribute soup instead of the plain column name), and wrap the bare label text
+ * in its own <span class="crb_dt_label"> so it - and only it - can truncate with an ellipsis.
+ * That last part matters once a table has enough columns that some get squeezed to ~90px: with
+ * an uppercase/bold/letter-spaced label plus a sort icon plus (on filtrable columns)
+ * table-filter.js's funnel button all fighting for that width, an unwrapped text node has no
+ * element of its own to truncate, so it either wraps to a second line or - inside
+ * table-filter.js's `.th-content flex` row, which sets no min-width/overflow handling of its own -
+ * pushes the icons after it past the cell's own right edge, overlapping the next column's header.
+ * Wrapping the label lets CSS shrink/truncate the text first while pinning the icons at a fixed
+ * size (flex-shrink:0), so the header can never grow taller or wider than one row regardless of
+ * column count - verified against TestCaseExecutionList.jsp, the narrowest/most-columned list page.
+ * When scrollX is enabled, DataTables keeps two <thead> copies - a visible one inside
+ * .dataTables_scrollHead, and a near-invisible one (1px tall, width-sync only) inside
+ * .dataTables_scrollBody. Only the visible one is touched.
+ * @param {String} tableId
+ * @returns {void}
+ */
+function modernizeTableHeaderOnce(tableId) {
+    var $thead = getVisibleTheadForModernization(tableId);
+    if (!$thead.length || $thead.data("crbModernized")) {
+        return;
+    }
+    $thead.data("crbModernized", true);
+
+    $thead.find("th").not("#filterHeader th").each(function () {
+        var $th = $(this);
+        var $docLink = $th.find("a.docOnline, a.nodoc");
+        if ($docLink.length) {
+            $docLink.addClass("crb_dt_doclink");
+            $docLink.find("span.glyphicon").replaceWith(
+                $docLink.hasClass("nodoc")
+                    ? '<i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>'
+                    : '<i data-lucide="circle-help" class="w-3.5 h-3.5"></i>'
+            );
+        }
+
+        var rawLabel = $th.attr("aria-label");
+        if (rawLabel && rawLabel.indexOf("<") !== -1) {
+            var plainLabel = $("<div>" + rawLabel.replace(/<a[\s\S]*?<\/a>/, "") + "</div>").text().trim();
+            $th.attr("aria-label", plainLabel);
+        }
+
+        // Runs before table-filter.js's own afterDatatableFeeds pass (which, on filtrable
+        // columns, wrapInner()s everything still in the <th> - including this span - into its
+        // `.th-content` flex row), so this must not assume that wrapper exists yet.
+        var fullTitle = $th.attr("title") || $th.text().trim();
+        $th.contents().each(function () {
+            if (this.nodeType === 3 && this.textContent.trim()) {
+                $(this).wrap('<span class="crb_dt_label" title="' + fullTitle.replace(/"/g, "&quot;") + '"></span>');
+            }
+        });
+    });
+
+    if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * Keeps the header's sort-direction icon in sync with the actual sort state - called once right
+ * after modernizeTableHeaderOnce() and again on every draw.dt (sorting/searching/paging all fire
+ * it), since DataTables toggles the sorting/sorting_asc/sorting_desc classes on every draw rather
+ * than only when the sort itself changes. DataTables' own sprite-based carets (from the vendored
+ * dataTables.bootstrap.min.css) are suppressed in CSS and were never replaced with anything.
+ * Always removes and re-appends rather than diffing in place, so it doesn't need to know whether
+ * Lucide has already turned a given icon into an inline <svg> (it copies the original element's
+ * classes, including crb_dt_sorticon, onto that svg - simplest to just look for either).
+ * Some columns (those listed in createDataTableWithPermissionsNew's filtrableColumns) get a
+ * second icon of their own from js/global/table-filter.js: a funnel button wrapped, along with
+ * the column's label, in a `.th-content` flex row with that button pushed to the far right via
+ * `ml-auto`. table-filter builds that wrapper later than this file's own init (it runs from
+ * afterDatatableFeeds, after this function's first, pre-data-load pass) by simply wrapping
+ * whatever is already in the <th> - including a sort icon this function already inserted - so
+ * without this check both icons independently gravitate to the same top-right corner instead of
+ * sitting side by side. When that wrapper exists, the icon is inserted as a normal flex child
+ * right before the funnel instead of being pinned absolutely.
+ * @param {String} tableId
+ * @returns {void}
+ */
+function syncTableHeaderSortIcons(tableId) {
+    var $thead = getVisibleTheadForModernization(tableId);
+    // table-filter.js also appends its own #filterHeader <tr>, an empty structural spacer row
+    // built unconditionally (even with no filtrableColumns) - its <th> cells have neither
+    // sorting_disabled nor any sorting_* class, so without this exclusion a meaningless sort
+    // icon would end up floating inside each of them too.
+    $thead.find("th").not("#filterHeader th").not(".sorting_disabled").each(function () {
+        var $th = $(this);
+        var iconName = "chevrons-up-down";
+        if ($th.hasClass("sorting_asc")) {
+            iconName = "arrow-up";
+        } else if ($th.hasClass("sorting_desc")) {
+            iconName = "arrow-down";
+        }
+        $th.find(".crb_dt_sorticon").remove();
+        var $filterTrigger = $th.find(".col-filter-trigger");
+        if ($filterTrigger.length) {
+            $filterTrigger.before('<i data-lucide="' + iconName + '" class="crb_dt_sorticon crb_dt_sorticon--inline w-3.5 h-3.5"></i>');
+        } else {
+            $th.append('<i data-lucide="' + iconName + '" class="crb_dt_sorticon w-3.5 h-3.5"></i>');
+        }
+    });
+    if (window.lucide) lucide.createIcons();
+}
+
+/**
+ * @param {String} tableId
+ * @returns {jQuery} the header row actually visible to (and clicked by) the user.
+ */
+function getVisibleTheadForModernization(tableId) {
+    var $thead = $("#" + tableId + "_wrapper").find(".dataTables_scrollHead thead");
+    return $thead.length ? $thead : $("#" + tableId + " thead");
+}
+
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
@@ -215,6 +334,12 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
     var oTable = $("#" + tableConfigurations.divId).DataTable(configs);
     if (window.lucide) lucide.createIcons();
+    modernizeTableHeaderOnce(tableConfigurations.divId);
+    syncTableHeaderSortIcons(tableConfigurations.divId);
+    // table-filter.js's per-column funnel button (when this table has filtrable columns) is built
+    // slightly later, from the same initial ajax response's afterDatatableFeeds callback - re-sync
+    // once more just after so the sort icon re-parents next to it instead of sitting underneath.
+    setTimeout(function () { syncTableHeaderSortIcons(tableConfigurations.divId); }, 50);
 
     var $wrapper = $("#" + tableConfigurations.divId + "_wrapper");
 
@@ -466,6 +591,7 @@ function createDataTableWithPermissionsNew(tableConfigurations, callbackFunction
 
         $("#" + tableConfigurations.divId + "_last a")
             .html('<i data-lucide="chevrons-right" class="w-4 h-4"></i>');
+        syncTableHeaderSortIcons(tableConfigurations.divId);
         if (window.lucide) lucide.createIcons();
     });
 

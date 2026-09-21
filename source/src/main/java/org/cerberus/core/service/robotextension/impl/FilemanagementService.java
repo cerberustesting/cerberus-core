@@ -296,7 +296,8 @@ public class FilemanagementService implements IFilemanagementService {
 
     private String generateSikuliUrlOnNode(Session session, String path) {
         int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getNodePort());
-        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getNodeHost()), port, path);
+        String host = StringUtil.isEmptyOrNull(session.getExecutorExtensionHost()) ? session.getNodeHost() : session.getExecutorExtensionHost();
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(host), port, path);
     }
 
 }

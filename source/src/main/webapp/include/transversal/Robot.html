@@ -478,8 +478,14 @@
             success: function (dataMessage) {
                 hideLoaderInModal('#editRobotModal');
                 if (getAlertType(dataMessage.messageType) === "success") {
+                    // Legacy path: refreshes the DataTable on the V1 page. On a
+                    // migrated page that id no longer exists, so this is a no-op
+                    // there and the notify below is what reloads the V2 table.
                     var oTable = $("#robotsTable").dataTable();
                     oTable.fnDraw(false);
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("robot");
+                    }
                     $('#editRobotModal').data("Saved", true);
                     $('#editRobotModal').data("robot", data);
                     window.dispatchEvent(new CustomEvent('robot-modal-close'));
@@ -734,6 +740,7 @@
         var executorBrowserProxyHostInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyHost);
         var executorBrowserProxyPortInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyPort);
         var executorExtensionPortInput = $('<input>').addClass(inputCls).val(executor.executorExtensionPort);
+        var executorExtensionHostInput = $('<input>').addClass(inputCls).val(executor.executorExtensionHost);
         var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false).addClass(inputCls);
         var table = $("#" + tableBody);
 
@@ -810,8 +817,8 @@
 
         // Extension
         var extLine = $('<div class="flex gap-3"></div>');
+        extLine.append(makeField(doc.getDocOnline("robotexecutor", "executorExtensionHost"), executorExtensionHostInput, "flex-1 min-w-0"));
         extLine.append(makeField(doc.getDocOnline("robotexecutor", "executorExtensionPort"), executorExtensionPortInput, "shrink-0").css("width", "120px"));
-        extLine.append($('<div class="flex-1"></div>'));
 
         advPanel.append(devTitle).append(devLine1).append(devLine2);
         advPanel.append(proxyTitle).append(proxyLine0).append(proxyLine1).append(proxyLine2);
@@ -852,6 +859,7 @@
         executorBrowserProxyHostInput.change(function () { executor.executorBrowserProxyHost = $(this).val(); });
         executorBrowserProxyPortInput.change(function () { executor.executorBrowserProxyPort = $(this).val(); });
         executorExtensionPortInput.change(function () { executor.executorExtensionPort = $(this).val(); });
+        executorExtensionHostInput.change(function () { executor.executorExtensionHost = $(this).val(); });
 
         // Autocomplete
         hostInput.autocomplete({
@@ -864,6 +872,10 @@
         }).on("focus", function () { $(this).autocomplete("search", ""); });
         executorBrowserProxyHostInput.autocomplete({
             source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0,
+            messages: { noResults: '', results: function () { return ''; } }
+        }).on("focus", function () { $(this).autocomplete("search", ""); });
+        executorExtensionHostInput.autocomplete({
+            source: getInvariantArray("ROBOTHOST", false), minLength: 0,
             messages: { noResults: '', results: function () { return ''; } }
         }).on("focus", function () { $(this).autocomplete("search", ""); });
 
@@ -888,7 +900,7 @@
             isDeviceLockUnlock: false, description: "",
             executorProxyServiceHost: "", executorProxyServicePort: 8093,
             executorBrowserProxyHost: "", executorBrowserProxyPort: 0,
-            executorExtensionPort: 0, executorProxyType: "NONE"
+            executorExtensionPort: 0, executorExtensionHost: "", executorProxyType: "NONE"
         };
         appendExecutorRow(tableBody, newExecutor);
         refreshPopoverDocumentation("editExecutorsTable");

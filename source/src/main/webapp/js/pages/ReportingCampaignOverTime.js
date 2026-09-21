@@ -70,7 +70,79 @@ function campaignTrends() {
             if (urlCampaigns.length) this.selCampaigns = urlCampaigns;
             var self = this;
             // ReadTagStat requires explicit campaigns: wait for the list before the first load
+            this._buildTable();
             this._loadCampaigns().then(function () { self.load(); });
+        },
+
+        /**
+         * The run-by-run list is the shared V2 table (js/global/crbTable.js) in
+         * CLIENT mode - the rows come from the tag statistics already loaded for the
+         * charts, there is no endpoint to page against - and EMBEDDED, because the
+         * card and its titled head already exist on the page.
+         */
+        _buildTable() {
+            var self = this;
+            createCerberusTable({
+                id: 'ctRunsTable',
+                mount: '#ctRunsTableMount',
+                clientRows: [],
+                embedded: true,
+                onRefresh: function () { self.load(); },
+                pageLength: 15,
+                lengthMenu: [15, 25, 50, 100, 200],
+                searchPlaceholder: 'Search runs...',
+                emptyMessage: 'No campaign run on this period',
+                rowKey: 'tag',
+                defaultSort: {field: 't', dir: 'desc'},
+                persistColumns: true,
+                columns: [
+                    {field: 'tag', title: 'Run', width: '320px', className: 'font-medium'},
+                    {field: 'campaign', title: 'Campaign', width: '200px', filterable: true},
+                    {
+                        field: 't', title: 'Date', width: '180px',
+                        render: function (row) { return crbTableEscape(row.t ? self.fmtDateTime(row.t) : '-'); }
+                    },
+                    {field: 'nbExeU', title: 'Executions', width: '120px',
+                     className: 'text-right tabular-nums'},
+                    {
+                        field: 'nbFlaky', title: 'Flaky', width: '100px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            return row.nbFlaky > 0
+                                ? '<span class="v2in-chip v2in-chip--warn">' + crbTableEscape(row.nbFlaky) + '</span>'
+                                : '<span class="v2in-dim">' + crbTableEscape(row.nbFlaky || 0) + '</span>';
+                        }
+                    },
+                    {
+                        field: 'ciRes', title: 'CI', width: '140px', filterable: true,
+                        render: function (row) {
+                            if (!row.ciRes) {
+                                return '<span class="v2in-dim">-</span>';
+                            }
+                            var score = (row.ciSc !== undefined && row.ciSc !== null)
+                                ? ' ' + row.ciSc + '/' + (row.ciScT || 100) : '';
+                            return '<span class="v2in-chip ' +
+                                (row.ciRes === 'OK' ? 'v2in-chip--ok' : 'v2in-chip--ko') + '">' +
+                                crbTableEscape(row.ciRes + score) + '</span>';
+                        }
+                    },
+                    {
+                        field: 'durMs', title: 'Duration', width: '130px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) {
+                            return crbTableEscape(row.durMs !== null && row.durMs !== undefined
+                                ? self.fmtDuration(row.durMs) : '-');
+                        }
+                    }
+                ],
+                actions: [
+                    {
+                        key: 'open', icon: 'external-link', gate: 'always',
+                        title: 'Open the campaign report of this run',
+                        onClick: function (row) { self.openRun(row.tag); }
+                    }
+                ]
+            });
         },
         _loadCampaigns() {
             var self = this;
@@ -220,6 +292,9 @@ function campaignTrends() {
             });
             this.runs = runs;
             this.loaded = true;
+            // tableRuns is the reversed view the charts and the head count use; the
+            // V2 table sorts on its own, so it gets the same rows.
+            crbTableSetRows('ctRunsTable', this.tableRuns);
         },
         // default Cerberus tags embed their date (xxx.YYYYMMDD-HHMMSS): recover it when the
         // servlet did not send a duration point for the run

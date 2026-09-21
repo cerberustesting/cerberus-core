@@ -894,6 +894,9 @@
                 document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.OBJECT_CHANGE), (e) => {
                     this.handleObjectChangeEvent(e.detail.payload);
                 });
+                document.addEventListener(CerberusWs.Event.forChannel(CerberusWs.Channel.USERCONTEXT_UPDATE), (e) => {
+                    this.handleObjectChangeEvent(e.detail.payload);
+                });
 
                 document.addEventListener(CerberusWs.Event.CONNECTED, () => {
                     this.subscribeExecutionChannels();
@@ -1025,7 +1028,8 @@
                     sessionID: this.activitySessionID,
                     subject: CerberusWs.Subject.SUBSCRIBE,
                     channels: [
-                        CerberusWs.Channel.OBJECT_CHANGE
+                        CerberusWs.Channel.OBJECT_CHANGE,
+                        CerberusWs.Channel.USERCONTEXT_UPDATE
                     ]
                 };
 
@@ -1722,12 +1726,31 @@
             },
 
             handleObjectSideEffects(event) {
-                if (!event || event.action !== "create") {
+                if (!event) {
+                    return;
+                }
+
+                // Pushed as action=update (context changed, not created), so it needs its own
+                // branch ahead of the create-only gate below.
+                if (event.objectName === "DefaultSystem") {
+                    this.applyDefaultSystemChange(event);
+                    return;
+                }
+
+                if (event.action !== "create") {
                     return;
                 }
 
                 if (event.objectName === "Invariant") {
                     this.cleanInvariantSessionStorage(event);
+                }
+            },
+
+            applyDefaultSystemChange(event) {
+                const activeSystems = (event.object || {}).activeSystems;
+
+                if (Array.isArray(activeSystems) && typeof ChangeWorkspace === "function") {
+                    ChangeWorkspace(activeSystems);
                 }
             },
 

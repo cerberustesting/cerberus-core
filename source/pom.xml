@@ -243,6 +243,14 @@
             <artifactId>log4j-api</artifactId>
             <version>2.25.3</version>
         </dependency>
+        <!-- Bridges SLF4J (used internally by Spring/Spring Security) to Log4j2 - without it,
+        SLF4J finds no provider and silently no-ops, so Spring's own logging (including
+        org.springframework.security at DEBUG) never reaches the console appender. -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>2.25.3</version>
+        </dependency>
 
         <!-- JsonPath Version 2.10.0 : 31/10/2025 - Usage : Parse JSON using JSONPath
         https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->

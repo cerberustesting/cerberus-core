@@ -131,6 +131,15 @@ public interface ITestCaseStepActionControlService {
      * @param testCaseStepActionControl
      * @return
      */
+    /**
+     * Moves a control to another action of the same testcase.
+     *
+     * @see org.cerberus.core.crud.dao.ITestCaseStepActionControlDAO#moveTestCaseStepActionControlToAction
+     */
+    boolean moveTestCaseStepActionControlToAction(String test, String testcase, int stepId, int actionId,
+                                                  int controlId, int newStepId, int newActionId,
+                                                  int newControlId, int sort, String usrModif);
+
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 
     /**

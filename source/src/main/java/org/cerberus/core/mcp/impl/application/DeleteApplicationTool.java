@@ -101,7 +101,7 @@ public class DeleteApplicationTool implements MCPTool {
                 Call this tool whenever the user asks to remove or delete an application.
                 Before calling this tool, confirm the application name with the user.
 
-                Use list_applications to find the exact application name before deleting.
+                Use cerberus_application_list to find the exact application name before deleting.
 
                 Do not call this tool when the user only asks to list, read, create, or update an application.
                 """,

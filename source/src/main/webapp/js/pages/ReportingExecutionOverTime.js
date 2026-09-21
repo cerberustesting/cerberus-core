@@ -78,7 +78,73 @@ function executionTrends() {
                 }
             } catch (e) { /* ignore */ }
             this._loadTests();
+            this._buildTable();
             if (this.selTestcases.length) this.load();
+        },
+
+        /**
+         * The executions list is the shared V2 table (js/global/crbTable.js) in
+         * CLIENT mode: its rows are derived in the browser from the duration curves,
+         * so there is no endpoint to page against. EMBEDDED, because the card and its
+         * titled head already exist on the page - the component adds no frame.
+         * Built once; load() pushes each new dataset with crbTableSetRows().
+         */
+        _buildTable() {
+            var self = this;
+            createCerberusTable({
+                id: 'etExecutionsTable',
+                mount: '#etExecutionsTableMount',
+                clientRows: [],
+                embedded: true,
+                onRefresh: function () { self.load(); },
+                pageLength: 15,
+                lengthMenu: [15, 25, 50, 100, 200],
+                searchPlaceholder: 'Search executions...',
+                emptyMessage: 'No execution on this period',
+                rowKey: 'exeId',
+                defaultSort: {field: 't', dir: 'desc'},
+                persistColumns: true,
+                columns: [
+                    {
+                        field: 't', title: 'Date', width: '180px',
+                        render: function (row) { return crbTableEscape(self.fmtDateTime(row.t)); }
+                    },
+                    {
+                        field: 'testCase', title: 'Test case', width: '240px',
+                        render: function (row) {
+                            return '<div class="v2in-dim text-xs">' + crbTableEscape(row.test) + '</div>' +
+                                '<div class="v2in-strong">' + crbTableEscape(row.testCase) + '</div>';
+                        }
+                    },
+                    {field: 'test', title: 'Test folder', width: '200px', visible: false, filterable: true},
+                    {field: 'environment', title: 'Environment', width: '130px', filterable: true},
+                    {field: 'country', title: 'Country', width: '110px', filterable: true},
+                    {
+                        field: 'status', title: 'Status', width: '130px', filterable: true,
+                        render: function (row) {
+                            var c = self.statusColor(row.status);
+                            return '<span class="v2in-chip" style="background: color-mix(in srgb, ' +
+                                crbTableEscape(c) + ' 14%, transparent); color:' + crbTableEscape(c) + '">' +
+                                crbTableEscape(row.status + (row.fn ? ' (FN)' : '')) + '</span>';
+                        }
+                    },
+                    {
+                        field: 'durMs', title: 'Duration', width: '130px',
+                        className: 'text-right tabular-nums',
+                        render: function (row) { return crbTableEscape(self.fmtDuration(row.durMs)); }
+                    },
+                    {field: 'exeId', title: 'Execution id', width: '130px', visible: false,
+                     className: 'font-mono text-right tabular-nums'},
+                    {field: 'serie', title: 'Serie', width: '260px', visible: false}
+                ],
+                actions: [
+                    {
+                        key: 'open', icon: 'external-link', gate: 'always',
+                        title: 'Open the execution',
+                        onClick: function (row) { self.openExe(row.exeId); }
+                    }
+                ]
+            });
         },
         _loadTests() {
             var self = this;
@@ -215,6 +281,9 @@ function executionTrends() {
                 if (serie.points.length) self.durationSeries.push(serie);
             });
             this.executions.sort(function (a, b) { return b.t - a.t; });
+            // The array stays (the chart tooltips and the count in the card head read
+            // it); the V2 table gets the same rows.
+            crbTableSetRows('etExecutionsTable', this.executions);
 
             // Executions per day, stacked by status (dates come unsorted from the server)
             var dates = (data.datasetExeStatusNbDates || []).slice();

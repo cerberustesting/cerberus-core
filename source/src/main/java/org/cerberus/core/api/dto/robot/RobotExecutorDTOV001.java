@@ -52,6 +52,7 @@ import java.sql.Timestamp;
         "executorBrowserProxyHost",
         "executorBrowserProxyPort",
         "executorExtensionPort",
+        "executorExtensionHost",
         "executorExtensionProxyPort",
         "deviceUdid",
         "deviceName",
@@ -129,6 +130,10 @@ public class RobotExecutorDTOV001 {
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
     @Schema(description = "Executor extension port", example = "9090")
     private Integer executorExtensionPort;
+
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "Host used to reach the Cerberus browser extension. If empty, the executor Host is used.", example = "extension.mytunnel.io")
+    private String executorExtensionHost;
 
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
     @Schema(description = "Executor extension proxy port", example = "9091")

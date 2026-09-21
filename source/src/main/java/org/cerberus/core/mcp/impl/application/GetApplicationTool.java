@@ -41,7 +41,7 @@ import java.util.Map;
  * <p>Delegates to {@link IApplicationService#readByKey(String)} for the lookup and
  * converts the result to a full DTO via {@link ApplicationMapperV001}.</p>
  *
- * <p>Use {@code list_applications} instead when the application name is unknown or
+ * <p>Use {@code cerberus_application_list} instead when the application name is unknown or
  * when browsing all available applications.</p>
  */
 @Component
@@ -94,7 +94,7 @@ public class GetApplicationTool implements MCPTool {
 
                 Call this tool whenever the user asks to inspect or display a specific application by name.
 
-                Use list_applications instead when the application name is unknown or to browse all applications.
+                Use cerberus_application_list instead when the application name is unknown or to browse all applications.
                 Do not call this tool when the user asks to create, update, or delete an application.
                 """,
                 new McpSchema.JsonSchema(

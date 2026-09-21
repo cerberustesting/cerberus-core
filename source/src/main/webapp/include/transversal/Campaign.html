@@ -197,7 +197,7 @@
                                                             <button type="button" @click.stop="select(item)"
                                                                     class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 transition"
                                                                     :class="item.value === selectedValue ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''">
-                                                                <span class="inline-block px-2 py-0.5 rounded text-xs text-white mr-2" :style="'background-color:' + (item.color || '#8b8b8c')" x-text="item.label"></span>
+                                                                <span class="inline-block px-2 py-0.5 rounded text-xs mr-2" :style="crbChipStyle(item.color || '#8b8b8c')" x-text="item.label"></span>
                                                                 <span class="text-xs text-slate-400" x-text="'[' + item.system + ']'"></span>
                                                             </button>
                                                         </template>
@@ -586,9 +586,15 @@
 </div>
 
 <script>
-    tinymce.init({
-        selector: ".wysiwyg"
-    });
+    // Campaign.html is pulled into every page via modalInclusions.jsp, but only pages that actually
+    // open this modal (list/campaign pages) load Tinymce - guard so the ones that don't (e.g. the
+    // Insights/reporting V2 pages) don't throw here and abort the rest of this script block (which
+    // would silently take campaignModal() down with it).
+    if (typeof tinymce !== 'undefined') {
+        tinymce.init({
+            selector: ".wysiwyg"
+        });
+    }
 
     // ===== ALPINE COMPONENT =====
     function campaignModal() {
@@ -727,8 +733,8 @@ function camp_getComboConfigLabel(labelType, system, tableId) {
 
 function camp_comboConfigLabel_format(label) {
     var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div style='float:left;'><span class='label label-primary' style='background-color:"
-            + label.color + "' data-toggle='tooltip' data-labelid='"
+            "<div style='float:left;'><span class='label label-primary' style='"
+            + crbChipStyle(label.color) + "' data-toggle='tooltip' data-labelid='"
             + label.id + "' title='"
             + label.description + "'>"
             + label.label + "</span> ["
@@ -742,8 +748,8 @@ function camp_comboConfigLabel_format(label) {
 function camp_comboConfigLabel_formatSelection(label) {
     var result = label.id;
     if (!isEmpty(label.label)) {
-        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
-                + label.color + "' data-toggle='tooltip' data-labelid='"
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='"
+                + crbChipStyle(label.color) + "' data-toggle='tooltip' data-labelid='"
                 + label.id + "' title='"
                 + label.description + "'>"
                 + label.label + "</span></div>";
@@ -831,34 +837,18 @@ function campaign_viewEntryClick(param) {
     showLoader("#testcampaignList");
 
 
+    campaign_ensureViewTables();
+
     var jqxhr = $.getJSON("ReadCampaign?testcases=true&", "campaign=" + encodeURIComponent(param));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
+        var list = obj.testcase || [];
 
-        /* TESTCASE */
-
-        var array = [];
-
-        $.each(obj.testcase, function (e) {
-            array.push(
-                    [obj.testcase[e].test, obj.testcase[e].testCase, obj.testcase[e].application, obj.testcase[e].description, obj.testcase[e].status]
-                    );
-        });
-
-        if ($("#viewTestcampaignModal #viewTestcampaignsTable_wrapper").length > 0) {
-            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().clear();
-            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().rows.add(array).draw();
-
-        } else {
-            //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("viewTestcampaignsTable", array, aoColumnsFunc_TestCase(), true);
-            createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
-        }
+        $("#viewTestcampaignCount").text(list.length);
+        crbTableSetRows('viewTestcampaignTable', list);
 
         hideLoader("#testcampaignList");
-
         window.dispatchEvent(new CustomEvent('viewtestcampaign-modal-open'));
-
     });
     refreshPopoverDocumentation("editTestcampaignModal");
 }
@@ -876,37 +866,255 @@ function campaign_viewStatEntryClick(param) {
     showLoader("#testcampaignList");
 
 
+    campaign_ensureViewTables();
+
     var jqxhr = $.getJSON("ReadCampaign?tags=true&", "campaign=" + encodeURIComponent(param));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
+        // The endpoint returns an object keyed by index, not an array.
+        var tags = [];
+        $.each(obj.tags || {}, function (k, t) { if (t) tags.push(t); });
 
-        /* TAG */
-
-        var array = [];
-
-        $.each(obj.tags, function (e) {
-            array.push(
-                    [obj.tags[e], obj.tags[e].tag, obj.tags[e].nbExe, obj.tags[e].nbExeUsefull, obj.tags[e].DateCreated, obj.tags[e].DateEndQueue, obj.tags[e].ciResult, obj.tags[e].ciScore]
-                    );
+        // Duration and executions-per-minute are derived, and the table sorts on
+        // them - so they have to be real fields on the row, not something a
+        // renderer computes on the fly.
+        tags = tags.map(function (t) {
+            var d = getDuration(t);
+            return $.extend({}, t, {
+                durationSec: d.data > 0 ? d.data : 0,
+                exePerMin: d.data > 0 ? Math.round((t.nbExe / (d.data / 60)) * 10) / 10 : null,
+                reliability: t.nbExe > 0 ? (t.nbExeUsefull / t.nbExe) * 100 : 0
+            });
         });
 
-        if ($("#viewStatcampaignModal #viewTagcampaignsTable_wrapper").length > 0) {
-            $("#viewStatcampaignModal #viewTagcampaignsTable").DataTable().clear();
-            $("#viewStatcampaignModal #viewTagcampaignsTable").DataTable().rows.add(array).draw();
-
-        } else {
-            //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("viewTagcampaignsTable", array, aoColumnsFunc_Tag(), true, [1, 'desc']);
-            createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTagcampaignList", undefined, true);
-        }
-
+        $("#viewStatcampaignCount").text(tags.length);
+        $("#viewStatcampaignKpis").html(campaign_statKpis(tags));
+        crbTableSetRows('viewStatcampaignTable', tags);
 
         hideLoader("#testcampaignList");
-
         window.dispatchEvent(new CustomEvent('viewstatcampaign-modal-open'));
-
     });
 
+}
+
+/**
+ * The KPI strip above the runs table: what a campaign owner wants before reading
+ * a single row - how many runs, how many of them passed CI, the average duration
+ * and when it last ran.
+ */
+function campaign_statKpis(tags) {
+    if (!tags.length) {
+        return '';
+    }
+    var withCi = tags.filter(function (t) { return !isEmpty(t.ciResult); });
+    var ciOk = withCi.filter(function (t) { return t.ciResult === 'OK'; }).length;
+    var durations = tags.map(function (t) { return getDuration(t).data; })
+                        .filter(function (d) { return d > 0; });
+    var avgDur = durations.length
+        ? durations.reduce(function (a, b) { return a + b; }, 0) / durations.length : 0;
+    var lastRun = Math.max.apply(null, tags.map(function (t) {
+        var d = new Date(t.DateCreated).getTime();
+        return isNaN(d) ? 0 : d;
+    }).concat([0]));
+
+    var kpi = function (label, value, sub) {
+        return '<div class="crb_modal_kpi">' +
+            '<span class="crb_modal_kpi_label">' + label + '</span>' +
+            '<span class="crb_modal_kpi_value">' + value + '</span>' +
+            '<span class="crb_modal_kpi_sub">' + (sub || '') + '</span></div>';
+    };
+    var okPct = withCi.length ? Math.round(ciOk * 100 / withCi.length) : null;
+
+    return kpi('Runs', tags.length, 'over the whole history') +
+        kpi('CI passed', okPct === null ? '-' : okPct + '%',
+            withCi.length ? (ciOk + ' of ' + withCi.length + ' with a verdict') : 'no CI verdict yet') +
+        kpi('Avg duration', avgDur ? getHumanReadableDuration(avgDur) : '-', 'per run') +
+        kpi('Last run', lastRun ? getDate(lastRun) : '-', '');
+}
+
+/**
+ * Builds the two modal tables once. Both are the shared V2 table in CLIENT mode
+ * (the rows come whole from ReadCampaign, there is nothing to page server-side) and
+ * EMBEDDED mode (the card and its head belong to the modal).
+ *
+ * Built lazily on the first open rather than at page load: these modals live in a
+ * transversal include pulled into pages that may never open them, and a table that
+ * is never shown should not cost a mount.
+ */
+function campaign_ensureViewTables() {
+    if (window.crbTableRegistry && window.crbTableRegistry['viewStatcampaignTable']) {
+        return;
+    }
+    var doc = new Doc();
+
+    createCerberusTable({
+        id: 'viewTestcampaignTable',
+        mount: '#viewTestcampaignTableMount',
+        clientRows: [],
+        embedded: true,
+        pageLength: 10,
+        lengthMenu: [10, 15, 25, 50, 100],
+        searchPlaceholder: 'Search test case, application, description...',
+        emptyMessage: 'This campaign runs no test case yet',
+        rowKey: function (r) { return JSON.stringify([r.test, r.testCase]); },
+        defaultSort: {field: 'test', dir: 'asc'},
+        persistColumns: true,
+        columns: [
+            {field: 'test', title: doc.getDocLabel("test", "Test"), width: '220px'},
+            {
+                field: 'testCase', title: doc.getDocLabel("testcase", "TestCase"),
+                width: '140px', className: 'font-mono',
+                render: function (r) {
+                    return '<a target="_blank" href="TestCaseScriptV2.jsp?test=' +
+                        encodeURIComponent(r.test) + '&testcase=' + encodeURIComponent(r.testCase) + '">' +
+                        crbTableEscape(r.testCase) + '</a>';
+                }
+            },
+            {field: 'application', title: doc.getDocLabel("application", "Application"), width: '150px'},
+            {field: 'description', title: doc.getDocLabel("testcase", "Description"), width: '380px'},
+            {field: 'status', title: doc.getDocLabel("testcase", "Status"), width: '130px'}
+        ],
+        actions: [
+            {
+                key: 'script', icon: 'file-text', gate: 'always',
+                title: 'Open the test case script',
+                href: function (r) {
+                    return './TestCaseScriptV2.jsp?test=' + encodeURIComponent(r.test) +
+                        '&testcase=' + encodeURIComponent(r.testCase);
+                }
+            }
+        ]
+    });
+
+    createCerberusTable({
+        id: 'viewStatcampaignTable',
+        mount: '#viewStatcampaignTableMount',
+        clientRows: [],
+        embedded: true,
+        pageLength: 10,
+        lengthMenu: [10, 15, 25, 50, 100],
+        searchPlaceholder: 'Search a run...',
+        emptyMessage: 'This campaign has never run',
+        rowKey: 'tag',
+        defaultSort: {field: 'DateCreated', dir: 'desc'},
+        persistColumns: true,
+        columns: [
+            {field: 'tag', title: doc.getDocOnline("tag", "tag"), width: '320px',
+             className: 'font-medium'},
+            {
+                field: 'DateCreated', title: doc.getDocLabel("page_tag", "datecreated"),
+                width: '170px',
+                render: function (t) { return crbTableEscape(getDate(t.DateCreated)); }
+            },
+            {
+                field: 'ciResult', title: doc.getDocOnline("tag", "ciresult"),
+                width: '110px', filterable: true,
+                render: function (t) { return campaign_ciChip(t.ciResult); }
+            },
+            {
+                // Not sortable: a distribution has no single value to order by.
+                title: doc.getDocLabel("page_tag", "result"), sortable: false, width: '230px',
+                render: function (t) { return campaign_resultBar(t); }
+            },
+            {
+                field: 'reliability', title: doc.getDocOnline("page_tag", "reliability"),
+                width: '170px',
+                render: function (t) { return campaign_reliabilityMeter(t); }
+            },
+            {
+                field: 'durationSec', title: doc.getDocOnline("page_tag", "duration"),
+                width: '130px', className: 'text-right tabular-nums',
+                render: function (t) {
+                    var d = getDuration(t);
+                    return crbTableEscape(d.data > 0 ? d.disp : '-');
+                }
+            },
+            {field: 'nbExeUsefull', title: doc.getDocOnline("tag", "nbexeusefull"),
+             width: '120px', className: 'text-right tabular-nums'},
+            {field: 'nbExe', title: doc.getDocOnline("tag", "nbexe"),
+             width: '110px', className: 'text-right tabular-nums'},
+            {
+                field: 'exePerMin', title: doc.getDocOnline("page_tag", "exepermin"),
+                width: '130px', className: 'text-right tabular-nums',
+                render: function (t) {
+                    return t.exePerMin === null ? '' : crbTableEscape(t.exePerMin);
+                }
+            },
+            {field: 'ciScore', title: doc.getDocOnline("tag", "ciscore"),
+             width: '110px', visible: false, className: 'text-right tabular-nums'},
+            {
+                field: 'DateEndQueue', title: doc.getDocOnline("tag", "dateendqueue"),
+                width: '170px', visible: false,
+                render: function (t) { return crbTableEscape(getDate(t.DateEndQueue)); }
+            }
+        ],
+        actions: [
+            {
+                key: 'report', icon: 'external-link', gate: 'always',
+                title: 'Open the full campaign report of this run',
+                href: function (t) {
+                    return './ReportingExecutionByTagV2.jsp?Tag=' + encodeURIComponent(t.tag);
+                }
+            }
+        ]
+    });
+}
+
+/** CI verdict chip. Empty while the run has no verdict yet. */
+function campaign_ciChip(ciResult) {
+    if (isEmpty(ciResult)) {
+        return '<span class="crb_card_head_hint">-</span>';
+    }
+    var cls = ciResult === 'OK'
+        ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400'
+        : 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400';
+    return '<span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ' +
+        'ring-1 ring-inset ' + cls + '">' + crbTableEscape(ciResult) + '</span>';
+}
+
+/**
+ * Status distribution of one run, as a single stacked bar.
+ *
+ * Same ten statuses V1 stacked, but on the shared .crb_statusbar instead of a row
+ * of Bootstrap .progress-bar blocks, and each segment keeps its status colour from
+ * the .status<XX> classes the rest of the app uses.
+ */
+function campaign_resultBar(tag) {
+    var total = tag.nbExeUsefull || 0;
+    if (total <= 0) {
+        return '<span class="crb_card_head_hint">no useful execution</span>';
+    }
+    var order = ['OK', 'KO', 'FA', 'NA', 'NE', 'WE', 'PE', 'QU', 'QE', 'CA'];
+    var segs = order.map(function (st) {
+        var n = tag['nb' + st] || 0;
+        if (!n) {
+            return '';
+        }
+        var pct = n * 100 / total;
+        return '<span class="crb_statusbar_seg status' + st + '" style="width:' + pct + '%" title="' +
+            crbTableEscape(st + ': ' + n + ' (' + (Math.round(pct * 10) / 10) + '%)') + '">' +
+            (pct >= 12 ? crbTableEscape(Math.round(pct)) + '%' : '') + '</span>';
+    }).join('');
+    return '<span class="crb_statusbar">' + segs + '</span>';
+}
+
+/** Share of executions that were useful (not retried away), as a meter. */
+function campaign_reliabilityMeter(tag) {
+    if (!(tag.nbExe > 0)) {
+        return '<span class="crb_card_head_hint">-</span>';
+    }
+    var pct = (tag.nbExeUsefull / tag.nbExe) * 100;
+    // getGreenToRed() returns pure rgb(0,255,0) at the top of the scale, which is
+    // fine as a bar but unreadable as text. The figure uses the charter's semantic
+    // colours instead, which hold up in both themes.
+    var bar = getGreenToRed(pct);
+    var text = pct >= 90 ? '#059669' : (pct >= 50 ? '#d97706' : '#dc2626');
+    return '<span class="crb_meter" title="' +
+        crbTableEscape(tag.nbExeUsefull + ' useful out of ' + tag.nbExe + ' executions') + '">' +
+        '<span class="crb_meter_track"><span class="crb_meter_fill" style="width:' +
+        Math.min(100, Math.max(0, pct)) + '%; background:' + crbTableEscape(bar) + '"></span></span>' +
+        '<span class="crb_meter_value" style="color:' + text + '">' +
+        crbTableEscape(Math.round(pct * 10) / 10 + '%') + '</span></span>';
 }
 
 function campaign_viewEntryModalCloseHandler() {
@@ -919,6 +1127,9 @@ function campaign_viewEntryModalCloseHandler() {
 
 function campaign_editEntryClick(param) {
     clearResponseMessageMainPage();
+
+    // Restore the Edit title: the modal is shared with Create, which sets its own.
+    campaign_setModalTitle("edittestcampaign_field");
 
     //Store the campaign name
     $("#campaignKey").val(param);
@@ -1154,6 +1365,12 @@ function campaign_editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
                 oTable.fnDraw(false);
+                // The V2 CampaignList replaces #testcampaignsTable with a crbTable,
+                // which fnDraw above cannot reach; this event is what reloads it.
+                // No-op on the legacy page, where nothing listens.
+                if (typeof crbNotifyDataChanged === "function") {
+                    crbNotifyDataChanged("campaign");
+                }
                 window.dispatchEvent(new CustomEvent('campaign-modal-close'));
                 showMessage(data);
             } else {
@@ -1175,6 +1392,18 @@ function campaign_editEntryModalCloseHandler() {
     clearResponseMessage($('#editTestcampaignModal'));
 }
 
+/** Sets the shared campaign modal header from a page_testcampaign doc label. */
+function campaign_setModalTitle(labelKey) {
+    var doc = new Doc();
+    var title = doc.getDocLabel("page_testcampaign", labelKey);
+    // getDocLabel returns a "Missing doc" placeholder rather than an empty string
+    // when a label is absent, so a plain `|| fallback` would never fire.
+    if (!title || title.indexOf("Missing doc") !== -1) {
+        title = (labelKey === "addtestcampaign_field") ? "Add Campaign" : "Edit Campaign";
+    }
+    $("#editTestcampaignModalLabel").text(title);
+}
+
 function campaign_addEntryClick() {
     clearResponseMessageMainPage();
 
@@ -1190,8 +1419,26 @@ function campaign_addEntryClick() {
     //clear the modals fields when closed
     window.addEventListener('campaign-modal-close', campaign_editEntryModalCloseHandler);
 
-    $("#editTestcampaignModal #campaign").empty();
-    $("#editTestcampaignModal #originalCampaign").empty();
+    // The modal is SHARED with Edit, and its header is a single static <h4>. Only
+    // the "edit" label was ever loaded into it, so creating a campaign came up
+    // titled "Edit Campaign" while its button said "Create". Each entry point now
+    // states which one it is. (The matching name='addTestcampaignField' element the
+    // page controllers fill does not exist in this markup - this <h4> is the title.)
+    campaign_setModalTitle("addtestcampaign_field");
+
+    // Create has to start from a clean form.
+    // These two lines used to be .empty(), which removes an element's children and
+    // therefore does nothing at all to an <input>: after opening Edit on a campaign
+    // and closing it, Create came up pre-filled with that campaign - name included,
+    // which is the primary key. Resetting the whole form clears every field the
+    // previous Edit had loaded, not just these two.
+    var addForm = $('#editTestcampaignModal #editTestcampaignModalForm')[0];
+    if (addForm) {
+        addForm.reset();
+    }
+    $("#editTestcampaignModal #campaign").val("");
+    $("#editTestcampaignModal #originalCampaign").val("");
+    $('#editTestcampaignModal').find('div.has-error').removeClass("has-error");
 
     $("#editTestcampaignModal #campaign").removeAttr("readonly");
 
@@ -1304,6 +1551,12 @@ function campaign_addEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
                 oTable.fnDraw(false);
+                // The V2 CampaignList replaces #testcampaignsTable with a crbTable,
+                // which fnDraw above cannot reach; this event is what reloads it.
+                // No-op on the legacy page, where nothing listens.
+                if (typeof crbNotifyDataChanged === "function") {
+                    crbNotifyDataChanged("campaign");
+                }
                 window.dispatchEvent(new CustomEvent('campaign-modal-close'));
                 showMessage(data);
             } else {
@@ -1518,7 +1771,7 @@ function appendLabelRow(campaign, campaignLabelID, labelId, system, label, color
         .append('<td style="padding:8px 12px; width:48px;"><button type="button" class="crb-delete-row inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">' + trashSvg + '</button></td>')
         .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + labelId + '</td>')
         .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + system + '</td>')
-        .append('<td style="padding:8px 12px;"><span class="inline-block px-2 py-0.5 rounded text-xs text-white" style="background-color:' + (color || '#8b8b8c') + '">' + label + '</span></td>')
+        .append('<td style="padding:8px 12px;"><span class="inline-block px-2 py-0.5 rounded text-xs" style="' + crbChipStyle(color || '#8b8b8c') + '">' + label + '</span></td>')
         .append('<td style="padding:8px 12px;" class="text-sm text-slate-700 dark:text-slate-300">' + type + '</td>');
     $tr.find('.crb-delete-row').on('click', function() {
         $tr.css({'background': '#fef2f2', 'opacity': '0.5'});
@@ -1642,8 +1895,8 @@ function aoColumnsFunc_Label(tableId) {
             "sName": "label",
             "title": doc.getDocLabel("label", "label"),
             "mRender": function (data, type, obj) {
-                var result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
-                        + obj[5] + "' data-toggle='tooltip' data-labelid='"
+                var result = "<div style='float:left;height: 34px'><span class='label label-primary' style='"
+                        + crbChipStyle(obj[5]) + "' data-toggle='tooltip' data-labelid='"
                         + obj[2] + "' title='"
                         + obj[6] + "'>"
                         + obj[4] + "</span></div>";

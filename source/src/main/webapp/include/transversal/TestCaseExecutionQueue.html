@@ -360,6 +360,12 @@
                 if (getAlertType(data.messageType) === "success") {
                     var oTable = $("#executionsTable").dataTable();
                     oTable.fnDraw(false);
+                    // The V2 queue list replaces #executionsTable with a crbTable,
+                    // which fnDraw above cannot reach; this event is what reloads it.
+                    // No-op on legacy pages, where nothing listens.
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("executionqueue");
+                    }
                     $('#editExecutionQueueModal').data("Saved", true);
                     window.dispatchEvent(new CustomEvent('exequeue-modal-close'));
                     if (data.addedEntries === 1) {

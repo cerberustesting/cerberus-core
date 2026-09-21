@@ -20,12 +20,15 @@
 package org.cerberus.core.mcp.impl.application;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.dto.application.ApplicationMapperV001;
 import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
+import org.cerberus.core.mcp.util.MCPUserContextService;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.service.IApplicationService;
@@ -58,16 +61,18 @@ public class CreateApplicationTool implements MCPTool {
     private final ApplicationMapperV001 applicationMapper;
     private final InvariantMapperV001 invariantMapper;
     private final MCPLogUtils mcpLogUtils;
+    private final MCPUserContextService userContext;
 
     @Autowired
     private WebSocketEventSender webSocketEventSender;
 
-    public CreateApplicationTool(IApplicationService applicationService, IInvariantService invariantService, ApplicationMapperV001 applicationMapper, InvariantMapperV001 invariantMapper, MCPLogUtils mcpLogUtils) {
+    public CreateApplicationTool(IApplicationService applicationService, IInvariantService invariantService, ApplicationMapperV001 applicationMapper, InvariantMapperV001 invariantMapper, MCPLogUtils mcpLogUtils, MCPUserContextService userContext) {
         this.applicationService = applicationService;
         this.invariantService = invariantService;
         this.applicationMapper = applicationMapper;
         this.invariantMapper = invariantMapper;
         this.mcpLogUtils = mcpLogUtils;
+        this.userContext = userContext;
     }
 
     @Override
@@ -76,7 +81,7 @@ public class CreateApplicationTool implements MCPTool {
                 createTool(),
                 (exchange, request) -> {
                     Map<String, Object> args = MCPToolUtils.argumentsOrEmpty(request.arguments());
-                    return execute(args);
+                    return execute(args, exchange);
                 }
         );
     }
@@ -163,11 +168,12 @@ public class CreateApplicationTool implements MCPTool {
      * checks for a pre-existing application, builds the entity, and delegates creation
      * to {@link IApplicationService#create(Application)}.
      *
-     * @param args the raw MCP argument map from the client request
+     * @param args     the raw MCP argument map from the client request
+     * @param exchange the MCP exchange, used to resolve the caller's active system context
      * @return a success result containing {@code status} and {@code application},
      *         or an error result with a human-readable message
      */
-    private McpSchema.CallToolResult execute(Map<String, Object> args) {
+    private McpSchema.CallToolResult execute(Map<String, Object> args, McpSyncServerExchange exchange) {
         String applicationName = MCPToolUtils.getString(args, "application", "");
         String description = MCPToolUtils.getString(args, "description", "");
         String type = MCPToolUtils.getString(args, "type", "");
@@ -180,7 +186,8 @@ public class CreateApplicationTool implements MCPTool {
         if("".equals(appSessionID)){
             webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START, Map.of("toolName", TOOL_NAME ));
         }
-        mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s type=%s system=%s", TOOL_NAME, applicationName, type, system));
+        String login = userContext.getLogin(exchange);
+        mcpLogUtils.call(TOOL_NAME, "application_create", String.format("MCP tool %s called with application=%s type=%s system=%s", TOOL_NAME, applicationName, type, system), login);
 
         if (applicationName.isBlank()) {
             return MCPToolUtils.errorText("Missing required parameter: application");
@@ -193,6 +200,24 @@ public class CreateApplicationTool implements MCPTool {
         }
         if (!system.matches("[a-zA-Z0-9_\\-]+")) {
             return MCPToolUtils.errorText("Invalid system name '" + system + "': only letters, digits, hyphens and underscores are allowed.");
+        }
+
+        if (login == null) {
+            return MCPToolUtils.errorText("Unable to resolve the authenticated MCP user for this call.");
+        }
+        List<String> activeSystems;
+        try {
+            activeSystems = userContext.getContextSystems(userContext.getUser(login));
+        } catch (CerberusException e) {
+            return MCPToolUtils.errorText(
+                    "Unable to read system context for '" + login + "': " + e.getMessageError().getDescription());
+        }
+        if (activeSystems.stream().noneMatch(system::equalsIgnoreCase)) {
+            return MCPToolUtils.errorText(
+                    "System '" + system + "' is not in your active MCP context " + activeSystems + ". "
+                            + "Call cerberus_context_system_update (action=add) to activate an allowed system, "
+                            + "or cerberus_context_system_list to see what's available. "
+                            + "A system you have no access to cannot be created through this tool.");
         }
 
         // If the SYSTEM invariant does not exist, require explicit user confirmation before creating it.

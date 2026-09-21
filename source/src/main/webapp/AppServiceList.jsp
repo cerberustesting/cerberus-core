@@ -19,6 +19,19 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%--
+    Service Library list, on the Alpine table component (js/global/crbTable.js).
+
+    Replaced the DataTables version on 2026-08-29 after validation. The previous
+    implementation is still served at AppServiceListV1.jsp (loading
+    js/pages/AppServiceList.js) - to roll back, copy AppServiceListV1.jsp over
+    this file. Both read the same ReadAppService endpoint, so no data or Java
+    change is involved either way.
+
+    Every <script> and <jsp:include> below mirrors the V1 page - dropping one
+    leaves a button that renders and then silently does nothing.
+    Re-check with ./check-v2-migration.sh AppServiceList after any edit here.
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html class="h-full">
@@ -30,8 +43,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Service Library</title>
-        <script type="text/javascript" src="js/pages/AppServiceList.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/global/autocomplete.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/pages/AppServiceListV2.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -43,16 +56,14 @@
                           + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/utils/modal-confirmation.html" %>
-            <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
+            <%-- listTestCase: the "test cases using this service" panel (list action) --%>
+            <%@ include file="include/pages/testdatalib/listTestCase.html"%>
 
             <h1 class="page-title-line" id="title">Service Library</h1>
 
             <div class="">
-                <div id="soapLibraryList">
-                    <table id="soapLibrarysTable" class="table table-hover display"
-                           name="soapLibrarysTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+                <div id="soapLibraryList"></div>
+                <div class="marginBottom20"></div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

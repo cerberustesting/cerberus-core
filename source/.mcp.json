@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "cerberus-mcp": {
+      "type": "http",
+      "url": "https://qa.cerberus-testing.com/mcp",
+      "oauth": {
+        "clientId": "Cerberus-mcp"
+      }
+    }
+  }
+}

@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.List;
@@ -153,11 +154,13 @@ public class RobotDTOV001 {
     @Schema(description = "Last modification date")
     private Timestamp dateModif;
 
-    @JsonView(View.Public.GET.class)
+    @Valid
+    @JsonView({View.Public.GET.class, View.Public.POST.class})
     @Schema(description = "Robot capabilities")
     private List<RobotCapabilityDTOV001> capabilities;
 
-    @JsonView(View.Public.GET.class)
+    @Valid
+    @JsonView({View.Public.GET.class, View.Public.POST.class})
     @Schema(description = "Robot executors")
     private List<RobotExecutorDTOV001> executors;
 }

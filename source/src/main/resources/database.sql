@@ -6862,3 +6862,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 -- 1947
 INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
   VALUES('ACTION', 'setAccessibilityContent', 24955, 'Set JSON Accessibility Analysis to current content', 'Set Accessibility content');
+
+-- 1948
+ALTER TABLE `robotexecutor`
+    ADD COLUMN `ExecutorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `HostPassword`;

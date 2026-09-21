@@ -351,6 +351,12 @@
                 if (getAlertType(data.messageType) === "success") {
                     var oTable = $("#eventHooksTable").dataTable();
                     oTable.fnDraw(false);
+                    // The V2 EventHookList replaces #eventHooksTable with a crbTable,
+                    // which fnDraw above cannot reach; this event is what reloads it.
+                    // No-op on legacy pages, where nothing listens.
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("eventhook");
+                    }
                     $('#editEventHookModal').data("Saved", true);
                     window.dispatchEvent(new CustomEvent('eventhook-modal-close'));
                     showMessage(data);

@@ -129,6 +129,9 @@
             AO_PROPOSALS: 'ao.proposals',
             TESTCASE_PROPOSALS: 'testcase.proposals',
 
+            // User context events
+            USERCONTEXT_UPDATE: 'usercontext.update',
+
             // Client request channels
             CHAT_SEND: 'chat.send',
             EXECUTION_MONITOR: 'execution.monitor',

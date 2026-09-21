@@ -28,10 +28,9 @@
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
                     <a class="v2-library-link"
-                       :href="'./TestCaseScript.jsp?test=' + encodeURIComponent(activeStep.libraryStepTest) + '&testcase=' + encodeURIComponent(activeStep.libraryStepTestCase) + '&stepId=' + activeStep.libraryStepStepId"
-                       target="_blank"
+                       :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(activeStep.libraryStepTest) + '&testcase=' + encodeURIComponent(activeStep.libraryStepTestCase) + '&stepId=' + activeStep.libraryStepStepId"
                        @click.stop
-                       data-tip="Open library in new tab">
+                       data-tip="Open library step">
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         <span x-text="activeStep.libraryStepTestCase || 'Library'"></span>
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -139,7 +138,6 @@
                             <div style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
                                 <template x-for="u in libUsers" :key="u.test + u.testcase + u.stepId">
                                     <a :href="'./TestCaseScriptV2.jsp?test=' + encodeURIComponent(u.test) + '&testcase=' + encodeURIComponent(u.testcase) + '&stepId=' + u.stepId"
-                                       target="_blank"
                                        style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; font-size: 11px; text-decoration: none; color: var(--crb-text-color, #1e293b); transition: all 0.15s; border: 1px solid transparent;"
                                        onmouseenter="this.style.background='color-mix(in srgb, var(--crb-orange-color) 8%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--crb-orange-color) 15%, transparent)'"
                                        onmouseleave="this.style.background='transparent'; this.style.borderColor='transparent'">

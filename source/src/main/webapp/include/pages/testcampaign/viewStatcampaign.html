@@ -1,8 +1,19 @@
-<!-- View Stat Campaign Modal - Alpine.js/Tailwind -->
+<%--
+    Campaign executions modal ("List of executions for campaign X").
+
+    Reached from the Statistics action of the campaign list. It used to be a bare
+    legacy client-side DataTable in an otherwise empty modal - unstyled Bootstrap
+    progress bars, truncated headers and no way to reach the report of a run. Now:
+    a KPI strip that answers "how is this campaign doing" at a glance, then the
+    shared V2 table (client mode, embedded) with the run-by-run detail and an action
+    that opens each run's campaign report.
+
+    The rows are pushed by campaign_viewStatEntryClick() in include/transversal/Campaign.html.
+--%>
 <div x-data="{ open: false, isFullscreen: false }"
      x-show="open"
      x-cloak
-     @viewstatcampaign-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); setTimeout(() => { if ($('#viewTagcampaignsTable_wrapper').length > 0) $('#viewTagcampaignsTable').DataTable().columns.adjust(); }, 300); })"
+     @viewstatcampaign-modal-open.window="open = true; $nextTick(() => { if (window.lucide) lucide.createIcons(); })"
      @viewstatcampaign-modal-close.window="open = false"
      class="crb_modal"
      id="viewStatcampaignModal">
@@ -11,7 +22,7 @@
     <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
     <!-- Modal Card -->
-    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[1200px] rounded-2xl'"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[1280px] rounded-2xl'"
          :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
          class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
@@ -29,8 +40,11 @@
                     <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-500"></i>
                 </div>
                 <div>
-                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100" id="viewStatcampaignModalLabel" name="viewStatcampaignField">View Statcampaign</h5>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">Tag statistics for this campaign</p>
+                    <h5 class="!text-lg !font-semibold !mb-0 !mt-0 text-slate-900 dark:text-slate-100"
+                        id="viewStatcampaignModalLabel" name="viewStatcampaignField">Campaign executions</h5>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">
+                        Every run of this campaign - result, reliability, duration and CI verdict
+                    </p>
                 </div>
             </div>
             <div class="flex items-center gap-1">
@@ -47,18 +61,26 @@
 
         <!-- BODY -->
         <div class="flex-1 overflow-y-auto px-6 pb-3 min-h-0">
-            <div id="tabsCView-2">
-                <div id="viewTagcampaignList" class="overflow-x-auto">
-                    <table id="viewTagcampaignsTable" class="table table-hover display" name="viewTagcampaignsTable" style="width:100%"></table>
-                    <div class="mb-5"></div>
+
+            <%-- Filled by campaign_viewStatEntryClick(); hidden while there is no run. --%>
+            <div class="crb_modal_kpis" id="viewStatcampaignKpis"></div>
+
+            <%-- The V2 table, EMBEDDED: this card and its head are the modal's. --%>
+            <div class="crb_card" style="padding: 0; overflow: hidden; margin-bottom: 0">
+                <div class="crb_card_head">
+                    <span class="crb_card_head_title">Runs</span>
+                    <span class="crb_card_head_count" id="viewStatcampaignCount">0</span>
+                    <span class="flex-1"></span>
+                    <span class="crb_card_head_hint">open a run to get its full campaign report</span>
                 </div>
+                <div id="viewStatcampaignTableMount"></div>
             </div>
         </div>
 
         <!-- FOOTER -->
         <div class="flex justify-end gap-2 px-6 py-3 shrink-0">
             <button type="button" @click="open = false"
-                    class="px-4 py-2 rounded-md bg-blue-400 text-white text-sm hover:bg-blue-700 transition" name="buttonClose">Close</button>
+                    class="px-4 py-2 rounded-md bg-sky-400 text-white text-sm hover:bg-sky-500 transition" name="buttonClose">Close</button>
         </div>
     </div>
 </div>

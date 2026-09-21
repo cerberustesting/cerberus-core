@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.spec.McpSchema;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +55,31 @@ public final class MCPToolUtils {
         return defaultValue;
     }
 
+    /**
+     * Reads a 64-bit identifier from the tool arguments.
+     *
+     * <p>Execution ids exceed the int range on long-lived Cerberus instances, and JSON has no
+     * integer width: a client may send the same id as a Long, an Integer or — some MCP clients
+     * quote large numbers to avoid float precision loss — as a String. All three are accepted.</p>
+     *
+     * @param args         the tool arguments.
+     * @param key          the argument name to read.
+     * @param defaultValue the value returned when the argument is absent or unparseable.
+     * @return the identifier, or {@code defaultValue}.
+     */
+    public static long getLong(Map<String, Object> args, String key, long defaultValue) {
+        Object value = args.get(key);
+        if (value instanceof Number number) return number.longValue();
+        if (value instanceof String stringValue) {
+            try {
+                return Long.parseLong(stringValue.trim());
+            } catch (NumberFormatException e) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
     @SuppressWarnings("unchecked")
     public static List<String> getStringList(Map<String, Object> args, String key, List<String> defaultValue) {
         Object value = args.get(key);
@@ -63,6 +89,51 @@ public final class MCPToolUtils {
         }
 
         return defaultValue;
+    }
+
+    /**
+     * Reads a list of identifiers from the tool arguments.
+     *
+     * <p>Accepts numbers and numeric strings alike: JSON has no integer type of its own and clients
+     * differ on how they render one, so refusing {@code ["10","20"]} would fail a call that is
+     * unambiguous.</p>
+     *
+     * @return the identifiers, or {@code null} when the argument is absent or holds an element that
+     * is not a whole number — the two cases a caller must be told apart from an empty list.
+     */
+    public static List<Integer> getIntegerList(Map<String, Object> args, String key) {
+        Object value = args.get(key);
+        if (!(value instanceof List<?> list)) {
+            return null;
+        }
+        List<Integer> result = new ArrayList<>(list.size());
+        for (Object element : list) {
+            if (element instanceof Number number) {
+                result.add(number.intValue());
+            } else if (element instanceof String stringValue) {
+                try {
+                    result.add(Integer.valueOf(stringValue.trim()));
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Reads a nested object from the tool arguments.
+     *
+     * <p>Returns an empty map rather than null for anything that is not an object, so a caller
+     * that sent the wrong shape is handled by the field checks that follow instead of by a null
+     * check at every use site.</p>
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> getMap(Map<String, Object> args, String key) {
+        Object value = args.get(key);
+        return value instanceof Map ? (Map<String, Object>) value : Map.of();
     }
 
     public static String nullSafe(String value) {
@@ -103,6 +174,32 @@ public final class MCPToolUtils {
         }
     }
 
+
+    /**
+     * Returns a payload both as text and as structured content.
+     *
+     * <p>Use this only for a tool that declares an {@code outputSchema}: the specification requires
+     * a tool returning structured content to produce results conforming to its declared schema, and
+     * a client is entitled to validate them. The two travel together or not at all.</p>
+     *
+     * <p>The serialized JSON stays in the text block, as the specification asks for backwards
+     * compatibility — and because the in-app MCP Inspector parses exactly that block. The cost is
+     * that the payload is carried twice, which is why this is reserved for small, bounded results:
+     * on a listing it would double what a caller has to read back, working against the size limits
+     * a tool result has to respect.</p>
+     */
+    public static McpSchema.CallToolResult successStructured(Object payload) {
+        try {
+            return new McpSchema.CallToolResult(
+                    List.of(new McpSchema.TextContent(null, OBJECT_MAPPER.writeValueAsString(payload), null)),
+                    false,
+                    payload,
+                    null
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to serialize MCP tool response.", e);
+        }
+    }
 
     public static McpSchema.ToolAnnotations annotations(
             String title, boolean readOnlyHint, boolean destructiveHint, boolean idempotentHint, boolean openWorldHint, boolean returnDirect

@@ -25,6 +25,7 @@ import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +46,9 @@ import java.util.Map;
 public class ListTestCasesTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_testcase_list";
+
+    /** How many testcases a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     private final ITestCaseService testCaseService;
     private final MCPLogUtils mcpLogUtils;
@@ -98,6 +102,11 @@ public class ListTestCasesTool implements MCPTool {
                         "enum", List.of("MANUAL", "AUTOMATED", "PRIVATE")
                 )
         );
+
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "testcases");
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -163,11 +172,15 @@ public class ListTestCasesTool implements MCPTool {
                 .map(this::toMap)
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "testFolder", testFolder,
-                "count", result.size(),
-                "testcases", result
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Map<String, Object>> page = MCPPagination.slice(result, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("testFolder", testFolder);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, result.size(), page.size(), "testcases");
+        response.put("testcases", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

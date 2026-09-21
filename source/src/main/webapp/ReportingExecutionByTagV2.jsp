@@ -33,6 +33,7 @@
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
 
         <!-- V2 page -->
+        <%-- The execution grid is the shared V2 table in client + embedded mode. --%>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTagV2.js?v=${appVersion}"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
         <link rel="stylesheet" type="text/css" href="css/pages/ReportingExecutionByTagV2.css?v=${appVersion}"/>
@@ -126,13 +127,20 @@
                     </div>
                 </template>
 
-                <template x-if="loaded && !error">
-                    <div class="v2rt-page">
-                        <%@ include file="include/pages/reportingexecutionbytagv2/infoCards.html" %>
-                        <%@ include file="include/pages/reportingexecutionbytagv2/sections.html" %>
-                        <%@ include file="include/pages/reportingexecutionbytagv2/executionGrid.html" %>
-                    </div>
-                </template>
+                <%--
+                    x-show, not x-if. <template x-if> destroys and recreates its
+                    content on every flip, which takes the mounted V2 grid with it:
+                    picking another campaign execution would leave the registry
+                    pointing at dead nodes and the grid empty for ever. x-show only
+                    toggles display, so the grid is mounted once, keeps its search,
+                    sort and column choices, and simply receives a new column set and
+                    new rows for each tag.
+                --%>
+                <div class="v2rt-page" x-show="loaded && !error" x-cloak>
+                    <%@ include file="include/pages/reportingexecutionbytagv2/infoCards.html" %>
+                    <%@ include file="include/pages/reportingexecutionbytagv2/sections.html" %>
+                    <%@ include file="include/pages/reportingexecutionbytagv2/executionGrid.html" %>
+                </div>
 
                 <%@ include file="include/pages/reportingexecutionbytagv2/pdfModal.html" %>
 

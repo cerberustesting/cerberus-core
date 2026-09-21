@@ -29,6 +29,7 @@ import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseStepAction;
 import org.cerberus.core.crud.entity.TestCaseStepActionControl;
+import org.cerberus.core.mcp.util.MCPExecutionSignal;
 import org.cerberus.core.websocket.runtime.ExecutionMonitor;
 import org.cerberus.core.websocket.runtime.ObjectChangeHistory;
 import org.cerberus.core.websocket.runtime.QueueStatus;
@@ -61,6 +62,12 @@ public class WebSocketService {
     private ExecutionMonitor executionMonitor;
     @Autowired
     private ObjectChangeHistory objectChangeHistory;
+    /**
+     * Lets MCP tools waiting on a tag wake up as soon as a run progresses, instead of polling.
+     * Signalling is best-effort and never alters what is pushed to the WebSocket channels.
+     */
+    @Autowired
+    private MCPExecutionSignal mcpExecutionSignal;
 
     /**
      * Execution just got its RunID and started.
@@ -119,6 +126,10 @@ public class WebSocketService {
             webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_DELTA_ID(execution.getTagObj().getCampaign()), executionLight);
         }
 
+        // Wake any MCP call waiting on this tag. The signal only invites the waiter to re-read the
+        // tag, so firing on every execution rather than only on the last one is what lets a
+        // campaign report its progress as it advances.
+        mcpExecutionSignal.signal(execution.getTag());
     }
 
     /**
@@ -186,6 +197,10 @@ public class WebSocketService {
         if ("OK".equalsIgnoreCase(tag.getCiResult())) {
             webSocketEventSender.sendToChannel(WebSocketStatic.CHANNEL_CAMPAIGN_SUCCESS, campaignExecutionMapper.toLightDto(tag));
         }
+
+        // Counters and CI verdict are final here, so a waiter woken by this reads the definitive
+        // result rather than an intermediate one.
+        mcpExecutionSignal.signal(tag.getTag());
     }
 
     /**

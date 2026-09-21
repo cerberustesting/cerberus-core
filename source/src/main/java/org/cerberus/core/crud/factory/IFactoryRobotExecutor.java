@@ -48,6 +48,7 @@ public interface IFactoryRobotExecutor {
      * @param executorBrowserProxyHost
      * @param executorBrowserProxyPort
      * @param executorExtensionPort
+     * @param executorExtensionHost Host used to reach the Cerberus browser extension. If empty, host will be used.
      * @param deviceUdid
      * @param UsrCreated
      * @param executorProxyType
@@ -56,8 +57,8 @@ public interface IFactoryRobotExecutor {
      * @param DateModif
      * @return
      */
-    RobotExecutor create(Integer ID, String robot, String executor, boolean isActive, 
+    RobotExecutor create(Integer ID, String robot, String executor, boolean isActive,
             Integer rank, String host, String port, String hostUser, String hostPassword, Integer executorExtensionProxyPort, String deviceUdid,
-            String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorProxyType,
+            String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorExtensionHost, String executorProxyType,
             String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

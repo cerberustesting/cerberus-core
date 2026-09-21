@@ -56,6 +56,9 @@ public class OAuthProtectedResourceMetadataServlet extends HttpServlet {
             return;
         }
 
+        if (keycloakUrl.endsWith("/")) {
+            keycloakUrl = keycloakUrl.substring(0, keycloakUrl.length() - 1);
+        }
         String issuer = keycloakUrl + "/realms/" + realm;
         String resource = baseUrl(request) + "/mcp";
 
@@ -76,6 +79,11 @@ public class OAuthProtectedResourceMetadataServlet extends HttpServlet {
     /**
      * Builds {@code scheme://host[:port]/context} from the incoming request,
      * omitting the port when it is the default for the scheme.
+     *
+     * Behind a reverse proxy, request.getScheme()/getServerPort() already reflect
+     * the client-facing https:// origin via Tomcat's RemoteIpValve (see the WAR's
+     * META-INF/context.xml), which reads X-Forwarded-Proto/Host/Port upstream of
+     * every servlet, including this one which bypasses Spring MVC.
      */
     static String baseUrl(HttpServletRequest request) {
         String scheme = request.getScheme();

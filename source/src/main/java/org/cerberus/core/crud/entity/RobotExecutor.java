@@ -56,6 +56,7 @@ public class RobotExecutor {
     private String executorBrowserProxyHost;
     private Integer executorBrowserProxyPort;
     private Integer executorExtensionPort;
+    private String executorExtensionHost; // Host used to reach the Cerberus browser extension. If empty, the executor Host is used (eg: when the extension is exposed via a different tunnel/hostname than Selenium, such as cloudflared).
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -257,6 +258,14 @@ public class RobotExecutor {
         this.executorExtensionPort = executorExtensionPort;
     }
 
+    public String getExecutorExtensionHost() {
+        return executorExtensionHost;
+    }
+
+    public void setExecutorExtensionHost(String executorExtensionHost) {
+        this.executorExtensionHost = executorExtensionHost;
+    }
+
     public String getExecutorProxyType() {
         return executorProxyType;
     }
@@ -390,6 +399,9 @@ public class RobotExecutor {
         if ((this.executorExtensionPort == null) ? (other.executorExtensionPort != null) : !this.executorExtensionPort.equals(other.executorExtensionPort)) {
             return false;
         }
+        if ((this.executorExtensionHost == null) ? (other.executorExtensionHost != null) : !this.executorExtensionHost.equals(other.executorExtensionHost)) {
+            return false;
+        }
         return true;
     }
 
@@ -417,6 +429,7 @@ public class RobotExecutor {
             result.put("executorBrowserProxyHost", this.getExecutorBrowserProxyHost());
             result.put("executorBrowserProxyPort", this.getExecutorBrowserProxyPort());
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
+            result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorProxyType", this.getExecutorProxyType());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());

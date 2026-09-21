@@ -27,6 +27,7 @@ import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,9 @@ import java.util.Map;
 public class ListCountryEnvironmentParametersTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_country_environment_parameters_list";
+
+    /** How many entries a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     private final ICountryEnvironmentParametersService countryEnvironmentParametersService;
     private final CountryEnvironmentParametersMapperV001 mapper;
@@ -106,6 +110,11 @@ public class ListCountryEnvironmentParametersTool implements MCPTool {
                 "type", "string",
                 "description", "Optional text filter applied on application, endpoint, domain, or context root (case-insensitive)."
         ));
+
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "entries");
 
         return new McpSchema.Tool(
                 TOOL_NAME,
@@ -164,11 +173,15 @@ public class ListCountryEnvironmentParametersTool implements MCPTool {
                 .map(Object.class::cast)
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "system", system,
-                "count", entries.size(),
-                "entries", entries
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Object> page = MCPPagination.slice(entries, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("system", system);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, entries.size(), page.size(), "entries");
+        response.put("entries", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

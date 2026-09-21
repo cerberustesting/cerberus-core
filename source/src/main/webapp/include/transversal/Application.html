@@ -181,10 +181,9 @@
 
                 <!-- TAB: Object -->
                 <div x-show="activeTab === 'object'" x-transition id="tabsEditApp-3">
-                    <div id="modalAppObjectList">
-                        <table id="modalAppObjectsTable" class="table table-hover display" name="modalAppObjectsTable"></table>
-                        <div class="mb-4"></div>
-                    </div>
+                    <%-- Shared V2 table, EMBEDDED: no card of its own, the modal
+                         panel is the frame. Built by app_ensureObjectTable(). --%>
+                    <div id="modalAppObjectList"></div>
                 </div>
 
                 <!-- TAB: Deployment -->
@@ -362,14 +361,9 @@
         getSelectInvariant("ENVIRONMENT", true);
         getSelectInvariant("COUNTRY", true);
 
-        // Redraw applicationObjects DataTable when Object tab is clicked
-        $(document).off('click.appObjectTab').on('click.appObjectTab', '#editApplicationModal button[name="tabsAppEdit3"]', function () {
-            setTimeout(function () {
-                if ($("#editApplicationModal #modalAppObjectsTable_wrapper").length > 0) {
-                    $("#editApplicationModal #modalAppObjectsTable").DataTable().draw();
-                }
-            }, 100);
-        });
+        // The redraw-on-tab-click hack is gone: it existed because a DataTable laid
+        // out inside a hidden panel measures its columns at zero width. crbTable
+        // measures nothing on mount, so a hidden tab costs it nothing.
     }
 
     function editApplicationClick(application) {
@@ -447,6 +441,12 @@
                 if (getAlertType(data.messageType) === "success") {
                     var oTable = $("#applicationsTable").dataTable();
                     oTable.fnDraw(false);
+                    // The V2 ApplicationList replaces #applicationsTable with a
+                    // crbTable, which fnDraw above cannot reach; this event is what
+                    // reloads it. No-op on legacy pages, where nothing listens.
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("application");
+                    }
                     window.dispatchEvent(new CustomEvent('application-modal-close'));
                     showMessage(data);
                 } else {
@@ -533,16 +533,7 @@
             $('#editApplicationButton').attr('class', 'hidden').attr('hidden', 'hidden');
         }
 
-        if ($("#editApplicationModal #modalAppObjectsTable_wrapper").length > 0) {
-            var oTable = $("#editApplicationModal #modalAppObjectsTable").dataTable();
-            oTable.fnSettings().sAjaxSource = "ReadApplicationObject?application=" + encodeURIComponent(application.application);
-            oTable.fnDraw();
-        } else {
-            var configurations = new TableConfigurationsServerSide("modalAppObjectsTable", "ReadApplicationObject?application=" + encodeURIComponent(application.application), "contentTable", aoColumnsFunc_object("modalAppObjectsTable"), [1, 'asc']);
-            var table = createDataTableWithPermissions(configurations, function (data) {
-                renderOptionsForModalAppObject(application.application, data);
-            }, "#modalAppObjectList", undefined, true);
-        }
+        app_ensureObjectTable(application.application);
 
         if (mode !== "ADD") {
             loadEnvironmentTable(application.system, application.application);
@@ -622,14 +613,84 @@
         }
     }
 
-    function renderOptionsForModalAppObject(id, data) {
+    /**
+     * The Object tab of the application modal, on the shared V2 table
+     * (js/global/crbTable.js) in EMBEDDED mode - the modal panel is the frame, so
+     * the component draws no card of its own.
+     *
+     * SERVER mode: the endpoint carries the application being edited, and the modal
+     * is reopened on a different application all the time. The endpoint is
+     * re-pointed and the table reloaded rather than rebuilt, so the user's column
+     * choices survive and no markup is re-injected into a live modal.
+     */
+    function app_ensureObjectTable(application) {
         var doc = new Doc();
-        if ($("#modalCreateAppObjButton").length === 0) {
-            var contentToAdd = "<div class='mb-3'><a href='ApplicationObjectList.jsp?application=" + id + "' target='_blank'><button id='modalCreateAppObjButton' type='button' class='px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-300 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5'>" +
-                "<i data-lucide='external-link' class='w-3.5 h-3.5'></i> " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
-            $("#modalAppObjectsTable_wrapper div#modalAppObjectsTable_length").before(contentToAdd);
-            if (window.lucide) lucide.createIcons();
+        var endpoint = "ReadApplicationObject?application=" + encodeURIComponent(application);
+        var existing = crbTableInstance('appObjectModalTableV2');
+        if (existing) {
+            existing.cfg.endpoint = endpoint;
+            window.crbTableRegistry['appObjectModalTableV2'].endpoint = endpoint;
+            existing.start = 0;
+            existing.fetch();
+            return;
         }
+        createCerberusTable({
+            id: 'appObjectModalTableV2',
+            mount: '#modalAppObjectList',
+            endpoint: endpoint,
+            embedded: true,
+            pageLength: 10,
+            lengthMenu: [10, 15, 25, 50],
+            sendDefaultSystems: false,
+            persistColumns: true,
+            searchPlaceholder: 'Search objects...',
+            emptyMessage: 'This application has no object yet',
+            rowKey: 'object',
+            defaultSort: {field: 'object', dir: 'asc'},
+            toolbar: function () {
+                // The manage link, which V1 injected into the DataTables length row.
+                return "<a href='ApplicationObjectList.jsp?application=" +
+                    encodeURIComponent(application) + "' target='_blank' " +
+                    "class='flex items-center gap-1.5 px-3 py-1 rounded-md h-10 border " +
+                    "border-slate-300 dark:border-slate-600 text-sm text-slate-600 " +
+                    "dark:text-slate-300 hover:border-sky-400 hover:text-sky-500 transition'>" +
+                    "<i data-lucide='external-link' class='w-3.5 h-3.5'></i><span>" +
+                    doc.getDocLabel("page_application", "button_manage") + "</span></a>";
+            },
+            columns: [
+                {field: 'object', title: doc.getDocOnline("applicationObject", "Object"),
+                 width: '220px', className: 'font-medium'},
+                {field: 'value', title: doc.getDocOnline("applicationObject", "Value"),
+                 width: '360px', like: true},
+                {field: 'screenshotFilename',
+                 title: doc.getDocOnline("applicationObject", "ScreenshotFileName"), width: '220px'},
+                {field: 'application', title: doc.getDocOnline("application", "Application"),
+                 width: '160px', visible: false},
+                {field: 'usrCreated', title: doc.getDocOnline("transversal", "UsrCreated"),
+                 width: '130px', visible: false},
+                {
+                    field: 'dateCreated', title: doc.getDocOnline("transversal", "DateCreated"),
+                    width: '170px', visible: false, like: true,
+                    render: function (row) { return crbTableEscape(app_modalDate(row.dateCreated)); }
+                },
+                {field: 'usrModif', title: doc.getDocOnline("transversal", "UsrModif"),
+                 width: '130px', visible: false},
+                {
+                    field: 'dateModif', title: doc.getDocOnline("transversal", "DateModif"),
+                    width: '170px', visible: false, like: true,
+                    render: function (row) { return crbTableEscape(app_modalDate(row.dateModif)); }
+                }
+            ],
+            actions: []
+        });
+    }
+
+    /** Unset dates render blank, not an epoch date. */
+    function app_modalDate(value) {
+        if (value === undefined || value === null || value === "" || value === 0) {
+            return "";
+        }
+        return getDate(value);
     }
 
     function loadEnvironmentTable(selectSystem, selectApplication) {
@@ -797,20 +858,6 @@
         }
     }
 
-    function aoColumnsFunc_object(tableId) {
-        var doc = new Doc();
-        var aoColumns = [
-            { "data": "application", "sName": "application", "visible": false, "title": doc.getDocOnline("application", "Application") },
-            { "data": "object", "sName": "object", "title": doc.getDocOnline("applicationObject", "Object") },
-            { "data": "value", "sName": "value", "title": doc.getDocOnline("applicationObject", "Value") },
-            { "data": "screenshotFilename", "sName": "screenshotFilename", "title": doc.getDocOnline("applicationObject", "ScreenshotFileName") },
-            { "data": "usrCreated", "sName": "usrCreated", "visible": false, "title": doc.getDocOnline("transversal", "UsrCreated") },
-            { "data": "dateCreated", "like": true, "visible": false, "sName": "dateCreated", "title": doc.getDocOnline("transversal", "DateCreated"), "mRender": function (data, type, oObj) { return getDate(oObj["dateCreated"]); } },
-            { "data": "usrModif", "visible": false, "sName": "usrModif", "title": doc.getDocOnline("transversal", "UsrModif") },
-            { "data": "dateModif", "like": true, "visible": false, "sName": "dateModif", "title": doc.getDocOnline("transversal", "DateModif"), "mRender": function (data, type, oObj) { return getDate(oObj["dateModif"]); } }
-        ];
-        return aoColumns;
-    }
 
     function app_keyispressed(e, modalName) {
         var idname = $('#' + modalName + 'ApplicationModal #application').val();

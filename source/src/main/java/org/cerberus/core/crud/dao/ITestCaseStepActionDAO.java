@@ -73,6 +73,22 @@ public interface ITestCaseStepActionDAO {
     boolean changeTestCaseStepActionActionId(String test, String testcase, int stepid, int oldActionId, int newActionId);
 
     /**
+     * Moves an action to another step of the same testcase.
+     *
+     * <p>A plain update of the key columns, not a delete and re-insert: the controls of the action
+     * reference it by {@code (Test, Testcase, StepId, ActionId)} under an {@code ON UPDATE CASCADE}
+     * foreign key, so they follow the action in the same statement. Re-creating the action instead
+     * would drop them.</p>
+     *
+     * @param newActionId the id to take in the destination step; the caller picks one that is free
+     *                    there, since the pair (step, action) is the primary key.
+     * @param sort        the position the action takes in the destination step.
+     * @return whether a row was moved.
+     */
+    boolean moveTestCaseStepActionToStep(String test, String testcase, int stepId, int actionId,
+                                         int newStepId, int newActionId, int sort, String usrModif);
+
+    /**
      *
      * @param tcsa
      * @throws CerberusException

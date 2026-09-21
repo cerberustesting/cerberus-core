@@ -107,6 +107,9 @@ public class ListTestCaseStepActionsTool implements MCPTool {
                 Returns the list of actions for a given step in a Cerberus testcase.
 
                 Call this tool when the user needs to browse or inspect the actions of a step.
+
+                Use cerberus_testcase_step_action_reorder to change the order they run in, and the position
+                argument of cerberus_testcase_step_action_create to insert a new one in the middle.
                 Use search to filter actions by description or action type.
 
                 Do not call this tool when the user asks to create, update, or delete actions.

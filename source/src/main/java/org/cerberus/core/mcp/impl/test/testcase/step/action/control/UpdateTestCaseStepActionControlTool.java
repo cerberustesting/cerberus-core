@@ -26,12 +26,14 @@ import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlMapper
 import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPActionOptions;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -178,6 +180,8 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
                 "type", "integer",
                 "description", "Wait time in milliseconds after executing the control."
         ));
+        updateProperties.put("options", MCPActionOptions.schema("this control"));
+        updateProperties.put("conditionOptions", MCPActionOptions.schema("the evaluation of this control's condition"));
 
         Map<String, Object> updatesSchema = new LinkedHashMap<>();
         updatesSchema.put("type", "object");
@@ -252,9 +256,13 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
         String testcaseId = MCPToolUtils.getString(args, "testcase", "");
-        int stepId = MCPToolUtils.getInteger(args, "stepId", 0);
-        int actionId = MCPToolUtils.getInteger(args, "actionId", 0);
-        int controlId = MCPToolUtils.getInteger(args, "controlId", 0);
+        // 0 is a legitimate step, action and control id — Cerberus assigns these within their
+        // parent rather than from a sequence, and real testcases do start at 0. The sentinel for
+        // "not supplied" therefore has to be negative: reading it as 0 made every element numbered
+        // 0 unreachable through this tool, with an error blaming the caller.
+        int stepId = MCPToolUtils.getInteger(args, "stepId", -1);
+        int actionId = MCPToolUtils.getInteger(args, "actionId", -1);
+        int controlId = MCPToolUtils.getInteger(args, "controlId", -1);
 
         mcpLogUtils.call(TOOL_NAME, "testcase_step_action_control_update",
                 String.format("MCP tool %s called with testFolder=%s testcase=%s stepId=%d actionId=%d controlId=%d",
@@ -262,9 +270,9 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
 
         if (testFolder.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testFolder");
         if (testcaseId.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testcase");
-        if (stepId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
-        if (actionId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: actionId");
-        if (controlId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: controlId");
+        if (stepId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
+        if (actionId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: actionId");
+        if (controlId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: controlId");
 
         Object updatesObject = args.get("updates");
         if (!(updatesObject instanceof Map)) {
@@ -344,11 +352,20 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
                         existing.setWaitAfter(asInteger(value, field));
                         break;
 
+                    case "options":
+                        existing.setOptions(MCPActionOptions.merge(existing.getOptions(), asMap(value, field)));
+                        break;
+
+                    case "conditionOptions":
+                        existing.setConditionOptions(
+                                MCPActionOptions.merge(existing.getConditionOptions(), asMap(value, field)));
+                        break;
+
                     default:
                         return MCPToolUtils.errorText("Unsupported field for control update: " + field);
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | MCPActionOptions.InvalidOptionException e) {
             return MCPToolUtils.errorText(e.getMessage());
         }
 
@@ -363,11 +380,23 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
                     + " actionId=" + actionId + " controlId=" + controlId);
         }
 
-        TestcaseStepActionControlDTOV001 dto = mapper.toDTO(existing);
-        return MCPToolUtils.successJson(Map.of(
-                "status", "updated",
-                "control", dto
-        ));
+        // Read back from the database instead of echoing the entity that was just written. The DAOs
+        // behind these services log a failed UPDATE and return normally, so a write that never landed
+        // would otherwise be reported as "updated" with the values the caller hoped for — the silent
+        // false positive that costs a whole debugging session to notice.
+        TestCaseStepActionControl written = testCaseStepActionControlService
+                .findTestCaseStepActionControlByKey(testFolder, testcaseId, stepId, actionId, controlId);
+        if (written == null) {
+            return MCPToolUtils.errorText("The update was accepted but the control could not be read back. "
+                    + "Check it with cerberus_testcase_step_action_control_get before relying on it.");
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "updated");
+        response.put("updatedFields", new ArrayList<>(updates.keySet()));
+        response.put("readBackFromDatabase", true);
+        response.put("control", mapper.toDTO(written));
+        return MCPToolUtils.successJson(response);
     }
 
     /**
@@ -380,6 +409,23 @@ public class UpdateTestCaseStepActionControlTool implements MCPTool {
      * @param field the field name, used only for the error message.
      * @return trimmed string value, never {@code null}.
      */
+    /**
+     * Coerces {@code value} to a nested object.
+     *
+     * @throws IllegalArgumentException when the caller sent anything else.
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> asMap(Object value, String field) {
+        if (value == null) {
+            return Map.of();
+        }
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException("Invalid value for field '" + field
+                    + "'. Expected an object naming the settings to change, for example {\"timeout\": \"3000\"}.");
+        }
+        return (Map<String, Object>) value;
+    }
+
     private String asString(Object value, String field) {
         if (value == null) return "";
         if (!(value instanceof String)) {

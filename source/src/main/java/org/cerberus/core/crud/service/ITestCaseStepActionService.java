@@ -77,6 +77,14 @@ public interface ITestCaseStepActionService {
     boolean changeTestCaseStepActionActionId(String test, String testCase, int stepId, int oldActionId, int newActionId);
 
     /**
+     * Moves an action to another step of the same testcase, carrying its controls with it.
+     *
+     * @see org.cerberus.core.crud.dao.ITestCaseStepActionDAO#moveTestCaseStepActionToStep
+     */
+    boolean moveTestCaseStepActionToStep(String test, String testcase, int stepId, int actionId,
+                                         int newStepId, int newActionId, int sort, String usrModif);
+
+    /**
      *
      * @param tcsa
      * @return

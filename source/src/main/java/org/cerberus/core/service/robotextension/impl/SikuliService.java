@@ -1019,12 +1019,14 @@ public class SikuliService implements ISikuliService {
 
     private String generateSikuliUrlOnRobot(Session session, String path) {
         int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getPort());
-        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getHost()), port, path);
+        String host = StringUtil.isEmptyOrNull(session.getExecutorExtensionHost()) ? session.getHost() : session.getExecutorExtensionHost();
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(host), port, path);
     }
 
     private String generateSikuliUrlOnNode(Session session, String path) {
         int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getNodePort());
-        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getNodeHost()), port, path);
+        String host = StringUtil.isEmptyOrNull(session.getExecutorExtensionHost()) ? session.getNodeHost() : session.getExecutorExtensionHost();
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(host), port, path);
     }
 
 }

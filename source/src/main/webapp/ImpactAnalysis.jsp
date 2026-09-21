@@ -30,7 +30,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/ImpactAnalysis.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the table is js/global/crbTable.js driven by ImpactAnalysisV2.js.
+            ImpactAnalysis.js (V1) is NOT loaded - everything it owned is reimplemented
+            there. ImpactAnalysisV1.jsp is the rollback copy.
+            tinymce stays: the shared TestCase modal, which the Edit action opens,
+            initialises its description editor on it.
+        --%>
+        <script type="text/javascript" src="js/pages/ImpactAnalysisV2.js?v=${appVersion}"></script>
         <title id="pageTitle">Impact Analysis</title>
     </head>
     <body x-data x-cloak class="crb_body">
@@ -46,29 +53,13 @@
 
             <h1 class="page-title-line" id="title">Impact Analysis</h1>
 
-            <!-- Test Cases Table (createDataTableWithPermissionsNew generates the header block) -->
-            <div class="" id="tcList">
-                <table id="tcTable" class="table table-hover display" name="tcTable"></table>
-            </div>
-
-            <!-- Hidden tabs (kept for potential future use) -->
-            <div style="display:none">
-                <div id="tabDataLib">
-                    <div id="dlList">
-                        <table id="dlTable" class="table table-hover display" name="dlTable"></table>
-                    </div>
-                </div>
-                <div id="tabApplications">
-                    <div id="appList">
-                        <table id="appTable" class="table table-hover display" name="appTable"></table>
-                    </div>
-                </div>
-                <div id="tabServices">
-                    <div id="srvList">
-                        <table id="srvTable" class="table table-hover display" name="srvTable"></table>
-                    </div>
-                </div>
-            </div>
+            <%--
+                The three hidden tables (dlTable / appTable / srvTable, "kept for
+                potential future use") are gone: nothing in the codebase referenced
+                those ids, no JS ever initialised them, and they were inside a
+                display:none wrapper. They are in ImpactAnalysisV1.jsp if ever needed.
+            --%>
+            <div id="impactAnalysisList"></div>
 
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

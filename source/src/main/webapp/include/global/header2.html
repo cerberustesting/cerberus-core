@@ -766,6 +766,11 @@
                         <i data-lucide="book-open-text" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
                         <span class="text-white"  x-text="$store.labels.getLabel('header','swagger')"></span>
                     </a>
+                    <a href="McpInspector.jsp" id="menuMcpInspector" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'McpInspector.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="plug-zap" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white" x-text="$store.labels.getLabel('header','mcpinspector')"></span>
+                    </a>
                     <a href="EventHookList.jsp" id="menuEventhooks" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
                        :class="$store.sidebar.activeSubmenu === 'EventHookList.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
                         <i data-lucide="webhook" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>

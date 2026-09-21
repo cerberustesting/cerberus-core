@@ -22,4 +22,12 @@
 -->
 <Context path="/Cerberus">
   <!--     <Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/> -->
+  <!-- Behind a reverse proxy terminating TLS (nginx) : rewrite request.getScheme()/isSecure()/
+       getServerPort() from X-Forwarded-* so the app sees the client-facing https:// origin
+       instead of the proxy's internal http:// connection. internalProxies defaults to
+       loopback/private ranges, matching a proxy on the same host or LAN. -->
+  <Valve className="org.apache.catalina.valves.RemoteIpValve"
+         protocolHeader="X-Forwarded-Proto"
+         hostHeader="X-Forwarded-Host"
+         portHeader="X-Forwarded-Port"/>
 </Context>

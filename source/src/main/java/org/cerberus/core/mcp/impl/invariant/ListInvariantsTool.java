@@ -24,6 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.service.IInvariantService;
@@ -47,6 +48,9 @@ import java.util.Map;
 public class ListInvariantsTool implements MCPTool {
 
     private static final String TOOL_NAME = "cerberus_invariant_list";
+
+    /** How many invariants a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 100;
 
     /**
      * Whitelist of invariant category identifiers exposed through this tool.
@@ -114,6 +118,11 @@ public class ListInvariantsTool implements MCPTool {
                 )
         );
 
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "invariants");
+
         return new McpSchema.Tool(
                 TOOL_NAME,
                 null,
@@ -175,11 +184,15 @@ public class ListInvariantsTool implements MCPTool {
                 .map(this::toMap)
                 .toList();
 
-        return MCPToolUtils.successJson(Map.of(
-                "type", type,
-                "count", result.size(),
-                "invariants", result
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Map<String, Object>> page = MCPPagination.slice(result, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("type", type);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, result.size(), page.size(), "invariants");
+        response.put("invariants", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

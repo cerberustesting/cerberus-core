@@ -31,7 +31,12 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Campaign Management</title>
         <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/CampaignList.js?v=${appVersion}"></script>
+        <%--
+            V2 page: the list is js/global/crbTable.js driven by CampaignListV2.js.
+            CampaignList.js (V1) is NOT loaded. CampaignListV1.jsp is the rollback copy.
+            tinymce stays: the campaign modal's Long Description is a wysiwyg field.
+        --%>
+        <script type="text/javascript" src="js/pages/CampaignListV2.js?v=${appVersion}"></script>
     </head>
     <body x-data x-cloak class="crb_body">
         <jsp:include page="include/global/header2.html"/>
@@ -47,17 +52,11 @@
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
 
             <h1 class="page-title-line" id="title">Campaign Management</h1>
-            <div class="">
-                <div id="testcampaignList">
-                    <table id="testcampaignsTable" class="table table-hover display" name="testcampaignsTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
-            </div>
+            <div id="testcampaignList"></div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
             <jsp:include page="include/global/aiBottomBar.html"/>
-        </div>
         </main>
     </body>
 </html>

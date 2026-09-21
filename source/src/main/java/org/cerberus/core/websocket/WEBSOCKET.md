@@ -146,6 +146,7 @@ Contrairement à `subscribe`/`unsubscribe`, `message` n'accepte **qu'un seul** c
 | `campaign.start.{campaign}` / `campaign.update.{campaign}` / `campaign.delta.{campaign}` / `campaign.done.{campaign}` | `CHANNEL_CAMPAIGN_*_ID(campaign)` | Updates ciblées sur une campagne précise |
 | `objectcreation.application` / `.invariant` / `.testcase` / `.testcasestep` | `CHANNEL_OBJECTCREATION_*` | Notifie la création d'un objet par un MCP tool ou l'IA, poussé vers l'appSession appelante |
 | `ao.proposals` / `testcase.proposals` | `CHANNEL_AO_PROPOSALS` / `CHANNEL_TESTCASE_PROPOSALS` | Propositions générées par l'IA, poussées vers l'appSession appelante |
+| `usercontext.update` | `CHANNEL_USERCONTEXT_UPDATE` | Le contexte système/workspace actif d'un utilisateur (`User.defaultSystem`) a changé (ex. `cerberus_context_system_update`), poussé à toutes ses sessions abonnées (`sendToUser`) |
 
 Les channels `chat.send`, `execution.monitor`, `testcase.proposal.request`, `testcase.create.request`,
 `ao.generate.request`, `ao.generatecontinue.request`, `execution.debug.request` sont des **channels

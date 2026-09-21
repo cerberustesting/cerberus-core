@@ -145,9 +145,13 @@ public class DeleteTestCaseStepActionControlTool implements MCPTool {
     private McpSchema.CallToolResult execute(Map<String, Object> args) {
         String testFolder = MCPToolUtils.getString(args, "testFolder", "");
         String testcaseId = MCPToolUtils.getString(args, "testcase", "");
-        int stepId = MCPToolUtils.getInteger(args, "stepId", 0);
-        int actionId = MCPToolUtils.getInteger(args, "actionId", 0);
-        int controlId = MCPToolUtils.getInteger(args, "controlId", 0);
+        // 0 is a legitimate step, action and control id — Cerberus assigns these within their
+        // parent rather than from a sequence, and real testcases do start at 0. The sentinel for
+        // "not supplied" therefore has to be negative: reading it as 0 made every element numbered
+        // 0 unreachable through this tool, with an error blaming the caller.
+        int stepId = MCPToolUtils.getInteger(args, "stepId", -1);
+        int actionId = MCPToolUtils.getInteger(args, "actionId", -1);
+        int controlId = MCPToolUtils.getInteger(args, "controlId", -1);
 
         mcpLogUtils.call(TOOL_NAME, "testcase_step_action_control_delete",
                 String.format("MCP tool %s called with testFolder=%s testcase=%s stepId=%d actionId=%d controlId=%d",
@@ -155,9 +159,9 @@ public class DeleteTestCaseStepActionControlTool implements MCPTool {
 
         if (testFolder.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testFolder");
         if (testcaseId.isBlank()) return MCPToolUtils.errorText("Missing required parameter: testcase");
-        if (stepId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
-        if (actionId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: actionId");
-        if (controlId <= 0) return MCPToolUtils.errorText("Missing or invalid required parameter: controlId");
+        if (stepId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: stepId");
+        if (actionId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: actionId");
+        if (controlId < 0) return MCPToolUtils.errorText("Missing or invalid required parameter: controlId");
 
         // No direct findByKey service method exists — load the full list then filter in memory.
         AnswerList<TestCaseStepActionControl> answer = testCaseStepActionControlService.readByVarious1(testFolder, testcaseId, stepId, actionId);

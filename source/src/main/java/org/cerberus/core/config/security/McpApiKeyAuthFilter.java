@@ -75,6 +75,13 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
 
     private static final String API_KEY_HEADER = "X-API-KEY";
 
+    /**
+     * Request attribute carrying the resolved Cerberus login, set here and read back by
+     * {@link org.cerberus.core.config.cerberus.WebAppInitializer}'s MCP transport context
+     * extractor so tool handlers can identify the caller via {@code exchange.transportContext()}.
+     */
+    public static final String AUTHENTICATED_LOGIN_ATTR = "authenticatedLogin";
+
     @Autowired
     private IParameterService parameterService;
 
@@ -107,7 +114,7 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(login, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.setAttribute("authenticatedLogin", login);
+            request.setAttribute(AUTHENTICATED_LOGIN_ATTR, login);
 
             filterChain.doFilter(request, response);
             return;
@@ -122,7 +129,7 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     login, null, List.of(new SimpleGrantedAuthority("ROLE_MCP")));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.setAttribute("authenticatedLogin", login);
+            request.setAttribute(AUTHENTICATED_LOGIN_ATTR, login);
 
             filterChain.doFilter(request, response);
 

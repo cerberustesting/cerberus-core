@@ -2053,6 +2053,37 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
 }
 
 /**
+ * Shared bootstrap-treeview (dependencies/Bootstrap-treeview-1.2.0) option base.
+ * ROLLBACK ONLY as of the label-tree V2: both live call sites - TestCase.html's loadLabel()
+ * (Edit Test Case Header / mass-action "add label" picker) and Label.js's generateLabelTree()
+ * (Label & Tag's 3 browse tabs) - now build js/global/crbLabelTree.js instead. What still
+ * reaches this is LabelV1.jsp, through the copy of generateLabelTree() in js/pages/Label.js
+ * that LabelV2.js overrides on the live page. Centralized so
+ * the icon reskin (see the "Treeview" section of components.css - the class names below are pure
+ * CSS hooks with no built-in visual meaning of their own, matched there via mask-image/
+ * background-image) and the disabled color options stay identical everywhere this widget appears,
+ * rather than drifting between call sites.
+ * expand/collapseIcon and onhoverColor/borderColor are nulled/replaced because bootstrap-treeview
+ * either injects them as an inline per-node style (selectedColor/selectedBackColor, only relevant
+ * for a selectable caller) or as a runtime <style> block in <head> (onhoverColor/borderColor) -
+ * both bypass this stylesheet and can't respond to the dark mode toggle, so ownership of every
+ * color is kept entirely in CSS instead.
+ * @returns {Object} options to $.extend() with the caller's own {data: ...} and any
+ *          selection-specific keys (multiSelect, nodeIcon/selectedIcon, selectedColor/BackColor).
+ */
+function crbTreeviewIconOptions() {
+    return {
+        enableLinks: false,
+        showTags: true,
+        expandIcon: 'crb-tree-icon crb-tree-icon-expand',
+        collapseIcon: 'crb-tree-icon crb-tree-icon-collapse',
+        emptyIcon: 'crb-tree-icon',
+        onhoverColor: null,
+        borderColor: null
+    };
+}
+
+/**
  * This function add a tooltip if data in table field has to be wrapped
  * @returns {undefined}
  */
@@ -3696,4 +3727,196 @@ function getExecutionStatusConfig(status) {
         badgeClass: "bg-slate-100 text-slate-500 ring-slate-600/20 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-500/30",
         iconClass: ""
     };
+}
+
+/* =============================================================================
+ * Readable text colour for coloured chips (labels / tags / stickers).
+ *
+ * Labels carry a user-picked background colour and the ink has to be chosen from
+ * it. Two separate defects made that go wrong:
+ *
+ *  1. Label.guessFontColor() (server) picked the ink from HSB *brightness*, which
+ *     is max(R,G,B) and therefore reads any saturated colour as light: #1e49c8, a
+ *     dark blue, scored 0.78 and got BLACK text on it. That is the "quand c'est
+ *     foncé ça met du noir alors que le blanc était mieux" case. Fixed server side
+ *     too (Label.java), so both ends now agree on the same rule.
+ *
+ *  2. Several payloads simply do not carry fontColor. ReadLabel's contentTable
+ *     serialises the entity, whose fontColor field is never populated - the real
+ *     value only exists in the nested `display` object - so callers reading
+ *     row.fontColor got null and their `|| '#000'` fallback painted black text on
+ *     a black (#000000) label.
+ *
+ * Deriving the ink from the background here removes the dependency on which
+ * endpoint the chip came from, and gives the same answer everywhere.
+ *
+ * The rule is the WCAG contrast ratio (relative luminance, sRGB-linearised),
+ * measured against the two inks we actually paint - not pure black/white - and
+ * the better of the two wins.
+ * ========================================================================== */
+
+/** Inks the chips actually use. Near-black rather than #000 so light chips stay soft. */
+var CRB_CHIP_INK_DARK = "#111827";
+var CRB_CHIP_INK_LIGHT = "#ffffff";
+
+var crbColorRgbCache = {};
+
+/**
+ * Parses any CSS colour into [r, g, b, a] (0-255, alpha 0-1), or null.
+ * Handles #rgb / #rgba / #rrggbb / #rrggbbaa and rgb()/rgba(); anything else
+ * (named colours, hsl(), colour functions) is resolved once by the browser and
+ * cached, so the fallback costs one layout-free style read per distinct value.
+ */
+function crbParseColor(color) {
+    if (!color) {
+        return null;
+    }
+    var raw = String(color).trim();
+    if (crbColorRgbCache.hasOwnProperty(raw)) {
+        return crbColorRgbCache[raw];
+    }
+
+    var out = null;
+    var hex = raw.charAt(0) === "#" ? raw.substring(1) : null;
+
+    if (hex && /^[0-9a-fA-F]+$/.test(hex)) {
+        if (hex.length === 3 || hex.length === 4) {
+            out = [
+                parseInt(hex.charAt(0) + hex.charAt(0), 16),
+                parseInt(hex.charAt(1) + hex.charAt(1), 16),
+                parseInt(hex.charAt(2) + hex.charAt(2), 16),
+                hex.length === 4 ? parseInt(hex.charAt(3) + hex.charAt(3), 16) / 255 : 1
+            ];
+        } else if (hex.length === 6 || hex.length === 8) {
+            out = [
+                parseInt(hex.substring(0, 2), 16),
+                parseInt(hex.substring(2, 4), 16),
+                parseInt(hex.substring(4, 6), 16),
+                hex.length === 8 ? parseInt(hex.substring(6, 8), 16) / 255 : 1
+            ];
+        }
+    } else {
+        var m = raw.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,\/]+([\d.%]+))?\s*\)$/i);
+        if (m) {
+            var alpha = 1;
+            if (m[4] !== undefined) {
+                alpha = m[4].indexOf("%") >= 0 ? parseFloat(m[4]) / 100 : parseFloat(m[4]);
+            }
+            out = [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3]), alpha];
+        } else if (typeof document !== "undefined" && document.body) {
+            // Named colours and everything exotic: let the browser normalise it.
+            var probe = document.createElement("span");
+            probe.style.display = "none";
+            probe.style.color = raw;
+            // An invalid value leaves the property untouched, and getComputedStyle
+            // would then hand back the INHERITED colour - which is how "notacolor"
+            // used to resolve to a perfectly good black and get white ink on a
+            // transparent chip. Only trust the probe when the value was accepted.
+            if (probe.style.color !== "") {
+                document.body.appendChild(probe);
+                var computed = window.getComputedStyle(probe).color;
+                document.body.removeChild(probe);
+                if (computed && computed !== raw) {
+                    out = crbParseColor(computed);
+                }
+            }
+        }
+    }
+
+    if (out && out.some(isNaN)) {
+        out = null;
+    }
+    crbColorRgbCache[raw] = out;
+    return out;
+}
+
+/** WCAG relative luminance of an [r, g, b] triplet. */
+function crbRelativeLuminance(rgb) {
+    var channel = function (v) {
+        v = v / 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * channel(rgb[0]) + 0.7152 * channel(rgb[1]) + 0.0722 * channel(rgb[2]);
+}
+
+/** WCAG contrast ratio between two luminances. */
+function crbContrastRatio(l1, l2) {
+    var hi = Math.max(l1, l2);
+    var lo = Math.min(l1, l2);
+    return (hi + 0.05) / (lo + 0.05);
+}
+
+/**
+ * Ink to write on `color`. Falls back to the theme's normal text colour when the
+ * background is unparseable or too transparent to carry its own ink (below ~40%
+ * the chip is essentially the page behind it).
+ */
+function crbFontColorFor(color) {
+    var rgb = crbParseColor(color);
+    var themeInk = crbIsDarkTheme() ? CRB_CHIP_INK_LIGHT : CRB_CHIP_INK_DARK;
+    if (!rgb) {
+        return themeInk;
+    }
+    if (rgb[3] < 0.4) {
+        return themeInk;
+    }
+    // A partly transparent chip composites over the surface behind it; blend so
+    // the luminance we measure is the one the eye actually gets.
+    if (rgb[3] < 1) {
+        var surface = crbIsDarkTheme() ? [15, 23, 42] : [255, 255, 255];
+        rgb = [
+            rgb[0] * rgb[3] + surface[0] * (1 - rgb[3]),
+            rgb[1] * rgb[3] + surface[1] * (1 - rgb[3]),
+            rgb[2] * rgb[3] + surface[2] * (1 - rgb[3])
+        ];
+    }
+
+    var bg = crbRelativeLuminance(rgb);
+    var onDark = crbContrastRatio(bg, crbRelativeLuminance(crbParseColor(CRB_CHIP_INK_DARK)));
+    var onLight = crbContrastRatio(bg, crbRelativeLuminance(crbParseColor(CRB_CHIP_INK_LIGHT)));
+    return onLight >= onDark ? CRB_CHIP_INK_LIGHT : CRB_CHIP_INK_DARK;
+}
+
+/** True when the theme is currently dark. Kept local so this block stands alone. */
+function crbIsDarkTheme() {
+    return typeof document !== "undefined"
+            && document.documentElement.classList.contains("dark");
+}
+
+/**
+ * True when the chip would blend into the surface behind it and so needs an
+ * outline of its own. Both ends qualify: a #ffffff label on a white card in the
+ * light theme, and a #000000 one on the dark card in the dark theme.
+ *
+ * Deliberately not theme-aware. The style is baked into the markup at render
+ * time, so a theme-dependent answer would go stale the moment the user toggles
+ * the theme without re-rendering the table; outlining both extremes always is
+ * stable, and a ring on a black pill in the light theme just reads as a border.
+ */
+function crbColorNeedsOutline(color) {
+    var rgb = crbParseColor(color);
+    if (!rgb) {
+        return true;
+    }
+    if (rgb[3] < 0.4) {
+        return true;
+    }
+    var luminance = crbRelativeLuminance(rgb);
+    return luminance > 0.75 || luminance < 0.05;
+}
+
+/**
+ * Inline style for a coloured chip: background, readable ink, and an outline when
+ * the colour would otherwise disappear into the surface. Returns a plain string so
+ * it drops straight into the existing string-built markup.
+ */
+function crbChipStyle(color) {
+    var bg = color || "transparent";
+    var style = "background-color:" + bg + ";color:" + crbFontColorFor(color) + ";";
+    if (crbColorNeedsOutline(color)) {
+        // Mid slate at low alpha: dark enough to show on a white chip, light
+        // enough to show on a black one, so one value covers both themes.
+        style += "box-shadow:inset 0 0 0 1px rgba(148,163,184,.55);";
+    }
+    return style;
 }

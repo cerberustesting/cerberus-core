@@ -324,16 +324,18 @@ public class ReadLabel extends HttpServlet {
                     text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
                     text += " <span class='glyphicon glyphicon-trash'></span></button>";
 
-                    text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.open('./TestCaseList.jsp?label=" + label.getLabel() + "','_blank');\" class='btn-tree btn btn-default btn-xs margin-right5' name='tcLabel' title='Open Testcase list in new window' type='button'>";
+                    text += "<button id='tc1LabelNewTab' onclick=\"stopPropagation(event);window.open('./TestCaseList.jsp?label=" + label.getLabel() + "','_blank');\" class='btn-tree btn btn-default btn-xs margin-right5' name='tcLabel' title='Open Testcase list in new window' type='button'>";
                     text += " <span class='glyphicon glyphicon-list'></span></button>";
 
-                    text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.location.href = './TestCaseList.jsp?label=" + label.getLabel() + "';\" class='btn-tree btn btn-primary btn-xs margin-right5' name='tcLabel' title='Open Testcase list.' type='button'>";
+                    text += "<button id='tc1LabelSameTab' onclick=\"stopPropagation(event);window.location.href = './TestCaseList.jsp?label=" + label.getLabel() + "';\" class='btn-tree btn btn-primary btn-xs margin-right5' name='tcLabel' title='Open Testcase list.' type='button'>";
                     text += " <span class='glyphicon glyphicon-list'></span></button>";
                 }
 
-                text += "<span class='label label-primary' style='background-color:" + label.getColor() + ";color:"
-                        + label.guessFontColor()
-                        + ";' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
+                // chipStyle() carries the readable ink and, for colours that would blend
+                // into the card behind them, an outline. Same rule as crbChipStyle() in
+                // js/global/global.js, so tree chips and browser-built chips match.
+                text += "<span class='label label-primary' style='" + label.chipStyle()
+                        + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
                 text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
 
                 text += "%COUNTER1TEXT%";
@@ -365,9 +367,9 @@ public class ReadLabel extends HttpServlet {
                 node.setCounter1WithChild(label.getCounter1());
                 node.setTags(attributList);
                 node.setLabelObj(label);
-                node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
+                node.setCounter1Text("<span class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
                 node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
-                node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                node.setNbNodesText("<span class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
                 // If label is in HashMap, we set it as selected.
                 if (labelFromTestCaseToSelect.containsKey(label.getId())) {
                     node.setSelected(true);

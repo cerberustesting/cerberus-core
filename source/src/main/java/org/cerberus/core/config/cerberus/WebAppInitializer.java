@@ -19,12 +19,14 @@
  */
 package org.cerberus.core.config.cerberus;
 
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.security.McpApiKeyAuthFilter;
 import org.cerberus.core.config.security.OAuthProtectedResourceMetadataServlet;
 import org.cerberus.core.config.webmvc.WebMvcConfiguration;
 import org.springframework.web.WebApplicationInitializer;
@@ -35,6 +37,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.EnumSet;
+import java.util.Map;
 
 /**
  * Detected and called by Tomcat at startup via ServletContainerInitializer.
@@ -81,6 +84,16 @@ public class WebAppInitializer implements WebApplicationInitializer {
          */
         Object mcpProvider = HttpServletStreamableServerTransportProvider.builder()
                     .mcpEndpoint("/mcp")
+                    // Carries the login resolved by McpApiKeyAuthFilter (set as a request
+                    // attribute before this servlet handles the call) into the exchange, so
+                    // tool handlers can read it via exchange.transportContext() — the SDK
+                    // gives no other way to identify the caller inside a tool handler.
+                    .contextExtractor(request -> {
+                        Object login = request.getAttribute(McpApiKeyAuthFilter.AUTHENTICATED_LOGIN_ATTR);
+                        return login == null
+                                ? McpTransportContext.EMPTY
+                                : McpTransportContext.create(Map.of(McpApiKeyAuthFilter.AUTHENTICATED_LOGIN_ATTR, login));
+                    })
                     .build();
 
         servletContext.setAttribute("mcpTransportProvider", mcpProvider);
@@ -95,6 +108,9 @@ public class WebAppInitializer implements WebApplicationInitializer {
                 servletContext.addServlet("oauthProtectedResourceMetadata", new OAuthProtectedResourceMetadataServlet());
         metadataServlet.setLoadOnStartup(3);
         metadataServlet.addMapping("/.well-known/oauth-protected-resource");
+        // RFC 9728 §3.1: clients also probe the path-appended form when the resource
+        // identifier has a non-root path (here, the /mcp endpoint).
+        metadataServlet.addMapping("/.well-known/oauth-protected-resource/mcp");
 
 
         // Session expires after 600 minutes of inactivity

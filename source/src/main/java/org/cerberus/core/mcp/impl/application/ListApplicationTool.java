@@ -20,12 +20,16 @@
 package org.cerberus.core.mcp.impl.application;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.api.dto.application.ApplicationMapperV001;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPProjectionUtils;
+import org.cerberus.core.mcp.util.MCPPagination;
 import org.cerberus.core.mcp.util.MCPToolUtils;
+import org.cerberus.core.mcp.util.MCPUserContextService;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.websocket.WebSocketEventSender;
@@ -33,6 +37,7 @@ import org.cerberus.core.websocket.WebSocketStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +55,10 @@ import java.util.Map;
 @Component
 public class ListApplicationTool implements MCPTool {
 
-    private static final String TOOL_NAME = "list_applications";
+    private static final String TOOL_NAME = "cerberus_application_list";
+
+    /** How many applications a listing returns when the caller does not say. */
+    private static final int DEFAULT_LIMIT = 50;
 
     /** Exhaustive set of DTO field names that can be returned to the caller. */
     private static final List<String> ALL_FIELDS = List.of("application", "description", "sort", "type", "system", "subsystem", "svnurl",
@@ -61,14 +69,16 @@ public class ListApplicationTool implements MCPTool {
     private final IApplicationService applicationService;
     private final ApplicationMapperV001 applicationMapper;
     private final MCPLogUtils mcpLogUtils;
+    private final MCPUserContextService userContext;
 
     @Autowired
     private WebSocketEventSender webSocketEventSender;
 
-    public ListApplicationTool(IApplicationService applicationService, ApplicationMapperV001 applicationMapper, MCPLogUtils mcpLogUtils) {
+    public ListApplicationTool(IApplicationService applicationService, ApplicationMapperV001 applicationMapper, MCPLogUtils mcpLogUtils, MCPUserContextService userContext) {
         this.applicationService = applicationService;
         this.applicationMapper = applicationMapper;
         this.mcpLogUtils = mcpLogUtils;
+        this.userContext = userContext;
     }
 
     @Override
@@ -77,7 +87,7 @@ public class ListApplicationTool implements MCPTool {
                 createTool(),
                 (exchange, request) -> {
                     Map<String, Object> args = MCPToolUtils.argumentsOrEmpty(request.arguments());
-                    return execute(args);
+                    return execute(args, exchange);
                 }
         );
     }
@@ -138,6 +148,11 @@ public class ListApplicationTool implements MCPTool {
                 )
         );
 
+        // Copied because several of these tools build their properties with Map.of, which is
+        // immutable; the copy keeps one insertion point for every listing.
+        properties = new LinkedHashMap<>(properties);
+        MCPPagination.declare(properties, DEFAULT_LIMIT, "applications");
+
         return new McpSchema.Tool(
                 TOOL_NAME,
                 null,
@@ -168,10 +183,11 @@ public class ListApplicationTool implements MCPTool {
      * Executes the tool: loads all applications, applies the optional search filter,
      * maps entities to DTOs, projects the requested fields, and returns a JSON result.
      *
-     * @param args raw MCP argument map from the agent request
+     * @param args     raw MCP argument map from the agent request
+     * @param exchange the MCP exchange, used to resolve the caller's active system context
      * @return a {@link McpSchema.CallToolResult} containing the serialised application list
      */
-    private McpSchema.CallToolResult execute(Map<String, Object> args) {
+    private McpSchema.CallToolResult execute(Map<String, Object> args, McpSyncServerExchange exchange) {
         String intent = MCPToolUtils.getString(args, "intent", "");
         String search = MCPToolUtils.getString(args, "search", "");
         String appSessionID = MCPToolUtils.getString(args, "appSessionID", "");
@@ -182,8 +198,24 @@ public class ListApplicationTool implements MCPTool {
             webSocketEventSender.sendToAppSession(appSessionID, WebSocketStatic.CHANNEL_TOOL_START,
                     Map.of("toolName", TOOL_NAME ));
         }
-        mcpLogUtils.call(TOOL_NAME, intent, String.format("MCP tool %s called with intent=%s", TOOL_NAME, intent));
+        String login = userContext.getLogin(exchange);
+        mcpLogUtils.call(TOOL_NAME, intent, String.format("MCP tool %s called with intent=%s", TOOL_NAME, intent), login);
 
+        if (login == null) {
+            return MCPToolUtils.errorText("Unable to resolve the authenticated MCP user for this call.");
+        }
+        List<String> activeSystems;
+        try {
+            activeSystems = userContext.getContextSystems(userContext.getUser(login));
+        } catch (CerberusException e) {
+            return MCPToolUtils.errorText(
+                    "Unable to read system context for '" + login + "': " + e.getMessageError().getDescription());
+        }
+        if (activeSystems.isEmpty()) {
+            return MCPToolUtils.errorText(
+                    "No active system in your MCP context. Call cerberus_context_system_list to see your "
+                            + "allowed systems, then cerberus_context_system_update (action=add) to activate one or more.");
+        }
 
         // Explicit fields override intent-driven defaults when provided by the caller.
         List<String> fields = MCPToolUtils.getStringList(
@@ -196,6 +228,8 @@ public class ListApplicationTool implements MCPTool {
                 .getDataList()
                 .stream()
                 .map(Application.class::cast)
+                // Restrict to the caller's active system context (cerberus_context_system_list/_update).
+                .filter(app -> activeSystems.stream().anyMatch(system -> system.equalsIgnoreCase(app.getSystem())))
                 .filter(app -> matchesSearch(app, search))
                 .map(applicationMapper::toDTO)
                 // Reduce each DTO to only the caller-requested (or intent-default) fields to minimise payload size.
@@ -215,11 +249,15 @@ public class ListApplicationTool implements MCPTool {
                     Map.of("toolName", TOOL_NAME ));
         }
 
-        return MCPToolUtils.successJson(Map.of(
-                "intent", intent,
-                "count", applications.size(),
-                "applications", applications
-        ));
+        MCPPagination.Window window = MCPPagination.of(args, DEFAULT_LIMIT);
+        List<Map<String, Object>> page = MCPPagination.slice(applications, window);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("intent", intent);
+        response.put("count", page.size());
+        MCPPagination.describe(response, window, applications.size(), page.size(), "applications");
+        response.put("applications", page);
+        return MCPToolUtils.successJson(response);
     }
 
     /**

@@ -162,9 +162,10 @@ function displayPageLabel() {
 function generateLabelTree() {
     $.when($.ajax("ReadLabel?q=1" + getUser().defaultSystemsQuery + "&withHierarchy=true&hasButtons=Y")).then(function (data) {
 
-        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true});
-        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true});
-        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true});
+        var treeOptions = $.extend({}, crbTreeviewIconOptions(), {showIcon: false});
+        $('#mainTreeS').treeview($.extend({data: data.labelHierarchy.stickers}, treeOptions));
+        $('#mainTreeB').treeview($.extend({data: data.labelHierarchy.batteries}, treeOptions));
+        $('#mainTreeR').treeview($.extend({data: data.labelHierarchy.requirements}, treeOptions));
 
     });
 }
@@ -197,7 +198,13 @@ function renderOptionsForLabel(data) {
             if (window.lucide) lucide.createIcons();
         }
 
-        $('#createLabelButton').off("click").click(addEntryClick);
+        // Wrapped (not bound directly) so jQuery's click Event isn't forwarded as addEntryClick's
+        // own `type` argument - unlike the 3 tree-specific buttons above, which already call
+        // addEntryClick("REQUIREMENT"/"STICKER"/"BATTERY") from inside their own closures, this is
+        // the generic "let the user pick a type" button and must reach addEntryClick with type
+        // truly undefined, or its `type !== undefined` guard wrongly treats the click Event as a
+        // real type and preselects the Type dropdown with it.
+        $('#createLabelButton').off("click").click(function () { addEntryClick(); });
     }
 }
 
@@ -261,8 +268,13 @@ function deleteEntryClick(id, label) {
             return $.post("DeleteLabel", {id: id}, "json").then(function (data) {
                 var messageType = getAlertType(data.messageType);
                 if (messageType === "success") {
+                    // Legacy path: refreshes the DataTable on the V1 page. On the
+                    // migrated page that id is gone, so the notify is what reloads it.
                     var oTable = $("#labelsTable").dataTable();
                     oTable.fnDraw(false);
+                    if (typeof crbNotifyDataChanged === "function") {
+                        crbNotifyDataChanged("label");
+                    }
                     generateLabelTree();
                 }
                 showMessageMainPage(messageType, data.message, false);
@@ -298,6 +310,9 @@ function addEntryModalSaveHandler() {
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#labelsTable").dataTable();
             oTable.fnDraw(false);
+            if (typeof crbNotifyDataChanged === "function") {
+                crbNotifyDataChanged("label");
+            }
             generateLabelTree();
             showMessage(data);
             window.dispatchEvent(new CustomEvent('addlabel-modal-close'));
@@ -357,6 +372,9 @@ function editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#labelsTable").dataTable();
                 oTable.fnDraw(false);
+                if (typeof crbNotifyDataChanged === "function") {
+                    crbNotifyDataChanged("label");
+                }
                 generateLabelTree();
                 window.dispatchEvent(new CustomEvent('editlabel-modal-close'));
                 showMessage(data);
@@ -466,9 +484,11 @@ function getComboConfigLabel(labelType, system) {
 }
 
 function comboConfigLabel_format(label) {
+    // crbChipStyle picks a readable ink for the colour; without it these chips
+    // kept Bootstrap's white .label-primary text, which vanished on light labels.
     var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div style='float:left;'><span class='label label-primary' style='background-color:"
-            + label.color + "' data-toggle='tooltip' data-labelid='"
+            "<div style='float:left;'><span class='label label-primary' style='"
+            + crbChipStyle(label.color) + "' data-toggle='tooltip' data-labelid='"
             + label.id + "' title='"
             + label.description + "'>"
             + label.label + "</span></div>";
@@ -481,8 +501,8 @@ function comboConfigLabel_format(label) {
 function comboConfigLabel_formatSelection(label) {
     var result = label.id;
     if (!isEmpty(label.label)) {
-        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
-                + label.color + "' data-toggle='tooltip' data-labelid='"
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='"
+                + crbChipStyle(label.color) + "' data-toggle='tooltip' data-labelid='"
                 + label.id + "' title='"
                 + label.description + "'>"
                 + label.label + "</span></div>";
@@ -600,7 +620,7 @@ function aoColumnsFunc(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "render": function (data, type, full, meta) {
-                return '<span class="label label-primary" style="background-color:' + data.color + ';color:' + data.fontColor + '">' + data.label + '</span> ';
+                return '<span class="label label-primary" style="' + crbChipStyle(data.color) + '">' + data.label + '</span> ';
             }
         },
         {"sName": "parentLabelid",
@@ -610,7 +630,7 @@ function aoColumnsFunc(tableId) {
             "data": function (data, type, full, meta) {
                 if (data.labelParentObject !== undefined) {
                     //return '<span class="label label-primary" style="background-color:' + data.display.color + '">' + data.display.label + '</span> ';
-                    return '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + data.labelParentObject.color + '" data-toggle="tooltip" data-labelid="' + data.labelParentObject.id + '" title="' + data.labelParentObject.description + '">' + data.labelParentObject.label + '</span></div> ';
+                    return '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;' + crbChipStyle(data.labelParentObject.color) + '" data-toggle="tooltip" data-labelid="' + data.labelParentObject.id + '" title="' + data.labelParentObject.description + '">' + data.labelParentObject.label + '</span></div> ';
                 } else {
 
                     return '';

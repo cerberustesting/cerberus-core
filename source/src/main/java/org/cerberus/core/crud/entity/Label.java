@@ -127,68 +127,151 @@ public class Label {
         return labelJson;
     }
 
+    /**
+     * Label as seen by the GUI tree nodes (dto.TreeNode#toJson embeds this under
+     * "label").
+     *
+     * Carries every field the browser needs to RENDER a tree row itself. It used
+     * to expose only description/label/type/color/fontColor, which is why
+     * ReadLabel#getTree had to build the row - chip, description, action buttons,
+     * requirement pills - as an HTML string server-side and ship it in the node's
+     * "text". That string concatenated the label name straight into inline
+     * onclick handlers, so a label named  l'ol  broke out of the JS string; and it
+     * hardcoded Bootstrap 3 classes the front end no longer uses.
+     *
+     * js/global/crbLabelTree.js renders from these fields and ignores "text"
+     * entirely. "text" is still produced for the V1 rollback pages, which drive
+     * bootstrap-treeview and have no other source for a row.
+     */
     public JSONObject toJsonGUI() {
         JSONObject result = new JSONObject();
         try {
+            result.put("id", this.getId());
+            result.put("system", this.getSystem());
             result.put("description", this.getDescription());
             result.put("label", this.getLabel());
             result.put("type", this.getType());
             result.put("color", this.getColor());
             result.put("fontColor", this.guessFontColor());
+            result.put("parentLabelID", this.getParentLabelID());
+            result.put("requirementType", this.getRequirementType());
+            result.put("requirementStatus", this.getRequirementStatus());
+            result.put("requirementCriticity", this.getRequirementCriticity());
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
         return result;
     }
 
+    /**
+     * Text colour to write on top of this label's background colour.
+     *
+     * Returns the ink with the best WCAG contrast ratio against the background.
+     * This used to compare HSB *brightness*, which is max(R,G,B) and therefore
+     * reads every saturated colour as light: #1e49c8 (a dark blue) scored 0.78,
+     * was declared "not dark", and got black text that was barely readable.
+     * Relative luminance weights the channels the way the eye does, so the same
+     * blue now scores 0.09 and correctly gets white text.
+     *
+     * js/global/global.js#crbFontColorFor applies the identical rule client-side
+     * for the chips built in the browser; keep the two in step.
+     */
     public String guessFontColor() {
         return (this.isColorDark(this.getColor()) ? "white" : "black");
     }
 
+    /**
+     * True when white text reads better than black on the given colour.
+     *
+     * Kept named isColorDark for its callers, but the question it answers is
+     * "does this need light ink", which is what a contrast comparison gives.
+     */
     public boolean isColorDark(String colorCode) {
 
         try {
-            int red = 0;
-            int green = 0;
-            int blue = 0;
+            int[] rgb = toRgb(colorCode);
+            double luminance = relativeLuminance(rgb[0], rgb[1], rgb[2]);
+            // Contrast against the two inks; white wins when it is the better read.
+            double onWhite = contrastRatio(luminance, 1.0d);
+            double onBlack = contrastRatio(luminance, 0.0d);
+            return onWhite >= onBlack;
 
-            // Check if color is in RGBA format: rgba(r,g,b,a)
-            if (colorCode != null && colorCode.toLowerCase().startsWith("rgba")) {
-                // Extract RGBA values using regex
-                String rgbaValues = colorCode.substring(colorCode.indexOf('(') + 1, colorCode.indexOf(')'));
-                String[] values = rgbaValues.split(",");
-                if (values.length >= 3) {
-                    red = Integer.parseInt(values[0].trim());
-                    green = Integer.parseInt(values[1].trim());
-                    blue = Integer.parseInt(values[2].trim());
-                    // values[3] is the alpha channel, which we don't need for brightness calculation
-                }
-            } else {
-                // Handle hexadecimal color format: #RRGGBB or RRGGBB
-                String rawFontColor = colorCode;
-                if (rawFontColor.startsWith("#")) {
-                    rawFontColor = rawFontColor.substring(1);
-                }
-
-                // convert hex string to int
-                int rgb = Integer.parseInt(rawFontColor, 16);
-
-                Color c = new Color(rgb);
-                red = c.getRed();
-                green = c.getGreen();
-                blue = c.getBlue();
-            }
-
-            // Calculate brightness using RGB values
-            float[] hsb = Color.RGBtoHSB(red, green, blue, null);
-            float brightness = hsb[2];
-
-//            LOG.debug("is the Color Dark ? " + colorCode + " : " + (brightness < 0.5));
-            return (brightness < 0.5);
         } catch (Exception e) {
             LOG.warn("Could not guess if color " + colorCode + " is Dark.", e);
         }
         return true;
+    }
+
+    /** Parses "#RRGGBB", "RRGGBB" or "rgb/rgba(r,g,b[,a])" into {r, g, b}. */
+    private static int[] toRgb(String colorCode) {
+        // Check if color is in RGBA format: rgba(r,g,b,a)
+        if (colorCode != null && colorCode.toLowerCase().startsWith("rgb")) {
+            String rgbaValues = colorCode.substring(colorCode.indexOf('(') + 1, colorCode.indexOf(')'));
+            String[] values = rgbaValues.split(",");
+            if (values.length >= 3) {
+                // values[3], the alpha channel, plays no part in the luminance.
+                return new int[]{
+                    Integer.parseInt(values[0].trim()),
+                    Integer.parseInt(values[1].trim()),
+                    Integer.parseInt(values[2].trim())
+                };
+            }
+            throw new IllegalArgumentException("Unparseable colour " + colorCode);
+        }
+
+        // Handle hexadecimal color format: #RRGGBB or RRGGBB
+        String rawFontColor = colorCode;
+        if (rawFontColor.startsWith("#")) {
+            rawFontColor = rawFontColor.substring(1);
+        }
+        Color c = new Color(Integer.parseInt(rawFontColor, 16));
+        return new int[]{c.getRed(), c.getGreen(), c.getBlue()};
+    }
+
+    /**
+     * Full inline style for this label's chip: background, readable ink, and an
+     * outline when the colour would blend into the surface behind it.
+     *
+     * Mirrors crbChipStyle() in js/global/global.js so a chip rendered here (the
+     * label trees) and one rendered in the browser look identical.
+     */
+    public String chipStyle() {
+        String style = "background-color:" + this.getColor() + ";color:" + this.guessFontColor() + ";";
+        if (this.needsOutline(this.getColor())) {
+            style += "box-shadow:inset 0 0 0 1px rgba(148,163,184,.55);";
+        }
+        return style;
+    }
+
+    /**
+     * True when the colour sits at either extreme and would disappear into the
+     * card behind it: white on the light theme's card, black on the dark one's.
+     */
+    public boolean needsOutline(String colorCode) {
+        try {
+            int[] rgb = toRgb(colorCode);
+            double luminance = relativeLuminance(rgb[0], rgb[1], rgb[2]);
+            return luminance > 0.75d || luminance < 0.05d;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    /** WCAG 2.1 relative luminance of an sRGB colour. */
+    private static double relativeLuminance(int red, int green, int blue) {
+        return 0.2126d * linearise(red) + 0.7152d * linearise(green) + 0.0722d * linearise(blue);
+    }
+
+    private static double linearise(int channel) {
+        double v = channel / 255.0d;
+        return v <= 0.03928d ? v / 12.92d : Math.pow((v + 0.055d) / 1.055d, 2.4d);
+    }
+
+    /** WCAG 2.1 contrast ratio between two relative luminances. */
+    private static double contrastRatio(double l1, double l2) {
+        double hi = Math.max(l1, l2);
+        double lo = Math.min(l1, l2);
+        return (hi + 0.05d) / (lo + 0.05d);
     }
 
 }

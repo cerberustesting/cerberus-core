@@ -518,17 +518,27 @@
                             </button>
                         </div>
                         <!-- Label Lists -->
+<!-- The three pickers. Each panel is a plain mount point for
+                             js/global/crbLabelTree.js; the component draws its own search
+                             bar and scrolls its rows, which is why the panel no longer sets
+                             overflow/max-height itself - doing so scrolled the search box
+                             out of reach along with the list. .list-group and .form-group
+                             are gone with the Bootstrap 3 widget that needed them.
+                             An HTML comment rather than a JSP one: modalInclusions.jsp pulls
+                             this file in with jsp:include, which serves it as a static
+                             resource, so JSP syntax is never parsed here and a JSP comment
+                             renders as visible text in the middle of the modal. -->
                         <div x-show="labelTab === 'stickers'" id="tabsLEdit-1"
-                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
-                            <div class="form-group" id="labelList"><div id="selectLabelS" class="list-group"></div></div>
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3" style="min-height: 120px;">
+                            <div id="selectLabelS"></div>
                         </div>
                         <div x-show="labelTab === 'requirements'" id="tabsLEdit-2"
-                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
-                            <div class="form-group" id="labelList"><div id="selectLabelR" class="list-group"></div></div>
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3" style="min-height: 120px;">
+                            <div id="selectLabelR"></div>
                         </div>
                         <div x-show="labelTab === 'batteries'" id="tabsLEdit-3"
-                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 overflow-auto" style="min-height: 120px; max-height: 400px;">
-                            <div class="form-group" id="labelList"><div id="selectLabelB" class="list-group"></div></div>
+                             class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3" style="min-height: 120px;">
+                            <div id="selectLabelB"></div>
                         </div>
                     </div>
                 </div>
@@ -1375,31 +1385,9 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Label List
-    var table_label = [];
-    var table2 = $('#selectLabelS').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        var newLabel1 = {
-            labelId: table2[i].id,
-            toDelete: false
-        };
-        table_label.push(newLabel1);
-    }
-    var table2 = $('#selectLabelR').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        var newLabel1 = {
-            labelId: table2[i].id,
-            toDelete: false
-        };
-        table_label.push(newLabel1);
-    }
-    var table2 = $('#selectLabelB').treeview('getSelected', {levels: 20, silent: true});
-    for (var i = 0; i < table2.length; i++) {
-        var newLabel1 = {
-            labelId: table2[i].id,
-            toDelete: false
-        };
-        table_label.push(newLabel1);
-    }
+    var table_label = loadLabelSelectedIds("#selectLabel").map(function (labelId) {
+        return {labelId: labelId, toDelete: false};
+    });
     let isMutedEl = document.querySelector('#isMuted');
     let dataIsMuted = isMutedEl ? (isMutedEl._x_dataStack && isMutedEl._x_dataStack[0] ? isMutedEl._x_dataStack[0].isMutedActive : false) : false;
 
@@ -1512,8 +1500,14 @@ function confirmTestCaseModalHandler(mode) {
                         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcaselist", "ask_edit_testcase"), "", "", "", "");
                     }
                 }
+                // Legacy path: refreshes the DataTable on the V1 page. On a
+                // migrated page that id no longer exists, so this is a no-op there
+                // and the notify below is what reloads the V2 table.
                 var oTable = $("#testCaseTable").dataTable();
                 oTable.fnDraw(false);
+                if (typeof crbNotifyDataChanged === "function") {
+                    crbNotifyDataChanged("testcase");
+                }
                 $('#editTestCaseModal').data("Saved", true);
                 $('#editTestCaseModal').data("testcase", data);
                 $('#editTestCaseModal').data("bug", table_bug);
@@ -2295,49 +2289,103 @@ function appendTestCaseCountries(testCase, isReadOnly) {
 }
 
 /***
- * Build the list of label and flag them from the testcase values..
- * @param {String} labels - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
- * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
- * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
- * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
- * @param {String} test - Test Folder to Select.
- * @param {String} testCase - Test ID to Select.
+ * Build the three label pickers and tick the ones the testcase already carries.
+ *
+ * Now js/global/crbLabelTree.js in "select" mode - the SAME component the three
+ * browse tabs of Label & Tag use, so a label row looks and behaves identically
+ * whether you are managing labels or attaching them. It replaces
+ * bootstrap-treeview, whose checkbox was not a checkbox at all but the node's
+ * ICON slot swapped between two mask-image classes (nodeIcon/selectedIcon) -
+ * which is why the picker had no keyboard support, no search, and no way to see
+ * how many labels were ticked.
+ *
+ * @param {String} labels - unused, kept for the callers that still pass it. The
+ *          selection comes from the server, which flags state.selected on the
+ *          nodes belonging to test/testCase; the caller's own list was never read.
+ * @param {String} mySystem - system to load the labels of; defaults to the user's.
+ * @param {String} myLabelDiv - base id of the three containers, WITHOUT the
+ *          S/R/B suffix. Ex : "#selectLabel" -> #selectLabelS, R, B.
+ * @param {String} labelSize - unused, kept for the callers that still pass it.
+ *          It was a col-xs-?? width for a Bootstrap 3 grid this modal no longer has.
+ * @param {String} test - Test Folder to select.
+ * @param {String} testCase - Test ID to select.
  * @returns {null}
  */
 function loadLabel(labels, mySystem, myLabelDiv, labelSize, test, testCase) {
 
-    if (isEmpty(labelSize)) {
-        labelSize = "2";
-    }
     var labelDiv = myLabelDiv;
     var targetSystem = mySystem;
     if (isEmpty(targetSystem)) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.get("ReadLabel?system=" + targetSystem + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test) + "&testCaseSelect=" + encodeURI(testCase), "", "json");
+    CRB_LABEL_PICKERS.forEach(function (picker) {
+        var mount = labelDiv + picker.suffix;
+        var treeId = mount.replace("#", "") + "_tree";
+        // Idempotent. This runs on every modal open, always on the same three
+        // containers; rebuilding the markup would detach the mounted Alpine
+        // component and leak one per open. Only the nodes are replaced, below.
+        if (!window.crbLabelTreeRegistry[treeId]) {
+            createCerberusLabelTree({
+                id: treeId,
+                mount: mount,
+                mode: "select",
+                embedded: true,
+                type: picker.type,
+                typeLabel: picker.typeLabel,
+                searchPlaceholder: "Search " + picker.typeLabel + " labels..."
+            });
+        }
+    });
+
+    var jqxhr = $.get("ReadLabel?system=" + encodeURIComponent(targetSystem)
+            + "&withHierarchy=true&isSelectable=Y&testSelect=" + encodeURI(test)
+            + "&testCaseSelect=" + encodeURI(testCase), "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
 
-        //DRAW LABEL LIST
         if (messageType === "success") {
-
-            //DRAW LABEL TREE
-
-            $(labelDiv + 'S').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true, multiSelect: true});
-            $(labelDiv + 'B').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true, multiSelect: true});
-            $(labelDiv + 'R').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true, multiSelect: true});
-
-            $(labelDiv + 'S').treeview('expandAll', {levels: 20, silent: true});
-            $(labelDiv + 'B').treeview('expandAll', {levels: 20, silent: true});
-            $(labelDiv + 'R').treeview('expandAll', {levels: 20, silent: true});
-
+            var hierarchy = data.labelHierarchy || {};
+            CRB_LABEL_PICKERS.forEach(function (picker) {
+                var treeId = labelDiv + picker.suffix;
+                crbLabelTreeSetNodes(treeId.replace("#", "") + "_tree", hierarchy[picker.key] || []);
+            });
         } else {
             showMessageMainPage(messageType, data.message, true);
         }
 
     }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * The three label pickers, in tab order. Shared by loadLabel() and by every
+ * save handler that reads the selection back, so the suffix/response-key pairing
+ * is written down once.
+ */
+var CRB_LABEL_PICKERS = [
+    {suffix: "S", key: "stickers", type: "STICKER", typeLabel: "sticker"},
+    {suffix: "R", key: "requirements", type: "REQUIREMENT", typeLabel: "requirement"},
+    {suffix: "B", key: "batteries", type: "BATTERY", typeLabel: "battery"}
+];
+
+/**
+ * Label ids ticked across the three pickers built by loadLabel() on `labelDiv`.
+ *
+ * Replaces the three near-identical
+ *     $(div + 'S').treeview('getSelected', {levels: 20, silent: true})
+ * blocks every save handler carried. Returns [] for a picker that was never
+ * built, so a handler can call it whether or not the Label tab was opened.
+ *
+ * @param {String} labelDiv base id WITHOUT the S/R/B suffix, ex : "#selectLabel"
+ * @returns {Array} label ids, as Numbers
+ */
+function loadLabelSelectedIds(labelDiv) {
+    var ids = [];
+    CRB_LABEL_PICKERS.forEach(function (picker) {
+        ids = ids.concat(crbLabelTreeSelectedIds(labelDiv + picker.suffix));
+    });
+    return ids;
 }
 
 function appendApplicationList(defautValue, mySystem, modalId) {

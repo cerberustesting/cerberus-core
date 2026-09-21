@@ -138,6 +138,7 @@ public class CreateRobotExecutorTool implements MCPTool {
         properties.put("executorBrowserProxyHost", Map.of("type", "string", "description", "Optional manual browser proxy host (used when executorProxyType is 'MANUAL')."));
         properties.put("executorBrowserProxyPort", Map.of("type", "integer", "description", "Optional manual browser proxy port (used when executorProxyType is 'MANUAL')."));
         properties.put("executorExtensionPort", Map.of("type", "integer", "description", "Optional Cerberus browser extension port."));
+        properties.put("executorExtensionHost", Map.of("type", "string", "description", "Optional host used to reach the Cerberus browser extension, if different from 'host' (e.g. when the extension is exposed through a separate tunnel such as cloudflared). If empty, 'host' is used."));
         properties.put("executorExtensionProxyPort", Map.of("type", "integer", "description", "Optional proxy port used to reach the extension when the node has a private IP."));
         properties.put("deviceUdid", Map.of("type", "string", "description", "Optional mobile device UDID (for mobile executors)."));
         properties.put("deviceName", Map.of("type", "string", "description", "Optional mobile device name (for mobile executors)."));
@@ -218,6 +219,7 @@ public class CreateRobotExecutorTool implements MCPTool {
                 MCPToolUtils.getString(args, "executorBrowserProxyHost", ""),
                 getOptionalInteger(args, "executorBrowserProxyPort"),
                 getOptionalInteger(args, "executorExtensionPort"),
+                MCPToolUtils.getString(args, "executorExtensionHost", ""),
                 MCPToolUtils.getString(args, "executorProxyType", RobotExecutor.PROXY_TYPE_NONE),
                 MCPToolUtils.getString(args, "description", ""),
                 "MCP",

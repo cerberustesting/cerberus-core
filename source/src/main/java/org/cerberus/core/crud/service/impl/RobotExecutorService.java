@@ -326,6 +326,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         robotExecutor.setExecutorBrowserProxyHost(newRobotExecutorFromSource.getExecutorBrowserProxyHost() == null ? re.getItem().getExecutorBrowserProxyHost() : newRobotExecutorFromSource.getExecutorBrowserProxyHost());
         robotExecutor.setExecutorBrowserProxyPort(newRobotExecutorFromSource.getExecutorBrowserProxyPort() == null ? re.getItem().getExecutorBrowserProxyPort() : newRobotExecutorFromSource.getExecutorBrowserProxyPort());
         robotExecutor.setExecutorExtensionPort(newRobotExecutorFromSource.getExecutorExtensionPort() == null ? re.getItem().getExecutorExtensionPort() : newRobotExecutorFromSource.getExecutorExtensionPort());
+        robotExecutor.setExecutorExtensionHost(newRobotExecutorFromSource.getExecutorExtensionHost() == null ? re.getItem().getExecutorExtensionHost() : newRobotExecutorFromSource.getExecutorExtensionHost());
 
         this.update(robot, executor, robotExecutor);
 

@@ -103,6 +103,12 @@ public class ListTestCaseStepsTool implements MCPTool {
                 Returns the list of steps for a given testcase in Cerberus.
 
                 Call this tool when the user needs to browse or inspect the steps of a testcase.
+
+                This lists the steps as they are stored. For the sequence that actually runs — with the
+                actions of each step, and the library steps resolved to what they contribute — call
+                cerberus_testcase_scenario_get instead: it answers in one call what this one starts.
+
+                Use cerberus_testcase_step_reorder to change the order the steps run in.
                 Use search to filter steps by description.
 
                 Do not call this tool when the user asks to create, update, or delete steps.

@@ -246,9 +246,12 @@ public class RobotServerService implements IRobotServerService {
                 session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
                 LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
                 session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
+                LOG.debug("Extension host set: {}", execution.getRobotExecutorObj().getExecutorExtensionHost());
+                session.setExecutorExtensionHost(execution.getRobotExecutorObj().getExecutorExtensionHost());
             } else {
                 session.setExecutorExtensionProxyPort(0);
                 session.setExecutorExtensionPort(0);
+                session.setExecutorExtensionHost(null);
             }
             session.setConsoleLogs(new JSONArray());
 
@@ -464,6 +467,10 @@ public class RobotServerService implements IRobotServerService {
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 execution.setUserAgent(userAgent);
 
+            } else if (appiumDriver != null) {
+                // Mobile (Appium) : capture the real device/app viewport resolution so the
+                // front-end can size the live view / vision modal to its actual aspect-ratio.
+                execution.setScreenSize(getScreenSize(appiumDriver));
             }
 
             // unlock device if deviceLockUnlock is active
@@ -607,9 +614,12 @@ public class RobotServerService implements IRobotServerService {
                 session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
                 LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
                 session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
+                LOG.debug("Extension host set: {}", execution.getRobotExecutorObj().getExecutorExtensionHost());
+                session.setExecutorExtensionHost(execution.getRobotExecutorObj().getExecutorExtensionHost());
             } else {
                 session.setExecutorExtensionProxyPort(0);
                 session.setExecutorExtensionPort(0);
+                session.setExecutorExtensionHost(null);
             }
             session.setConsoleLogs(new JSONArray());
 
@@ -840,6 +850,10 @@ public class RobotServerService implements IRobotServerService {
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 execution.setUserAgent(userAgent);
 
+            } else if (appiumDriver != null) {
+                // Mobile (Appium) : capture the real device/app viewport resolution so the
+                // front-end can size the live view / vision modal to its actual aspect-ratio.
+                execution.setScreenSize(getScreenSize(appiumDriver));
             }
 
             // unlock device if deviceLockUnlock is active

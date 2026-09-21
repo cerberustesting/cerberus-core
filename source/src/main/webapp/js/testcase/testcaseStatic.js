@@ -18,6 +18,13 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// ═══ Orientation helpers, shared by TestCaseExecutionV2.jsp and TestCaseExecutionDebug.jsp ═══
+// Mobile (APK/IPA) executions are usually portrait, unlike web (GUI) which is landscape — used
+// to adapt screenshot thumbnails and the live view frame without affecting the GUI rendering.
+function crbIsPortraitApp(exe) {
+    return !!exe && (exe.applicationType === 'APK' || exe.applicationType === 'IPA');
+}
+
 // ACTION
 var actionOptGroupList = [
     {"name": "access_application", "label": {"en": "Application Access", "fr": "Accès à l'Application"}, "picto": "<img width='20px' height='20px' src='images/action-website.png'/>"},

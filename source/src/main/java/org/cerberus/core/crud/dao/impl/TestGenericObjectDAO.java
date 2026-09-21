@@ -142,7 +142,10 @@ public class TestGenericObjectDAO implements ITestGenericObjectDAO {
             searchSQL.append(" or `Description` like ?");
             searchSQL.append(" or `conditionValue1` like ?");
             searchSQL.append(" or `conditionValue2` like ?");
-            searchSQL.append(" or `conditionValue2` like ?)");
+            // Was `conditionValue2` a second time: the seventh placeholder was bound
+            // but pointed at the wrong column, so a term only present in
+            // ConditionValue3 silently never matched. Placeholder count is unchanged.
+            searchSQL.append(" or `conditionValue3` like ?)");
         }
         if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
@@ -313,7 +316,9 @@ public class TestGenericObjectDAO implements ITestGenericObjectDAO {
             searchSQL.append(" or `Description` like ?");
             searchSQL.append(" or `conditionValue1` like ?");
             searchSQL.append(" or `conditionValue2` like ?");
-            searchSQL.append(" or `conditionValue2` like ?)");
+            // Same copy/paste as readBySystemByCriteria: this was conditionValue2
+            // twice, so the distinct-value list ignored ConditionValue3 matches.
+            searchSQL.append(" or `conditionValue3` like ?)");
         }
         if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");

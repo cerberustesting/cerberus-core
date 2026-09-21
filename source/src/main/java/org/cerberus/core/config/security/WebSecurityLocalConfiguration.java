@@ -118,6 +118,7 @@
 					);
 					http.logout(logout -> logout
 							.logoutUrl("/Logout.jsp")
+							.logoutSuccessUrl("/LoggedOut.jsp")
 							.permitAll()
 					);
 

@@ -27,11 +27,13 @@ import org.cerberus.core.crud.entity.TestCaseStep;
 import org.cerberus.core.crud.service.ITestCaseStepService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.mcp.MCPTool;
+import org.cerberus.core.mcp.util.MCPActionOptions;
 import org.cerberus.core.mcp.util.MCPLogUtils;
 import org.cerberus.core.mcp.util.MCPToolUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +126,7 @@ public class UpdateTestCaseStepTool implements MCPTool {
                 "type", "boolean",
                 "description", "Set to true if this step is a reusable library step callable by other testcases."
         ));
+        updateProperties.put("conditionOptions", MCPActionOptions.schema("the evaluation of this step's condition"));
         updateProperties.put("isExecutionForced", Map.of(
                 "type", "boolean",
                 "description", "Set to true to force the execution of this step regardless of conditions."
@@ -263,11 +266,16 @@ public class UpdateTestCaseStepTool implements MCPTool {
                         existing.setExecutionForced(asBoolean(value, field));
                         break;
 
+                    case "conditionOptions":
+                        existing.setConditionOptions(
+                                MCPActionOptions.merge(existing.getConditionOptions(), asMap(value, field)));
+                        break;
+
                     default:
                         return MCPToolUtils.errorText("Unsupported field for step update: " + field);
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | MCPActionOptions.InvalidOptionException e) {
             return MCPToolUtils.errorText(e.getMessage());
         }
 
@@ -281,11 +289,22 @@ public class UpdateTestCaseStepTool implements MCPTool {
             return MCPToolUtils.errorText("Unable to update step: " + e.getMessage());
         }
 
-        TestcaseStepDTOV001 dto = mapper.toDTO(existing);
-        return MCPToolUtils.successJson(Map.of(
-                "status", "updated",
-                "step", dto
-        ));
+        // Read back from the database instead of echoing the entity that was just written. The DAOs
+        // behind these services log a failed UPDATE and return normally, so a write that never landed
+        // would otherwise be reported as "updated" with the values the caller hoped for — the silent
+        // false positive that costs a whole debugging session to notice.
+        TestCaseStep written = testCaseStepService.findTestCaseStep(testFolder, testcaseId, stepId);
+        if (written == null) {
+            return MCPToolUtils.errorText("The update was accepted but the step could not be read back. "
+                    + "Check it with cerberus_testcase_step_get before relying on it.");
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "updated");
+        response.put("updatedFields", new ArrayList<>(updates.keySet()));
+        response.put("readBackFromDatabase", true);
+        response.put("step", mapper.toDTO(written));
+        return MCPToolUtils.successJson(response);
     }
 
     /**
@@ -293,6 +312,23 @@ public class UpdateTestCaseStepTool implements MCPTool {
      * Returns an empty string when the value is {@code null}.
      * Throws {@link IllegalArgumentException} if the value is not a {@link String}.
      */
+    /**
+     * Coerces {@code value} to a nested object.
+     *
+     * @throws IllegalArgumentException when the caller sent anything else.
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> asMap(Object value, String field) {
+        if (value == null) {
+            return Map.of();
+        }
+        if (!(value instanceof Map)) {
+            throw new IllegalArgumentException("Invalid value for field '" + field
+                    + "'. Expected an object naming the settings to change, for example {\"timeout\": \"3000\"}.");
+        }
+        return (Map<String, Object>) value;
+    }
+
     private String asString(Object value, String field) {
         if (value == null) return "";
         if (!(value instanceof String)) {

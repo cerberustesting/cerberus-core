@@ -277,7 +277,7 @@
                                             <template x-for="file in _getScreenshots(prop.fileList)" :key="file.fileName">
                                                 <img :src="getMediaUrl(file, 140, 90)"
                                                      class="v2-exe-media-thumb"
-                                                     style="width:80px;height:52px"
+                                                     :style="crbIsPortraitApp(exe) ? 'width:52px;height:80px' : 'width:80px;height:52px'"
                                                      @click.stop="openLightbox(getMediaFullUrl(file))"
                                                      loading="lazy">
                                             </template>

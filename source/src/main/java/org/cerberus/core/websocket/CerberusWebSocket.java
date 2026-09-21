@@ -246,6 +246,8 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASE:
             case WebSocketStatic.CHANNEL_OBJECTCREATION_TESTCASESTEP:
 
+            case WebSocketStatic.CHANNEL_USERCONTEXT_UPDATE:
+
             case WebSocketStatic.CHANNEL_EXECUTION_START:
             case WebSocketStatic.CHANNEL_EXECUTION_UPDATE:
             case WebSocketStatic.CHANNEL_EXECUTION_DONE:

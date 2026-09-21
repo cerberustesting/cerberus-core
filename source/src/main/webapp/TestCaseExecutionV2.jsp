@@ -39,6 +39,7 @@
 
         <!-- V2 Scripts -->
         <script type="text/javascript" src="js/testcase/testcaseStatic.js?v=${appVersion}"></script>
+        <script type="text/javascript" src="js/testcase/condition.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionV2.js?v=${appVersion}"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js?v=${appVersion}"></script>
 
@@ -47,6 +48,14 @@
     </head>
     <body x-data x-cloak class="crb_body" :class="$store.rightPanel.open ? 'rp-open' : ''">
         <jsp:include page="include/global/header2.html"/>
+
+        <!-- Step Options modals (Options gear on TestCaseStep.html's action/control rows + step header).
+             Included before modalInclusions.jsp so its z-index-on-open observer (which only scans
+             .crb_modal nodes present in the DOM at that point) picks these up too; otherwise opening
+             one from within TestCaseStep.html's compact step editor renders it behind that modal. -->
+        <%@ include file="include/pages/testcasescript/manageActionControlOptions.html"%>
+        <%@ include file="include/pages/testcasescript/manageStepOptions.html"%>
+
         <jsp:include page="include/global/modalInclusions.jsp"/>
         <jsp:include page="include/global/rightPanel.html"/>
         <main class="crb_main_wrp" x-init="$store.sidebar.expanded = false"
@@ -60,9 +69,6 @@
 
             <!-- Execution modal -->
             <jsp:include page="include/transversal/TestCaseSimpleExecution.html"/>
-
-            <!-- Templates -->
-            <%@ include file="include/templates/selectDropdown.html"%>
 
             <!-- ============================================================ -->
             <!-- MAIN V2 CONTENT — Pure Alpine.js                             -->
@@ -93,61 +99,64 @@
                     </div>
                 </template>
 
-                <!-- TABS -->
-                <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 rounded-lg shadow-sm mb-4 h-10">
+                <!-- TABS - shared tab bar (.crb_tabs, components.css), same component as Label.jsp.
+                     Replaces the segmented pill this page built inline: flex-1 gave every tab
+                     an equal slice regardless of label length, and the fixed h-10 fought its
+                     own py-3 padding. -->
+                <div class="crb_tabs">
                     <!-- Tab: Steps -->
                     <button @click="setTab('steps')" id="v2ExeTabSteps"
-                            :class="tab === 'steps' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'steps' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="list-tree" class="w-4 h-4"></i>
                         <span>Steps</span>
                     </button>
                     <!-- Tab: Properties -->
                     <button @click="setTab('properties')" id="v2ExeTabProperties"
-                            :class="tab === 'properties' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'properties' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="variable" class="w-4 h-4"></i>
                         <span>Properties</span>
                     </button>
                     <!-- Tab: Bug -->
                     <button @click="setTab('bug')" id="v2ExeTabBug"
-                            :class="tab === 'bug' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'bug' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="bug" class="w-4 h-4"></i>
                         <span>Bug</span>
                     </button>
                     <!-- Tab: Environment -->
                     <button @click="setTab('env')" id="v2ExeTabEnv"
-                            :class="tab === 'env' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'env' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="earth" class="w-4 h-4"></i>
                         <span>Environment</span>
                     </button>
                     <!-- Tab: Robot -->
                     <button @click="setTab('robot')" id="v2ExeTabRobot"
-                            :class="tab === 'robot' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'robot' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="bot" class="w-4 h-4"></i>
                         <span>Robot</span>
                     </button>
                     <!-- Tab: Dependencies -->
                     <button @click="setTab('deps')" id="v2ExeTabDeps"
-                            :class="tab === 'deps' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'deps' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="link" class="w-4 h-4"></i>
                         <span>Deps</span>
                     </button>
                     <!-- Tab: Network -->
                     <button @click="setTab('network')" id="v2ExeTabNetwork"
-                            :class="tab === 'network' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'network' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="network" class="w-4 h-4"></i>
                         <span>Network</span>
                     </button>
                     <!-- Tab: Traceability -->
                     <button @click="setTab('traca')" id="v2ExeTabTraca"
-                            :class="tab === 'traca' ? 'crb_tab_selected' : 'crb_tab_not_selected'"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-md transition-colors duration-200">
+                            :class="tab === 'traca' ? 'crb_tab--active' : ''"
+                            class="crb_tab">
                         <i data-lucide="user" class="w-4 h-4"></i>
                         <span>Traceability</span>
                     </button>
