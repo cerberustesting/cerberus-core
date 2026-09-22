@@ -33,6 +33,7 @@ public class Property {
     public static final String KEYCLOAKREALM = "org.cerberus.keycloak.realm";
     public static final String KEYCLOAKCLIENT = "org.cerberus.keycloak.client";
     public static final String KEYCLOAKLOCALRUNNERCLIENT = "org.cerberus.keycloak.localrunnerclient";
+    public static final String KEYCLOAKMCPCLIENT = "org.cerberus.keycloak.mcpclient";
     public static final String KEYCLOAKURL = "org.cerberus.keycloak.url";
     public static final String SAAS = "org.cerberus.saas";
     public static final String SAASINSTANCE = "org.cerberus.saas.instance";

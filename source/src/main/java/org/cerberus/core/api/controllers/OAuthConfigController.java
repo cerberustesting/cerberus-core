@@ -71,6 +71,7 @@ public class OAuthConfigController {
                 .realm(System.getProperty(Property.KEYCLOAKREALM))
                 .clientId(System.getProperty(Property.KEYCLOAKCLIENT))
                 .localRunnerClientId(System.getProperty(Property.KEYCLOAKLOCALRUNNERCLIENT))
+                .cerberusMcpClientId(System.getProperty(Property.KEYCLOAKMCPCLIENT))
                 .build();
     }
 }

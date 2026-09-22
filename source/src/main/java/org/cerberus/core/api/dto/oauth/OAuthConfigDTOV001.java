@@ -38,7 +38,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"enabled", "keycloakUrl", "realm", "clientId"})
+@JsonPropertyOrder({"enabled", "keycloakUrl", "realm", "clientId", "localRunnerClientId", "cerberusMcpClientId"})
 @Schema(name = "OAuthConfig")
 public class OAuthConfigDTOV001 {
 
@@ -56,4 +56,7 @@ public class OAuthConfigDTOV001 {
 
     @Schema(description = "Keycloak client id used by local third-party tools", example = "cerberus-local-runner")
     private String localRunnerClientId;
+
+    @Schema(description = "Keycloak client id used by the Cerberus MCP server", example = "cerberus-mcp")
+    private String cerberusMcpClientId;
 }

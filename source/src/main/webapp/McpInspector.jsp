@@ -102,14 +102,25 @@
                     <!-- Authorize bar -->
                     <template x-if="!connected">
                         <div class="flex flex-wrap items-center gap-2">
-                            <input type="password" x-model="apiKeyInput" placeholder="Clé API Cerberus (X-API-KEY)"
-                                   class="crb_input rounded-md px-3 py-2 text-sm w-72"
-                                   @keydown.enter="authorize()">
-                            <button @click="authorize()" :disabled="connecting"
-                                    class="bg-blue-600 dark:bg-blue-500 !text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50">
-                                <span x-show="!connecting">Authorize</span>
-                                <span x-show="connecting">Connexion…</span>
-                            </button>
+                            <template x-if="oauthEnabled">
+                                <button @click="loginWithOAuth()" :disabled="connecting"
+                                        class="bg-blue-600 dark:bg-blue-500 !text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                                    <span x-show="!connecting">Se connecter via OAuth</span>
+                                    <span x-show="connecting">Connexion…</span>
+                                </button>
+                            </template>
+                            <template x-if="!oauthEnabled">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <input type="password" x-model="apiKeyInput" placeholder="Clé API Cerberus (X-API-KEY)"
+                                           class="crb_input rounded-md px-3 py-2 text-sm w-72"
+                                           @keydown.enter="authorize()">
+                                    <button @click="authorize()" :disabled="connecting"
+                                            class="bg-blue-600 dark:bg-blue-500 !text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                                        <span x-show="!connecting">Authorize</span>
+                                        <span x-show="connecting">Connexion…</span>
+                                    </button>
+                                </div>
+                            </template>
                             <span x-show="error" x-text="error" class="text-sm text-red-600 dark:text-red-400"></span>
                         </div>
                     </template>
@@ -134,7 +145,8 @@
                                         <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Rafraîchir
                                     </button>
                                     <button @click="logout()" class="crb_table_iconbtn">
-                                        <i data-lucide="key-round" class="w-3.5 h-3.5"></i> Changer de clé
+                                        <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                                        <span x-text="authMode === 'oauth' ? 'Se déconnecter' : 'Changer de clé'"></span>
                                     </button>
                                 </div>
                             </div>
@@ -296,10 +308,17 @@
                             <div x-show="activeTab === 'connection'" class="grid gap-4 lg:grid-cols-2">
                                 <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
                                     <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">Connecter un assistant</h3>
-                                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400" x-show="authMode !== 'oauth'">
                                         Ajoutez cette configuration dans Claude Desktop, Claude Code ou un autre client MCP.
                                         Les tools s'exécutent avec les droits de la clé API fournie, restreints à son contexte
                                         système actif (voir <span class="crb_code">cerberus_context_system_list</span>).
+                                    </p>
+                                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400" x-show="authMode === 'oauth'">
+                                        Ajoutez cette configuration dans Claude Desktop, Claude Code ou un autre client MCP.
+                                        Aucun token à fournir : un client MCP compatible découvre automatiquement le serveur
+                                        d'autorisation et ouvre son propre flow OAuth. Les tools s'exécutent avec les droits
+                                        de l'utilisateur connecté, restreints à son contexte système actif
+                                        (voir <span class="crb_code">cerberus_context_system_list</span>).
                                     </p>
                                     <pre class="mt-4 overflow-auto rounded-xl bg-slate-900 dark:bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100" x-text="connectionConfigPreview()"></pre>
                                     <button @click="copyText(connectionConfigPreview())"
@@ -317,7 +336,7 @@
                                         </div>
                                         <div class="flex items-center justify-between gap-3">
                                             <dt class="text-slate-500 dark:text-slate-400">Authentification</dt>
-                                            <dd class="crb_code">X-API-KEY</dd>
+                                            <dd class="crb_code" x-text="authMode === 'oauth' ? 'OAuth2 (Bearer)' : 'X-API-KEY'"></dd>
                                         </div>
                                         <div class="flex items-center justify-between gap-3">
                                             <dt class="text-slate-500 dark:text-slate-400">Protocole MCP</dt>

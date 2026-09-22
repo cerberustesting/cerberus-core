@@ -22,16 +22,22 @@
  * Minimal MCP (streamable HTTP) client for the /mcp endpoint, driving an Alpine
  * "try it out" UI — the in-app equivalent of the MCP Inspector, scoped to Cerberus.
  *
- * /mcp sits behind its own stateless + httpBasic Spring Security chain
- * (WebSecurityLocalConfiguration#mcpSecurityFilterChain), so the browser's normal
- * session cookie does not authenticate it. Reuses the existing X-API-KEY fallback
- * (McpApiKeyAuthFilter) instead — the user pastes their own Cerberus API key once,
- * exactly like the "Authorize" box in a public Swagger UI.
+ * /mcp sits behind its own stateless Spring Security chain, so the browser's normal
+ * session cookie does not authenticate it. Two auth modes are supported, mutually
+ * exclusive, picked once at load time from GET /api/public/oauth-config:
+ * - OAuth enabled: Authorization Code + PKCE against Keycloak (public client, no
+ *   secret in the browser), using the dedicated "cerberus-mcp" client id.
+ * - OAuth disabled: the X-API-KEY fallback (McpApiKeyAuthFilter) — the user pastes
+ *   their own Cerberus API key once, exactly like the "Authorize" box in a public
+ *   Swagger UI.
  */
 function mcpInspector() {
     return {
         apiKeyInput: '',
         apiKey: '',
+        authMode: 'apiKey',
+        oauthConfig: null,
+        accessToken: '',
         sessionId: null,
         nextId: 1,
 
@@ -51,12 +57,43 @@ function mcpInspector() {
         result: null,
         history: [],
 
-        init() {
-            const saved = sessionStorage.getItem('mcpInspectorApiKey');
-            if (saved) {
-                this.apiKeyInput = saved;
-                this.apiKey = saved;
+        async init() {
+            await this.loadOAuthConfig();
+            await this.handleOAuthCallback();
+            if (this.connected) {
+                return;
+            }
+
+            const savedToken = sessionStorage.getItem('mcpInspectorAccessToken');
+            const savedApiKey = sessionStorage.getItem('mcpInspectorApiKey');
+            if (this.oauthEnabled && savedToken) {
+                this.accessToken = savedToken;
+                this.authMode = 'oauth';
                 this.connect();
+            } else if (savedApiKey) {
+                this.apiKeyInput = savedApiKey;
+                this.apiKey = savedApiKey;
+                this.authMode = 'apiKey';
+                this.connect();
+            }
+        },
+
+        /**
+         * OAuth is only usable here once the dedicated MCP client id is configured
+         * server-side (org.cerberus.keycloak.mcpclient) — Keycloak enabled alone is not
+         * enough, otherwise loginWithOAuth() would send client_id=undefined.
+         */
+        get oauthEnabled() {
+            return !!(this.oauthConfig && this.oauthConfig.enabled && this.oauthConfig.cerberusMcpClientId);
+        },
+
+        /** Discovers whether this Cerberus instance has OAuth/Keycloak enabled, and with which client. */
+        async loadOAuthConfig() {
+            try {
+                const response = await fetch(getCerberusBasePath() + 'api/public/oauth-config');
+                this.oauthConfig = response.ok ? await response.json() : {enabled: false};
+            } catch (e) {
+                this.oauthConfig = {enabled: false};
             }
         },
 
@@ -81,18 +118,18 @@ function mcpInspector() {
             return this.activeSystems === null ? '—' : String(this.activeSystems);
         },
 
+        /**
+         * In OAuth mode, a compliant MCP client (Claude Desktop, Claude Code...) discovers Keycloak
+         * itself from the 401 challenge on /mcp (WWW-Authenticate: Bearer resource_metadata=...,
+         * RFC 9728) and runs its own OAuth flow — no static Authorization header to hand out, and
+         * pasting one would go stale as soon as the token expires.
+         */
         connectionConfigPreview() {
-            return JSON.stringify({
-                mcpServers: {
-                    cerberus: {
-                        type: 'http',
-                        url: this.mcpEndpointUrl(),
-                        headers: {
-                            'X-API-KEY': '<votre clé API>'
-                        }
-                    }
-                }
-            }, null, 2);
+            const server = {type: 'http', url: this.mcpEndpointUrl()};
+            if (this.authMode !== 'oauth') {
+                server.headers = {'X-API-KEY': '<votre clé API>'};
+            }
+            return JSON.stringify({mcpServers: {cerberus: server}}, null, 2);
         },
 
         /**
@@ -157,6 +194,7 @@ function mcpInspector() {
             if (!this.apiKeyInput || !this.apiKeyInput.trim()) {
                 return;
             }
+            this.authMode = 'apiKey';
             this.apiKey = this.apiKeyInput.trim();
             sessionStorage.setItem('mcpInspectorApiKey', this.apiKey);
             this.connect();
@@ -165,6 +203,7 @@ function mcpInspector() {
         logout() {
             this.apiKey = '';
             this.apiKeyInput = '';
+            this.accessToken = '';
             this.sessionId = null;
             this.connected = false;
             this.tools = [];
@@ -172,6 +211,107 @@ function mcpInspector() {
             this.result = null;
             this.activeSystems = null;
             sessionStorage.removeItem('mcpInspectorApiKey');
+            sessionStorage.removeItem('mcpInspectorAccessToken');
+        },
+
+        oauthRedirectUri() {
+            return window.location.origin + window.location.pathname;
+        },
+
+        /** org.cerberus.keycloak.url is configured with a trailing slash; strip it to avoid a double // once concatenated. */
+        keycloakRealmBaseUrl() {
+            return this.oauthConfig.keycloakUrl.replace(/\/+$/, '') + '/realms/' + this.oauthConfig.realm;
+        },
+
+        randomString(length = 64) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const values = crypto.getRandomValues(new Uint8Array(length));
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars[values[i] % chars.length];
+            }
+            return result;
+        },
+
+        async sha256Base64Url(input) {
+            const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+            let binary = '';
+            for (const byte of new Uint8Array(digest)) {
+                binary += String.fromCharCode(byte);
+            }
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        },
+
+        /** Starts an Authorization Code + PKCE flow against Keycloak, using the dedicated cerberus-mcp client. */
+        async loginWithOAuth() {
+            if (!this.oauthEnabled) {
+                return;
+            }
+            this.connecting = true;
+            const codeVerifier = this.randomString(64);
+            const codeChallenge = await this.sha256Base64Url(codeVerifier);
+            const state = this.randomString(32);
+            sessionStorage.setItem('mcpInspectorPkceVerifier', codeVerifier);
+            sessionStorage.setItem('mcpInspectorOauthState', state);
+
+            const params = new URLSearchParams({
+                client_id: this.oauthConfig.cerberusMcpClientId,
+                redirect_uri: this.oauthRedirectUri(),
+                response_type: 'code',
+                scope: 'openid',
+                code_challenge: codeChallenge,
+                code_challenge_method: 'S256',
+                state: state
+            });
+            window.location.href = this.keycloakRealmBaseUrl() + '/protocol/openid-connect/auth?' + params.toString();
+        },
+
+        /** Completes the PKCE flow on return from Keycloak, exchanging the code for an access token. */
+        async handleOAuthCallback() {
+            const url = new URL(window.location.href);
+            const code = url.searchParams.get('code');
+            if (!code || !this.oauthEnabled) {
+                return;
+            }
+
+            const state = url.searchParams.get('state');
+            const expectedState = sessionStorage.getItem('mcpInspectorOauthState');
+            const codeVerifier = sessionStorage.getItem('mcpInspectorPkceVerifier');
+            window.history.replaceState({}, '', window.location.pathname);
+            sessionStorage.removeItem('mcpInspectorOauthState');
+            sessionStorage.removeItem('mcpInspectorPkceVerifier');
+
+            if (!codeVerifier || state !== expectedState) {
+                this.error = 'Connexion OAuth invalide (state ou code_verifier manquant).';
+                return;
+            }
+
+            this.connecting = true;
+            try {
+                const body = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: this.oauthConfig.cerberusMcpClientId,
+                    redirect_uri: this.oauthRedirectUri(),
+                    code: code,
+                    code_verifier: codeVerifier
+                });
+                const response = await fetch(this.keycloakRealmBaseUrl() + '/protocol/openid-connect/token', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: body.toString()
+                });
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                const tokenResponse = await response.json();
+                this.authMode = 'oauth';
+                this.accessToken = tokenResponse.access_token;
+                sessionStorage.setItem('mcpInspectorAccessToken', this.accessToken);
+                await this.connect();
+            } catch (e) {
+                this.error = 'Échange du code OAuth échoué : ' + e.message;
+                this.connecting = false;
+            }
         },
 
         async connect() {
@@ -192,6 +332,7 @@ function mcpInspector() {
                 this.error = 'Connection failed: ' + e.message;
                 this.connected = false;
                 sessionStorage.removeItem('mcpInspectorApiKey');
+                sessionStorage.removeItem('mcpInspectorAccessToken');
             } finally {
                 this.connecting = false;
             }
@@ -371,7 +512,9 @@ function mcpInspector() {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json, text/event-stream'
             };
-            if (this.apiKey) {
+            if (this.authMode === 'oauth' && this.accessToken) {
+                headers['Authorization'] = 'Bearer ' + this.accessToken;
+            } else if (this.apiKey) {
                 headers['X-API-KEY'] = this.apiKey;
             }
             if (this.sessionId) {
