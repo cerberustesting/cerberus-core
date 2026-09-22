@@ -149,7 +149,7 @@ public class QueueStatus {
                     object.put("id", execution.getId());
                     object.put("test", execution.getTest());
                     object.put("testcase", execution.getTestCase());
-                    object.put("system", execution.getApplicationObj().getSystem());
+                    object.put("system", execution.getApplicationObj() == null ? "" : execution.getApplicationObj().getSystem());
                     object.put("application", execution.getApplication());
                     object.put("environment", execution.getEnvironmentData());
                     object.put("country", execution.getCountry());
