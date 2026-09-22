@@ -27,15 +27,25 @@ import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTranspor
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.cerberus.Property;
+import org.cerberus.core.crud.entity.User;
+import org.cerberus.core.crud.service.IUserService;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +59,11 @@ public class AIMcpClientService {
     private static final Logger LOG = LogManager.getLogger(AIMcpClientService.class);
 
     private static final String API_KEY_HEADER = "X-API-KEY";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String KEYCLOAK_REGISTRATION_ID = "keycloak";
     private static final String MCP_ENDPOINT = "/mcp";
+
+    private record AuthHeader(String name, String value) {}
 
     /**
      * Name of the client-side-only pseudo-tool used to let Claude propose quick-reply
@@ -60,6 +74,12 @@ public class AIMcpClientService {
 
     @Autowired
     AIConfig aiConfig;
+    @Autowired
+    IUserService userService;
+    // Only present under the "keycloak" profile (see WebSecurityKeycloakConfiguration) —
+    // stays null otherwise, in which case the personal API key path is used unconditionally.
+    @Autowired(required = false)
+    OAuth2AuthorizedClientManager authorizedClientManager;
 
     // Reopening a client (TCP/TLS connection + MCP "initialize" handshake + tools/list) on every
     // chat message added multiple seconds of dead time before Claude even started streaming.
@@ -83,9 +103,12 @@ public class AIMcpClientService {
     /**
      * Returns the MCP client for this chat session, opening and initializing one (plus listing
      * its tools) only on the first call. Subsequent calls for the same session reuse it.
+     *
+     * @param login the Cerberus login of the authenticated user this chat session belongs to —
+     *              every MCP call made through the returned client is attributed to this user.
      */
-    public McpSyncClient getOrOpenSessionClient(String sessionID) {
-        return sessionClientFor(sessionID).client;
+    public McpSyncClient getOrOpenSessionClient(String sessionID, String login) {
+        return sessionClientFor(sessionID, login).client;
     }
 
     /**
@@ -93,12 +116,13 @@ public class AIMcpClientService {
      * was opened and cached alongside it.
      */
     public List<Tool> getSessionTools(String sessionID) {
-        return sessionClientFor(sessionID).tools;
+        SessionMcpClient sessionClient = clientsBySession.get(sessionID);
+        return sessionClient == null ? List.of() : sessionClient.tools;
     }
 
-    private SessionMcpClient sessionClientFor(String sessionID) {
+    private SessionMcpClient sessionClientFor(String sessionID, String login) {
         SessionMcpClient sessionClient = clientsBySession.computeIfAbsent(sessionID, id -> {
-            McpSyncClient client = openClient();
+            McpSyncClient client = openClient(login);
             return new SessionMcpClient(client, listAnthropicTools(client));
         });
         sessionClient.lastUsedMillis = System.currentTimeMillis();
@@ -130,10 +154,11 @@ public class AIMcpClientService {
     }
 
     /**
-     * Opens an initialized synchronous MCP client on the configured host.
+     * Opens an initialized synchronous MCP client on the configured host, authenticated as
+     * {@code login} — every tool call made through it is attributed to that Cerberus user.
      * The caller is responsible for closing it (try-with-resources or closeGracefully()).
      */
-    public McpSyncClient openClient() {
+    public McpSyncClient openClient(String login) {
         String host = aiConfig.mcpHost();
         if (host == null || host.isBlank()) {
             throw new IllegalStateException("cerberus_ai_mcp_host is not configured.");
@@ -149,22 +174,74 @@ public class AIMcpClientService {
             endpoint = endpoint.replaceAll("/+$", "") + MCP_ENDPOINT;
         }
 
-        String apiKey = aiConfig.mcpApiKey();
+        // Resolved on every actual HTTP call (not baked in once here) so a Keycloak access
+        // token refreshed mid-way through this client's lifetime (cached up to
+        // SESSION_CLIENT_IDLE_TIMEOUT) is picked up rather than a stale one kept forever.
+        Supplier<AuthHeader> authHeaderSupplier = authHeaderSupplierFor(login);
 
         HttpClientStreamableHttpTransport transport = HttpClientStreamableHttpTransport
                 .builder(baseUrl)
                 .endpoint(endpoint)
-                .httpRequestCustomizer((requestBuilder, method, requestUri, body, context) ->
-                        requestBuilder.header(API_KEY_HEADER, apiKey))
+                .httpRequestCustomizer((requestBuilder, method, requestUri, body, context) -> {
+                    AuthHeader header = authHeaderSupplier.get();
+                    requestBuilder.header(header.name(), header.value());
+                })
                 .build();
 
-        LOG.debug("Opening MCP client : base={}, endpoint={}", baseUrl, endpoint);
+        LOG.debug("Opening MCP client : base={}, endpoint={}, login={}", baseUrl, endpoint, login);
 
         McpSyncClient client = McpClient.sync(transport)
                 .requestTimeout(Duration.ofSeconds(60))
                 .build();
         client.initialize();
         return client;
+    }
+
+    /**
+     * Builds the function resolving the MCP auth header for {@code login} : a Keycloak Bearer
+     * token (refreshed transparently by {@code authorizedClientManager} as needed) when the
+     * keycloak profile is active and an authorized client is available for that user, the
+     * user's personal API key otherwise — auto-generated on first use if they don't have one.
+     */
+    private Supplier<AuthHeader> authHeaderSupplierFor(String login) {
+        if (Property.isKeycloak() && authorizedClientManager != null) {
+            return () -> {
+                OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(
+                        OAuth2AuthorizeRequest.withClientRegistrationId(KEYCLOAK_REGISTRATION_ID)
+                                .principal(login)
+                                .build());
+                if (authorizedClient != null) {
+                    return new AuthHeader(AUTHORIZATION_HEADER, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
+                }
+                // No authorized client stored for this login (e.g. server restarted since
+                // they last logged in) — fall back to their personal API key.
+                LOG.warn("No OAuth2 authorized client found for '{}' — falling back to personal API key", login);
+                return new AuthHeader(API_KEY_HEADER, resolveOrCreateApiKey(login));
+            };
+        }
+        // Resolved once : unlike an OAuth token, a Cerberus API key doesn't expire.
+        String apiKey = resolveOrCreateApiKey(login);
+        return () -> new AuthHeader(API_KEY_HEADER, apiKey);
+    }
+
+    /**
+     * Returns {@code login}'s personal Cerberus API key, generating and persisting one if
+     * they don't already have one, so the chat always has an individual identity to call MCP
+     * with instead of falling back to a shared technical account.
+     */
+    private String resolveOrCreateApiKey(String login) {
+        User user;
+        try {
+            user = userService.findUserByKey(login);
+        } catch (CerberusException e) {
+            throw new IllegalStateException("Unable to load user '" + login + "' to resolve its MCP API key", e);
+        }
+        if (StringUtil.isEmptyOrNull(user.getApiKey())) {
+            user.setApiKey(UUID.randomUUID().toString());
+            userService.update(user);
+            LOG.info("Generated a new personal API key for '{}' to use the AI chat MCP integration", login);
+        }
+        return user.getApiKey();
     }
 
     /**

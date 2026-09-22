@@ -56,7 +56,6 @@ var CRB_PARAM_TABLE_ID = "parameterTableV2";
  */
 var CRB_PARAM_VIEWS = {
     ai: [
-        "cerberus_ai_mcp_apikey",
         "cerberus_ai_mcp_host",
         "cerberus_ai_use_mcp",
         "cerberus_log_mcpcalls",

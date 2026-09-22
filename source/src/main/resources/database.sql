@@ -6866,3 +6866,9 @@ INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
 -- 1948
 ALTER TABLE `robotexecutor`
     ADD COLUMN `ExecutorExtensionHost` VARCHAR(255) NULL DEFAULT NULL AFTER `HostPassword`;
+
+-- 1949
+-- The AI chat now authenticates to the MCP server as the actual logged-in user (their own
+-- API key, or a Keycloak Bearer token when the keycloak profile is active) instead of this
+-- shared technical key.
+DELETE FROM `parameter` WHERE `param`='cerberus_ai_mcp_apikey';

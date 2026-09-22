@@ -38,6 +38,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.security.Principal;
 import java.util.*;
 
 @Component
@@ -102,7 +103,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
                     break;
 
                 case WebSocketStatic.SUBJECT_MESSAGE:
-                    handleMessage(incoming);
+                    handleMessage(incoming, session);
                     break;
 
                 case WebSocketStatic.SUBJECT_UNSUBSCRIBE:
@@ -300,13 +301,24 @@ public class CerberusWebSocket extends TextWebSocketHandler {
     }
 
 
-    private void handleMessage(MessageTestCreationAI incoming) {
+    private void handleMessage(MessageTestCreationAI incoming, WebSocketSession session) {
         String channel = resolveSingleChannel(incoming);
+
+        // The AI chat and all its side effects (MCP tool calls, DB audit fields, usage
+        // logging) must be attributed to the user actually authenticated on this WebSocket
+        // connection, not to the client-supplied "sender" field — a connected client can put
+        // any login it wants in that JSON field, which would otherwise let it impersonate
+        // another user for every AI-triggered action.
+        Principal principal = session.getPrincipal();
+        if (principal == null || principal.getName() == null || principal.getName().isBlank()) {
+            throw new IllegalStateException("No authenticated user on this WebSocket session");
+        }
+        String authenticatedLogin = principal.getName();
 
         switch (channel) {
             case WebSocketStatic.CHANNEL_CHAT_SEND:
                 aiService.chatWithAI(
-                        incoming.getSender(),
+                        authenticatedLogin,
                         incoming.getSessionID(),
                         incoming.getContent()
                 );
@@ -315,7 +327,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_TESTCASE_PROPOSAL_REQUEST:
                 try {
                     aiService.generateTestCaseProposal(
-                            incoming.getSender(),
+                            authenticatedLogin,
                             incoming.getSessionID(),
                             incoming.getContent(),
                             incoming.getApplication(),
@@ -329,7 +341,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_TESTCASE_CREATE_REQUEST:
                 try {
                     aiService.createTestCaseAndGenerateContent(
-                            incoming.getSender(),
+                            authenticatedLogin,
                             incoming.getSessionID(),
                             incoming.getTestFolder(),
                             incoming.getTestcaseObject(),
@@ -344,7 +356,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
             case WebSocketStatic.CHANNEL_AO_GENERATECONTINUE_REQUEST:
             case WebSocketStatic.CHANNEL_AO_GENERATE_REQUEST:
                 aiService.generateApplicationObjectProposalWithAI(
-                        incoming.getSender(),
+                        authenticatedLogin,
                         incoming.getSessionID(),
                         incoming.getApplication(),
                         incoming.getPage(),
@@ -357,7 +369,7 @@ public class CerberusWebSocket extends TextWebSocketHandler {
 
             case WebSocketStatic.CHANNEL_EXECUTION_DEBUG_REQUEST:
                 aiService.executionDebugWithAI(
-                        incoming.getSender(),
+                        authenticatedLogin,
                         incoming.getSessionID(),
                         Long.parseLong(incoming.getContent())
                 );

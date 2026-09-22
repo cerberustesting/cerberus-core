@@ -78,7 +78,6 @@ function displayFilteredParametersTable(view) {
 
     const FILTERED_PARAMETER_VIEWS = {
         ai: [
-            "cerberus_ai_mcp_apikey",
             "cerberus_ai_mcp_host",
             "cerberus_ai_use_mcp",
             "cerberus_log_mcpcalls",

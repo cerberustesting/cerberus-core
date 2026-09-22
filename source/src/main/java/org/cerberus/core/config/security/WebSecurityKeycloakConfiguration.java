@@ -33,6 +33,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -99,6 +105,37 @@ public class WebSecurityKeycloakConfiguration {
 						.build();
 
 		return new InMemoryClientRegistrationRepository(registration);
+	}
+
+	/**
+	 * Indexed by principal name (not by HTTP session, unlike Spring's default
+	 * {@code HttpSessionOAuth2AuthorizedClientRepository}) so the user's Keycloak access/refresh
+	 * token pair, once stored here at login, can be looked up later from a thread with no HTTP
+	 * request in scope — e.g. the AI chat WebSocket handler needing to call the MCP server as
+	 * that same user (see AIMcpClientService).
+	 *
+	 * In-memory : fine for a single-instance deployment, but not shared across a cluster and
+	 * lost on restart. A clustered deployment would need a JDBC-backed OAuth2AuthorizedClientService
+	 * instead.
+	 */
+	@Bean
+	public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+		return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
+	}
+
+	@Bean
+	public OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(
+			ClientRegistrationRepository clientRegistrationRepository,
+			OAuth2AuthorizedClientService authorizedClientService) {
+		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+				.authorizationCode()
+				.refreshToken()
+				.build();
+
+		AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
+				new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
+		manager.setAuthorizedClientProvider(authorizedClientProvider);
+		return manager;
 	}
 
 	@Bean
@@ -274,7 +311,7 @@ public class WebSecurityKeycloakConfiguration {
 
 	@Bean
 	@Order(2)
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuth2AuthorizedClientService authorizedClientService) throws Exception {
 
 		http.csrf(csrf -> csrf.disable());
 
@@ -289,6 +326,10 @@ public class WebSecurityKeycloakConfiguration {
 					response.sendRedirect("/cerberus_core_war/login?error");
 				})
 				.userInfoEndpoint(userInfo -> userInfo.userAuthoritiesMapper(keycloakAuthoritiesMapper()))
+				// Stores the authorized client (access + refresh token) indexed by principal
+				// name instead of the default HTTP-session-scoped repository — see
+				// authorizedClientService() above for why.
+				.authorizedClientService(authorizedClientService)
 		);
 
 		http.logout(logout -> logout

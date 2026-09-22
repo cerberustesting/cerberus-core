@@ -50,11 +50,6 @@ public class AIConfig {
         return params.getParameterStringByKey("cerberus_ai_mcp_host", "", "");
     }
 
-    /** API key sent as the X-API-KEY header when connecting to the MCP server. */
-    public String mcpApiKey() {
-        return params.getParameterStringByKey("cerberus_ai_mcp_apikey", "", "");
-    }
-
     public int maxTokens() {
         return params.getParameterIntegerByKey("cerberus_anthropic_maxtoken", "", 1024);
     }

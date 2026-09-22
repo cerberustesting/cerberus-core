@@ -128,7 +128,7 @@ public class AIService implements IAIService {
             if (aiConfig.useMcp() && aiConfig.mcpHost() != null && !aiConfig.mcpHost().isBlank()) {
                 // Reused across messages of this session (see AIMcpClientService) instead of
                 // reopening a connection + re-running the MCP handshake on every single message.
-                mcpClient = aiMcpClientService.getOrOpenSessionClient(currentAiSessionID);
+                mcpClient = aiMcpClientService.getOrOpenSessionClient(currentAiSessionID, user);
                 tools = new ArrayList<>(aiMcpClientService.getSessionTools(currentAiSessionID));
                 LOG.debug("MCP enabled for chat session {} — {} tools available", currentAiSessionID, tools.size());
             }
