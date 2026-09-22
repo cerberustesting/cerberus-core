@@ -1427,8 +1427,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String browser = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browser"), "");
         String version = ParameterParserUtil.parseStringParam(resultSet.getString("exe.version"), "");
         String platform = ParameterParserUtil.parseStringParam(resultSet.getString("exe.platform"), "");
-        long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
-        long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
+        Timestamp startTs = resultSet.getTimestamp("exe.start");
+        long start = startTs == null ? 0 : startTs.getTime();
+        Timestamp endTs = resultSet.getTimestamp("exe.end");
+        long end = endTs == null ? 0 : endTs.getTime();
         String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
         boolean falseNegative = resultSet.getBoolean("exe.FalseNegative");
         String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
@@ -1589,8 +1591,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), "");
         String campaign = ParameterParserUtil.parseStringParam(resultSet.getString("tag.campaign"), "");
 
-        long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
-        long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
+        Timestamp startTs = resultSet.getTimestamp("exe.start");
+        long start = startTs == null ? 0 : startTs.getTime();
+        Timestamp endTs = resultSet.getTimestamp("exe.end");
+        long end = endTs == null ? 0 : endTs.getTime();
         boolean testCaseIsMuted = resultSet.getBoolean("exe.testCaseIsMuted");
         boolean isUseful = resultSet.getBoolean("exe.IsUseful");
         boolean falseNegative = resultSet.getBoolean("exe.FalseNegative");
