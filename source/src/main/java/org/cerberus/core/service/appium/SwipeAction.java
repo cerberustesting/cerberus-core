@@ -21,6 +21,8 @@ package org.cerberus.core.service.appium;
 
 import java.awt.geom.Line2D;
 
+import org.cerberus.core.engine.entity.Identifier;
+
 /**
  * A swipe action.
  * <p>
@@ -74,7 +76,7 @@ public class SwipeAction {
                     Integer.parseInt(coordinates[1]),
                     Integer.parseInt(coordinates[2]),
                     Integer.parseInt(coordinates[3])
-            ));
+            ), null);
         }
 
         /**
@@ -92,13 +94,33 @@ public class SwipeAction {
             if (direction == null) {
                 throw new IllegalArgumentException("Null direction");
             }
-            return new Direction(direction);
+            return new Direction(direction, null);
+        }
+
+        public static Direction fromRelative(Identifier referenceElement, Line2D direction) {
+            if (referenceElement == null) {
+                throw new IllegalArgumentException("Null reference element");
+            }
+            if (direction == null) {
+                throw new IllegalArgumentException("Null direction");
+            }
+            return new Direction(direction, referenceElement);
         }
 
         private Line2D direction;
+        private Identifier referenceElement;
 
-        private Direction(Line2D direction) {
+        private Direction(Line2D direction, Identifier referenceElement) {
             this.direction = direction;
+            this.referenceElement = referenceElement;
+        }
+
+        public boolean isRelative() {
+            return this.referenceElement != null;
+        }
+
+        public Identifier getReferenceElement() {
+            return this.referenceElement;
         }
 
         public int getX1() {
@@ -142,6 +164,18 @@ public class SwipeAction {
             SwipeAction action = new SwipeAction(ActionType.valueOf(actionType));
             if (action.isCustom()) {
                 action.setCustomDirection(Direction.fromString(direction));
+            }
+            return action;
+        } catch (Exception e) {
+            throw new SwipeActionException(e);
+        }
+    }
+
+    public static SwipeAction fromRelativeStrings(String actionType, Identifier referenceElement, String direction) throws SwipeActionException {
+        try {
+            SwipeAction action = new SwipeAction(ActionType.valueOf(actionType));
+            if (action.isCustom()) {
+                action.setCustomDirection(Direction.fromRelative(referenceElement, Direction.fromString(direction).direction));
             }
             return action;
         } catch (Exception e) {
