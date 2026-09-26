@@ -453,9 +453,14 @@ public class SikuliService implements ISikuliService {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (IOException ex) {
-            LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
-            msg.resolveDescription("URL", urlToConnect);
+            if (SIKULI_STARTVIDEO.equalsIgnoreCase(action)) {
+                // When calling startVideo, thread is kept open during full execution on order to let extention record the video. We can timeout as no answer is expected.
+                LOG.info("Timming out Sikuli action {}", action);
+            } else {
+                LOG.warn(ex, ex);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
+                msg.resolveDescription("URL", urlToConnect);
+            }
         } catch (JSONException ex) {
             LOG.warn("Exception when converting response to JSON : {}", response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
