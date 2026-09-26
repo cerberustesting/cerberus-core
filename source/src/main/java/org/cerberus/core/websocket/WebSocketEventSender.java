@@ -274,7 +274,7 @@ public class WebSocketEventSender {
             messageCountByWsId.computeIfAbsent(session.getId(), k -> new AtomicLong()).incrementAndGet();
             return true;
         } catch (Exception e) {
-            LOG.error("Unable to send WebSocket event. channel={}", envelope.channel(), e);
+            LOG.warn("Unable to send WebSocket event. channel={}", envelope.channel(), e.toString());
             return false;
         }
     }

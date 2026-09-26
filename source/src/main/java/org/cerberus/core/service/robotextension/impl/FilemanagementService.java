@@ -107,11 +107,11 @@ public class FilemanagementService implements IFilemanagementService {
             if (session.getExecutorExtensionProxyPort() > 0) {
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getExecutorExtensionProxyPort()));
 
-                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getExecutorExtensionProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection for action [{}] to Robot Node Filemanagement (using proxy : {}:{}) : {}", action, session.getHost(), session.getExecutorExtensionProxyPort(), urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.info("Open Connection to Robot Node Filemanagement : " + urlToConnect);
+                LOG.info("Open Connection for action [{}] to Robot Node Filemanagement : {}", action, urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Robot extension the sikuli timeout + 60 s to perform the action/control.
