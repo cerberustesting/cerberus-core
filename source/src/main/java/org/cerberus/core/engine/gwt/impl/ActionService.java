@@ -733,9 +733,11 @@ public class ActionService implements IActionService {
                                     if (sFileContent.startsWith("[")) {
                                         JSONArray contentFileJSON = new JSONArray(sFileContent);
                                         file.put("content", contentFileJSON);
-                                    } else {
+                                    } else if (sFileContent.startsWith("{")) {
                                         JSONObject contentFileJSON = new JSONObject(sFileContent);
                                         file.put("content", contentFileJSON);
+                                    } else {
+                                        file.put("content", sFileContent);
                                     }
                                     break;
                                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
