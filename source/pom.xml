@@ -309,6 +309,14 @@
             </exclusions>
         </dependency>
 
+        <!-- Kafka JSON Schema Serializer 8.3.2 (LATEST) : 26/09/2026 - Usage : Kafka service
+        https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-schema-serializer</artifactId>
+            <version>8.3.2</version>
+        </dependency>
+
         <!-- Mongo DB 4.11.5 : 06/11/2024 - Usage : MongoDB connector
         TODO : Migrate to 5.x.x
         https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync -->
@@ -335,7 +343,7 @@
         </dependency>
 
         <!-- SOAP Calls Version 3.0.2 (LATEST)
-         https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api. -->
+        https://mvnrepository.com/artifact/jakarta.xml.soap/jakarta.xml.soap-api. -->
         <dependency>
             <groupId>jakarta.xml.soap</groupId>
             <artifactId>jakarta.xml.soap-api</artifactId>
@@ -499,7 +507,7 @@
 
 
         <!-- Quartz Version 2.5.2 : 01/12/2025 - Usage : Scheduler
-         https://mvnrepository.com/artifact/org.quartz-scheduler/quartz  -->
+        https://mvnrepository.com/artifact/org.quartz-scheduler/quartz  -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -561,7 +569,7 @@
         </dependency>
 
         <!-- SFTP Version 2.17.1 : 28/01/2026 - Usage : Service FTP
-         https://mvnrepository.com/artifact/org.apache.sshd/sshd-sftp  -->
+        https://mvnrepository.com/artifact/org.apache.sshd/sshd-sftp  -->
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-sftp</artifactId>
