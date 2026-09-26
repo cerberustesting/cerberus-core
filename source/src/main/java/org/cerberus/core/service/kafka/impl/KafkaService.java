@@ -193,6 +193,20 @@ public class KafkaService implements IKafkaService {
         }
     }
 
+    private List<AppServiceContent> addIfNotContains(List<AppServiceContent> list, AppServiceContent entryToAdd) {
+        boolean exist = false;
+        for (AppServiceContent appServiceContent : list) {
+            if ((appServiceContent.getKey() != null) && (appServiceContent.getKey().equalsIgnoreCase(entryToAdd.getKey()))) {
+                exist = true;
+                break;
+            }
+        }
+        if (!exist) {
+            list.add(entryToAdd);
+        }
+        return list;
+    }
+
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers,
@@ -210,11 +224,16 @@ public class KafkaService implements IKafkaService {
         }
 
         Properties props = new Properties();
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
+
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
+//        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+//        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
         if (!activateAvro) {
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+//            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+//            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
         } else {
             if (isAvroEnableKey) {
                 serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
@@ -294,6 +313,7 @@ public class KafkaService implements IKafkaService {
                 LOG.debug("Produced Kafka message (Avro enable) - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
 
             } else {
+
                 ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, eventMessage);
                 for (AppServiceHeader object : serviceHeader) {
                     if (object.isActive()) {
@@ -442,11 +462,13 @@ public class KafkaService implements IKafkaService {
                 serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             } else {
                 if (avroEnableKey) {
+//                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                 } else {
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
                 }
                 if (avroEnableValue) {
+//                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                 } else {
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
