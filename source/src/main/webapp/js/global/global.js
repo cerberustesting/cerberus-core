@@ -1,5 +1,5 @@
 /*
- * Cerberus Copyright (C) 2013 - 2025 cerberustesting
+ * Cerberus Copyright (C) 2013 - 2026 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
@@ -2308,7 +2308,7 @@ function displayFooter(doc) {
 
     if (cerberusInformation !== null) {
         // Texte statique
-        var staticFooter = 'Cerberus 2025&trade;';
+        var staticFooter = 'Cerberus 2026&trade;';
 
         // Texte généré dynamiquement
         var footerString = doc.getDocLabel("page_global", "footer_text");
