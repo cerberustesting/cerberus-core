@@ -286,7 +286,7 @@ public class RestService implements IRestService {
 
             if (acceptUnsignedSsl) {
                 LOG.debug("Trusting all SSL Certificates.");
-                tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Preparing REST call - Trusting all SSL Certificates.");
+//                tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Preparing REST call - Trusting all SSL Certificates.");
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
                     @Override
@@ -381,7 +381,7 @@ public class RestService implements IRestService {
                 case AppService.METHOD_HTTPGET:
 
                     LOG.info("Start preparing the REST Call (GET). " + servicePath);
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (GET). " + servicePath);
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (GET). " + servicePath);
 
                     if (AppService.SRVBODYTYPE_FORMDATA.equals(bodyType)) {
                         // Adding query string from requestString
@@ -416,7 +416,7 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpGet.getRequestLine());
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpGet.getRequestLine());
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpGet.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpGet);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
@@ -433,7 +433,7 @@ public class RestService implements IRestService {
                 case AppService.METHOD_HTTPPOST:
 
                     LOG.info("Start preparing the REST Call (POST). " + servicePath);
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (POST). " + servicePath);
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (POST). " + servicePath);
 
                     serviceREST.setServicePath(servicePath);
                     HttpPost httpPost = new HttpPost(servicePath);
@@ -459,7 +459,7 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPost.getRequestLine());
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPost.getRequestLine());
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPost.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPost);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
@@ -483,7 +483,7 @@ public class RestService implements IRestService {
                 case AppService.METHOD_HTTPDELETE:
 
                     LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (DELETE). " + servicePath);
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (DELETE). " + servicePath);
 
                     serviceREST.setServicePath(servicePath);
                     HttpDeleteWithBody httpDelete = new HttpDeleteWithBody(servicePath);
@@ -509,7 +509,7 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpDelete.getRequestLine());
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpDelete.getRequestLine());
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpDelete.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpDelete);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
@@ -525,7 +525,7 @@ public class RestService implements IRestService {
 
                 case AppService.METHOD_HTTPPUT:
                     LOG.info("Start preparing the REST Call (PUT). " + servicePath);
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (PUT). " + servicePath);
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (PUT). " + servicePath);
 
                     serviceREST.setServicePath(servicePath);
                     HttpPut httpPut = new HttpPut(servicePath);
@@ -551,7 +551,7 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPut.getRequestLine());
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPut.getRequestLine());
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPut.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPut);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
@@ -575,7 +575,7 @@ public class RestService implements IRestService {
 
                 case AppService.METHOD_HTTPPATCH:
                     LOG.info("Start preparing the REST Call (PATCH). " + servicePath);
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (PATCH). " + servicePath);
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Start preparing the REST Call (PATCH). " + servicePath);
 
                     serviceREST.setServicePath(servicePath);
                     HttpPatch httpPatch = new HttpPatch(servicePath);
@@ -601,7 +601,7 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPatch.getRequestLine());
-                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPatch.getRequestLine());
+//                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPatch.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPatch);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
