@@ -21,6 +21,8 @@ package org.cerberus.core.config.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.config.cerberus.Property;
+import org.cerberus.core.service.ai.impl.AIMcpClientService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,18 +37,24 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.TokenExchangeOAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.endpoint.DefaultRefreshTokenTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2RefreshTokenGrantRequestEntityConverter;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -57,6 +65,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -86,11 +96,12 @@ public class WebSecurityKeycloakConfiguration {
 		String realm        = System.getProperty("org.cerberus.keycloak.realm");
 		String clientId     = System.getProperty("org.cerberus.keycloak.client");
 		String clientSecret = System.getProperty("org.cerberus.keycloak.secret");
+		String mcpClientId  = System.getProperty(Property.KEYCLOAKMCPCLIENT);
 
 		String baseUrl = keycloakUrl + "/realms/" + realm + "/protocol/openid-connect";
 
 		ClientRegistration registration =
-				ClientRegistration.withRegistrationId("keycloak")
+				ClientRegistration.withRegistrationId(AIMcpClientService.KEYCLOAK_REGISTRATION_ID)
 						.clientId(clientId)
 						.clientSecret(clientSecret)
 						.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
@@ -104,7 +115,20 @@ public class WebSecurityKeycloakConfiguration {
 						.clientName("Keycloak")
 						.build();
 
-		return new InMemoryClientRegistrationRepository(registration);
+		// Token-exchange registration : swaps a user's "keycloak" access token (audienced for
+		// the interactive login client) for one audienced to the MCP server's expected audience
+		// (org.cerberus.keycloak.mcp.audience, see mcpJwtDecoder()), via Keycloak's Standard
+		// Token Exchange. Sole consumer is AIMcpClientService — see oAuth2AuthorizedClientManager().
+		ClientRegistration mcpRegistration =
+				ClientRegistration.withRegistrationId(AIMcpClientService.MCP_REGISTRATION_ID)
+						.clientId(mcpClientId)
+						.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+						.authorizationGrantType(AuthorizationGrantType.TOKEN_EXCHANGE)
+						.tokenUri(baseUrl + "/token")
+						.clientName("Cerberus MCP")
+						.build();
+
+		return new InMemoryClientRegistrationRepository(registration, mcpRegistration);
 	}
 
 	/**
@@ -127,9 +151,35 @@ public class WebSecurityKeycloakConfiguration {
 	public OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager(
 			ClientRegistrationRepository clientRegistrationRepository,
 			OAuth2AuthorizedClientService authorizedClientService) {
+		// Spring's default refresh-token request only puts client_id in the body when the
+		// client authenticates with CLIENT_SECRET_POST — for a public client (NONE, e.g. the
+		// "Cerberus" registration above), it sends neither a client_secret nor a client_id,
+		// so Keycloak can't identify the caller and rejects the refresh as invalid client
+		// credentials. Add client_id unconditionally so public clients can refresh too.
+		DefaultRefreshTokenTokenResponseClient refreshTokenResponseClient = new DefaultRefreshTokenTokenResponseClient();
+		OAuth2RefreshTokenGrantRequestEntityConverter requestEntityConverter = new OAuth2RefreshTokenGrantRequestEntityConverter();
+		requestEntityConverter.addParametersConverter(grantRequest -> {
+			MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+			parameters.add(OAuth2ParameterNames.CLIENT_ID, grantRequest.getClientRegistration().getClientId());
+			return parameters;
+		});
+		refreshTokenResponseClient.setRequestEntityConverter(requestEntityConverter);
+
+		// Performs the "keycloak" -> "cerberus-mcp" exchange (see clientRegistrationRepository()).
+		// The subject token isn't taken from the current request's principal (there usually isn't
+		// one — this runs from the AI chat's WebSocket thread) but re-read from the authorized
+		// client already refreshed for AIMcpClientService.KEYCLOAK_REGISTRATION_ID just before this.
+		TokenExchangeOAuth2AuthorizedClientProvider tokenExchangeProvider = new TokenExchangeOAuth2AuthorizedClientProvider();
+		tokenExchangeProvider.setSubjectTokenResolver(context -> {
+			OAuth2AuthorizedClient loginClient = authorizedClientService.loadAuthorizedClient(
+					AIMcpClientService.KEYCLOAK_REGISTRATION_ID, context.getPrincipal().getName());
+			return loginClient != null ? loginClient.getAccessToken() : null;
+		});
+
 		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
 				.authorizationCode()
-				.refreshToken()
+				.refreshToken(refreshToken -> refreshToken.accessTokenResponseClient(refreshTokenResponseClient))
+				.provider(tokenExchangeProvider)
 				.build();
 
 		AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
