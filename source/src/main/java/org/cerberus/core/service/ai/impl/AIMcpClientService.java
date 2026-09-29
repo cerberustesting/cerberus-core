@@ -34,6 +34,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -60,7 +61,16 @@ public class AIMcpClientService {
 
     private static final String API_KEY_HEADER = "X-API-KEY";
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String KEYCLOAK_REGISTRATION_ID = "keycloak";
+    /**
+     * Registration id of the interactive login client (see WebSecurityKeycloakConfiguration) —
+     * its access token is audienced for that client, not the MCP server.
+     */
+    public static final String KEYCLOAK_REGISTRATION_ID = "keycloak";
+    /**
+     * Registration id of the token-exchange client used to swap a {@link #KEYCLOAK_REGISTRATION_ID}
+     * access token for one audienced to the MCP server (see WebSecurityKeycloakConfiguration).
+     */
+    public static final String MCP_REGISTRATION_ID = "cerberus-mcp";
     private static final String MCP_ENDPOINT = "/mcp";
 
     private record AuthHeader(String name, String value) {}
@@ -206,16 +216,30 @@ public class AIMcpClientService {
     private Supplier<AuthHeader> authHeaderSupplierFor(String login) {
         if (Property.isKeycloak() && authorizedClientManager != null) {
             return () -> {
-                OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(
+                OAuth2AuthorizedClient loginClient = authorizedClientManager.authorize(
                         OAuth2AuthorizeRequest.withClientRegistrationId(KEYCLOAK_REGISTRATION_ID)
                                 .principal(login)
                                 .build());
-                if (authorizedClient != null) {
-                    return new AuthHeader(AUTHORIZATION_HEADER, "Bearer " + authorizedClient.getAccessToken().getTokenValue());
+                if (loginClient == null) {
+                    // No authorized client stored for this login (e.g. server restarted since
+                    // they last logged in) — fall back to their personal API key.
+                    LOG.warn("No OAuth2 authorized client found for '{}' — falling back to personal API key", login);
+                    return new AuthHeader(API_KEY_HEADER, resolveOrCreateApiKey(login));
                 }
-                // No authorized client stored for this login (e.g. server restarted since
-                // they last logged in) — fall back to their personal API key.
-                LOG.warn("No OAuth2 authorized client found for '{}' — falling back to personal API key", login);
+                // The login client's token is audienced for that client, not the MCP server —
+                // exchange it (Keycloak Standard Token Exchange) for one audienced to MCP_REGISTRATION_ID.
+                try {
+                    OAuth2AuthorizedClient mcpClient = authorizedClientManager.authorize(
+                            OAuth2AuthorizeRequest.withClientRegistrationId(MCP_REGISTRATION_ID)
+                                    .principal(login)
+                                    .build());
+                    if (mcpClient != null) {
+                        return new AuthHeader(AUTHORIZATION_HEADER, "Bearer " + mcpClient.getAccessToken().getTokenValue());
+                    }
+                    LOG.warn("Token exchange to the MCP audience produced no client for '{}' — falling back to personal API key", login);
+                } catch (ClientAuthorizationException e) {
+                    LOG.warn("Token exchange to the MCP audience failed for '{}' — falling back to personal API key : {}", login, e.getMessage());
+                }
                 return new AuthHeader(API_KEY_HEADER, resolveOrCreateApiKey(login));
             };
         }

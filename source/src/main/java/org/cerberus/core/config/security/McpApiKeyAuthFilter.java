@@ -28,13 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.crud.service.IUserService;
 import org.cerberus.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -63,7 +62,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *       by an upstream filter : HTTP Basic ({@code local} profile) or Bearer JWT
  *       ({@code keycloak} profile). The resolved Cerberus / Keycloak authorities
  *       are preserved and augmented with {@code ROLE_MCP}.</li>
- *   <li>Fallback : a valid {@code X-API-KEY} header, mapped to its Cerberus user.</li>
+ *   <li>Fallback : a valid {@code X-API-KEY} header, mapped to its Cerberus user.
+ *       Checked directly against {@link IUserService#verifyAPIKey(String)} rather
+ *       than through the legacy public-API auth path, since that path is also
+ *       gated on the unrelated {@code cerberus_apikey_enable} parameter — {@code
+ *       cerberus_mcp_enable} is already the sufficient gate for this endpoint.</li>
  * </ol>
  *
  * @author bcivel
@@ -86,7 +89,7 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
     private IParameterService parameterService;
 
     @Autowired
-    private PublicApiAuthenticationService authenticationService;
+    private IUserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -122,22 +125,21 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
 
         // 2. Fallback : X-API-KEY header.
         String apiKey = request.getHeader(API_KEY_HEADER);
+        String login = StringUtil.isEmptyOrNull(apiKey) ? null : userService.verifyAPIKey(apiKey);
 
-        try {
-            String login = authenticationService.authenticateLogin(null, apiKey);
-
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    login, null, List.of(new SimpleGrantedAuthority("ROLE_MCP")));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            request.setAttribute(AUTHENTICATED_LOGIN_ATTR, login);
-
-            filterChain.doFilter(request, response);
-
-        } catch (BadCredentialsException ex) {
+        if (login == null) {
             LOG.warn("Unauthorized MCP access from {}", request.getRemoteAddr());
             response.setHeader("WWW-Authenticate", buildAuthenticateChallenge(request));
             writeJsonRpcError(response, HttpServletResponse.SC_UNAUTHORIZED, -32001, "Unauthorized");
+            return;
         }
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                login, null, List.of(new SimpleGrantedAuthority("ROLE_MCP")));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        request.setAttribute(AUTHENTICATED_LOGIN_ATTR, login);
+
+        filterChain.doFilter(request, response);
     }
 
     /**
