@@ -61,7 +61,7 @@ public class InvariantDTOV001 {
     private String idName;
 
     @NotBlank(message = "Value is mandatory")
-    @JsonView({View.Public.GET.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @Schema(description = "Invariant value", example = "click", required = true)
     private String value;
 
