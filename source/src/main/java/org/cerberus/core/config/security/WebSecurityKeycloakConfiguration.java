@@ -65,6 +65,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
@@ -313,7 +314,9 @@ public class WebSecurityKeycloakConfiguration {
 			@Qualifier("publicApiJwtDecoder") JwtDecoder publicApiJwtDecoder,
 			@Qualifier("publicApiJwtAuthenticationConverter") JwtAuthenticationConverter publicApiJwtAuthenticationConverter) throws Exception {
 		http
-				.securityMatcher(new AntPathRequestMatcher("/api/public/**"))
+				.securityMatcher(new OrRequestMatcher(
+						new AntPathRequestMatcher("/api/public/**"),
+						new AntPathRequestMatcher("/error")))
 				.csrf(csrf -> csrf.disable())
 				// IF_REQUIRED, not STATELESS : STATELESS installs a NullSecurityContextRepository,
 				// which never loads the SecurityContext from the HttpSession. That broke the webapp's
