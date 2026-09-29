@@ -299,7 +299,7 @@
                     </div>
                     <!-- Footer: See All -->
                     <div style="padding: 6px 8px; border-top: 1px solid var(--crb-grey-light-color)">
-                        <a :href="'TestCaseExecutionList.jsp?test=' + encodeURIComponent(exe.test || '') + '&TestCase=' + encodeURIComponent(exe.testcase || exe.testCase || '')"
+                        <a :href="'TestCaseExecutionList.jsp?Test=' + encodeURIComponent(exe.test || '') + '&TestCase=' + encodeURIComponent(exe.testcase || exe.testCase || '')"
                            class="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
                            style="color: var(--crb-blue-color); background: color-mix(in srgb, var(--crb-blue-color) 5%, transparent)"
                            @mouseenter="$el.style.background = 'color-mix(in srgb, var(--crb-blue-color) 12%, transparent)'"
