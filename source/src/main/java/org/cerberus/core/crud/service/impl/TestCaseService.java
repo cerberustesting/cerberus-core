@@ -926,6 +926,15 @@ public class TestCaseService implements ITestCaseService {
             LOG.warn(e.getMessage());
         }
 
+        // Un PUT qui omet ces tableaux (le GET public les omet quand ils sont vides) ne doit ni planter
+        // ni effacer les valeurs existantes : on reprend celles de la version en base.
+        if (newTestcaseVersion.getBugs() == null) {
+            newTestcaseVersion.setBugs(oldTestcaseVersion.getBugs() != null ? oldTestcaseVersion.getBugs() : new JSONArray());
+        }
+        if (newTestcaseVersion.getConditionOptions() == null) {
+            newTestcaseVersion.setConditionOptions(oldTestcaseVersion.getConditionOptions() != null ? oldTestcaseVersion.getConditionOptions() : new JSONArray());
+        }
+
         if (!newTestcaseVersion.equals(oldTestcaseVersion)) {
             newTestcaseVersion.setVersion(newTestcaseVersion.getVersion() + 1);
             LOG.debug(this.updateTestCaseInformation(newTestcaseVersion));

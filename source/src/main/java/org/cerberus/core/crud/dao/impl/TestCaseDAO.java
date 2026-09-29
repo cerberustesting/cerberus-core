@@ -530,6 +530,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         return testListAnswerList;
     }
 
+    /** Sérialise un JSONArray optionnel : un tableau absent est stocké comme un tableau vide. */
+    private static String jsonArrayToString(JSONArray array) {
+        return array == null ? "[]" : array.toString();
+    }
+
     @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         boolean res = false;
@@ -560,7 +565,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getBugs()), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
@@ -570,7 +575,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getConditionOptions()), ""));
             preStat.setBoolean(i++, testCase.isMuted());
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
@@ -687,7 +692,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getBugs()), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
@@ -703,7 +708,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getConditionOptions()), ""));
             preStat.setBoolean(i++, testCase.isMuted());
 
             res = preStat.executeUpdate() > 0;
@@ -1017,7 +1022,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getBugs()), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
@@ -1027,7 +1032,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(jsonArrayToString(testCase.getConditionOptions()), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
             preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
@@ -1696,7 +1701,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, tc.getFromMinor());
             preStat.setString(i++, tc.getToMajor());
             preStat.setString(i++, tc.getToMinor());
-            preStat.setString(i++, tc.getBugs().toString());
+            preStat.setString(i++, jsonArrayToString(tc.getBugs()));
             preStat.setString(i++, tc.getTargetMajor());
             preStat.setString(i++, tc.getTargetMinor());
             preStat.setString(i++, tc.getComment());
@@ -1711,7 +1716,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, tc.getConditionValue1());
             preStat.setString(i++, tc.getConditionValue2());
             preStat.setString(i++, tc.getConditionValue3());
-            preStat.setString(i++, tc.getConditionOptions().toString());
+            preStat.setString(i++, jsonArrayToString(tc.getConditionOptions()));
             preStat.setInt(i++, tc.getVersion());
             preStat.setString(i++, keyTest);
             preStat.setString(i++, keyTestCase);

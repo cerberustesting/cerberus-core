@@ -142,6 +142,9 @@ public class TestCase {
     @JsonIgnore
     public JSONArray getConditionOptionsActive() {
         JSONArray res = new JSONArray();
+        if (conditionOptions == null) {
+            return res;
+        }
         for (int i = 0; i < conditionOptions.length(); i++) {
             try {
                 JSONObject jo = conditionOptions.getJSONObject(i);
@@ -163,6 +166,9 @@ public class TestCase {
     @JsonIgnore
     public JSONArray getBugsActive() {
         JSONArray res = new JSONArray();
+        if (bugs == null) {
+            return res;
+        }
         for (int i = 0; i < bugs.length(); i++) {
             try {
                 JSONObject jo = bugs.getJSONObject(i);
