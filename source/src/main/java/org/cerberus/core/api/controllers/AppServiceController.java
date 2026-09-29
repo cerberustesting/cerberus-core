@@ -21,12 +21,18 @@ package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,6 +68,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,6 +86,42 @@ public class AppServiceController {
     private final IAppServiceService appServiceService;
     private final IServiceService serviceService;
     private final ILogEventService logEventService;
+
+    //LIST SERVICES
+    @GetMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "List services",
+        description = "List the services, optionally filtered by application",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the services", content = { @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = AppServiceDTOV001.class)))})
+        }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<List<AppServiceDTOV001>> findAll(
+            @Parameter(description = "Application name (optional filter)") @RequestParam(name = "application", required = false) String application,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/services", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        if (application != null && !application.isEmpty()) {
+            individualSearch.put("srv.application", List.of(application));
+        }
+
+        // The list is mutated by the DAO, so it gets a fresh mutable one.
+        List<AppService> services = this.appServiceService.readByCriteria(0, 0, "srv.service", "asc", null, individualSearch, new ArrayList<>()).getDataList();
+
+        return ResponseWrapper.wrap(
+                (services == null ? List.<AppService>of() : services)
+                        .stream()
+                        .map(this.appServiceMapper::toDTO)
+                        .collect(Collectors.toList())
+        );
+    }
 
     //FIND SERVICE BY SERVICE NAMES
     @GetMapping(path = "/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
