@@ -249,7 +249,8 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.LINGER_MS_CONFIG, String.valueOf(5), true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs - 100), true, 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.MAX_BLOCK_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
