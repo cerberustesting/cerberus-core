@@ -140,4 +140,19 @@ public interface IApplicationObjectService {
      * @return
      */
     AnswerList<String> readDistinctValuesByApplicationByCriteria(String application, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /** Lists the objects of an application. */
+    List<ApplicationObject> readByApplicationAPI(String application);
+
+    /** Reads an object, throws EntityNotFoundException when it does not exist. */
+    ApplicationObject readByKeyAPI(String application, String object);
+
+    /** Creates an object in the application. */
+    ApplicationObject createAPI(String application, ApplicationObject newObject, String login);
+
+    /** Replaces (patch=false) or merges (patch=true) an object. */
+    ApplicationObject updateAPI(String application, String object, ApplicationObject incoming, String login, boolean patch);
+
+    /** Deletes an object, throws EntityNotFoundException when it does not exist. */
+    void deleteAPI(String application, String object);
 }

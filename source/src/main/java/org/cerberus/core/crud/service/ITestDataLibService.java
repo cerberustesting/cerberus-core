@@ -190,5 +190,22 @@ public interface ITestDataLibService {
      * @return 
      */
     boolean userHasPermission(TestDataLib lib, String userName);
-    
+
+    /** Lists libraries, without their sub-data. */
+    List<TestDataLib> readByVariousAPI(String name, String system, String environment, String country, String type);
+
+    /** Reads a library with its sub-data, throws EntityNotFoundException when it does not exist. */
+    TestDataLib readByKeyAPI(Integer id);
+
+    /** Creates a library with its sub-data. */
+    TestDataLib createAPI(TestDataLib newLib, String login);
+
+    /**
+     * Replaces (patch=false) or merges (patch=true) a library. A provided sub-data list replaces the existing
+     * one on PUT and is merged by subData name on PATCH.
+     */
+    TestDataLib updateAPI(Integer id, TestDataLib incoming, Boolean ignoreFirstLine, String login, boolean patch);
+
+    /** Deletes a library and its sub-data. */
+    void deleteAPI(Integer id);
 }

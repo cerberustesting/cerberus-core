@@ -198,4 +198,19 @@ public interface ILabelService {
      * @return
      */
     public List<TreeNode> hierarchyConstructor(HashMap<Integer, TreeNode> inputList);
+
+    /** Lists labels, an empty list meaning no filter. */
+    List<Label> readByVariousAPI(List<String> systems, List<String> types);
+
+    /** Reads a label, throws EntityNotFoundException when it does not exist. */
+    Label readByKeyAPI(Integer id);
+
+    /** Creates a label and returns it with its generated id. */
+    Label createAPI(Label newLabel, String login);
+
+    /** Replaces (patch=false) or merges (patch=true) a label. */
+    Label updateAPI(Integer id, Label incoming, String login, boolean patch);
+
+    /** Deletes a label, its children being moved back to the root. */
+    void deleteAPI(Integer id, String login);
 }

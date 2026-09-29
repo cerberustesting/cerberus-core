@@ -19,6 +19,10 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
+import org.cerberus.core.api.exceptions.EntityNotFoundException;
+import org.cerberus.core.api.exceptions.FailedInsertOperationException;
+import org.cerberus.core.api.exceptions.InvalidRequestException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -465,4 +469,137 @@ public class LabelService implements ILabelService {
         }
     }
 
+    // ---- Methods used by the public API
+
+
+    private static final String DEFAULT_COLOR = "#BBBBBB";
+
+
+    @Override
+    public List<Label> readByVariousAPI(List<String> systems, List<String> types) {
+        AnswerList<Label> answer = this.readByVarious(new ArrayList<>(systems), new ArrayList<>(types));
+        return answer.getDataList() == null ? List.of() : answer.getDataList();
+    }
+
+    @Override
+    public Label readByKeyAPI(Integer id) {
+        AnswerItem<Label> answer = this.readByKey(id);
+        if (answer.getItem() == null) {
+            throw new EntityNotFoundException(Label.class, "id", id);
+        }
+        return answer.getItem();
+    }
+
+    @Override
+    public Label createAPI(Label newLabel, String login) {
+        if (StringUtil.isEmptyOrNull(newLabel.getLabel())) {
+            throw new InvalidRequestException("Field 'label' is mandatory");
+        }
+        newLabel.setId(null);
+        newLabel.setSystem(nullToEmpty(newLabel.getSystem()));
+        newLabel.setType(StringUtil.isEmptyOrNull(newLabel.getType()) ? Label.TYPE_STICKER : newLabel.getType());
+        checkType(newLabel.getType());
+        newLabel.setColor(StringUtil.isEmptyOrNull(newLabel.getColor()) ? DEFAULT_COLOR : newLabel.getColor());
+        // 0, not null, is what the application means by "no parent".
+        newLabel.setParentLabelID(newLabel.getParentLabelID() == null ? 0 : newLabel.getParentLabelID());
+        newLabel.setRequirementType(nullToEmpty(newLabel.getRequirementType()));
+        newLabel.setRequirementStatus(nullToEmpty(newLabel.getRequirementStatus()));
+        newLabel.setRequirementCriticity(nullToEmpty(newLabel.getRequirementCriticity()));
+        newLabel.setDescription(nullToEmpty(newLabel.getDescription()));
+        newLabel.setLongDescription(nullToEmpty(newLabel.getLongDescription()));
+
+        List<Label> sameSystem = readByVariousAPI(List.of(newLabel.getSystem()), List.of());
+        for (Label candidate : sameSystem) {
+            if (newLabel.getLabel().equalsIgnoreCase(candidate.getLabel()) && newLabel.getSystem().equals(nullToEmpty(candidate.getSystem()))) {
+                throw new InvalidRequestException("Label already exists: label=" + candidate.getLabel() + " system=" + newLabel.getSystem() + " id=" + candidate.getId());
+            }
+        }
+
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        newLabel.setUsrCreated(login);
+        newLabel.setDateCreated(now);
+        newLabel.setUsrModif(login);
+        newLabel.setDateModif(now);
+        check(this.create(newLabel));
+
+        // The insert does not hand the generated id back, so the label is read back by its key.
+        for (Label candidate : readByVariousAPI(List.of(newLabel.getSystem()), List.of())) {
+            if (newLabel.getLabel().equals(candidate.getLabel()) && newLabel.getSystem().equals(nullToEmpty(candidate.getSystem()))) {
+                return candidate;
+            }
+        }
+        return newLabel;
+    }
+
+    @Override
+    public Label updateAPI(Integer id, Label incoming, String login, boolean patch) {
+        Label existing = readByKeyAPI(id);
+
+        existing.setSystem(pick(incoming.getSystem(), existing.getSystem(), patch));
+        if (!StringUtil.isEmptyOrNull(incoming.getLabel())) {
+            existing.setLabel(incoming.getLabel());
+        } else if (!patch) {
+            throw new InvalidRequestException("Field 'label' is mandatory");
+        }
+        if (!StringUtil.isEmptyOrNull(incoming.getType())) {
+            checkType(incoming.getType());
+            existing.setType(incoming.getType());
+        } else if (!patch) {
+            existing.setType(Label.TYPE_STICKER);
+        }
+        if (!StringUtil.isEmptyOrNull(incoming.getColor())) {
+            existing.setColor(incoming.getColor());
+        } else if (!patch) {
+            existing.setColor(DEFAULT_COLOR);
+        }
+        if (incoming.getParentLabelID() != null) {
+            if (id.equals(incoming.getParentLabelID())) {
+                throw new InvalidRequestException("A label cannot be its own parent");
+            }
+            existing.setParentLabelID(incoming.getParentLabelID());
+        } else if (!patch) {
+            existing.setParentLabelID(0);
+        }
+        existing.setRequirementType(pick(incoming.getRequirementType(), existing.getRequirementType(), patch));
+        existing.setRequirementStatus(pick(incoming.getRequirementStatus(), existing.getRequirementStatus(), patch));
+        existing.setRequirementCriticity(pick(incoming.getRequirementCriticity(), existing.getRequirementCriticity(), patch));
+        existing.setDescription(pick(incoming.getDescription(), existing.getDescription(), patch));
+        existing.setLongDescription(pick(incoming.getLongDescription(), existing.getLongDescription(), patch));
+        existing.setUsrModif(login);
+        existing.setDateModif(new Timestamp(System.currentTimeMillis()));
+
+        check(this.update(existing));
+        return readByKeyAPI(id);
+    }
+
+    @Override
+    public void deleteAPI(Integer id, String login) {
+        Label existing = readByKeyAPI(id);
+        // Children are moved back to the root by the service before the deletion.
+        existing.setUsrModif(login);
+        check(this.delete(existing));
+    }
+
+    private static void checkType(String type) {
+        if (!List.of(Label.TYPE_STICKER, Label.TYPE_BATTERY, Label.TYPE_REQUIREMENT).contains(type)) {
+            throw new InvalidRequestException("Unknown label type '" + type + "'. Use STICKER, BATTERY or REQUIREMENT.");
+        }
+    }
+
+    private static String pick(String incoming, String existing, boolean patch) {
+        if (incoming != null) {
+            return incoming;
+        }
+        return patch ? existing : "";
+    }
+
+    private static String nullToEmpty(String value) {
+        return value == null ? "" : value;
+    }
+
+    private static void check(Answer answer) {
+        if (!answer.isCodeStringEquals("OK")) {
+            throw new FailedInsertOperationException(answer.getMessageDescription());
+        }
+    }
 }

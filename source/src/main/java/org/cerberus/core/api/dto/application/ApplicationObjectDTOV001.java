@@ -46,27 +46,27 @@ public class ApplicationObjectDTOV001 {
     @Schema(description = "Technical identifier of the application object")
     private int id;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Application this object belongs to")
     private String application;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Object name (unique per application)")
     private String object;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Locator value (e.g. XPath, CSS selector, element identifier)")
     private String value;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Screenshot filename associated with this object")
     private String screenshotFilename;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Horizontal offset for element coordinates")
     private String xOffset;
 
-    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class, View.Public.PATCH.class})
     @Schema(description = "Vertical offset for element coordinates")
     private String yOffset;
 
