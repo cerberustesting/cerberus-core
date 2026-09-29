@@ -256,8 +256,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.conditionoptions : " + testCaseStepActionControl.getConditionOptions().toString());
-            LOG.debug("SQL.param.options : " + testCaseStepActionControl.getOptions().toString());
+            LOG.debug("SQL.param.conditionoptions : " + testCaseStepActionControl.getConditionOptions());
+            LOG.debug("SQL.param.options : " + testCaseStepActionControl.getOptions());
         }
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {

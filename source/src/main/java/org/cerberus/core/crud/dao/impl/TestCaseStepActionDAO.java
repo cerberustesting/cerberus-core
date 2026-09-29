@@ -325,7 +325,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getOptions() == null ? "[]" : testCaseStepAction.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
@@ -378,7 +378,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
             LOG.debug("SQL.param.conditionValue1 " + testCaseStepAction.getConditionValue1());
             LOG.debug("SQL.param.conditionValue2 " + testCaseStepAction.getConditionValue2());
-            LOG.debug("SQL.param.options " + testCaseStepAction.getOptions().toString());
+            LOG.debug("SQL.param.options " + testCaseStepAction.getOptions());
         }
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
