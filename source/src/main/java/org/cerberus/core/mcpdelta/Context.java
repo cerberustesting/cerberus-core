@@ -52,18 +52,27 @@ public final class Context {
      * The Selenium grid for live page outlines: the configured one, else the first active robot executor of the
      * instance that needs no credentials.
      */
-    public String gridUrl() {
+    /**
+     * The Selenium grids that can open a page: the configured one, else every distinct grid of the active robot
+     * executors without credentials, chrome robots first. Some may be down: the caller tries them in turn.
+     */
+    public java.util.List<String> grids() {
         if (!config.gridUrl.isBlank()) {
-            return config.gridUrl;
+            return java.util.List.of(config.gridUrl);
         }
-        Db.Row r = db.read(c -> Db.one(c, "SELECT x.host, x.port FROM robotexecutor x JOIN robot b ON b.robot=x.robot"
-                + " WHERE x.IsActive=1 AND b.IsActive=1 AND COALESCE(x.HostUser,'')='' AND COALESCE(x.host,'')<>'' ORDER BY x.`rank`, x.robot LIMIT 1"));
-        if (r == null) {
+        java.util.List<Db.Row> rows = db.read(c -> Db.query(c, "SELECT x.host, x.port FROM robotexecutor x JOIN robot b ON b.robot=x.robot"
+                + " WHERE x.IsActive=1 AND b.IsActive=1 AND COALESCE(x.HostUser,'')='' AND COALESCE(x.host,'')<>''"
+                + " ORDER BY COALESCE(b.browser,'')<>'chrome', x.`rank`, x.robot"));
+        java.util.Set<String> grids = new java.util.LinkedHashSet<>();
+        for (Db.Row r : rows) {
+            String host = r.s("host").trim().contains("://") ? r.s("host").trim() : "http://" + r.s("host").trim();
+            grids.add(host + (r.s("port").isBlank() || host.matches(".*:\\d+/?$") ? "" : ":" + r.s("port").trim()));
+        }
+        if (grids.isEmpty()) {
             throw new org.cerberus.core.mcpdelta.tools.Tool.ToolError("no Selenium grid to open the page: none is configured and no active robot executor"
                     + " without credentials exists");
         }
-        String host = r.s("host").contains("://") ? r.s("host") : "http://" + r.s("host");
-        return host + (r.s("port").isBlank() || host.matches(".*:\\d+/?$") ? "" : ":" + r.s("port"));
+        return new java.util.ArrayList<>(grids);
     }
 
     /** Who the current call writes as: the authenticated Cerberus login, else the configured user. */

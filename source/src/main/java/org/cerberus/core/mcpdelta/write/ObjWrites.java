@@ -158,6 +158,11 @@ final class ObjWrites {
             Spec.Entity spec = t.ref.spec();
             String ref = t.ref.text();
             ObjStore.Agg base = t.base != null ? t.base : ObjStore.load(c, spec, t.ref.key(), true);
+            if (base != null && base.sharing > 1) {
+                diags.add(Diagnostic.error(ref, 0, ObjStore.sharedKey(base) + ": which one to " + (t.doc == null ? "delete" : "change")
+                        + " would be a guess", "give each its own key in Cerberus first"));
+                continue;
+            }
             String baseFp = base == null ? WriteService.ABSENT : ObjStore.fingerprint(base);
             if (expected != null && !Objects.equals(expected.get(ref), baseFp)) {
                 diags.add(Diagnostic.error(ref, 0, "changed since the plan was made", "plan the change again"));

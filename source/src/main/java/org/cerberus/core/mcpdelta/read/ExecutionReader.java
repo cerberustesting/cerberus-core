@@ -76,8 +76,8 @@ public final class ExecutionReader {
         StringBuilder sb = new StringBuilder();
         sb.append('#').append(id).append(' ').append(e.s("Test")).append('/').append(e.s("TestCase")).append(' ')
                 .append(e.s("ControlStatus")).append(" · ").append(e.s("Environment")).append('/').append(e.s("Country"))
-                .append(" · ").append(e.s("robot").isEmpty() ? e.s("Browser") : e.s("robot") + " " + e.s("Browser"))
-                .append(" · ").append(time(e.s("Start"))).append(" · ").append(duration(e)).append(" · tag ").append(e.s("Tag")).append('\n');
+                .append(" · ").append((e.s("robot") + " " + e.s("Browser")).isBlank() ? "" : (e.s("robot") + " " + e.s("Browser")).trim() + " · ")
+                .append(time(e.s("Start"))).append(" · ").append(duration(e)).append(" · tag ").append(e.s("Tag")).append('\n');
         if (!e.s("ControlMessage").isBlank()) {
             sb.append(Text.truncate(Text.oneLine(e.s("ControlMessage")), 220)).append('\n');
         }

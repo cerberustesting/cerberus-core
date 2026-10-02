@@ -86,7 +86,7 @@ missing and changes nothing.
 | Property | Default | Purpose |
 |---|---|---|
 | `org.cerberus.mcpdelta.home` | `<catalina.base>/mcpdelta` | Folder of the undo journal |
-| `org.cerberus.mcpdelta.grid` | first active robot executor without credentials | Selenium grid used to outline a live page (`read` of `live:<url>`) |
+| `org.cerberus.mcpdelta.grid` | the active robot executors without credentials, chrome first, tried in turn | Selenium grid used to outline a live page (`read` of `live:<url>`) |
 | `org.cerberus.mcpdelta.allowedOrigins` | none | Comma-separated browser origins allowed besides the instance's own |
 
 ## Limits
@@ -94,7 +94,11 @@ missing and changes nothing.
 - The *systems* a user is restricted to (`usersystem`) are not enforced, as on `/mcp`.
 - The `executor` option of `run` is refused: Cerberus picks the robot executor itself.
 - Outlining a live page needs a Selenium grid reachable from the server without credentials (a
-  robot executor, or `org.cerberus.mcpdelta.grid`). Outlines of pages saved by executions always work.
+  robot executor, or `org.cerberus.mcpdelta.grid`). A grid that does not answer is skipped and tried
+  last for the next 10 minutes. Outlines of pages saved by executions always work.
+- A data library entry is identified by its name, system, environment and country, but Cerberus does
+  not enforce that these are unique. When several entries share them, Delta says so, shows the first
+  one and refuses to change or delete it: give each entry its own key first.
 
 ## Troubleshooting
 

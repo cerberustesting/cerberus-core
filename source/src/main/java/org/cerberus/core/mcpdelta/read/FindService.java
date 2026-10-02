@@ -73,7 +73,7 @@ public final class FindService {
             for (Index.Tc t : inScope) {
                 allowed.add(t.ref());
             }
-            List<String[]> candidates = candidates(c, text, regex);
+            List<String[]> candidates = candidates(c, regex ? text : sqlKey(text), regex);
             DbResolver resolver = new DbResolver(c, ctx.catalog);
             Map<String, List<String>> hits = new LinkedHashMap<>();
             int lines = 0;
@@ -122,6 +122,42 @@ public final class FindService {
             }
             return sb.toString();
         });
+    }
+
+    /**
+     * What the database is searched for. A document line spans several columns (an action and its values), so a
+     * text with quoted values is searched by its longest value; the line itself is then matched exactly.
+     */
+    public static String sqlKey(String text) {
+        java.util.regex.Matcher m = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"").matcher(text);
+        String key = null;
+        while (m.find()) {
+            String v = unquote(m.group(1));
+            if (key == null || v.length() > key.length()) {
+                key = v;
+            }
+        }
+        return key == null || key.isEmpty() ? text : key;
+    }
+
+    /** The value as stored, from its quoted form (Text.quote). */
+    private static String unquote(String quoted) {
+        StringBuilder sb = new StringBuilder(quoted.length());
+        for (int i = 0; i < quoted.length(); i++) {
+            char c = quoted.charAt(i);
+            if (c == '\\' && i + 1 < quoted.length()) {
+                char n = quoted.charAt(++i);
+                if (n == 'u' && i + 4 < quoted.length() && quoted.substring(i + 1, i + 5).matches("[0-9a-fA-F]{4}")) {
+                    sb.append((char) Integer.parseInt(quoted.substring(i + 1, i + 5), 16));
+                    i += 4;
+                    continue;
+                }
+                sb.append(n == 'n' ? '\n' : n == 't' ? '\t' : n == 'r' ? '\r' : n);
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     /** Testcases whose rows contain the text somewhere: a cheap first cut, refined on the documents. */

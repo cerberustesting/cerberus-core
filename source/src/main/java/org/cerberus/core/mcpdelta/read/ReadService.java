@@ -83,7 +83,7 @@ public final class ReadService {
         }
         if (!live.isEmpty()) {
             try {
-                out.append(out.length() > 0 ? "\n\n" : "").append(new org.cerberus.core.mcpdelta.run.LiveOutline(ctx.gridUrl()).probe(live, budget));
+                out.append(out.length() > 0 ? "\n\n" : "").append(org.cerberus.core.mcpdelta.run.LiveOutline.probeFirst(ctx.grids(), live, budget));
             } catch (RuntimeException e) {
                 out.append(out.length() > 0 ? "\n\n" : "").append("!! live: ").append(e.getMessage());
             }
@@ -363,7 +363,7 @@ public final class ReadService {
             if (d == null) {
                 return "!! unknown delta " + id;
             }
-            StringBuilder sb = new StringBuilder(d.id + " " + d.time + " by " + d.user + " — " + Text.nz(d.intent));
+            StringBuilder sb = new StringBuilder(d.id + " " + localTime(d.time) + " by " + d.user + " — " + Text.nz(d.intent));
             if (d.undoes != null) {
                 sb.append(" (undoes ").append(d.undoes).append(')');
             }
@@ -379,8 +379,25 @@ public final class ReadService {
         if (recent.isEmpty()) {
             return "journal is empty";
         }
-        return recent.stream().map(d -> d.id + "  " + d.time.substring(0, Math.min(16, d.time.length())).replace('T', ' ') + "  "
-                + Text.truncate(Text.nz(d.intent), 60) + "  · " + d.entries.size() + " testcase(s)"
+        return recent.stream().map(d -> d.id + "  " + localTime(d.time) + "  " + Text.nz(d.user) + "  "
+                + Text.truncate(Text.nz(d.intent), 60) + "  · " + touched(d)
                 + (d.undoneBy != null ? "  [undone by " + d.undoneBy + "]" : "")).collect(Collectors.joining("\n"));
+    }
+
+    /** The journal keeps UTC instants; they are shown in the server's zone, like execution times. */
+    private static String localTime(String instant) {
+        try {
+            return java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(java.time.ZoneId.systemDefault())
+                    .format(java.time.Instant.parse(instant));
+        } catch (RuntimeException e) {
+            return Text.nz(instant);
+        }
+    }
+
+    private static String touched(Journal.Delta d) {
+        long objects = d.entries.stream().filter(e -> e.entity != null).count();
+        long testcases = d.entries.size() - objects;
+        return (testcases > 0 ? testcases + " testcase(s)" : "") + (testcases > 0 && objects > 0 ? ", " : "")
+                + (objects > 0 ? objects + " object(s)" : "") + (d.entries.isEmpty() ? "nothing" : "");
     }
 }

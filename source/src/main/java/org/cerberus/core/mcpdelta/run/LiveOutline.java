@@ -86,12 +86,50 @@ public final class LiveOutline {
         }
     }
 
+    /** A grid that gave no browser session: the next one may. */
+    private static final class Unreachable extends RuntimeException {
+        Unreachable(String message) {
+            super(message);
+        }
+    }
+
+    /** When each grid last failed to give a session: a dead grid costs its timeout once in a while, not on every read. */
+    private static final Map<String, Long> DOWN = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final long DOWN_FOR_MS = 10 * 60_000L;
+    private static final int MAX_TRIES = 4;
+
+    /** Outlines the URLs on the first grid that gives a browser session, grids that failed lately tried last. */
+    public static String probeFirst(List<String> grids, List<String> urls, int room) {
+        long now = System.currentTimeMillis();
+        List<String> order = new ArrayList<>(grids);
+        order.sort(java.util.Comparator.comparing(g -> now - DOWN.getOrDefault(g, 0L) < DOWN_FOR_MS));
+        List<String> failed = new ArrayList<>();
+        for (String grid : order.subList(0, Math.min(MAX_TRIES, order.size()))) {
+            try {
+                String outline = new LiveOutline(grid).probe(urls, room);
+                DOWN.remove(grid);
+                return outline;
+            } catch (Unreachable e) {
+                DOWN.put(grid, System.currentTimeMillis());
+                failed.add(grid + " (" + e.getMessage() + ")");
+            }
+        }
+        throw new Tool.ToolError("cannot drive a browser: no grid gave a session. Tried " + String.join(", ", failed)
+                + (order.size() > MAX_TRIES ? " (" + (order.size() - MAX_TRIES) + " more not tried)" : "")
+                + ". Configure the grid to use: DELTA_GRID_URL, or org.cerberus.core.mcpdelta.grid in Cerberus.");
+    }
+
     /** Opens each URL in one throw-away browser session and outlines it; what several pages share is shown once. */
     public String probe(List<String> urls, int room) {
         String session = null;
         try {
             // "eager": the DOM is what is outlined; waiting for every ad and tracker to load can take half a minute.
-            JsonNode created = post("/session", "{\"capabilities\":{\"alwaysMatch\":{\"browserName\":\"chrome\",\"pageLoadStrategy\":\"eager\"}}}");
+            JsonNode created;
+            try {
+                created = post("/session", "{\"capabilities\":{\"alwaysMatch\":{\"browserName\":\"chrome\",\"pageLoadStrategy\":\"eager\"}}}");
+            } catch (Exception e) {
+                throw new Unreachable(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+            }
             session = created.path("value").path("sessionId").asText();
             post("/session/" + session + "/window/rect", "{\"width\":1366,\"height\":768}");
             post("/session/" + session + "/timeouts", "{\"script\":20000}");
@@ -103,7 +141,7 @@ public final class LiveOutline {
                 sb.append(outline(session, Math.max(1500, room / urls.size()), true, shared, path(url))).append('\n');
             }
             return sb.toString().stripTrailing();
-        } catch (Tool.ToolError e) {
+        } catch (Tool.ToolError | Unreachable e) {
             throw e;
         } catch (Exception e) {
             throw new Tool.ToolError("cannot drive a browser on " + grid + ": " + e.getMessage());

@@ -53,6 +53,8 @@ public final class ObjStore {
         public final Entity spec;
         public final List<String> key;
         public Row root;
+        /** How many rows have this key: Cerberus does not always enforce it, and only the first one is read. */
+        public int sharing = 1;
         public final Map<String, List<Row>> children = new LinkedHashMap<>();
 
         public Agg(Entity spec, List<String> key) {
@@ -70,6 +72,12 @@ public final class ObjStore {
         public boolean isEmpty() {
             return root == null && children.values().stream().allMatch(List::isEmpty);
         }
+    }
+
+    /** Why an object whose key several rows share cannot be changed: which one would be is a guess. */
+    public static String sharedKey(Agg a) {
+        return a.sharing + " " + a.spec.plural + " have the key " + a.ref() + " in Cerberus; only the first"
+                + (a.spec.id == null ? "" : " (" + a.spec.id + " " + a.root.s(a.spec.id) + ")") + " is shown here";
     }
 
     /** Names labels for the documents (label ids are not meaningful to a reader). */
@@ -105,10 +113,12 @@ public final class ObjStore {
                 sql.append('`').append(e.keys.get(i).column).append("`=?");
                 params.add(i < key.size() ? key.get(i) : "");
             }
-            a.root = Db.one(c, sql + suffix, params.toArray());
-            if (a.root == null) {
+            List<Row> rows = Db.query(c, sql + (e.id == null ? "" : " ORDER BY `" + e.id + "`") + suffix, params.toArray());
+            if (rows.isEmpty()) {
                 return null;
             }
+            a.root = rows.get(0);
+            a.sharing = rows.size();
         }
         for (Child ch : e.children) {
             a.children.get(ch.kind).addAll(childRows(c, a, ch, suffix));

@@ -125,8 +125,9 @@ public final class WriteTool implements Tool {
         }
         List<String> refs = run.isObject() ? Args.list(run, "refs") : new java.util.ArrayList<>();
         if (refs.isEmpty()) {
+            // The testcases written; an object written alongside (folder, application...) is not something to run.
             for (WriteService.Change c : outcome.changes) {
-                if (!"deleted".equals(c.kind)) {
+                if (c.entity == null && !"deleted".equals(c.kind)) {
                     refs.add(c.ref);
                 }
             }

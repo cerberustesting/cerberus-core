@@ -100,7 +100,9 @@ public final class ObjService {
         }
         String doc = ObjCodec.render(ObjStore.toDoc(a, labels(c)));
         int lines = a.children.values().stream().mapToInt(List::size).sum();
-        return "# v" + ObjStore.fingerprint(a) + (lines > 0 ? " · " + lines + " line(s)" : "") + "\n" + doc;
+        return "# v" + ObjStore.fingerprint(a) + (lines > 0 ? " · " + lines + " line(s)" : "") + "\n"
+                + (a.sharing > 1 ? "!! " + ObjStore.sharedKey(a) + ". Delta cannot tell them apart: give each its own key in Cerberus"
+                + " to read or change the others.\n" : "") + doc;
     }
 
     private String listing(Connection c, Entity e, String filter) throws SQLException {
@@ -113,8 +115,22 @@ public final class ObjService {
             }
             return sb.toString();
         }
+        String previous = null;
+        int same = 1;
         for (Row r : rows) {
-            sb.append("  ").append(String.join("/", ObjStore.trimKey(keyOf(e, r))));
+            String key = String.join("/", ObjStore.trimKey(keyOf(e, r)));
+            // Rows that share a key (Cerberus does not always enforce it) are one entry here: only the first is reachable.
+            if (key.equals(previous)) {
+                same++;
+                continue;
+            }
+            if (same > 1) {
+                sb.setLength(sb.length() - 1);
+                sb.append("  ×").append(same).append(" with this key\n");
+            }
+            previous = key;
+            same = 1;
+            sb.append("  ").append(key);
             for (String attr : e.listAttrs) {
                 Field f = e.field(attr);
                 if (f != null && !r.s(f.column).isEmpty()) {
@@ -125,6 +141,10 @@ public final class ObjService {
                 sb.append("  · ").append(Text.truncate(Text.oneLine(r.s(e.title)), 70));
             }
             sb.append('\n');
+        }
+        if (same > 1) {
+            sb.setLength(sb.length() - 1);
+            sb.append("  ×").append(same).append(" with this key\n");
         }
         return sb.append("read ").append(e.kind).append(":<key> for one, as a document you can edit").toString();
     }
