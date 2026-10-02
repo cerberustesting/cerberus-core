@@ -1,0 +1,21 @@
+[
+  { "control": "text", "param1": "Value", "param2": "Length", "param3": "Nature", "applicationType": ["ALL"], "description": "Retourne une chaîne statique ou aléatoire selon la nature et la longueur." },
+  { "control": "getFromDataLib", "param1": "DataLib name", "param2": "Nature", "param3": "Row Limit", "applicationType": ["ALL"], "description": "Récupère une valeur depuis une Data Library Cerberus." },
+  { "control": "getFromSql", "param1": "SQL Query", "param2": "Database", "param3": "Rank", "applicationType": ["ALL"], "description": "Exécute une requête SQL et retourne une valeur du jeu de résultats." },
+  { "control": "getFromHtml", "param1": "Element path", "param2": "Element type", "param3": "Nature", "applicationType": ["WEB"], "description": "Récupère la valeur, l’attribut ou la position d’un élément HTML." },
+  { "control": "getFromHtmlVisible", "param1": "Element path", "param2": "Element type", "param3": null, "applicationType": ["WEB"], "description": "Récupère une valeur uniquement pour les éléments visibles dans la page." },
+  { "control": "getAttributeFromHtml", "param1": "Element path", "param2": "Attribute name", "param3": null, "applicationType": ["WEB"], "description": "Récupère la valeur d’un attribut spécifique d’un élément HTML." },
+  { "control": "getFromJS", "param1": "Javascript command", "param2": null, "param3": null, "applicationType": ["WEB"], "description": "Exécute du JavaScript et retourne le résultat." },
+  { "control": "getFromCookie", "param1": "Cookie name", "param2": "Cookie attribute", "param3": null, "applicationType": ["WEB"], "description": "Retourne la valeur d’un cookie ou d’un attribut spécifique du cookie." },
+  { "control": "getFromXml", "param1": "Xpath", "param2": "XML source", "param3": "Output type", "applicationType": ["ALL"], "description": "Extrait des données depuis un document XML via un XPath." },
+  { "control": "getRawFromXml", "param1": "Xpath", "param2": "XML source", "param3": null, "applicationType": ["ALL"], "description": "Récupère l’élément XML brut." },
+  { "control": "getDifferencesFromXml", "param1": "Xpath", "param2": "XML source", "param3": null, "applicationType": ["ALL"], "description": "Compare deux XML et retourne les différences." },
+  { "control": "getFromJson", "param1": "JSON Path", "param2": "JSON source", "param3": "Output type", "applicationType": ["ALL"], "description": "Récupère une valeur depuis un JSON selon un chemin JSONPath." },
+  { "control": "getRawFromJson", "param1": "JSON Path", "param2": "JSON source", "param3": null, "applicationType": ["ALL"], "description": "Récupère l’élément JSON brut selon le chemin fourni." },
+  { "control": "getFromGroovy", "param1": "Groovy command", "param2": null, "param3": null, "applicationType": ["ALL"], "description": "Exécute du code Groovy et retourne le résultat." },
+  { "control": "getFromCommand", "param1": "Command", "param2": "Arguments", "param3": null, "applicationType": ["APK", "IPA"], "description": "Exécute une commande Appium et retourne le résultat." },
+  { "control": "getElementPosition", "param1": "Element path", "param2": null, "param3": null, "applicationType": ["WEB"], "description": "Retourne les coordonnées d’un élément sur la page." },
+  { "control": "getFromNetworkTraffic", "param1": "URL filter", "param2": "JSON Path", "param3": "Output type", "applicationType": ["WEB", "APK", "IPA"], "description": "Extrait une donnée à partir du trafic réseau intercepté." },
+  { "control": "getOTP", "param1": "Secret key", "param2": null, "param3": null, "applicationType": ["ALL"], "description": "Génère un code OTP à partir d’une clé secrète." },
+  { "control": "getFromExecutionObject", "param1": "Execution variable name", "param2": null, "param3": null, "applicationType": ["ALL"], "description": "Récupère une valeur depuis le contexte d’exécution." }
+]

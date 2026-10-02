@@ -102,6 +102,7 @@ discovery endpoint — unlike the MCP client, which has its own JWT decoder wire
 | `spring.profiles.active=local\|keycloak` | Selects the active `WebSecurityXxxConfiguration` |
 | `org.cerberus.authentification=keycloak` | Informational flag (`Property.isKeycloak()`) driving UI/API behavior |
 | `cerberus_mcp_enable` (DB parameter) | Enables/disables `/mcp` entirely |
+| `cerberus_mcpdelta_enable` (DB parameter) | Enables/disables `/mcpdelta/mcp` (MCP Delta, see [MCPDELTA.md](MCPDELTA.md)), which shares the `/mcp` filter chain and authentication |
 | `org.cerberus.keycloak.{url,realm,client,secret}` | Main Keycloak connection & web app client |
 | `org.cerberus.keycloak.mcpclient` | Dedicated public OAuth client id for the MCP Inspector *and* the server-side token exchange used by `AIMcpClientService` |
 | `org.cerberus.keycloak.mcp.audience` | Required `aud` claim on tokens accepted by `/mcp` (validated by `mcpJwtDecoder`); target audience of the `cerberus-mcp` token exchange |

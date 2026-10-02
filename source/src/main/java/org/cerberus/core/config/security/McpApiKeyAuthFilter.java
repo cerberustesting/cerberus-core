@@ -97,9 +97,12 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         // MCP feature toggle : disabled by default until the parameter is created.
-        if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_mcp_enable, "", false)) {
-            LOG.warn("MCP access refused (cerberus_mcp_enable is disabled) from {}", request.getRemoteAddr());
-            writeJsonRpcError(response, HttpServletResponse.SC_FORBIDDEN, -32002, "MCP is disabled");
+        // /mcpdelta/mcp (MCP Delta) has its own switch, cerberus_mcpdelta_enable.
+        boolean delta = isMcpDelta(request);
+        String toggle = delta ? Parameter.VALUE_cerberus_mcpdelta_enable : Parameter.VALUE_cerberus_mcp_enable;
+        if (!parameterService.getParameterBooleanByKey(toggle, "", false)) {
+            LOG.warn("MCP access refused ({} is disabled) from {}", toggle, request.getRemoteAddr());
+            writeJsonRpcError(response, HttpServletResponse.SC_FORBIDDEN, -32002, delta ? "MCP Delta is disabled" : "MCP is disabled");
             return;
         }
 
@@ -154,10 +157,16 @@ public class McpApiKeyAuthFilter extends OncePerRequestFilter {
     private String buildAuthenticateChallenge(HttpServletRequest request) {
         if (System.getProperty("org.cerberus.keycloak.url") != null) {
             String metadataUrl = OAuthProtectedResourceMetadataServlet.baseUrl(request)
-                    + "/.well-known/oauth-protected-resource";
+                    + (isMcpDelta(request) ? "/.well-known/oauth-protected-resource/mcpdelta/mcp" : "/.well-known/oauth-protected-resource");
             return "Bearer resource_metadata=\"" + metadataUrl + "\"";
         }
-        return "Basic realm=\"Cerberus MCP\"";
+        return isMcpDelta(request) ? "Basic realm=\"Cerberus MCP Delta\"" : "Basic realm=\"Cerberus MCP\"";
+    }
+
+    /** The MCP Delta endpoint (/mcpdelta/mcp), served by McpDeltaServlet behind this same filter. */
+    static boolean isMcpDelta(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri != null && uri.endsWith("/mcpdelta/mcp");
     }
 
     private void writeJsonRpcError(HttpServletResponse response, int httpStatus, int code, String message) throws IOException {

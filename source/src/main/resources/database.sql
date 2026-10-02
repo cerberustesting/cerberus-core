@@ -6872,3 +6872,7 @@ ALTER TABLE `robotexecutor`
 -- API key, or a Keycloak Bearer token when the keycloak profile is active) instead of this
 -- shared technical key.
 DELETE FROM `parameter` WHERE `param`='cerberus_ai_mcp_apikey';
+
+-- 1950
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+    VALUES  ('', 'cerberus_mcpdelta_enable', 'false', 'Boolean in order to enable the MCP Delta endpoint (/mcpdelta/mcp).');

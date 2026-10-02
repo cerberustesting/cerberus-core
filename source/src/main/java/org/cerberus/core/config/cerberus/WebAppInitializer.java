@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpSessionListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.security.McpApiKeyAuthFilter;
+import org.cerberus.core.mcpdelta.host.McpDeltaServlet;
 import org.cerberus.core.config.security.OAuthProtectedResourceMetadataServlet;
 import org.cerberus.core.config.webmvc.WebMvcConfiguration;
 import org.springframework.web.WebApplicationInitializer;
@@ -111,6 +112,15 @@ public class WebAppInitializer implements WebApplicationInitializer {
         // RFC 9728 §3.1: clients also probe the path-appended form when the resource
         // identifier has a non-root path (here, the /mcp endpoint).
         metadataServlet.addMapping("/.well-known/oauth-protected-resource/mcp");
+        metadataServlet.addMapping("/.well-known/oauth-protected-resource/mcpdelta/mcp");
+
+        /**
+         * MCP Delta (/mcpdelta/mcp): five tools, documents instead of CRUD calls. Same authentication as /mcp
+         * (McpApiKeyAuthFilter), its own switch (cerberus_mcpdelta_enable).
+         */
+        ServletRegistration.Dynamic mcpDeltaServlet = servletContext.addServlet("mcpDeltaServlet", new McpDeltaServlet());
+        mcpDeltaServlet.setLoadOnStartup(4);
+        mcpDeltaServlet.addMapping("/mcpdelta/mcp");
 
 
         // Session expires after 600 minutes of inactivity

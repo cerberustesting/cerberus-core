@@ -47,6 +47,7 @@ public class WebSecurityRules {
                 // the resource identifier (here, the /mcp endpoint) has a non-root path.
                 .requestMatchers(m("/.well-known/oauth-protected-resource")).permitAll()
                 .requestMatchers(m("/.well-known/oauth-protected-resource/mcp")).permitAll()
+                .requestMatchers(m("/.well-known/oauth-protected-resource/mcpdelta/mcp")).permitAll()
                 // ── Public
                 .requestMatchers(
                         m("/DatabaseMaintenance.jsp"),

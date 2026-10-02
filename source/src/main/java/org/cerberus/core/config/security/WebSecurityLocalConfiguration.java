@@ -87,7 +87,7 @@
 				McpApiKeyAuthFilter mcpApiKeyAuthFilter,
 				AuthenticationManager authenticationManager) throws Exception {
 			http
-					.securityMatcher("/mcp")
+					.securityMatcher("/mcp", "/mcpdelta/mcp")
 					.csrf(csrf -> csrf.disable())
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 					.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())

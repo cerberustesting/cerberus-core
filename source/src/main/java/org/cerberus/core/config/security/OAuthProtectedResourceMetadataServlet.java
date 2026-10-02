@@ -60,7 +60,9 @@ public class OAuthProtectedResourceMetadataServlet extends HttpServlet {
             keycloakUrl = keycloakUrl.substring(0, keycloakUrl.length() - 1);
         }
         String issuer = keycloakUrl + "/realms/" + realm;
-        String resource = baseUrl(request) + "/mcp";
+        // The path-appended form names its resource: /mcpdelta/mcp (MCP Delta) or /mcp.
+        String uri = request.getRequestURI();
+        String resource = baseUrl(request) + (uri != null && uri.endsWith("/mcpdelta/mcp") ? "/mcpdelta/mcp" : "/mcp");
 
         JSONObject metadata = new JSONObject();
         metadata.put("resource", resource);

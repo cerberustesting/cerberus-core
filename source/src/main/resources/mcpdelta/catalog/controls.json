@@ -1,0 +1,66 @@
+[
+  { "control": "verifyStringEqual", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que deux chaînes sont égales" },
+  { "control": "verifyStringDifferent", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que deux chaînes sont différentes" },
+  { "control": "verifyStringGreater", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que la première chaîne est supérieure" },
+  { "control": "verifyStringMinor", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que la première chaîne est inférieure" },
+  { "control": "verifyStringContains", "param1": "Texte", "param2": "Sous-chaîne", "param3": null, "applicationType": ["ALL"], "description": "Vérifie qu’une chaîne contient une sous-chaîne" },
+  { "control": "verifyStringNotContains", "param1": "Texte", "param2": "Sous-chaîne", "param3": null, "applicationType": ["ALL"], "description": "Vérifie qu’une chaîne ne contient pas une sous-chaîne" },
+
+  { "control": "verifyNumericEquals", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que deux nombres sont égaux" },
+  { "control": "verifyNumericDifferent", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que deux nombres sont différents" },
+  { "control": "verifyNumericGreater", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que le premier nombre est supérieur" },
+  { "control": "verifyNumericGreaterOrEqual", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que le premier nombre est supérieur ou égal" },
+  { "control": "verifyNumericMinor", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que le premier nombre est inférieur" },
+  { "control": "verifyNumericMinorOrEqual", "param1": "Valeur 1", "param2": "Valeur 2", "param3": null, "applicationType": ["ALL"], "description": "Vérifie que le premier nombre est inférieur ou égal" },
+
+  { "control": "verifyElementPresent", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI", "APK", "IPA"], "description": "Vérifie que l’élément est présent" },
+  { "control": "verifyElementNotPresent", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI", "APK", "IPA"], "description": "Vérifie que l’élément est absent" },
+  { "control": "verifyElementVisible", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’élément est visible" },
+  { "control": "verifyElementNotVisible", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’élément est invisible" },
+  { "control": "verifyElementChecked", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie qu’une case est cochée" },
+  { "control": "verifyElementNotChecked", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie qu’une case n’est pas cochée" },
+  { "control": "verifyElementEquals", "param1": "Locator 1", "param2": "Locator 2", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que deux éléments sont identiques" },
+  { "control": "verifyElementDifferent", "param1": "Locator 1", "param2": "Locator 2", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que deux éléments sont différents" },
+  { "control": "verifyElementInElement", "param1": "Parent locator", "param2": "Child locator", "param3": null, "applicationType": ["GUI"], "description": "Vérifie qu’un élément est contenu dans un autre" },
+  { "control": "verifyElementClickable", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’élément est cliquable" },
+  { "control": "verifyElementNotClickable", "param1": "Locator", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’élément n’est pas cliquable" },
+
+  { "control": "verifyElementTextEqual", "param1": "Locator", "param2": "Texte attendu", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte d’un élément est égal à la valeur attendue" },
+  { "control": "verifyElementTextDifferent", "param1": "Locator", "param2": "Texte attendu", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte d’un élément est différent de la valeur attendue" },
+  { "control": "verifyElementTextContains", "param1": "Locator", "param2": "Sous-chaîne", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte d’un élément contient une sous-chaîne" },
+  { "control": "verifyElementTextNotContains", "param1": "Locator", "param2": "Sous-chaîne", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte d’un élément ne contient pas une sous-chaîne" },
+  { "control": "verifyElementTextMatchRegex", "param1": "Locator", "param2": "Expression régulière", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte correspond à une expression régulière" },
+
+  { "control": "verifyStringArrayContains", "param1": "Liste de chaînes", "param2": "Valeur recherchée", "param3": null, "applicationType": ["ALL"], "description": "Vérifie qu’une valeur existe dans une liste de chaînes" },
+  { "control": "verifyNumericArrayContains", "param1": "Liste de nombres", "param2": "Valeur recherchée", "param3": null, "applicationType": ["ALL"], "description": "Vérifie qu’un nombre existe dans une liste" },
+  { "control": "verifyElementTextArrayContains", "param1": "Locator", "param2": "Liste attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie qu’un élément contient un texte présent dans une liste" },
+  { "control": "verifyElementNumericArrayContains", "param1": "Locator", "param2": "Liste attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie qu’un élément contient un nombre présent dans une liste" },
+
+  { "control": "verifyElementNumericEqual", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est égale" },
+  { "control": "verifyElementNumericDifferent", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est différente" },
+  { "control": "verifyElementNumericGreater", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est supérieure" },
+  { "control": "verifyElementNumericGreaterOrEqual", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est supérieure ou égale" },
+  { "control": "verifyElementNumericMinor", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est inférieure" },
+  { "control": "verifyElementNumericMinorOrEqual", "param1": "Locator", "param2": "Valeur attendue", "param3": null, "applicationType": ["GUI"], "description": "Vérifie que la valeur numérique d’un élément est inférieure ou égale" },
+
+  { "control": "verifyTextInPage", "param1": "Texte attendu", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte est présent dans la page" },
+  { "control": "verifyTextNotInPage", "param1": "Texte à ne pas trouver", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte n’est pas présent dans la page" },
+
+  { "control": "verifyTitleEqual", "param1": "Titre attendu", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le titre de la page est égal" },
+  { "control": "verifyTitleDifferent", "param1": "Titre attendu", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le titre de la page est différent" },
+  { "control": "verifyTitleContains", "param1": "Sous-chaîne", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le titre contient un texte" },
+  { "control": "verifyTitleNotContains", "param1": "Sous-chaîne", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le titre ne contient pas un texte" },
+  { "control": "verifyTitleMatchRegex", "param1": "Expression régulière", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le titre correspond à une expression régulière" },
+
+  { "control": "verifyUrlEqual", "param1": "URL attendue", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’URL est égale" },
+  { "control": "verifyUrlDifferent", "param1": "URL attendue", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’URL est différente" },
+  { "control": "verifyUrlContains", "param1": "Sous-chaîne", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’URL contient une sous-chaîne" },
+  { "control": "verifyUrlNotContains", "param1": "Sous-chaîne", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’URL ne contient pas une sous-chaîne" },
+  { "control": "verifyUrlMatchRegex", "param1": "Expression régulière", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que l’URL correspond à une expression régulière" },
+
+  { "control": "verifyTextInDialog", "param1": "Texte attendu", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Vérifie que le texte apparaît dans une boîte de dialogue" },
+  { "control": "verifyXmlTreeStructure", "param1": "XML source", "param2": "Structure attendue", "param3": null, "applicationType": ["API"], "description": "Vérifie la structure d’un document XML" },
+  { "control": "takeScreenshot", "param1": "Nom de fichier (optionnel)", "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Prend une capture d’écran" },
+  { "control": "getPageSource", "param1": null, "param2": null, "param3": null, "applicationType": ["GUI"], "description": "Récupère le code source de la page" },
+  { "control": "verifyJsonFormat", "param1": "Chaîne JSON", "param2": null, "param3": null, "applicationType": ["API"], "description": "Vérifie que la chaîne est au format JSON valide" }
+]

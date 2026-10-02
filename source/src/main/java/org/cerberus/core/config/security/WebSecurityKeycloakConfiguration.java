@@ -348,7 +348,7 @@ public class WebSecurityKeycloakConfiguration {
 			@Qualifier("mcpJwtDecoder") JwtDecoder mcpJwtDecoder,
 			@Qualifier("mcpJwtAuthenticationConverter") JwtAuthenticationConverter mcpJwtAuthenticationConverter) throws Exception {
 		http
-				.securityMatcher("/mcp")
+				.securityMatcher("/mcp", "/mcpdelta/mcp")
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())

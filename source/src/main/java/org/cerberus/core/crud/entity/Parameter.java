@@ -61,6 +61,7 @@ public class Parameter {
     public static final String VALUE_cerberus_splashpage_enable = "cerberus_splashpage_enable";
     public static final String VALUE_cerberus_apikey_enable = "cerberus_apikey_enable";
     public static final String VALUE_cerberus_mcp_enable = "cerberus_mcp_enable";
+    public static final String VALUE_cerberus_mcpdelta_enable = "cerberus_mcpdelta_enable";
     public static final String VALUE_cerberus_apikey_value1 = "cerberus_apikey_value1";
     public static final String VALUE_cerberus_apikey_value2 = "cerberus_apikey_value2";
     public static final String VALUE_cerberus_apikey_value3 = "cerberus_apikey_value3";

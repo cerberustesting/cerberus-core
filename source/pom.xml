@@ -611,6 +611,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>prompts/**</include>
+                    <include>mcpdelta/**</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>
