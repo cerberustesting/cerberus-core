@@ -438,7 +438,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         HashMap<String, Integer> hash = new HashMap<>();
         for (int i = 1; i < messageListBlocking.size(); i++) {
             if (hash.containsKey(messageListBlocking.get(i).getCodeString())) {
-                hash.put(messageListBlocking.get(i).getCodeString(), hash.get(messageList.get(i).getCodeString()) + 1);
+                hash.put(messageListBlocking.get(i).getCodeString(), hash.get(messageListBlocking.get(i).getCodeString()) + 1);
             } else {
                 hash.put(messageListBlocking.get(i).getCodeString(), 1);
             }

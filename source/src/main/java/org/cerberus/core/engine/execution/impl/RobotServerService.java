@@ -1848,15 +1848,19 @@ public class RobotServerService implements IRobotServerService {
                     try {
 
                         AnswerItem<TestCaseExecutionHttpStat> answHttpStat = testCaseExecutionHttpStatService.convertFromHarWithStat(tce, har);
-                        tce.setHttpStat(answHttpStat.getItem());
+                        if (answHttpStat.getItem() == null) {
+                            LOG.warn("No HttpStat built from Har for execution {} (Har empty or without stat), skipping stats save.", tce.getId());
+                        } else {
+                            tce.setHttpStat(answHttpStat.getItem());
 
-                        testCaseExecutionHttpStatService.create(answHttpStat.getItem());
+                            testCaseExecutionHttpStatService.create(answHttpStat.getItem());
 
-                        // Log Full HAR Network Execution
-                        try {
-                            tce.addFileList(recorderService.recordHar(tce, har));
-                        } catch (Exception ex) {
-                            LOG.error("Exception Saving Har Files " + tce.getId(), ex);
+                            // Log Full HAR Network Execution
+                            try {
+                                tce.addFileList(recorderService.recordHar(tce, har));
+                            } catch (Exception ex) {
+                                LOG.error("Exception Saving Har Files " + tce.getId(), ex);
+                            }
                         }
 
                     } catch (Exception ex) {
