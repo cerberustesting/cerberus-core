@@ -78,7 +78,6 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -139,7 +138,6 @@ public class RestService implements IRestService {
 
     private static final Logger LOG = LogManager.getLogger(RestService.class);
 
-    @NotThreadSafe
     class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
 
         public static final String METHOD_NAME = "DELETE";
