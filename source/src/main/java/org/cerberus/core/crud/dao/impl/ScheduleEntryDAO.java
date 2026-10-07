@@ -191,6 +191,33 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     }
 
     @Override
+    public AnswerList<ScheduleEntry> readAll() {
+        AnswerList<ScheduleEntry> ans = new AnswerList<>();
+        List<ScheduleEntry> objectList = new ArrayList<>();
+        final String query = "SELECT * FROM `scheduleentry` ORDER BY `name`, `ID`";
+        MessageEvent msg;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);
+                ResultSet resultSet = preStat.executeQuery()) {
+            while (resultSet.next()) {
+                objectList.add(this.loadFromResultSet(resultSet));
+            }
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        ans.setResultMessage(msg);
+        ans.setDataList(objectList);
+        return ans;
+    }
+
+    @Override
     public AnswerList<ScheduleEntry> readAllActive() {
         //LOG.debug("readAllActive is running");
         AnswerList<ScheduleEntry> ans = new AnswerList<>();

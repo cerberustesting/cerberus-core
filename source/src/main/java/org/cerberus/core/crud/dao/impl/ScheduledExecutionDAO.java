@@ -24,6 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IScheduledExecutionDAO;
@@ -37,6 +40,7 @@ import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -243,6 +247,39 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
             }
         }
         return new Answer(msg);
+    }
+
+    @Override
+    public AnswerList<ScheduledExecution> readSince(Timestamp since, int maxRows) {
+        AnswerList<ScheduledExecution> ans = new AnswerList<>();
+        List<ScheduledExecution> objectList = new ArrayList<>();
+        final String query = "SELECT * FROM `scheduledexecution` WHERE `scheduledDate` >= ? ORDER BY `scheduledDate` DESC LIMIT ?";
+        MessageEvent msg;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.since : " + since);
+        }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setTimestamp(1, since);
+            preStat.setInt(2, Math.min(maxRows, MAX_ROW_SELECTED));
+            try (ResultSet rs = preStat.executeQuery()) {
+                while (rs.next()) {
+                    objectList.add(factoryScheduledExecution.create(rs.getLong("ID"), rs.getLong("schedulerID"), rs.getString("scheduleName"),
+                            rs.getString("status"), rs.getString("comment"), rs.getString("UsrCreated"), rs.getString("UsrModif"),
+                            rs.getTimestamp("scheduledDate"), rs.getTimestamp("scheduleFireTime"), rs.getTimestamp("DateCreated"), rs.getTimestamp("DateModif")));
+                }
+            }
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        ans.setResultMessage(msg);
+        ans.setDataList(objectList);
+        return ans;
     }
 
 }

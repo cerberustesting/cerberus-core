@@ -321,6 +321,70 @@ const testcaseSimpleExecutionLabel = {
     modalsubtitle: {en:"Run your test case on specific environments, defining robots and parameters", fr:"Exécuter le cas de test sur les environnements selectionnés, avec les robots et paramètres choisis."}
 }
 
+const pageScheduledRunsLabel = {
+    title: { en: "Scheduled Runs", fr: "Exécutions planifiées" },
+    history: { en: "History", fr: "Historique" },
+    campaign: { en: "Campaign", fr: "Campagne" },
+    allcampaigns: { en: "All campaigns", fr: "Toutes les campagnes" },
+    refresh: { en: "Refresh", fr: "Rafraîchir" },
+    newschedule: { en: "New schedule", fr: "Nouvelle planification" },
+    close: { en: "Close", fr: "Fermer" },
+    refreshed: { en: "refreshed {0}", fr: "actualisé {0}" },
+    cronzone: { en: "cron evaluated in {0}", fr: "cron évalué dans le fuseau {0}" },
+    pickcampaign: { en: "Pick a campaign...", fr: "Choisir une campagne..." },
+    cronlabel: { en: "Cron (Quartz: sec min hour day-of-month month day-of-week)", fr: "Cron (Quartz : sec min heure jour-du-mois mois jour-de-semaine)" },
+    description: { en: "Description", fr: "Description" },
+    create: { en: "Create", fr: "Créer" },
+    presets: { en: "Presets", fr: "Préréglages" },
+    preset15: { en: "Every 15 min", fr: "Toutes les 15 min" },
+    presethourly: { en: "Hourly", fr: "Toutes les heures" },
+    presetdaily: { en: "Daily 02:00", fr: "Tous les jours à 02:00" },
+    presetweekdays: { en: "Weekdays 08:00", fr: "Jours ouvrés à 08:00" },
+    presetsunday: { en: "Sunday 22:00", fr: "Dimanche à 22:00" },
+    kpiactive: { en: "Active schedules", fr: "Planifications actives" },
+    kpiactivesub: { en: "out of {0} ({1} paused)", fr: "sur {0} ({1} en pause)" },
+    kpinext: { en: "Next run", fr: "Prochain run" },
+    kpinextnone: { en: "nothing planned", fr: "rien de prévu" },
+    kpifired: { en: "Fired", fr: "Déclenchées" },
+    kpifiredsub: { en: "over the last {0} day(s)", fr: "sur les {0} derniers jour(s)" },
+    kpisuccess: { en: "Trigger success", fr: "Succès du déclenchement" },
+    kpisuccesssub: { en: "campaigns accepted by the queue", fr: "campagnes acceptées par la file" },
+    kpierrors: { en: "Errors", fr: "Erreurs" },
+    kpierrorslast: { en: "last: {0}", fr: "dernière : {0}" },
+    kpierrorsnone: { en: "none on the period", fr: "aucune sur la période" },
+    upcoming: { en: "Upcoming runs", fr: "Prochains runs" },
+    upcomingempty: { en: "Nothing planned: no active schedule.", fr: "Rien de prévu : aucune planification active." },
+    when: { en: "When", fr: "Quand" },
+    in: { en: "In", fr: "Dans" },
+    schedules: { en: "Schedules", fr: "Planifications" },
+    schedulesempty: { en: "No schedule yet. Use \"New schedule\" to run a campaign on a cron.", fr: "Aucune planification. Utilisez « Nouvelle planification » pour lancer une campagne sur un cron." },
+    cron: { en: "Cron", fr: "Cron" },
+    state: { en: "State", fr: "État" },
+    lastrun: { en: "Last run", fr: "Dernier run" },
+    success: { en: "Success", fr: "Succès" },
+    active: { en: "active", fr: "active" },
+    paused: { en: "paused", fr: "en pause" },
+    pause: { en: "Pause", fr: "Mettre en pause" },
+    resume: { en: "Resume", fr: "Reprendre" },
+    delete: { en: "Delete", fr: "Supprimer" },
+    historytitle: { en: "History ({0})", fr: "Historique ({0})" },
+    historyempty: { en: "No scheduled execution on this period.", fr: "Aucune exécution planifiée sur cette période." },
+    scheduled: { en: "Scheduled", fr: "Planifiée" },
+    status: { en: "Status", fr: "Statut" },
+    detail: { en: "Detail", fr: "Détail" },
+    showmore: { en: "Show more ({0} left)", fr: "Afficher plus ({0} restants)" },
+    justnow: { en: "just now", fr: "à l'instant" },
+    ago: { en: "{0} ago", fr: "il y a {0}" },
+    now: { en: "now", fr: "maintenant" },
+    inx: { en: "in {0}", fr: "dans {0}" },
+    loaderror: { en: "Could not read the schedules. {0}", fr: "Impossible de lire les planifications. {0}" },
+    loadunreachable: { en: "Could not read the schedules (server unreachable).", fr: "Impossible de lire les planifications (serveur injoignable)." },
+    opfailed: { en: "Operation failed.", fr: "L'opération a échoué." },
+    opunreachable: { en: "Operation failed (server unreachable).", fr: "L'opération a échoué (serveur injoignable)." },
+    pickboth: { en: "Pick a campaign and a cron definition.", fr: "Choisissez une campagne et une définition cron." },
+    confirmdelete: { en: "Delete the schedule \"{0}\" of campaign {1} ?", fr: "Supprimer la planification « {0} » de la campagne {1} ?" }
+};
+
 const datePickerLabel = {
     year: {en:"Year", fr:"Année"},
     month: {en:"Month", fr:"Mois"},
@@ -339,4 +403,5 @@ window.applicationObjectLabel = applicationObjectLabel;
 window.testcaseSimpleCreationImportLabel = testcaseSimpleCreationImportLabel;
 window.testcaseSimpleCreationLabel = testcaseSimpleCreationLabel;
 window.testcaseSimpleExecutionLabel = testcaseSimpleExecutionLabel;
+window.pageScheduledRunsLabel = pageScheduledRunsLabel;
 window.datePickerLabel = datePickerLabel;

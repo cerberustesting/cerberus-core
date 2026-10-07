@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.core.crud.entity.ScheduledExecution;
 import org.cerberus.core.exception.CerberusException;
@@ -46,6 +47,13 @@ public interface IScheduledExecutionService {
      * @return
      */
     public Answer update(ScheduledExecution scheduledExecution);
+
+    /**
+     * @param since only the executions scheduled at or after this date
+     * @param maxRows maximum number of rows returned (most recent first)
+     * @return the scheduled executions, most recent first
+     */
+    public AnswerList<ScheduledExecution> readSince(Timestamp since, int maxRows);
 
     /**
      *

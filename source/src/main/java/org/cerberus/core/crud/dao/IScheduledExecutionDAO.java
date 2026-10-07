@@ -19,9 +19,11 @@
  */
 package org.cerberus.core.crud.dao;
 
+import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.ScheduledExecution;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerList;
 
 /**
  *
@@ -50,4 +52,11 @@ public interface IScheduledExecutionDAO {
      * @return
      */
     public Answer update(ScheduledExecution scheduledExecutionObject);
+
+    /**
+     * @param since only the executions scheduled at or after this date
+     * @param maxRows maximum number of rows returned (most recent first)
+     * @return the scheduled executions, most recent first
+     */
+    public AnswerList<ScheduledExecution> readSince(Timestamp since, int maxRows);
 }

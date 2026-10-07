@@ -176,6 +176,8 @@ public class WebSecurityRules {
                 // ── RunTest
                 .requestMatchers(
                         m("/RunTests.jsp"),
+                        m("/ScheduledRuns.jsp"),
+                        m("/ReadScheduledRuns"),
                         m("/findEnvironmentByCriteria"),
                         m("/UpdateTestCaseExecution"),
                         m("/RunExecutionInQueue"),
