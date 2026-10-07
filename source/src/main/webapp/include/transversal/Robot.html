@@ -11,7 +11,7 @@
     <div class="absolute inset-0 bg-slate-900/60" @click="open = false"></div>
 
     <!-- Modal Card -->
-    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-[900px] rounded-2xl'"
+    <div :class="isFullscreen ? 'w-full h-full rounded-none' : 'crb_card w-full max-w-5xl rounded-2xl'"
          :style="isFullscreen ? '' : 'max-height: calc(100vh - 4rem); margin: 2rem 1rem;'"
          class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col transition-all duration-300 z-10"
          x-transition:enter="transition ease-out duration-300"
@@ -60,7 +60,8 @@
                 <div style="width: 70px; flex-shrink: 0;">
                     <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" for="robotIsActive" name="activeField">Active</label>
                     <div class="flex items-center h-10">
-                        <input class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="robotIsActive" name="robotIsActive" type="checkbox" value="1">
+                        <input class="hidden" id="robotIsActive" name="robotIsActive" type="checkbox" value="1">
+                        <button type="button" role="switch" id="robotIsActiveSwitch" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300 dark:bg-slate-600"><span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span></button>
                     </div>
                 </div>
             </div>
@@ -70,9 +71,9 @@
         <div class="flex flex-col flex-1 min-h-0">
             <div class="w-full flex bg-slate-200 dark:bg-slate-700 p-1 mx-6 mb-2 rounded-lg shadow-sm h-10" style="width: calc(100% - 3rem);">
                 <template x-for="t in [
-                    {id:'definition', label:'Definition', name:'tabDefinition'},
-                    {id:'capabilities', label:'Capabilities', name:'tabCapabilities'},
-                    {id:'executors', label:'Executors', name:'tabExecutors'}
+                    {id:'definition', label:'Definition', name:'tabDefinition', counter:false, icon:'bot'},
+                    {id:'capabilities', label:'Capabilities', name:'tabCapabilities', counter:true, icon:'settings-2'},
+                    {id:'executors', label:'Executors', name:'tabExecutors', counter:true, icon:'network'}
                 ]" :key="t.id">
                     <button type="button" @click="robotTab = t.id"
                             :class="robotTab === t.id
@@ -80,7 +81,7 @@
                                 : 'bg-slate-200 dark:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'"
                             class="flex-1 flex items-center justify-center px-3 py-1.5 rounded-md transition-colors duration-200 text-xs whitespace-nowrap"
                             :name="t.name"
-                            x-text="t.label">
+                            ><i :data-lucide="t.icon" class="w-3.5 h-3.5 mr-1.5"></i><span x-text="t.label"></span><span x-show="t.counter" :id="'robotTabCount-' + t.id" class="ml-1.5 px-1.5 rounded-full bg-slate-300/70 dark:bg-slate-600 text-[10px] text-slate-700 dark:text-slate-200">0</span>
                     </button>
                 </template>
             </div>
@@ -98,97 +99,111 @@
 
                     <!-- TAB: Definition -->
                     <div x-show="robotTab === 'definition'" id="tabsEdit-1">
-                        <!-- Type -->
-                        <div class="mb-3">
-                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
-                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="type" id="type"></select>
-                        </div>
 
-                        <!-- Platform + Logo + Screen Size -->
-                        <div class="flex gap-3 mb-3">
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="platformField">Platform</label>
-                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="platform" name="robotPlatform"></select>
-                            </div>
-                            <div class="flex items-end pb-0.5" style="width: 44px;">
-                                <img id="platformLogo" class="h-9 rounded" src="./images/platform-XP.png">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="screensizeField">Screen Size</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="screensize" id="screensize" maxlength="250">
-                            </div>
+                        <!-- Execution environment -->
+                        <section class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-3">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="monitor" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Execution environment</span>
                         </div>
-
-                        <!-- Browser + Logo + Version -->
-                        <div class="flex gap-3 mb-3">
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="browserField">Browser</label>
-                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="browser" name="robotBrowser"></select>
+                            <div class="mb-3">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="typeField">Type</label>
+                                <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="type" id="type"></select>
                             </div>
-                            <div class="flex items-end pb-0.5" style="width: 44px;">
-                                <img id="browserLogo" class="h-9 rounded" src="./images/platform-XP.png">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="versionField">Version</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="version" id="version" maxlength="45">
-                            </div>
-                        </div>
-
-                        <!-- Accept Insecure Certs + Notifications + Extra Param -->
-                        <div class="flex gap-3 mb-3">
-                            <div style="width: 140px; flex-shrink: 0;">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="isAcceptInsecureCertsField">Accept Insecure Certs</label>
-                                <div class="flex items-center h-10">
-                                    <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="isAcceptInsecureCerts" name="isAcceptInsecureCerts">
+                            <div class="flex gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="platformField">Platform</label>
+                                    <div class="flex items-center gap-2">
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="platform" name="robotPlatform"></select>
+                                        <img id="platformLogo" class="h-9 rounded shrink-0" src="./images/platform-XP.png">
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="screensizeField">Screen Size</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="screensize" id="screensize" maxlength="250" placeholder="1920*1080">
+                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 !mb-0">Format: width*height.</p>
                                 </div>
                             </div>
-                            <div style="width: 180px; flex-shrink: 0;">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="acceptNotificationsField">Accept Notifications</label>
-                                <div class="flex items-center gap-1 h-10" id="acceptNotifications"
-                                     x-data="{ accNotif: '0' }"
-                                     @accnotif-preselect.window="accNotif = String($event.detail)">
-                                    <template x-for="opt in [{v:'0',tip:'Default'},{v:'1',tip:'Allow'},{v:'2',tip:'Block'}]" :key="opt.v">
-                                        <button type="button"
-                                                @click="accNotif = opt.v"
-                                                :title="opt.tip"
-                                                class="inline-flex items-center justify-center h-8 px-3 rounded-md border text-xs font-medium transition cursor-pointer"
-                                                :class="accNotif === opt.v
-                                                    ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 text-blue-700 dark:text-blue-300 ring-1 ring-blue-400/30'
-                                                    : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'"
-                                                x-text="opt.v"></button>
-                                    </template>
-                                    <input type="hidden" name="acceptNotifications" :value="accNotif">
+                        </section>
+
+                        <!-- Browser -->
+                        <section class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-3">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="globe" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Browser</span>
+                        </div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="browserField">Browser</label>
+                                    <div class="flex items-center gap-2">
+                                        <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="browser" name="robotBrowser"></select>
+                                        <img id="browserLogo" class="h-9 rounded shrink-0" src="./images/platform-XP.png">
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="versionField">Version</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="version" id="version" maxlength="45">
                                 </div>
                             </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="extraParamField">Extra Parameters</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="extraParam" id="extraParam" maxlength="1000">
+                            <div class="flex gap-3 mb-3">
+                                <div style="width: 140px; flex-shrink: 0;">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="isAcceptInsecureCertsField">Accept Insecure Certs</label>
+                                    <div class="flex items-center h-10">
+                                        <input type="checkbox" class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500" id="isAcceptInsecureCerts" name="isAcceptInsecureCerts">
+                                    </div>
+                                </div>
+                                <div style="width: 180px; flex-shrink: 0;">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="acceptNotificationsField">Accept Notifications</label>
+                                    <div class="flex items-center gap-1 h-10" id="acceptNotifications"
+                                         x-data="{ accNotif: '0' }"
+                                         @accnotif-preselect.window="accNotif = String($event.detail)">
+                                        <template x-for="opt in [{v:'0',tip:'Default'},{v:'1',tip:'Allow'},{v:'2',tip:'Block'}]" :key="opt.v">
+                                            <button type="button"
+                                                    @click="accNotif = opt.v"
+                                                    :title="opt.tip"
+                                                    class="inline-flex items-center justify-center h-8 px-3 rounded-md border text-xs font-medium transition cursor-pointer"
+                                                    :class="accNotif === opt.v
+                                                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 text-blue-700 dark:text-blue-300 ring-1 ring-blue-400/30'
+                                                        : 'border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                                                    x-text="opt.v"></button>
+                                        </template>
+                                        <input type="hidden" name="acceptNotifications" :value="accNotif">
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="extraParamField">Extra Parameters</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="extraParam" id="extraParam" maxlength="1000">
+                                </div>
                             </div>
-                        </div>
+                            <div class="flex gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="profileFolderField">Profile Folder</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="profileFolder" id="profileFolder" maxlength="400">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="useragentField">User Agent</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="useragent" id="useragent" maxlength="250">
+                                </div>
+                            </div>
+                        </section>
 
-                        <!-- Profile Folder + User Agent -->
-                        <div class="flex gap-3 mb-3">
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="profileFolderField">Profile Folder</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="profileFolder" id="profileFolder" maxlength="400">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="useragentField">User Agent</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="useragent" id="useragent" maxlength="250">
-                            </div>
+                        <!-- Description -->
+                        <section class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-3">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</span>
                         </div>
-
-                        <!-- Declination + Description -->
-                        <div class="flex gap-3 mb-3">
-                            <div style="width: 200px; flex-shrink: 0;">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="robotdecliField">Declination</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robotdecli" id="robotdecli" maxlength="100">
+                            <div class="flex gap-3">
+                                <div style="width: 200px; flex-shrink: 0;">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="robotdecliField">Declination</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" name="robotdecli" id="robotdecli" maxlength="100">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
+                                    <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="Description" name="description" maxlength="250">
+                                </div>
                             </div>
-                            <div class="flex-1">
-                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="descriptionField">Description</label>
-                                <input type="text" class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="Description" name="description" maxlength="250">
-                            </div>
-                        </div>
+                        </section>
                     </div>
 
                     <!-- TAB: Capabilities -->
@@ -197,45 +212,74 @@
                             <div class="flex items-center gap-2 mb-3">
                                 <i data-lucide="settings-2" class="w-4 h-4 text-blue-600"></i>
                                 <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Capabilities Configuration</span>
+                                <div class="ml-auto flex bg-slate-200 dark:bg-slate-700 p-0.5 rounded-md" role="tablist">
+                                    <button type="button" id="capViewListBtn" class="flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors"><i data-lucide="list" class="w-3.5 h-3.5"></i>List</button>
+                                    <button type="button" id="capViewJsonBtn" class="flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors"><i data-lucide="braces" class="w-3.5 h-3.5"></i>JSON</button>
+                                </div>
                             </div>
-                            <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                                <table class="w-full text-sm text-left" id="editCapabilitiesTable">
-                                    <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
-                                        <tr>
-                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300"></th>
-                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
-                                            <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editValueHeader" name="editValueHeader">Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="editCapabilitiesTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
-                                    </tbody>
-                                </table>
+
+                            <!-- List view (default) -->
+                            <div id="capListView">
+                                <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                                    <table class="w-full text-sm text-left" id="editCapabilitiesTable">
+                                        <thead class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 border-b-2 border-slate-300 dark:border-slate-600">
+                                            <tr>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 50px;" class="text-slate-600 dark:text-slate-300"></th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
+                                                <th style="padding: 12px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; min-width: 150px;" class="text-slate-600 dark:text-slate-300" id="editValueHeader" name="editValueHeader">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editCapabilitiesTableBody" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" id="addEditCapability"
+                                            class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                        <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                                        Add Capability
+                                    </button>
+                                </div>
                             </div>
-                            <div class="mt-3">
-                                <button type="button" id="addEditCapability"
-                                        class="flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                                    <svg width="14" height="14" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
-                                    Add Capability
-                                </button>
+
+                            <!-- JSON view: edit or paste, the form is updated -->
+                            <div id="capJsonView" class="hidden">
+                                <textarea id="capJsonText" spellcheck="false" rows="14"
+                                          class="w-full font-mono text-xs border rounded-md p-3 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                                          placeholder='{"browserName": "chrome", "goog:chromeOptions": {"args": ["--headless"]}}'></textarea>
+                                <div class="mt-2 flex items-center gap-2 text-xs">
+                                    <span id="capJsonDot" class="inline-block h-2 w-2 rounded-full bg-slate-400 shrink-0"></span>
+                                    <span id="capJsonStatus" class="text-slate-600 dark:text-slate-300"></span>
+                                </div>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 !mb-0">A JSON object: capability name &rarr; value. Objects and arrays are stored as JSON text. The list is updated when you leave the field or switch back to List.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB: Executors -->
+                    <!-- TAB: Executors (master / detail) -->
                     <div x-show="robotTab === 'executors'" id="tabsEdit-3">
-                        <!-- Load Balancing Method -->
-                        <div class="mb-3">
-                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbexemethodField">Load Balancing Method</label>
-                            <select class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="lbexemethod" name="lbexemethod"></select>
+                        <div class="flex items-end gap-4 mb-4 pb-3 border-b border-slate-200 dark:border-slate-700">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-semibold text-slate-700 dark:text-slate-300">Execution distribution</div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 !mb-0">How executions are spread across the active executors.</p>
+                            </div>
+                            <div style="width: 240px; flex-shrink: 0;">
+                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1" name="lbexemethodField">Load Balancing Method</label>
+                                <select class="w-full h-9 border rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all" id="lbexemethod" name="lbexemethod"></select>
+                            </div>
                         </div>
-                        <div id="listPanelEditExecutors">
-                            <table class="w-full text-sm" id="editExecutorsTable">
-                                <tbody id="editExecutorsTableBody">
-                                </tbody>
-                            </table>
-                            <button type="button" class="mt-3 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center gap-1.5" id="addEditExecutor">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Executor
-                            </button>
+                        <div id="robotExecutorWorkspace" class="flex gap-4" style="min-height: 380px;">
+                            <aside class="shrink-0 rounded-lg border border-slate-200 dark:border-slate-700 p-2 flex flex-col" style="width: 240px;">
+                                <div class="flex items-center gap-2 px-2 py-1 mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                    Executors
+                                    <span id="executorListCount" class="px-1.5 rounded-full bg-slate-200 dark:bg-slate-700 text-[10px] text-slate-600 dark:text-slate-300">0</span>
+                                </div>
+                                <div id="executorList" class="flex-1 overflow-y-auto"></div>
+                                <button type="button" id="addEditExecutor" class="mt-2 px-3 py-1.5 rounded-md border border-dashed border-slate-300 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 transition flex items-center justify-center gap-1.5">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Executor
+                                </button>
+                            </aside>
+                            <div id="executorDetails" class="flex-1 min-w-0"></div>
                         </div>
                     </div>
 
@@ -312,25 +356,25 @@
         $("#editRobotModal [name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
         $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
         $("#editRobotModal [name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
-        $("#editRobotModal [name='robotField']").html(doc.getDocOnline("robot", "robot"));
-        $("#editRobotModal [name='platformField']").html(doc.getDocOnline("robot", "platform"));
-        $("#editRobotModal [name='browserField']").html(doc.getDocOnline("robot", "browser"));
-        $("#editRobotModal [name='versionField']").html(doc.getDocOnline("robot", "version"));
-        $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
-        $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
-        $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
-        $("#editRobotModal [name='isAcceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
-        $("#editRobotModal [name='extraParamField']").html(doc.getDocOnline("robot", "ExtraParam"));
-        $("#editRobotModal [name='acceptNotificationsField']").html(doc.getDocOnline("robot", "AcceptNotifications"));
-        $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
-        $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
-        $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
-        $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
-        $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
-        $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
-        $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
-        $("#editRobotModal [name='lbexemethodField']").html(doc.getDocOnline("robot", "lbexemethod"));
-        $("#editRobotModal [name='typeField']").html(doc.getDocOnline("robot", "type"));
+        $("#editRobotModal [name='robotField']").html(doc.getDocLabel("robot", "robot"));
+        $("#editRobotModal [name='platformField']").html(doc.getDocLabel("robot", "platform"));
+        $("#editRobotModal [name='browserField']").html(doc.getDocLabel("robot", "browser"));
+        $("#editRobotModal [name='versionField']").html(doc.getDocLabel("robot", "version"));
+        $("#editRobotModal [name='activeField']").html(doc.getDocLabel("robot", "active"));
+        $("#editRobotModal [name='useragentField']").html(doc.getDocLabel("robot", "useragent"));
+        $("#editRobotModal [name='screensizeField']").html(doc.getDocLabel("robot", "screensize"));
+        $("#editRobotModal [name='isAcceptInsecureCertsField']").html(doc.getDocLabel("robot", "IsAcceptInsecureCerts"));
+        $("#editRobotModal [name='extraParamField']").html(doc.getDocLabel("robot", "ExtraParam"));
+        $("#editRobotModal [name='acceptNotificationsField']").html(doc.getDocLabel("robot", "AcceptNotifications"));
+        $("#editRobotModal [name='profileFolderField']").html(doc.getDocLabel("robot", "ProfileFolder"));
+        $("#editRobotModal [name='descriptionField']").html(doc.getDocLabel("robot", "description"));
+        $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocLabel("robot", "capabilityCapability"));
+        $("#editRobotModal [name='addValueHeader']").html(doc.getDocLabel("robot", "capabilityValue"));
+        $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocLabel("robot", "capabilityCapability"));
+        $("#editRobotModal [name='editValueHeader']").html(doc.getDocLabel("robot", "capabilityValue"));
+        $("#editRobotModal [name='robotdecliField']").html(doc.getDocLabel("robot", "robotdecli"));
+        $("#editRobotModal [name='lbexemethodField']").html(doc.getDocLabel("robot", "lbexemethod"));
+        $("#editRobotModal [name='typeField']").html(doc.getDocLabel("robot", "type"));
 
         displayInvariantList("robotActive", "ROBOTACTIVE", false);
         displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
@@ -356,14 +400,28 @@
         getSelectInvariant("ROBOTEXECUTORACTIVE", true);
         getSelectInvariant('PROXYTYPE', false);
 
+        $("#capViewListBtn").off("click").click(function () { setCapabilitiesView('list'); });
+        $("#capViewJsonBtn").off("click").click(function () { setCapabilitiesView('json'); });
+        $("#capJsonText").off("input blur")
+            .on("input", function () { paintCapJsonStatus(parseCapabilitiesJson($(this).val())); })
+            .on("blur", function () { applyCapabilitiesJson(); });
+
         $("#addEditCapability").off("click").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
-        $("#addEditExecutor").off("click").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
+        $("#addEditExecutor").off("click").click(addNewExecutor);
+
+        $("#robotIsActiveSwitch").off("click").click(function () {
+            var cb = $("#robotIsActive");
+            if (cb.prop("disabled")) return;
+            cb.prop("checked", !cb.prop("checked"));
+            paintRobotActiveSwitch();
+        });
 
         $("#editRobotButton").off("click").click(function () { confirmRobotModalHandler("EDIT"); });
         $("#addRobotButton").off("click").click(function () { confirmRobotModalHandler("ADD"); });
         $("#duplicateRobotButton").off("click").click(function () { confirmRobotModalHandler("DUPLICATE"); });
 
         $("#platform").off("change").change(function () {
+            if (typeof renderExecutorDetails === "function") renderExecutorDetails();
             if ($(this).val() !== "") {
                 $('#platformLogo').attr('src', './images/platform-' + $(this).val() + '.png');
             } else {
@@ -426,6 +484,10 @@
         var myServlet = "UpdateRobot";
         if ((mode === "ADD") || (mode === "DUPLICATE")) { myServlet = "CreateRobot"; }
 
+        if (capView === 'json' && !applyCapabilitiesJson()) {
+            showMessage(new Message("danger", "The capabilities JSON is invalid."), $('#editRobotModal'));
+            return;
+        }
         var capabilityTable = $("#editCapabilitiesTableBody tr");
         var capabilities = [];
         for (var i = 0; i < capabilityTable.length; i++) {
@@ -433,12 +495,7 @@
             if (!capability.toDelete) { capabilities.push(capability); }
         }
 
-        var executorTable = $("#editExecutorsTableBody tr");
-        var executors = [];
-        for (var i = 0; i < executorTable.length; i++) {
-            var executor = $(executorTable[i]).data("executor");
-            if (!executor.toDelete) { executors.push(executor); }
-        }
+        var executors = executorsState.filter(function (executor) { return !executor.toDelete; });
 
         var data = convertSerialToJSONObject(formEdit.serialize());
         data.capabilities = JSON.stringify(capabilities);
@@ -537,17 +594,23 @@
         }
     }
 
+    function paintRobotActiveSwitch() {
+        var cb = $("#robotIsActive");
+        paintSwitch($("#robotIsActiveSwitch"), cb.prop("checked"));
+        $("#robotIsActiveSwitch").toggleClass("opacity-50 cursor-not-allowed", cb.prop("disabled") === true);
+    }
+
     function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         var formEdit = $('#' + modalId);
         var doc = new Doc();
         var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT")) || (mode === "DUPLICATE") || (mode === "ADD"));
 
         if (mode === "EDIT") {
-            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_edit"));
+            $("[name='editRobotField']").html(doc.getDocLabel("page_global", "btn_edit"));
         } else if (mode === "ADD") {
-            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_add"));
+            $("[name='editRobotField']").html(doc.getDocLabel("page_global", "btn_add"));
         } else if (mode === "DUPLICATE") {
-            $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
+            $("[name='editRobotField']").html(doc.getDocLabel("page_global", "btn_duplicate"));
         }
 
         if (isEmpty(robot)) {
@@ -567,6 +630,9 @@
             formEdit.find("#extraParam").val("");
             window.dispatchEvent(new CustomEvent('accnotif-preselect', { detail: 0 }));
             formEdit.find("#isAcceptInsecureCerts").prop("checked", true);
+            loadCapabilitiesTable("editCapabilitiesTableBody", []);
+            loadExecutorsTable([]);
+            setCapabilitiesView('list', true);
         } else {
             if (mode === "EDIT") {
                 formEdit.find("#robotid").prop("value", robot.robotID);
@@ -599,7 +665,8 @@
             window.dispatchEvent(new CustomEvent('accnotif-preselect', { detail: robot.acceptNotifications }));
             formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
             loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
-            loadExecutorsTable("editExecutorsTableBody", robot.executors);
+            loadExecutorsTable(robot.executors);
+            setCapabilitiesView('list', true);
         }
 
         formEdit.find("#robotid").prop("readonly", true);
@@ -636,6 +703,97 @@
             formEdit.find("#type").prop("readonly", "readonly");
             formEdit.find("#extraParam").prop("readonly", "readonly");
         }
+        paintRobotActiveSwitch();
+    }
+
+    // ===== CAPABILITIES: list / JSON views =====
+    var capView = 'list';
+
+    // Rows of the list (not marked as deleted) as a JSON object: capability -> value (JSON text becomes an object).
+    function capabilitiesToJson() {
+        var obj = {};
+        $("#editCapabilitiesTableBody tr").each(function () {
+            var c = $(this).data("capability");
+            if (c.toDelete || isEmpty(c.capability)) return;
+            var v = c.value == null ? "" : c.value;
+            if (typeof v === "string" && /^\s*[\[{]/.test(v)) {
+                try { v = JSON.parse(v); } catch (ex) { /* keep as text */ }
+            }
+            obj[c.capability] = v;
+        });
+        return obj;
+    }
+
+    // Parses the JSON text. Returns {caps: [...]} or {error: "..."}.
+    function parseCapabilitiesJson(text) {
+        if (isEmpty(text) || text.trim() === "") return {caps: []};
+        var obj;
+        try { obj = JSON.parse(text); } catch (ex) { return {error: ex.message}; }
+        if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+            return {error: "Expected a JSON object: {\"capability\": \"value\"}."};
+        }
+        var existing = {};
+        $("#editCapabilitiesTableBody tr").each(function () {
+            var c = $(this).data("capability");
+            if (c && c.id) existing[c.capability] = c.id;
+        });
+        var caps = [];
+        $.each(obj, function (key, value) {
+            var v = (value !== null && typeof value === "object") ? JSON.stringify(value) : String(value === null ? "" : value);
+            caps.push({toDelete: false, id: existing[key] || 0, capability: key, value: v});
+        });
+        return {caps: caps};
+    }
+
+    function paintCapJsonStatus(res) {
+        if (res.error) {
+            $("#capJsonDot").attr("class", "inline-block h-2 w-2 rounded-full bg-red-500 shrink-0");
+            $("#capJsonStatus").text("Invalid JSON: " + res.error);
+        } else {
+            $("#capJsonDot").attr("class", "inline-block h-2 w-2 rounded-full bg-green-500 shrink-0");
+            $("#capJsonStatus").text("Valid JSON - " + res.caps.length + " capabilit" + (res.caps.length === 1 ? "y" : "ies"));
+        }
+    }
+
+    // Applies the JSON text to the list. Returns false (and shows the error) when it is invalid.
+    function applyCapabilitiesJson() {
+        var res = parseCapabilitiesJson($("#capJsonText").val());
+        paintCapJsonStatus(res);
+        if (res.error) return false;
+        loadCapabilitiesTable("editCapabilitiesTableBody", res.caps);
+        return true;
+    }
+
+    function paintCapViewButtons() {
+        var on = "bg-slate-50 dark:bg-slate-900 font-semibold", off = "text-slate-700 dark:text-slate-300 hover:text-slate-900";
+        $("#capViewListBtn").attr("class", "flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors " + (capView === 'list' ? on : off));
+        $("#capViewJsonBtn").attr("class", "flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors " + (capView === 'json' ? on : off));
+    }
+
+    // force: leave the JSON view without applying (used when the modal is (re)loaded).
+    function setCapabilitiesView(view, force) {
+        if (view === capView && !force) return true;
+        if (capView === 'json' && view === 'list' && !force) {
+            if (!applyCapabilitiesJson()) return false;
+        }
+        capView = view;
+        if (view === 'json') {
+            $("#capJsonText").val(JSON.stringify(capabilitiesToJson(), null, 2));
+            paintCapJsonStatus(parseCapabilitiesJson($("#capJsonText").val()));
+        }
+        $("#capListView").toggleClass("hidden", view !== 'list');
+        $("#capJsonView").toggleClass("hidden", view !== 'json');
+        paintCapViewButtons();
+        if (window.lucide) lucide.createIcons();
+        return true;
+    }
+
+    function updateCapabilityCounter() {
+        var n = 0;
+        $("#editCapabilitiesTableBody tr").each(function () {
+            if (!$(this).data("capability").toDelete) n++;
+        });
+        $("#robotTabCount-capabilities").text(n);
     }
 
     function loadCapabilitiesTable(tableBody, capabilities) {
@@ -644,17 +802,7 @@
             capability.toDelete = false;
             appendCapabilityRow(tableBody, capability);
         });
-    }
-
-    function loadExecutorsTable(tableBody, executors) {
-        $('#' + tableBody + ' tr').remove();
-        $.each(executors, function (idx, executor) {
-            executor.toDelete = false;
-            appendExecutorRow(tableBody, executor);
-        });
-        $('#' + tableBody + ' [data-toggle="popover"]').popover({
-            'placement': 'auto', 'container': '#listPanelEditExecutors'
-        });
+        updateCapabilityCounter();
     }
 
     function appendCapabilityRow(tableBody, capability) {
@@ -689,6 +837,7 @@
 
         deleteBtn.click(function () {
             capability.toDelete = !capability.toDelete;
+            updateCapabilityCounter();
             if (capability.toDelete) {
                 row.css({ "background": "#fef2f2", "opacity": "0.5" });
                 row.find("input").css({ "textDecoration": "line-through", "color": "#94a3b8", "background": "#fef2f2" });
@@ -708,202 +857,496 @@
         table.append(row);
     }
 
-    function appendExecutorRow(tableBody, executor) {
-        nbRow++;
-        var doc = new Doc();
-        var inputCls = "w-full h-9 border rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all";
-        var checkCls = "h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500";
-        var currentNbRow = nbRow;
-
-        function makeField(labelHtml, inputEl, extraClass) {
-            var wrap = $('<div class="' + (extraClass || '') + ' overflow-hidden"></div>');
-            var lbl = $('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 truncate overflow-hidden"></div>').html(labelHtml);
-            wrap.append(lbl).append(inputEl);
-            return wrap;
-        }
-
-        // Inputs
-        var deleteBtn = $('<button type="button" class="inline-flex items-center justify-center h-8 w-8 shrink-0 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition self-end mb-0.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>');
-        var selectActive = $('<input type="checkbox">').addClass(checkCls).prop("checked", executor.isActive);
-        var nameInput = $('<input maxlength="150">').addClass(inputCls).attr("placeholder", "-- " + doc.getDocLabel("robotexecutor", "executor") + " --").val(executor.executor);
-        var rankInput = $('<input>').addClass(inputCls).attr("placeholder", "Rank").val(executor.rank);
-        var hostInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Host --").val(executor.host);
-        var portInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Port --").val(executor.port);
-        var hostUserInput = $('<input>').addClass(inputCls).attr("placeholder", "-- User --").val(executor.hostUser);
-        var hostPasswordInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Password --").val(executor.hostPassword);
-        var deviceUdidInput = $('<input>').addClass(inputCls).attr("placeholder", "-- UDID --").val(executor.deviceUdid);
-        var deviceNameInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Name --").val(executor.deviceName);
-        var devicePortInput = $('<input>').addClass(inputCls).attr("placeholder", "-- Port --").val(executor.devicePort);
-        var deviceLockUnlockInput = $('<input type="checkbox">').addClass(checkCls).prop("checked", executor.isDeviceLockUnlock);
-        var executorProxyServiceHostInput = $('<input>').addClass(inputCls).val(executor.executorProxyServiceHost);
-        var executorProxyServicePortInput = $('<input>').addClass(inputCls).val(executor.executorProxyServicePort);
-        var executorBrowserProxyHostInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyHost);
-        var executorBrowserProxyPortInput = $('<input>').addClass(inputCls).val(executor.executorBrowserProxyPort);
-        var executorExtensionPortInput = $('<input>').addClass(inputCls).val(executor.executorExtensionPort);
-        var executorExtensionHostInput = $('<input>').addClass(inputCls).val(executor.executorExtensionHost);
-        var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false).addClass(inputCls);
-        var table = $("#" + tableBody);
-
-        // Proxy readonly logic
-        if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
-            executorProxyServiceHostInput.prop("readonly", true); executorProxyServicePortInput.prop("readonly", true);
-        }
-        if (executor.executorProxyType === 'NONE') {
-            executorBrowserProxyHostInput.prop("readonly", true); executorBrowserProxyPortInput.prop("readonly", true);
-        }
-        selectProxyTypeLnk.change(function () {
-            executor.executorProxyType = $(this).val();
-            var isNoneOrManual = (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL');
-            executorProxyServiceHostInput.prop("readonly", isNoneOrManual);
-            executorProxyServicePortInput.prop("readonly", isNoneOrManual);
-            executorBrowserProxyHostInput.prop("readonly", executor.executorProxyType === 'NONE');
-            executorBrowserProxyPortInput.prop("readonly", executor.executorProxyType === 'NONE');
-        });
-
-        // === BUILD CARD ===
-        var card = $('<div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4 mb-3 overflow-hidden"></div>');
-
-        // Line 1: Delete + Executor name + Active + Rank
-        var line1 = $('<div class="flex gap-3 mb-3"></div>');
-        line1.append(deleteBtn);
-        line1.append(makeField(doc.getDocOnline("robotexecutor", "executor"), nameInput, "flex-1 min-w-0"));
-        var activeWrap = $('<div style="width:55px; flex-shrink:0;"></div>');
-        activeWrap.append($('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1"></div>').html(doc.getDocOnline("robotexecutor", "active")));
-        activeWrap.append($('<div class="flex items-center h-9"></div>').append(selectActive));
-        line1.append(activeWrap);
-        line1.append(makeField(doc.getDocOnline("robotexecutor", "rank"), rankInput, "shrink-0").css("width", "70px"));
-        card.append(line1);
-
-        // Line 2: Host + Port
-        var line2 = $('<div class="flex gap-3 mb-3"></div>');
-        line2.append(makeField(doc.getDocOnline("robotexecutor", "host"), hostInput, "flex-1 min-w-0"));
-        line2.append(makeField(doc.getDocOnline("robotexecutor", "Port"), portInput, "shrink-0").css("width", "100px"));
-        card.append(line2);
-
-        // Line 3: Host User + Host Password
-        var line3 = $('<div class="flex gap-3 mb-3"></div>');
-        line3.append(makeField(doc.getDocOnline("robotexecutor", "hostUser"), hostUserInput, "flex-1 min-w-0"));
-        line3.append(makeField(doc.getDocOnline("robotexecutor", "hostPassword"), hostPasswordInput, "flex-1 min-w-0"));
-        card.append(line3);
-
-        // Advanced toggle
-        var advToggle = $('<button type="button" class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-sky-500 transition mb-2"><i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200 adv-icon"></i> Advanced</button>');
-        var advPanel = $('<div class="hidden" id="col' + currentNbRow + '"></div>');
-
-        // Device section
-        var devTitle = $('<div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2 mt-1">Device</div>');
-        var devLine1 = $('<div class="flex gap-3 mb-3"></div>');
-        devLine1.append(makeField(doc.getDocOnline("robotexecutor", "deviceUdid"), deviceUdidInput, "flex-1 min-w-0"));
-        devLine1.append(makeField(doc.getDocOnline("robotexecutor", "deviceName"), deviceNameInput, "flex-1 min-w-0"));
-        var devLine2 = $('<div class="flex gap-3 mb-3"></div>');
-        devLine2.append(makeField(doc.getDocOnline("robotexecutor", "devicePort"), devicePortInput, "shrink-0").css("width", "100px"));
-        var lockWrap = $('<div style="width:100px; flex-shrink:0;"></div>');
-        lockWrap.append($('<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1"></div>').html(doc.getDocOnline("robotexecutor", "deviceLockUnlock")));
-        lockWrap.append($('<div class="flex items-center h-9"></div>').append(deviceLockUnlockInput));
-        devLine2.append(lockWrap);
-        devLine2.append($('<div class="flex-1"></div>'));
-
-        // Proxy section
-        var proxyTitle = $('<div class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Proxy</div>');
-        var proxyLine0 = $('<div class="flex gap-3 mb-3"></div>');
-        proxyLine0.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyType"), selectProxyTypeLnk.val(executor.executorProxyType), "flex-1 min-w-0"));
-        proxyLine0.append($('<div class="flex-1"></div>'));
-        var proxyLine1 = $('<div class="flex gap-3 mb-3"></div>');
-        proxyLine1.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyServiceHost"), executorProxyServiceHostInput, "flex-1 min-w-0"));
-        proxyLine1.append(makeField(doc.getDocOnline("robotexecutor", "executorProxyServicePort"), executorProxyServicePortInput, "shrink-0").css("width", "100px"));
-        var proxyLine2 = $('<div class="flex gap-3 mb-3"></div>');
-        proxyLine2.append(makeField(doc.getDocOnline("robotexecutor", "executorBrowserProxyHost"), executorBrowserProxyHostInput, "flex-1 min-w-0"));
-        proxyLine2.append(makeField(doc.getDocOnline("robotexecutor", "executorBrowserProxyPort"), executorBrowserProxyPortInput, "shrink-0").css("width", "100px"));
-
-        // Extension
-        var extLine = $('<div class="flex gap-3"></div>');
-        extLine.append(makeField(doc.getDocOnline("robotexecutor", "executorExtensionHost"), executorExtensionHostInput, "flex-1 min-w-0"));
-        extLine.append(makeField(doc.getDocOnline("robotexecutor", "executorExtensionPort"), executorExtensionPortInput, "shrink-0").css("width", "120px"));
-
-        advPanel.append(devTitle).append(devLine1).append(devLine2);
-        advPanel.append(proxyTitle).append(proxyLine0).append(proxyLine1).append(proxyLine2);
-        advPanel.append(extLine);
-
-        advToggle.on('click', function() {
-            advPanel.toggleClass('hidden');
-            $(this).find('.adv-icon').toggleClass('rotate-180');
-        });
-
-        card.append(advToggle).append(advPanel);
-
-        // Wrap in TR > TD
-        var row = $("<tr></tr>").addClass("border-none");
-        var td = $("<td colspan='3' class='p-0'></td>").append(card);
-        row.append(td);
-
-        // Delete toggle
-        deleteBtn.click(function () {
-            executor.toDelete = !executor.toDelete;
-            if (executor.toDelete) { card.addClass("opacity-40"); } else { card.removeClass("opacity-40"); }
-        });
-
-        // Bind changes
-        selectActive.change(function () { executor.isActive = $(this).prop("checked"); });
-        nameInput.change(function () { executor.executor = $(this).val(); });
-        rankInput.change(function () { executor.rank = $(this).val(); });
-        hostInput.change(function () { executor.host = $(this).val(); });
-        portInput.change(function () { executor.port = $(this).val(); });
-        hostUserInput.change(function () { executor.hostUser = $(this).val(); });
-        hostPasswordInput.change(function () { executor.hostPassword = $(this).val(); });
-        deviceNameInput.change(function () { executor.deviceName = $(this).val(); });
-        deviceUdidInput.change(function () { executor.deviceUdid = $(this).val(); });
-        devicePortInput.change(function () { executor.devicePort = $(this).val(); });
-        deviceLockUnlockInput.change(function () { executor.isDeviceLockUnlock = $(this).prop("checked"); });
-        executorProxyServiceHostInput.change(function () { executor.executorProxyServiceHost = $(this).val(); });
-        executorProxyServicePortInput.change(function () { executor.executorProxyServicePort = $(this).val(); });
-        executorBrowserProxyHostInput.change(function () { executor.executorBrowserProxyHost = $(this).val(); });
-        executorBrowserProxyPortInput.change(function () { executor.executorBrowserProxyPort = $(this).val(); });
-        executorExtensionPortInput.change(function () { executor.executorExtensionPort = $(this).val(); });
-        executorExtensionHostInput.change(function () { executor.executorExtensionHost = $(this).val(); });
-
-        // Autocomplete
-        hostInput.autocomplete({
-            source: getInvariantArray("ROBOTHOST", false), minLength: 0,
-            messages: { noResults: '', results: function () { return ''; } }
-        }).on("focus", function () { $(this).autocomplete("search", ""); });
-        executorProxyServiceHostInput.autocomplete({
-            source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0,
-            messages: { noResults: '', results: function () { return ''; } }
-        }).on("focus", function () { $(this).autocomplete("search", ""); });
-        executorBrowserProxyHostInput.autocomplete({
-            source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0,
-            messages: { noResults: '', results: function () { return ''; } }
-        }).on("focus", function () { $(this).autocomplete("search", ""); });
-        executorExtensionHostInput.autocomplete({
-            source: getInvariantArray("ROBOTHOST", false), minLength: 0,
-            messages: { noResults: '', results: function () { return ''; } }
-        }).on("focus", function () { $(this).autocomplete("search", ""); });
-
-        executor.executorProxyType = selectProxyTypeLnk.prop("value");
-        row.data("executor", executor);
-        table.append(row);
-        if (window.lucide) lucide.createIcons();
-    }
-
     function addNewCapabilityRow(tableBody) {
         var newCapability = { toDelete: false, id: 0, capability: "", value: "" };
         appendCapabilityRow(tableBody, newCapability);
+        updateCapabilityCounter();
     }
 
-    function addNewExecutorRow(tableBody) {
-        var nbExecutorTable = $("#editExecutorsTableBody tr").length;
-        nbExecutorTable++;
+
+
+    // ===== EXECUTORS: master/detail editor =====
+    // State lives in this array (not in the DOM) so that the list and the detail
+    // panel can be re-rendered freely. confirmRobotModalHandler reads it on save.
+    var executorsState = [];
+    var selectedExecutor = null;
+    var executorSubTab = 'connection';
+    var executorAuthOpen = new WeakMap();
+    var executorExtOpen = new WeakMap();
+    var executorProxyPrevType = new WeakMap();
+
+    var EXE_INPUT = "w-full h-9 border rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all";
+    var EXE_LABEL = "block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1";
+    var EXE_SECTION = "rounded-lg border border-slate-200 dark:border-slate-700 p-4 mb-3";
+
+    // Device settings only make sense for mobile robots.
+    function isMobilePlatform() {
+        return /^(ios|android)/i.test($("#editRobotModal #platform").val() || "");
+    }
+
+    // Whether the Proxy / Extension feature of the executor is switched on (shown as a dot on its tab).
+    function exeProxyOn(e) {
+        return !!e.executorProxyType && e.executorProxyType !== 'NONE';
+    }
+
+    function exeExtensionOn(e) {
+        if (!executorExtOpen.has(e)) {
+            executorExtOpen.set(e, !isEmpty(e.executorExtensionHost) || Number(e.executorExtensionPort) > 0);
+        }
+        return executorExtOpen.get(e);
+    }
+
+    function refreshExecutorTabDots() {
+        var e = selectedExecutor;
+        if (!e) return;
+        $("#exeTabDot-proxy").toggleClass("hidden", !exeProxyOn(e));
+        $("#exeTabDot-extension").toggleClass("hidden", !exeExtensionOn(e));
+    }
+
+    function exeAuthOn(e) {
+        if (!executorAuthOpen.has(e)) {
+            executorAuthOpen.set(e, !isEmpty(e.hostUser) || !isEmpty(e.hostPassword));
+        }
+        return executorAuthOpen.get(e);
+    }
+
+    // Toggle switch, same pattern as the TestCase header modal (blue = on).
+    function paintSwitch(btn, on) {
+        btn.attr("aria-checked", on)
+            .toggleClass("bg-blue-600", on).toggleClass("bg-slate-300 dark:bg-slate-600", !on);
+        btn.children("span").toggleClass("translate-x-5", on).toggleClass("translate-x-0", !on);
+    }
+
+    function exeSwitch(checked, onChange, disabled) {
+        var on = checked === true;
+        var btn = $('<button type="button" role="switch" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"><span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span></button>');
+        btn.on("click", function () { if (disabled) return; on = !on; paintSwitch(btn, on); onChange(on); });
+        paintSwitch(btn, on);
+        if (disabled) btn.prop("disabled", true).addClass("opacity-50 cursor-not-allowed");
+        return btn;
+    }
+
+    // Text/number input bound to executor[key]. opts: {placeholder, type, onInput}
+    function exeField(label, executor, key, widthStyle, opts) {
+        opts = opts || {};
+        var input = $('<input autocomplete="off">').addClass(EXE_INPUT).val(executor[key] == null ? "" : executor[key]);
+        if (opts.type) input.attr("type", opts.type);
+        if (opts.placeholder) input.attr("placeholder", opts.placeholder);
+        if (opts.maxlength) input.attr("maxlength", opts.maxlength);
+        input.on("input change", function () {
+            executor[key] = $(this).val();
+            if (opts.onInput) opts.onInput();
+        });
+        if (opts.onChange) input.on("change", opts.onChange);
+        var wrap = $('<div class="min-w-0"></div>').attr("style", widthStyle || "flex:1 1 0");
+        wrap.append($('<label class="' + EXE_LABEL + '"></label>').html(label)).append(input);
+        wrap.input = input;
+        return wrap;
+    }
+
+    function exeRow() {
+        return $('<div class="flex gap-3 mb-3"></div>');
+    }
+
+    function exeSectionTitle(icon, text, right) {
+        var t = $('<div class="flex items-center gap-2 mb-3"></div>')
+            .append('<i data-lucide="' + icon + '" class="w-4 h-4 text-blue-600"></i>')
+            .append($('<span class="text-sm font-semibold text-slate-700 dark:text-slate-300"></span>').text(text));
+        if (right) t.append($('<div class="ml-auto"></div>').append(right));
+        return t;
+    }
+
+    function exeSwitchRow(label, hint, checked, onChange, disabled) {
+        var left = $('<div></div>')
+            .append($('<div class="text-sm font-medium text-slate-700 dark:text-slate-300"></div>').html(label));
+        if (hint) left.append($('<div class="text-xs text-slate-500 dark:text-slate-400"></div>').text(hint));
+        return $('<div class="flex items-center justify-between gap-3"></div>').append(left).append(exeSwitch(checked, onChange, disabled));
+    }
+
+    // Titled section with an on/off switch; the body is only drawn while on.
+    function exeOptionalSection(icon, label, on, onChange, drawBody, offHint) {
+        var box = $('<div class="' + EXE_SECTION + '"></div>');
+        var body = $('<div class="mt-3"></div>');
+        function draw(isOn) {
+            body.empty();
+            if (isOn) {
+                drawBody(body);
+            } else {
+                body.append($('<p class="text-xs text-slate-500 dark:text-slate-400 !m-0"></p>').text(offHint));
+            }
+            if (window.lucide) lucide.createIcons();
+            refreshExecutorTabDots();
+        }
+        box.append(exeSectionTitle(icon, label, exeSwitch(!!on, function (v) { onChange(v); draw(v); }))).append(body);
+        draw(!!on);
+        return box;
+    }
+
+    // Status line of the Cerberus Proxy: reachable ? authenticated ? (authentication is defined on the executor).
+    function proxyStatusBox(e) {
+        var box = $('<div class="rounded-md border border-slate-200 dark:border-slate-700 px-3 py-2 flex items-center gap-2"></div>');
+        box.append('<span id="proxyStatusDot" class="inline-block h-2 w-2 rounded-full bg-slate-400 shrink-0"></span>')
+            .append('<span id="proxyStatusText" class="text-xs text-slate-600 dark:text-slate-300 flex-1 min-w-0">Not checked.</span>')
+            .append($('<button type="button" class="px-3 py-1 rounded-md border border-slate-300 dark:border-slate-600 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition shrink-0">Test connection</button>')
+                .on("click", function () { checkProxyConnection(e); }));
+        return box;
+    }
+
+    var proxyCheckSeq = 0;
+    function checkProxyConnection(e) {
+        var dot = $("#proxyStatusDot"), text = $("#proxyStatusText");
+        if (dot.length === 0) return;
+        function paint(color, msg) {
+            dot.attr("class", "inline-block h-2 w-2 rounded-full shrink-0 " + color);
+            text.text(msg);
+        }
+        if (isEmpty(e.executorProxyServiceHost)) {
+            paint("bg-slate-400", "Enter the Proxy service host to test the connection.");
+            return;
+        }
+        var seq = ++proxyCheckSeq;
+        paint("bg-amber-400", "Checking...");
+        var port = parseInt(e.executorProxyServicePort, 10);
+        $.ajax({
+            url: "api/public/robots/proxy/check", method: "POST", async: true,
+            headers: {'X-API-VERSION': 1}, dataType: 'json', contentType: 'application/json',
+            data: JSON.stringify({
+                host: e.executorProxyServiceHost, port: isNaN(port) ? null : port,
+                authMode: e.executorProxyAuthMode || "NONE", authToken: e.executorProxyAuthToken || "",
+                oauthTokenUrl: e.executorProxyOauthTokenUrl || "", oauthClientId: e.executorProxyOauthClientId || "",
+                oauthClientSecret: e.executorProxyOauthClientSecret || "",
+                robot: originalRobotName, executor: e.executor
+            }),
+            success: function (response) {
+                if (seq !== proxyCheckSeq) return; // a more recent check is running
+                var r = response.data || {};
+                var auth = "Authentication: " + r.authMode + ". ";
+                paint(r.status === "ok" ? "bg-green-500" : "bg-red-500", (r.status === "ok" ? "" : "[" + r.status + "] ") + auth + (r.message || ""));
+            },
+            error: function () {
+                if (seq === proxyCheckSeq) paint("bg-red-500", "Connection test failed.");
+            }
+        });
+    }
+
+    function updateExecutorCounters() {
+        var n = executorsState.filter(function (e) { return !e.toDelete; }).length;
+        $("#robotTabCount-executors, #executorListCount").text(n);
+    }
+
+    function renderExecutorList() {
+        var list = $("#executorList").empty();
+        $.each(executorsState, function (idx, e) {
+            var selected = (e === selectedExecutor);
+            var item = $('<button type="button" class="w-full flex items-center gap-2 text-left px-3 py-2 rounded-md border transition mb-1.5"></button>')
+                .addClass(selected
+                    ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600"
+                    : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800")
+                .toggleClass("opacity-40", e.toDelete === true);
+            var addr = (isEmpty(e.host) ? "" : e.host) + (isEmpty(e.port) ? "" : ":" + e.port);
+            var nameEl = $('<span class="block text-sm font-medium text-slate-900 dark:text-slate-100 truncate"></span>').text(isEmpty(e.executor) ? "-" : e.executor);
+            if (e.toDelete) nameEl.addClass("line-through");
+            var status = $('<span class="flex items-center gap-1.5 mt-1 text-[10px] text-slate-500 dark:text-slate-400"></span>')
+                .append($('<span class="inline-block h-1.5 w-1.5 rounded-full"></span>').addClass(e.isActive ? "bg-green-500" : "bg-slate-400"))
+                .append(document.createTextNode(e.isActive ? "Active" : "Inactive"));
+            item.append('<i data-lucide="server" class="w-4 h-4 shrink-0 text-slate-400"></i>')
+                .append($('<span class="min-w-0 flex-1"></span>').append(nameEl)
+                    .append($('<span class="block text-xs text-slate-500 dark:text-slate-400 truncate"></span>').text(addr))
+                    .append(status))
+                .append('<i data-lucide="chevron-right" class="w-3 h-3 shrink-0 text-slate-400"></i>');
+            item.on("click", function () { selectExecutor(e); });
+            list.append(item);
+        });
+        if (executorsState.length === 0) {
+            list.append('<div class="text-xs text-slate-400 px-2 py-4 text-center">No executor</div>');
+        }
+        updateExecutorCounters();
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function selectExecutor(e) {
+        selectedExecutor = e;
+        renderExecutorList();
+        renderExecutorDetails();
+    }
+
+    function renderExecutorDetails() {
+        var panel = $("#executorDetails").empty();
+        var e = selectedExecutor;
+        if (!e) {
+            panel.append('<div class="h-full flex items-center justify-center text-sm text-slate-400">Select or add an executor</div>');
+            return;
+        }
+        var doc = new Doc();
+
+        // Heading: name + caption, icon-only delete
+        var delBtn = $('<button type="button" class="inline-flex items-center justify-center h-9 w-9 shrink-0 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"></button>')
+            .attr("title", e.toDelete ? "Restore this executor" : "Delete this executor")
+            .append('<i data-lucide="' + (e.toDelete ? "undo-2" : "trash-2") + '" class="w-4 h-4"></i>')
+            .on("click", function () { deleteExecutor(e); });
+        panel.append($('<div class="flex items-start justify-between gap-3 mb-3"></div>')
+            .append($('<div class="min-w-0"></div>')
+                .append($('<h5 class="!text-base !font-semibold !m-0 text-slate-900 dark:text-slate-100 truncate"></h5>').text(isEmpty(e.executor) ? "-" : e.executor))
+                .append($('<p class="text-xs text-slate-500 dark:text-slate-400 !m-0"></p>').text(e.toDelete ? "Will be deleted on save" : "Execution endpoint of the robot")))
+            .append(delBtn));
+
+        // Sub-tabs (same segmented style as the modal tabs)
+        var defs = [
+            {id: 'connection', label: 'Connection', icon: 'cable'},
+            {id: 'proxy', label: 'Proxy', icon: 'route', dot: exeProxyOn(e)},
+            {id: 'extension', label: 'Extension', icon: 'puzzle', dot: exeExtensionOn(e)}
+        ];
+        if (isMobilePlatform()) defs.push({id: 'device', label: 'Device', icon: 'smartphone'});
+        if (!defs.some(function (t) { return t.id === executorSubTab; })) executorSubTab = 'connection';
+        var tabs = $('<div class="flex bg-slate-200 dark:bg-slate-700 p-1 mb-3 rounded-lg shadow-sm h-9" role="tablist"></div>');
+        $.each(defs, function (i, t) {
+            var b = $('<button type="button" role="tab" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-1 rounded-md transition-colors duration-200 text-xs whitespace-nowrap"></button>')
+                .addClass(executorSubTab === t.id
+                    ? "bg-slate-50 font-semibold dark:bg-slate-900"
+                    : "text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white")
+                .append('<i data-lucide="' + t.icon + '" class="w-3.5 h-3.5"></i>')
+                .append(document.createTextNode(t.label));
+            if (t.dot !== undefined) {
+                b.append($('<span class="inline-block h-1.5 w-1.5 rounded-full bg-blue-600"></span>').attr("id", "exeTabDot-" + t.id).toggleClass("hidden", !t.dot));
+            }
+            b.on("click", function () { executorSubTab = t.id; renderExecutorDetails(); });
+            tabs.append(b);
+        });
+        panel.append(tabs);
+
+        var content = $('<div class="' + (e.toDelete ? "opacity-50 pointer-events-none" : "") + '"></div>');
+        if (executorSubTab === 'connection') {
+            renderExecutorConnection(content, e, doc);
+        } else if (executorSubTab === 'device') {
+            renderExecutorDevice(content, e, doc);
+        } else if (executorSubTab === 'extension') {
+            renderExecutorExtension(content, e, doc);
+        } else {
+            renderExecutorProxy(content, e, doc);
+        }
+        panel.append(content);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function renderExecutorConnection(c, e, doc) {
+        var sec = $('<div class="' + EXE_SECTION + '"></div>');
+        sec.append($('<div class="mb-3"></div>').append(exeField(doc.getDocLabel("robotexecutor", "executor") + '<span class="text-blue-600">*</span>', e, "executor", "width:100%",
+            {maxlength: 150, onInput: function () { renderExecutorList(); $("#executorDetails h5").text(isEmpty(e.executor) ? "-" : e.executor); }})));
+        var hostField = exeField(doc.getDocLabel("robotexecutor", "host"), e, "host", "flex:1 1 0", {onInput: renderExecutorList});
+        sec.append(exeRow().addClass("!mb-0")
+            .append(hostField)
+            .append(exeField(doc.getDocLabel("robotexecutor", "Port"), e, "port", "width:110px;flex-shrink:0", {onInput: renderExecutorList}))
+            .append(exeField(doc.getDocLabel("robotexecutor", "rank"), e, "rank", "width:90px;flex-shrink:0", {type: "number"})));
+        c.append(sec);
+        hostField.input.autocomplete({source: getInvariantArray("ROBOTHOST", false), minLength: 0,
+            messages: {noResults: '', results: function () { return ''; }}}).on("focus", function () { $(this).autocomplete("search", ""); });
+
+        // Authentication (optional)
+        var authBox = $('<div class="' + EXE_SECTION + '"></div>');
+        var authFields = $('<div class="mt-3"></div>');
+        function drawAuth() {
+            authFields.empty();
+            if (exeAuthOn(e)) {
+                authFields.append(exeRow().addClass("!mb-0")
+                    .append(exeField(doc.getDocLabel("robotexecutor", "hostUser"), e, "hostUser"))
+                    .append(exeField(doc.getDocLabel("robotexecutor", "hostPassword"), e, "hostPassword", "flex:1 1 0", {type: "password"})));
+            } else {
+                authFields.append('<p class="text-xs text-slate-500 dark:text-slate-400 !m-0">No user or password.</p>');
+            }
+        }
+        authBox.append(exeSectionTitle("shield-check", "Authentication",
+            exeSwitch(exeAuthOn(e), function (on) {
+                executorAuthOpen.set(e, on);
+                if (!on) { e.hostUser = ""; e.hostPassword = ""; }
+                drawAuth();
+            })).find("span.text-sm").after('<span class="text-[10px] text-slate-400 ml-2">Optional</span>').end());
+        authBox.append(authFields);
+        drawAuth();
+        c.append(authBox);
+
+        // Active
+        c.append($('<div class="' + EXE_SECTION + '"></div>').append(
+            exeSwitchRow("Executor active", "Available for new executions.", e.isActive === true, function (on) {
+                e.isActive = on; renderExecutorList();
+            })));
+    }
+
+    function renderExecutorProxy(c, e, doc) {
+        var proxySrc = {source: getInvariantArray("ROBOTPROXYHOST", false), minLength: 0, messages: {noResults: '', results: function () { return ''; }}};
+        function ac(field) {
+            field.input.autocomplete(proxySrc).on("focus", function () { $(this).autocomplete("search", ""); });
+            return field;
+        }
+        var drawApi = null; // set when the API section is drawn
+        function recheck() { checkProxyConnection(e); }
+        function section(icon, title) {
+            return $('<div class="' + EXE_SECTION + '"></div>').append(exeSectionTitle(icon, title));
+        }
+
+        // Proxy type: standalone at the top, it drives which sections are needed below.
+        var types = [["NONE", "NONE (no proxy)"], ["MANUAL", "MANUAL"], ["MITMPROXY", "CERBERUS-PROXY"]];
+        if (["NONE", "MANUAL", "MITMPROXY"].indexOf(e.executorProxyType || "NONE") < 0) {
+            types.push([e.executorProxyType, e.executorProxyType]); // legacy value: kept, never changed silently
+        }
+        var typeSel = $('<select></select>').addClass(EXE_INPUT);
+        $.each(types, function (k, t) { typeSel.append($('<option></option>').val(t[0]).text(t[1])); });
+        typeSel.val(e.executorProxyType || "NONE");
+        var browser = section("globe", "Browser");
+        function drawBrowser() {
+            browser.children().slice(1).remove(); // keep the title
+            browser.toggleClass("hidden", e.executorProxyType === 'NONE');
+            if (e.executorProxyType !== 'NONE') {
+                browser.append(exeRow().addClass("!mb-0").addClass("mt-3")
+                    .append(ac(exeField("Host", e, "executorBrowserProxyHost")))
+                    .append(exeField("Port", e, "executorBrowserProxyPort", "width:110px;flex-shrink:0", e.executorProxyType === 'MITMPROXY' ? {placeholder: "0 = auto"} : {})));
+            }
+            refreshExecutorTabDots();
+        }
+        typeSel.on("change", function () { e.executorProxyType = $(this).val(); drawBrowser(); drawRest(); });
+        e.executorProxyType = typeSel.val();
+        var restTop = $('<div></div>'); // proxy service + authentication, above the browser section
+        c.append($('<div class="mb-3"></div>').append($('<label class="' + EXE_LABEL + '"></label>').html(doc.getDocLabel("robotexecutor", "executorProxyType"))).append(typeSel));
+        c.append(restTop);
+        c.append(browser);
+        drawBrowser();
+
+        // Only with the Cerberus Proxy: the proxy service, its authentication and the API relay are useless otherwise.
+        var restBottom = $('<div></div>'); // API, below the browser section
+        c.append(restBottom);
+        function drawRest() {
+            restTop.empty();
+            restBottom.empty();
+            if (e.executorProxyType === 'MITMPROXY' || e.executorProxyType === 'NETWORKTRAFFIC') {
+            // 2. Cerberus Robot Proxy: where the Cerberus Proxy is, shared by the browser (CERBERUS-PROXY) and the API (relay).
+            var service = section("server", "Cerberus Robot Proxy");
+            service.append(exeRow()
+                .append(ac(exeField("Host", e, "executorProxyServiceHost", "flex:1 1 0", {onChange: recheck})))
+                .append(exeField("Port", e, "executorProxyServicePort", "width:110px;flex-shrink:0", {onChange: recheck})));
+            service.append(proxyStatusBox(e));
+            restTop.append(service);
+
+            // 3. Authentication towards the proxy service (NONE, TOKEN or OAUTH).
+            var auth = section("shield-check", "Authentication");
+            var authMode = $('<select></select>').addClass(EXE_INPUT);
+            $.each(["NONE", "TOKEN", "OAUTH"], function (k, m) { authMode.append($('<option></option>').val(m).text(m)); });
+            authMode.val(e.executorProxyAuthMode || "NONE");
+            var authFields = $('<div class="mt-3"></div>');
+            function drawAuth() {
+                authFields.empty();
+                var rc = {onChange: recheck};
+                if (e.executorProxyAuthMode === 'TOKEN') {
+                    authFields.append(exeRow().addClass("!mb-0").append(exeField(doc.getDocLabel("robotexecutor", "executorProxyAuthToken"), e, "executorProxyAuthToken", "flex:1 1 0", $.extend({type: "password"}, rc))));
+                } else if (e.executorProxyAuthMode === 'OAUTH') {
+                    authFields.append(exeRow().append(exeField(doc.getDocLabel("robotexecutor", "executorProxyOauthTokenUrl"), e, "executorProxyOauthTokenUrl", "flex:1 1 0", rc)));
+                    authFields.append(exeRow().addClass("!mb-0")
+                        .append(exeField(doc.getDocLabel("robotexecutor", "executorProxyOauthClientId"), e, "executorProxyOauthClientId", "flex:1 1 0", rc))
+                        .append(exeField(doc.getDocLabel("robotexecutor", "executorProxyOauthClientSecret"), e, "executorProxyOauthClientSecret", "flex:1 1 0", $.extend({type: "password"}, rc))));
+                } else {
+                    authFields.append('<p class="text-xs text-slate-500 dark:text-slate-400 !m-0">The proxy service is called without authentication.</p>');
+                }
+                authFields.find("input[type=password]").attr("autocomplete", "new-password");
+            }
+            authMode.on("change", function () { e.executorProxyAuthMode = $(this).val(); drawAuth(); recheck(); if (drawApi) drawApi(); });
+            e.executorProxyAuthMode = authMode.val();
+            auth.append($('<div></div>').append($('<label class="' + EXE_LABEL + '"></label>').text("Cerberus Robot Proxy Authentication")).append(authMode)).append(authFields);
+            drawAuth();
+            restTop.append(auth);
+
+            // 4. API: service calls (REST/SOAP) sent through the relay of the proxy service.
+            // The relay needs an authentication on the proxy: not available (and forced off) when it is NONE.
+            var api = section("webhook", "API");
+            var apiBody = $('<div></div>');
+            api.append(apiBody);
+            drawApi = function () {
+                var noAuth = (e.executorProxyAuthMode || "NONE") === "NONE";
+                if (noAuth) e.relayActive = false;
+                apiBody.empty().append(exeSwitchRow(doc.getDocLabel("robotexecutor", "relayActive"),
+                    noAuth ? "Requires an authentication (TOKEN or OAUTH) on the Cerberus Robot Proxy." : "Service calls (REST/SOAP) go through the relay of the proxy service.",
+                    e.relayActive === true, function (on) { e.relayActive = on; }, noAuth));
+            };
+            drawApi();
+            restBottom.append(api);
+            }
+            if (window.lucide) lucide.createIcons();
+            refreshExecutorTabDots();
+            if (restTop.children().length > 0) recheck();
+        }
+
+        drawRest();
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function renderExecutorExtension(c, e, doc) {
+        var hostSrc = {source: getInvariantArray("ROBOTHOST", false), minLength: 0, messages: {noResults: '', results: function () { return ''; }}};
+        function ac(field, src) {
+            field.input.autocomplete(src).on("focus", function () { $(this).autocomplete("search", ""); });
+            return field;
+        }
+
+        // Extension: on when a host or port is set, or when switched on in this session
+        c.append(exeOptionalSection("puzzle", "Extension", exeExtensionOn(e),
+            function (on) {
+                executorExtOpen.set(e, on);
+                if (!on) { e.executorExtensionHost = ""; e.executorExtensionPort = 0; }
+            },
+            function (body) {
+                body.append(exeRow().addClass("!mb-0")
+                    .append(ac(exeField("Host", e, "executorExtensionHost", "flex:1 1 0"), hostSrc))
+                    .append(exeField("Port", e, "executorExtensionPort", "width:110px;flex-shrink:0")));
+            }, "No extension."));
+    }
+
+    function renderExecutorDevice(c, e, doc) {
+        var dev = $('<div class="' + EXE_SECTION + '"></div>').append(exeSectionTitle("smartphone", "Device"));
+        dev.append(exeRow()
+            .append(exeField(doc.getDocLabel("robotexecutor", "deviceUdid"), e, "deviceUdid"))
+            .append(exeField(doc.getDocLabel("robotexecutor", "deviceName"), e, "deviceName")));
+        dev.append(exeRow().addClass("!mb-0").addClass("items-end")
+            .append(exeField(doc.getDocLabel("robotexecutor", "devicePort"), e, "devicePort", "width:110px;flex-shrink:0"))
+            .append($('<div class="flex-1"></div>').append(exeSwitchRow(doc.getDocLabel("robotexecutor", "deviceLockUnlock"), null, e.isDeviceLockUnlock === true, function (on) { e.isDeviceLockUnlock = on; }))));
+        c.append(dev);
+
+    }
+
+    function deleteExecutor(e) {
+        if (!e.ID) {
+            // never saved: just drop it
+            executorsState.splice(executorsState.indexOf(e), 1);
+            selectedExecutor = executorsState.length > 0 ? executorsState[0] : null;
+        } else {
+            e.toDelete = !e.toDelete;
+        }
+        renderExecutorList();
+        renderExecutorDetails();
+    }
+
+    function loadExecutorsTable(executors) {
+        executorsState = [];
+        $.each(executors || [], function (idx, executor) {
+            executor.toDelete = false;
+            executorsState.push(executor);
+        });
+        selectedExecutor = executorsState.length > 0 ? executorsState[0] : null;
+        executorSubTab = 'connection';
+        renderExecutorList();
+        renderExecutorDetails();
+    }
+
+    function addNewExecutor() {
+        var n = executorsState.length + 1;
         var newExecutor = {
-            toDelete: false, ID: 0, executor: "EXE-" + nbExecutorTable,
-            isActive: true, rank: nbExecutorTable, host: "", port: "",
+            toDelete: false, ID: 0, executor: "EXE-" + n,
+            isActive: true, rank: n, host: "", port: "",
             hostUser: "", hostPassword: "", deviceUdid: "", deviceName: "",
             isDeviceLockUnlock: false, description: "",
             executorProxyServiceHost: "", executorProxyServicePort: 8093,
             executorBrowserProxyHost: "", executorBrowserProxyPort: 0,
-            executorExtensionPort: 0, executorExtensionHost: "", executorProxyType: "NONE"
+            executorExtensionPort: 0, executorExtensionHost: "", executorProxyType: "NONE",
+            relayActive: false, executorProxyAuthMode: "NONE", executorProxyAuthToken: "",
+            executorProxyOauthTokenUrl: "", executorProxyOauthClientId: "", executorProxyOauthClientSecret: ""
         };
-        appendExecutorRow(tableBody, newExecutor);
-        refreshPopoverDocumentation("editExecutorsTable");
+        executorsState.push(newExecutor);
+        executorSubTab = 'connection';
+        selectExecutor(newExecutor);
     }
-
 </script>
