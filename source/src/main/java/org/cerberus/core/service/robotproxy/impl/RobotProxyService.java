@@ -20,12 +20,16 @@
 package org.cerberus.core.service.robotproxy.impl;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.core.crud.entity.AppService;
+import org.cerberus.core.crud.entity.AppServiceHeader;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -43,7 +47,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.core.service.robotproxy.IProxyAuthService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
 
 /**
  *
@@ -60,8 +66,44 @@ public class RobotProxyService implements IRobotProxyService {
     private IHarService harService;
     @Autowired
     private ILogEventService logEventService;
+    @Autowired
+    private IProxyAuthService proxyAuthService;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RobotProxyService.class);
+
+    /**
+     * Authorization header towards the Cerberus Proxy (none, token or oauth,
+     * from the startup parameters of Cerberus).
+     */
+    private List<AppServiceHeader> proxyHeaders(RobotExecutor executor) {
+        List<AppServiceHeader> headers = new ArrayList<>();
+        try {
+            String authorization = proxyAuthService.getAuthorizationHeader(executor);
+            if (authorization != null) {
+                AppServiceHeader header = new AppServiceHeader();
+                header.setActive(true);
+                header.setKey("Authorization");
+                header.setValue(authorization);
+                headers.add(header);
+            }
+        } catch (RelayException ex) {
+            LOG.warn("Cerberus Proxy authentication not available : {} {}", ex.getCode(), ex.getMessage());
+        }
+        return headers;
+    }
+
+    private InputStream openProxyStream(String url, RobotExecutor executor) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            String authorization = proxyAuthService.getAuthorizationHeader(executor);
+            if (authorization != null) {
+                connection.setRequestProperty("Authorization", authorization);
+            }
+        } catch (RelayException ex) {
+            throw new IOException("Cerberus Proxy authentication not available : " + ex.getCode() + " " + ex.getMessage(), ex);
+        }
+        return connection.getInputStream();
+    }
 
     @Override
     public void startRemoteProxy(TestCaseExecution tce, String proxyType) {
@@ -84,7 +126,7 @@ public class RobotProxyService implements IRobotProxyService {
         }
         LOG.debug("Starting Cerberus Robot Proxy calling : '{}'", url);
 
-        try (InputStream is = new URL(url).openStream()) {
+        try (InputStream is = openProxyStream(url, tce.getRobotExecutorObj())) {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
             int cp;
@@ -129,7 +171,7 @@ public class RobotProxyService implements IRobotProxyService {
                     tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Shutting down of Cerberus Robot Proxy calling : "+ urlStop);
                     LOG.debug("Shutting down of Cerberus Robot Proxy calling : '{}'", urlStop);
 
-                    InputStream is = new URL(urlStop).openStream();
+                    InputStream is = openProxyStream(urlStop, tce.getRobotExecutorObj());
                     is.close();
 
                     tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Cerberus Robot Proxy shutdown done (uuid : " + tce.getRemoteProxyUUID() + ").");
@@ -145,7 +187,7 @@ public class RobotProxyService implements IRobotProxyService {
     }
 
     @Override
-    public MessageEvent waitForIdleNetwork(String exHost, Integer exPort, String exUuid, String system) throws CerberusEventException {
+    public MessageEvent waitForIdleNetwork(RobotExecutor executor, String exHost, Integer exPort, String exUuid, String system) throws CerberusEventException {
         // Generate URL to Cerberus executor with parameter to get the nb of hits so far.
         String url = "http://" + exHost + ":" + exPort + "/getStats?uuid=" + exUuid;
 
@@ -161,7 +203,7 @@ public class RobotProxyService implements IRobotProxyService {
             Integer i = 0;
             for (i = 0; i < maxLoop; i++) {
                 AnswerItem<AppService> result = new AnswerItem<>();
-                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
+                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, proxyHeaders(executor), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
 
                 if (result.isCodeStringEquals("OK")) {
 
@@ -214,7 +256,7 @@ public class RobotProxyService implements IRobotProxyService {
             LOG.debug("Getting Network Traffic content from URL : " + url);
 
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, proxyHeaders(tce.getRobotExecutorObj()), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
 
             AppService appSrv = result.getItem();
             har = new JSONObject(appSrv.getResponseHTTPBody());
@@ -246,12 +288,12 @@ public class RobotProxyService implements IRobotProxyService {
     }
 
     @Override
-    public Integer getHitsNb(String exHost, Integer exPort, String exUuid) throws CerberusEventException {
+    public Integer getHitsNb(RobotExecutor executor, String exHost, Integer exPort, String exUuid) throws CerberusEventException {
         String url = "http://" + exHost + ":" + exPort + "/getStats?uuid=" + exUuid;
         Integer nbHits = 0;
         try {
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, proxyHeaders(executor), new ArrayList<>(), null, 10000, "", true, null, "", "", "", "", "");
 
             if (result.isCodeStringEquals("OK")) {
 

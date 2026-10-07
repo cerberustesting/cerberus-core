@@ -54,6 +54,11 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.Robot;
+import org.cerberus.core.crud.entity.RobotExecutor;
+import org.cerberus.core.crud.service.IRobotExecutorService;
+import org.cerberus.core.crud.service.IRobotService;
+import org.cerberus.core.service.robotproxy.IRelayService;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvParam;
 import org.cerberus.core.crud.factory.IFactoryInvariant;
@@ -110,6 +115,12 @@ public class ServiceService implements IServiceService {
     private IKafkaService kafkaService;
     @Autowired
     private IFtpService ftpService;
+    @Autowired
+    private IRelayService relayService;
+    @Autowired
+    private IRobotService robotService;
+    @Autowired
+    private IRobotExecutorService robotExecutorService;
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
@@ -412,6 +423,17 @@ public class ServiceService implements IServiceService {
                 if (timeoutMs == 0) {
                     timeoutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", system, 60000);
                 }
+                // When the relay of the Robot Executor is active, only REST and SOAP can go through the relay.
+                // Other types must fail explicitly instead of being called directly.
+                if (relayService.isRelayActive(execution.getRobotExecutorObj())
+                        && !AppService.TYPE_REST.equals(appService.getType()) && !AppService.TYPE_SOAP.equals(appService.getType())) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_RELAY_NOTSUPPORTED)
+                            .resolveDescription("SERVICENAME", service)
+                            .resolveDescription("SERVICETYPE", String.valueOf(appService.getType()));
+                    result.setItem(appService);
+                    result.setResultMessage(message);
+                    return result;
+                }
                 // The rest of the data will be prepared depending on the TYPE and METHOD used.
                 switch (appService.getType()) {
                     case AppService.TYPE_SOAP:
@@ -464,7 +486,7 @@ public class ServiceService implements IServiceService {
                          * Call SOAP and store it into the execution.
                          */
                         result = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, decodedAttachement,
-                                appService.getHeaderList(), token, timeoutMs, system);
+                                appService.getHeaderList(), token, timeoutMs, system, execution.getRobotExecutorObj());
                         LOG.debug("SOAP Called done.");
 
                         LOG.debug("Result message." + result.getResultMessage());
@@ -489,7 +511,8 @@ public class ServiceService implements IServiceService {
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), appService.getBodyType(),
                                         appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution, appService.getDescription(),
-                                        appService.getAuthType(), appService.getAuthUser(), appService.getAuthPassword(), appService.getAuthAddTo());
+                                        appService.getAuthType(), appService.getAuthUser(), appService.getAuthPassword(), appService.getAuthAddTo(),
+                                        execution.getRobotExecutorObj());
                                 message = result.getResultMessage()
                                         .resolveDescription("SERVICENAME", service);
                                 result.setResultMessage(message);
@@ -793,6 +816,12 @@ public class ServiceService implements IServiceService {
     @Override
     public AnswerItem<AppService> callAPI(String service, String country, String environment, String application, String system, int timeout,
             String kafkaNb, String kafkaTime, List<AppServiceCallPropertyDTO> props, String login) {
+        return callAPI(service, country, environment, application, system, timeout, kafkaNb, kafkaTime, props, login, null, null);
+    }
+
+    @Override
+    public AnswerItem<AppService> callAPI(String service, String country, String environment, String application, String system, int timeout,
+            String kafkaNb, String kafkaTime, List<AppServiceCallPropertyDTO> props, String login, String robot, String executor) {
         AnswerItem<AppService> ans = null;
 
         // Secure non null parameters.
@@ -891,6 +920,60 @@ public class ServiceService implements IServiceService {
                         .country(country).property(callProp.getKey()).value1(callProp.getValue())
                         .type(TestCaseCountryProperties.TYPE_TEXT).nature(TestCaseCountryProperties.NATURE_STATIC).build();
                 execution.addTestCaseCountryPropertyList(prop);
+            }
+        }
+
+        // Simulation Robot : if a robot is requested, the call is done as if the execution was running on its executor.
+        if (StringUtil.isNotEmptyOrNull(robot)) {
+            MessageEvent robotError = null;
+            try {
+                Robot robObj = robotService.readByKey(robot);
+                if (robObj == null) {
+                    robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                            .resolveDescription("SERVICENAME", service)
+                            .resolveDescription("DESCRIPTION", "Robot '" + robot + "' does not exist");
+                } else if (!robObj.isActive()) {
+                    robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                            .resolveDescription("SERVICENAME", service)
+                            .resolveDescription("DESCRIPTION", "Robot '" + robot + "' is not active");
+                } else {
+                    RobotExecutor robExeObj;
+                    if (StringUtil.isEmptyOrNull(executor)) {
+                        robExeObj = robotExecutorService.readBestByKey(robot);
+                        if (robExeObj == null) {
+                            robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("SERVICENAME", service)
+                                    .resolveDescription("DESCRIPTION", "Could not get the best Executor of Robot '" + robot + "'");
+                        }
+                    } else {
+                        robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(robot, executor));
+                        if (robExeObj == null) {
+                            robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("SERVICENAME", service)
+                                    .resolveDescription("DESCRIPTION", "Executor '" + executor + "' of Robot '" + robot + "' does not exist");
+                        } else if (!robExeObj.isActive()) {
+                            robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                    .resolveDescription("SERVICENAME", service)
+                                    .resolveDescription("DESCRIPTION", "Executor '" + executor + "' of Robot '" + robot + "' is not active");
+                        }
+                    }
+                    if (robotError == null) {
+                        execution.setRobot(robot);
+                        execution.setRobotObj(robObj);
+                        execution.setRobotExecutor(robExeObj.getExecutor());
+                        execution.setRobotExecutorObj(robExeObj);
+                    }
+                }
+            } catch (CerberusException e) {
+                LOG.warn("Robot '{}' / executor '{}' not found : {}", robot, executor, e.toString());
+                robotError = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICENAME", service)
+                        .resolveDescription("DESCRIPTION", "Robot '" + robot + "' or its executor '" + (executor == null ? "" : executor) + "' does not exist");
+            }
+            if (robotError != null) {
+                ans = new AnswerItem<>();
+                ans.setResultMessage(robotError);
+                return ans;
             }
         }
 

@@ -47,6 +47,8 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.service.robotproxy.IRelayService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
 
 /**
  * @author Tiago Bernardes
@@ -62,6 +64,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
     private IBuildRevisionInvariantService buildRevisionInvariantService;
+    @Autowired
+    private IRelayService relayService;
 
     private MessageGeneral message;
 
@@ -73,6 +77,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
+                    && this.checkRelay(tCExecution)
                     && this.checkExecutorProxy(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -91,6 +96,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
+                    && this.checkRelay(tCExecution)
                     && this.checkExecutorProxy(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -417,5 +423,31 @@ public class ExecutionCheckService implements IExecutionCheckService {
         }
         return true;
 
+    }
+
+    /**
+     * If the relay is active on the Robot Executor, check the relay of
+     * the runner is reachable, accepts the token and is not paused. Done for
+     * every application type as service calls can be done by any of them.
+     */
+    private boolean checkRelay(TestCaseExecution tce) {
+
+        if (tce.getRobotExecutorObj() != null && relayService.isRelayActive(tce.getRobotExecutorObj())) {
+            RobotExecutor executor = tce.getRobotExecutorObj();
+            try {
+                relayService.check(executor);
+                return true;
+            } catch (RelayException ex) {
+                LOG.warn("Relay check failed on {}:{} - {} : {}", executor.getExecutorProxyServiceHost(), executor.getExecutorProxyServicePort(), ex.getCode(), ex.getMessage());
+                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RELAY);
+                message.resolveDescription("HOST", String.valueOf(executor.getExecutorProxyServiceHost()))
+                        .resolveDescription("PORT", String.valueOf(executor.getExecutorProxyServicePort()))
+                        .resolveDescription("ROBOT", String.valueOf(executor.getRobot()))
+                        .resolveDescription("ROBOTEXE", String.valueOf(executor.getExecutor()))
+                        .resolveDescription("DETAIL", ex.getMessage());
+                return false;
+            }
+        }
+        return true;
     }
 }

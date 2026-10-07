@@ -109,6 +109,12 @@ public class UpdateRobotExecutorTool implements MCPTool {
         updateProperties.put("executorProxyServicePort", Map.of("type", "integer", "description", "New proxy service port."));
         updateProperties.put("executorBrowserProxyHost", Map.of("type", "string", "description", "New manual browser proxy host."));
         updateProperties.put("executorBrowserProxyPort", Map.of("type", "integer", "description", "New manual browser proxy port."));
+        updateProperties.put("relayActive", Map.of("type", "boolean", "description", "If true, service calls go through the relay service of the Cerberus Proxy (executorProxyServiceHost/Port)."));
+        updateProperties.put("executorProxyAuthMode", Map.of("type", "string", "enum", List.of("NONE", "TOKEN", "OAUTH"), "description", "Authentication towards the Cerberus Proxy."));
+        updateProperties.put("executorProxyAuthToken", Map.of("type", "string", "description", "New Bearer token (mode TOKEN). Never returned in tool responses."));
+        updateProperties.put("executorProxyOauthTokenUrl", Map.of("type", "string", "description", "New OAuth token endpoint (mode OAUTH)."));
+        updateProperties.put("executorProxyOauthClientId", Map.of("type", "string", "description", "New OAuth client id (mode OAUTH)."));
+        updateProperties.put("executorProxyOauthClientSecret", Map.of("type", "string", "description", "New OAuth client secret (mode OAUTH). Never returned in tool responses."));
         updateProperties.put("executorExtensionPort", Map.of("type", "integer", "description", "New Cerberus browser extension port."));
         updateProperties.put("executorExtensionHost", Map.of("type", "string", "description", "New host used to reach the Cerberus browser extension, if different from 'host'. Leave empty to fall back to 'host'."));
         updateProperties.put("executorExtensionProxyPort", Map.of("type", "integer", "description", "New proxy port used to reach the extension."));
@@ -244,6 +250,24 @@ public class UpdateRobotExecutorTool implements MCPTool {
                     case "executorExtensionPort":
                         entity.setExecutorExtensionPort(asInteger(value, field));
                         break;
+                    case "relayActive":
+                        entity.setRelayActive(asBoolean(value, field));
+                        break;
+                    case "executorProxyAuthMode":
+                        entity.setExecutorProxyAuthMode(asString(value, field));
+                        break;
+                    case "executorProxyAuthToken":
+                        entity.setExecutorProxyAuthToken(asString(value, field));
+                        break;
+                    case "executorProxyOauthTokenUrl":
+                        entity.setExecutorProxyOauthTokenUrl(asString(value, field));
+                        break;
+                    case "executorProxyOauthClientId":
+                        entity.setExecutorProxyOauthClientId(asString(value, field));
+                        break;
+                    case "executorProxyOauthClientSecret":
+                        entity.setExecutorProxyOauthClientSecret(asString(value, field));
+                        break;
                     case "executorExtensionHost":
                         entity.setExecutorExtensionHost(asString(value, field));
                         break;
@@ -286,6 +310,8 @@ public class UpdateRobotExecutorTool implements MCPTool {
         RobotExecutorDTOV001 dto = mapper.toDTO(entity);
         // Strip the write-only credential before returning it to the MCP client.
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "updated",

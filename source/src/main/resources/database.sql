@@ -6876,3 +6876,15 @@ DELETE FROM `parameter` WHERE `param`='cerberus_ai_mcp_apikey';
 -- 1950
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
     VALUES  ('', 'cerberus_mcpdelta_enable', 'false', 'Boolean in order to enable the MCP Delta endpoint (/mcpdelta/mcp).');
+
+-- 1951
+-- Relay: when active, the service calls (REST/SOAP...) of an execution go through the relay service of the
+-- Cerberus Proxy, reachable at ExecutorProxyServiceHost/Port. The authentication towards the proxy is defined
+-- per executor : NONE, TOKEN (Bearer token) or OAUTH (client credentials of a service account).
+ALTER TABLE `robotexecutor`
+    ADD COLUMN `IsRelayActive` BOOLEAN NOT NULL DEFAULT 0 AFTER `ExecutorProxyServicePort`,
+    ADD COLUMN `ExecutorProxyAuthMode` VARCHAR(10) NOT NULL DEFAULT 'NONE' AFTER `IsRelayActive`,
+    ADD COLUMN `ExecutorProxyAuthToken` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyAuthMode`,
+    ADD COLUMN `ExecutorProxyOauthTokenUrl` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyAuthToken`,
+    ADD COLUMN `ExecutorProxyOauthClientId` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyOauthTokenUrl`,
+    ADD COLUMN `ExecutorProxyOauthClientSecret` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyOauthClientId`;

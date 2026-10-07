@@ -155,6 +155,9 @@ public final class Specs {
                                         bool("deviceLockUnlock", "IsDeviceLockUnlock", "0"),
                                         text("proxyType", "executorProxyType", "NONE").values("PROXYTYPE"),
                                         text("proxyServiceHost", "ExecutorProxyServiceHost"), num("proxyServicePort", "ExecutorProxyServicePort", "0"),
+                                        bool("relayActive", "IsRelayActive", "0"),
+                                        text("proxyAuthMode", "ExecutorProxyAuthMode", "NONE"), secret("proxyAuthToken", "ExecutorProxyAuthToken"),
+                                        text("proxyOauthTokenUrl", "ExecutorProxyOauthTokenUrl"), text("proxyOauthClientId", "ExecutorProxyOauthClientId"), secret("proxyOauthClientSecret", "ExecutorProxyOauthClientSecret"),
                                         text("browserProxyHost", "ExecutorBrowserProxyHost"), num("browserProxyPort", "ExecutorBrowserProxyPort", "0"))
                                 .description("description").id("id").order("`rank`, executor"))
                 .order("robot").list("browser", "platform", "type").filter("browser"));

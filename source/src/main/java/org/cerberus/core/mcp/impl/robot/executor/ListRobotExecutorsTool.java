@@ -185,6 +185,8 @@ public class ListRobotExecutorsTool implements MCPTool {
      */
     private RobotExecutorDTOV001 withoutPassword(RobotExecutorDTOV001 dto) {
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
         return dto;
     }
 

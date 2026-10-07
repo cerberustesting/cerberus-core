@@ -151,6 +151,8 @@ public class DeleteRobotExecutorTool implements MCPTool {
         RobotExecutorDTOV001 dto = mapper.toDTO(entity);
         // Strip the write-only credential before returning it to the MCP client.
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
 
         Answer deleteAnswer = robotExecutorService.delete(entity);
 

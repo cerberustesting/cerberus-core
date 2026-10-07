@@ -67,6 +67,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "FA", "The test '%TEST%' isn't active."),
     VALIDATION_FAILED_USERAGENTDIFFERENT(90, "FA", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
     VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE(90, "FA", "Could not connect to Cerberus Robot Proxy host '%HOST%' on port %PORT%. Check the Cerberus Robot Proxy is up and running, or unselect the Proxy flag at robot executor level (robot : %ROBOT%, executor : %ROBOTEXE%)."),
+    VALIDATION_FAILED_RELAY(92, "FA", "The relay of robot executor (robot : %ROBOT%, executor : %ROBOTEXE%) is active but the relay '%HOST%:%PORT%' cannot be used. %DETAIL%"),
     VALIDATION_FAILED_KAFKACONSUMERSEEK(90, "FA", "Could not start execution because failed when trying to retreive Kafka topics latest offsets on Service %SERVICE%. %DETAIL%"),
     VALIDATION_FAILED_INSTANCE_INACTIVE(91, "FA", "This Cerberus Instance has been temporary disabled. Please try again later."),
     VALIDATION_SUCCEEDED(89, "PE", "The validation succeeded"),

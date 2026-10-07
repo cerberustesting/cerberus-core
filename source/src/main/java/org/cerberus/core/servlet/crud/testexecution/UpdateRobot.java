@@ -309,6 +309,33 @@ public class UpdateRobot extends HttpServlet {
                 }
             }
 
+            boolean relayActive = reJson.has("relayActive") && reJson.optBoolean("relayActive", false);
+            // Authentication towards the Cerberus Proxy (secrets come back masked when not changed by the user).
+            String executorProxyAuthMode = reJson.optString("executorProxyAuthMode", RobotExecutor.PROXY_AUTH_NONE);
+            if (StringUtil.isEmptyOrNull(executorProxyAuthMode)) {
+                executorProxyAuthMode = RobotExecutor.PROXY_AUTH_NONE;
+            }
+            String executorProxyOauthTokenUrl = reJson.optString("executorProxyOauthTokenUrl", "");
+            String executorProxyOauthClientId = reJson.optString("executorProxyOauthClientId", "");
+            String executorProxyAuthToken = reJson.optString("executorProxyAuthToken", "");
+            String executorProxyOauthClientSecret = reJson.optString("executorProxyOauthClientSecret", "");
+            if (executorProxyAuthToken.equals(StringUtil.SECRET_STRING)) {
+                executorProxyAuthToken = "";
+                for (RobotExecutor robotExecutor : robotExecutorsFromDb) {
+                    if (robotExecutor.getId() == id) {
+                        executorProxyAuthToken = robotExecutor.getExecutorProxyAuthToken();
+                    }
+                }
+            }
+            if (executorProxyOauthClientSecret.equals(StringUtil.SECRET_STRING)) {
+                executorProxyOauthClientSecret = "";
+                for (RobotExecutor robotExecutor : robotExecutorsFromDb) {
+                    if (robotExecutor.getId() == id) {
+                        executorProxyOauthClientSecret = robotExecutor.getExecutorProxyOauthClientSecret();
+                    }
+                }
+            }
+
             //Front (json serialize) send string empty when user provides no value. So, need to check first if value is not an empty string to secure and affect 0.
             Integer executorExtensionPort = (reJson.has("executorExtensionPort") && !reJson.get("executorExtensionPort").toString().isEmpty()) ? reJson.getInt("executorExtensionPort") : 0;
             String executorExtensionHost = "";
@@ -317,7 +344,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorExtensionPort, executorExtensionHost, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorExtensionPort, executorExtensionHost, relayActive, executorProxyAuthMode, executorProxyAuthToken, executorProxyOauthTokenUrl, executorProxyOauthClientId, executorProxyOauthClientSecret, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }

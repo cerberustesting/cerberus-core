@@ -661,6 +661,16 @@
                                         <input class="w-full h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" id="callKafkaTime" name="callKafkaTime"/>
                                     </div>
                                 </div>
+                                <div class="grid grid-cols-3 gap-3 mb-3">
+                                    <div>
+                                        <label for="callRobot" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Robot <span class="text-slate-400">(optional)</span></label>
+                                        <select class="w-full h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" id="callRobot" name="callRobot"></select>
+                                    </div>
+                                    <div id="callExecutorWrap" class="hidden">
+                                        <label for="callExecutor" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Executor</label>
+                                        <select class="w-full h-10 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" id="callExecutor" name="callExecutor"></select>
+                                    </div>
+                                </div>
                                 <div id="listPanelCallProp">
                                     <label for="callPropTable" name="callPropTableField" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Properties</label>
                                     <div class="rounded-md border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -817,6 +827,7 @@
         // type, bodyType, method, authType, authAddTo are now handled by crbDropdown in HTML
         displayAppServiceList("parentContentService", "", "");
         displayInvariantList("callSystem", "SYSTEM", false, undefined, undefined, undefined, undefined, "editServiceModal");
+        $("#callRobot").off("change").change(function () { loadCallExecutors($(this).val(), ""); });
 
         $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
         $("[name='buttonCall']").html('<i data-lucide="play" class="w-3 h-3"></i> ' + doc.getDocLabel("page_global", "buttonCall"));
@@ -1300,6 +1311,46 @@
 
     }
 
+    // ===== Simulation robot (optional) =====
+    var callRobotsLoaded = null; // promise, robots are read once
+
+    function loadCallRobots() {
+        if (callRobotsLoaded === null) {
+            callRobotsLoaded = $.getJSON("ReadRobot").then(function (data) {
+                var sel = $("#callRobot").empty().append($("<option></option>").val("").text("-- None --"));
+                $.each(data.contentTable || [], function (i, r) {
+                    if (r.isActive !== false) sel.append($("<option></option>").val(r.robot).text(r.robot));
+                });
+            });
+        }
+        return callRobotsLoaded;
+    }
+
+    // Executors of the robot; "" = the best executor is chosen by Cerberus.
+    function loadCallExecutors(robot, selected) {
+        var sel = $("#callExecutor").empty();
+        $("#callExecutorWrap").toggleClass("hidden", isEmpty(robot));
+        if (isEmpty(robot)) return $.Deferred().resolve().promise();
+        sel.append($("<option></option>").val("").text("Best executor (auto)"));
+        return $.ajax({url: "ReadRobot?withExecutors=true", method: "POST", data: {robot: robot}}).then(function (data) {
+            $.each((data.contentTable && data.contentTable.executors) || [], function (i, e) {
+                if (e.isActive !== false) sel.append($("<option></option>").val(e.executor).text(e.executor));
+            });
+            sel.val(selected || "");
+        });
+    }
+
+    function setCallRobot(robot, executor) {
+        return loadCallRobots().then(function () {
+            var sel = $("#callRobot");
+            if (!isEmpty(robot) && sel.find("option[value='" + robot.replace(/'/g, "\\'") + "']").length === 0) {
+                sel.append($("<option></option>").val(robot).text(robot)); // robot inactive or removed: keep what was saved
+            }
+            sel.val(robot || "");
+            return loadCallExecutors(robot, executor);
+        });
+    }
+
     function getCallParam() {
         let callCountry = $('#callCountry').val();
         let callSystem = $('#callSystem').val();
@@ -1322,6 +1373,8 @@
             'timeout': callTimeout,
             'kafkanb': callKafkaNb,
             'kafkaTime': callKafkaTime,
+            'robot': $('#callRobot').val() || "",
+            'executor': $('#callExecutor').val() || "",
             'props': table_callProp
         };
 
@@ -2058,6 +2111,7 @@
             formEdit.find("#callCountry").prop("value", "");
             formEdit.find("#callEnv").prop("value", "");
             formEdit.find("#callSystem").prop("value", "");
+            setCallRobot("", "");
             window.dispatchEvent(new CustomEvent('srv-type-preselect', {detail: 'REST'}));
             window.dispatchEvent(new CustomEvent('bodytype-preselect', {detail: 'raw'}));
             formEdit.find("#authType").prop("value", "none");
@@ -2110,6 +2164,7 @@
             formEdit.find("#callTimeout").prop("value", service.simulationParameters.timeout);
             formEdit.find("#callKafkaNb").prop("value", service.simulationParameters.kafkanb);
             formEdit.find("#callKafkaTime").prop("value", service.simulationParameters.kafkaTime);
+            setCallRobot(service.simulationParameters.robot || "", service.simulationParameters.executor || "");
             if (extraInfo !== undefined) {
                 formEdit.find("#callSystem").val(extraInfo.system);
                 $("[name='callCountry']").empty();

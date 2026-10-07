@@ -49,6 +49,12 @@ public interface IFactoryRobotExecutor {
      * @param executorBrowserProxyPort
      * @param executorExtensionPort
      * @param executorExtensionHost Host used to reach the Cerberus browser extension. If empty, host will be used.
+     * @param relayActive true if service calls must go through the relay
+     * @param executorProxyAuthMode NONE, TOKEN or OAUTH (authentication towards the Cerberus Proxy)
+     * @param executorProxyAuthToken secret Bearer token (mode TOKEN)
+     * @param executorProxyOauthTokenUrl token endpoint (mode OAUTH)
+     * @param executorProxyOauthClientId client id (mode OAUTH)
+     * @param executorProxyOauthClientSecret secret client secret (mode OAUTH)
      * @param deviceUdid
      * @param UsrCreated
      * @param executorProxyType
@@ -59,6 +65,6 @@ public interface IFactoryRobotExecutor {
      */
     RobotExecutor create(Integer ID, String robot, String executor, boolean isActive,
             Integer rank, String host, String port, String hostUser, String hostPassword, Integer executorExtensionProxyPort, String deviceUdid,
-            String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorExtensionHost, String executorProxyType,
+            String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorExtensionHost, boolean relayActive, String executorProxyAuthMode, String executorProxyAuthToken, String executorProxyOauthTokenUrl, String executorProxyOauthClientId, String executorProxyOauthClientSecret, String executorProxyType,
             String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

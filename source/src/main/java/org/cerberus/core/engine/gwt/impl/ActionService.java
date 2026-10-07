@@ -1714,7 +1714,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionWaitNetworkTrafficIdle(TestCaseExecution tCExecution) {
         try {
 
-            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorProxyServiceHost(), tCExecution.getRobotExecutorObj().getExecutorProxyServicePort(),
+            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj(), tCExecution.getRobotExecutorObj().getExecutorProxyServiceHost(), tCExecution.getRobotExecutorObj().getExecutorProxyServicePort(),
                     tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
 
         } catch (CerberusEventException ex) {
@@ -2088,7 +2088,7 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Latest index from cerberus-executor
              */
-            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID());
+            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj(), exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID());
 
             NetworkTrafficIndex nti = new NetworkTrafficIndex();
             if (StringUtil.isEmptyOrNull(value1)) {

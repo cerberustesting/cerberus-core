@@ -26,6 +26,7 @@ import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPMessage;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceHeader;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.xml.sax.SAXException;
@@ -71,5 +72,14 @@ public interface ISoapService {
      * @return 
      */
     AnswerItem<AppService> callSOAP(String envelope, String servicePath, String operation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system);
-    
+
+    /**
+     * Same as above. If robotExecutor is not null and has its relay
+     * active, the call is performed through the relay of the runner (never
+     * directly).
+     *
+     * @param robotExecutor Robot Executor of the execution (can be null)
+     */
+    AnswerItem<AppService> callSOAP(String envelope, String servicePath, String operation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system, RobotExecutor robotExecutor);
+
 }

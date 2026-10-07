@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceContent;
 import org.cerberus.core.crud.entity.AppServiceHeader;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.util.answer.AnswerItem;
 
@@ -58,5 +59,17 @@ public interface IRestService {
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
             String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description,
             String authType, String authUser, String authPassword, String authAddTo);
+
+    /**
+     * Same as above. If robotExecutor is not null and has its relay
+     * active, the call is performed through the relay of the runner (never
+     * directly).
+     *
+     * @param robotExecutor Robot Executor of the execution (can be null)
+     */
+    AnswerItem<AppService> callREST(String servicePath, String queryString, String method, String bodyType,
+            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description,
+            String authType, String authUser, String authPassword, String authAddTo, RobotExecutor robotExecutor);
 
 }
