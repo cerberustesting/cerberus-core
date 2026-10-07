@@ -346,6 +346,17 @@ public class RelayServiceTest {
     }
 
     @Test
+    void unreachableMessageShowsTheCauseNotJustABareConnectException() {
+        RobotExecutor e = executor();
+        server.stop(0);
+        RelayException ex = assertThrows(RelayException.class, () -> service.check(e));
+        // The JDK client reports a refused connection as a ConnectException without message: the reason
+        // is in its causes, which is what tells a refused connection from a DNS failure or a missing route.
+        assertTrue(ex.getMessage().contains("ConnectException"), ex.getMessage());
+        assertTrue(ex.getMessage().contains("caused by"), "the cause chain must be shown: " + ex.getMessage());
+    }
+
+    @Test
     void missingHostOrTokenIsNotConfigured() {
         RobotExecutor noHost = executor();
         noHost.setExecutorProxyServiceHost("");

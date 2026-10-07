@@ -173,7 +173,29 @@ public class RelayService implements IRelayService {
                     "No answer from the relay of the runner '" + address + "' after " + timeoutMs + " ms.", ex);
         }
         return new RelayException(RelayException.CODE_UNREACHABLE, 0,
-                "Could not reach the relay of the runner '" + address + "' : " + ex.getClass().getSimpleName() + " " + safe(ex.getMessage(), executor), ex);
+                "Could not reach the relay of the runner '" + address + "' : " + describeFailure(ex, executor), ex);
+    }
+
+    /**
+     * Class and message of each exception of the chain. The JDK HTTP client reports a failed connection as
+     * a bare ConnectException (no message) and keeps the reason in its causes: connection refused, DNS
+     * failure (UnresolvedAddressException), no route... Without them the failure cannot be told apart.
+     */
+    private String describeFailure(Throwable failure, RobotExecutor executor) {
+        StringBuilder description = new StringBuilder();
+        String previous = null;
+        Throwable current = failure;
+        for (int depth = 0; current != null && depth < 6; depth++) {
+            String message = current.getMessage();
+            String item = current.getClass().getSimpleName()
+                    + (message == null || message.isEmpty() ? "" : " (" + safe(message.split("\\R", 2)[0], executor) + ")");
+            if (!item.equals(previous)) {
+                description.append(description.length() == 0 ? "" : " <- caused by ").append(item);
+                previous = item;
+            }
+            current = current.getCause() == current ? null : current.getCause();
+        }
+        return description.toString();
     }
 
     private static class RawResponse {

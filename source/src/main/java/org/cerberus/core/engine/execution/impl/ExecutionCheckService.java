@@ -47,6 +47,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.service.robotproxy.IRelayService;
 import org.cerberus.core.service.robotproxy.entity.RelayException;
 
@@ -426,9 +427,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     /**
-     * If the relay is active on the Robot Executor, check the relay of
-     * the runner is reachable, accepts the token and is not paused. Done for
-     * every application type as service calls can be done by any of them.
+     * Reports a relay that cannot be reached, but never refuses the execution: the relay is only needed by
+     * the service calls of the execution, and many executions (a GUI test without any) never use it, whereas
+     * the robot of a local runner has it active by default. A service call that does go through the relay
+     * fails by itself, with the cause, when it runs.
+     *
+     * @return always true, so that it can stand in the chain of checks
      */
     private boolean checkRelay(TestCaseExecution tce) {
 
@@ -436,16 +440,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
             RobotExecutor executor = tce.getRobotExecutorObj();
             try {
                 relayService.check(executor);
-                return true;
             } catch (RelayException ex) {
                 LOG.warn("Relay check failed on {}:{} - {} : {}", executor.getExecutorProxyServiceHost(), executor.getExecutorProxyServicePort(), ex.getCode(), ex.getMessage());
-                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RELAY);
-                message.resolveDescription("HOST", String.valueOf(executor.getExecutorProxyServiceHost()))
-                        .resolveDescription("PORT", String.valueOf(executor.getExecutorProxyServicePort()))
-                        .resolveDescription("ROBOT", String.valueOf(executor.getRobot()))
-                        .resolveDescription("ROBOTEXE", String.valueOf(executor.getExecutor()))
-                        .resolveDescription("DETAIL", ex.getMessage());
-                return false;
+                tce.addExecutionLog(ExecutionLog.STATUS_WARN, "The relay of robot executor " + executor.getRobot() + " / " + executor.getExecutor()
+                        + " cannot be used, the service calls of this execution will fail. " + ex.getMessage());
             }
         }
         return true;
