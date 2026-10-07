@@ -287,6 +287,10 @@ public class RelayService implements IRelayService {
         } catch (Exception ex) {
             // Body is not JSON.
         }
+        if ("relay_disabled".equals(code)) {
+            // Code of the Cerberus Robot Proxy when its relay is not enabled (no relay token in mode none): same meaning as relay_stopped.
+            code = RelayException.CODE_RELAY_STOPPED;
+        }
         String detail = (error == null || error.isEmpty()) ? "" : " (" + error + ")";
         String prefix = "Relay of the runner '" + address + "' ";
         if (code == null) {
@@ -306,7 +310,7 @@ public class RelayService implements IRelayService {
             case RelayException.CODE_UNAUTHORIZED:
                 return new RelayException(code, status, prefix + "refused the authentication (http 401). Check the proxy authentication of the robot executor." + detail);
             case RelayException.CODE_RELAY_STOPPED:
-                return new RelayException(code, status, prefix + "is stopped (http 503). Start the relay on the runner." + detail);
+                return new RelayException(code, status, prefix + "is disabled or stopped (http 503). Enable the relay on the proxy." + detail);
             case RelayException.CODE_UNSUPPORTED:
                 return new RelayException(code, status, prefix + "does not exist (http 404). The runner is probably too old, please upgrade it.");
             case RelayException.CODE_TARGET_BLOCKED:

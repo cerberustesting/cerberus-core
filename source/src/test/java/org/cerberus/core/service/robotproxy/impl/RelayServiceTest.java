@@ -239,6 +239,8 @@ public class RelayServiceTest {
     @Test
     void errors503() {
         assertRelayError(503, "{\"code\":\"relay_stopped\"}", RelayException.CODE_RELAY_STOPPED);
+        // Code used by the Cerberus Robot Proxy when its relay is not enabled.
+        assertRelayError(503, "{\"error\":\"The relay is disabled\",\"code\":\"relay_disabled\"}", RelayException.CODE_RELAY_STOPPED);
     }
 
     @Test
