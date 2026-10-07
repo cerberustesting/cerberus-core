@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.api.services;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +46,10 @@ public class ApplicationApiService {
             throw new EntityNotFoundException(Application.class, "application", idApplication);
         }
         return application;
+    }
+
+    public List<Application> readAll() throws CerberusException {
+        return this.applicationService.convert(this.applicationService.readAll());
     }
 
     public Application readByKeyWithDependency(String idApplication) throws CerberusException {

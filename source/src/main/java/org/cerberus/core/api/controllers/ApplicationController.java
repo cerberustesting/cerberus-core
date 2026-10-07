@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,8 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.exception.CerberusException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,6 +80,33 @@ public class ApplicationController {
 
     private static final Logger LOG = LogManager.getLogger(ApplicationController.class);
 
+
+    //LIST ALL APPLICATIONS
+    @GetMapping(headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get all Applications",
+        description = "Get the list of all applications (without their environments)",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Found the applications", content = { @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = ApplicationDTOV001.class)))}),
+        }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<List<ApplicationDTOV001>> findAllApplications(
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) throws CerberusException {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+
+        return ResponseWrapper.wrap(
+                this.applicationApiService.readAll()
+                        .stream()
+                        .map(this.applicationMapper::toDTO)
+                        .collect(Collectors.toList())
+        );
+    }
 
     //FIND APPLICATION BY APPLICATION NAME
     @GetMapping(path = "/{application}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
