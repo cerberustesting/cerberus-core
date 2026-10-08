@@ -408,6 +408,64 @@ const pageRunTestsLabel = {
     reportbytag: { en: "Report by tag", fr: "Rapport par tag" }
 };
 
+const pageReportingMonitorWebLabel = {
+    title: { en: "Web Monitor", fr: "Supervision Web" },
+    favorites: { en: "Favorites", fr: "Favoris" },
+    choosetestcase: { en: "Choose a test case...", fr: "Choisir un cas de test..." },
+    testcase: { en: "Test case", fr: "Cas de test" },
+    searchfolder: { en: "Search test folder...", fr: "Rechercher un dossier de test..." },
+    searchtestcase: { en: "Search test case...", fr: "Rechercher un cas de test..." },
+    nofolder: { en: "No test folder matches", fr: "Aucun dossier de test" },
+    notestcase: { en: "No test case matches", fr: "Aucun cas de test" },
+    back: { en: "Back to the folders", fr: "Retour aux dossiers" },
+    addfavorite: { en: "Add to favorites", fr: "Ajouter aux favoris" },
+    removefavorite: { en: "Remove from favorites", fr: "Retirer des favoris" },
+    period: { en: "Period", fr: "Période" },
+    browser: { en: "Browser", fr: "Navigateur" },
+    environment: { en: "Environment", fr: "Environnement" },
+    country: { en: "Country", fr: "Pays" },
+    refresh: { en: "Refresh", fr: "Rafraîchir" },
+    refreshed: { en: "refreshed {0}", fr: "actualisé {0}" },
+    loading: { en: "Loading...", fr: "Chargement..." },
+    empty: { en: "Choose a test case, or open a favorite, to see its network behavior.", fr: "Choisissez un cas de test, ou ouvrez un favori, pour voir son comportement réseau." },
+    nodata: { en: "No network statistics for this test case over the period. They are recorded when the execution captures the network traffic (HAR).", fr: "Aucune statistique réseau pour ce cas de test sur la période. Elles sont enregistrées quand l'exécution capture le trafic réseau (HAR)." },
+    loaderror: { en: "Unable to load the data: {0}", fr: "Impossible de charger les données : {0}" },
+    responsetime: { en: "Network time", fr: "Temps réseau" },
+    executionscount: { en: "{0} executions", fr: "{0} exécutions" },
+    vsprevious: { en: "vs previous period", fr: "vs période précédente" },
+    novsprevious: { en: "no previous period data", fr: "pas de données sur la période précédente" },
+    totaltime: { en: "Total", fr: "Total" },
+    internaltime: { en: "Internal", fr: "Interne" },
+    statusperexecution: { en: "Status per execution - click to inspect", fr: "Statut par exécution - cliquer pour inspecter" },
+    traffic: { en: "Network traffic", fr: "Trafic réseau" },
+    avgtransfer: { en: "average transfer", fr: "transfert moyen" },
+    successrate: { en: "Success rate", fr: "Taux de réussite" },
+    failures: { en: "Failures", fr: "Échecs" },
+    requests: { en: "Requests", fr: "Requêtes" },
+    thirdparties: { en: "Third party hosts", fr: "Hôtes tiers" },
+    weightbytype: { en: "Weight by content type", fr: "Poids par type de contenu" },
+    totalof: { en: "{0} in total", fr: "{0} au total" },
+    thirdpartyhosts: { en: "Third party hosts", fr: "Hôtes tiers" },
+    thirdpartysub: { en: "calls outside the main domain", fr: "appels hors domaine principal" },
+    nothirdparty: { en: "No third party host for this execution.", fr: "Aucun hôte tiers pour cette exécution." },
+    execution: { en: "Execution #{0}", fr: "Exécution #{0}" },
+    open: { en: "Open the execution", fr: "Ouvrir l'exécution" },
+    internaltimelabel: { en: "Internal time", fr: "Temps interne" },
+    transfer: { en: "Transfer", fr: "Transfert" },
+    latest: { en: "Latest executions", fr: "Dernières exécutions" },
+    execcol: { en: "Execution", fr: "Exécution" },
+    status: { en: "Status", fr: "Statut" },
+    robot: { en: "Robot", fr: "Robot" },
+    size: { en: "Size", fr: "Taille" },
+    other: { en: "Other", fr: "Autre" },
+    typeimg: { en: "Images", fr: "Images" },
+    typejs: { en: "JavaScript", fr: "JavaScript" },
+    typecss: { en: "CSS", fr: "CSS" },
+    typehtml: { en: "HTML", fr: "HTML" },
+    typemedia: { en: "Media", fr: "Médias" },
+    typeother: { en: "Other", fr: "Autre" }
+};
+
 const pageScheduledRunsLabel = {
     title: { en: "Scheduled Runs", fr: "Exécutions planifiées" },
     history: { en: "History", fr: "Historique" },
@@ -491,5 +549,6 @@ window.testcaseSimpleCreationImportLabel = testcaseSimpleCreationImportLabel;
 window.testcaseSimpleCreationLabel = testcaseSimpleCreationLabel;
 window.testcaseSimpleExecutionLabel = testcaseSimpleExecutionLabel;
 window.pageScheduledRunsLabel = pageScheduledRunsLabel;
+window.pageReportingMonitorWebLabel = pageReportingMonitorWebLabel;
 window.pageRunTestsLabel = pageRunTestsLabel;
 window.datePickerLabel = datePickerLabel;
