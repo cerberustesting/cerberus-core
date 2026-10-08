@@ -302,7 +302,7 @@ public class UpdateRobot extends HttpServlet {
             if (hostPassword.equals(StringUtil.SECRET_STRING)) {
                 hostPassword = "";
                 for (RobotExecutor robotExecutor : robotExecutorsFromDb) {
-                    if (robotExecutor.getId() == id) {
+                    if (robotExecutor.getId().equals(id)) {
                         hostPassword = robotExecutor.getHostPassword();
                         LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
                     }
