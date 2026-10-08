@@ -103,6 +103,10 @@ function multiSelectDropdown(config = {}) {
         top: 0, left: 0, width: 0,
 
         async init() {
+          // Let Alpine finish the DOM update that created this component (x-for, x-if) first:
+          // nodes appended while it runs are not initialized.
+          await this.$nextTick();
+
           // Clone and attach template into component root element
           const tpl = document.getElementById('multi-select-dropdown-template').content.cloneNode(true);
           this.$el.appendChild(tpl);

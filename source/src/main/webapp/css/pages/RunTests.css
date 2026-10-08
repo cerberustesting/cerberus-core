@@ -1,40 +1,19 @@
 /*
- * Cerberus  Copyright (C) 2013  vertigo17
+ * Cerberus Copyright (C) 2013 - 2026 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * This file is part of Cerberus.
- *
- * Cerberus is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Cerberus is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- *//* 
-    Created on : 16 juin 2017, 12:02:24
-    Author     : cerberus
-*/
+ * Run Tests page. Builds on the v2in- components of InsightsShared.css.
+ */
 
-/* Run Sticky buttons*/
-/*.feedback {
-    background-color : #31B0D5;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 4px;
-    border-color: #46b8da;
-    z-index: 999999999999;
-}*/
+.rt-filters { border-bottom: 1px solid var(--crb-new-border); }
+.rt-filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
 
-#runTestCaseBlockSticky {
-    position: fixed;
-    bottom: 0px;
-    right: 10px;
-    z-index: 1000;
-}
+.rt-testlist { max-height: 360px; overflow-y: auto; }
+.rt-check { width: 28px; padding-right: 0 !important; }
 
+.rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; align-items: start; }
+@media (min-width: 1280px) { .rt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.rt-stack { display: flex; flex-direction: column; gap: 14px; }
+.rt-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.rt-form--wide { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.rt-form .v2in-input { width: 100%; }
