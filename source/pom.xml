@@ -208,15 +208,6 @@
             <version>4.19.0</version>
         </dependency>
 
-        <!-- Failsafe 3.3.2 : needed at runtime by selenium-http (ClientConfig -> RetryRequest). It is only a
-        transitive dependency of Selenium, and the build of the CI once left it out of the WAR
-        https://mvnrepository.com/artifact/dev.failsafe/failsafe -->
-        <dependency>
-            <groupId>dev.failsafe</groupId>
-            <artifactId>failsafe</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-
         <!-- Selenium 4.13.0 : Sep 25, 2023 - TODO : Remove?
         https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-http-jdk-client -->
         <dependency>
