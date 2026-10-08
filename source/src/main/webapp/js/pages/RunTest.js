@@ -33,14 +33,14 @@ function runTests() {
     var PREF_KEY = 'runTestsPrefs';
     var CUSTOM_ROBOT = 'CustomConfiguration';
     var EXEC_FIELDS = [
-        {key: 'verbose', invariant: 'VERBOSE', param: 'verbose', campaign: 'Verbose', label: 'verbose'},
-        {key: 'screenshot', invariant: 'SCREENSHOT', param: 'screenshot', campaign: 'Screenshot', label: 'screenshot'},
-        {key: 'video', invariant: 'VIDEO', param: 'video', campaign: 'Video', label: 'video'},
-        {key: 'pageSource', invariant: 'PAGESOURCE', param: 'pagesource', campaign: 'PageSource', label: 'pagesource'},
-        {key: 'seleniumLog', invariant: 'ROBOTLOG', param: 'seleniumlog', campaign: 'RobotLog', label: 'robotlog'},
-        {key: 'consoleLog', invariant: 'CONSOLELOG', param: 'consolelog', campaign: 'ConsoleLog', label: 'consolelog'},
-        {key: 'retries', invariant: 'RETRIES', param: 'retries', campaign: 'Retries', label: 'retries'},
-        {key: 'manualExecution', invariant: 'MANUALEXECUTION', param: 'manualexecution', campaign: 'ManualExecution', label: 'manualexecution'}
+        {key: 'verbose', icon: 'list', invariant: 'VERBOSE', param: 'verbose', campaign: 'Verbose', label: 'verbose'},
+        {key: 'screenshot', icon: 'image', invariant: 'SCREENSHOT', param: 'screenshot', campaign: 'Screenshot', label: 'screenshot'},
+        {key: 'video', icon: 'video', invariant: 'VIDEO', param: 'video', campaign: 'Video', label: 'video'},
+        {key: 'pageSource', icon: 'file-code', invariant: 'PAGESOURCE', param: 'pagesource', campaign: 'PageSource', label: 'pagesource'},
+        {key: 'seleniumLog', icon: 'server', invariant: 'ROBOTLOG', param: 'seleniumlog', campaign: 'RobotLog', label: 'robotlog'},
+        {key: 'consoleLog', icon: 'square-terminal', invariant: 'CONSOLELOG', param: 'consolelog', campaign: 'ConsoleLog', label: 'consolelog'},
+        {key: 'retries', icon: 'repeat', invariant: 'RETRIES', param: 'retries', campaign: 'Retries', label: 'retries'},
+        {key: 'manualExecution', icon: 'zap', invariant: 'MANUALEXECUTION', param: 'manualexecution', campaign: 'ManualExecution', label: 'manualexecution'}
     ];
     var TEXT_FIELDS = [
         {key: 'tag', param: 'tag', campaign: 'Tag'},
@@ -88,7 +88,9 @@ function runTests() {
         manual: {myhost: '', mycontextroot: '', myloginrelativeurl: '', myenvdata: ''},
 
         // robot
-        robots: [],
+        robots: [],               // [{robot, platform, browser, active, activeExecutorsCount}]
+        robotFilter: '',
+        envFilter: '',
         selRobots: [],
         robotInfo: {host: '', port: '', browser: ''},
         custom: {ss_ip: '', ss_p: '', browser: ''},
@@ -104,6 +106,7 @@ function runTests() {
         async init() {
             var self = this;
             document.title = this.t('title');
+            this.watchIcons();
             FILTERS.forEach(function (f) { self.filters[f.key] = []; });
             FILTERS.forEach(function (f) {
                 window.addEventListener('rt-' + f.key + '-change', function (e) { self.filters[f.key] = e.detail || []; });
@@ -122,8 +125,10 @@ function runTests() {
                 $.getJSON('ReadCountryEnvParam', 'uniqueEnvironment=true' + systemQuery).then(function (d) {
                     self.environments = d.contentTable || [];
                 }),
-                $.getJSON('ReadRobot').then(function (d) {
-                    self.robots = (d.contentTable || []).map(function (r) { return r.robot; });
+                fetch('./api/robots/read?iDisplayStart=0&iDisplayLength=100', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({})
+                }).then(function (r) { return r.json(); }).then(function (d) {
+                    self.robots = (d.contentTable || []).map(function (r) { return self.toRobotItem(r); });
                 }),
                 Promise.all(invariantNames.map(function (n) { return self.loadInvariant(n); }))
             ]);
@@ -151,6 +156,16 @@ function runTests() {
                 }
             }
             if (this.selRobots.length === 1) { this.loadRobotInfo(); }
+        },
+
+        // The icons (lucide) are drawn once: the ones rendered later by x-if / x-for need another pass.
+        watchIcons() {
+            var scheduled = false;
+            new MutationObserver(function () {
+                if (scheduled || !window.lucide) { return; }
+                scheduled = true;
+                requestAnimationFrame(function () { scheduled = false; lucide.createIcons(); });
+            }).observe(this.$el, {childList: true, subtree: true});
         },
 
         // ── Labels (labels.js, pageRunTests) - {0}, {1}... are replaced by the extra arguments ──
@@ -307,6 +322,26 @@ function runTests() {
         },
 
         // ── Robot ──
+        toRobotItem(r) {
+            return {
+                robot: r.robot,
+                platform: r.platform,
+                browser: r.browser,
+                active: r.isActive !== false,
+                activeExecutorsCount: (r.executors || []).filter(function (e) { return e.isActive; }).length
+            };
+        },
+        get robotNames() {
+            return this.robots.map(function (r) { return r.robot; });
+        },
+        get filteredRobots() {
+            var q = this.robotFilter.trim().toLowerCase();
+            return this.robots.filter(function (r) { return !q || (r.robot + ' ' + r.browser + ' ' + r.platform).toLowerCase().indexOf(q) !== -1; });
+        },
+        get filteredEnvironments() {
+            var q = this.envFilter.trim().toLowerCase();
+            return this.environments.filter(function (e) { return !q || e.environment.toLowerCase().indexOf(q) !== -1; });
+        },
         get isCustomRobot() {
             return this.selRobots.length === 1 && this.selRobots[0] === CUSTOM_ROBOT;
         },
@@ -346,7 +381,7 @@ function runTests() {
                 $('#editRobotModal').unbind('hidden.bs.modal');
                 var saved = $('#editRobotModal').data('robot');
                 if (saved && $('#editRobotModal').data('Saved')) {
-                    if (mode === 'ADD' && self.robots.indexOf(saved.robot) === -1) { self.robots.push(saved.robot); }
+                    if (mode === 'ADD' && self.robotNames.indexOf(saved.robot) === -1) { self.robots.push(self.toRobotItem(saved)); }
                     if (mode === 'ADD') { self.selRobots = [saved.robot]; }
                     self.$nextTick(function () { self.loadRobotInfo(); });
                 }
@@ -368,7 +403,7 @@ function runTests() {
             if (!pref) { return; }
             $.extend(this.exec, pref.exec);
             $.extend(this.custom, pref.custom);
-            this.selRobots = (pref.robots || []).filter(function (r) { return r === CUSTOM_ROBOT || this.robots.indexOf(r) !== -1; }, this);
+            this.selRobots = (pref.robots || []).filter(function (r) { return r === CUSTOM_ROBOT || this.robotNames.indexOf(r) !== -1; }, this);
             this.envMode = pref.envMode || 'auto';
             $.extend(this.manual, pref.manual);
             var envs = this.environments.map(function (e) { return e.environment; });
