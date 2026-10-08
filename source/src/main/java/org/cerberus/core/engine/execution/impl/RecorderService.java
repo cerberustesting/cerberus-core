@@ -86,6 +86,8 @@ import org.cerberus.core.engine.entity.ExecutionLog;
 public class RecorderService implements IRecorderService {
 
     @Autowired
+    private org.cerberus.core.crud.service.ITestCaseExecutionServiceCallService testCaseExecutionServiceCallService;
+    @Autowired
     IParameterService parameterService;
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
@@ -726,6 +728,8 @@ public class RecorderService implements IRecorderService {
 
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
+            // The statistic of that call (API Monitor) points to these files.
+            testCaseExecutionServiceCallService.attachFiles(execution, service, recorderRequest.getLevel());
 
             recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), service.toJSONOnExecution().toString(), execution.getSecrets());
 

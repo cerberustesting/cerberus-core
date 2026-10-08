@@ -189,7 +189,7 @@
                 <template x-if="current && rows.length > 0">
                     <div class="v2in-page">
 
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 wm-top">
 
                             <!-- Network time over the executions -->
                             <div class="crb_card lg:col-span-2">
@@ -254,7 +254,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 wm-top">
 
                             <!-- Weight by content type (selected execution) -->
                             <div class="crb_card">

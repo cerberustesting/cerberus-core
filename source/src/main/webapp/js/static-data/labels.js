@@ -466,6 +466,64 @@ const pageReportingMonitorWebLabel = {
     typeother: { en: "Other", fr: "Autre" }
 };
 
+const pageReportingMonitorApiLabel = {
+    title: { en: "API Monitor", fr: "Supervision API" },
+    favorites: { en: "Favorites", fr: "Favoris" },
+    service: { en: "Service", fr: "Service" },
+    chooseservice: { en: "Choose a service...", fr: "Choisir un service..." },
+    searchservice: { en: "Search service...", fr: "Rechercher un service..." },
+    noservice: { en: "No service called over the last 30 days", fr: "Aucun service appelé sur les 30 derniers jours" },
+    calls: { en: "{0} call(s)", fr: "{0} appel(s)" },
+    addfavorite: { en: "Add to favorites", fr: "Ajouter aux favoris" },
+    removefavorite: { en: "Remove from favorites", fr: "Retirer des favoris" },
+    period: { en: "Period", fr: "Période" },
+    environment: { en: "Environment", fr: "Environnement" },
+    country: { en: "Country", fr: "Pays" },
+    refresh: { en: "Refresh", fr: "Rafraîchir" },
+    refreshed: { en: "refreshed {0}", fr: "actualisé {0}" },
+    loading: { en: "Loading...", fr: "Chargement..." },
+    empty: { en: "Choose a service, or open a favorite, to see how it behaves.", fr: "Choisissez un service, ou ouvrez un favori, pour voir son comportement." },
+    nodata: { en: "No call of this service over the period. The calls are recorded from the version that introduced this page: services called before are not available.", fr: "Aucun appel de ce service sur la période. Les appels sont enregistrés à partir de la version qui a introduit cette page : les appels antérieurs ne sont pas disponibles." },
+    loaderror: { en: "Unable to load the data: {0}", fr: "Impossible de charger les données : {0}" },
+    responsetime: { en: "Response time", fr: "Temps de réponse" },
+    callscount: { en: "{0} calls", fr: "{0} appels" },
+    grouped: { en: "each point groups {0} calls", fr: "chaque point regroupe {0} appels" },
+    vsprevious: { en: "vs previous period", fr: "vs période précédente" },
+    novsprevious: { en: "no previous period data", fr: "pas de données sur la période précédente" },
+    average: { en: "Average", fr: "Moyenne" },
+    p95: { en: "p95", fr: "p95" },
+    errorlegend: { en: "Errors", fr: "Erreurs" },
+    statusperexecution: { en: "Status per call - click to inspect", fr: "Statut par appel - cliquer pour inspecter" },
+    successrate: { en: "Success rate", fr: "Taux de réussite" },
+    errors: { en: "Errors", fr: "Erreurs" },
+    p50: { en: "p50", fr: "p50" },
+    callsperiod: { en: "Calls", fr: "Appels" },
+    distribution: { en: "Response time distribution", fr: "Distribution des temps de réponse" },
+    distributionsub: { en: "number of calls per duration range", fr: "nombre d'appels par plage de durée" },
+    httpcodes: { en: "HTTP codes", fr: "Codes HTTP" },
+    httpcodessub: { en: "answers by class", fr: "réponses par classe" },
+    nocode: { en: "No HTTP code", fr: "Sans code HTTP" },
+    consumers: { en: "Test cases calling the service", fr: "Cas de test appelant le service" },
+    consumerssub: { en: "most failing first", fr: "les plus en échec d'abord" },
+    noconsumer: { en: "No test case.", fr: "Aucun cas de test." },
+    call: { en: "Call #{0}", fr: "Appel #{0}" },
+    filerequest: { en: "Request", fr: "Requête" },
+    fileresponse: { en: "Response", fr: "Réponse" },
+    filecall: { en: "Call", fr: "Appel" },
+    nofiles: { en: "Request and response not recorded: enable the trace files on the service.", fr: "Requête et réponse non enregistrées : activez l'enregistrement des fichiers de trace sur le service." },
+    open: { en: "Open the execution", fr: "Ouvrir l'exécution" },
+    duration: { en: "Duration", fr: "Durée" },
+    size: { en: "Size", fr: "Taille" },
+    http: { en: "HTTP code", fr: "Code HTTP" },
+    method: { en: "Method", fr: "Méthode" },
+    latest: { en: "Latest calls", fr: "Derniers appels" },
+    when: { en: "Date", fr: "Date" },
+    status: { en: "Status", fr: "Statut" },
+    testcase: { en: "Test case", fr: "Cas de test" },
+    robot: { en: "Browser", fr: "Navigateur" },
+    execution: { en: "Execution", fr: "Exécution" }
+};
+
 const pageScheduledRunsLabel = {
     title: { en: "Scheduled Runs", fr: "Exécutions planifiées" },
     history: { en: "History", fr: "Historique" },
@@ -550,5 +608,6 @@ window.testcaseSimpleCreationLabel = testcaseSimpleCreationLabel;
 window.testcaseSimpleExecutionLabel = testcaseSimpleExecutionLabel;
 window.pageScheduledRunsLabel = pageScheduledRunsLabel;
 window.pageReportingMonitorWebLabel = pageReportingMonitorWebLabel;
+window.pageReportingMonitorApiLabel = pageReportingMonitorApiLabel;
 window.pageRunTestsLabel = pageRunTestsLabel;
 window.datePickerLabel = datePickerLabel;

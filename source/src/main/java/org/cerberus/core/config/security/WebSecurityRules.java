@@ -119,6 +119,7 @@ public class WebSecurityRules {
                         m("/ReadTestCaseExecutionByTag"),
                         m("/ReadExecutionStat"),
                         m("/ReadWebMonitor"),
+                        m("/ReadApiMonitor"),
                         m("/ReadQueueStat"),
                         m("/ReadTagStat")
                 ).hasRole("TestRO")
@@ -314,6 +315,7 @@ public class WebSecurityRules {
                         m("/RobotList.jsp"),
                         m("/ReportingMonitor.jsp"),
                         m("/ReportingMonitorWeb.jsp"),
+                        m("/ReportingMonitorApi.jsp"),
                         m("/Homepage"),
                         m("/ReadMyUser"),
                         m("/ReadExecutionTagHistory"),

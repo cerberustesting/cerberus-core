@@ -57,5 +57,8 @@
 .wm-meter > div { height: 100%; border-radius: 999px; background: #f59e0b; }
 .wm-row--on { background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); }
 
+/* Cards of a row keep their own height instead of stretching to the tallest one. */
+.wm-top { align-items: start; }
+
 /* ═══════════ Dark mode ═══════════ */
 :root.dark .wm-tile, :root.dark .wm-meter { background: #1e293b; }

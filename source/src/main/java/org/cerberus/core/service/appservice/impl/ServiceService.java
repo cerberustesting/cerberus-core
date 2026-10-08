@@ -58,6 +58,7 @@ import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.service.IRobotExecutorService;
 import org.cerberus.core.crud.service.IRobotService;
+import org.cerberus.core.crud.service.ITestCaseExecutionServiceCallService;
 import org.cerberus.core.service.robotproxy.IRelayService;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvParam;
@@ -123,9 +124,19 @@ public class ServiceService implements IServiceService {
     private IRobotExecutorService robotExecutorService;
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
+    @Autowired
+    private ITestCaseExecutionServiceCallService testCaseExecutionServiceCallService;
 
     @Override
     public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePathParam, String manualOperation,
+            TestCaseExecution execution, int timeoutMs, int rowLimit) {
+        AnswerItem<AppService> result = performCallService(service, targetNbEvents, targetNbSec, database, manualRequest, manualServicePathParam, manualOperation, execution, timeoutMs, rowLimit);
+        // Statistic for the API Monitor (never breaks the call).
+        testCaseExecutionServiceCallService.recordCall(execution, result.getItem(), result.getResultMessage());
+        return result;
+    }
+
+    private AnswerItem<AppService> performCallService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePathParam, String manualOperation,
             TestCaseExecution execution, int timeoutMs, int rowLimit) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;

@@ -6888,3 +6888,39 @@ ALTER TABLE `robotexecutor`
     ADD COLUMN `ExecutorProxyOauthTokenUrl` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyAuthToken`,
     ADD COLUMN `ExecutorProxyOauthClientId` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyOauthTokenUrl`,
     ADD COLUMN `ExecutorProxyOauthClientSecret` VARCHAR(255) NULL DEFAULT NULL AFTER `ExecutorProxyOauthClientId`;
+
+-- 1952
+-- One row per call of a registered service (REST, SOAP...) made during an execution, to follow the
+-- availability and the response time of the services over time (API Monitor page).
+-- Like testcaseexecutionhttpstat, there is no link to the execution so that the history is kept
+-- independently of the purge of the executions. FileLevel is the level under which the request, response and
+-- call description of that call were recorded in testcaseexecutionfile (when the service records its trace files).
+CREATE TABLE `testcaseexecutionservicecall` (
+  `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ExeID` BIGINT(20) UNSIGNED NOT NULL,
+  `Start` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `Service` VARCHAR(255) NOT NULL,
+  `Application` VARCHAR(200) NULL DEFAULT NULL,
+  `Type` VARCHAR(20) NOT NULL DEFAULT '',
+  `Method` VARCHAR(20) NULL DEFAULT NULL,
+  `HttpCode` INT(10) NOT NULL DEFAULT 0,
+  `DurationMs` INT(10) NOT NULL DEFAULT 0,
+  `ResponseSize` INT(10) NOT NULL DEFAULT 0,
+  `Status` VARCHAR(2) NOT NULL DEFAULT '',
+  `System` VARCHAR(45) NOT NULL DEFAULT '',
+  `Test` VARCHAR(45) NULL DEFAULT NULL,
+  `Testcase` VARCHAR(45) NULL DEFAULT NULL,
+  `Country` VARCHAR(45) NOT NULL DEFAULT '',
+  `Environment` VARCHAR(45) NOT NULL DEFAULT '',
+  `RobotDecli` VARCHAR(100) NOT NULL DEFAULT '',
+  `FileLevel` VARCHAR(150) NULL DEFAULT NULL,
+  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',
+  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UsrModif` VARCHAR(45) NOT NULL DEFAULT '',
+  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',
+  PRIMARY KEY (`ID`),
+  KEY `IX_testcaseexecutionservicecall_01` (`Service`, `Start`),
+  KEY `IX_testcaseexecutionservicecall_02` (`Start`),
+  KEY `IX_testcaseexecutionservicecall_03` (`Test`, `Testcase`, `Start`),
+  KEY `IX_testcaseexecutionservicecall_04` (`ExeID`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
