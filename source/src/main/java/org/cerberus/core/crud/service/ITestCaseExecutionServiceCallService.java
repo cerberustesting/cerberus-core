@@ -34,17 +34,19 @@ public interface ITestCaseExecutionServiceCallService {
      * to record the statistic must not affect the execution.
      *
      * @param execution the execution that made the call
-     * @param service the service as it was called, with the response, start and end of the call
+     * @param service the service as it was called, with the response, start and end of the call. The protocol
+     * services build their own AppService, whose name is not the one of the registered service.
+     * @param serviceName name of the registered service that was called (empty when there is none)
      * @param result result of the call
      */
-    void recordCall(TestCaseExecution execution, AppService service, MessageEvent result);
+    void recordCall(TestCaseExecution execution, AppService service, String serviceName, MessageEvent result);
 
     /**
      * Links the recorded call of a service to the level under which its request / response files were
      * stored. Never throws.
      *
      * @param execution the execution that made the call
-     * @param service the service as it was called
+     * @param service the service as it was called (its start identifies the call inside the execution)
      * @param fileLevel level of the files in testcaseexecutionfile
      */
     void attachFiles(TestCaseExecution execution, AppService service, String fileLevel);

@@ -132,7 +132,7 @@ public class ServiceService implements IServiceService {
             TestCaseExecution execution, int timeoutMs, int rowLimit) {
         AnswerItem<AppService> result = performCallService(service, targetNbEvents, targetNbSec, database, manualRequest, manualServicePathParam, manualOperation, execution, timeoutMs, rowLimit);
         // Statistic for the API Monitor (never breaks the call).
-        testCaseExecutionServiceCallService.recordCall(execution, result.getItem(), result.getResultMessage());
+        testCaseExecutionServiceCallService.recordCall(execution, result.getItem(), service, result.getResultMessage());
         return result;
     }
 
@@ -819,6 +819,10 @@ public class ServiceService implements IServiceService {
             return result;
         }
 
+        // The protocol services build their own AppService : it gets the application of the called service.
+        if (result.getItem() != null && appService != null && result.getItem() != appService && StringUtil.isEmptyOrNull(result.getItem().getApplication())) {
+            result.getItem().setApplication(appService.getApplication());
+        }
         result.setResultMessage(message);
         LOG.debug("Ended callService : " + service + " with database : " + database + " Result : " + message.getDescription());
         return result;

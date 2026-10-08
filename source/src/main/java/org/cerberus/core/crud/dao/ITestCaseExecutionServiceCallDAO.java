@@ -42,11 +42,10 @@ public interface ITestCaseExecutionServiceCallDAO {
      * Links a recorded call to the level under which its files were stored.
      *
      * @param exeId execution of the call
-     * @param service name of the service
-     * @param start start of the call (epoch milliseconds)
+     * @param start start of the call (epoch milliseconds), which identifies the call inside the execution
      * @param fileLevel level of the files in testcaseexecutionfile
      */
-    void setFileLevel(long exeId, String service, long start, String fileLevel);
+    void setFileLevel(long exeId, long start, String fileLevel);
 
     /**
      * @param service name of the service

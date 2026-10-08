@@ -45,22 +45,24 @@ public class TestCaseExecutionServiceCallService implements ITestCaseExecutionSe
     private ITestCaseExecutionServiceCallDAO testCaseExecutionServiceCallDAO;
 
     @Override
-    public void recordCall(TestCaseExecution execution, AppService service, MessageEvent result) {
+    public void recordCall(TestCaseExecution execution, AppService service, String serviceName, MessageEvent result) {
         try {
-            // Registered services only, and only calls that really reached the service (start and end are set by the protocol layer).
-            if (execution == null || execution.getId() <= 0 || service == null || StringUtil.isEmptyOrNull(service.getService())
-                    || "null".equals(service.getService()) || service.getStart() == null || service.getEnd() == null) {
+            // Registered services only, and only calls that were really sent (the protocol layer sets the start just before).
+            if (execution == null || execution.getId() <= 0 || service == null || StringUtil.isEmptyOrNull(serviceName)
+                    || "null".equals(serviceName) || service.getStart() == null) {
                 return;
             }
+            // A call that failed before the answer (timeout, unreachable) has no end: it lasted until now.
+            long end = service.getEnd() != null ? service.getEnd().getTime() : System.currentTimeMillis();
             TestCaseExecutionServiceCall call = new TestCaseExecutionServiceCall();
             call.setExeId(execution.getId());
             call.setStart(service.getStart().getTime());
-            call.setService(service.getService());
+            call.setService(serviceName);
             call.setApplication(service.getApplication());
             call.setType(service.getType());
             call.setMethod(service.getMethod());
             call.setHttpCode(service.getResponseHTTPCode());
-            call.setDurationMs((int) Math.max(0, service.getEnd().getTime() - service.getStart().getTime()));
+            call.setDurationMs((int) Math.max(0, end - service.getStart().getTime()));
             call.setResponseSize(service.getResponseHTTPBody() != null ? service.getResponseHTTPBody().length()
                     : (service.getFile() != null ? service.getFile().length : 0));
             call.setStatus(result == null ? "" : result.getCodeString());
@@ -82,7 +84,7 @@ public class TestCaseExecutionServiceCallService implements ITestCaseExecutionSe
             if (execution == null || execution.getId() <= 0 || service == null || service.getStart() == null || StringUtil.isEmptyOrNull(fileLevel)) {
                 return;
             }
-            testCaseExecutionServiceCallDAO.setFileLevel(execution.getId(), service.getService(), service.getStart().getTime(), fileLevel);
+            testCaseExecutionServiceCallDAO.setFileLevel(execution.getId(), service.getStart().getTime(), fileLevel);
         } catch (Exception ex) {
             LOG.warn("Unable to link the service call statistic to its files. " + ex.toString(), ex);
         }

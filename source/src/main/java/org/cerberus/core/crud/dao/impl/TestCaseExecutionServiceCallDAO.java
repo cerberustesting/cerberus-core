@@ -97,13 +97,12 @@ public class TestCaseExecutionServiceCallDAO implements ITestCaseExecutionServic
     }
 
     @Override
-    public void setFileLevel(long exeId, String service, long start, String fileLevel) {
-        final String query = "UPDATE testcaseexecutionservicecall SET `filelevel` = ? WHERE `exeid` = ? AND `service` = ? AND `start` = ?";
+    public void setFileLevel(long exeId, long start, String fileLevel) {
+        final String query = "UPDATE testcaseexecutionservicecall SET `filelevel` = ? WHERE `exeid` = ? AND `start` = ?";
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, fileLevel);
             preStat.setLong(2, exeId);
-            preStat.setString(3, service);
-            preStat.setTimestamp(4, new Timestamp(start));
+            preStat.setTimestamp(3, new Timestamp(start));
             preStat.executeUpdate();
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
