@@ -6924,3 +6924,10 @@ CREATE TABLE `testcaseexecutionservicecall` (
   KEY `IX_testcaseexecutionservicecall_03` (`Test`, `Testcase`, `Start`),
   KEY `IX_testcaseexecutionservicecall_04` (`ExeID`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 1953
+-- Purge of the service call statistics (API Monitor): daily job, calls older than the retention are deleted.
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_servicecallpurgejob_active', 'Y', 'Y in order to activate the job that purges the service call statistics (API Monitor) older than cerberus_servicecall_retentiondays.')
+  ,('', 'cerberus_servicecallpurgejob_period', '1440', 'Period of time in minutes between each job that purges the old service call statistics (API Monitor).')
+  ,('', 'cerberus_servicecall_retentiondays', '365', 'Number of days the service call statistics (API Monitor) are kept. 0 or less keeps them forever.');

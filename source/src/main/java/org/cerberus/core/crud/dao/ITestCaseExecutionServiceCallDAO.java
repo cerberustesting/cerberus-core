@@ -30,6 +30,15 @@ public interface ITestCaseExecutionServiceCallDAO {
     Answer create(TestCaseExecutionServiceCall object);
 
     /**
+     * Deletes at most limit calls started before the given date.
+     *
+     * @param before calls started before that date are deleted
+     * @param limit maximum number of rows deleted by the call (keeps the locks short)
+     * @return the number of calls deleted
+     */
+    int deleteOlderThan(Date before, int limit);
+
+    /**
      * Links a recorded call to the level under which its files were stored.
      *
      * @param exeId execution of the call

@@ -27,6 +27,7 @@ import org.cerberus.core.crud.service.IMyVersionService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.crud.service.ITestCaseExecutionServiceCallService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.engine.scheduler.SchedulerInit;
 import org.cerberus.core.exception.CerberusException;
@@ -57,6 +58,8 @@ public class ScheduledTaskRunner {
     @Autowired
     private IMyVersionService myVersionService;
     @Autowired
+    private ITestCaseExecutionServiceCallService testCaseExecutionServiceCallService;
+    @Autowired
     private WebSocketEventSender webSocketEventSender;
 
     private int b1TickNumberTarget = 60;
@@ -67,6 +70,8 @@ public class ScheduledTaskRunner {
     private int b3TickNumber = 1;
     private int b4TickNumberTarget = 1;
     private int b4TickNumber = 1;
+    private int b5TickNumberTarget = 1440;
+    private int b5TickNumber = 1;
 
     private long loadingTimestamp = 0;
     private boolean instanceActive = true;
@@ -112,6 +117,7 @@ public class ScheduledTaskRunner {
             b2TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueueprocessingjob_period", "", 30);
             b3TickNumberTarget = 1;
             b4TickNumberTarget = 1;
+            b5TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_servicecallpurgejob_period", "", 1440);
 
             if (b1TickNumber < b1TickNumberTarget) {
                 b1TickNumber++;
@@ -142,6 +148,14 @@ public class ScheduledTaskRunner {
                 b4TickNumber = 1;
                 // We trigger the Queue dependencies release by timing.
                 performBatch4_ProcessTimingBasedQueueDependencies();
+            }
+
+            if (b5TickNumber < b5TickNumberTarget) {
+                b5TickNumber++;
+            } else {
+                b5TickNumber = 1;
+                // We trigger the purge of the old service call statistics.
+                performBatch5_PurgeServiceCalls();
             }
 
             LOG.debug("Schedule ({}) Stop. "
@@ -191,6 +205,18 @@ public class ScheduledTaskRunner {
             LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e, e);
         }
 
+    }
+
+    private void performBatch5_PurgeServiceCalls() {
+        LOG.info("Schedule ({}) : servicecallpurgejob Task triggered. (triggered every {} minutes)", loadingTimestamp, b5TickNumberTarget);
+        if (parameterService.getParameterBooleanByKey("cerberus_servicecallpurgejob_active", "", true)) {
+            int days = parameterService.getParameterIntegerByKey("cerberus_servicecall_retentiondays", "", 90);
+            int nbDeleted = testCaseExecutionServiceCallService.purge(days);
+            LOG.info("Schedule ({}) : servicecallpurgejob Task purged {} service call(s) older than {} day(s).", loadingTimestamp, nbDeleted, days);
+        } else {
+            LOG.info("Schedule ({}) : servicecallpurgejob Task disabled by config (cerberus_servicecallpurgejob_active).", loadingTimestamp);
+        }
+        LOG.info("Schedule ({}) : servicecallpurgejob Task ended.", loadingTimestamp);
     }
 
     private void performBatch4_ProcessTimingBasedQueueDependencies() {

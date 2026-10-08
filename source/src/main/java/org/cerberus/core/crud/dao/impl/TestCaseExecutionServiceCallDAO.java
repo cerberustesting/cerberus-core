@@ -84,6 +84,19 @@ public class TestCaseExecutionServiceCallDAO implements ITestCaseExecutionServic
     }
 
     @Override
+    public int deleteOlderThan(Date before, int limit) {
+        final String query = "DELETE FROM testcaseexecutionservicecall WHERE `start` < ? LIMIT ?";
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setTimestamp(1, new Timestamp(before.getTime()));
+            preStat.setInt(2, limit);
+            return preStat.executeUpdate();
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            return 0;
+        }
+    }
+
+    @Override
     public void setFileLevel(long exeId, String service, long start, String fileLevel) {
         final String query = "UPDATE testcaseexecutionservicecall SET `filelevel` = ? WHERE `exeid` = ? AND `service` = ? AND `start` = ?";
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {

@@ -49,6 +49,14 @@ public interface ITestCaseExecutionServiceCallService {
      */
     void attachFiles(TestCaseExecution execution, AppService service, String fileLevel);
 
+    /**
+     * Deletes the calls older than the retention. Never throws.
+     *
+     * @param retentionDays number of days to keep, 0 or less keeps everything
+     * @return the number of calls deleted
+     */
+    int purge(int retentionDays);
+
     AnswerList<TestCaseExecutionServiceCall> readByService(String service, Date from, Date to);
 
     List<String[]> readServicesWithCalls(Date from, Date to);

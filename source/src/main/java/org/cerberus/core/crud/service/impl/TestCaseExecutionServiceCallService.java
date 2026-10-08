@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 public class TestCaseExecutionServiceCallService implements ITestCaseExecutionServiceCallService {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionServiceCallService.class);
+    private static final int PURGE_BATCH_SIZE = 5000;
+    private static final int PURGE_MAX_BATCHES = 200;   // 1 million rows by run at most, the next run goes on
 
     @Autowired
     private ITestCaseExecutionServiceCallDAO testCaseExecutionServiceCallDAO;
@@ -84,6 +86,28 @@ public class TestCaseExecutionServiceCallService implements ITestCaseExecutionSe
         } catch (Exception ex) {
             LOG.warn("Unable to link the service call statistic to its files. " + ex.toString(), ex);
         }
+    }
+
+    @Override
+    public int purge(int retentionDays) {
+        if (retentionDays <= 0) {
+            return 0;
+        }
+        int total = 0;
+        try {
+            Date before = new Date(System.currentTimeMillis() - retentionDays * 24L * 3600 * 1000);
+            // By small batches so that a first purge of a big table does not hold long locks.
+            for (int batch = 0; batch < PURGE_MAX_BATCHES; batch++) {
+                int deleted = testCaseExecutionServiceCallDAO.deleteOlderThan(before, PURGE_BATCH_SIZE);
+                total += deleted;
+                if (deleted < PURGE_BATCH_SIZE) {
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            LOG.warn("Unable to purge the service call statistics. " + ex.toString(), ex);
+        }
+        return total;
     }
 
     @Override
