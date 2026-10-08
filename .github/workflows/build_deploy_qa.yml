@@ -36,6 +36,24 @@ jobs:
       run: |
         cd source
         mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean install --file pom.xml 
+    - name: Check the WAR dependencies
+      # The transitive dependencies of selenium-remote-driver (failsafe, netty, opentelemetry...) were once left
+      # out of the WAR without any build error, which broke every Selenium execution at runtime.
+      # We print what Maven resolves and refuse to deliver a WAR that misses them.
+      run: |
+        cd source
+        mvn -v
+        mvn --batch-mode dependency:tree -Dincludes=io.netty:netty-common,dev.failsafe:failsafe,io.opentelemetry:opentelemetry-api,org.asynchttpclient:async-http-client,org.seleniumhq.selenium:selenium-remote-driver || true
+        war=$(ls target/cerberus-core-*.war | head -1)
+        echo "WAR: $war - $(unzip -Z1 "$war" | grep -c '^WEB-INF/lib/.*\.jar$') jar(s) in WEB-INF/lib"
+        missing=0
+        for jar in failsafe netty-common netty-handler opentelemetry-api async-http-client selenium-remote-driver; do
+          if ! unzip -Z1 "$war" | grep -q "^WEB-INF/lib/$jar-"; then
+            echo "::error::$jar is missing from WEB-INF/lib of $war"
+            missing=1
+          fi
+        done
+        exit $missing
     - name: Push file to core VM
       env:
         source-war: 'target/*.war'
