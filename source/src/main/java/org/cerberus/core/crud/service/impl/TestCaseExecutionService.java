@@ -433,14 +433,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             return mes;
         }
         // Clean list from OK status code.
-        
+
         finalMessage = messageListBlocking.get(0).getDescription().split("-- Waited")[0];
         HashMap<String, Integer> hash = new HashMap<>();
         for (int i = 1; i < messageListBlocking.size(); i++) {
-            if (hash.containsKey(messageListBlocking.get(i).getCodeString())) {
-                hash.put(messageListBlocking.get(i).getCodeString(), hash.get(messageListBlocking.get(i).getCodeString()) + 1);
-            } else {
-                hash.put(messageListBlocking.get(i).getCodeString(), 1);
+            String code = messageListBlocking.get(i).getCodeString();
+            if (code != null) {
+                hash.merge(code, 1, Integer::sum);
             }
         }
         if (!hash.isEmpty()) {
