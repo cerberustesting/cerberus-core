@@ -77,7 +77,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 
 import org.apache.avro.generic.GenericRecord;
@@ -115,6 +114,9 @@ public class KafkaService implements IKafkaService {
     IJsonService jsonService;
     @Autowired
     private IVariableService variableService;
+
+    private static final String SCHEMAREGISTRY_AVRO = "AVRO";
+    private static final String SCHEMAREGISTRY_JSONSCHEMA = "JSONSCHEMA";
 
     protected final Logger LOG = org.apache.logging.log4j.LogManager.getLogger(getClass());
 
@@ -210,7 +212,7 @@ public class KafkaService implements IKafkaService {
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL,
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, String schemaRegistryFlag, String schemaRegistryURL,
             boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
@@ -227,14 +229,9 @@ public class KafkaService implements IKafkaService {
 
         serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
         serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
-//        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
-//        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
-        if (!activateAvro) {
-            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-//            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-//            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-        } else {
+
+        if (SCHEMAREGISTRY_AVRO.equals(schemaRegistryFlag)) {
+
             if (isAvroEnableKey) {
                 serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
             } else {
@@ -245,15 +242,31 @@ public class KafkaService implements IKafkaService {
             } else {
                 serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
             }
-//            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
             serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
+
+        } else if (SCHEMAREGISTRY_JSONSCHEMA.equals(schemaRegistryFlag)) {
+
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer", true, 0, "", "", null, "", null));
+
+        } else {
+
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.LINGER_MS_CONFIG, String.valueOf(5), true, 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs - 100), true, 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.MAX_BLOCK_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.LINGER_MS_CONFIG, String.valueOf(5), true, 0, "", "", null, "", null));
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs - 100), true, 0, "", "", null, "", null));
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ProducerConfig.MAX_BLOCK_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        if (SCHEMAREGISTRY_JSONSCHEMA.equals(schemaRegistryFlag)) {
+            // Set timeout on schema registry calls.
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, "http.connect.timeout.ms", String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, "http.read.timeout.ms", String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        }
 
+        // Map AppServiceContent to Kafka props
         for (AppServiceContent object : serviceContent) {
             if (object.isActive()) {
                 props.put(object.getKey(), object.getValue());
@@ -269,13 +282,14 @@ public class KafkaService implements IKafkaService {
 
         int partition = -1;
         long offset = -1;
-        KafkaProducer<Object, Object> producer = null;
-        try {
+
+        if (SCHEMAREGISTRY_AVRO.equals(schemaRegistryFlag)) {
 
             LOG.info("Open Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            KafkaProducer<Object, Object> producer = null;
             producer = new KafkaProducer<>(props);
 
-            if (activateAvro) {
+            try {
 
                 Schema.Parser parser = new Schema.Parser();
                 Schema schemaValue;
@@ -313,7 +327,71 @@ public class KafkaService implements IKafkaService {
                 offset = metadata.offset();
                 LOG.debug("Produced Kafka message (Avro enable) - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
 
-            } else {
+            } catch (Exception ex) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
+                message.setDescription(message.getDescription().replace("%EX%", ex.toString() + " " + StringUtil.getExceptionCauseFromString(ex)));
+                LOG.error(ex, ex);
+            } finally {
+                if (producer != null) {
+                    producer.flush();
+                    if (producer != null) {
+                        try {
+                            producer.close();
+                        } catch (Exception e) {
+                            LOG.error(e, e);
+                        }
+                    }
+                    LOG.info("Closed Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+                } else {
+                    LOG.info("Producer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
+                }
+            }
+
+        } else if (SCHEMAREGISTRY_JSONSCHEMA.equals(schemaRegistryFlag)) {
+
+            LOG.info("Open Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            KafkaProducer<Object, JSONObject> producer = null;
+            producer = new KafkaProducer<>(props);
+            try {
+
+                ProducerRecord<Object, JSONObject> record = new ProducerRecord<>(topic, key, new JSONObject(eventMessage));
+                for (AppServiceHeader object : serviceHeader) {
+                    if (object.isActive()) {
+                        record.headers().add(new RecordHeader(object.getKey(), object.getValue().getBytes()));
+                    }
+                }
+                LOG.debug("Producing Kafka message - topic : " + topic + " key : " + key + " message : " + eventMessage);
+                RecordMetadata metadata = producer.send(record).get(); //Wait for a responses
+                partition = metadata.partition();
+                offset = metadata.offset();
+                LOG.debug("Produced Kafka message - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
+
+            } catch (Exception ex) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
+                message.setDescription(message.getDescription().replace("%EX%", ex.toString() + " " + StringUtil.getExceptionCauseFromString(ex)));
+                LOG.error(ex, ex);
+            } finally {
+                if (producer != null) {
+                    producer.flush();
+                    if (producer != null) {
+                        try {
+                            producer.close();
+                        } catch (Exception e) {
+                            LOG.error(e, e);
+                        }
+                    }
+                    LOG.info("Closed Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+                } else {
+                    LOG.info("Producer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
+                }
+            }
+
+        } else {
+
+            LOG.info("Open Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+            KafkaProducer<Object, Object> producer = null;
+            producer = new KafkaProducer<>(props);
+            try {
 
                 ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, eventMessage);
                 for (AppServiceHeader object : serviceHeader) {
@@ -327,28 +405,28 @@ public class KafkaService implements IKafkaService {
                 offset = metadata.offset();
                 LOG.debug("Produced Kafka message - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
 
-            }
-
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_PRODUCEKAFKA);
-        } catch (Exception ex) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
-            message.setDescription(message.getDescription().replace("%EX%", ex.toString() + " " + StringUtil.getExceptionCauseFromString(ex)));
-            LOG.error(ex, ex);
-        } finally {
-            if (producer != null) {
-                producer.flush();
+            } catch (Exception ex) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
+                message.setDescription(message.getDescription().replace("%EX%", ex.toString() + " " + StringUtil.getExceptionCauseFromString(ex)));
+                LOG.error(ex, ex);
+            } finally {
                 if (producer != null) {
-                    try {
-                        producer.close();
-                    } catch (Exception e) {
-                        LOG.error(e, e);
+                    producer.flush();
+                    if (producer != null) {
+                        try {
+                            producer.close();
+                        } catch (Exception e) {
+                            LOG.error(e, e);
+                        }
                     }
+                    LOG.info("Closed Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
+                } else {
+                    LOG.info("Producer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
                 }
-                LOG.info("Closed Producer : " + getKafkaConsumerKey(topic, bootstrapServers));
-            } else {
-                LOG.info("Producer not opened : " + getKafkaConsumerKey(topic, bootstrapServers));
             }
         }
+
+        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_PRODUCEKAFKA);
 
         serviceREST.setKafkaResponseOffset(offset);
         serviceREST.setKafkaResponsePartition(partition);
@@ -383,9 +461,10 @@ public class KafkaService implements IKafkaService {
             kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
-            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
-            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
+            kafkaProps = addIfNotContains(kafkaProps, factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs - 100), true, 0, "", "", null, "", null));
+            kafkaProps = addIfNotContains(kafkaProps, factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            kafkaProps = addIfNotContains(kafkaProps, factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
             for (AppServiceContent object : kafkaProps) {
                 if (object.isActive()) {
@@ -439,7 +518,7 @@ public class KafkaService implements IKafkaService {
     @Override
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue,
-            boolean activateAvro, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt) {
+            String schemaRegistryFlag, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
@@ -458,24 +537,30 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
 
-            if (!activateAvro) {
-                serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
-                serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
-            } else {
+            if (SCHEMAREGISTRY_AVRO.equals(schemaRegistryFlag)) {
+
                 if (avroEnableKey) {
-//                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                 } else {
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
                 }
                 if (avroEnableValue) {
-//                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
                 } else {
                     serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
                 }
-//            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
                 serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
+
+            } else if (SCHEMAREGISTRY_JSONSCHEMA.equals(schemaRegistryFlag)) {
+
+                serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+                serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer", true, 0, "", "", null, "", null));
+
+            } else {
+
+                serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+                serviceContent = addIfNotContains(serviceContent, factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+
             }
 
             for (AppServiceContent object : serviceContent) {
@@ -516,76 +601,7 @@ public class KafkaService implements IKafkaService {
                 while (consume) {
                     LOG.debug("Start Poll.");
 
-                    if (!activateAvro) {
-
-                        // NON AVRO VERSION
-                        @SuppressWarnings("unchecked")
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
-                        LOG.debug("End Poll.");
-                        if (Instant.now().toEpochMilli() > timeoutTime) {
-                            LOG.debug("Timed out searching for record");
-                            consumer.wakeup(); //exit
-                        }
-                        //Now for each record in the batch of records we got from Kafka
-                        for (ConsumerRecord<String, String> record : records) {
-                            try {
-                                LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
-                                LOG.debug("  " + record.key() + " | " + record.value());
-
-                                // Parsing header.
-                                JSONObject headerJSON = new JSONObject();
-                                for (Header header : record.headers()) {
-                                    String headerKey = header.key();
-                                    String headerValue = new String(header.value());
-                                    headerJSON.put(headerKey, headerValue);
-                                }
-
-                                boolean recordError = false;
-
-                                // Parsing event message.
-                                JSONObject recordJSON = new JSONObject();
-                                try {
-                                    recordJSON = new JSONObject(record.value());
-                                } catch (JSONException ex) {
-                                    LOG.warn("Failed to convert message to JSON Format : {}", record.value());
-                                    LOG.warn(ex, ex);
-                                    recordError = true;
-                                }
-
-                                // Complete event with headers.
-                                JSONObject messageJSON = new JSONObject();
-                                messageJSON.put("key", record.key());
-                                if (recordError) {
-                                    messageJSON.put("value", record.value());
-                                } else {
-                                    messageJSON.put("value", recordJSON);
-                                }
-                                messageJSON.put("offset", record.offset());
-                                messageJSON.put("partition", record.partition());
-                                messageJSON.put("header", headerJSON);
-
-                                nbEvents++;
-
-                                boolean match = isRecordMatch(record.value(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
-
-                                if (match) {
-                                    resultJSON.put(messageJSON);
-                                    nbFound++;
-                                    if (nbFound >= targetNbEventsInt) {
-                                        consume = false;  //exit the consume loop
-                                        consumer.wakeup(); //takes effect on the next poll loop so need to break.
-                                        break; //if we've found a match, stop looping through the current record batch
-                                    }
-                                }
-
-                            } catch (Exception ex) {
-                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                                //but we don't want to trigger the catch block for Kafka consumption
-                                LOG.error(ex, ex);
-                            }
-                        }
-
-                    } else {
+                    if (SCHEMAREGISTRY_AVRO.equals(schemaRegistryFlag)) {
 
                         if (avroEnableKey) {
 
@@ -801,6 +817,75 @@ public class KafkaService implements IKafkaService {
                                 }
                             }
 
+                        }
+                        
+                    } else {
+
+                        // NON AVRO VERSION
+                        @SuppressWarnings("unchecked")
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                        LOG.debug("End Poll.");
+                        if (Instant.now().toEpochMilli() > timeoutTime) {
+                            LOG.debug("Timed out searching for record");
+                            consumer.wakeup(); //exit
+                        }
+                        //Now for each record in the batch of records we got from Kafka
+                        for (ConsumerRecord<String, String> record : records) {
+                            try {
+                                LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                                LOG.debug("  " + record.key() + " | " + record.value());
+
+                                // Parsing header.
+                                JSONObject headerJSON = new JSONObject();
+                                for (Header header : record.headers()) {
+                                    String headerKey = header.key();
+                                    String headerValue = new String(header.value());
+                                    headerJSON.put(headerKey, headerValue);
+                                }
+
+                                boolean recordError = false;
+
+                                // Parsing event message.
+                                JSONObject recordJSON = new JSONObject();
+                                try {
+                                    recordJSON = new JSONObject(record.value());
+                                } catch (JSONException ex) {
+                                    LOG.warn("Failed to convert message to JSON Format : {}", record.value());
+                                    LOG.warn(ex, ex);
+                                    recordError = true;
+                                }
+
+                                // Complete event with headers.
+                                JSONObject messageJSON = new JSONObject();
+                                messageJSON.put("key", record.key());
+                                if (recordError) {
+                                    messageJSON.put("value", record.value());
+                                } else {
+                                    messageJSON.put("value", recordJSON);
+                                }
+                                messageJSON.put("offset", record.offset());
+                                messageJSON.put("partition", record.partition());
+                                messageJSON.put("header", headerJSON);
+
+                                nbEvents++;
+
+                                boolean match = isRecordMatch(record.value(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+
+                                if (match) {
+                                    resultJSON.put(messageJSON);
+                                    nbFound++;
+                                    if (nbFound >= targetNbEventsInt) {
+                                        consume = false;  //exit the consume loop
+                                        consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                        break; //if we've found a match, stop looping through the current record batch
+                                    }
+                                }
+
+                            } catch (Exception ex) {
+                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                //but we don't want to trigger the catch block for Kafka consumption
+                                LOG.error(ex, ex);
+                            }
                         }
 
                     }

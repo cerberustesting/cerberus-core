@@ -55,7 +55,7 @@ public interface IKafkaService {
      * @param serviceHeader
      * @param serviceContent
      * @param token
-     * @param isAvroEnable
+     * @param schemaRegistryFlag
      * @param schemaRegistryURL
      * @param isAvroEnableKey
      * @param avroSchemaKey
@@ -66,7 +66,7 @@ public interface IKafkaService {
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, 
-            boolean isAvroEnable, String schemaRegistryURL, boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs);
+            String schemaRegistryFlag, String schemaRegistryURL, boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs);
 
     /**
      * Get the last offset of every partition.
@@ -93,8 +93,8 @@ public interface IKafkaService {
      * @param serviceHeader
      * @param filterHeaderPath
      * @param targetNbEventsInt
+     * @param schemaRegistryFlag
      * @param filterHeaderValue
-     * @param avroEnable
      * @param avroEnableKey
      * @param avroEnableValue
      * @param schemaRegistryURL
@@ -103,7 +103,7 @@ public interface IKafkaService {
      */
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue,
-            boolean avroEnable, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt);
+            String schemaRegistryFlag, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt);
 
     /**
      * Get the latest Offset of all partitions. This is triggered at the

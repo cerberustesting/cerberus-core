@@ -584,14 +584,21 @@ public class ServiceService implements IServiceService {
                             }
                         }
 
+                        String schemaRegistryFlag = "NONE";
                         switch (appService.getMethod()) {
 
                             case AppService.METHOD_KAFKAPRODUCE:
                                 /**
                                  * Call REST and store it into the execution.
                                  */
+                                if (appService.isAvroEnable()) {
+                                    schemaRegistryFlag = "AVRO";
+                                }
+                                if (appService.getDescription().contains("[JSON Schema]")) {
+                                    schemaRegistryFlag = "JSONSCHEMA";
+                                }
                                 result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
-                                        token, appService.isAvroEnable(), decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.getAvroSchemaKey(), appService.isAvroEnableValue(), appService.getAvroSchemaValue(), timeoutMs);
+                                        token, schemaRegistryFlag, decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.getAvroSchemaKey(), appService.isAvroEnableValue(), appService.getAvroSchemaValue(), timeoutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -711,9 +718,16 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaFilterHeaderValue(decodedFilterHeaderValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
+
+                                if (appService.isAvroEnable()) {
+                                    schemaRegistryFlag = "AVRO";
+                                }
+                                if (appService.getDescription().contains("[JSON Schema]")) {
+                                    schemaRegistryFlag = "JSONSCHEMA";
+                                }
                                 AnswerItem<String> resultSearch = kafkaService.searchEvent(execution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
                                         appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
-                                        appService.isAvroEnable(), decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.isAvroEnableValue(), targetNbEventsInt, targetNbSecInt);
+                                        schemaRegistryFlag, decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.isAvroEnableValue(), targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
