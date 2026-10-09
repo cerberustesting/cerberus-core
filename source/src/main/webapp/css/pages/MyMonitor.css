@@ -1,0 +1,91 @@
+/*
+ * Cerberus Copyright (C) 2013 - 2026 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * My Monitor page: the grid and the card of the widgets. Builds on the v2in- components of
+ * InsightsShared.css and on the tabs of ReportingMonitorWeb.css.
+ */
+
+/* ═══════════ Dashboard tabs ═══════════ */
+.wm-tab-star { border: none; background: transparent; padding: 0; display: flex; color: inherit; opacity: 0.5; cursor: pointer; }
+.wm-tab-star:hover { opacity: 1; color: #f59e0b; }
+.wm-tab-star--on { opacity: 1; color: #f59e0b; }
+.wm-tab-star--on svg { fill: #f59e0b; }
+.wm-tab { padding-right: 12px; }
+
+/* ═══════════ Grid: 12 columns, rows of --mm-row ═══════════ */
+.mm-grid { position: relative; width: 100%; transition: height 0.15s; }
+.mm-grid--edit {
+    border-radius: 12px;
+    background-image:
+        linear-gradient(to right, var(--crb-new-border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--crb-new-border) 1px, transparent 1px);
+    background-size: calc(100% / 12) var(--mm-row);
+}
+.mm-cell { position: absolute; padding: 8px; box-sizing: border-box; }
+.mm-cell--drag { z-index: 30; opacity: 0.85; }
+.mm-cell--drag .mm-card { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25); border-color: var(--crb-blue-color); }
+
+/* ═══════════ Card of a widget ═══════════ */
+/* .crb_card carries a big padding and a bottom margin made for the pages: a widget is a tile of the grid. */
+.mm-card { height: 100%; margin-bottom: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+.mm-card--edit { border-style: dashed; }
+/* The text widget is a bold line, its icon in front: no frame outside of the edit mode */
+.mm-card--bare:not(.mm-card--edit) { border-color: transparent; background: transparent; box-shadow: none; }
+.mm-card--bare .mm-text { display: none; }
+.mm-title--text { font-weight: 700; font-size: 16px; }
+.mm-head { display: flex; align-items: center; gap: 10px; min-height: 32px; flex-shrink: 0; user-select: none; }
+.mm-handle { cursor: grab; touch-action: none; }
+.mm-handle:active { cursor: grabbing; }
+.mm-tile { width: 32px; height: 32px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.mm-tile--sm { width: 26px; height: 26px; border-radius: 8px; }
+.mm-title { font-size: 14px; font-weight: 600; color: var(--crb-dark-color); min-width: 0; }
+.mm-iconbtn {
+    width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--crb-grey-light-color); background: transparent;
+    display: flex; align-items: center; justify-content: center; color: var(--crb-grey-color); cursor: pointer; flex-shrink: 0;
+}
+.mm-iconbtn:hover, .mm-iconbtn--on { border-color: var(--crb-blue-color); color: var(--crb-blue-color); }
+.mm-iconbtn--del:hover { border-color: var(--crb-red-color, #e63757); color: var(--crb-red-color, #e63757); }
+.mm-resize {
+    position: absolute; right: 4px; bottom: 4px; width: 16px; height: 16px; cursor: nwse-resize; touch-action: none;
+    background: linear-gradient(135deg, transparent 50%, var(--crb-grey-color) 50%, var(--crb-grey-color) 60%, transparent 60%, transparent 75%, var(--crb-grey-color) 75%, var(--crb-grey-color) 85%, transparent 85%);
+    opacity: 0.6;
+}
+.mm-resize:hover { opacity: 1; }
+
+.mm-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.mm-body--cfg {
+    position: fixed; z-index: 1001; top: 50%; left: 50%; transform: translate(-50%, -50%); flex: none;
+    width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 64px); overflow-y: auto; gap: 14px;
+    padding: 20px 22px; border-radius: 16px; background: var(--crb-white-color, #fff); box-shadow: 0 24px 64px rgba(15, 23, 42, 0.35);
+}
+.mm-backdrop { position: fixed; z-index: 1000; inset: 0; background: rgba(15, 23, 42, 0.45); }
+.mm-popin-title { display: flex; align-items: center; gap: 10px; }
+/* The click goes to the button, not to the svg drawn inside it */
+.mm-iconbtn svg, .mm-iconbtn i, .wm-tab-star svg, .wm-tab-star i { pointer-events: none; }
+.mm-widget { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.mm-field-list { display: flex; flex-direction: column; gap: 10px; }
+.mm-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mm-field .v2in-input { width: 100%; }
+.mm-swatch { width: 22px; height: 22px; border-radius: 999px; border: 2px solid transparent; cursor: pointer; }
+.mm-swatch--on { border-color: var(--crb-dark-color); }
+
+/* ═══════════ Contents ═══════════ */
+.mm-big { font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; color: var(--crb-dark-color); }
+.mm-sub { font-size: 11.5px; color: var(--crb-grey-color); }
+.mm-empty { font-size: 11.5px; color: var(--crb-grey-color); font-style: italic; }
+.mm-text { font-size: 13px; white-space: pre-wrap; overflow: auto; color: var(--crb-dark-color); }
+.mm-kpi { display: flex; flex-direction: column; gap: 6px; }
+.mm-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.mm-tab {
+    border: none; background: transparent; font-size: 11.5px; padding: 2px 8px; border-radius: 12px; cursor: pointer; color: var(--crb-grey-color);
+}
+.mm-tab--on { background: color-mix(in srgb, var(--crb-blue-color) 12%, transparent); color: var(--crb-blue-color); }
+.mm-chartwidget { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.mm-chart { flex: 1; min-height: 0; overflow: hidden; }
+.mm-chart .v2in-chart { display: block; }
+
+/* ═══════════ Loader: over the widget while its data loads ═══════════ */
+.mm-loader { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--crb-white-color, #fff) 70%, transparent); }
+.mm-spinner { width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--crb-grey-light-color); border-top-color: var(--crb-blue-color); animation: mm-spin 0.8s linear infinite; }
+@keyframes mm-spin { to { transform: rotate(360deg); } }

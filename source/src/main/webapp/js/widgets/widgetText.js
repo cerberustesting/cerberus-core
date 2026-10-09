@@ -17,3 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * Widget "text": a free note on the dashboard.
+ * Options: w.content.
+ */
+(function () {
+    window.MyMonitor.register({
+        type: 'text', icon: 'file-text', color: 'amber', w: 4, h: 2, minW: 2, minH: 1,
+        defaults: function () { return {content: ''}; }
+    });
+})();

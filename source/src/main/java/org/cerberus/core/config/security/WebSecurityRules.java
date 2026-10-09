@@ -313,6 +313,7 @@ public class WebSecurityRules {
                         m("/Homepage.jsp"),
                         m("/ImpactAnalysis.jsp"),
                         m("/RobotList.jsp"),
+                        m("/MyMonitor.jsp"),
                         m("/ReportingMonitor.jsp"),
                         m("/ReportingMonitorWeb.jsp"),
                         m("/ReportingMonitorApi.jsp"),

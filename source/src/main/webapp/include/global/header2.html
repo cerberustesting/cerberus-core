@@ -456,11 +456,10 @@
                 <!-- Template factorisé (non affiché directement) -->
                 <template x-ref="monitorMenuItems">
 
-                    <a href="#" id="menuMonitorAutomate" @click.prevent class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg cursor-not-allowed text-slate-500 opacity-70"
-                       :title="$store.labels.getLabel('header','soon')">
-                        <i data-lucide="chart-column" class="w-4 h-4 text-slate-500"></i>
-                        <span class="text-slate-400" x-text="$store.labels.getLabel('header','monitorautomate')"></span>
-                        <i data-lucide="clock" class="w-3 h-3 text-amber-400 opacity-80"></i>
+                    <a href="MyMonitor.jsp" id="menuMyMonitor" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
+                       :class="$store.sidebar.activeSubmenu === 'MyMonitor.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
+                        <span class="text-white" x-text="$store.labels.getLabel('header','mymonitor')"></span>
                     </a>
 
                     <a href="ReportingMonitor.jsp" id="menuReportingMonitor" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
@@ -473,13 +472,6 @@
                        :class="$store.sidebar.activeSubmenu === 'ReportingMonitorWeb.jsp' ? '!bg-blue-600 !text-white hover:!bg-blue-700' : '!text-slate-300 hover:bg-slate-700/30 hover:!text-white'">
                         <i data-lucide="globe" class="w-4 h-4 text-slate-400 group-hover:!text-white transition-colors"></i>
                         <span class="text-white" x-text="$store.labels.getLabel('header','monitorweb')"></span>
-                    </a>
-
-                    <a href="#" id="menuMobileMonitor" @click.prevent class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg cursor-not-allowed text-slate-500 opacity-70"
-                       :title="$store.labels.getLabel('header','soon')">
-                        <i data-lucide="smartphone" class="w-4 h-4 text-slate-500"></i>
-                        <span class="text-slate-400" x-text="$store.labels.getLabel('header','monitormobile')"></span>
-                        <i data-lucide="clock" class="w-3 h-3 text-amber-400 opacity-80"></i>
                     </a>
 
                     <a href="ReportingMonitorApi.jsp" id="menuReportingMonitorApi" class="group flex items-center gap-2 px-4 py-2 text-xs rounded-lg transition-colors"
