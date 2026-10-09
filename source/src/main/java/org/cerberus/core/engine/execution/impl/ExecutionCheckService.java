@@ -47,6 +47,9 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.engine.entity.ExecutionLog;
+import org.cerberus.core.service.robotproxy.IRelayService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
 
 /**
  * @author Tiago Bernardes
@@ -62,6 +65,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
     private IBuildRevisionInvariantService buildRevisionInvariantService;
+    @Autowired
+    private IRelayService relayService;
 
     private MessageGeneral message;
 
@@ -73,6 +78,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
+                    && this.checkRelay(tCExecution)
                     && this.checkExecutorProxy(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -91,6 +97,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
+                    && this.checkRelay(tCExecution)
                     && this.checkExecutorProxy(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
@@ -417,5 +424,28 @@ public class ExecutionCheckService implements IExecutionCheckService {
         }
         return true;
 
+    }
+
+    /**
+     * Reports a relay that cannot be reached, but never refuses the execution: the relay is only needed by
+     * the service calls of the execution, and many executions (a GUI test without any) never use it, whereas
+     * the robot of a local runner has it active by default. A service call that does go through the relay
+     * fails by itself, with the cause, when it runs.
+     *
+     * @return always true, so that it can stand in the chain of checks
+     */
+    private boolean checkRelay(TestCaseExecution tce) {
+
+        if (tce.getRobotExecutorObj() != null && relayService.isRelayActive(tce.getRobotExecutorObj())) {
+            RobotExecutor executor = tce.getRobotExecutorObj();
+            try {
+                relayService.check(executor);
+            } catch (RelayException ex) {
+                LOG.warn("Relay check failed on {}:{} - {} : {}", executor.getExecutorProxyServiceHost(), executor.getExecutorProxyServicePort(), ex.getCode(), ex.getMessage());
+                tce.addExecutionLog(ExecutionLog.STATUS_WARN, "The relay of robot executor " + executor.getRobot() + " / " + executor.getExecutor()
+                        + " cannot be used, the service calls of this execution will fail. " + ex.getMessage());
+            }
+        }
+        return true;
     }
 }

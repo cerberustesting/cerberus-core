@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +52,11 @@ public class ScheduledExecutionService implements IScheduledExecutionService {
     @Override
     public long create(ScheduledExecution scheduledExecution) throws CerberusException {
         return scheduledExecutionDAO.create(scheduledExecution);
+    }
+
+    @Override
+    public AnswerList<ScheduledExecution> readSince(Timestamp since, int maxRows) {
+        return scheduledExecutionDAO.readSince(since, maxRows);
     }
 
     @Override

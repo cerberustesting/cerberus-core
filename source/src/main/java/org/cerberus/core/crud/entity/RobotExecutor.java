@@ -57,6 +57,12 @@ public class RobotExecutor {
     private Integer executorBrowserProxyPort;
     private Integer executorExtensionPort;
     private String executorExtensionHost; // Host used to reach the Cerberus browser extension. If empty, the executor Host is used (eg: when the extension is exposed via a different tunnel/hostname than Selenium, such as cloudflared).
+    private boolean relayActive; // When true, service calls (REST/SOAP...) of the execution go through the relay service of the Cerberus Proxy (executorProxyServiceHost/Port). The authentication towards the proxy is defined below.
+    private String executorProxyAuthMode = PROXY_AUTH_NONE; // NONE, TOKEN or OAUTH.
+    private String executorProxyAuthToken; // Secret (mode TOKEN): Bearer token. Never exposed (same convention as hostPassword).
+    private String executorProxyOauthTokenUrl; // Mode OAUTH: token endpoint (eg Keycloak realm).
+    private String executorProxyOauthClientId; // Mode OAUTH: client id of the service account.
+    private String executorProxyOauthClientSecret; // Secret (mode OAUTH): never exposed.
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -65,6 +71,9 @@ public class RobotExecutor {
     /**
      * Static PROXY TYPE String.
      */
+    public static final String PROXY_AUTH_NONE = "NONE";
+    public static final String PROXY_AUTH_TOKEN = "TOKEN";
+    public static final String PROXY_AUTH_OAUTH = "OAUTH";
     public static final String PROXY_TYPE_NONE = "NONE"; // No Proxy. Browser will connect directly on Internet
     public static final String PROXY_TYPE_MANUAL = "MANUAL"; // A Manual proxy is configured on executorBrowserProxyHost and executorBrowserProxyPort
     public static final String PROXY_TYPE_NETWORKTRAFFIC = "NETWORKTRAFFIC"; // Proxy will be configured to Cerberus robot proxy component --> Network traffic features will be activated.
@@ -266,6 +275,58 @@ public class RobotExecutor {
         this.executorExtensionHost = executorExtensionHost;
     }
 
+    public boolean isRelayActive() {
+        return relayActive;
+    }
+
+    public void setRelayActive(boolean relayActive) {
+        this.relayActive = relayActive;
+    }
+
+    private static String maskSecret(String secret) {
+        return (secret != null && !secret.isEmpty()) ? StringUtil.SECRET_STRING : "";
+    }
+
+    public String getExecutorProxyAuthMode() {
+        return executorProxyAuthMode;
+    }
+
+    public void setExecutorProxyAuthMode(String executorProxyAuthMode) {
+        this.executorProxyAuthMode = executorProxyAuthMode;
+    }
+
+    public String getExecutorProxyAuthToken() {
+        return executorProxyAuthToken;
+    }
+
+    public void setExecutorProxyAuthToken(String executorProxyAuthToken) {
+        this.executorProxyAuthToken = executorProxyAuthToken;
+    }
+
+    public String getExecutorProxyOauthTokenUrl() {
+        return executorProxyOauthTokenUrl;
+    }
+
+    public void setExecutorProxyOauthTokenUrl(String executorProxyOauthTokenUrl) {
+        this.executorProxyOauthTokenUrl = executorProxyOauthTokenUrl;
+    }
+
+    public String getExecutorProxyOauthClientId() {
+        return executorProxyOauthClientId;
+    }
+
+    public void setExecutorProxyOauthClientId(String executorProxyOauthClientId) {
+        this.executorProxyOauthClientId = executorProxyOauthClientId;
+    }
+
+    public String getExecutorProxyOauthClientSecret() {
+        return executorProxyOauthClientSecret;
+    }
+
+    public void setExecutorProxyOauthClientSecret(String executorProxyOauthClientSecret) {
+        this.executorProxyOauthClientSecret = executorProxyOauthClientSecret;
+    }
+
     public String getExecutorProxyType() {
         return executorProxyType;
     }
@@ -402,6 +463,16 @@ public class RobotExecutor {
         if ((this.executorExtensionHost == null) ? (other.executorExtensionHost != null) : !this.executorExtensionHost.equals(other.executorExtensionHost)) {
             return false;
         }
+        if (this.relayActive != other.relayActive) {
+            return false;
+        }
+        if (!java.util.Objects.equals(this.executorProxyAuthMode, other.executorProxyAuthMode)
+                || !java.util.Objects.equals(this.executorProxyAuthToken, other.executorProxyAuthToken)
+                || !java.util.Objects.equals(this.executorProxyOauthTokenUrl, other.executorProxyOauthTokenUrl)
+                || !java.util.Objects.equals(this.executorProxyOauthClientId, other.executorProxyOauthClientId)
+                || !java.util.Objects.equals(this.executorProxyOauthClientSecret, other.executorProxyOauthClientSecret)) {
+            return false;
+        }
         return true;
     }
 
@@ -431,6 +502,12 @@ public class RobotExecutor {
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorProxyType", this.getExecutorProxyType());
+            result.put("relayActive", this.isRelayActive());
+            result.put("executorProxyAuthMode", this.getExecutorProxyAuthMode());
+            result.put("executorProxyOauthTokenUrl", this.getExecutorProxyOauthTokenUrl());
+            result.put("executorProxyOauthClientId", this.getExecutorProxyOauthClientId());
+            result.put("executorProxyAuthToken", secured ? maskSecret(this.getExecutorProxyAuthToken()) : this.getExecutorProxyAuthToken());
+            result.put("executorProxyOauthClientSecret", secured ? maskSecret(this.getExecutorProxyOauthClientSecret()) : this.getExecutorProxyOauthClientSecret());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

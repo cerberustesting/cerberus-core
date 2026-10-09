@@ -25,6 +25,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceHeader;
+import org.cerberus.core.crud.entity.RobotExecutor;
+import org.cerberus.core.service.robotproxy.IRelayService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
+import org.cerberus.core.service.robotproxy.entity.RelayRequest;
+import org.cerberus.core.service.robotproxy.entity.RelayResponse;
+import jakarta.xml.soap.MimeHeader;
+import java.util.Iterator;
 import org.cerberus.core.crud.factory.IFactoryAppService;
 import org.cerberus.core.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.core.crud.service.IAppServiceService;
@@ -105,6 +112,8 @@ public class SoapService implements ISoapService {
     private IParameterService parameterService;
     @Autowired
     IProxyService proxyService;
+    @Autowired
+    private IRelayService relayService;
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method, List<AppServiceHeader> header, String token) throws SOAPException, IOException, SAXException, ParserConfigurationException {
@@ -206,6 +215,47 @@ public class SoapService implements ISoapService {
 
     @Override
     public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
+        return callSOAP(envelope, servicePath, soapOperation, attachmentUrl, header, token, timeOutMs, system, null);
+    }
+
+    /**
+     * Sends the SOAP message through the relay of the runner and parses the
+     * answer back into a SOAPMessage.
+     */
+    private SOAPMessage sendSOAPMessageThroughRelay(SOAPMessage message, String url, int timeoutMs, boolean acceptUnsignedSsl, RobotExecutor robotExecutor) throws SOAPException, IOException, RelayException {
+        message.saveChanges();
+        RelayRequest relayRequest = new RelayRequest()
+                .setMethod("POST")
+                .setUrl(url)
+                .setFollowRedirects(true)
+                .setTimeoutMs(timeoutMs)
+                .setAcceptUnsignedSsl(acceptUnsignedSsl);
+        Iterator<?> it = message.getMimeHeaders().getAllHeaders();
+        while (it.hasNext()) {
+            MimeHeader mh = (MimeHeader) it.next();
+            relayRequest.addHeader(mh.getName(), mh.getValue());
+        }
+        ByteArrayOutputStream bodyOut = new ByteArrayOutputStream();
+        message.writeTo(bodyOut);
+        relayRequest.setBody(bodyOut.toByteArray());
+
+        RelayResponse relayResponse = relayService.call(robotExecutor, relayRequest);
+        if (relayResponse.getBody().length == 0) {
+            throw new SOAPException("Empty SOAP response (http status " + relayResponse.getStatus() + ").");
+        }
+        MimeHeaders responseHeaders = new MimeHeaders();
+        for (String[] h : relayResponse.getHeaders()) {
+            responseHeaders.addHeader(h[0], h[1]);
+        }
+        try {
+            return MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL).createMessage(responseHeaders, new ByteArrayInputStream(relayResponse.getBody()));
+        } catch (SOAPException | IOException ex) {
+            throw new SOAPException("Response (http status " + relayResponse.getStatus() + ") is not a valid SOAP message : " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system, RobotExecutor robotExecutor) {
         AnswerItem<AppService> result = new AnswerItem<>();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
@@ -284,7 +334,29 @@ public class SoapService implements ISoapService {
             serviceSOAP.setProxyUser(null);
 
             SOAPMessage soapResponse = null;
-            if (proxyService.useProxy(servicePath, system)) {
+            if (relayService.isRelayActive(robotExecutor)) {
+
+                // Relay is active on the Robot Executor : the call must go through the relay (no fallback to a direct call).
+                // For display only. The token is never exposed.
+                serviceSOAP.setProxy(true);
+                serviceSOAP.setProxyHost(robotExecutor.getExecutorProxyServiceHost());
+                serviceSOAP.setProxyPort(robotExecutor.getExecutorProxyServicePort() == null ? 0 : robotExecutor.getExecutorProxyServicePort());
+                try {
+                    boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system, true);
+                    serviceSOAP.setStart(new Timestamp(new Date().getTime()));
+                    soapResponse = sendSOAPMessageThroughRelay(input, servicePath, timeOutMs, acceptUnsignedSsl, robotExecutor);
+                    serviceSOAP.setEnd(new Timestamp(new Date().getTime()));
+                } catch (RelayException e) {
+                    LOG.warn("Exception when trying to callSOAP through the relay on URL : '{}' - {} {}", servicePath, e.getCode(), e.getMessage());
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                    message.setDescription(message.getDescription()
+                            .replace("%SERVICEPATH%", servicePath)
+                            .replace("%SOAPMETHOD%", String.valueOf(soapOperation))
+                            .replace("%DESCRIPTION%", e.getMessage()));
+                    result.setResultMessage(message);
+                    return result;
+                }
+            } else if (proxyService.useProxy(servicePath, system)) {
 
                 // Get Proxy host and port from parameters.
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);

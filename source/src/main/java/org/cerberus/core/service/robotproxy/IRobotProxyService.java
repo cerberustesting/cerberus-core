@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.robotproxy;
 
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.exception.CerberusEventException;
@@ -52,7 +53,7 @@ public interface IRobotProxyService {
      * @return
      * @throws org.cerberus.core.exception.CerberusEventException
      */
-    public MessageEvent waitForIdleNetwork(String exHost, Integer exPort, String exUuid, String system) throws CerberusEventException;
+    public MessageEvent waitForIdleNetwork(RobotExecutor executor, String exHost, Integer exPort, String exUuid, String system) throws CerberusEventException;
 
     /**
      *
@@ -61,7 +62,6 @@ public interface IRobotProxyService {
      * @param exHost
      * @param exPort
      * @param exUuid
-     * @param system
      * @param indexFrom
      * @return
      * @throws CerberusException
@@ -87,5 +87,5 @@ public interface IRobotProxyService {
      * @return
      * @throws CerberusEventException
      */
-    public Integer getHitsNb(String exHost, Integer exPort, String exUuid) throws CerberusEventException;
+    public Integer getHitsNb(RobotExecutor executor, String exHost, Integer exPort, String exUuid) throws CerberusEventException;
 }

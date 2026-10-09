@@ -19,13 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%--
-    Document   : RunTests1
-    Created on : 14 oct. 2015, 16:07:31
-    Author     : cerberus
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html class="h-full">
     <head>
@@ -33,399 +27,310 @@
         <meta name="active-submenu" content="RunTests.jsp">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
+
+        <link rel="stylesheet" type="text/css" href="css/pages/InsightsShared.css?v=${appVersion}"/>
         <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css?v=${appVersion}"/>
         <script type="text/javascript" src="js/pages/RunTest.js?v=${appVersion}"></script>
 
-        <title id="pageTitle">Run Test</title>
+        <title id="pageTitle">Run Tests</title>
     </head>
-    <body x-data x-cloak class="crb_body">
+    <body x-data x-cloak class="crb_body" :class="$store.rightPanel.open ? 'rp-open' : ''">
         <jsp:include page="include/global/header2.html"/>
         <jsp:include page="include/global/modalInclusions.jsp"/>
-        <%@ include file="include/utils/modal-confirmation.html"%>
+        <jsp:include page="include/global/rightPanel.html"/>
+        <jsp:include page="include/templates/selectMultipleDropdown.html"/>
+        <main class="crb_main_wrp" :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
+              :style="{marginLeft: ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80)) + 'px',
+                      width: 'calc(100vw - ' + ($store.sidebar.hidden ? 0 : ($store.sidebar.expanded ? 288 : 80))
+                          + 'px - '+ ($store.rightPanel.open ? $store.rightPanel.width : 0) + 'px)'}">
+            <%@ include file="include/global/messagesArea.html" %>
 
-        <main class="crb_main" :class="$store.sidebar.expanded ? 'crb_main_sidebar-expanded' : 'crb_main_sidebar-collapsed'">
+            <div x-data="runTests()" class="v2in-page" id="runTestsRoot">
 
-        <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
-            <button type="button" class="feedback btn btn-default " id="runTestCase">Run TestCase</button>
-            <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
-        </div>
-
-
-
-            <div id="DialogMessagesArea">
-                <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                    <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                    <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                        <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                    </button>
-                </div>
-            </div>
-            <%@ include file="include/global/messagesArea.html"%>
-            <%@ include file="include/pages/runtests/TestCaseNotValid.html"%>
-
-            <h1 class="page-title-line">Run Test Case</h1>
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <div class="crb_card" id="selectionPanel">
-                        <div class="panel-heading">
-                            Selection Type
-                        </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-sm-5">
-                                    <div class="btn-group">
-                                        <button type="button" id="SelectionManual" class="btn btn-success">Manual Selection</button>
-                                        <button type="button" id="SelectionCampaign" class="btn btn-default">Campaign Selection</button>
-                                    </div>
-                                </div>
-                                <form id="campaignSelection"  style="display: none;">
-                                    <div class="form-group col-sm-5">
-                                        <div class="input-group">
-                                            <select class="form-control" id="campaignSelect" style="width: 300px"></select>
-                                            <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="crb_card" id="TestPanel">
-                        <div class="panel-heading" id="ChooseTestHeader">
-                            Choose Test Case / Environment / Country
-                        </div>
-                        <div class="panel-body" id="chooseTest">
-                            <div class="panel panel-default" id="filtersPanelContainer">
-                                <div class="panel-heading" id="FilterPanelHeader">
-                                    <span id="FilterHeader">Extended Test Case Filters</span>
-                                </div>
-                                <div class="panel-body" id="filtersPanel">
-                                    <form id="filters">
-                                        <div class="row">
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_test" for="testFilter">Test</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <i><label id="lbl_label" for="labelFilter">Label</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_status" for="statusFilter">Status</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="statusFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_creator" for="creatorFilter">Creator</label>
-                                                <select class="multiselectelement form-control" multiple="" id="creatorFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_implementer" for="implementerFilter">Implementer</label>
-                                                <select class="multiselectelement form-control" multiple="" id="implementerFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_type" for="typeFilter">Type</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="typeFilter"></select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_priority" for="priorityFilter">Priority</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="priorityFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_system" for="systemFilter">System</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="systemFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_application" for="applicationFilter">Application</label>
-                                                <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetMajor" for="targetMajorFilter">Target Major</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMajorFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <i><label id="lbl_targetMinor" for="targetMinorFilter">Target Minor</label></i>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="targetMinorFilter"></select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_campaign" for="campaignFilter">Campaign</label>
-                                                <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_size" for="lengthFilter">Result size</label>
-                                                <select class="form-control" id="lengthFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-8">
-                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="loadFiltersBtn">Search</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-xs-11">
-                                    <label for="testcaseList" id="testcaseListLabel" class="bold">Test Case :</label>
-                                    <select multiple id="testCaseList" class="form-control" style="height: 300px;"></select>
-                                </div>
-                                <div class="col-xs-1">
-                                    <div class="row" style="margin-top: 120px;">
-                                        <button id="testcaseSelectAll" class="btn-default glyphicon glyphicon-check" title="Select All"></button>
-                                        <button id="testcaseSelectNone" class="btn-default glyphicon glyphicon-unchecked" title="Select None"></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-
-                                <div id="envSettingsBlock" class="col-lg-6" style="margin-bottom: 15px;">
-                                    <label for="envList" id="envListLabel" class="bold">Environment :</label>
-                                    <label class="radio-inline">
-                                        <input name="envSettings" value="auto" checked type="radio"/><span>Automatic</span>
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input name="envSettings" value="manual" type="radio"/><span>Manual</span>
-                                    </label>
-                                    <form id="envSettingsAuto">
-                                        <select multiple class="form-control" name="environment"></select>
-                                    </form>
-                                    <form id="envSettingsMan" style="display: none;" class="form-horizontal">
-                                        <div class="form-group">
-                                            <label for="myhost" class="col-sm-3 control-label bold">My Host</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="myhost" name="myhost"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="mycontextroot" class="col-sm-3 control-label bold">My Context Root</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="mycontextroot" name="mycontextroot"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="myloginrelativeurl" class="col-sm-3 control-label bold">My Login Relative URL</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="myloginrelativeurl" name="myloginrelativeurl"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="myenvdata" class="col-sm-3 control-label bold">My Data Environment</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="myenvdata" name="environment"></select>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div id="countrySettingsBlock" class="col-lg-6">
-                                    <div class="row">
-                                        <div class="form-group col-xs-11">
-                                            <label for="countryList" id="countryListLabel" class="bold">Country :</label>
-                                            <div id="countryList" name="countryList" ></div>
-                                        </div>
-                                        <div class="col-xs-1">
-                                            <div class="row" style="margin-top: 30px;">
-                                                <button id="countrySelectAll" class="btn-default glyphicon glyphicon-check" title="Select All"></button>
-                                                <button id="countrySelectNone" class="btn-default glyphicon glyphicon-unchecked" title="Select None"></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
-
-                        </div>
-                    </div>
-
+                <div class="v2in-pagetitle">
+                    <h1 class="page-title-line" x-text="t('title')"></h1>
                 </div>
 
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="crb_card" id="RobotPanel">
-
-                                <div class="panel-heading">
-                                    <label id="rbtLabel">Robot settings</label>
-                                </div>
-                                <div class="panel-body" id="robotSettings">
-                                    <form class="form-horizontal" id="robotSettingsForm">
-                                        <div class="form-group">
-                                            <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
-                                            <div class="col-sm-6">
-                                                <select class="form-control" id="robot" name="robot" multiple></select>
-                                                <button type="button" id="robotEdit" class="btn-default glyphicon glyphicon-edit btn" title="Edit Robot"></button>
-                                                <button type="button" id="robotCreate" class="btn-default glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
-                                            </div>
-                                            <div class="col-sm-1" style="margin-top: 0px;">
-                                            </div>
-                                            <div class="col-sm-1" style="margin-top: 0px;">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="seleniumIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="seleniumIP" name="ss_ip"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="seleniumPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="seleniumPort" name="ss_p"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="browser" class="col-sm-3 control-label bold">Browser</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="browser" name="browser"></select>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <div class="col-sm-offset-3 col-sm-9">
-                                        <button class="btn btn-default btn-sm pull-right" id="saveRobotPreferences">Record my Robot Preferences</button>
-                                    </div>
-                                </div>
-
-                            </div>
+                <!-- Sticky bar: what to run, and the run buttons -->
+                <div class="crb_card v2in-card v2in-header" :style="$store.rightPanel.open ? { top: '0px' } : {}">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="rt-seg">
+                            <button type="button" id="SelectionManual" class="rt-seg-item" :class="mode === 'tests' ? 'rt-seg-item--on' : ''" @click="setMode('tests')">
+                                <i data-lucide="list-checks" class="w-4 h-4"></i><span x-text="t('modetests')"></span>
+                            </button>
+                            <button type="button" id="SelectionCampaign" class="rt-seg-item" :class="mode === 'campaign' ? 'rt-seg-item--on' : ''" @click="setMode('campaign')">
+                                <i data-lucide="tag" class="w-4 h-4"></i><span x-text="t('modecampaign')"></span>
+                            </button>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="crb_card" id="executionPanel">
-                                <div class="panel-heading">
-                                    <label id="exeLabel">Execution settings</label>
-                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        <div x-show="mode === 'campaign'" x-cloak>
+                            <select class="rt-input" id="campaignSelect" style="min-width: 260px" x-model="campaign" @change="loadCampaign()">
+                                <option value="" x-text="t('pickcampaign')"></option>
+                                <template x-for="c in campaigns" :key="c">
+                                    <option :value="c" x-text="c"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <span class="text-xs text-slate-500 dark:text-slate-400" x-show="mode === 'campaign' && campaign" x-text="t('campaignhint')"></span>
+                        <div class="flex-1"></div>
+                        <span class="rt-summary" x-text="t('summary', testCount, executionCount)"></span>
+                        <button type="button" class="rt-btn" id="runTestCase" @click="run(false)" :disabled="running || loading">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span x-text="mode === 'campaign' ? t('runcampaign') : t('run')"></span>
+                        </button>
+                        <button type="button" class="rt-btn rt-btn--primary" id="runTestCaseAndSee" @click="run(true)" :disabled="running || loading">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                            <span x-text="mode === 'campaign' ? t('runcampaignsee') : t('runsee')"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Test cases -->
+                <div class="crb_card v2in-card" id="TestPanel">
+                    <div class="v2in-card-body rt-stack">
+                        <div class="rt-head">
+                            <div class="rt-tile">
+                                <span x-show="mode === 'tests'"><i data-lucide="list-checks" class="text-blue-500 w-5 h-5"></i></span>
+                                <span x-show="mode === 'campaign'" x-cloak><i data-lucide="tag" class="text-blue-500 w-5 h-5"></i></span>
+                            </div>
+                            <h4 class="rt-title" x-text="mode === 'campaign' ? t('campaigntests') : t('testcases')"></h4>
+                            <span class="rt-badge rt-badge--blue" x-text="mode === 'campaign' ? testcases.length : (selectedTestcases.length + ' / ' + testcases.length)"></span>
+                            <div class="flex-1"></div>
+                            <template x-if="mode === 'tests'">
+                                <button type="button" class="rt-btn rt-btn--sm" :class="filtersOpen || activeFilters ? 'rt-btn--on' : ''" @click="openFilters()">
+                                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                                    <span x-text="t('filters') + (activeFilters ? ' (' + activeFilters + ')' : '')"></span>
+                                </button>
+                            </template>
+                        </div>
+
+                        <!-- Filters, created the first time they are opened (each one loads its own values) -->
+                        <template x-if="filtersLoaded">
+                            <div class="rt-filters" x-show="mode === 'tests' && filtersOpen" id="filtersPanel">
+                                <div class="rt-filter-grid">
+                                    <template x-for="f in filterDefs" :key="f.key">
+                                        <div class="v2in-field">
+                                            <span class="v2in-fieldlabel" x-text="t(f.label)"></span>
+                                            <div x-data="multiSelectDropdown({ id: 'rt-' + f.key, labelField: 'label', valueField: 'value', returnType: 'value',
+                                                                              placeholder: t('any'), loader: () => filterItems(f) })"></div>
+                                        </div>
+                                    </template>
                                 </div>
-                                <div class="panel-body" id="executionSettings">
-                                    <form class="form-horizontal"id="executionSettingsForm">
-                                        <div class="form-group">
-                                            <label for="tag" class="col-sm-3 control-label bold">Tag</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="tag" name="Tag" maxlength="255"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
-                                            <!--                                            <span class="toggle glyphicon glyphicon-list pull-left"></span>-->
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="verbose" name="Verbose"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="screenshot" class="col-sm-3 control-label bold">Screenshot</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="screenshot" name="Screenshot"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="video" class="col-sm-3 control-label bold">Video</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="video" name="Video"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="pageSource" name="PageSource"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="seleniumLog" class="col-sm-3 control-label bold">Robot Log</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="seleniumLog" name="SeleniumLog"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="consoleLog" class="col-sm-3 control-label bold">Console Log</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="consoleLog" name="ConsoleLog"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="timeout" class="col-sm-3 control-label bold">Timeout</label>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="timeout" name="timeout"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="retries" class="col-sm-3 control-label bold">Retries</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="retries" name="retries"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="priority" class="col-sm-3 control-label bold">Priority</label>
-                                            <div class="col-sm-9">
-                                                <input type="text"  class="form-control" id="priority" name="priority"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="manualExecution" class="col-sm-3 control-label bold">Manual Execution</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control" id="manualExecution" name="manualExecution"></select>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <div class="col-sm-offset-3 col-sm-9">
-                                        <button type="" class="btn btn-default btn-sm pull-right" id="saveExecutionParams">Record my Execution Parameters</button>
+                                <div class="flex items-center gap-3 mt-3 flex-wrap">
+                                    <button type="button" class="rt-btn rt-btn--primary" id="loadFiltersBtn" @click="loadTestcases()" :disabled="listLoading">
+                                        <i data-lucide="search" class="w-3.5 h-3.5"></i><span x-text="t('search')"></span>
+                                    </button>
+                                    <select class="rt-input" x-model.number="resultSize" :title="t('resultsize')">
+                                        <option :value="50">50</option>
+                                        <option :value="100">100</option>
+                                        <option :value="-1">&gt;100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="flex items-center gap-2 flex-wrap" x-show="mode === 'tests'">
+                            <input type="text" class="rt-input" style="min-width: 280px" x-model="listFilter" :placeholder="t('quickfilter')" spellcheck="false">
+                            <button type="button" class="rt-btn rt-btn--sm" id="testcaseSelectAll" @click="selectAll(true)">
+                                <i data-lucide="check-check" class="w-3.5 h-3.5"></i><span x-text="t('selectall')"></span>
+                            </button>
+                            <button type="button" class="rt-btn rt-btn--sm" id="testcaseSelectNone" @click="selectAll(false)">
+                                <i data-lucide="square" class="w-3.5 h-3.5"></i><span x-text="t('selectnone')"></span>
+                            </button>
+                            <span class="text-xs text-slate-500 dark:text-slate-400" x-show="listLoading" x-text="t('loading')"></span>
+                        </div>
+                        <div class="v2in-empty" x-show="!listLoading && visibleTestcases.length === 0" x-text="mode === 'campaign' && !campaign ? t('pickcampaignfirst') : t('notestcase')"></div>
+                        <div class="rt-testlist" x-show="visibleTestcases.length > 0">
+                            <template x-for="tc in visibleTestcases" :key="key(tc)">
+                                <div class="rt-item rt-item--row" :class="[selected[key(tc)] ? 'rt-item--on' : '', mode === 'tests' ? '' : 'rt-item--static']"
+                                     @click="mode === 'tests' && (selected[key(tc)] = !selected[key(tc)])">
+                                    <span class="v2in-check" x-show="mode === 'tests'" :class="selected[key(tc)] ? 'v2in-check--on' : ''"></span>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="rt-item-title truncate"><span x-text="tc.test"></span> / <span x-text="tc.testcase"></span></div>
+                                        <div class="rt-item-sub truncate" x-text="tc.description"></div>
                                     </div>
+                                    <span class="rt-badge rt-badge--blue" x-text="tc.application"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Created once the static lists are loaded, so that the selects find their options -->
+                <template x-if="!loading">
+                <div class="rt-grid">
+
+                    <!-- Environments and countries -->
+                    <div class="crb_card v2in-card" id="envSettingsBlock">
+                        <div class="v2in-card-body rt-stack">
+                            <div class="rt-head">
+                                <div class="rt-tile"><i data-lucide="earth" class="text-green-500 w-5 h-5"></i></div>
+                                <h4 class="rt-title" x-text="t('target')"></h4>
+                                <div class="flex-1"></div>
+                                <div class="rt-seg rt-seg--sm">
+                                    <button type="button" class="rt-seg-item" :class="envMode === 'auto' ? 'rt-seg-item--on' : ''" @click="envMode = 'auto'" x-text="t('automatic')"></button>
+                                    <button type="button" class="rt-seg-item" :class="envMode === 'manual' ? 'rt-seg-item--on' : ''" @click="envMode = 'manual'" x-text="t('manual')"></button>
+                                </div>
+                            </div>
+
+                            <template x-if="envMode === 'auto'">
+                                <div class="rt-stack">
+                                    <input type="text" class="rt-input" x-model="envFilter" :placeholder="t('filterenvs')" spellcheck="false">
+                                    <div class="rt-list">
+                                        <template x-for="e in filteredEnvironments" :key="e.environment">
+                                            <button type="button" class="rt-item" :class="selEnvironments.includes(e.environment) ? 'rt-item--on' : ''" @click="toggle(selEnvironments, e.environment)">
+                                                <div class="min-w-0 flex-1 text-left">
+                                                    <div class="rt-item-title truncate" x-text="e.environment"></div>
+                                                    <div class="rt-item-sub" x-show="e.active === false" x-text="t('disabled')"></div>
+                                                </div>
+                                                <span class="rt-badge rt-badge--green" x-text="e.environment"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div class="rt-form" x-show="envMode === 'manual'" x-cloak>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('myhost')"></span>
+                                    <input type="text" class="rt-input" id="myhost" x-model="manual.myhost"></label>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('mycontextroot')"></span>
+                                    <input type="text" class="rt-input" id="mycontextroot" x-model="manual.mycontextroot"></label>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('myloginrelativeurl')"></span>
+                                    <input type="text" class="rt-input" id="myloginrelativeurl" x-model="manual.myloginrelativeurl"></label>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('myenvdata')"></span>
+                                    <select class="rt-input" id="myenvdata" x-model="manual.myenvdata">
+                                        <option value=""></option>
+                                        <template x-for="e in environments" :key="e.environment">
+                                            <option :value="e.environment" x-text="e.environment"></option>
+                                        </template>
+                                    </select></label>
+                            </div>
+
+                            <div class="rt-stack" id="countrySettingsBlock">
+                                <div class="rt-subhead">
+                                    <i data-lucide="flag" class="w-4 h-4"></i>
+                                    <span x-text="t('countries')"></span>
+                                    <div class="flex-1"></div>
+                                    <button type="button" class="rt-link" id="countrySelectAll" @click="selCountries = countries.slice()" x-text="t('selectall')"></button>
+                                    <button type="button" class="rt-link" id="countrySelectNone" @click="selCountries = []" x-text="t('selectnone')"></button>
+                                </div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <template x-for="c in countries" :key="c">
+                                        <button type="button" class="rt-chip" :class="selCountries.includes(c) ? 'rt-chip--on' : ''" @click="toggle(selCountries, c)" x-text="c"></button>
+                                    </template>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <form method="get" action="RunTestCase" id="RunTestCase">
-                        <input type="hidden" name="Test" id="testATQ">
-                        <input type="hidden" name="TestCase" id="testcaseATQ">
-                        <input type="hidden" name="Country" id="countryATQ">
-                        <input type="hidden" name="Environment" id="envATQ">
-                        <input type="hidden" name="browser" id="browserATQ">
-                        <input type="hidden" name="manualURL" id="manualURLATQ">
-                        <input type="hidden" name="myhost" id="myhostATQ">
-                        <input type="hidden" name="mycontextroot" id="mycontextrootATQ">
-                        <input type="hidden" name="myloginrelativeurl" id="myloginrelativeurlATQ">
-                        <input type="hidden" name="myenvdata" id="myenvdataATQ">
-                        <input type="hidden" name="robot" id="manualRobotATQ">
-                        <input type="hidden" name="ss_ip" id="ss_ipATQ">
-                        <input type="hidden" name="ss_p" id="ss_pATQ">
-                        <input type="hidden" name="version" id="versionATQ">
-                        <input type="hidden" name="Tag" id="tagATQ">
-                        <input type="hidden" name="outputformat" id="outputformatATQ" value="gui">
-                        <input type="hidden" name="verbose" id="verboseATQ">
-                        <input type="hidden" name="screenshot" id="screenshotATQ">
-                        <input type="hidden" name="video" id="videoATQ">
-                        <input type="hidden" name="pageSource" id="pageSourceATQ">
-                        <input type="hidden" name="seleniumLog" id="seleniumLogATQ">
-                        <input type="hidden" name="consoleLog" id="consoleLogATQ">
-                        <input type="hidden" name="timeout" id="timeoutATQ">
-                        <input type="hidden" name="retries" id="retriesATQ">
-                        <input type="hidden" name="manualExecution" id="manualExecutionATQ">
-                    </form>
-
-                </div>
-            </div>
-
-            <!--            <div class="row" id="runCampaignBlock" style="display: none;">
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaign">Run Campaign</button>
+                    <!-- Robot -->
+                    <div class="crb_card v2in-card" id="RobotPanel">
+                        <div class="v2in-card-body rt-stack" id="robotSettings">
+                            <div class="rt-head">
+                                <div class="rt-tile"><i data-lucide="bot" class="text-blue-500 w-5 h-5"></i></div>
+                                <h4 class="rt-title" x-text="t('robot')"></h4>
+                                <div class="flex-1"></div>
+                                <button type="button" class="rt-iconbtn" id="robotEdit" x-show="namedRobot" @click="openRobotModal('EDIT')" :title="t('editrobot')">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                </button>
+                                <button type="button" class="rt-iconbtn" id="robotCreate" @click="openRobotModal('ADD')" :title="t('newrobot')">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
                             </div>
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSee">Run Campaign (and See Result)</button>
+                            <input type="text" class="rt-input" x-model="robotFilter" :placeholder="t('filterrobots')" spellcheck="false">
+                            <div class="rt-list">
+                                <button type="button" class="rt-item" :class="isCustomRobot ? 'rt-item--on' : ''" @click="toggleRobot('CustomConfiguration')">
+                                    <div class="rt-robot-icons"><i data-lucide="settings-2" class="w-5 h-5 text-slate-500"></i></div>
+                                    <div class="min-w-0 flex-1 text-left">
+                                        <div class="rt-item-title" x-text="t('customconfig')"></div>
+                                    </div>
+                                </button>
+                                <template x-for="r in filteredRobots" :key="r.robot">
+                                    <button type="button" class="rt-item" :class="selRobots.includes(r.robot) ? 'rt-item--on' : ''" @click="toggleRobot(r.robot)">
+                                        <div class="rt-robot-icons">
+                                            <img :src="'images/platform-' + r.platform + '.png'" :title="r.platform" onerror="this.style.display='none'">
+                                            <img :src="'images/browser-' + r.browser + '.png'" :title="r.browser" onerror="this.style.display='none'">
+                                        </div>
+                                        <div class="min-w-0 flex-1 text-left">
+                                            <div class="rt-item-title truncate" x-text="r.robot"></div>
+                                            <div class="rt-item-sub flex items-center gap-2">
+                                                <span class="rt-badge" :class="r.active ? 'rt-badge--green' : 'rt-badge--red'" x-text="r.active ? 'ACTIVE' : 'INACTIVE'"></span>
+                                                <span x-text="t('executors', r.activeExecutorsCount)"></span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </template>
+                            </div>
+                            <div class="rt-form" x-show="isCustomRobot" x-cloak>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('seleniumip')"></span>
+                                    <input type="text" class="rt-input" id="seleniumIP" x-model="custom.ss_ip"></label>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('seleniumport')"></span>
+                                    <input type="text" class="rt-input" id="seleniumPort" x-model="custom.ss_p"></label>
+                                <label class="v2in-field"><span class="v2in-fieldlabel" x-text="t('browser')"></span>
+                                    <select class="rt-input" id="browser" x-model="custom.browser">
+                                        <option value=""></option>
+                                        <template x-for="b in options('BROWSER')" :key="b.value">
+                                            <option :value="b.value" x-text="b.value + ' - ' + b.description"></option>
+                                        </template>
+                                    </select></label>
+                            </div>
+                            <div class="rt-form" x-show="namedRobot" x-cloak>
+                                <div class="v2in-field"><span class="v2in-fieldlabel" x-text="t('seleniumip')"></span><span class="text-sm" x-text="robotInfo.host || '-'"></span></div>
+                                <div class="v2in-field"><span class="v2in-fieldlabel" x-text="t('seleniumport')"></span><span class="text-sm" x-text="robotInfo.port || '-'"></span></div>
+                                <div class="v2in-field"><span class="v2in-fieldlabel" x-text="t('browser')"></span><span class="text-sm" x-text="robotInfo.browser || '-'"></span></div>
+                            </div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400" x-show="selRobots.length > 1" x-text="t('multirobot', selRobots.length)"></span>
+                        </div>
+                    </div>
+
+                    <!-- Execution parameters -->
+                    <div class="crb_card v2in-card" id="executionPanel">
+                        <div class="v2in-card-body rt-stack" id="executionSettings">
+                            <div class="rt-head">
+                                <div class="rt-tile"><i data-lucide="sliders" class="text-orange-500 w-5 h-5"></i></div>
+                                <h4 class="rt-title" x-text="t('execution')"></h4>
+                                <div class="flex-1"></div>
+                                <span class="rt-badge rt-badge--green" x-show="prefsSaved" x-cloak x-text="t('prefssaved')"></span>
+                                <button type="button" class="rt-iconbtn rt-iconbtn--ok" id="saveExecutionParams" @click="savePreferences()" :title="t('saveprefs')">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                </button>
+                                <button type="button" class="rt-iconbtn" @click="resetPreferences()" :title="t('resetprefs')">
+                                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <div class="rt-row">
+                                <div class="rt-row-icon"><i data-lucide="tag" class="w-4 h-4"></i></div>
+                                <input type="text" class="rt-input flex-1" id="tag" maxlength="255" x-model="exec.tag" :placeholder="t('tag')" :title="t('tag')">
+                            </div>
+                            <template x-for="f in execFields" :key="f.key">
+                                <div class="rt-row">
+                                    <div class="rt-row-icon"><i :data-lucide="f.icon" class="w-4 h-4"></i></div>
+                                    <select class="rt-input flex-1" :id="f.key" x-model="exec[f.key]" :title="t(f.label)">
+                                        <option value="" x-text="t(f.label)"></option>
+                                        <template x-for="o in options(f.invariant)" :key="o.value">
+                                            <option :value="o.value" x-text="o.value + ' - ' + o.description"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </template>
+                            <div class="rt-row">
+                                <div class="rt-row-icon"><i data-lucide="clock" class="w-4 h-4"></i></div>
+                                <input type="number" class="rt-input flex-1" id="timeout" x-model="exec.timeout" :placeholder="t('timeouthint')" :title="t('timeout')">
+                            </div>
+                            <div class="rt-row">
+                                <div class="rt-row-icon"><i data-lucide="arrow-up" class="w-4 h-4"></i></div>
+                                <input type="number" class="rt-input flex-1" id="priority" x-model="exec.priority" :placeholder="t('priorityhint')" :title="t('priority')">
                             </div>
                         </div>
-                        <div class="row" id="runTestCaseBlock">
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCase">Run Test Case</button>
-                            </div>
-                            <div class="col-lg-6">
-                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSee">Run Test Case (and See Result)</button>
-                            </div>
-                        </div>-->
+                    </div>
 
-            <footer class="footer marginTop25">
-                <div class="col-xs-6 container-fluid" id="footer"></div>
+                </div>
+                </template>
+
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
             </footer>
         </main>
     </body>

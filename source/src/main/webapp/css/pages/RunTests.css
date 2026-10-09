@@ -1,40 +1,117 @@
 /*
- * Cerberus  Copyright (C) 2013  vertigo17
+ * Cerberus Copyright (C) 2013 - 2026 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * This file is part of Cerberus.
- *
- * Cerberus is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Cerberus is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- *//* 
-    Created on : 16 juin 2017, 12:02:24
-    Author     : cerberus
-*/
+ * Run Tests page. Same visual language as the TestCaseSimpleExecution modal (icon tiles,
+ * selectable cards, segmented controls), on top of the v2in- components of InsightsShared.css.
+ */
 
-/* Run Sticky buttons*/
-/*.feedback {
-    background-color : #31B0D5;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 4px;
-    border-color: #46b8da;
-    z-index: 999999999999;
-}*/
+/* ═══════════ Layout ═══════════ */
+.rt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; align-items: start; }
+@media (min-width: 1280px) { .rt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.rt-stack { display: flex; flex-direction: column; gap: 14px; }
+.rt-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.rt-list { display: flex; flex-direction: column; gap: 8px; max-height: 288px; overflow-y: auto; padding-right: 4px; }
+.rt-testlist { display: flex; flex-direction: column; gap: 6px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+.rt-filters { border: 1px solid var(--crb-new-border); border-radius: 12px; padding: 14px; }
+.rt-filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
 
-#runTestCaseBlockSticky {
-    position: fixed;
-    bottom: 0px;
-    right: 10px;
-    z-index: 1000;
+/* ═══════════ Card header: icon tile + title ═══════════ */
+.rt-head { display: flex; align-items: center; gap: 12px; }
+.rt-tile {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; background: #f1f5f9;
 }
+.rt-title { font-size: 16px; font-weight: 600; margin: 0 !important; color: var(--crb-dark-color); }
+.rt-subhead { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--crb-grey-color); }
+.rt-link { font-size: 11px; font-weight: 600; color: var(--crb-blue-color); background: none; border: none; cursor: pointer; padding: 0 2px; }
+.rt-link:hover { text-decoration: underline; }
 
+/* ═══════════ Inputs / buttons ═══════════ */
+.rt-input {
+    height: 40px; padding: 0 12px; border-radius: 6px; font-size: 14px; width: 100%; min-width: 0;
+    border: 1px solid #cbd5e1; background: #fff; color: #0f172a; outline: none; transition: all 0.15s;
+}
+.rt-input:hover { background: #f8fafc; }
+.rt-input:focus { border-color: var(--crb-blue-color); box-shadow: 0 0 0 1px var(--crb-blue-color); }
+.rt-row { display: flex; align-items: center; gap: 12px; }
+.rt-row-icon {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; background: #f1f5f9; color: #94a3b8;
+    display: flex; align-items: center; justify-content: center;
+}
+.rt-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 6px;
+    font-size: 14px; border: 1px solid #cbd5e1; background: transparent; color: #334155; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.rt-btn:hover { background: #f1f5f9; }
+.rt-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.rt-btn--sm { padding: 5px 10px; font-size: 12px; }
+.rt-btn--on { border-color: var(--crb-blue-color); color: var(--crb-blue-color); background: color-mix(in srgb, var(--crb-blue-color) 8%, transparent); }
+.rt-btn--primary { background: #2563eb; border-color: #2563eb; color: #fff !important; }
+.rt-btn--primary:hover { background: #0ea5e9; border-color: #0ea5e9; }
+.rt-iconbtn {
+    width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; color: #94a3b8; transition: all 0.15s;
+}
+.rt-iconbtn:hover { color: var(--crb-blue-color); background: #f1f5f9; }
+.rt-iconbtn--ok { color: #16a34a; }
+.rt-iconbtn--ok:hover { color: #22c55e; }
+.rt-summary { font-size: 12px; font-weight: 600; color: var(--crb-grey-color); }
+
+/* ═══════════ Segmented control ═══════════ */
+.rt-seg { display: inline-flex; padding: 4px; border-radius: 8px; background: #f1f5f9; }
+.rt-seg-item {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; border: none; background: transparent;
+    font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s;
+}
+.rt-seg-item:hover { color: #0f172a; }
+.rt-seg-item--on { background: #fff; color: #0f172a; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+.rt-seg--sm .rt-seg-item { padding: 4px 10px; font-size: 12px; }
+
+/* ═══════════ Selectable cards ═══════════ */
+.rt-item {
+    display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border-radius: 8px;
+    border: 1px solid #e2e8f0; background: transparent; cursor: pointer; transition: all 0.15s;
+}
+.rt-item:hover { background: #f8fafc; }
+.rt-item--on { background: rgba(239, 246, 255, 0.8); border-color: #60a5fa; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+.rt-item--row { padding: 8px 12px; }
+.rt-item--static { cursor: default; }
+.rt-item--static:hover { background: transparent; }
+.rt-item-title { font-size: 14px; font-weight: 500; color: var(--crb-dark-color); }
+.rt-item-sub { font-size: 12px; color: #94a3b8; }
+.rt-robot-icons { display: flex; align-items: center; gap: 4px; flex-shrink: 0; min-width: 24px; }
+.rt-robot-icons img { width: 24px; height: 24px; object-fit: contain; opacity: 0.8; }
+
+/* ═══════════ Badges / chips ═══════════ */
+.rt-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;
+    background: #f1f5f9; color: #475569; white-space: nowrap;
+}
+.rt-badge--blue { background: #dbeafe; color: #1d4ed8; }
+.rt-badge--green { background: #dcfce7; color: #15803d; }
+.rt-badge--red { background: #fee2e2; color: #b91c1c; }
+.rt-chip {
+    padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    border: 1px solid #e2e8f0; background: transparent; color: #64748b;
+}
+.rt-chip:hover { background: #f8fafc; }
+.rt-chip--on { background: #dbeafe; border-color: #60a5fa; color: #1d4ed8; }
+
+/* ═══════════ Dark mode ═══════════ */
+:root.dark .rt-tile, :root.dark .rt-row-icon, :root.dark .rt-seg { background: #1e293b; }
+:root.dark .rt-input { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+:root.dark .rt-input:hover { background: #334155; }
+:root.dark .rt-btn { border-color: #475569; color: #cbd5e1; }
+:root.dark .rt-btn:hover, :root.dark .rt-iconbtn:hover, :root.dark .rt-chip:hover { background: #334155; }
+:root.dark .rt-seg-item { color: #94a3b8; }
+:root.dark .rt-seg-item:hover { color: #fff; }
+:root.dark .rt-seg-item--on { background: #0f172a; color: #f1f5f9; }
+:root.dark .rt-item, :root.dark .rt-chip { border-color: #334155; }
+:root.dark .rt-item:hover { background: #1e293b; }
+:root.dark .rt-item--on { background: #172554; border-color: #2563eb; }
+:root.dark .rt-badge { background: #334155; color: #cbd5e1; }
+:root.dark .rt-badge--blue { background: #1e3a8a; color: #93c5fd; }
+:root.dark .rt-badge--green { background: #14532d; color: #86efac; }
+:root.dark .rt-badge--red { background: #7f1d1d; color: #fca5a5; }
+:root.dark .rt-chip--on { background: #1e3a8a; border-color: #2563eb; color: #93c5fd; }

@@ -328,6 +328,13 @@ public class RobotExecutorService implements IRobotExecutorService {
         robotExecutor.setExecutorExtensionPort(newRobotExecutorFromSource.getExecutorExtensionPort() == null ? re.getItem().getExecutorExtensionPort() : newRobotExecutorFromSource.getExecutorExtensionPort());
         robotExecutor.setExecutorExtensionHost(newRobotExecutorFromSource.getExecutorExtensionHost() == null ? re.getItem().getExecutorExtensionHost() : newRobotExecutorFromSource.getExecutorExtensionHost());
 
+        robotExecutor.setRelayActive(newRobotExecutorFromSource.getRelayActive() == null ? re.getItem().isRelayActive() : newRobotExecutorFromSource.getRelayActive());
+        robotExecutor.setExecutorProxyAuthMode(newRobotExecutorFromSource.getExecutorProxyAuthMode() == null ? re.getItem().getExecutorProxyAuthMode() : newRobotExecutorFromSource.getExecutorProxyAuthMode());
+        robotExecutor.setExecutorProxyAuthToken(newRobotExecutorFromSource.getExecutorProxyAuthToken() == null ? re.getItem().getExecutorProxyAuthToken() : newRobotExecutorFromSource.getExecutorProxyAuthToken());
+        robotExecutor.setExecutorProxyOauthTokenUrl(newRobotExecutorFromSource.getExecutorProxyOauthTokenUrl() == null ? re.getItem().getExecutorProxyOauthTokenUrl() : newRobotExecutorFromSource.getExecutorProxyOauthTokenUrl());
+        robotExecutor.setExecutorProxyOauthClientId(newRobotExecutorFromSource.getExecutorProxyOauthClientId() == null ? re.getItem().getExecutorProxyOauthClientId() : newRobotExecutorFromSource.getExecutorProxyOauthClientId());
+        robotExecutor.setExecutorProxyOauthClientSecret(newRobotExecutorFromSource.getExecutorProxyOauthClientSecret() == null ? re.getItem().getExecutorProxyOauthClientSecret() : newRobotExecutorFromSource.getExecutorProxyOauthClientSecret());
+
         this.update(robot, executor, robotExecutor);
 
         return this.readByKey(robot, executor).getItem();

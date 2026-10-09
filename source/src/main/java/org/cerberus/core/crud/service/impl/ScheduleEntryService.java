@@ -63,6 +63,11 @@ public class ScheduleEntryService implements IScheduleEntryService {
     }
 
     @Override
+    public AnswerList<ScheduleEntry> readAll() {
+        return schedulerDao.readAll();
+    }
+
+    @Override
     public AnswerList<ScheduleEntry> readAllActive() {
         AnswerList<ScheduleEntry> ans = new AnswerList<>();
         ans = schedulerDao.readAllActive();

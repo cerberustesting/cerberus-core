@@ -40,6 +40,11 @@ public interface IScheduleEntryService {
     public AnswerItem<ScheduleEntry> readbykey(long id);
   
     /**
+     * @return every schedule entry, active or not
+     */
+    public AnswerList<ScheduleEntry> readAll();
+
+    /**
      *
      * @return
      */

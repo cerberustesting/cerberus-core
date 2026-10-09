@@ -241,7 +241,8 @@ public class AppServiceController {
         JSONObject result = new JSONObject();
 
         AnswerItem<AppService> ans = serviceService.callAPI(service, serviceCallDTO.getCountry(), serviceCallDTO.getEnvironment(), serviceCallDTO.getApplication(), serviceCallDTO.getSystem(),
-                serviceCallDTO.getTimeout(), serviceCallDTO.getKafkanb(), serviceCallDTO.getKafkaTime(), serviceCallDTO.getProps(), login);
+                serviceCallDTO.getTimeout(), serviceCallDTO.getKafkanb(), serviceCallDTO.getKafkaTime(), serviceCallDTO.getProps(), login,
+                serviceCallDTO.getRobot(), serviceCallDTO.getExecutor());
 
         // If the service to call is a temporary create service, we clean it right after the call.
         if (service.contains(AppService.SERVICENAME_SIMULATIONCALL)) {

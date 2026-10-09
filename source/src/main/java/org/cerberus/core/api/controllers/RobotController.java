@@ -38,6 +38,8 @@ import org.cerberus.core.api.dto.robot.RobotDTOV001;
 import org.cerberus.core.api.dto.robot.RobotExecutorDTOV001;
 import org.cerberus.core.api.dto.robot.RobotExecutorMapperV001;
 import org.cerberus.core.api.dto.robot.RobotMapperV001;
+import org.cerberus.core.api.dto.robot.RobotProxyCheckDTOV001;
+import org.cerberus.core.api.dto.robot.RobotProxyCheckResultDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.FailedInsertOperationException;
@@ -53,6 +55,9 @@ import org.cerberus.core.crud.service.impl.RobotCapabilityService;
 import org.cerberus.core.crud.service.impl.RobotExecutorService;
 import org.cerberus.core.crud.service.impl.RobotService;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.service.robotproxy.IRelayService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -85,6 +90,7 @@ public class RobotController {
     private final RobotCapabilityMapperV001 robotCapabilityMapper;
     private final ILogEventService logEventService;
     private final PublicApiAuthenticationService apiAuthenticationService;
+    private final IRelayService relayService;
 
     private static final Logger LOG = LogManager.getLogger(RobotController.class);
 
@@ -315,8 +321,94 @@ public class RobotController {
 
         RobotExecutorDTOV001 dto = this.robotExecutorMapper.toDTO(executor);
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
 
         return ResponseWrapper.wrap(dto);
+    }
+
+    //CHECK CERBERUS ROBOT PROXY
+    @PostMapping(path = "/proxy/check", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Check a Cerberus Robot Proxy",
+        description = "Tests that a Cerberus Robot Proxy is reachable and accepts the authentication (NONE, TOKEN or OAUTH). Nothing is saved. "
+                + "A secret sent as the masked value is read from the saved executor (robot + executor), only if host and port are unchanged.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Result of the check", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RobotProxyCheckResultDTOV001.class))}),
+        }
+    )
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseWrapper<RobotProxyCheckResultDTOV001> checkProxy(
+        @JsonView(View.Public.POST.class) @RequestBody RobotProxyCheckDTOV001 check,
+        @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+        @Parameter(hidden = true) HttpServletRequest request,
+        @Parameter(hidden = true) Principal principal) throws CerberusException {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/robots", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /robots/proxy/check called with URL: %s", request.getRequestURL()), request, login);
+
+        String mode = StringUtil.isEmptyOrNull(check.getAuthMode()) ? RobotExecutor.PROXY_AUTH_NONE : check.getAuthMode().toUpperCase();
+        RobotExecutor executor = new RobotExecutor();
+        executor.setExecutorProxyServiceHost(check.getHost() == null ? "" : check.getHost().trim());
+        executor.setExecutorProxyServicePort(check.getPort());
+        executor.setExecutorProxyAuthMode(mode);
+        executor.setExecutorProxyAuthToken(check.getAuthToken());
+        executor.setExecutorProxyOauthTokenUrl(check.getOauthTokenUrl());
+        executor.setExecutorProxyOauthClientId(check.getOauthClientId());
+        executor.setExecutorProxyOauthClientSecret(check.getOauthClientSecret());
+
+        boolean tokenMasked = StringUtil.SECRET_STRING.equals(check.getAuthToken());
+        boolean secretMasked = StringUtil.SECRET_STRING.equals(check.getOauthClientSecret());
+        if (tokenMasked || secretMasked) {
+            // A masked secret is only replaced by the saved one when the target is the saved one : the secret must never be sent to another host.
+            RobotExecutor stored = null;
+            if (!StringUtil.isEmptyOrNull(check.getRobot()) && !StringUtil.isEmptyOrNull(check.getExecutor())) {
+                stored = this.robotExecutorService.readByKey(check.getRobot(), check.getExecutor()).getItem();
+            }
+            boolean sameTarget = stored != null
+                    && java.util.Objects.equals(stored.getExecutorProxyServiceHost(), executor.getExecutorProxyServiceHost())
+                    && java.util.Objects.equals(stored.getExecutorProxyServicePort(), executor.getExecutorProxyServicePort());
+            if (!sameTarget) {
+                return ResponseWrapper.wrap(RobotProxyCheckResultDTOV001.builder().status("not_configured").authMode(mode)
+                        .message("The saved secret can only be used with the saved host and port. Enter the secret again to test another proxy.").build());
+            }
+            if (tokenMasked) {
+                executor.setExecutorProxyAuthToken(stored.getExecutorProxyAuthToken());
+            }
+            if (secretMasked) {
+                executor.setExecutorProxyOauthClientSecret(stored.getExecutorProxyOauthClientSecret());
+            }
+        }
+
+        RobotProxyCheckResultDTOV001.RobotProxyCheckResultDTOV001Builder result = RobotProxyCheckResultDTOV001.builder().authMode(mode);
+        try {
+            this.relayService.check(executor);
+            result.status("ok").message("Proxy reachable" + (RobotExecutor.PROXY_AUTH_NONE.equals(mode) ? "." : " and authenticated."));
+        } catch (RelayException ex) {
+            LOG.debug("Check of the Cerberus Robot Proxy failed : {} {}", ex.getCode(), ex.getMessage());
+            result.status(toProxyCheckStatus(ex.getCode())).message(ex.getMessage());
+        }
+        return ResponseWrapper.wrap(result.build());
+    }
+
+    private static String toProxyCheckStatus(String code) {
+        switch (code) {
+            case RelayException.CODE_UNREACHABLE:
+            case RelayException.CODE_TIMEOUT:
+            case RelayException.CODE_CONNECT_FAILED:
+                return "unreachable";
+            case RelayException.CODE_UNAUTHORIZED:
+                return "unauthorized";
+            case RelayException.CODE_NOT_CONFIGURED:
+                return "not_configured";
+            case RelayException.CODE_UNSUPPORTED:
+                return "unsupported";
+            case RelayException.CODE_RELAY_STOPPED:
+                return "stopped";
+            default:
+                return "error";
+        }
     }
 
     //PATCH ROBOT EXECUTOR

@@ -46,6 +46,11 @@ public interface IScheduleEntryDAO {
     public AnswerItem<Integer> create(ScheduleEntry scheduler);
     
     /**
+     * @return every schedule entry, active or not
+     */
+    public AnswerList<ScheduleEntry> readAll();
+
+    /**
      *
      * @return
      */

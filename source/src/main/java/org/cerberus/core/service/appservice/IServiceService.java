@@ -70,4 +70,16 @@ public interface IServiceService {
      */
     AnswerItem<AppService> callAPI(String service, String country, String environment, String application, String system, int timeout, String kafkaNb, String kafkaTime, List<AppServiceCallPropertyDTO> props, String login);
 
+    /**
+     * Same as above. If robot is defined, the call is simulated as if the
+     * execution was running on this Robot (and executor, or the best one if not
+     * defined). If the relay of the executor is active, the call goes
+     * through the relay of the runner.
+     *
+     * @param robot Robot name (optional)
+     * @param executor Executor name of the Robot (optional)
+     */
+    AnswerItem<AppService> callAPI(String service, String country, String environment, String application, String system, int timeout, String kafkaNb, String kafkaTime, List<AppServiceCallPropertyDTO> props, String login,
+            String robot, String executor);
+
 }

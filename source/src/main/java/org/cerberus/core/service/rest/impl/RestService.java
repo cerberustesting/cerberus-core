@@ -56,6 +56,12 @@ import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.AppServiceContent;
 import org.cerberus.core.crud.entity.AppServiceHeader;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.RobotExecutor;
+import org.cerberus.core.service.robotproxy.IRelayService;
+import org.cerberus.core.service.robotproxy.entity.RelayException;
+import org.cerberus.core.service.robotproxy.entity.RelayRequest;
+import org.cerberus.core.service.robotproxy.entity.RelayResponse;
+import java.io.ByteArrayOutputStream;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.factory.IFactoryAppService;
 import org.cerberus.core.crud.factory.IFactoryAppServiceHeader;
@@ -72,7 +78,6 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -117,6 +122,8 @@ public class RestService implements IRestService {
     IProxyService proxyService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private IRelayService relayService;
 
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -131,7 +138,6 @@ public class RestService implements IRestService {
 
     private static final Logger LOG = LogManager.getLogger(RestService.class);
 
-    @NotThreadSafe
     class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
 
         public static final String METHOD_NAME = "DELETE";
@@ -189,11 +195,147 @@ public class RestService implements IRestService {
         }
     }
 
+    /**
+     * Data needed to perform a call through the relay of a runner.
+     */
+    private static class RelayContext {
+
+        final RobotExecutor executor;
+        final List<org.openqa.selenium.Cookie> cookies;
+        final boolean acceptUnsignedSsl;
+        final boolean followRedir;
+        final int timeoutMs;
+
+        RelayContext(RobotExecutor executor, List<org.openqa.selenium.Cookie> cookies, boolean acceptUnsignedSsl, boolean followRedir, int timeoutMs) {
+            this.executor = executor;
+            this.cookies = cookies;
+            this.acceptUnsignedSsl = acceptUnsignedSsl;
+            this.followRedir = followRedir;
+            this.timeoutMs = timeoutMs;
+        }
+    }
+
+    /**
+     * Executes the request directly or, when relayCtx is defined, through the
+     * relay of the runner. Both return the same response structure.
+     */
+    private AppService executeCall(CloseableHttpClient httpclient, HttpRequestBase request, RelayContext relayCtx) throws Exception {
+        if (relayCtx == null) {
+            return executeHTTPCall(httpclient, request);
+        }
+        return executeRelayCall(request, relayCtx);
+    }
+
+    private AppService executeRelayCall(HttpRequestBase request, RelayContext ctx) throws Exception {
+        RelayRequest relayRequest = new RelayRequest()
+                .setMethod(request.getMethod())
+                .setUrl(request.getURI().toString())
+                .setFollowRedirects(ctx.followRedir)
+                .setTimeoutMs(ctx.timeoutMs)
+                .setAcceptUnsignedSsl(ctx.acceptUnsignedSsl);
+
+        boolean hasContentType = false;
+        String cookieHeader = null;
+        for (Header header : request.getAllHeaders()) {
+            if ("Content-Type".equalsIgnoreCase(header.getName())) {
+                hasContentType = true;
+            }
+            if ("Cookie".equalsIgnoreCase(header.getName())) {
+                cookieHeader = (cookieHeader == null ? "" : cookieHeader + "; ") + header.getValue();
+                continue;
+            }
+            relayRequest.addHeader(header.getName(), header.getValue());
+        }
+
+        if (request instanceof HttpEntityEnclosingRequestBase) {
+            HttpEntity entity = ((HttpEntityEnclosingRequestBase) request).getEntity();
+            if (entity != null) {
+                if (!hasContentType && entity.getContentType() != null) {
+                    relayRequest.addHeader("Content-Type", entity.getContentType().getValue());
+                }
+                ByteArrayOutputStream bodyOut = new ByteArrayOutputStream();
+                entity.writeTo(bodyOut);
+                relayRequest.setBody(bodyOut.toByteArray());
+            }
+        }
+
+        // Cookies of the GUI session (the direct call gets them from a cookie store).
+        String guiCookies = buildCookieHeader(ctx.cookies, request.getURI());
+        if (!guiCookies.isEmpty()) {
+            cookieHeader = (cookieHeader == null ? "" : cookieHeader + "; ") + guiCookies;
+        }
+        if (cookieHeader != null) {
+            relayRequest.addHeader("Cookie", cookieHeader);
+        }
+
+        RelayResponse relayResponse = relayService.call(ctx.executor, relayRequest);
+        LOG.info("{} (through relay)", relayResponse.getStatus());
+        if (relayResponse.isTruncated()) {
+            LOG.warn("The response body of {} has been truncated by the relay.", request.getURI());
+        }
+
+        AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
+                AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null, "", null, "", null, null);
+        myResponse.setResponseHTTPCode(relayResponse.getStatus());
+        // The relay does not return the protocol version.
+        myResponse.setResponseHTTPVersion("HTTP/1.1");
+        for (String[] header : relayResponse.getHeaders()) {
+            myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header[0], header[1], true, 0, "", "", null, "", null));
+        }
+        myResponse.setResponseHTTPBody(relayResponse.getBodyAsString());
+        return myResponse;
+    }
+
+    /**
+     * Builds the value of a Cookie header from the cookies of the browser
+     * matching the target (domain, path, expiry, secure).
+     */
+    private String buildCookieHeader(List<org.openqa.selenium.Cookie> cookies, URI uri) {
+        StringBuilder sb = new StringBuilder();
+        String host = uri.getHost() == null ? "" : uri.getHost().toLowerCase();
+        String path = (uri.getPath() == null || uri.getPath().isEmpty()) ? "/" : uri.getPath();
+        Date now = new Date();
+        for (org.openqa.selenium.Cookie cookie : cookies) {
+            if (cookie.getExpiry() != null && cookie.getExpiry().before(now)) {
+                continue;
+            }
+            if (cookie.isSecure() && !"https".equalsIgnoreCase(uri.getScheme())) {
+                continue;
+            }
+            String domain = cookie.getDomain();
+            if (domain != null && !domain.isEmpty()) {
+                String d = domain.startsWith(".") ? domain.substring(1).toLowerCase() : domain.toLowerCase();
+                if (!(host.equals(d) || host.endsWith("." + d))) {
+                    continue;
+                }
+            }
+            String cookiePath = cookie.getPath();
+            if (cookiePath != null && !cookiePath.isEmpty() && !"/".equals(cookiePath)
+                    && !(path.equals(cookiePath) || path.startsWith(cookiePath.endsWith("/") ? cookiePath : cookiePath + "/"))) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append("; ");
+            }
+            sb.append(cookie.getName()).append("=").append(cookie.getValue());
+        }
+        return sb.toString();
+    }
+
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, String bodyType,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
             String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description,
             String authType, String authUser, String authPassword, String authAddTo) {
+        return callREST(servicePath, requestString, method, bodyType, headerList, contentList, token, timeOutMs, system,
+                isFollowRedir, tcexecution, description, authType, authUser, authPassword, authAddTo, null);
+    }
+
+    @Override
+    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, String bodyType,
+            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description,
+            String authType, String authUser, String authPassword, String authAddTo, RobotExecutor robotExecutor) {
 
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
@@ -221,9 +363,30 @@ public class RestService implements IRestService {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
+        // When the relay of the Robot Executor is active, the call must go through the relay of the runner (no fallback to a direct call).
+        boolean useRelay = relayService.isRelayActive(robotExecutor);
+        List<org.openqa.selenium.Cookie> relayCookies = new ArrayList<>();
+        if (useRelay) {
+            try {
+                relayService.getBaseUrl(robotExecutor);
+            } catch (RelayException ex) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_RELAY)
+                        .resolveDescription("SERVICEURL", servicePath)
+                        .resolveDescription("DESCRIPTION", ex.getMessage());
+                result.setResultMessage(message);
+                return result;
+            }
+            // For display only. The token is never exposed.
+            serviceREST.setProxy(true);
+            serviceREST.setProxyHost(robotExecutor.getExecutorProxyServiceHost());
+            serviceREST.setProxyPort(robotExecutor.getExecutorProxyServicePort() == null ? 0 : robotExecutor.getExecutorProxyServicePort());
+        }
+
         CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
-        if (proxyService.useProxy(servicePath, system)) {
+        if (useRelay) {
+            httpclientBuilder = HttpClientBuilder.create();
+        } else if (proxyService.useProxy(servicePath, system)) {
 
             String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
             int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
@@ -265,6 +428,11 @@ public class RestService implements IRestService {
             // When performing a simulation service call, the session may be null, 
             if (tcexecution.getSession() != null) {
                 WebDriver driver = tcexecution.getSession().getDriver();
+
+                if (useRelay) {
+                    // Cookies will be sent in a Cookie header through the relay.
+                    relayCookies.addAll(driver.manage().getCookies());
+                }
 
                 BasicCookieStore cookieStore = new BasicCookieStore();
 
@@ -310,6 +478,8 @@ public class RestService implements IRestService {
             serviceREST.setBodyType(bodyType);
 
             httpclient = httpclientBuilder.build();
+
+            RelayContext relayCtx = useRelay ? new RelayContext(robotExecutor, relayCookies, acceptUnsignedSsl, isFollowRedir, timeOutMs) : null;
 
             RequestConfig requestConfig;
             // Timeout setup.
@@ -418,7 +588,7 @@ public class RestService implements IRestService {
                     LOG.info("Executing request " + httpGet.getRequestLine());
 //                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpGet.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
-                    responseHttp = executeHTTPCall(httpclient, httpGet);
+                    responseHttp = executeCall(httpclient, httpGet, relayCtx);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
@@ -461,7 +631,7 @@ public class RestService implements IRestService {
                     LOG.info("Executing request " + httpPost.getRequestLine());
 //                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPost.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
-                    responseHttp = executeHTTPCall(httpclient, httpPost);
+                    responseHttp = executeCall(httpclient, httpPost, relayCtx);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
@@ -511,7 +681,7 @@ public class RestService implements IRestService {
                     LOG.info("Executing request " + httpDelete.getRequestLine());
 //                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpDelete.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
-                    responseHttp = executeHTTPCall(httpclient, httpDelete);
+                    responseHttp = executeCall(httpclient, httpDelete, relayCtx);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
@@ -553,7 +723,7 @@ public class RestService implements IRestService {
                     LOG.info("Executing request " + httpPut.getRequestLine());
 //                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPut.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
-                    responseHttp = executeHTTPCall(httpclient, httpPut);
+                    responseHttp = executeCall(httpclient, httpPut, relayCtx);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
@@ -603,7 +773,7 @@ public class RestService implements IRestService {
                     LOG.info("Executing request " + httpPatch.getRequestLine());
 //                    tcexecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing request " + httpPatch.getRequestLine());
                     serviceREST.setStart(new Timestamp(new Date().getTime()));
-                    responseHttp = executeHTTPCall(httpclient, httpPatch);
+                    responseHttp = executeCall(httpclient, httpPatch, relayCtx);
                     serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
@@ -638,6 +808,21 @@ public class RestService implements IRestService {
 
         } catch (CerberusEventException ex) {
             result.setResultMessage(ex.getMessageError());
+            return result;
+
+        } catch (RelayException ex) {
+            LOG.info("Exception when performing the REST Call through the relay. {} {}", ex.getCode(), ex.getMessage());
+            if (ex.isTimeout()) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT)
+                        .resolveDescription("TIMEOUT", String.valueOf(timeOutMs))
+                        .resolveDescription("SERVICEURL", servicePath)
+                        .resolveDescription("DESCRIPTION", ex.getMessage());
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_RELAY)
+                        .resolveDescription("SERVICEURL", servicePath)
+                        .resolveDescription("DESCRIPTION", ex.getMessage());
+            }
+            result.setResultMessage(message);
             return result;
 
         } catch (SocketTimeoutException ex) {

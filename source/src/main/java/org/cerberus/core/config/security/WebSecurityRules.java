@@ -118,6 +118,8 @@ public class WebSecurityRules {
                         m("/GetReportTest"),
                         m("/ReadTestCaseExecutionByTag"),
                         m("/ReadExecutionStat"),
+                        m("/ReadWebMonitor"),
+                        m("/ReadApiMonitor"),
                         m("/ReadQueueStat"),
                         m("/ReadTagStat")
                 ).hasRole("TestRO")
@@ -176,6 +178,8 @@ public class WebSecurityRules {
                 // ── RunTest
                 .requestMatchers(
                         m("/RunTests.jsp"),
+                        m("/ScheduledRuns.jsp"),
+                        m("/ReadScheduledRuns"),
                         m("/findEnvironmentByCriteria"),
                         m("/UpdateTestCaseExecution"),
                         m("/RunExecutionInQueue"),
@@ -310,6 +314,8 @@ public class WebSecurityRules {
                         m("/ImpactAnalysis.jsp"),
                         m("/RobotList.jsp"),
                         m("/ReportingMonitor.jsp"),
+                        m("/ReportingMonitorWeb.jsp"),
+                        m("/ReportingMonitorApi.jsp"),
                         m("/Homepage"),
                         m("/ReadMyUser"),
                         m("/ReadExecutionTagHistory"),

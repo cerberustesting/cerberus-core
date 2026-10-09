@@ -39,7 +39,7 @@ import org.cerberus.core.api.dto.views.View;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({
-        "application", "country", "environment", "kafkaTime", "kafkanb", "system", "timeout", "props"
+        "application", "country", "environment", "kafkaTime", "kafkanb", "system", "timeout", "robot", "executor", "props"
 })
 @Schema(name = "ServiceCall")
 public class AppServiceCallDTO {
@@ -73,6 +73,14 @@ public class AppServiceCallDTO {
     @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @Schema(description = "Timeout value")
     private int timeout;
+
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Robot name. If defined, the call is simulated on this Robot (the relay of its executor is used when active)")
+    private String robot;
+
+    @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @Schema(description = "Executor name of the Robot. If empty, the best executor of the Robot is used")
+    private String executor;
 
     @JsonView({View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @Schema(description = "Properties list")

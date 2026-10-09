@@ -146,6 +146,8 @@ public class GetRobotExecutorTool implements MCPTool {
         RobotExecutorDTOV001 dto = mapper.toDTO(answer.getItem());
         // Strip the write-only credential before returning it to the MCP client.
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
 
         return MCPToolUtils.successJson(dto);
     }

@@ -32,7 +32,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
 
     @Override
     public RobotExecutor create(Integer ID, String robot, String executor, boolean isActive, Integer rank, String host, String port, String hostUser, String hostPassword,
-                                Integer executorExtensionProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorExtensionHost, String executorProxyType, String description,
+                                Integer executorExtensionProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorBrowserProxyPort, Integer executorExtensionPort, String executorExtensionHost, boolean relayActive, String executorProxyAuthMode, String executorProxyAuthToken, String executorProxyOauthTokenUrl, String executorProxyOauthClientId, String executorProxyOauthClientSecret, String executorProxyType, String description,
                                 String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         RobotExecutor newRobot = new RobotExecutor();
         newRobot.setId(ID);
@@ -55,6 +55,12 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
         newRobot.setExecutorBrowserProxyPort(executorBrowserProxyPort);
         newRobot.setExecutorExtensionPort(executorExtensionPort);
         newRobot.setExecutorExtensionHost(executorExtensionHost);
+        newRobot.setRelayActive(relayActive);
+        newRobot.setExecutorProxyAuthMode(executorProxyAuthMode);
+        newRobot.setExecutorProxyAuthToken(executorProxyAuthToken);
+        newRobot.setExecutorProxyOauthTokenUrl(executorProxyOauthTokenUrl);
+        newRobot.setExecutorProxyOauthClientId(executorProxyOauthClientId);
+        newRobot.setExecutorProxyOauthClientSecret(executorProxyOauthClientSecret);
         newRobot.setDescription(description);
         newRobot.setUsrCreated(UsrCreated);
         newRobot.setDateCreated(DateCreated);

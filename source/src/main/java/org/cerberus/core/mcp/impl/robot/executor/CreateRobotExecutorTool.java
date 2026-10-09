@@ -137,6 +137,12 @@ public class CreateRobotExecutorTool implements MCPTool {
         properties.put("executorProxyServicePort", Map.of("type", "integer", "description", "Optional proxy service port."));
         properties.put("executorBrowserProxyHost", Map.of("type", "string", "description", "Optional manual browser proxy host (used when executorProxyType is 'MANUAL')."));
         properties.put("executorBrowserProxyPort", Map.of("type", "integer", "description", "Optional manual browser proxy port (used when executorProxyType is 'MANUAL')."));
+        properties.put("relayActive", Map.of("type", "boolean", "description", "Optional. If true, service calls (REST/SOAP...) go through the relay service of the Cerberus Proxy (uses executorProxyServiceHost/Port; requires executorProxyType MITMPROXY). Default false."));
+        properties.put("executorProxyAuthMode", Map.of("type", "string", "enum", List.of("NONE", "TOKEN", "OAUTH"), "description", "Optional. Authentication towards the Cerberus Proxy. Default NONE."));
+        properties.put("executorProxyAuthToken", Map.of("type", "string", "description", "Optional Bearer token (mode TOKEN). Never returned in tool responses."));
+        properties.put("executorProxyOauthTokenUrl", Map.of("type", "string", "description", "Optional OAuth token endpoint (mode OAUTH)."));
+        properties.put("executorProxyOauthClientId", Map.of("type", "string", "description", "Optional OAuth client id (mode OAUTH)."));
+        properties.put("executorProxyOauthClientSecret", Map.of("type", "string", "description", "Optional OAuth client secret (mode OAUTH). Never returned in tool responses."));
         properties.put("executorExtensionPort", Map.of("type", "integer", "description", "Optional Cerberus browser extension port."));
         properties.put("executorExtensionHost", Map.of("type", "string", "description", "Optional host used to reach the Cerberus browser extension, if different from 'host' (e.g. when the extension is exposed through a separate tunnel such as cloudflared). If empty, 'host' is used."));
         properties.put("executorExtensionProxyPort", Map.of("type", "integer", "description", "Optional proxy port used to reach the extension when the node has a private IP."));
@@ -220,6 +226,12 @@ public class CreateRobotExecutorTool implements MCPTool {
                 getOptionalInteger(args, "executorBrowserProxyPort"),
                 getOptionalInteger(args, "executorExtensionPort"),
                 MCPToolUtils.getString(args, "executorExtensionHost", ""),
+                MCPToolUtils.getBoolean(args, "relayActive", false),
+                MCPToolUtils.getString(args, "executorProxyAuthMode", RobotExecutor.PROXY_AUTH_NONE),
+                MCPToolUtils.getString(args, "executorProxyAuthToken", ""),
+                MCPToolUtils.getString(args, "executorProxyOauthTokenUrl", ""),
+                MCPToolUtils.getString(args, "executorProxyOauthClientId", ""),
+                MCPToolUtils.getString(args, "executorProxyOauthClientSecret", ""),
                 MCPToolUtils.getString(args, "executorProxyType", RobotExecutor.PROXY_TYPE_NONE),
                 MCPToolUtils.getString(args, "description", ""),
                 "MCP",
@@ -237,6 +249,8 @@ public class CreateRobotExecutorTool implements MCPTool {
         RobotExecutorDTOV001 dto = mapper.toDTO(entity);
         // Strip the write-only credential before returning it to the MCP client.
         dto.setHostPassword(null);
+        dto.setExecutorProxyAuthToken(null);
+        dto.setExecutorProxyOauthClientSecret(null);
 
         return MCPToolUtils.successJson(Map.of(
                 "status", "created",

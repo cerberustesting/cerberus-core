@@ -49,6 +49,12 @@ import java.sql.Timestamp;
         "executorProxyType",
         "executorProxyServiceHost",
         "executorProxyServicePort",
+        "relayActive",
+        "executorProxyAuthMode",
+        "executorProxyAuthToken",
+        "executorProxyOauthTokenUrl",
+        "executorProxyOauthClientId",
+        "executorProxyOauthClientSecret",
         "executorBrowserProxyHost",
         "executorBrowserProxyPort",
         "executorExtensionPort",
@@ -118,6 +124,30 @@ public class RobotExecutorDTOV001 {
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
     @Schema(description = "Proxy service port", example = "8080")
     private Integer executorProxyServicePort;
+
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "Whether service calls (REST/SOAP...) go through the relay service of the Cerberus Proxy (executorProxyServiceHost/Port)", example = "false")
+    private Boolean relayActive;
+
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "Authentication towards the Cerberus Proxy", example = "NONE", allowableValues = {"NONE", "TOKEN", "OAUTH"})
+    private String executorProxyAuthMode;
+
+    @JsonView({View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "Bearer token of the Cerberus Proxy (mode TOKEN, write-only)", example = "secret")
+    private String executorProxyAuthToken;
+
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "OAuth token endpoint (mode OAUTH)", example = "https://keycloak.mycompany.com/realms/cerberus/protocol/openid-connect/token")
+    private String executorProxyOauthTokenUrl;
+
+    @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "OAuth client id (mode OAUTH)", example = "cerberus-backend")
+    private String executorProxyOauthClientId;
+
+    @JsonView({View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
+    @Schema(description = "OAuth client secret (mode OAUTH, write-only)", example = "secret")
+    private String executorProxyOauthClientSecret;
 
     @JsonView({View.Public.GET.class, View.Public.POST.class, View.Public.PATCH.class, View.Public.PUT.class})
     @Schema(description = "Browser proxy host", example = "proxy.browser.io")
