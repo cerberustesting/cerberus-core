@@ -131,7 +131,7 @@ public class SlackService implements ISlackService {
 
         int rc = response.getStatusLine().getStatusCode();
         if (rc >= 200 && rc < 300) {
-            LOG.debug("Slack request http return code : " + rc);
+            LOG.info("Slack notification requested with http return code : " + rc);
         } else {
             LOG.warn("Slack request http return code : " + rc);
             LOG.warn("Message sent to " + webHook + ":");

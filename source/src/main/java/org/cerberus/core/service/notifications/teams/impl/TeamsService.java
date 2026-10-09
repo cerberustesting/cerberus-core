@@ -128,7 +128,7 @@ public class TeamsService implements ITeamsService {
 
         int rc = response.getStatusLine().getStatusCode();
         if (rc >= 200 && rc < 300) {
-            LOG.debug("Teams request http return code : " + rc);
+            LOG.info("Teams notification requested with http return code : " + rc);
         } else {
             LOG.warn("Teams request http return code : " + rc);
             LOG.warn("Message sent to " + webHook + ":");

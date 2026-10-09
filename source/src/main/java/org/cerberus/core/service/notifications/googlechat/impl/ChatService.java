@@ -132,7 +132,7 @@ public class ChatService implements IChatService {
 
         int rc = response.getStatusLine().getStatusCode();
         if (rc >= 200 && rc < 300) {
-            LOG.debug("Google Chat request http return code : " + rc);
+            LOG.info("Google Chat notification requested with http return code : " + rc);
         } else {
             LOG.warn("Google Chat request http return code : " + rc);
             LOG.warn("Message sent to " + webHook + ":");
