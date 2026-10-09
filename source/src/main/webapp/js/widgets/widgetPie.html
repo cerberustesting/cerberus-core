@@ -1,4 +1,4 @@
-<!-- Widget timeline: view and settings (the card, its header and its common settings are in MyMonitor.jsp) -->
+<!-- Widget pie: view and settings (the card, its header and its common settings are in MyMonitor.jsp) -->
 <div class="mm-loader" x-show="loading" x-cloak><span class="mm-spinner"></span></div>
 <div x-show="!cfg" class="mm-chartwidget">
     <div class="mm-empty" x-show="!ready" x-text="t('picktestcases')"></div>
@@ -8,16 +8,16 @@
     <div class="mm-chartwidget" x-show="ready && !error && hasData">
         <div class="flex items-end justify-between gap-3 flex-wrap">
             <div>
-                <span class="mm-big" x-text="summary.big"></span>
-                <span class="mm-sub ml-2" x-text="summary.sub"></span>
+                <span class="mm-big" x-text="sum"></span>
+                <span class="mm-sub ml-2" x-text="metricLabel(metric)"></span>
             </div>
             <div class="v2in-legend">
-                <template x-for="s in legend" :key="s.label">
-                    <span class="v2in-legend-item"><span class="v2in-legend-dot" :style="'background:' + s.color"></span><span x-text="s.label"></span></span>
+                <template x-for="s in slices" :key="s.label">
+                    <span class="v2in-legend-item"><span class="v2in-legend-dot" :style="'background:' + s.color"></span><span x-text="s.label + ' ' + s.text"></span></span>
                 </template>
             </div>
         </div>
-        <div class="mm-chart" x-ref="chart" x-html="svg" @click="!editMode && openExecution($event)"></div>
+        <div class="mm-chart" x-ref="chart" x-html="svg"></div>
     </div>
 </div>
 

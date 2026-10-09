@@ -1,0 +1,30 @@
+<!-- Widget kpi: view and settings (the card, its header and its common settings are in MyMonitor.jsp) -->
+<div class="mm-loader" x-show="loading" x-cloak><span class="mm-spinner"></span></div>
+<div x-show="!cfg" class="mm-kpi">
+    <div class="flex items-baseline justify-between gap-2" x-show="raw !== null">
+        <span class="mm-big" x-text="value"></span>
+        <span class="text-sm font-semibold whitespace-nowrap" x-show="diff !== null" :style="'color:' + diffColor" x-text="diffText"></span>
+    </div>
+    <div class="mm-sub" x-show="raw !== null" x-text="sub"></div>
+    <div class="v2in-chip v2in-chip--ko" x-show="error" x-text="error"></div>
+</div>
+
+<div x-show="cfg" class="mm-field">
+    <span class="v2in-fieldlabel" x-text="t('source')"></span>
+    <select class="v2in-input" :value="w.source" @change="pickSource($event.target.value)">
+        <template x-for="s in sources" :key="s">
+            <option :value="s" :selected="s === w.source" x-text="sourceLabel(s)"></option>
+        </template>
+    </select>
+    <span class="v2in-fieldlabel" x-text="t('metric')"></span>
+    <select class="v2in-input" @change="w.metric = $event.target.value">
+        <template x-for="k in metrics" :key="k">
+            <option :value="k" :selected="k === metric" x-text="metricLabel(k)"></option>
+        </template>
+    </select>
+    <span class="v2in-fieldlabel" x-text="t('scope')"></span>
+    <select class="v2in-input" x-model="w.scope">
+        <option value="system" :selected="w.scope !== 'global'" x-text="t('kpi_scope_system')"></option>
+        <option value="global" :selected="w.scope === 'global'" x-text="t('kpi_scope_global')"></option>
+    </select>
+</div>

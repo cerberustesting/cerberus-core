@@ -18,303 +18,104 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// widgetTimelineOptions : Options available
-// WidgetTimelineTemplate : Template HTML
-// editWidgetCount : Edit Widget
-// getData : Retrieve data from Back
+/**
+ * Widget "timeline": the data along the time, over the period. Configured like every chart widget
+ * (see widgetData.js); the split makes one curve per value ("none": a single curve).
+ * Metrics of the executions:
+ *   duration     one dot per execution (click opens it); with no split, one curve per country / environment / robot
+ *   avgDuration  the average duration per day
+ *   status       the executions per day, stacked by status (no split)
+ *   count        the number of executions per day
+ *   okRate       the percentage of OK per day
+ * Metric of the test cases: created, the number created per day.
+ */
+(function () {
+    var MM = window.MyMonitor;
+    var IN = MM.IN;
 
+    var SOURCES = {
+        executions: {metrics: ['duration', 'avgDuration', 'status', 'count', 'okRate'], splits: ['none', 'country', 'environment', 'robot', 'status', 'application', 'test', 'testcase']},
+        testcases: {metrics: ['created'], splits: ['none', 'application', 'status', 'type', 'priority', 'system', 'test', 'implementer']}
+    };
 
-var widgetTimelineOptions={
-    "Count":["MWV - 0001","MWV - 0002","MWV - 0003","MWV - 0004","MWV - 0005","MWV - 0006"],
-    "Time":["MWV - 0001","MWV - 0002","MWV - 0003","MWV - 0004","MWV - 0005","MWV - 0006"]
-};
-var configTime = {};
-
-function WidgetTimelineTemplate(w) {
-
-    return `
-        <div class="crb_card absolute p-2.5" data-id="${w.id}">
-          <div class="drag-handle drag-widget">⋮⋮⋮</div>
-          <div class="widget-controls">
-            <button class="btn btn-xs btn-info edit-widget">Edit</button>
-            <button class="btn btn-xs btn-danger delete-widget">&times;</button>
-          </div>
-          <h4 class="widget-header" style="margin-bottom:0">TESTCASE PREFORMANCE (ms)</h4>
-          <p class="widget-content">${w.content}</p>
-          <div class="">
-                <div class="timelineChart" id="${w.id}-widget-timeline">
-                    <div class="row">
-                        <div class="col-xs-12" id="${w.id}-ChartTestStat">
-                            <canvas id="${w.id}-canvasTestStat"></canvas>
-                        </div>
-                    </div>
-                </div>
-          </div>
-        </div>
-      `;
-}
-
-
-function editWidgetTimeline(wd, $w) {
-    // Cacher le graphique
-    $w.find(".timelineChart").hide();
-
-    // Construire la combo du titre
-    var $title = $('<select class="form-control input-sm widget-title"></select>');
-    Object.keys(widgetTimelineOptions).forEach(function (t) {
-        $title.append(`<option ${t == wd.option ? "selected" : ""}>${t}</option>`);
+    MM.register({
+        type: 'timeline', icon: 'chart-line', color: 'cyan', w: 6, h: 4, minW: 3, minH: 3,
+        defaults: function () { return {source: 'executions', metric: 'duration', split: 'none', filters: []}; }
     });
 
-    // Construire la combo du contenu
-    var $content = $('<select class="form-control input-sm widget-content"></select>');
-    widgetTimelineOptions[wd.option].forEach(function(c){
-        $content.append(`<option ${c==wd.content?"selected":""}>${c}</option>`);
-    });
+    window.widgetTimeline = function (w) {
+        return MM.dataWidget(w, SOURCES, {
+            get isStatus() { return w.source === 'executions' && this.metric === 'status'; },
+            get hasData() { return w.source === 'executions' ? this.statusTotals().length > 0 : this.records.length > 0; },
+            get inPeriod() {
+                var from = Date.now() - this.periodDays * 86400000;
+                return this.records.filter(function (r) { return r.t >= from; });
+            },
 
-    // Remplacer le titre (h4) par une combo
-    $w.find(".widget-header").replaceWith($title);
+            get summary() {
+                var m = this.metric, exes = this.records, n = exes.length;
+                if (w.source === 'testcases') { return {big: MM.fmtNum(this.inPeriod.length), sub: MM.t('createdover', this.periodDays)}; }
+                var total = MM.agg.sum(this.statusTotals(), function (s) { return s.value; });
+                var ok = MM.agg.sum(this.statusTotals().filter(function (s) { return s.label === 'OK'; }), function (s) { return s.value; });
+                if (m === 'duration' || m === 'avgDuration') {
+                    return {big: IN.fmtDuration(MM.agg.avgDur(exes)), sub: MM.t('avgduration', n, IN.fmtDuration(n ? exes[n - 1].dur : null))};
+                }
+                if (m === 'count') { return {big: MM.fmtNum(total), sub: MM.t('executionsover', this.periodDays)}; }
+                return {big: (total ? Math.round(ok * 1000 / total) / 10 : 0) + '%', sub: MM.t('okrate', total)};
+            },
+            get legend() {
+                if (this.isStatus) { return this.statusTotals().map(function (s) { return {label: s.label, color: IN.statusColor(s.label)}; }); }
+                return this.series.length > 1 ? this.series.map(function (s) { return {label: s.name, color: s.color}; }) : [];
+            },
 
-    // Insérer la combo content juste après le titre
-    $title.after($content);
-
-    // Gérer le changement du titre -> recharge du contenu
-    $title.change(function(){
-        var val = $(this).val();
-        var $c = $('<select class="form-control input-sm widget-content"></select>');
-        widgetTimelineOptions[val].forEach(function(c){
-            $c.append(`<option>${c}</option>`);
+            // The groups of records that make one curve each.
+            get groups() {
+                var split = this.split, records = w.source === 'testcases' ? this.inPeriod : this.records;
+                if (split !== 'none') { return MM.agg.groupBy(records, split).map(function (g) { return {name: g.label, exes: g.exes, key: g.label}; }); }
+                if (w.source === 'executions' && this.metric === 'duration') {
+                    var map = {}, list = [];
+                    records.forEach(function (e) {
+                        var name = [e.country, e.environment, e.robot].filter(Boolean).join(' / ') || e.testcase;
+                        if (!map[name]) { map[name] = {name: name, exes: [], key: name}; list.push(map[name]); }
+                        map[name].exes.push(e);
+                    });
+                    return list;
+                }
+                return [{name: this.metricLabel(this.metric), exes: records, key: ''}];
+            },
+            get series() {
+                var m = this.metric, split = this.split, many = this.groups.length > 1;
+                return this.groups.map(function (g, i) {
+                    var color = split === 'status' ? IN.statusColor(g.key) : many ? IN.seriesPalette[i % IN.seriesPalette.length] : MM.COLORS.blue;
+                    var points;
+                    if (m === 'duration') {
+                        points = g.exes.map(function (e) {
+                            return {t: e.t, v: e.dur, dotColor: IN.statusColor(e.status), attr: 'data-exe="' + IN.esc(e.id) + '"',
+                                title: g.name + ' - ' + IN.fmtDateTime(e.t) + ' - ' + e.status + ' - ' + IN.fmtDuration(e.dur)};
+                        });
+                    } else {
+                        points = MM.agg.perDay(g.exes).map(function (d) {
+                            var v = m === 'okRate' ? MM.agg.okRate(d.exes) : m === 'avgDuration' ? MM.agg.avgDur(d.exes) : d.exes.length;
+                            return {t: d.t, v: v, title: g.name + ' - ' + d.date + ' - ' + (m === 'avgDuration' ? IN.fmtDuration(v) : m === 'okRate' ? v + '%' : v)};
+                        });
+                    }
+                    return {name: g.name, color: color, points: points};
+                });
+            },
+            get svg() {
+                var W = this.box.w, H = this.box.h;
+                if (this.isStatus) {
+                    return IN.stackedBars(this.statusDays.map(function (d) {
+                        return {label: IN.fmtShortDate(d.date), title: d.date, segments: Object.keys(d.counts).map(function (s) { return {status: s, value: d.counts[s]}; })};
+                    }), {W: W, H: H});
+                }
+                var unit = this.metric === 'duration' || this.metric === 'avgDuration' ? 'duration' : 'number';
+                return IN.timeLines(this.series, {W: W, H: H, unit: unit, xDomain: [Date.now() - this.periodDays * 86400000, Date.now()]});
+            },
+            openExecution(e) {
+                var dot = e.target.closest('[data-exe]');
+                if (dot) { window.open('./TestCaseExecutionV2.jsp?executionId=' + encodeURIComponent(dot.getAttribute('data-exe')), '_blank'); }
+            }
         });
-        $content.replaceWith($c);
-        $content = $c;
-    });
-}
-
-
-function saveWidgetTimeline(wd, $w) {
-    var newTitle = $w.find("select.widget-title").val();
-    var newContent = $w.find("select.widget-content").val();
-
-    wd.option = newTitle;
-    wd.content = newContent;
-
-    $w.find("select.widget-title").replaceWith(
-        `<h4 class="widget-header">${newTitle}</h4>`
-    );
-    $w.find("select.widget-content").remove();
-    $w.find(".timelineChart").show();
-
-    wd.option=newTitle; wd.content=newContent;
-    localStorage.setItem("widgets",JSON.stringify(widgetData));
-
-}
-
-
-function buildWidgetTimelineGraphs(id, data, chart) {
-    const curves = [...data.datasetExeTime].sort((a, b) => {
-        const aKey = `${a.key.testcase.test}-${a.key.testcase.testcase}-${a.key.unit}-${a.key.party}-${a.key.type}`;
-        const bKey = `${b.key.testcase.test}-${b.key.testcase.testcase}-${b.key.unit}-${b.key.party}-${b.key.type}`;
-        return bKey.localeCompare(aKey);
-    });
-
-    const datasets = curves.map((curve, i) => {
-        const points = curve.points.map(p => ({
-            x: p.x,
-            y: p.y,
-            id: p.exe,
-            controlStatus: p.exeControlStatus,
-            falseNegative: p.falseNegative
-        }));
-
-        return {
-            label: getLabel(
-                curve.key.testcase.description,
-                curve.key.country,
-                curve.key.environment,
-                curve.key.robotdecli,
-                curve.key.unit,
-                curve.key.party,
-                curve.key.type,
-                curve.key.testcase.testcase
-            ),
-            data: points,
-            borderColor: getLineColorForTimeline(i),
-            backgroundColor: getFillColorForTimeline(i),
-            pointRadius: 3,
-            pointHoverRadius: 6,
-            hitRadius: 10,
-            fill: true,
-            pointBorderWidth: ctx => ctx.raw.falseNegative ? 3 : 1,
-            pointBorderColor: ctx => ctx.raw.falseNegative ? '#00d27a' : getLineColorForTimeline(i),
-            pointBackgroundColor: ctx => getExeStatusRowColor(ctx.raw.controlStatus)
-        };
-    });
-
-    chart.data.datasets = datasets;
-    chart.update();
-}
-
-function getLineColorForTimeline(index){
-    const rootStyle = getComputedStyle(document.documentElement);
-    const lineColor = rootStyle.getPropertyValue("--crb-green-color").trim();
-
-    const colors = [lineColor];
-    return colors[index % colors.length];
-}
-
-function getFillColorForTimeline(index){
-    const rootStyle = getComputedStyle(document.documentElement);
-    const fillColor = rootStyle.getPropertyValue("--crb-green-light-color").trim();
-
-    const colors = [fillColor];
-    return colors[index % colors.length];
-}
-
-function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
-    let label = tcDesc.length > 20 ? testcaseid : tcDesc;
-
-    if (party && party !== "total") {
-        label += ` - ${party}`;
-    }
-    if (type && type !== "total") {
-        label += (label ? " - " : "") + type;
-    }
-    if (unit && ["totalsize", "sizemax", "totaltime", "timemax"].includes(unit)) {
-        label += (label ? " [" : "[") + unit + "]";
-    }
-
-    return label;
-}
-
-function widgetTimeline(id, tc) {
-
-    const chart = initTimelineGraph(id);
-    let qS = "from=2025-07-30T22:00:00.000Z&to=2025-09-28T22:00:00.563Z&parties=total&types=total&units=request&units=totalsize&tests=QA - Games&testcases=" + tc;
-
-    $.ajax({
-        url: "ReadExecutionStat?" + qS,
-        method: "GET",
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-            if (data.messageType === "OK") {
-                buildWidgetTimelineGraphs(id, data, chart);
-            } else {
-                showMessageMainPage(getAlertType(data.messageType), data.message, false);
-            }
-            hideLoader($("#otFilterPanel"));
-        },
-        error: showUnexpectedError
-    });
-}
-
-function initTimelineGraph(id) {
-    const ctx = document.getElementById(id + '-canvasTestStat').getContext('2d');
-
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: { datasets: [] },
-        options: getOptions("Test Case Duration", "time")
-    });
-
-    // gestion du clic sur un point
-    document.getElementById(id + '-canvasTestStat').onclick = evt => {
-        const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, false);
-        if (points.length) {
-            const { datasetIndex, index } = points[0];
-            const exe = chart.data.datasets[datasetIndex].data[index].id;
-            window.open('./TestCaseExecution.jsp?executionId=' + exe, '_blank');
-        }
     };
-
-    return chart;
-}
-
-function getOptions(title, unit) {
-    const rootStyle = getComputedStyle(document.documentElement);
-    const lineColor = rootStyle.getPropertyValue("--crb-green-color").trim();
-    const fillColor = rootStyle.getPropertyValue("--crb-green-light-color").trim();
-
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'nearest',
-            intersect: true
-        },
-        plugins: {
-            title: {
-                display: false,
-                text: title,
-                color: '#1f2937',
-                font: { size: 16, weight: 'bold' }
-            },
-            tooltip: {
-                callbacks: {
-                    label: context => {
-                        const label = context.dataset.label || '';
-                        const value = context.parsed.y;
-                        if (unit === "size") {
-                            return `${label}: ${formatNumber(Math.round(value / 1024))} kb`;
-                        } else if (unit === "time") {
-                            return `${label}: ${formatNumber(value)} ms`;
-                        } else {
-                            return `${label}: ${value}`;
-                        }
-                    }
-                }
-            },
-            legend: {
-                display: false,
-                position: 'top',
-                labels: {
-                    usePointStyle: true,
-                    color: '#374151'
-                }
-            }
-        },
-        scales: {
-            x: {
-                type: 'time',
-                time: { tooltipFormat: 'dd MMM yyyy HH:mm' },
-                title: { display: false, text: 'Date' },
-                ticks: {
-                    maxTicksLimit: 4,
-                    font: { size: 10 }
-                },
-            },
-            y: {
-                title: { display: false, text: title },
-                ticks: {
-                    maxTicksLimit: 4,
-                    font: { size: 10 },
-                    callback: value => {
-                        if (unit === "size") {
-                            return formatNumber(Math.round(value / 1024));
-                        } else if (unit === "time") {
-                            return formatNumber(value);
-                        } else {
-                            return value;
-                        }
-                    }
-                }
-            }
-        },
-        elements: {
-            line: {
-                borderWidth: 2,
-                tension: 0.4,
-                borderColor: lineColor,
-                backgroundColor: fillColor,
-                fill: true
-            },
-            point: {
-                radius: 3,
-                hoverRadius: 6
-            }
-        }
-    };
-}
-
-function formatNumber(num) {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-}
+})();
