@@ -19,55 +19,49 @@
  */
 package org.cerberus.core.websocket.runtime;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import jakarta.annotation.PostConstruct;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.cerberus.core.crud.entity.TestCaseExecutionLight;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.StringUtil;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-/**
- * @author vertigo17
- */
 @Component
 public class ExecutionMonitor {
 
     private static final String SEPARATOR = "-";
     private static final int MAXEXECUTIONEXELIST = 10;
-    // Websocket data content
-    private HashMap<String, List<Long>> executionBoxHashMap;
-    private HashMap<Long, TestCaseExecutionLight> executionHashMap;
+    private static final Logger LOG = LogManager.getLogger(ExecutionMonitor.class);
 
-    private long lastWebsocketPush;
-    private boolean needPush;
+    // Remplacement par ConcurrentHashMap pour supporter les accès concurrents
+    private final Map<String, List<Long>> executionBoxHashMap = new ConcurrentHashMap<>();
+    private final Map<Long, TestCaseExecutionLight> executionHashMap = new ConcurrentHashMap<>();
+
+    private volatile long lastWebsocketPush;
+    private volatile boolean needPush;
 
     @Autowired
-    ITestCaseExecutionService testCaseExecutionService;
+    private ITestCaseExecutionService testCaseExecutionService;
 
     @PostConstruct
     public void init() {
         try {
             LOG.info("Monitor component build.");
-            executionHashMap = new HashMap<>();
-            executionBoxHashMap = new HashMap<>();
-            lastWebsocketPush = new Date().getTime();
+            lastWebsocketPush = System.currentTimeMillis();
             needPush = false;
 
             LOG.debug("Loading last executions in order to init the monitor class component from oldest to newest.");
             List<TestCaseExecutionLight> lastExecutions = testCaseExecutionService.ReadLastExecutionForMonitor();
-            if ((lastExecutions != null) && (!lastExecutions.isEmpty())) {
+            if (lastExecutions != null && !lastExecutions.isEmpty()) {
                 for (int i = lastExecutions.size(); i > 0; i--) {
                     this.addNewExecutionToMonitor(lastExecutions.get(i - 1));
                 }
@@ -78,25 +72,12 @@ public class ExecutionMonitor {
         }
     }
 
-    /**
-     * Not included in table.
-     */
-    private static final Logger LOG = LogManager.getLogger(ExecutionMonitor.class);
-
-    public HashMap<String, List<Long>> getExecutionBoxHashMap() {
+    public Map<String, List<Long>> getExecutionBoxHashMap() {
         return executionBoxHashMap;
     }
 
-    public void setExecutionBoxHashMap(HashMap<String, List<Long>> executionBoxHashMap) {
-        this.executionBoxHashMap = executionBoxHashMap;
-    }
-
-    public HashMap<Long, TestCaseExecutionLight> getExecutionHashMap() {
+    public Map<Long, TestCaseExecutionLight> getExecutionHashMap() {
         return executionHashMap;
-    }
-
-    public void setExecutionHashMap(HashMap<Long, TestCaseExecutionLight> executionHashMap) {
-        this.executionHashMap = executionHashMap;
     }
 
     public long getLastWebsocketPush() {
@@ -116,13 +97,13 @@ public class ExecutionMonitor {
     }
 
     public void updateExecutionToMonitor(long executionId, boolean isFalseNegative) {
-        if (executionHashMap.containsKey(executionId)) {
-            executionHashMap.get(executionId).setFalseNegative(isFalseNegative);
+        TestCaseExecutionLight exec = executionHashMap.get(executionId);
+        if (exec != null) {
+            exec.setFalseNegative(isFalseNegative);
         }
     }
 
-    public void addNewExecutionToMonitor(TestCaseExecutionLight newexecution) {
-
+    public synchronized void addNewExecutionToMonitor(TestCaseExecutionLight newexecution) {
         // Adding execution to main Map
         executionHashMap.put(newexecution.getId(), newexecution);
 
@@ -132,27 +113,17 @@ public class ExecutionMonitor {
                 + StringUtil.cleanFromSpecialCharacters(newexecution.getCountry()) + SEPARATOR
                 + StringUtil.cleanFromSpecialCharacters(newexecution.getEnvironment()) + SEPARATOR
                 + StringUtil.cleanFromSpecialCharacters(newexecution.getRobot());
-        String keyTest = StringUtil.cleanFromSpecialCharacters(newexecution.getTest()) + SEPARATOR
-                + StringUtil.cleanFromSpecialCharacters(newexecution.getTestCase());
-        String keyEnv = StringUtil.cleanFromSpecialCharacters(newexecution.getCountry()) + SEPARATOR
-                + StringUtil.cleanFromSpecialCharacters(newexecution.getEnvironment()) + SEPARATOR
-                + StringUtil.cleanFromSpecialCharacters(newexecution.getRobot());
 
-        // Maintain Execution tile
-        if (this.getExecutionBoxHashMap().containsKey(key)) {
-            List<Long> existingList = this.getExecutionBoxHashMap().get(key);
-            existingList.add(newexecution.getId());
-            // If old execution list is too big, we remove the oldest one.
-            if (existingList.size() > MAXEXECUTIONEXELIST) {
-                executionHashMap.remove(existingList.get(0));
-                existingList.remove(0);
+        // Use computeIfAbsent in order to init the list in atomic way with CopyOnWriteArrayList
+        List<Long> existingList = executionBoxHashMap.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>());
+        existingList.add(newexecution.getId());
 
+        // Si la liste devient trop grande, suppression de la plus ancienne entrée
+        if (existingList.size() > MAXEXECUTIONEXELIST) {
+            Long removedId = existingList.remove(0);
+            if (removedId != null) {
+                executionHashMap.remove(removedId);
             }
-            this.getExecutionBoxHashMap().put(key, existingList);
-        } else {
-            List<Long> newList = new ArrayList<>();
-            newList.add(newexecution.getId());
-            this.getExecutionBoxHashMap().put(key, newList);
         }
     }
 
@@ -160,15 +131,21 @@ public class ExecutionMonitor {
         JSONObject result = new JSONObject();
 
         try {
+            // Snapshots copies creation in order to instanciate the JSONObject without concurancy
+            Map<Long, TestCaseExecutionLight> executionsSnapshot = new HashMap<>(executionHashMap);
+            Map<String, List<Long>> boxesSnapshot = new HashMap<>();
 
-            result.put("executions", executionHashMap);
-            result.put("executionBoxes", executionBoxHashMap);
+            // Copie profonde des listes
+            executionBoxHashMap.forEach((k, v) -> boxesSnapshot.put(k, new ArrayList<>(v)));
+
+            result.put("executions", executionsSnapshot);
+            result.put("executionBoxes", boxesSnapshot);
+
             JSONObject wsTiming = new JSONObject();
             wsTiming.put("lastPush", lastWebsocketPush);
             wsTiming.put("needPush", needPush);
             result.put("wsTiming", wsTiming);
 
-            //queueStats.queueSize
         } catch (JSONException ex) {
             LOG.error(ex, ex);
         } catch (Exception ex) {
@@ -176,5 +153,4 @@ public class ExecutionMonitor {
         }
         return result;
     }
-
 }
