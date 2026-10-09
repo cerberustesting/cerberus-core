@@ -2164,8 +2164,8 @@ public class ControlService implements IControlService {
         String jsonToVerify = controlExecution.getValue1();
         String jsonSchema = controlExecution.getValue2();
 
-        LOG.info("Control: verifyJsonFormat on: {}", jsonToVerify);
-        LOG.info("Control: verifyJsonFormat format: {}", jsonSchema);
+        LOG.debug("Control: verifyJsonFormat on: {}", jsonToVerify);
+        LOG.debug("Control: verifyJsonFormat format: {}", jsonSchema);
 
         MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VERIFYJSONFORMAT);
         message.resolveDescription("JSONTOVALIDATE",jsonToVerify);
@@ -2174,7 +2174,7 @@ public class ControlService implements IControlService {
         try {
             StringBuilder differences = new StringBuilder();
             Set<String> errors = jsonSchemaValidator.getDifferences(jsonToVerify, jsonSchema);
-            LOG.info("Control: verifyJsonFormat differences found: {}", errors.size());
+            LOG.debug("Control: verifyJsonFormat differences found: {}", errors.size());
             if (!errors.isEmpty()) {
                 errors.forEach(e -> differences.append("- " + e));
                     message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VERIFYJSONFORMAT);
