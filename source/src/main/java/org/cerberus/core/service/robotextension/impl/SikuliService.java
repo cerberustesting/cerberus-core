@@ -1004,12 +1004,16 @@ public class SikuliService implements ISikuliService {
         return image;
     }
 
+    /**
+     *
+     * Replace something like
+     * http://localhost:9080/Cerberus/ReadApplicationObjectImage?application=Cerberus&object=BUTTONACCEPT#xoffset=|yoffset=
+     * by BUTTONACCEPT or BUTTONACCEPT (xoffset=10 yoffset=20)
+     *
+     * @param locator
+     * @return
+     */
     private String generateSikuliObjectFromLocator(String locator) {
-        // Replace something like http://localhost:9080/Cerberus/ReadApplicationObjectImage?application=Cerberus&object=BUTTONACCEPT#xoffset=|yoffset=
-        // by
-        // BUTTONACCEPT
-        // or
-        // BUTTONACCEPT (xoffset=10 yoffset=20)
         if (locator.contains("object=")) {
             String newName = locator.replace("#xoffset=|yoffset=", "").split("object=")[1].replace("#", " (").replace("|", " ");
             if (newName.endsWith("=")) {
@@ -1019,7 +1023,6 @@ public class SikuliService implements ISikuliService {
         } else {
             return locator;
         }
-
     }
 
     private String generateSikuliUrlOnRobot(Session session, String path) {

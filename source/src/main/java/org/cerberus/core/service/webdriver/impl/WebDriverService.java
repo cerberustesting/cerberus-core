@@ -416,7 +416,7 @@ public class WebDriverService implements IWebDriverService {
                 element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
             answer.setItem(element);
-            Integer numberOfElement = this.getNumberOfElements(session, identifier);
+            Integer numberOfElement = this.getNumberOfElements(session, locator);
             msg = AnswerUtil.getMessageDependingOnNbOfElement(numberOfElement, identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
 
             /**
@@ -1980,6 +1980,11 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public Integer getNumberOfElements(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
+        return session.getDriver().findElements(locator).size();
+    }
+
+    @Override
+    public Integer getNumberOfElements(Session session, By locator) {
         return session.getDriver().findElements(locator).size();
     }
 

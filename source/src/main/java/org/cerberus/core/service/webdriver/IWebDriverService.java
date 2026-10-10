@@ -32,6 +32,7 @@ import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -103,6 +104,8 @@ public interface IWebDriverService {
     String getFromCookie(Session session, String cookieName, String cookieParameter);
 
     Integer getNumberOfElements(Session session, Identifier object);
+
+    Integer getNumberOfElements(Session session, By locator);
 
     File takeScreenShotFile(Session session, String cropValues);
 

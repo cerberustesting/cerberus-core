@@ -219,7 +219,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public AnswerItem<JSONObject>  doSikuliVerifyElementPresent(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliVerifyElementPresent(Session session, String locator, String text);
 
     /**
      *
@@ -228,7 +228,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public AnswerItem<JSONObject>  doSikuliVerifyElementNotPresent(Session session, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliVerifyElementNotPresent(Session session, String locator, String text);
 
     /**
      *
