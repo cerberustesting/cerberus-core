@@ -423,8 +423,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     // Getting here the list of possible executor sorted by prio.
                     List<RobotExecutor> robotExelist = new ArrayList<>();
                     appType = exe.getAppType();
-                    if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
-                        // Application require a robot so we can get the list of executors.
+                    if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))
+                            || !StringUtil.isEmptyOrNull(robot)) {
+                        // Application require a robot (or a robot is defined on the entry, eg. SRV for its relay) so we can get the list of executors.
                         if (StringUtil.isEmptyOrNull(robot)) {
                             robotExelist = new ArrayList<>();
                             robotExelist.add(factoryRobotExecutor.create(0, "", "", true, 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", 0, "", "", null, false, "", 0, "", 0, 0, "", false, "NONE", "", "", "", "", "", "", "", null, "", null));
