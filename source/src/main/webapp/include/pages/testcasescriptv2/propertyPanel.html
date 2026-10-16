@@ -234,6 +234,7 @@
                                                          enableLiveAutocompletion: false
                                                      });
                                                      editor.setReadOnly(!canUpdate);
+                                                     setupAceVariableCompleter(editor);
                                                      editor.setValue(prop.value1 || '', -1);
                                                      editor.on('change', () => {
                                                          var val = editor.getValue();
@@ -254,11 +255,24 @@
                                         </div>
                                     </template>
                                     <template x-if="!(['getFromJS','getFromGroovy','getFromSql','getFromCommand'].includes(prop.type) && fieldKey === 'value1')">
+                                        <div class="relative">
                                         <textarea class="v2-prop-field-textarea"
                                                   :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
-                                                  rows="2"
+                                                  @focus="acOnFocusProp(pIdx, fieldKey, $event.target.value)" @input="acOnInput($event.target.value, $event.target)" @blur="acOnBlur()" @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acVisible && _acMode==='variable' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.preventDefault(); updatePropertyField(pIdx, fieldKey, acSelectVariable(_acResults[_acSelectedIdx], $event.target)); }"
+                                                  rows="2" autocomplete="off"
                                                   :placeholder="(_getPropertyFields(prop.type, prop.database)[fieldKey].label || {}).en || 'Value...'"
                                                   :disabled="!canUpdate"></textarea>
+                                        <div class="v2-ac-dropdown" x-show="_acVisible && _acIsPropField(pIdx, fieldKey)" x-cloak>
+                                            <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                                <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                     @mousedown.prevent="let inp = $el.closest('.relative').querySelector('textarea, input'); if (_acMode==='variable') { updatePropertyField(pIdx, fieldKey, acSelectVariable(acItem, inp)); }">
+                                                    <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
+                                                    <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                    <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        </div>
                                     </template>
                                 </div>
                             </template>
@@ -280,10 +294,23 @@
                                 </template>
                                 <!-- Input if no options -->
                                 <template x-if="!_getPropertyFields(prop.type, prop.database)[fieldKey].options">
+                                    <div class="relative">
                                     <input type="text" class="v2-prop-field-input"
                                            :value="prop[fieldKey]" @change="updatePropertyField(pIdx, fieldKey, $event.target.value)"
+                                           @focus="acOnFocusProp(pIdx, fieldKey, $event.target.value)" @input="acOnInput($event.target.value, $event.target)" @blur="acOnBlur()" @keydown="acOnKeydown($event); if ($event.key==='Enter' && _acVisible && _acMode==='variable' && _acSelectedIdx >= 0 && _acResults[_acSelectedIdx]) { $event.preventDefault(); updatePropertyField(pIdx, fieldKey, acSelectVariable(_acResults[_acSelectedIdx], $event.target)); }" autocomplete="off"
                                            :placeholder="(_getPropertyFields(prop.type, prop.database)[fieldKey].label || {}).en || ''"
                                            :disabled="!canUpdate">
+                                    <div class="v2-ac-dropdown" x-show="_acVisible && _acIsPropField(pIdx, fieldKey)" x-cloak>
+                                        <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
+                                            <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
+                                                 @mousedown.prevent="let inp = $el.closest('.relative').querySelector('textarea, input'); if (_acMode==='variable') { updatePropertyField(pIdx, fieldKey, acSelectVariable(acItem, inp)); }">
+                                                <span class="v2-ac-icon" :class="'v2-ac-icon--' + (acItem.icon || 'default')" x-text="({'property':'P','system':'S','object':'O','datalib':'D','service':'Sv','element':'El'})[acItem.icon] || '?'"></span>
+                                                <span class="v2-ac-item__label" x-text="acItem.label"></span>
+                                                <span class="v2-ac-item__desc" x-text="acItem.desc"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    </div>
                                 </template>
                             </div>
                         </template>

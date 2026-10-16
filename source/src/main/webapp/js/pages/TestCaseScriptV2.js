@@ -2174,6 +2174,69 @@ function scriptV2() {
             }
         },
 
+        // ── Same as acOnFocus, for the fields of the properties tab (%variable% suggestions only) ──
+        acOnFocusProp(pIdx, fieldKey, currentVal) {
+            if (this._acBlurTimer) { clearTimeout(this._acBlurTimer); this._acBlurTimer = null; }
+            this._acActiveField = { typeKey: 'property', fieldKey: fieldKey, isControl: false, autoType: 'variable', isProp: true, pIdx: pIdx };
+            this._acActiveAIdx = -1;
+            this._acActiveCIdx = -1;
+            this._acSelectedIdx = -1;
+            this._acCreateLabel = '';
+            this._acMode = 'field';
+            this._acVisible = false;
+            var cursorEnd = (currentVal || '').length;
+            var varState = this._parseVariableContext(currentVal || '', cursorEnd);
+            if (varState) this._enterVariableMode(varState, currentVal || '');
+        },
+
+        /** %variable% completer for an Ace editor (property value1 of JS/Groovy/SQL/Command types) */
+        setupAceVariableCompleter(editor) {
+            var self = this;
+            var textBeforeCursor = function(ed) {
+                var pos = ed.getCursorPosition();
+                return ed.session.getLine(pos.row).substring(0, pos.column);
+            };
+            editor.completers = [{
+                getCompletions: function(ed, session, pos, prefix, callback) {
+                    var line = textBeforeCursor(ed);
+                    var vs = self._parseVariableContext(line, line.length);
+                    if (!vs) { callback(null, []); return; }
+                    self._enterVariableMode(vs, line);
+                    var level = vs.level;
+                    var results = self._acResults || [];
+                    self._acVisible = false;
+                    self._acMode = 'field';
+                    callback(null, results.map(function(r) {
+                        var suffix = (level === 'root' || level === 'object' || level === 'datalib') ? '.' : '%';
+                        return {
+                            caption: r.label, value: r.value + suffix, meta: r.desc, score: 1000,
+                            completer: {
+                                insertMatch: function(ed, data) {
+                                    var cur = ed.getCursorPosition();
+                                    var typed = ed.session.getLine(cur.row).substring(0, cur.column).match(/\w*$/)[0];
+                                    ed.session.remove({ start: { row: cur.row, column: cur.column - typed.length }, end: cur });
+                                    ed.insert(data.value);
+                                    if (/\.$/.test(data.value)) setTimeout(function() { ed.execCommand('startAutocomplete'); }, 0);
+                                }
+                            }
+                        };
+                    }));
+                }
+            }];
+            editor.commands.on('afterExec', function(e) {
+                if (e.command.name !== 'insertstring' && e.command.name !== 'backspace') return;
+                var line = textBeforeCursor(editor);
+                if (self._parseVariableContext(line, line.length)) {
+                    editor.execCommand('startAutocomplete');
+                }
+            });
+        },
+
+        _acIsPropField(pIdx, fieldKey) {
+            var f = this._acActiveField;
+            return !!(f && f.isProp && f.pIdx === pIdx && f.fieldKey === fieldKey);
+        },
+
         // ══════════════════════════════════════════════
         // ── acOnInput — called on every keystroke ──
         // ══════════════════════════════════════════════
