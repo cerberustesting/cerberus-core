@@ -129,6 +129,14 @@
                 V1
             </button>
             <template x-if="tagObj && tagObj.campaign">
+                <button type="button" class="v2rt-btn" :class="loaded ? '' : 'v2rt-btn--disabled'"
+                        title="Edit the campaign (opens the campaign modal)"
+                        @click="editCampaign()">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit campaign
+                </button>
+            </template>
+            <template x-if="tagObj && tagObj.campaign">
                 <button type="button" class="v2rt-btn v2rt-btn--primary" :class="loaded ? '' : 'v2rt-btn--disabled'"
                         title="Launch this run again (a new tag is created)"
                         @click="openRunAgain()">
