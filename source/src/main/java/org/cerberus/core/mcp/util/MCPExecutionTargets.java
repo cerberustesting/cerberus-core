@@ -164,7 +164,9 @@ public class MCPExecutionTargets {
         }
 
         boolean robotRequired = requiresRobot(applicationType);
-        List<Map<String, Object>> robots = robotRequired ? resolveRobots(applicationType) : List.of();
+        // SRV is not driven by a robot but may still name one: its executor carries the relay of the service calls.
+        List<Map<String, Object>> robots = robotRequired || Application.TYPE_SRV.equalsIgnoreCase(applicationType)
+                ? resolveRobots(applicationType) : List.of();
 
         return new Targets(null, testCase, applicationName, system, applicationType,
                 declaredCountries, countries, runnable, robotRequired, robots);
@@ -208,7 +210,8 @@ public class MCPExecutionTargets {
      * Returns whether an application of this type needs a robot at all.
      *
      * <p>Mirrors the guard in {@code QueuedExecutionService.addToQueue}: only GUI, APK, IPA and FAT
-     * applications are driven by a robot. For every other type the engine forces the robot to an
+     * applications are driven by a robot. SRV applications are not driven by one, but may still name one
+     * to get the relay of its executor (optional). For every other type the engine forces the robot to an
      * empty value, so offering a robot list would be misleading.</p>
      */
     public boolean requiresRobot(String applicationType) {
@@ -249,7 +252,8 @@ public class MCPExecutionTargets {
 
         for (Robot robot : allRobots) {
             String robotType = robot.getType();
-            boolean accepted = "".equals(robotType) || applicationType.equals(robotType);
+            // A SRV application takes any robot, whatever its type : only its executor (relay) is used.
+            boolean accepted = "".equals(robotType) || applicationType.equals(robotType) || Application.TYPE_SRV.equalsIgnoreCase(applicationType);
             if (!accepted) {
                 continue;
             }

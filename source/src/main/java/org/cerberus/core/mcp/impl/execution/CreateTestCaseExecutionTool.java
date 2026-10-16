@@ -135,7 +135,10 @@ public class CreateTestCaseExecutionTool implements MCPTool {
             }
         } else if (!targets.robotRequired()) {
             message.append("\nApplication type '").append(applicationType)
-                    .append("' is not driven by a robot, so robots is filled in for you.\n");
+                    .append("' is not driven by a robot, so robots is optional")
+                    .append(Application.TYPE_SRV.equalsIgnoreCase(applicationType)
+                            ? " (name one to use the relay of its executor)" : " and filled in for you")
+                    .append(".\n");
         }
 
         message.append("\nSend them all in one call, as lists: {\"testFolder\": \"").append(testFolder)
@@ -236,9 +239,13 @@ public class CreateTestCaseExecutionTool implements MCPTool {
                         Robot names to execute on. Required for GUI, APK, IPA and FAT applications — the ones the
                         engine actually drives — including when manualExecution is 'Y' or 'A'.
 
-                        Omit it for SRV, BAT and NONE applications: the engine discards the robot for those, and
+                        Optional for SRV applications: a named robot is kept, and the service calls (REST/SOAP) of the
+                        execution go through the relay of its executor when that relay is active. Pass the robot
+                        that carries the relay (e.g. a local runner), or omit it to call the services directly.
+
+                        Omit it for BAT and NONE applications: the engine discards the robot for those, and
                         this tool supplies the placeholder the underlying service needs. Do not invent a browser
-                        robot for a service test — it would be ignored, and would make a later failure look like
+                        robot for them — it would be ignored, and would make a later failure look like
                         a robot problem.
 
                         Use cerberus_testcase_execution_targets to get the robots valid for this testcase."""
@@ -342,14 +349,14 @@ public class CreateTestCaseExecutionTool implements MCPTool {
                     + "run on.");
         }
 
-        // Only GUI, APK, IPA and FAT applications are driven by a robot. For every other type the
-        // engine discards whatever robot it is given and queues with an empty one — verified by
-        // queuing an SRV testcase with a robot name that does not exist: the entry was still
-        // created, with Robot empty. The underlying service nevertheless rejects an empty robots
-        // list outright, which is why callers used to have to invent a value.
+        // Only GUI, APK, IPA and FAT applications are driven by a robot. SRV keeps a named robot (for the
+        // relay of its executor). For BAT/NONE the engine discards whatever robot it is given and queues
+        // with an empty one. The underlying service nevertheless rejects an empty robots list outright,
+        // which is why callers used to have to invent a value.
         String applicationType = resolveApplicationType(testFolder, testcase);
         boolean robotDriven = isRobotDriven(applicationType);
-        boolean robotIgnored = !applicationType.isBlank() && !robotDriven;
+        // SRV is not driven by a robot, but a named robot is kept: its executor defines the relay of the service calls.
+        boolean robotIgnored = !applicationType.isBlank() && !robotDriven && !Application.TYPE_SRV.equalsIgnoreCase(applicationType);
 
         // Everything still missing is reported in one answer, with the values this testcase would
         // accept. Reporting them one at a time is what turned a first run into four calls: each

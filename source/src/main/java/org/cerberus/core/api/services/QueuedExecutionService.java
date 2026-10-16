@@ -552,12 +552,25 @@ public class QueuedExecutionService {
                                                     }
 
                                                 } else {
-                                                    // Application does not need any robot so we force an empty value.
-                                                    LOG.debug("Forcing Robot to empty value. Application type={}", app.getType());
+                                                    // Application does not need a robot to drive a browser/device. For a SRV application, the first named robot
+                                                    // (if any) is still kept, because its executor defines the relay used by the service calls.
+                                                    String srvRobot = "";
+                                                    String srvRobotDecli = "";
+                                                    if (Application.TYPE_SRV.equalsIgnoreCase(app.getType()) && robots != null) {
+                                                        for (String robotName : robots) {
+                                                            Robot namedRobot = robotsMap.get(robotName);
+                                                            if (!StringUtil.isEmptyOrNull(robotName) && namedRobot != null) {
+                                                                srvRobot = namedRobot.getRobot();
+                                                                srvRobotDecli = StringUtil.isEmptyOrNull(namedRobot.getRobotDecli()) ? namedRobot.getRobot() : namedRobot.getRobotDecli();
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    LOG.debug("Robot forced to '{}'. Application type={}", srvRobot, app.getType());
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
                                                         toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
-                                                                testCase, country.getCountry(), environment, "", "", "", "",
+                                                                testCase, country.getCountry(), environment, srvRobot, srvRobotDecli, "", "",
                                                                 "", "", "", "", manualUrl, manualHostforThisApplication, manualUrlParameters.getContextRoot(),
                                                                 manualUrlParameters.getLoginRelativeUrl(), manualUrlParameters.getEnvData(), tag, screenshot, video,
                                                                 verbose, timeout, pageSource, robotLog, consoleLog, 0, retries,

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.mcp.impl.execution;
 
+import org.cerberus.core.crud.entity.Application;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.cerberus.core.crud.entity.TestCase;
@@ -184,7 +185,10 @@ public class ListTestCaseExecutionTargetsTool implements MCPTool {
                             + "Check which country the environments are actually declared under with "
                             + "cerberus_country_environment_parameters_list.");
         } else if (!targets.robotRequired()) {
-            response.put("message", "Application type '" + targets.applicationType() + "' is not driven by a robot, so the "
+            response.put("message", Application.TYPE_SRV.equalsIgnoreCase(targets.applicationType())
+                    ? "Application type 'SRV' is not driven by a robot, so robots is optional. Name one of the listed robots "
+                    + "to run the REST/SOAP calls through the relay of its executor (when active); leave it out to call directly."
+                    : "Application type '" + targets.applicationType() + "' is not driven by a robot, so the "
                     + "execution engine ignores it. cerberus_testcase_execution_create fills the robot in by itself "
                     + "for this application type — leave the robots parameter out.");
         } else if (targets.robots().isEmpty()) {
