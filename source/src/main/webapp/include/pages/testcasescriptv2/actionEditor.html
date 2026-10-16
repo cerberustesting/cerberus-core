@@ -278,6 +278,12 @@
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </button>
                                                 </template>
+                                                <template x-if="_getObjectName(action.value1)">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                            @click="openObjectModal(action.value1)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                    </button>
+                                                </template>
                                             </div>
                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
@@ -307,6 +313,12 @@
                                                     <button type="button" class="v2-ac-edit-btn" data-tip="Edit / Create"
                                                             @click="_openFieldSmartModal(action.action, 'field2', false, action.value2)">
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                                    </button>
+                                                </template>
+                                                <template x-if="_getObjectName(action.value2)">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                            @click="openObjectModal(action.value2)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                                     </button>
                                                 </template>
                                             </div>
@@ -340,6 +352,12 @@
                                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                                     </button>
                                                 </template>
+                                                <template x-if="_getObjectName(action.value3)">
+                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                            @click="openObjectModal(action.value3)">
+                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                    </button>
+                                                </template>
                                             </div>
                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
@@ -367,11 +385,19 @@
                                             <template x-if="isFieldOptional(action.action, 'field1') && getActionPlaceholder(action.action, 'field1')">
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
-                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                    <div class="v2-ac-input-wrap">
+                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                            :value="action.value1" @input="updateActionField(aIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field1', false, action.value1, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                        <template x-if="_getObjectName(action.value1)">
+                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                    @click="openObjectModal(action.value1)">
+                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                            </button>
+                                                        </template>
+                                                    </div>
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field1' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -387,11 +413,19 @@
                                             <template x-if="isFieldOptional(action.action, 'field2') && getActionPlaceholder(action.action, 'field2')">
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
-                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                    <div class="v2-ac-input-wrap">
+                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                            :value="action.value2" @input="updateActionField(aIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field2', false, action.value2, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                        <template x-if="_getObjectName(action.value2)">
+                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                    @click="openObjectModal(action.value2)">
+                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                            </button>
+                                                        </template>
+                                                    </div>
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field2' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -407,11 +441,19 @@
                                             <template x-if="isFieldOptional(action.action, 'field3') && getActionPlaceholder(action.action, 'field3')">
                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                     <label class="v2-field-label v2-field-label--opt" x-text="getActionPlaceholder(action.action, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
-                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                    <div class="v2-ac-input-wrap">
+                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                            :value="action.value3" @input="updateActionField(aIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                            @focus="acOnFocus(action.action, 'field3', false, action.value3, aIdx)"
                                                            @blur="acOnBlur()" autocomplete="off"
                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                        <template x-if="_getObjectName(action.value3)">
+                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                    @click="openObjectModal(action.value3)">
+                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                            </button>
+                                                        </template>
+                                                    </div>
                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveField && _acActiveField.fieldKey==='field3' && !_acActiveField.isControl" x-cloak>
                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -543,11 +585,19 @@
                                                     <template x-if="getControlPlaceholder(ctrl.control, 'field1') && !isControlFieldOptional(ctrl.control, 'field1')">
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field1')"></label>
-                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                            <div class="v2-ac-input-wrap">
+                                                                <input type="text" class="v2-field-input v2-field-input--sm"
                                                                    :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                <template x-if="_getObjectName(ctrl.value1)">
+                                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                            @click="openObjectModal(ctrl.value1)">
+                                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                    </button>
+                                                                </template>
+                                                            </div>
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -563,11 +613,19 @@
                                                     <template x-if="getControlPlaceholder(ctrl.control, 'field2') && !isControlFieldOptional(ctrl.control, 'field2')">
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field2')"></label>
-                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                            <div class="v2-ac-input-wrap">
+                                                                <input type="text" class="v2-field-input v2-field-input--sm"
                                                                    :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                <template x-if="_getObjectName(ctrl.value2)">
+                                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                            @click="openObjectModal(ctrl.value2)">
+                                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                    </button>
+                                                                </template>
+                                                            </div>
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -583,11 +641,19 @@
                                                     <template x-if="getControlPlaceholder(ctrl.control, 'field3') && !isControlFieldOptional(ctrl.control, 'field3')">
                                                         <div class="flex-1 min-w-[120px] relative">
                                                             <label class="v2-field-label v2-field-label--control" x-text="getControlPlaceholder(ctrl.control, 'field3')"></label>
-                                                            <input type="text" class="v2-field-input v2-field-input--sm"
+                                                            <div class="v2-ac-input-wrap">
+                                                                <input type="text" class="v2-field-input v2-field-input--sm"
                                                                    :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                    @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
                                                                    @blur="acOnBlur()" autocomplete="off"
                                                                    :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                <template x-if="_getObjectName(ctrl.value3)">
+                                                                    <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                            @click="openObjectModal(ctrl.value3)">
+                                                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                    </button>
+                                                                </template>
+                                                            </div>
                                                             <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
                                                                 <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                     <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -613,11 +679,19 @@
                                                             <template x-if="isControlFieldOptional(ctrl.control, 'field1') && getControlPlaceholder(ctrl.control, 'field1')">
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field1').replace(/^\[opt\]\s*/i, '')"></label>
-                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                    <div class="v2-ac-input-wrap">
+                                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                                            :value="ctrl.value1" @input="updateControlField(aIdx, cIdx, 'value1', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field1', true, ctrl.value1, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                        <template x-if="_getObjectName(ctrl.value1)">
+                                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                                    @click="openObjectModal(ctrl.value1)">
+                                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                            </button>
+                                                                        </template>
+                                                                    </div>
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field1' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -633,11 +707,19 @@
                                                             <template x-if="isControlFieldOptional(ctrl.control, 'field2') && getControlPlaceholder(ctrl.control, 'field2')">
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field2').replace(/^\[opt\]\s*/i, '')"></label>
-                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                    <div class="v2-ac-input-wrap">
+                                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                                            :value="ctrl.value2" @input="updateControlField(aIdx, cIdx, 'value2', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field2', true, ctrl.value2, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                        <template x-if="_getObjectName(ctrl.value2)">
+                                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                                    @click="openObjectModal(ctrl.value2)">
+                                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                            </button>
+                                                                        </template>
+                                                                    </div>
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field2' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"
@@ -653,11 +735,19 @@
                                                             <template x-if="isControlFieldOptional(ctrl.control, 'field3') && getControlPlaceholder(ctrl.control, 'field3')">
                                                                 <div class="flex-1 min-w-[120px] pl-3 relative">
                                                                     <label class="v2-field-label v2-field-label--opt" x-text="getControlPlaceholder(ctrl.control, 'field3').replace(/^\[opt\]\s*/i, '')"></label>
-                                                                    <input type="text" class="v2-field-input v2-field-input--sm"
+                                                                    <div class="v2-ac-input-wrap">
+                                                                        <input type="text" class="v2-field-input v2-field-input--sm"
                                                                            :value="ctrl.value3" @input="updateControlField(aIdx, cIdx, 'value3', $event.target.value); acOnInput($event.target.value, $event.target)"
                                                                            @focus="acOnFocus(ctrl.control, 'field3', true, ctrl.value3, aIdx, cIdx)"
                                                                            @blur="acOnBlur()" autocomplete="off"
                                                                            :disabled="!canUpdate || activeStep.isUsingLibraryStep">
+                                                                        <template x-if="_getObjectName(ctrl.value3)">
+                                                                            <button type="button" class="v2-ac-edit-btn" data-tip="Application object"
+                                                                                    @click="openObjectModal(ctrl.value3)">
+                                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                                            </button>
+                                                                        </template>
+                                                                    </div>
                                                                     <div class="v2-ac-dropdown" x-show="_acVisible && _acActiveAIdx === aIdx && _acActiveCIdx === cIdx && _acActiveField && _acActiveField.fieldKey==='field3' && _acActiveField.isControl" x-cloak>
                                                                         <template x-for="(acItem, acIdx) in _acResults" :key="acIdx">
                                                                             <div class="v2-ac-item" :class="acIdx === _acSelectedIdx ? 'v2-ac-item--active' : ''"

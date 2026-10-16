@@ -2047,6 +2047,32 @@ function scriptV2() {
             }
         },
 
+        /** Name of the first %object.xxx% keyword found in a value (or null) */
+        _getObjectName(value) {
+            if (!value || typeof value !== 'string') return null;
+            var m = value.match(/%object\.([^.%]+)/);
+            return m ? m[1] : null;
+        },
+
+        /** Open the ApplicationObject modal: EDIT if the object exists, ADD otherwise */
+        openObjectModal(value) {
+            var name = this._getObjectName(value);
+            var app = this.testInfo.application;
+            if (!name || !app || typeof openModalApplicationObject !== 'function') return;
+            $.ajax({
+                url: 'ReadApplicationObject',
+                data: { application: app, object: name },
+                dataType: 'json',
+                success: function(data) {
+                    var exists = data && data.contentTable && data.contentTable.object !== undefined;
+                    openModalApplicationObject(app, name, exists ? 'EDIT' : 'ADD', 'testCaseScript');
+                },
+                error: function() {
+                    openModalApplicationObject(app, name, 'ADD', 'testCaseScript');
+                }
+            });
+        },
+
         // ── DataLib autocomplete for property value1 when type=getFromDataLib ──
         _dlAutoItems: [],
         _dlSearch: '',
