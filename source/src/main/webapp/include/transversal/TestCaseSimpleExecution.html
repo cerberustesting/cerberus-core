@@ -358,6 +358,13 @@
                 Close
             </button>
 
+            <button @click="openRunTestsPage()"
+                    title="Open the Run Tests page with this selection"
+                    class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+                Open in Run Tests
+            </button>
+
             <button @click="submit(false)"
                     :disabled="loading"
                     class="px-4 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
@@ -637,6 +644,32 @@
             },
 
             /* ---------------- SUBMIT ---------------- */
+
+            // Opens RunTests.jsp preloaded with the current selection (test case or campaign, envs, countries, robots, settings).
+            openRunTestsPage() {
+                const params = new URLSearchParams();
+                if (this.campaign) {
+                    params.append('campaign', this.campaign);
+                } else {
+                    params.append('test', this.test);
+                    params.append('testcase', this.testcase);
+                }
+                const st = this.settings;
+                if (st.tag) {
+                    params.append('tag', st.tag);
+                }
+                ['verbose', 'screenshot', 'video', 'pagesource', 'seleniumlog', 'consolelog'].forEach(k => params.append(k, st.verbose));
+                params.append('retries', st.retries);
+                params.append('priority', st.priority);
+                params.append('manualexecution', st.manual);
+                if (st.timeout) {
+                    params.append('timeout', st.timeout);
+                }
+                [...new Set(this.selectedEnvs.map(e => e.country))].forEach(c => params.append('country', c));
+                [...new Set(this.selectedEnvs.map(e => e.environment))].forEach(e => params.append('environment', e));
+                this.selectedRobots.forEach(r => params.append('robot', r));
+                window.location.href = 'RunTests.jsp?' + params.toString();
+            },
 
             async submit(redirectAfterRun = true) {
 

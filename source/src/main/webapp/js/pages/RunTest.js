@@ -140,6 +140,7 @@ function runTests() {
             if (this.selCountries.length === 0 && this.countries.length === 1) { this.selCountries = this.countries.slice(); }
             if (this.selEnvironments.length === 0 && this.environments.length === 1) { this.selEnvironments = [this.environments[0].environment]; }
 
+            this.applyExecDefaults();
             this.loading = false;
 
             var campaign = GetURLParameters('campaign')[0];
@@ -147,6 +148,8 @@ function runTests() {
                 this.mode = 'campaign';
                 this.campaign = campaign;
                 await this.loadCampaign();
+                this.applyUrlParameters(); // the selection of the caller wins over the campaign definition
+                this.applyExecDefaults();
             } else {
                 var test = GetURLParameter('test');
                 var testcase = GetURLParameter('testcase');
@@ -410,15 +413,32 @@ function runTests() {
             this.selEnvironments = (pref.environments || []).filter(function (e) { return envs.indexOf(e) !== -1; });
             this.selCountries = (pref.countries || []).filter(function (c) { return this.countries.indexOf(c) !== -1; }, this);
         },
+        // The combos have no empty entry: a missing or unknown value falls back to the default one.
+        applyExecDefaults() {
+            var defaults = {retries: '0', manualExecution: 'N'};
+            EXEC_FIELDS.forEach(function (f) {
+                var values = this.options(f.invariant).map(function (o) { return String(o.value); });
+                if (values.indexOf(String(this.exec[f.key])) !== -1) { return; }
+                var wanted = defaults[f.key] !== undefined ? defaults[f.key] : '1';
+                this.exec[f.key] = values.indexOf(wanted) !== -1 ? wanted : (values[0] || '');
+            }, this);
+        },
         applyUrlParameters() {
             var tag = GetURLParameter('tag');
             var browser = GetURLParameter('browser');
-            var country = GetURLParameter('country');
-            var environment = GetURLParameter('environment');
+            var countries = GetURLParameters('country').filter(function (c) { return this.countries.indexOf(c) !== -1; }, this);
+            var environments = GetURLParameters('environment');
+            var robots = GetURLParameters('robot').filter(function (r) { return this.robotNames.indexOf(r) !== -1; }, this);
             if (tag) { this.exec.tag = tag; }
+            // Execution parameters (verbose, retries, timeout...) take precedence over the saved preferences.
+            EXEC_FIELDS.concat(TEXT_FIELDS).forEach(function (f) {
+                var v = GetURLParameter(f.param);
+                if (v !== undefined && v !== null && v !== '') { this.exec[f.key] = v; }
+            }, this);
             if (browser) { this.custom.browser = browser; }
-            if (country && this.countries.indexOf(country) !== -1) { this.selCountries = [country]; }
-            if (environment) { this.selEnvironments = [environment]; }
+            if (countries.length > 0) { this.selCountries = countries; }
+            if (environments.length > 0) { this.selEnvironments = environments; }
+            if (robots.length > 0) { this.selRobots = robots; }
         },
         savePreferences() {
             var self = this;

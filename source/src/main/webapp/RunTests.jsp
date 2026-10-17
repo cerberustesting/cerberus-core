@@ -247,8 +247,8 @@
                                 <template x-for="r in filteredRobots" :key="r.robot">
                                     <button type="button" class="rt-item" :class="selRobots.includes(r.robot) ? 'rt-item--on' : ''" @click="toggleRobot(r.robot)">
                                         <div class="rt-robot-icons">
-                                            <img :src="'images/platform-' + r.platform + '.png'" :title="r.platform" onerror="this.style.display='none'">
-                                            <img :src="'images/browser-' + r.browser + '.png'" :title="r.browser" onerror="this.style.display='none'">
+                                            <img x-show="r.platform" :src="r.platform ? 'images/platform-' + r.platform + '.png' : null" :title="r.platform" onerror="this.style.display='none'">
+                                            <img x-show="r.browser" :src="r.browser ? 'images/browser-' + r.browser + '.png' : null" :title="r.browser" onerror="this.style.display='none'">
                                         </div>
                                         <div class="min-w-0 flex-1 text-left">
                                             <div class="rt-item-title truncate" x-text="r.robot"></div>
@@ -306,9 +306,8 @@
                                 <div class="rt-row">
                                     <div class="rt-row-icon"><i :data-lucide="f.icon" class="w-4 h-4"></i></div>
                                     <select class="rt-input flex-1" :id="f.key" x-model="exec[f.key]" :title="t(f.label)">
-                                        <option value="" x-text="t(f.label)"></option>
-                                        <template x-for="o in options(f.invariant)" :key="o.value">
-                                            <option :value="o.value" x-text="o.value + ' - ' + o.description"></option>
+                                                                                <template x-for="o in options(f.invariant)" :key="o.value">
+                                            <option :value="o.value" :selected="String(o.value) === String(exec[f.key])" x-text="o.value + ' - ' + o.description"></option>
                                         </template>
                                     </select>
                                 </div>
