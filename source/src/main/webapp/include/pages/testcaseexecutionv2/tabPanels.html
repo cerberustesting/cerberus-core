@@ -617,10 +617,10 @@
                 <div class="flex items-center gap-1.5">
                     <span class="v2-exe-info-value" x-text="exe.application || '-'"></span>
                     <template x-if="exe.application">
-                        <a :href="'ApplicationEdit.jsp?application=' + encodeURIComponent(exe.application)" target="_blank"
+                        <button type="button" @click="openModalApplication(exe.application, 'EDIT')"
                            class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Application">
                             <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </a>
+                        </button>
                     </template>
                 </div>
             </div>
@@ -629,10 +629,10 @@
                 <div class="flex items-center gap-1.5">
                     <span class="v2-exe-info-value" x-text="exe.country || '-'"></span>
                     <template x-if="exe.country">
-                        <a :href="'InvariantList.jsp?idName=COUNTRY&value=' + encodeURIComponent(exe.country)" target="_blank"
+                        <button type="button" @click="openModalInvariant('COUNTRY', exe.country, 'EDIT')"
                            class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Country">
                             <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </a>
+                        </button>
                     </template>
                 </div>
             </div>
@@ -641,10 +641,10 @@
                 <div class="flex items-center gap-1.5">
                     <span class="v2-exe-info-value" x-text="exe.environment || '-'"></span>
                     <template x-if="exe.environment">
-                        <a :href="'InvariantList.jsp?idName=ENVIRONMENT&value=' + encodeURIComponent(exe.environment)" target="_blank"
+                        <button type="button" @click="openModalInvariant('ENVIRONMENT', exe.environment, 'EDIT')"
                            class="text-slate-400 hover:text-blue-500 transition-colors" title="Edit Environment">
                             <i data-lucide="pencil" class="w-3 h-3"></i>
-                        </a>
+                        </button>
                     </template>
                 </div>
             </div>

@@ -10,6 +10,9 @@
              x-bind:style="{ width: Math.max(progressBar, 0) + '%', backgroundColor: progressColor, boxShadow: progressBar > 0 ? ('0 0 10px ' + progressColor) : 'none' }"></div>
     </div>
 
+    <!-- False Negative bar - thin green line under the progress bar -->
+    <div x-show="falseNegative" x-cloak style="height: 3px; background-color: var(--crb-green-color, #10b981)"></div>
+
     <div class="p-3">
         <div class="flex items-center gap-2 flex-wrap">
 
@@ -156,7 +159,7 @@
             <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 shrink-0"></div>
 
             <!-- False Negative toggle -->
-            <button @click="toggleFalseNegative()"
+            <button x-show="exe.controlStatus !== 'OK' && exe.controlStatus !== 'PE'" @click="toggleFalseNegative()"
                     class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors shrink-0"
                     :class="falseNegative ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'"
                     data-tip="Toggle False Negative" data-tip-pos="bottom">

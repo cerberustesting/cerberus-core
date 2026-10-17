@@ -57,6 +57,7 @@
         <%@ include file="include/pages/testcasescript/manageStepOptions.html"%>
 
         <jsp:include page="include/global/modalInclusions.jsp"/>
+        <%@ include file="include/transversal/Invariant.html" %>
         <jsp:include page="include/global/rightPanel.html"/>
         <main class="crb_main_wrp" x-init="$store.sidebar.expanded = false"
               :class="$store.rightPanel.isResizing ? '' : 'transition-all duration-200'"
