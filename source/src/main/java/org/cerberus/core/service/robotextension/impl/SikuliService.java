@@ -34,6 +34,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -452,6 +453,15 @@ public class SikuliService implements ISikuliService {
             LOG.warn(ex, ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
+        } catch (SocketTimeoutException ex) {
+            if (SIKULI_STARTVIDEO.equalsIgnoreCase(action)) {
+                // When calling startVideo, thread is kept open during full execution on order to let extention record the video. We can timeout as no answer is expected.
+                LOG.info("Timming out Sikuli action {}", action);
+            } else {
+                LOG.warn(ex, ex);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_TIMEOUT);
+                msg.resolveDescription("URL", urlToConnect);
+            }
         } catch (IOException ex) {
             if (SIKULI_STARTVIDEO.equalsIgnoreCase(action)) {
                 // When calling startVideo, thread is kept open during full execution on order to let extention record the video. We can timeout as no answer is expected.

@@ -335,6 +335,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_REMOVEDIFFERENCE(287, "FA", "Failed to remove difference '%DIFFERENCE%' from '%DIFFERENCES%'", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT(288, "FA", "Failed to Right Click on element %ELEMENT% because could not find element '%ELEMENT%'! %MESSAGE%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL(289, "FA", "Robot Extension Server is not reachable at %URL%. Please verify the url parameters.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_ROBOTEXTENSION_SERVER_TIMEOUT(289, "FA", "Robot Extension Server timed out at %URL%. Maybe action took too much time.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_ROBOTEXTENSION_SERVER_NOT_REACHABLE(289, "FA", "Robot Extension Server is not reachable at %URL%. Please verify that the required dependencies are present.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY(289, "FA", "Failed to perform the action %ACTION% due to missing property to calculate.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND(289, "FA", "Failed to perform the action '%ACTION%' because property '%PROP%' does not exist.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
