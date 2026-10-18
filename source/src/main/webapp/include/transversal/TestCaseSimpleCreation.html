@@ -86,7 +86,7 @@
                         </div>
                         <div class="mt-2">
                             <button type="button"
-                                    @click="creatingApplication = true; form.application=''"
+                                    @click="creatingApplication = true; form.application=''; newApplication=''"
                                     class="text-xs text-blue-600 hover:underline flex items-center gap-1">
                                 <i data-lucide="plus" class="w-3 h-3"></i>
                                 Create a new application
@@ -100,7 +100,7 @@
                         <div class="flex gap-3">
                             <div class="flex-[1_1_33%] min-w-[150px]">
                                 <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Name</label>
-                                <input type="text" x-model="form.application"
+                                <input type="text" x-model="newApplication"
                                        class="w-full h-10 border rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all">
                             </div>
                             <div class="flex-[2_1_66%] min-w-[200px]">
@@ -130,7 +130,7 @@
                             </div>
                         </div>
                         <button type="button"
-                                @click="creatingApplication=false; form.application='';"
+                                @click="creatingApplication=false; form.application=''; newApplication='';"
                                 class="text-xs text-blue-600 hover:underline flex items-center gap-1">
                             <i data-lucide="arrow-left" class="w-3 h-3"></i>
                             Choose existing application
@@ -278,6 +278,7 @@
             isFullscreen: false,
             errorMessage: '',
             creatingApplication: false,
+            newApplication: '',
             form: {
                 application: '',
                 type: '',
@@ -328,7 +329,8 @@
             },
 
             validateForm() {
-                if (!this.form.application) { this.errorMessage = "Please specify the application!"; return false; }
+                const application = this.creatingApplication ? this.newApplication : this.form.application;
+                if (!application) { this.errorMessage = "Please specify the application!"; return false; }
                 if (!this.form.testFolderId) { this.errorMessage = "Please specify the test folder!"; return false; }
                 if (!this.form.testcaseId) { this.errorMessage = "Please specify the Testcase ID!"; return false; }
                 if (this.form.testFolderId.includes('&')) { this.errorMessage = "Test folder name cannot contain &"; return false; }
@@ -339,7 +341,11 @@
 
             submitForm() {
                 if (!this.validateForm()) return;
-                const data = {...this.form, system: getUser().defaultSystem};
+                const data = {
+                    ...this.form,
+                    application: this.creatingApplication ? this.newApplication : this.form.application,
+                    system: getUser().defaultSystem
+                };
 
                 fetch('api/public/testcases/create', {
                     method: 'POST',
