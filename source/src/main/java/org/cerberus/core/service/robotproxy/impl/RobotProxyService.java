@@ -140,7 +140,7 @@ public class RobotProxyService implements IRobotProxyService {
             tce.setRemoteProxyUUID(json.getString("uuid"));
             tce.setRemoteProxyStarted(true);
 
-            tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Proxy started on port :"+json.getInt("port"));
+            tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Proxy started on port : "+json.getInt("port"));
             tce.addExecutionLog(ExecutionLog.STATUS_INFO, "Proxy config : "+json.toString());
 
             LOG.debug("Cerberus Robot Proxy started on port : " + tce.getRemoteProxyPort() + " (uuid : " + tce.getRemoteProxyUUID() + ")");

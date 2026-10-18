@@ -511,8 +511,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!conditionDecodeError) {
 
-                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Evaluate testcase condition");
-
                 conditionAnswerTc = this.conditionService.evaluateCondition(execution.getConditionOperator(),
                         execution.getConditionVal1(), execution.getConditionVal2(), execution.getConditionVal3(),
                         execution, execution.getConditionOptions());
@@ -733,8 +731,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 //  Execute Step
                                 LOG.debug("{}Executing step : {} - {} - Step {} - Index {}",
-                                        logPrefix, stepExecution.getTest(), stepExecution.getTestCase(), stepExecution.getStepId(), stepExecution.getStepId());
-                                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing step : " + stepExecution.getStepId() + " - " + stepExecution.getDescription());
+                                        logPrefix, stepExecution.getTest(), stepExecution.getTestCase(), stepExecution.getStepId(), stepExecution.getIndex());
+                                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing step : #" + stepExecution.getSort() + "." + stepExecution.getIndex() + " (" + stepExecution.getStepId() + ") - " + stepExecution.getDescription());
 
                                 if (doExecuteStep) {
                                     // We execute the step
@@ -1265,7 +1263,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     actionExecution.getValue2(),
                                     actionExecution.getValue3());
 
-                            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing action : " + actionExecution.getSequence() + " - " + actionExecution.getDescription() + " Action '" + actionExecution.getAction() + "' with '" + actionExecution.getValue1() + "' | '" + actionExecution.getValue2() + "' | '" + actionExecution.getValue3() + "'");
+                            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing action : #" + actionExecution.getSort() + " (" + actionExecution.getSequence() + ") - " + actionExecution.getDescription() + " Action '" + actionExecution.getAction() + "' with '" + actionExecution.getValue1() + "' | '" + actionExecution.getValue2() + "' | '" + actionExecution.getValue3() + "'");
 
                             // We execute the Action
                             actionExecution = this.executeAction(actionExecution, execution);
@@ -1627,7 +1625,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
 
                 LOG.debug("Executing control : {} type : {}", controlExecution.getControlId(), controlExecution.getControl());
-                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing control : " + controlExecution.getControlId() + " - " + controlExecution.getDescription() + " Control '" + controlExecution.getControl() + "' with '" + controlExecution.getValue1() + "' | '" + controlExecution.getValue2() + "' | '" + controlExecution.getValue3() + "'");
+                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing control : #" + controlExecution.getSort() + " (" + controlExecution.getControlId() + ") - " + controlExecution.getDescription() + " Control '" + controlExecution.getControl() + "' with '" + controlExecution.getValue1() + "' | '" + controlExecution.getValue2() + "' | '" + controlExecution.getValue3() + "'");
 
                 // We populate the TestCase Control List
                 actionExecution.addTestCaseStepActionExecutionList(controlExecution);

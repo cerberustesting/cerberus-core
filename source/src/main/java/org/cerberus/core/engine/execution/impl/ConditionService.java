@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Objects;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.json.JSONObject;
 
 /**
@@ -79,6 +80,7 @@ public class ConditionService implements IConditionService {
     public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution execution, JSONArray options) {
 
         LOG.debug("Starting Evaluation condition : {}", conditionOperator);
+        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Starting evaluation of condition : " + conditionOperator + "' with '" + conditionValue1 + "' | '" + conditionValue2 + "' | '" + conditionValue3 + "'");
 
         ConditionOperatorEnum conditionToEvaluate = ConditionOperatorEnum.getConditionOperatorEnumFromString(conditionOperator);
 
@@ -234,6 +236,7 @@ public class ConditionService implements IConditionService {
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionToEvaluate.getCondition()));
         }
         LOG.debug("Finished Evaluation condition : {}", mes.getCodeString());
+        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Finished Evaluation condition : " + mes.getCodeString());
 
         // Reset Timeout to default
         robotServerService.setOptionsToDefault(execution.getSession());
