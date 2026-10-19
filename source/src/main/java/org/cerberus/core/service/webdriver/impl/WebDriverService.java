@@ -1003,8 +1003,8 @@ public class WebDriverService implements IWebDriverService {
             return message;
 
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString(), exception);
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString(), exception);
+            return parseWebDriverException(exception, "When clicking on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
 
     }
@@ -1039,8 +1039,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When pressing left mouse button on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -1073,8 +1073,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When releasing left mouse button on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -1138,8 +1138,8 @@ public class WebDriverService implements IWebDriverService {
             return message;
 
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When switching to window");
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription()
@@ -1172,8 +1172,8 @@ public class WebDriverService implements IWebDriverService {
         } catch (TimeoutException exception) {
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.debug("Alert popup is closed ? {}", exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.debug("Alert popup is closed ? {}", exception.toString());
+            return parseWebDriverException(exception, "When interacting with dialog box");
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
@@ -1225,8 +1225,8 @@ public class WebDriverService implements IWebDriverService {
         } catch (TimeoutException exception) {
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.debug("Alert popup still exist ? {}", exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.debug("Alert popup still exist ? {}", exception.toString());
+            return parseWebDriverException(exception, "When pressing key '" + valueToPress + "' on dialog box");
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ALERT);
         message.setDescription(message.getDescription().replace("%KEY%", valueToPress));
@@ -1304,8 +1304,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When double clicking on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -1345,8 +1345,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When feeding data '" + ParameterParserUtil.securePassword(valueToType, propertyName) + "' on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -1383,8 +1383,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When moving mouse over '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -1443,8 +1443,8 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When refreshing current page");
         }
         return message;
     }
@@ -1463,8 +1463,8 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When returning to previous page");
         }
         return message;
     }
@@ -1483,8 +1483,8 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When moving forward to next page");
         }
         return message;
     }
@@ -1629,8 +1629,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
 
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When pressing key '" + keyToPress + "'");
 
         } catch (Exception exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
@@ -1667,8 +1667,8 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%URL%", url));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When openning URL '" + url + "'");
         }
 
         return message;
@@ -1925,8 +1925,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When moving focus to iframe '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
         return message;
     }
@@ -1939,8 +1939,8 @@ public class WebDriverService implements IWebDriverService {
             session.getDriver().switchTo().defaultContent();
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSDEFAULTIFRAME);
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When moving back focus to default iframe");
         }
 
         return message;
@@ -2140,8 +2140,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
-            return parseWebDriverException(exception);
+//            LOG.warn(exception.toString());
+            return parseWebDriverException(exception, "When right clicking on '" + identifier.getIdentifier() + "=" + identifier.getLocator() + "'");
         }
     }
 
@@ -2150,11 +2150,12 @@ public class WebDriverService implements IWebDriverService {
      * @return A new Event Message with selenium related description
      * @author vertigo17
      */
-    private MessageEvent parseWebDriverException(WebDriverException exception) {
+    private MessageEvent parseWebDriverException(WebDriverException exception, String actionDescription) {
         MessageEvent mes;
-        LOG.fatal(exception.toString());
+//        LOG.warn(exception.toString());
         mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_EXCEPTION);
-        mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
+        mes.resolveDescription("ACTION", actionDescription)
+                .resolveDescription("ERROR", exception.getMessage().split("\n")[0]);
         return mes;
     }
 
