@@ -19,12 +19,20 @@
  */
 package org.cerberus.core.service.notifications.email;
 
-/**
- *
- * @author vertigo17
- */
-public interface IEmailBodyGeneration {
+import java.util.List;
+import org.cerberus.core.service.notifications.email.entity.BuildContentRow;
 
-    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision);
+public interface IEmailBuildContentService {
 
+    /**
+     * Read the modifications delivered between lastRevision (excluded) and revision (included) for the given build.
+     * Never fails : an error is logged and an empty list is returned.
+     *
+     * @param system system
+     * @param build build (sprint) delivered
+     * @param revision last revision delivered
+     * @param lastRevision previous revision (empty = everything since the beginning)
+     * @return the lines, ordered by build, revision and application
+     */
+    List<BuildContentRow> read(String system, String build, String revision, String lastRevision);
 }

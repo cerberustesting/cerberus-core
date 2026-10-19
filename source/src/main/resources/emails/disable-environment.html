@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- Environment disabled email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>
+    The environment <b th:text="${environment}">env</b> for country <b th:text="${country}">country</b>
+    <th:block th:if="${!#strings.isEmpty(build)}">(build <b th:text="${build}">build</b>, revision <b th:text="${revision}">rev</b>)</th:block>
+    has been disabled, either to cancel the environment or to start deploying a new build / revision.
+  </p>
+  <p>Please do not use the applications until you receive further notification.</p>
+</th:block>
+</body>
+</html>

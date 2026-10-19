@@ -6940,3 +6940,16 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   ,('', 'cerberus_email_theme_primarycolor', '#2c7be5', 'Main color (hex, ex #2c7be5) of the buttons of the emails.')
   ,('', 'cerberus_email_theme_backgroundcolor', '#f5f6fa', 'Background color (hex, ex #f5f6fa) of the emails.')
   ,('', 'cerberus_email_theme_footertext', '', 'Text displayed in the footer of the emails.');
+
+-- 1955
+-- The emails are built from templates and the email theme : the body parameters are not used anymore (subject, from, to and cc are kept).
+DELETE FROM `parameter` WHERE `param` IN (
+  'cerberus_notification_accountcreation_body'
+  ,'cerberus_notification_forgotpassword_body'
+  ,'cerberus_notification_newbuildrevision_body'
+  ,'cerberus_notification_disableenvironment_body'
+  ,'cerberus_notification_newchain_body'
+  ,'cerberus_notification_tagexecutionstart_body'
+  ,'cerberus_notification_tagexecutionend_body'
+  ,'cerberus_notification_executionstart_body'
+  ,'cerberus_notification_executionend_body');

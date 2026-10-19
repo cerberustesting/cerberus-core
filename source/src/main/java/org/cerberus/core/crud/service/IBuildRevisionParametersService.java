@@ -96,6 +96,17 @@ public interface IBuildRevisionParametersService {
 
     /**
      *
+     * @param system
+     * @param build
+     * @param revision last revision of the content (included)
+     * @param lastRevision previous revision (excluded), empty for everything
+     * @return every line of the build content between lastRevision (excluded)
+     * and revision (included)
+     */
+    AnswerList<BuildRevisionParameters> readByBuildBetweenRevisions(String system, String build, String revision, String lastRevision);
+
+    /**
+     *
      * @param brp
      * @return
      */

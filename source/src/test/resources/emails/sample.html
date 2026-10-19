@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p th:text="${message}">Message</p>
+  <p th:if="${!#strings.isEmpty(link)}">
+    <a th:href="${link}" th:style="'display:inline-block;padding:10px 18px;color:#ffffff;text-decoration:none;border-radius:4px;background-color:' + ${theme.primaryColor()} + ';'">Open</a>
+  </p>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- Testcase created / updated / deleted email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <th:block th:switch="${eventType}">
+    <p th:case="'TESTCASE_CREATE'">Testcase <b th:text="${test + ' - ' + testcase}">folder - tc</b> was just created.</p>
+    <p th:case="'TESTCASE_UPDATE'">Testcase <b th:text="${test + ' - ' + testcase}">folder - tc</b> was just updated to version <b th:text="${version}">2</b>.</p>
+    <p th:case="'TESTCASE_DELETE'">Testcase <b th:text="${test + ' - ' + testcase}">folder - tc</b> was just deleted.</p>
+  </th:block>
+  <p th:if="${!#strings.isEmpty(urlTestcase)}"><a th:replace="~{components/fragments :: button(${urlTestcase}, 'Open the testcase')}"></a></p>
+</th:block>
+</body>
+</html>

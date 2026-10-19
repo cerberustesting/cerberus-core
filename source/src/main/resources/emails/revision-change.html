@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- New build / revision email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>
+    Build <b th:text="${build}">build</b> with revision <b th:text="${revision}">rev</b> is now available in
+    <b th:text="${environment}">env</b> for country <b th:text="${country}">country</b>.
+  </p>
+
+  <th:block th:if="${!#lists.isEmpty(buildContent)}">
+    <table th:replace="~{components/fragments :: sectionTitle('history', 'blue', 'Modifications since the last change')}"></table>
+    <p th:if="${!#strings.isEmpty(lastBuild)}" style="margin:0 0 8px 0;font-size:12px;color:#64748b;">Previous version : <span th:text="${lastBuild}">b</span> / <span th:text="${lastRevision}">r</span></p>
+    <table cellpadding="6" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>
+        <tr style="background-color:#f1f5f9;text-align:left;">
+          <th>Build / Rev</th><th>Application</th><th>Project</th><th>Bug</th><th>Ticket</th><th>Owner</th><th>Release</th>
+        </tr>
+      </thead>
+      <tbody th:each="row : ${buildContent}">
+        <tr>
+          <td><span th:text="${row.build() + ' / ' + row.revision()}">b / r</span></td>
+          <td th:text="${row.application()}">app</td>
+          <td th:text="${row.project()}">project</td>
+          <td>
+            <a th:if="${!#strings.isEmpty(row.bugUrl())}" th:href="${row.bugUrl()}" th:text="${row.bugId()}">1</a>
+            <span th:if="${#strings.isEmpty(row.bugUrl())}" th:text="${row.bugId()}">1</span>
+          </td>
+          <td th:text="${row.ticketId()}">ticket</td>
+          <td th:text="${row.owner()}">owner</td>
+          <td>
+            <a th:if="${!#strings.isEmpty(row.releaseUrl())}" th:href="${row.releaseUrl()}" th:text="${row.release()}">1.0</a>
+            <span th:if="${#strings.isEmpty(row.releaseUrl())}" th:text="${row.release()}">1.0</span>
+          </td>
+        </tr>
+        <tr style="border-bottom:1px solid #e2e8f0;">
+          <td colspan="7" style="font-size:11px;color:#888888;" th:text="${row.subject()}">subject</td>
+        </tr>
+      </tbody>
+    </table>
+  </th:block>
+</th:block>
+</body>
+</html>

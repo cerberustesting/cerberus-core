@@ -496,15 +496,12 @@ public class ParameterService implements IParameterService {
             case "cerberus_propertyexternalsql_timeout":
             case Parameter.VALUE_cerberus_testdatalib_sql_fetchmax:
             case Parameter.VALUE_cerberus_testdatalib_mongodb_fetchmax:
-            case "cerberus_notification_disableenvironment_body":
             case "cerberus_notification_disableenvironment_cc":
             case "cerberus_notification_disableenvironment_subject":
             case "cerberus_notification_disableenvironment_to":
-            case "cerberus_notification_newbuildrevision_body":
             case "cerberus_notification_newbuildrevision_cc":
             case "cerberus_notification_newbuildrevision_subject":
             case "cerberus_notification_newbuildrevision_to":
-            case "cerberus_notification_newchain_body":
             case "cerberus_notification_newchain_cc":
             case "cerberus_notification_newchain_subject":
             case "cerberus_notification_newchain_to":

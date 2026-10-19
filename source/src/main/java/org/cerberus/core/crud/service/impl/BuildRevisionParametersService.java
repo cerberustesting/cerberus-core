@@ -79,6 +79,11 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
+    public AnswerList<BuildRevisionParameters> readByBuildBetweenRevisions(String system, String build, String revision, String lastRevision) {
+        return this.buildRevisionParametersDAO.readByBuildBetweenRevisions(system, build, revision, lastRevision);
+    }
+
+    @Override
     public AnswerList<BuildRevisionParameters> readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
         return this.buildRevisionParametersDAO.readNonSVNRelease(system, build, revision, lastBuild, lastRevision);
     }

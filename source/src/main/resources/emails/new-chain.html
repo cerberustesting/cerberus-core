@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<!-- New chain executed email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>
+    A new chain <b th:text="${chain}">chain</b> has been executed in <b th:text="${environment}">env</b>
+    for country <b th:text="${country}">country</b>.
+  </p>
+  <p>Please perform your necessary tests following that execution.</p>
+</th:block>
+</body>
+</html>

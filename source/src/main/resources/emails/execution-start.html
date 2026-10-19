@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- Start of testcase execution email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>The execution <b th:text="${executionId}">1</b> of testcase <b th:text="${test + ' - ' + testcase}">folder - tc</b> has just started.</p>
+  <table role="presentation" cellpadding="6" cellspacing="0" border="0" style="font-size:14px;margin-bottom:16px;">
+    <tr th:if="${!#strings.isEmpty(tag)}"><td style="color:#888888;width:140px;">Tag</td><td th:text="${tag}">tag</td></tr>
+    <tr><td style="color:#888888;width:140px;">Environment</td><td th:text="${environment}">env</td></tr>
+    <tr><td style="color:#888888;">Country</td><td th:text="${country}">country</td></tr>
+    <tr th:if="${!#strings.isEmpty(robot)}"><td style="color:#888888;">Robot</td><td th:text="${robot}">robot</td></tr>
+  </table>
+  <p><a th:replace="~{components/fragments :: button(${urlExecution}, 'Follow the execution')}"></a></p>
+</th:block>
+</body>
+</html>

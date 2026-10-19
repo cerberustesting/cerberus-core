@@ -19,6 +19,15 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BatchInvariant;
@@ -31,32 +40,30 @@ import org.cerberus.core.crud.entity.User;
 import org.cerberus.core.crud.service.IBatchInvariantService;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
-import org.cerberus.core.service.notifications.email.IEmailBodyGeneration;
+import org.cerberus.core.service.notifications.email.IEmailBuildContentService;
 import org.cerberus.core.service.notifications.email.IEmailFactory;
 import org.cerberus.core.service.notifications.email.IEmailGenerationService;
+import org.cerberus.core.service.notifications.email.IEmailRenderer;
+import org.cerberus.core.service.notifications.email.ISmtpConfigService;
 import org.cerberus.core.service.notifications.email.entity.Email;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * @author vertigo17
+ * Builds the notification emails : the data of each mail is gathered here, the
+ * look is defined by the Thymeleaf templates (resources/emails) and the email theme.
+ * Subject, from, to and cc remain defined by the cerberus_notification_* parameters.
  */
 @Service
 public class EmailGenerationService implements IEmailGenerationService {
 
     private static final Logger LOG = LogManager.getLogger(EmailGenerationService.class);
+
+    private static final String DEFAULT_FROM = "Cerberus <no.reply@cerberus-testing.org>";
+    private static final DateTimeFormatter TAGEND_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     private IParameterService parameterService;
@@ -65,459 +72,321 @@ public class EmailGenerationService implements IEmailGenerationService {
     @Autowired
     private IBatchInvariantService batchInvariantService;
     @Autowired
-    private ITagService tagService;
-    @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private IEmailFactory emailFactory;
     @Autowired
-    private IEmailBodyGeneration emailBodyGeneration;
+    private ISmtpConfigService smtpConfigService;
+    @Autowired
+    private IEmailRenderer emailRenderer;
+    @Autowired
+    private IEmailBuildContentService emailBuildContentService;
 
     @Override
     public Email generateRevisionChangeEmail(String system, String country, String env, String build, String revision) throws Exception {
-        Email email = new Email();
+        CountryEnvParam countryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
-        CountryEnvParam myCountryEnvParam;
-        myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
-
-        /* Pick the datas from the database */
         String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String to = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_to", system).getValue();
         String cc = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_subject", system).getValue();
-        String body = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_body", system).getValue();
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.geteMailBodyRevision())) {
-            body = myCountryEnvParam.geteMailBodyRevision();
-        }
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.getDistribList())) {
-            to = myCountryEnvParam.getDistribList();
+        if (StringUtil.isNotEmptyOrNULLString(countryEnvParam.getDistribList())) {
+            to = countryEnvParam.getDistribList();
         }
 
-        /* Replace the Keywords from the fed text  */
-        subject = subject.replace("%SYSTEM%", system);
-        subject = subject.replace("%COUNTRY%", country);
-        subject = subject.replace("%ENV%", env);
-        subject = subject.replace("%BUILD%", build);
-        subject = subject.replace("%REVISION%", revision);
+        subject = fill(subject, "%SYSTEM%", system, "%COUNTRY%", country, "%ENV%", env, "%BUILD%", build, "%REVISION%", revision);
 
-        body = body.replace("%SYSTEM%", system);
-        body = body.replace("%COUNTRY%", country);
-        body = body.replace("%ENV%", env);
-        body = body.replace("%BUILD%", build);
-        body = body.replace("%REVISION%", revision);
+        Map<String, Object> model = new HashMap<>();
+        model.put("system", system);
+        model.put("country", country);
+        model.put("environment", env);
+        model.put("build", build);
+        model.put("revision", revision);
+        model.put("lastBuild", countryEnvParam.getBuild());
+        model.put("lastRevision", countryEnvParam.getRevision());
+        model.put("buildContent", emailBuildContentService.read(system, build, revision, countryEnvParam.getRevision()));
 
-        // Generate the Table Contented in the mail
-        String content;
-
-        String lastBuild = myCountryEnvParam.getBuild();
-        String lastRev = myCountryEnvParam.getRevision();
-
-        if (body.contains("%BUILDCONTENT%")) {
-            content = "";
-            content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev);
-            content = content.replace("$", " ");
-            body = body.replace("%BUILDCONTENT%", content);
-        }
-
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
-
-        return email;
-
+        String body = emailRenderer.render("revision-change", "Build " + build + " / revision " + revision + " available in " + env, model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, cc);
     }
 
     @Override
     public Email generateDisableEnvEmail(String system, String country, String env) throws Exception {
-        Email email = new Email();
+        CountryEnvParam countryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
-        CountryEnvParam myCountryEnvParam;
-        myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
-
-        /* Pick the datas from the database */
         String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String to = parameterService.findParameterByKey("cerberus_notification_disableenvironment_to", system).getValue();
         String cc = parameterService.findParameterByKey("cerberus_notification_disableenvironment_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_disableenvironment_subject", system).getValue();
-        String body = parameterService.findParameterByKey("cerberus_notification_disableenvironment_body", system).getValue();
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
-            body = myCountryEnvParam.geteMailBodyDisableEnvironment();
+        if (StringUtil.isNotEmptyOrNULLString(countryEnvParam.getDistribList())) {
+            to = countryEnvParam.getDistribList();
         }
 
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.getDistribList())) {
-            to = myCountryEnvParam.getDistribList();
-        }
+        subject = fill(subject, "%SYSTEM%", system, "%COUNTRY%", country, "%ENV%", env,
+                "%BUILD%", countryEnvParam.getBuild(), "%REVISION%", countryEnvParam.getRevision());
 
-        subject = subject.replace("%SYSTEM%", system);
-        subject = subject.replace("%COUNTRY%", country);
-        subject = subject.replace("%ENV%", env);
-        subject = subject.replace("%BUILD%", myCountryEnvParam.getBuild());
-        subject = subject.replace("%REVISION%", myCountryEnvParam.getRevision());
+        Map<String, Object> model = new HashMap<>();
+        model.put("system", system);
+        model.put("country", country);
+        model.put("environment", env);
+        model.put("build", countryEnvParam.getBuild());
+        model.put("revision", countryEnvParam.getRevision());
 
-        body = body.replace("%SYSTEM%", system);
-        body = body.replace("%COUNTRY%", country);
-        body = body.replace("%ENV%", env);
-        body = body.replace("%BUILD%", myCountryEnvParam.getBuild());
-        body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
-
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
-
-        return email;
+        String body = emailRenderer.render("disable-environment", "Environment " + env + " disabled", model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, cc);
     }
 
     @Override
     public Email generateNewChainEmail(String system, String country, String env, String chain) throws Exception {
+        CountryEnvParam countryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
-        Email email = new Email();
+        BatchInvariant batchInvariant = batchInvariantService.convert(batchInvariantService.readByKey(chain));
+        String lastChain = batchInvariant.getBatch() + " (" + batchInvariant.getDescription() + ")";
 
-        /* Page Display - START */
-        CountryEnvParam myCountryEnvParam;
-        myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
-
-        BatchInvariant myBatchInvariant;
-        myBatchInvariant = batchInvariantService.convert(batchInvariantService.readByKey(chain));
-        String lastchain = myBatchInvariant.getBatch() + " (" + myBatchInvariant.getDescription() + ")";
-
-        /* Pick the datas from the database */
         String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String to = parameterService.findParameterByKey("cerberus_notification_newchain_to", system).getValue();
         String cc = parameterService.findParameterByKey("cerberus_notification_newchain_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_newchain_subject", system).getValue();
-        String body = parameterService.findParameterByKey("cerberus_notification_newchain_body", system).getValue();
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.geteMailBodyChain())) {
-            body = myCountryEnvParam.geteMailBodyChain();
-        }
-        if (StringUtil.isNotEmptyOrNULLString(myCountryEnvParam.getDistribList())) {
-            to = myCountryEnvParam.getDistribList();
+        if (StringUtil.isNotEmptyOrNULLString(countryEnvParam.getDistribList())) {
+            to = countryEnvParam.getDistribList();
         }
 
-        subject = subject.replace("%SYSTEM%", system);
-        subject = subject.replace("%COUNTRY%", country);
-        subject = subject.replace("%ENV%", env);
-        subject = subject.replace("%BUILD%", myCountryEnvParam.getBuild());
-        subject = subject.replace("%REVISION%", myCountryEnvParam.getRevision());
-        subject = subject.replace("%CHAIN%", lastchain);
+        subject = fill(subject, "%SYSTEM%", system, "%COUNTRY%", country, "%ENV%", env,
+                "%BUILD%", countryEnvParam.getBuild(), "%REVISION%", countryEnvParam.getRevision(), "%CHAIN%", lastChain);
 
-        body = body.replace("%SYSTEM%", system);
-        body = body.replace("%COUNTRY%", country);
-        body = body.replace("%ENV%", env);
-        body = body.replace("%BUILD%", myCountryEnvParam.getBuild());
-        body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
-        body = body.replace("%CHAIN%", lastchain);
+        Map<String, Object> model = new HashMap<>();
+        model.put("system", system);
+        model.put("country", country);
+        model.put("environment", env);
+        model.put("chain", lastChain);
 
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
-
-        return email;
-
+        String body = emailRenderer.render("new-chain", "New chain executed in " + env, model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, cc);
     }
 
     @Override
     public Email generateAccountCreationEmail(User user) throws Exception {
         String system = "";
-        Email email = new Email();
 
-        /* Pick the datas from the database */
         String from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
-        String to = user.getEmail();
         String cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
-        String body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        body = body.replace("%NAME%", user.getName());
-        body = body.replace("%LOGIN%", user.getLogin());
-        body = body.replace("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", user.getName());
+        model.put("login", user.getLogin());
+        model.put("password", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
+        model.put("url", cerberusUrl());
 
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
-
-        return email;
+        String body = emailRenderer.render("account-creation", "Your account has been created", model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, user.getEmail(), cc);
     }
 
     @Override
     public Email generateForgotPasswordEmail(User user) throws Exception {
-        Email email = new Email();
         String system = "";
 
-        String to = user.getEmail();
         String from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
-        String body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
-        body = body.replace("%NAME%", user.getName());
-        body = body.replace("%LOGIN%", user.getLogin());
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", user.getName());
+        model.put("login", user.getLogin());
+        model.put("linkUrl", cerberusUrl() + "ChangePassword.jsp?login=" + StringUtil.encodeURL(user.getLogin())
+                + "&confirmationToken=" + StringUtil.encodeURL(user.getResetPasswordToken()));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("<a href='");
-        sb.append(cerberusUrl);
-        sb.append("ChangePassword.jsp?login=");
-        sb.append(user.getLogin());
-        sb.append("&confirmationToken=");
-        sb.append(user.getResetPasswordToken());
-        sb.append("'>Click here to reset your password</a>");
-
-        body = body.replace("%LINK%", sb.toString());
-
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, cc);
-
-        return email;
-
+        String body = emailRenderer.render("forgot-password", "Reset your password", model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, user.getEmail(), cc);
     }
 
     @Override
     public Email generateNotifyStartTagExecution(Tag tag, String to) throws Exception {
-        Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system, DEFAULT_FROM);
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
-        String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+        String environments = StringUtil.convertToString(new JSONArray(tag.getReqEnvironmentList()), ",");
+        String countries = StringUtil.convertToString(new JSONArray(tag.getReqCountryList()), ",");
 
-        String myEnvironmentList = StringUtil.convertToString(new JSONArray(tag.getReqEnvironmentList()), ",");
-        String myCountryList = StringUtil.convertToString(new JSONArray(tag.getReqCountryList()), ",");
+        subject = fill(subject, "%TAG%", tag.getTag(), "%CAMPAIGN%", tag.getCampaign(),
+                "%REQENVIRONMENTLIST%", environments, "%REQCOUNTRYLIST%", countries);
 
-        StringBuilder urlreporttag = new StringBuilder();
-        urlreporttag.append(cerberusUrl);
-        urlreporttag.append("ReportingExecutionByTag.jsp?Tag=");
-        urlreporttag.append(StringUtil.encodeURL(tag.getTag()));
-        body = body.replace("%TAG%", tag.getTag());
-        body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
-        body = body.replace("%CAMPAIGN%", tag.getCampaign());
-        body = body.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
-        body = body.replace("%REQCOUNTRYLIST%", myCountryList);
+        Map<String, Object> model = new HashMap<>();
+        model.put("tag", tag.getTag());
+        model.put("campaign", tag.getCampaign());
+        model.put("environments", environments);
+        model.put("countries", countries);
+        model.put("urlReport", cerberusUrl() + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag()));
 
-        subject = subject.replace("%TAG%", tag.getTag());
-        subject = subject.replace("%CAMPAIGN%", tag.getCampaign());
-        subject = subject.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
-        subject = subject.replace("%REQCOUNTRYLIST%", myCountryList);
+        String body = emailRenderer.render("campaign-start", "Campaign " + tag.getCampaign() + " started", model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, null);
+    }
 
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
+    /**
+     * Row of the status legend of the end of campaign email.
+     */
+    public record StatusRow(String status, String label, String color, int nb, int percent) {
+    }
 
-        LOG.debug(subject);
-        LOG.debug(body);
-        return email;
+    /**
+     * Tile of the "Report by status" of the end of campaign email.
+     */
+    public record StatusTile(String value, String label, String sub, String background, String border, String textColor) {
+    }
 
+    /**
+     * Row of the non OK testcase table of the end of campaign email.
+     */
+    public record ExecutionRow(int priority, String test, String testcase, String environment, String country, String robotDecli,
+            String status, String color, String textColor, String url, String description) {
     }
 
     @Override
     public Email generateNotifyEndTagExecution(Tag tag, String to) throws Exception {
-        try {
+        String system = "";
 
-            Email email = new Email();
-            String system = "";
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, DEFAULT_FROM);
+        String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
+        String cerberusUrl = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringCerberusURLByKey(), "/");
 
-            String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-            String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-            int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-            String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-            String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
-            String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
-            String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
-            boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
+        String environments = StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ",");
+        String countries = StringUtil.convertToString(new JSONArray(tag.getCountryList()), ",");
+        String applications = StringUtil.convertToString(new JSONArray(tag.getApplicationList()), ",");
+        String systems = StringUtil.convertToString(new JSONArray(tag.getSystemList()), ",");
+        String robots = StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ",");
 
-            String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-            cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-
-            StringBuilder urlreporttag = new StringBuilder();
-            urlreporttag.append(cerberusUrl).append("ReportingExecutionByTag.jsp?Tag=").append(StringUtil.encodeURL(tag.getTag()));
-
-            // Body replace.
-            body = body.replace("%TAG%", tag.getTag());
-            body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
-            body = body.replace("%CAMPAIGN%", tag.getCampaign());
-            body = body.replace("%CIRESULT%", tag.getCiResult());
-            String ciColor = TestCaseExecution.CONTROLSTATUS_KO_COL_EXT;
-            if ("OK".equals(tag.getCiResult())) {
-                ciColor = TestCaseExecution.CONTROLSTATUS_OK_COL_EXT;
+        // Report by status : same figures as the campaign report page.
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        counts.put("OK", tag.getNbOK());
+        counts.put("KO", tag.getNbKO());
+        counts.put("FA", tag.getNbFA());
+        counts.put("NA", tag.getNbNA());
+        counts.put("NE", tag.getNbNE());
+        counts.put("WE", tag.getNbWE());
+        counts.put("PE", tag.getNbPE());
+        counts.put("QU", tag.getNbQU());
+        counts.put("QE", tag.getNbQE());
+        counts.put("PA", tag.getNbPA());
+        counts.put("CA", tag.getNbCA());
+        int total = tag.getNbExeUsefull();
+        List<StatusRow> statusRows = new ArrayList<>();
+        List<DonutChartRenderer.Slice> slices = new ArrayList<>();
+        for (String status : EmailStatusPalette.ORDER) {
+            int nb = counts.get(status);
+            if (nb > 0) {
+                statusRows.add(new StatusRow(status, EmailStatusPalette.label(status), EmailStatusPalette.color(status), nb, percent(nb, total)));
+                slices.add(new DonutChartRenderer.Slice(EmailStatusPalette.color(status), nb));
             }
-            body = body.replace("%CIRESULTCOLOR%", ciColor);
-            body = body.replace("%CISCORE%", String.valueOf(tag.getCiScore()));
-            body = body.replace("%CISCORETHRESHOLD%", String.valueOf(tag.getCiScoreThreshold()));
-
-            String myEnvironmentList = StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ",");
-            String myCountryList = StringUtil.convertToString(new JSONArray(tag.getCountryList()), ",");
-            String myApplicationList = StringUtil.convertToString(new JSONArray(tag.getApplicationList()), ",");
-            String mySystemList = StringUtil.convertToString(new JSONArray(tag.getSystemList()), ",");
-            String myRobotList = StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ",");
-
-            body = body.replace("%ENVIRONMENTLIST%", myEnvironmentList);
-            body = body.replace("%COUNTRYLIST%", myCountryList);
-            body = body.replace("%APPLICATIONLIST%", myApplicationList);
-            body = body.replace("%SYSTEMLIST%", mySystemList);
-            body = body.replace("%ROBOTDECLILIST%", myRobotList);
-
-            String myReqEnvironmentList = StringUtil.convertToString(new JSONArray(tag.getReqEnvironmentList()), ",");
-            String myReqCountryList = StringUtil.convertToString(new JSONArray(tag.getReqCountryList()), ",");
-
-            body = body.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
-            body = body.replace("%REQCOUNTRYLIST%", myReqCountryList);
-
-            long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
-            body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
-            body = body.replace("%TAGSTART%", String.valueOf(tag.getDateCreated()));
-            body = body.replace("%TAGEND%", String.valueOf(tag.getDateEndQueue()));
-
-            // Get TestcaseExecutionDetail in order to replace %TAGGLOBALSTATUS%.
-            StringBuilder globalStatus = new StringBuilder();
-            globalStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Status</td><td>Number</td><td>%</td></tr></thead><tbody>");
-            // Map that will contain the color of every status.
-            Map<String, String> statColorMap = new HashMap<>();
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_OK, TestCaseExecution.CONTROLSTATUS_OK_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_KO, TestCaseExecution.CONTROLSTATUS_KO_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_FA, TestCaseExecution.CONTROLSTATUS_FA_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_NA, TestCaseExecution.CONTROLSTATUS_NA_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_NE, TestCaseExecution.CONTROLSTATUS_NE_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_WE, TestCaseExecution.CONTROLSTATUS_WE_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_PE, TestCaseExecution.CONTROLSTATUS_PE_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_QU, TestCaseExecution.CONTROLSTATUS_QU_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_PA, TestCaseExecution.CONTROLSTATUS_PA_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_QE, TestCaseExecution.CONTROLSTATUS_QE_COL_EXT);
-            statColorMap.put(TestCaseExecution.CONTROLSTATUS_CA, TestCaseExecution.CONTROLSTATUS_CA_COL_EXT);
-            // Map that will contain the nb of execution for global status.
-            Map<String, Integer> statNbMap = new HashMap<>();
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_OK, tag.getNbOK());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_KO, tag.getNbKO());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_FA, tag.getNbFA());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NA, tag.getNbNA());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NE, tag.getNbNE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_WE, tag.getNbWE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_PE, tag.getNbPE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QU, tag.getNbQU());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_PA, tag.getNbQU());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QE, tag.getNbQE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_CA, tag.getNbCA());
-            // Status list in the correct order.
-            float per = 0;
-            List<String> statList = new ArrayList<>(Arrays.asList("OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"));
-            for (String string : statList) {
-                if (statNbMap.get(string) > 0) {
-                    globalStatus.append("<tr>");
-                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";text-align: center;\">").append(string).append("</td>");
-                    globalStatus.append("<td style=\"text-align: right;\">").append(statNbMap.get(string)).append("</td>");
-                    per = statNbMap.get(string) / (float) tag.getNbExeUsefull();
-                    per *= 100;
-                    globalStatus.append("<td style=\"text-align: right;\">").append(String.format("%.2f", per)).append("</td>");
-                    globalStatus.append("</tr>");
-                }
-            }
-            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold; text-align: center;\"><td>TOTAL</td>");
-            globalStatus.append("<td style=\"text-align: right;\">").append(tag.getNbExeUsefull()).append("</td>");
-            globalStatus.append("<td></td></tr>");
-            globalStatus.append("</tbody></table>");
-            body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
-
-            // Get TestcaseExecutionDetail in order to replace %TAGTCDETAIL%.
-            StringBuilder detailStatus = new StringBuilder();
-            List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
-            Collections.sort(testCaseExecutions, new SortExecution());
-            Integer totalTC = 0;
-            Integer maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
-            boolean odd = true;
-            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Prio</td><td>Test Folder</td><td>Test Case</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
-            for (TestCaseExecution execution : testCaseExecutions) {
-                if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
-                    if (totalTC < maxLines) {
-                        StringBuilder urlexe = new StringBuilder();
-                        StringBuilder statusCell = new StringBuilder();
-                        if (execution.getId() > 0) {
-                            urlexe.append(cerberusUrl).append("/TestCaseExecution.jsp?executionId=").append(execution.getId());
-                            statusCell.append("<a href=\"").append(urlexe).append("\">").append(execution.getControlStatus()).append("</a>");
-                        } else {
-                            statusCell.append(execution.getControlStatus());
-                        }
-                        String tr = "";
-                        if (odd) {
-                            tr = "<tr style=\"background-color:#E3E3E3\">";
-                        } else {
-                            tr = "<tr>";
-                        }
-                        odd = !odd;
-                        detailStatus.append(tr);
-                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center;\">").append(execution.getTestCasePriority()).append("</td>");
-                        detailStatus.append("<td><b>").append(execution.getTest()).append("</b></td>");
-                        detailStatus.append("<td><b>").append(execution.getTestCase()).append("</b></td>");
-                        detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
-                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(statusCell).append("</td>");
-                        detailStatus.append("</tr>");
-                        detailStatus.append(tr);
-                        detailStatus.append("<td colspan=\"5\" style=\"font-size: xx-small;margin-left: 10px;\">").append(execution.getDescription()).append("</td>");
-                        detailStatus.append("</tr>");
-                    } else if (totalTC == maxLines) {
-                        detailStatus.append("<tr style=\"background-color:#ffcaba; font-style:bold\">");
-                        detailStatus.append("<td colspan=\"7\">Only the first ");
-                        detailStatus.append(maxLines);
-                        detailStatus.append(" row(s) are displayed...</td>");
-                        detailStatus.append("</tr>");
-                    }
-                    totalTC++;
-                }
-            }
-            detailStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\">");
-            detailStatus.append("<td>TOTAL</td>");
-            detailStatus.append("<td colspan=\"6\">").append(totalTC).append("</td>");
-            detailStatus.append("</tr>");
-            detailStatus.append("</tbody></table>");
-            body = body.replace("%TAGTCDETAIL%", detailStatus.toString());
-
-            // Subject replace.
-            subject = subject.replace("%TAG%", tag.getTag());
-            subject = subject.replace("%CAMPAIGN%", tag.getCampaign());
-            subject = subject.replace("%ENVIRONMENTLIST%", myEnvironmentList);
-            subject = subject.replace("%COUNTRYLIST%", myCountryList);
-            subject = subject.replace("%APPLICATIONLIST%", myApplicationList);
-            subject = subject.replace("%SYSTEMLIST%", mySystemList);
-            subject = subject.replace("%ROBOTDECLILIST%", myRobotList);
-            subject = subject.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
-            subject = subject.replace("%REQCOUNTRYLIST%", myReqCountryList);
-
-            email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
-
-            LOG.debug(subject);
-            LOG.debug(body);
-            return email;
-
-        } catch (Exception e) {
-            LOG.error(e.toString(), e);
         }
-        return null;
+        int okPct = percent(counts.get("OK"), total);
+        int notOk = counts.get("KO") + counts.get("FA") + counts.get("NA") + counts.get("CA");
+        int pending = counts.get("QU") + counts.get("QE") + counts.get("PA") + counts.get("PE") + counts.get("WE") + counts.get("NE");
 
+        List<StatusTile> tiles = new ArrayList<>();
+        tiles.add(tile("blue", String.valueOf(total), "Total", ""));
+        tiles.add(tile("green", String.valueOf(counts.get("OK")), "OK", okPct + "%"));
+        tiles.add(tile("red", String.valueOf(notOk), "Not OK", percent(notOk, total) + "%"));
+        if (pending > 0) {
+            tiles.add(tile("orange", String.valueOf(pending), "Pending", percent(pending, total) + "%"));
+        }
+        if (tag.getNbFlaky() > 0) {
+            tiles.add(tile("amber", String.valueOf(tag.getNbFlaky()), "Flaky", ""));
+        }
+        if (!StringUtil.isEmptyOrNull(tag.getCiResult())) {
+            tiles.add(tile("OK".equals(tag.getCiResult()) ? "green" : "KO".equals(tag.getCiResult()) ? "red" : "slate",
+                    tag.getCiResult(), "CI result", tag.getCiScore() + "/" + tag.getCiScoreThreshold()));
+        }
+
+        List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+        Collections.sort(testCaseExecutions, new SortExecution());
+        int maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
+        List<ExecutionRow> executionRows = new ArrayList<>();
+        int notOkTotal = 0;
+        for (TestCaseExecution execution : testCaseExecutions) {
+            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
+                if (notOkTotal < maxLines) {
+                    String url = execution.getId() > 0 ? cerberusUrl + "TestCaseExecution.jsp?executionId=" + execution.getId() : "";
+                    executionRows.add(new ExecutionRow(execution.getTestCasePriority(), execution.getTest(), execution.getTestCase(),
+                            execution.getEnvironment(), execution.getCountry(), execution.getRobotDecli(),
+                            execution.getControlStatus(), EmailStatusPalette.color(execution.getControlStatus()),
+                            EmailStatusPalette.textColor(execution.getControlStatus()), url, execution.getDescription()));
+                }
+                notOkTotal++;
+            }
+        }
+
+        // The donut is a picture : if it cannot be drawn the mail is sent without it, tiles and legend carry the figures.
+        byte[] donut = null;
+        try {
+            donut = DonutChartRenderer.render(slices, okPct + "%", "OK RATE", rateColor(okPct));
+        } catch (Exception | LinkageError e) {
+            LOG.warn("Could not draw the donut of the end of campaign email : " + e);
+        }
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("tag", tag.getTag());
+        model.put("campaign", tag.getCampaign());
+        model.put("urlReport", cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag()));
+        // Icon of the title : green when the CI is OK, red when KO, orange when undetermined.
+        model.put("titleColor", "OK".equals(tag.getCiResult()) ? EmailStatusPalette.color("OK")
+                : "KO".equals(tag.getCiResult()) ? EmailStatusPalette.color("KO") : EmailStatusPalette.color("FA"));
+        model.put("start", tag.getDateCreated() == null ? "" : tag.getDateCreated().toLocalDateTime().format(TAGEND_DATE_FORMAT));
+        model.put("end", tag.getDateEndQueue() == null ? "" : tag.getDateEndQueue().toLocalDateTime().format(TAGEND_DATE_FORMAT));
+        model.put("durationMin", tag.getDateCreated() == null || tag.getDateEndQueue() == null ? null
+                : (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000);
+        model.put("environments", environments);
+        model.put("countries", countries);
+        model.put("applications", applications);
+        model.put("systems", systems);
+        model.put("robots", robots);
+        model.put("tiles", tiles);
+        model.put("statusRows", statusRows);
+        model.put("totalExecutions", total);
+        model.put("hasDonut", donut != null);
+        model.put("donutSize", DonutChartRenderer.DISPLAY_SIZE);
+        model.put("executionRows", executionRows);
+        model.put("notOkTotal", notOkTotal);
+        model.put("maxLines", maxLines);
+
+        subject = fill(subject, "%TAG%", tag.getTag(), "%CAMPAIGN%", tag.getCampaign(), "%ENVIRONMENTLIST%", environments,
+                "%COUNTRYLIST%", countries, "%APPLICATIONLIST%", applications, "%SYSTEMLIST%", systems, "%ROBOTDECLILIST%", robots);
+
+        String body = emailRenderer.render("campaign-end", "Campaign " + tag.getCampaign() + " finished", model, Locale.ENGLISH, system);
+        Email email = emailFactory.create(smtpConfigService.read(system), subject, body, from, to, null);
+        if (donut != null) {
+            email.addInlineImage("donut", donut);
+        }
+        return email;
+    }
+
+    // Color of the OK rate at the center of the donut, like on the campaign report page : green when everything is OK,
+    // orange from 50%, red below. Medium tones (tailwind -600) : the image is readable on a light and on a dark background.
+    private static String rateColor(int okPct) {
+        return okPct >= 100 ? "#16a34a" : okPct >= 50 ? "#d97706" : "#dc2626";
+    }
+
+    private static int percent(int part, int total) {
+        return total > 0 ? Math.round(part * 100f / total) : 0;
+    }
+
+    // Tile colors : the tailwind -50 background, -200 border and -600/700 value of the tone.
+    private static StatusTile tile(String tone, String value, String label, String sub) {
+        switch (tone) {
+            case "blue":
+                return new StatusTile(value, label, sub, "#eff6ff", "#bfdbfe", "#2563eb");
+            case "green":
+                return new StatusTile(value, label, sub, "#f0fdf4", "#bbf7d0", "#16a34a");
+            case "red":
+                return new StatusTile(value, label, sub, "#fef2f2", "#fecaca", "#dc2626");
+            case "orange":
+                return new StatusTile(value, label, sub, "#fff7ed", "#fed7aa", "#ea580c");
+            case "amber":
+                return new StatusTile(value, label, sub, "#fffbeb", "#fde68a", "#b45309");
+            default:
+                return new StatusTile(value, label, sub, "#f8fafc", "#e2e8f0", "#475569");
+        }
     }
 
     class SortExecution implements Comparator<TestCaseExecution> {
@@ -565,162 +434,118 @@ public class EmailGenerationService implements IEmailGenerationService {
 
     @Override
     public Email generateNotifyStartExecution(TestCaseExecution exe, String to) throws Exception {
-        Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, DEFAULT_FROM);
         String subject = parameterService.getParameterStringByKey("cerberus_notification_executionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_executionstart_subject'.");
-        String body = parameterService.getParameterStringByKey("cerberus_notification_executionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_executionstart_body'.");
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+        subject = fillExecution(subject, exe);
 
-        StringBuilder urlTestCase = new StringBuilder();
-        urlTestCase.append(cerberusUrl);
-        urlTestCase.append("TestCaseExecution.jsp?executionId=");
-        urlTestCase.append(exe.getId());
-
-        body = body.replace("%TAG%", exe.getTag());
-        body = body.replace("%URLEXECUTION%", urlTestCase.toString());
-        body = body.replace("%EXECUTIONID%", String.valueOf(exe.getId()));
-        body = body.replace("%COUNTRY%", exe.getCountry());
-        body = body.replace("%ENVIRONMENT%", exe.getEnvironment());
-        body = body.replace("%ROBOT%", exe.getRobot());
-        body = body.replace("%ROBOTDECLINATION%", exe.getRobotDecli());
-        body = body.replace("%TESTFOLDER%", exe.getTest());
-        body = body.replace("%TESTCASE%", exe.getTestCase());
-
-        subject = subject.replace("%TAG%", exe.getTag());
-        subject = subject.replace("%EXECUTIONID%", String.valueOf(exe.getId()));
-        subject = subject.replace("%COUNTRY%", exe.getCountry());
-        subject = subject.replace("%ENVIRONMENT%", exe.getEnvironment());
-        subject = subject.replace("%ROBOT%", exe.getRobot());
-        subject = subject.replace("%ROBOTDECLINATION%", exe.getRobotDecli());
-        subject = subject.replace("%TESTFOLDER%", exe.getTest());
-        subject = subject.replace("%TESTCASE%", exe.getTestCase());
-
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
-
-        LOG.debug(subject);
-        LOG.debug(body);
-        return email;
-
+        String body = emailRenderer.render("execution-start", "Execution " + exe.getId() + " started", executionModel(exe), Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, null);
     }
 
     @Override
     public Email generateNotifyEndExecution(TestCaseExecution exe, String to) throws Exception {
-        Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, DEFAULT_FROM);
         String subject = parameterService.getParameterStringByKey("cerberus_notification_executionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_executionend_subject'.");
-        String body = parameterService.getParameterStringByKey("cerberus_notification_executionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_executionend_body'.");
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+        subject = fillExecution(subject, exe);
+        subject = fill(subject, "%STATUS%", exe.getControlStatus());
 
-        StringBuilder urlTestCase = new StringBuilder();
-        urlTestCase.append(cerberusUrl);
-        urlTestCase.append("TestCaseExecution.jsp?executionId=");
-        urlTestCase.append(exe.getId());
+        Map<String, Object> model = executionModel(exe);
+        model.put("status", exe.getControlStatus());
+        String statusColor = EmailStatusPalette.color(exe.getControlStatus());
+        model.put("statusColor", statusColor);
+        model.put("statusTextColor", EmailStatusPalette.textColor(exe.getControlStatus()));
+        model.put("titleColor", statusColor);
 
-        body = body.replace("%TAG%", exe.getTag());
-        body = body.replace("%URLEXECUTION%", urlTestCase.toString());
-        body = body.replace("%EXECUTIONID%", String.valueOf(exe.getId()));
-        body = body.replace("%COUNTRY%", exe.getCountry());
-        body = body.replace("%ENVIRONMENT%", exe.getEnvironment());
-        body = body.replace("%ROBOT%", exe.getRobot());
-        body = body.replace("%ROBOTDECLINATION%", exe.getRobotDecli());
-        body = body.replace("%TESTFOLDER%", exe.getTest());
-        body = body.replace("%TESTCASE%", exe.getTestCase());
-        body = body.replace("%STATUS%", exe.getControlStatus());
-
-        subject = subject.replace("%TAG%", exe.getTag());
-        subject = subject.replace("%EXECUTIONID%", String.valueOf(exe.getId()));
-        subject = subject.replace("%COUNTRY%", exe.getCountry());
-        subject = subject.replace("%ENVIRONMENT%", exe.getEnvironment());
-        subject = subject.replace("%ROBOT%", exe.getRobot());
-        subject = subject.replace("%ROBOTDECLINATION%", exe.getRobotDecli());
-        subject = subject.replace("%TESTFOLDER%", exe.getTest());
-        subject = subject.replace("%TESTCASE%", exe.getTestCase());
-        subject = subject.replace("%STATUS%", exe.getControlStatus());
-
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
-
-        LOG.debug(subject);
-        LOG.debug(body);
-        return email;
-
+        String body = emailRenderer.render("execution-end", "Execution " + exe.getId() + " finished", model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, null);
     }
 
     @Override
     public Email generateNotifyTestCaseChange(TestCase testCase, String to, String eventReference) throws Exception {
-        Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
-//        String subject = parameterService.getParameterStringByKey("cerberus_notification_testcasechange_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_testcasechange_subject'.");
-//        String body = parameterService.getParameterStringByKey("cerberus_notification_testcasechange_body", system, "Empty Body. Please define parameter 'cerberus_notification_testcasechange_body'.");
-        String subject = "";
-        String body = "";
-        boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
+        String from = parameterService.getParameterStringByKey("cerberus_notification_from", system, DEFAULT_FROM);
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-
-        StringBuilder urlTestCase = new StringBuilder();
-        urlTestCase.append(cerberusUrl);
-        urlTestCase.append("TestCaseScript.jsp?test=");
-        urlTestCase.append(StringUtil.encodeURL(testCase.getTest()));
-        urlTestCase.append("&testcase=");
-        urlTestCase.append(StringUtil.encodeURL(testCase.getTestcase()));
-
+        String subject;
+        String title;
         switch (eventReference) {
             case EventHook.EVENTREFERENCE_TESTCASE_CREATE:
                 subject = "[Cerberus] TestCase '%TESTFOLDER% - %TESTCASE%' was Created.";
-                body = "Hello,<br><br>Testcase <b>%TESTFOLDER% - %TESTCASE%</b> was just created.<br><br>You can access it <a href=\"%TESTCASEURL%\">here</a>.";
+                title = "Testcase created";
                 break;
             case EventHook.EVENTREFERENCE_TESTCASE_DELETE:
                 subject = "[Cerberus] TestCase '%TESTFOLDER% - %TESTCASE%' was Deleted.";
-                body = "Hello,<br><br>Testcase <b>%TESTFOLDER% - %TESTCASE%</b> was just deleted.";
+                title = "Testcase deleted";
                 break;
             case EventHook.EVENTREFERENCE_TESTCASE_UPDATE:
                 subject = "[Cerberus] TestCase '%TESTFOLDER% - %TESTCASE%' was Updated to version %TESTCASEVERSION%.";
-                body = "Hello,<br><br>Testcase <b>%TESTFOLDER% - %TESTCASE%</b> was just updated to version %TESTCASEVERSION%.<br><br>You can access it <a href=\"%TESTCASEURL%\">here</a>.";
+                title = "Testcase updated";
                 break;
+            default:
+                throw new IllegalArgumentException("Event '" + eventReference + "' is not a testcase change.");
         }
 
-        body = body.replace("%TESTFOLDER%", testCase.getTest());
-        body = body.replace("%TESTCASE%", testCase.getTestcase());
-        body = body.replace("%STATUS%", testCase.getStatus());
-        body = body.replace("%TESTCASEURL%", urlTestCase);
-        body = body.replace("%TESTCASEVERSION%", String.valueOf(testCase.getVersion()));
+        String urlTestcase = "";
+        if (!EventHook.EVENTREFERENCE_TESTCASE_DELETE.equals(eventReference)) {
+            urlTestcase = cerberusUrl() + "TestCaseScript.jsp?test=" + StringUtil.encodeURL(testCase.getTest())
+                    + "&testcase=" + StringUtil.encodeURL(testCase.getTestcase());
+        }
 
-        subject = subject.replace("%TESTFOLDER%", testCase.getTest());
-        subject = subject.replace("%TESTCASE%", testCase.getTestcase());
-        subject = subject.replace("%STATUS%", testCase.getStatus());
-        subject = subject.replace("%TESTCASEURL%", urlTestCase);
-        subject = subject.replace("%TESTCASEVERSION%", String.valueOf(testCase.getVersion()));
+        subject = fill(subject, "%TESTFOLDER%", testCase.getTest(), "%TESTCASE%", testCase.getTestcase(),
+                "%STATUS%", testCase.getStatus(), "%TESTCASEVERSION%", String.valueOf(testCase.getVersion()));
 
-        email = emailFactory.create(host, port, userName, password, isSetTls, subject, body, from, to, null);
+        Map<String, Object> model = new HashMap<>();
+        model.put("eventType", eventReference);
+        model.put("test", testCase.getTest());
+        model.put("testcase", testCase.getTestcase());
+        model.put("status", testCase.getStatus());
+        model.put("version", testCase.getVersion());
+        model.put("urlTestcase", urlTestcase);
+        if (EventHook.EVENTREFERENCE_TESTCASE_DELETE.equals(eventReference)) {
+            model.put("titleColorName", "red");
+        }
 
-        LOG.debug(subject);
-        LOG.debug(body);
-        return email;
+        String body = emailRenderer.render("testcase-change", title, model, Locale.ENGLISH, system);
+        return emailFactory.create(smtpConfigService.read(system), subject, body, from, to, null);
+    }
 
+    private Map<String, Object> executionModel(TestCaseExecution exe) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("executionId", exe.getId());
+        model.put("tag", exe.getTag());
+        model.put("test", exe.getTest());
+        model.put("testcase", exe.getTestCase());
+        model.put("environment", exe.getEnvironment());
+        model.put("country", exe.getCountry());
+        model.put("robot", exe.getRobot());
+        model.put("robotDecli", exe.getRobotDecli());
+        model.put("urlExecution", cerberusUrl() + "TestCaseExecution.jsp?executionId=" + exe.getId());
+        return model;
+    }
+
+    private static String fillExecution(String subject, TestCaseExecution exe) {
+        return fill(subject, "%TAG%", exe.getTag(), "%EXECUTIONID%", String.valueOf(exe.getId()), "%COUNTRY%", exe.getCountry(),
+                "%ENVIRONMENT%", exe.getEnvironment(), "%ROBOT%", exe.getRobot(), "%ROBOTDECLINATION%", exe.getRobotDecli(),
+                "%TESTFOLDER%", exe.getTest(), "%TESTCASE%", exe.getTestCase());
+    }
+
+    /**
+     * Replace the %TOKEN% of a subject. Arguments are token / value pairs, a null value is replaced by an empty text.
+     */
+    private static String fill(String text, String... tokenValuePairs) {
+        for (int i = 0; i + 1 < tokenValuePairs.length; i += 2) {
+            text = text.replace(tokenValuePairs[i], tokenValuePairs[i + 1] == null ? "" : tokenValuePairs[i + 1]);
+        }
+        return text;
+    }
+
+    private String cerberusUrl() {
+        return StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringCerberusURLByKey(), "/");
     }
 }

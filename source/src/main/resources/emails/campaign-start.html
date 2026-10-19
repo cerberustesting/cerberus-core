@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- Start of campaign email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>
+    The campaign <b th:text="${campaign}">Campaign</b> (tag <b th:text="${tag}">Tag</b>) has just started
+    <th:block th:if="${!#strings.isEmpty(environments)}">on <b th:text="${environments}">env</b></th:block>
+    <th:block th:if="${!#strings.isEmpty(countries)}">for <b th:text="${countries}">country</b></th:block>.
+  </p>
+  <p><a th:replace="~{components/fragments :: button(${urlReport}, 'Follow the execution')}"></a></p>
+</th:block>
+</body>
+</html>

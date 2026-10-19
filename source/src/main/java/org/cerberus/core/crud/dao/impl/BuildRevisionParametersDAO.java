@@ -514,6 +514,68 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
+    public AnswerList<BuildRevisionParameters> readByBuildBetweenRevisions(String system, String build, String revision, String lastRevision) {
+        AnswerList<BuildRevisionParameters> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        List<BuildRevisionParameters> brpList = new ArrayList<>();
+        boolean hasLastRevision = !StringUtil.isEmptyOrNull(lastRevision);
+
+        StringBuilder query = new StringBuilder()
+                .append("SELECT brp.* FROM buildrevisionparameters brp ")
+                .append("JOIN application a ON a.application = brp.application ")
+                .append("JOIN buildrevisioninvariant bri ON bri.versionname = brp.revision AND bri.`system` = ? AND bri.`level` = 2 ")
+                .append("WHERE brp.build = ? AND a.`system` = ? ");
+        if (hasLastRevision) { // If lastRevision is not defined, we take everything.
+            query.append("AND bri.seq > (SELECT seq FROM buildrevisioninvariant WHERE `system` = ? AND `level` = 2 AND `versionname` = ?) ");
+        }
+        query.append("AND bri.seq <= (SELECT seq FROM buildrevisioninvariant WHERE `system` = ? AND `level` = 2 AND `versionname` = ?) ")
+                .append("ORDER BY brp.Build, bri.seq, brp.Application, brp.datecre, brp.TicketIDFixed, brp.BugIDFixed, brp.`Release` ")
+                .append("LIMIT ").append(MAX_ROW_SELECTED);
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, system);
+            preStat.setString(i++, build);
+            preStat.setString(i++, system);
+            if (hasLastRevision) {
+                preStat.setString(i++, system);
+                preStat.setString(i++, lastRevision);
+            }
+            preStat.setString(i++, system);
+            preStat.setString(i, revision);
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                while (resultSet.next()) {
+                    brpList.add(loadFromResultSet(resultSet));
+                }
+            }
+
+            if (brpList.size() >= MAX_ROW_SELECTED) {
+                LOG.error("Partial Result in the query.");
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+            } else if (brpList.isEmpty()) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(brpList);
+        return response;
+    }
+
+    @Override
     public Answer create(BuildRevisionParameters brp) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()

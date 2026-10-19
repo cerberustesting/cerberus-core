@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- End of campaign email. Variables : see EmailGenerationService.generateNotifyEndTagExecution. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p style="margin-top:0;">
+    The campaign <b th:text="${campaign}">Campaign</b> (tag <b th:text="${tag}">Tag</b>) has just finished.
+  </p>
+
+  <table role="presentation" cellpadding="6" cellspacing="0" border="0" style="width:100%;font-size:14px;margin-bottom:8px;">
+    <tr>
+      <td style="color:#94a3b8;width:140px;">Period</td>
+      <td>
+        <span th:text="${start}">start</span> &rarr; <span th:text="${end}">end</span>
+        <span th:if="${durationMin != null}" style="color:#94a3b8;">(<span th:text="${durationMin}">5</span> min)</span>
+      </td>
+    </tr>
+    <tr th:if="${!#strings.isEmpty(systems)}"><td style="color:#94a3b8;">Systems</td><td th:text="${systems}">sys</td></tr>
+    <tr th:if="${!#strings.isEmpty(applications)}"><td style="color:#94a3b8;">Applications</td><td th:text="${applications}">app</td></tr>
+    <tr th:if="${!#strings.isEmpty(environments)}"><td style="color:#94a3b8;">Environments</td><td th:text="${environments}">env</td></tr>
+    <tr th:if="${!#strings.isEmpty(countries)}"><td style="color:#94a3b8;">Countries</td><td th:text="${countries}">ctry</td></tr>
+    <tr th:if="${!#strings.isEmpty(robots)}"><td style="color:#94a3b8;">Robots</td><td th:text="${robots}">robot</td></tr>
+  </table>
+
+  <!-- Report by status : tiles, donut and legend, as on the campaign report page -->
+  <table th:replace="~{components/fragments :: sectionTitle('chart-pie', 'purple', 'Report by status (' + ${totalExecutions} + ' executions)')}"></table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+    <tr>
+      <td th:each="tile, stat : ${tiles}" valign="top"
+          th:style="'padding:0 ' + (${stat.last} ? '0' : '4px') + ' 0 ' + (${stat.first} ? '0' : '4px') + ';'">
+        <div th:style="'text-align:center;padding:10px 6px;border-radius:12px;border:1px solid ' + ${tile.border()} + ';background-color:' + ${tile.background()} + ';'">
+          <div th:style="'font-size:20px;font-weight:800;line-height:1.1;color:' + ${tile.textColor()} + ';'" th:text="${tile.value()}">10</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#94a3b8;margin-top:2px;">
+            <span th:text="${tile.label()}">Total</span>
+            <span th:if="${!#strings.isEmpty(tile.sub())}" style="font-weight:600;text-transform:none;" th:text="${tile.sub()}">80%</span>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td th:if="${hasDonut}" valign="middle" th:width="${donutSize}" style="padding-right:18px;">
+        <img th:src="'cid:img-donut'" th:width="${donutSize}" th:height="${donutSize}" alt="Report by status"
+             th:style="'display:block;border:0;width:' + ${donutSize} + 'px;height:' + ${donutSize} + 'px;'">
+      </td>
+      <td valign="middle">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr th:each="row : ${statusRows}">
+            <td width="22" style="padding:4px 0;"><div th:style="'width:10px;height:10px;border-radius:3px;background-color:' + ${row.color()} + ';'"></div></td>
+            <td width="30" style="padding:4px 0;font-size:11px;font-weight:800;" th:text="${row.status()}">OK</td>
+            <td style="padding:4px 0;font-size:12px;color:#94a3b8;" th:text="${row.label()}">OK</td>
+            <td align="right" style="padding:4px 0;font-size:13px;font-weight:800;" th:text="${row.nb()}">8</td>
+            <td align="right" width="48" style="padding:4px 0;font-size:11px;font-weight:600;color:#94a3b8;"><span th:text="${row.percent()}">80</span>%</td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(statusRows)}"><td style="font-size:12px;color:#94a3b8;">No execution on this tag</td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <th:block th:if="${notOkTotal > 0}">
+    <table th:replace="~{components/fragments :: sectionTitle('circle-x', 'red', 'Non OK testcases (' + ${notOkTotal} + ')')}"></table>
+    <table cellpadding="6" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>
+        <tr style="background-color:#f1f5f9;text-align:left;">
+          <th>Prio</th><th>Test folder</th><th>Testcase</th><th>Env</th><th>Country</th><th>Robot</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody th:each="row : ${executionRows}">
+        <tr>
+          <td th:text="${row.priority()}">1</td>
+          <td><b th:text="${row.test()}">folder</b></td>
+          <td><b th:text="${row.testcase()}">tc</b></td>
+          <td th:text="${row.environment()}">env</td>
+          <td th:text="${row.country()}">ctry</td>
+          <td th:text="${row.robotDecli()}">robot</td>
+          <td>
+            <a th:if="${!#strings.isEmpty(row.url())}" th:href="${row.url()}" th:text="${row.status()}"
+               th:style="'display:inline-block;padding:1px 8px;border-radius:6px;font-weight:600;text-decoration:none;color:' + ${row.textColor()} + ';background-color:' + ${row.color()} + ';'">KO</a>
+            <span th:if="${#strings.isEmpty(row.url())}" th:text="${row.status()}"
+                  th:style="'display:inline-block;padding:1px 8px;border-radius:6px;font-weight:600;color:' + ${row.textColor()} + ';background-color:' + ${row.color()} + ';'">KO</span>
+          </td>
+        </tr>
+        <tr style="border-bottom:1px solid #e2e8f0;">
+          <td></td><td colspan="6" style="font-size:11px;color:#94a3b8;" th:text="${row.description()}">description</td>
+        </tr>
+      </tbody>
+      <tbody th:if="${notOkTotal > maxLines}">
+        <tr style="background-color:#fff7ed;">
+          <td colspan="7">Only the first <span th:text="${maxLines}">100</span> row(s) are displayed...</td>
+        </tr>
+      </tbody>
+    </table>
+  </th:block>
+
+  <p style="margin-top:28px;margin-bottom:0;">
+    <a th:replace="~{components/fragments :: button(${urlReport}, 'Open the campaign report')}"></a>
+  </p>
+</th:block>
+</body>
+</html>

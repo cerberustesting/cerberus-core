@@ -98,6 +98,19 @@ public interface IBuildRevisionParametersDAO {
 
     /**
      *
+     * @param system
+     * @param build
+     * @param revision last revision of the content (included)
+     * @param lastRevision previous revision (excluded). When empty, everything
+     * since the first revision of the build is returned.
+     * @return every line of the build content of the given build, between
+     * lastRevision (excluded) and revision (included), ordered by revision,
+     * application, creation date, ticket, bug and release.
+     */
+    AnswerList<BuildRevisionParameters> readByBuildBetweenRevisions(String system, String build, String revision, String lastRevision);
+
+    /**
+     *
      * @param brp
      * @return
      */

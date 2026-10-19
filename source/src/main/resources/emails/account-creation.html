@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- Account creation email. Variables : see EmailGenerationService. -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{components/layout :: layout(~{::content})}">
+<body>
+<th:block th:fragment="content">
+  <p>Hello <b th:text="${name}">Name</b>,</p>
+  <p>Your account has been created. Use the following credentials to connect :</p>
+  <table role="presentation" cellpadding="6" cellspacing="0" border="0" style="font-size:14px;margin-bottom:16px;">
+    <tr><td style="color:#888888;width:100px;">Login</td><td><b th:text="${login}">login</b></td></tr>
+    <tr><td style="color:#888888;">Password</td><td><b th:text="${password}">password</b></td></tr>
+  </table>
+  <p>At your first connection, you will be invited to modify your password.</p>
+  <p th:if="${!#strings.isEmpty(url)}"><a th:replace="~{components/fragments :: button(${url}, 'Open ' + ${theme.appName()})}"></a></p>
+</th:block>
+</body>
+</html>
