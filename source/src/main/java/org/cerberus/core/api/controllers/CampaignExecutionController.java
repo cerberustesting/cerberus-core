@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -62,6 +63,13 @@ import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.util.DateUtil;
 import org.springframework.core.io.InputStreamResource;
+import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.service.notifications.email.IEmailGenerationService;
+import org.cerberus.core.service.notifications.email.IEmailService;
+import org.cerberus.core.service.notifications.email.entity.Email;
+import org.cerberus.core.util.StringUtil;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -91,6 +99,9 @@ public class CampaignExecutionController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ICIService ciService;
     private final IPDFCampaignReportService pdfService;
+    private final ITagService tagService;
+    private final IEmailGenerationService emailGenerationService;
+    private final IEmailService emailService;
 
     private static final String EXECUTIONS_CAMPAIGN_CI_PATH = "/campaignexecutions/ci";
     private static final String EXECUTIONS_CAMPAIGN_CI_SVG_PATH = "/campaignexecutions/ci/svg";
@@ -121,6 +132,41 @@ public class CampaignExecutionController {
                                 this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, "")
                         )
         );
+    }
+
+    @PostMapping(path = "/{campaignExecutionId}/notify", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Send the end of campaign email of a campaign execution (tag) to the given recipients",
+            description = "Send the end of campaign email (same content as the CAMPAIGN_END event hooks) on demand.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Email sent.", content = { @Content(mediaType = "application/json")})
+            }
+    )
+    public ResponseEntity<Map<String, String>> notifyCampaignExecutionByEmail(
+            @Parameter(description = "Campaign Execution ID (tag)") @PathVariable("campaignExecutionId") String campaignExecutionId,
+            @Parameter(description = "Recipient email addresses, separated by ;") @RequestParam("recipient") String recipient,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/notify called with URL: %s", request.getRequestURL()), request, login);
+
+        if (StringUtil.isEmptyOrNull(recipient)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Please provide at least one recipient email address."));
+        }
+        try {
+            Tag tag = tagService.convert(tagService.readByKey(campaignExecutionId));
+            if (tag == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Campaign execution '" + campaignExecutionId + "' does not exist."));
+            }
+            Email email = emailGenerationService.generateNotifyEndTagExecution(tag, recipient);
+            emailService.sendHtmlMail(email);
+            return ResponseEntity.ok(Map.of("message", "Campaign report sent to " + recipient + "."));
+        } catch (Exception ex) {
+            LOG.error("Could not send the campaign report email", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Could not send the email: " + ex.getMessage()));
+        }
     }
 
     @GetMapping(path = "/pdf/{campaignExecutionId}", produces = "application/zip")

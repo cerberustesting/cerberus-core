@@ -1,11 +1,17 @@
 *Bug fixes*
 [square]
-* none
+* The new build/revision email no longer builds its SQL query by concatenating values (parameters are now bound).
+* Special characters (like '<') in testcase names, descriptions or campaign names no longer break the notification emails (all values are now escaped).
 
 *Improvements / New features*
 [square]
-* none
+* Notification emails refactored: every email is now built from an HTML template (Thymeleaf) inside a common branded layout, with the same look as the Cerberus screens (colors, icon before the title, one color per execution status).
+* White-label emails: logo, application name, main color, background color and footer text can be changed from the parameters `cerberus_email_theme_appname`, `cerberus_email_theme_logourl`, `cerberus_email_theme_primarycolor`, `cerberus_email_theme_backgroundcolor` and `cerberus_email_theme_footertext`. When no logo is defined, `cerberus_instancelogo_url` is used.
+* End of campaign email now displays a "Report by status" similar to the one of the campaign report page (tiles, donut and legend).
+* Added a public API endpoint to check the rendering of every notification email with real data: `POST /api/public/notifications/test`. The email is always sent to the email address of the user owning the API key.
+* Added a public API endpoint to send the end of campaign email on demand: `POST /api/public/campaignexecutions/{tag}/notify`.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Breaking change on notification emails: the body of the emails is no longer configurable from parameters. The parameters `cerberus_notification_accountcreation_body`, `cerberus_notification_forgotpassword_body`, `cerberus_notification_newbuildrevision_body`, `cerberus_notification_disableenvironment_body`, `cerberus_notification_newchain_body`, `cerberus_notification_tagexecutionstart_body`, `cerberus_notification_tagexecutionend_body`, `cerberus_notification_executionstart_body` and `cerberus_notification_executionend_body` are deleted during the upgrade. Any customization of these bodies is lost: save them before upgrading if needed. Subject, from, to and cc parameters are kept.
+* The email bodies defined on environments (new build/revision, environment disabled, new chain) are no longer used.
