@@ -20,6 +20,7 @@
 package org.cerberus.core.service.notifications.email;
 
 import org.cerberus.core.service.notifications.email.entity.Email;
+import org.cerberus.core.service.notifications.email.entity.SmtpConfig;
 
 /**
  *
@@ -31,4 +32,6 @@ public interface IEmailFactory {
     
     public Email create(String host, int smtpPort, String userName, String password, boolean setTls, String subject, String body,
             String from, String to, String cc);
+
+    public Email create(SmtpConfig smtp, String subject, String body, String from, String to, String cc);
 }

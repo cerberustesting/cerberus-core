@@ -6931,3 +6931,12 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_servicecallpurgejob_active', 'Y', 'Y in order to activate the job that purges the service call statistics (API Monitor) older than cerberus_servicecall_retentiondays.')
   ,('', 'cerberus_servicecallpurgejob_period', '1440', 'Period of time in minutes between each job that purges the old service call statistics (API Monitor).')
   ,('', 'cerberus_servicecall_retentiondays', '365', 'Number of days the service call statistics (API Monitor) are kept. 0 or less keeps them forever.');
+
+-- 1954
+-- Theme applied to the templated emails (white-label). Empty logo url falls back on cerberus_instancelogo_url.
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_email_theme_appname', 'Cerberus Testing', 'Application name displayed in the header and footer of the emails.')
+  ,('', 'cerberus_email_theme_logourl', '', 'URL of the logo displayed in the emails. If empty, cerberus_instancelogo_url is used.')
+  ,('', 'cerberus_email_theme_primarycolor', '#2c7be5', 'Main color (hex, ex #2c7be5) of the buttons of the emails.')
+  ,('', 'cerberus_email_theme_backgroundcolor', '#f5f6fa', 'Background color (hex, ex #f5f6fa) of the emails.')
+  ,('', 'cerberus_email_theme_footertext', '', 'Text displayed in the footer of the emails.');

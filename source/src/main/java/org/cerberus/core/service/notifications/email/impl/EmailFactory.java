@@ -20,6 +20,7 @@
 package org.cerberus.core.service.notifications.email.impl;
 
 import org.cerberus.core.service.notifications.email.entity.Email;
+import org.cerberus.core.service.notifications.email.entity.SmtpConfig;
 import org.cerberus.core.service.notifications.email.IEmailFactory;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,10 @@ public class EmailFactory implements IEmailFactory {
         email.setTo(to);
         email.setUserName(userName);
         return email;
+    }
+
+    @Override
+    public Email create(SmtpConfig smtp, String subject, String body, String from, String to, String cc) {
+        return create(smtp.host(), smtp.port(), smtp.userName(), smtp.password(), smtp.setTls(), subject, body, from, to, cc);
     }
 }

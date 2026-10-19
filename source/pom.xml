@@ -482,6 +482,13 @@
             <version>1.6.0</version>
         </dependency>
 
+        <!-- Thymeleaf 3.1.3 : HTML email templates (standalone engine, no thymeleaf-spring) -->
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf</artifactId>
+            <version>3.1.3.RELEASE</version>
+        </dependency>
+
         <!-- Apache Commons Text 1.15.0 (LATEST) : 11/09/2025 -
         https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
         <dependency>
@@ -612,6 +619,7 @@
                 <includes>
                     <include>prompts/**</include>
                     <include>mcpdelta/**</include>
+                    <include>emails/**</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>
