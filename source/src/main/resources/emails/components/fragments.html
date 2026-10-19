@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- Reusable pieces of the emails. badge(text, backgroundColor, textColor).
+     Usage : <a th:replace="~{components/fragments :: button(${url}, 'Label')}"></a>
+             <p th:replace="~{components/fragments :: sectionTitle('chart-pie', 'purple', 'Global status')}"></p> -->
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<a th:fragment="button(url, label)" th:href="${url}" th:text="${label}"
+   th:style="'display:inline-block;padding:9px 16px;color:#ffffff;font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;background-color:' + ${theme.primaryColor()} + ';'">Open</a>
+
+<span th:fragment="badge(text, color, textColor)" th:text="${text}"
+      th:style="'display:inline-block;min-width:36px;text-align:center;padding:2px 10px;border-radius:6px;font-weight:600;color:' + ${textColor} + ';background-color:' + ${color} + ';'">OK</span>
+
+<table th:fragment="sectionTitle(icon, color, title)" role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 8px 0;">
+  <tr>
+    <td width="24" height="24" align="center" valign="middle"
+        th:style="'width:24px;height:24px;border-radius:8px;background-color:' + ${palette[color]} + ';'">
+      <img th:src="'cid:icon-' + ${icon}" width="14" height="14" alt="" style="display:block;border:0;margin:0 auto;">
+    </td>
+    <td valign="middle" style="padding-left:10px;font-size:14px;font-weight:600;" th:text="${title}">Section</td>
+  </tr>
+</table>
+</body>
+</html>

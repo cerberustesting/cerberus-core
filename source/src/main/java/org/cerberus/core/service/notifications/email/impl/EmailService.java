@@ -19,7 +19,9 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
-import java.nio.charset.Charset;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.cerberus.core.service.notifications.email.entity.Email;
 import org.apache.commons.mail.HtmlEmail;
 import org.cerberus.core.crud.entity.LogEvent;
@@ -39,6 +41,9 @@ public class EmailService implements IEmailService {
     @Autowired
     private ILogEventService logEventService;
 
+    // Icons of the templates are referenced as cid:icon-<name> and embedded in the mail from emails/icons/<name>.png.
+    private static final Pattern ICON_CID = Pattern.compile("cid:icon-([a-z0-9-]+)");
+
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(EmailService.class);
 
     @Override
@@ -52,7 +57,7 @@ public class EmailService implements IEmailService {
             email.setHostName(cerberusEmail.getHost());
             email.setFrom(cerberusEmail.getFrom());
             email.setSubject(cerberusEmail.getSubject());
-            email.setHtmlMsg(cerberusEmail.getBody());
+            email.setHtmlMsg(embedGeneratedImages(email, embedIcons(email, cerberusEmail.getBody()), cerberusEmail));
             email.setCharset("UTF-8");
             if (cerberusEmail.isSetTls()) {
                 email = (HtmlEmail) email.setStartTLSEnabled(true);
@@ -116,6 +121,54 @@ public class EmailService implements IEmailService {
             LOG.debug("Mail not send because smtp host not defined or default. smtp : " + cerberusEmail.getHost());
         }
 
+    }
+
+    /**
+     * Embed in the mail the icons referenced by the body (cid:icon-name) and point the body to the embedded parts.
+     * An unknown icon is left as is : the client simply does not display it.
+     */
+    private String embedIcons(HtmlEmail email, String body) {
+        String result = body;
+        Matcher matcher = ICON_CID.matcher(body);
+        java.util.Set<String> done = new java.util.HashSet<>();
+        while (matcher.find()) {
+            String name = matcher.group(1);
+            if (!done.add(name)) {
+                continue;
+            }
+            URL icon = EmailService.class.getClassLoader().getResource("emails/icons/" + name + ".png");
+            if (icon == null) {
+                LOG.warn("Email icon not found : emails/icons/" + name + ".png");
+                continue;
+            }
+            try {
+                String cid = email.embed(icon, "icon-" + name + ".png");
+                result = result.replace("cid:icon-" + name, "cid:" + cid);
+            } catch (Exception e) {
+                LOG.warn("Could not embed the email icon '" + name + "'", e);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Embed the images generated for the mail (ex : the donut of the end of campaign), referenced by the body as cid:img-name.
+     */
+    private String embedGeneratedImages(HtmlEmail email, String body, Email cerberusEmail) {
+        String result = body;
+        for (java.util.Map.Entry<String, byte[]> image : cerberusEmail.getInlineImages().entrySet()) {
+            String reference = "cid:img-" + image.getKey();
+            if (!body.contains(reference)) {
+                continue;
+            }
+            try {
+                String cid = email.embed(new org.apache.commons.mail.ByteArrayDataSource(image.getValue(), "image/png"), "img-" + image.getKey() + ".png");
+                result = result.replace(reference, "cid:" + cid);
+            } catch (Exception e) {
+                LOG.warn("Could not embed the email image '" + image.getKey() + "'", e);
+            }
+        }
+        return result;
     }
 
 }

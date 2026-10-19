@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- Common branded layout of every email, same look as the cards of the front.
+     Content templates call it with : <html th:replace="~{components/layout :: layout(~{::content})}"> and define a th:fragment="content".
+     Available variables : theme, title, titleIcon (lucide icon name), titleColor (hex), palette (color name -> hex). -->
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title}">Title</title>
+</head>
+<body style="margin:0;padding:0;" th:style="'margin:0;padding:0;background-color:' + ${theme.backgroundColor()} + ';'">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       th:style="'background-color:' + ${theme.backgroundColor()} + ';'">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:640px;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e2124;">
+        <tr>
+          <td style="padding:0 4px 14px 4px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td th:if="${!#strings.isEmpty(theme.logoUrl())}" style="padding-right:10px;" valign="middle">
+                  <img th:src="${theme.logoUrl()}" th:alt="${theme.appName()}" height="28" style="display:block;border:0;height:28px;" alt="">
+                </td>
+                <td valign="middle" style="font-size:14px;font-weight:600;color:#64748b;" th:text="${theme.appName()}">Cerberus Testing</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color:#ffffff;border:1px solid #dbe3ee;border-radius:16px;padding:24px 28px;font-size:14px;line-height:1.5;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;">
+              <tr>
+                <td width="32" height="32" align="center" valign="middle"
+                    th:style="'width:32px;height:32px;border-radius:12px;background-color:' + ${titleColor} + ';'">
+                  <img th:src="'cid:icon-' + ${titleIcon}" width="16" height="16" alt="" style="display:block;border:0;margin:0 auto;">
+                </td>
+                <td valign="middle" style="padding-left:12px;font-size:16px;font-weight:600;" th:text="${title}">Title</td>
+              </tr>
+            </table>
+            <th:block th:replace="${content}">Content</th:block>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 4px 0 4px;font-size:12px;color:#94a3b8;">
+            <div th:if="${!#strings.isEmpty(theme.footerText())}" th:text="${theme.footerText()}">Footer</div>
+            <div>
+              <span th:text="${theme.appName()}">Cerberus Testing</span>
+              <th:block th:if="${!#strings.isEmpty(theme.baseUrl())}"> - <a th:href="${theme.baseUrl()}" th:text="${theme.baseUrl()}" style="color:#94a3b8;text-decoration:none;">http://localhost:8080/Cerberus</a></th:block>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

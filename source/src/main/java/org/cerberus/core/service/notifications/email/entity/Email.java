@@ -35,6 +35,7 @@ public class Email {
     String from;
     String to;
     String cc;
+    java.util.Map<String, byte[]> inlineImages = new java.util.HashMap<>();
 
     public String getHost() {
         return host;
@@ -115,5 +116,15 @@ public class Email {
     public void setCc(String cc) {
         this.cc = cc;
     }
-    
+
+    /**
+     * Images generated for this mail, by name : the body references them with cid:img-name.
+     */
+    public java.util.Map<String, byte[]> getInlineImages() {
+        return inlineImages;
+    }
+
+    public void addInlineImage(String name, byte[] png) {
+        this.inlineImages.put(name, png);
+    }
 }
