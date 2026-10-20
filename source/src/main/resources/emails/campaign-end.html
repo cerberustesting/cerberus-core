@@ -85,7 +85,12 @@
           </td>
         </tr>
         <tr style="border-bottom:1px solid #e2e8f0;">
-          <td></td><td colspan="6" style="font-size:11px;color:#94a3b8;" th:text="${row.description()}">description</td>
+          <td></td>
+          <td colspan="6" style="padding-top:0;">
+            <div style="font-size:11px;color:#94a3b8;" th:if="${!#strings.isEmpty(row.description())}" th:text="${row.description()}">description</div>
+            <div th:if="${!#strings.isEmpty(row.controlMessage())}" th:text="${row.controlMessage()}"
+                 th:style="'margin-top:3px;padding-left:8px;font-size:11px;color:#475569;border-left:3px solid ' + ${row.color()} + ';'">control message</div>
+          </td>
         </tr>
       </tbody>
       <tbody th:if="${notOkTotal > maxLines}">

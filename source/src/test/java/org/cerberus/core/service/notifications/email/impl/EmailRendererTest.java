@@ -32,6 +32,7 @@ import org.cerberus.core.service.notifications.email.entity.BuildContentRow;
 import org.cerberus.core.service.notifications.email.entity.EmailTheme;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -109,8 +110,8 @@ class EmailRendererTest {
         model.put("hasDonut", true);
         model.put("donutSize", 190);
         model.put("executionRows", List.of(
-                new EmailGenerationService.ExecutionRow(1, "folder", "TC001", "QA", "FR", "chrome", "KO", "#ef4444", "#ffffff", "https://acme.test/TestCaseExecution.jsp?executionId=5", "<b>desc</b>"),
-                new EmailGenerationService.ExecutionRow(2, "folder", "TC002", "QA", "FR", "chrome", "FA", "#f97316", "#ffffff", "", "")));
+                new EmailGenerationService.ExecutionRow(1, "folder", "TC001", "QA", "FR", "chrome", "KO", "#ef4444", "#ffffff", "https://acme.test/TestCaseExecution.jsp?executionId=5", "<b>desc</b>", "Element <div> not found"),
+                new EmailGenerationService.ExecutionRow(2, "folder", "TC002", "QA", "FR", "chrome", "FA", "#f97316", "#ffffff", "", "", "")));
         model.put("notOkTotal", notOkTotal);
         model.put("maxLines", maxLines);
         return model;
@@ -127,6 +128,10 @@ class EmailRendererTest {
         assertTrue(html.contains("TC001"));
         assertTrue(html.contains("executionId=5"));
         assertTrue(html.contains("&lt;b&gt;desc&lt;/b&gt;"));
+        // The control message is displayed (escaped) with the color of the status, only on the rows that have one.
+        assertTrue(html.contains("Element &lt;div&gt; not found"));
+        assertTrue(html.contains("border-left:3px solid #ef4444"));
+        assertEquals(1, html.split("border-left:3px solid", -1).length - 1);
         assertTrue(html.contains("Open the campaign report"));
         assertFalse(html.contains("Only the first"));
         // Empty lists are not displayed.

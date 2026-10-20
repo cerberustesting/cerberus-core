@@ -63,6 +63,8 @@ public class EmailGenerationService implements IEmailGenerationService {
     private static final Logger LOG = LogManager.getLogger(EmailGenerationService.class);
 
     private static final String DEFAULT_FROM = "Cerberus <no.reply@cerberus-testing.org>";
+    // Control messages can be very long (stack traces...) : only the beginning is displayed in the mail.
+    private static final int CONTROL_MESSAGE_MAX_LENGTH = 400;
     private static final DateTimeFormatter TAGEND_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
@@ -240,7 +242,7 @@ public class EmailGenerationService implements IEmailGenerationService {
      * Row of the non OK testcase table of the end of campaign email.
      */
     public record ExecutionRow(int priority, String test, String testcase, String environment, String country, String robotDecli,
-            String status, String color, String textColor, String url, String description) {
+            String status, String color, String textColor, String url, String description, String controlMessage) {
     }
 
     @Override
@@ -311,7 +313,8 @@ public class EmailGenerationService implements IEmailGenerationService {
                     executionRows.add(new ExecutionRow(execution.getTestCasePriority(), execution.getTest(), execution.getTestCase(),
                             execution.getEnvironment(), execution.getCountry(), execution.getRobotDecli(),
                             execution.getControlStatus(), EmailStatusPalette.color(execution.getControlStatus()),
-                            EmailStatusPalette.textColor(execution.getControlStatus()), url, execution.getDescription()));
+                            EmailStatusPalette.textColor(execution.getControlStatus()), url, execution.getDescription(),
+                            shorten(execution.getControlMessage(), CONTROL_MESSAGE_MAX_LENGTH)));
                 }
                 notOkTotal++;
             }
@@ -365,6 +368,14 @@ public class EmailGenerationService implements IEmailGenerationService {
     // orange from 50%, red below. Medium tones (tailwind -600) : the image is readable on a light and on a dark background.
     private static String rateColor(int okPct) {
         return okPct >= 100 ? "#16a34a" : okPct >= 50 ? "#d97706" : "#dc2626";
+    }
+
+    private static String shorten(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        String trimmed = text.trim();
+        return trimmed.length() <= maxLength ? trimmed : trimmed.substring(0, maxLength).trim() + "...";
     }
 
     private static int percent(int part, int total) {
