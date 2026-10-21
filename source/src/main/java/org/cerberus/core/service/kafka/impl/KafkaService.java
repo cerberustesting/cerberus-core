@@ -818,7 +818,65 @@ public class KafkaService implements IKafkaService {
                             }
 
                         }
-                        
+
+                    } else if (SCHEMAREGISTRY_JSONSCHEMA.equals(schemaRegistryFlag)) {
+
+                        // NON AVRO VERSION
+                        @SuppressWarnings("unchecked")
+                        ConsumerRecords<String, JSONObject> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                        LOG.debug("End Poll.");
+                        if (Instant.now().toEpochMilli() > timeoutTime) {
+                            LOG.debug("Timed out searching for record");
+                            consumer.wakeup(); //exit
+                        }
+                        //Now for each record in the batch of records we got from Kafka
+                        for (ConsumerRecord<String, JSONObject> record : records) {
+                            try {
+                                LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                                LOG.debug("  " + record.key() + " | " + record.value());
+
+                                // Parsing header.
+                                JSONObject headerJSON = new JSONObject();
+                                for (Header header : record.headers()) {
+                                    String headerKey = header.key();
+                                    String headerValue = new String(header.value());
+                                    headerJSON.put(headerKey, headerValue);
+                                }
+
+//                                boolean recordError = false;
+//
+//                                // Parsing event message.
+//                                JSONObject recordJSON = new JSONObject();
+//                                recordJSON = record.value();
+                                // Complete event with headers.
+                                JSONObject messageJSON = new JSONObject();
+                                messageJSON.put("key", record.key());
+                                messageJSON.put("value", record.value());
+                                messageJSON.put("offset", record.offset());
+                                messageJSON.put("partition", record.partition());
+                                messageJSON.put("header", headerJSON);
+
+                                nbEvents++;
+
+                                boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+
+                                if (match) {
+                                    resultJSON.put(messageJSON);
+                                    nbFound++;
+                                    if (nbFound >= targetNbEventsInt) {
+                                        consume = false;  //exit the consume loop
+                                        consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                        break; //if we've found a match, stop looping through the current record batch
+                                    }
+                                }
+
+                            } catch (Exception ex) {
+                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                //but we don't want to trigger the catch block for Kafka consumption
+                                LOG.error(ex, ex);
+                            }
+                        }
+
                     } else {
 
                         // NON AVRO VERSION
