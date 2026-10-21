@@ -823,15 +823,24 @@ public class KafkaService implements IKafkaService {
 
                         // NON AVRO VERSION
                         @SuppressWarnings("unchecked")
-                        ConsumerRecords<String, JSONObject> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                        ConsumerRecords<String, Object> records = consumer.poll(Duration.ofSeconds(pollDurationSec));
                         LOG.debug("End Poll.");
                         if (Instant.now().toEpochMilli() > timeoutTime) {
                             LOG.debug("Timed out searching for record");
                             consumer.wakeup(); //exit
                         }
                         //Now for each record in the batch of records we got from Kafka
-                        for (ConsumerRecord<String, JSONObject> record : records) {
+                        for (ConsumerRecord<String, Object> record : records) {
                             try {
+                                
+                                Object value = record.value();
+
+                                LOG.info("Kafka value class: {}",
+                                        value == null ? "null" : value.getClass().getName());
+
+                                LOG.info("Kafka value: {}", value);
+
+                                
                                 LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
                                 LOG.debug("  " + record.key() + " | " + record.value());
 
@@ -858,7 +867,7 @@ public class KafkaService implements IKafkaService {
 
                                 nbEvents++;
 
-                                boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+                                boolean match = isRecordMatch(new JSONObject((Map<?, ?>) record.value()).toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
 
                                 if (match) {
                                     resultJSON.put(messageJSON);

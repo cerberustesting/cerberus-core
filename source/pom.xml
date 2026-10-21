@@ -231,7 +231,7 @@
         </dependency>
 
 
-        <!-- Log4J 2.25.3 (LATEST STABLE) : 16/12/2025 - Usage : Log
+        <!-- Log4J 2.25.5 (LATEST STABLE) : 21/10/2026 - Usage : Log
         https://mvnrepository.com/artifact/org.mozilla/rhino -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
