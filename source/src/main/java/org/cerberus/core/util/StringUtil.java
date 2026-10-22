@@ -358,6 +358,7 @@ public final class StringUtil {
      * @return formatted host
      */
     public static String cleanHostURL(String host) {
+        host = host.trim();
         String newHost = host;
         if (!(host.startsWith(HTTP_PREFIX) || host.startsWith(HTTPS_PREFIX) || host.startsWith(FTP_PREFIX) || host.startsWith(FTPS_PREFIX) || host.startsWith(FILE_PREFIX))) {
             // No prefix so we put http:// by default.

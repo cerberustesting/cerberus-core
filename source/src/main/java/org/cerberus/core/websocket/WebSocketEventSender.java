@@ -274,7 +274,7 @@ public class WebSocketEventSender {
             messageCountByWsId.computeIfAbsent(session.getId(), k -> new AtomicLong()).incrementAndGet();
             return true;
         } catch (Exception e) {
-            LOG.warn("Unable to send WebSocket event. channel={}", envelope.channel(), e.toString());
+            LOG.warn("Unable to send WebSocket event. channel={} error={}", envelope.channel(), e.toString());
             return false;
         }
     }
@@ -427,7 +427,7 @@ public class WebSocketEventSender {
 
         int removedCount = removedPayloads != null ? removedPayloads.size() : 0;
 
-        LOG.warn(
+        LOG.debug(
                 "Expired pending WebSocket events removed. channel={} removed={} age={}ms retention={}ms",
                 channel,
                 removedCount,
