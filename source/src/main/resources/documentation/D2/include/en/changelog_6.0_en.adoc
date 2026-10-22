@@ -2,6 +2,13 @@
 [square]
 * The new build/revision email no longer builds its SQL query by concatenating values (parameters are now bound).
 * Special characters (like '<') in testcase names, descriptions or campaign names no longer break the notification emails (all values are now escaped).
+* Executions: fixed a NPE in the result message aggregation, executions that could end up in PE when building the global result message, a `ConcurrentModificationException` in the execution monitor, and NPEs on queued executions without application or without start/end date.
+* Robots: the host password was cleared when saving a robot, creating a robot executor could fail on a NOT NULL constraint, and the executor extension host could be overridden by the stale robot IP.
+* Fixed an empty grid on the campaign report and on the homepage, the Admin menu that disappeared with Keycloak authentication, the AI assistant bottom bar hiding the end of the page, and a 500 error on the AI usage page.
+* Fixed the application field that could not be filled in the simple test case creation modal, optional dropdown values that could not be cleared, and the filter on last executions of a test folder.
+* Fixed parameters that could not be saved, scripts imported from Cerberus JSON that disappeared, application service creation that failed on every insert, and double `//` in generated URLs.
+* Public API (`/api/public/**`): errors now return a JSON 500 instead of a login redirect, and authentication of session-based webapp calls is fixed. Test case, step, action and control options are now null-safe.
+* Host URLs are now trimmed before being used.
 
 *Improvements / New features*
 [square]
@@ -11,7 +18,61 @@
 * Added a public API endpoint to check the rendering of every notification email with real data: `POST /api/public/notifications/test`. The email is always sent to the email address of the user owning the API key.
 * Added a public API endpoint to send the end of campaign email on demand: `POST /api/public/campaignexecutions/{tag}/notify`.
 
+*Technical upgrades*
+[square]
+* Migration to Java 17 (instead of 11) and Jakarta EE.
+* Migration to Tomcat 11. The WAR is built for Tomcat 11 and the Docker image is now based on `tomcat:11-jre17-temurin`.
+* Spring upgraded to 6.2. Build now uses Node 22 LTS.
+* Security: Thymeleaf upgraded to 3.1.5 (sandbox bypass vulnerability) and log4j vulnerabilities fixed.
+* Kafka: client and schema registry dependencies aligned, support of the 'JSON Schema' schema registry, and consistent timeout parameters (no more `delivery.timeout.ms` ConfigException).
+* `X-Forwarded-*` headers are now handled by the Tomcat RemoteIpValve (including for the MCP protected resource metadata).
+
+*New user interface (front-end V2)*
+[square]
+* Reporting, admin and queue pages rebuilt on the new charter: 20 pages migrated on shared table and label-tree engines.
+* Tables: column reordering (with drop position displayed) and an explicit view reset.
+* Right panel and footer on the pages, with a unified notification center. Campaign events are received in real time through a single WebSocket, and changes on applications or invariants are notified.
+* Run Tests page rebuilt with campaign and test case modes, reusing the visual codes of the simple execution modal. The simple execution modal can open Run Tests with the current selection.
+* New layout of the robot modal.
+* Execution page V2: application, invariant and robot modals open from their tabs, false negative button displayed only when the execution is not OK (with a green bar in the header once declared), thumbnails in portrait for APK and IPA.
+* Script V2 page: `%variable%` autocompletion in the properties tab and a button to open the application object modal from `%object.xxx%` keywords.
+* Campaign execution report: new Edit campaign button.
+
+*Monitoring*
+[square]
+* My Monitor: dashboards of widgets (KPI, timeline, pie, radar, text) with a TV mode.
+* Scheduled Runs: new page to follow and create campaign schedules.
+* API Monitor: calls of the registered services are recorded and followed in a new page, with a scheduled job purging the statistics.
+* Web Monitor: new page following the network statistics of one test case.
+
+*AI assistant and MCP*
+[square]
+* AI assistant: new tools (robots, executions, environments, test folders, test case creation), suggestions, display of tools and tokens used, configurable Anthropic base URL, chat kept open when changing page, and sessions/tokens usage on the homepage.
+* MCP server authentication with OAuth (RFC 9728 discovery) or API key, executed as the actual logged-in user and restricted to the caller's active system context.
+* New MCP tools: labels, campaigns, eventhooks, data libraries (create, inspect and repair), execution reading and debugging, service import from curl, positional test case editing, variables and properties available to a test case, and waiting for a run to finish.
+* MCP Delta: a 5-tool MCP endpoint available at `/mcpdelta/mcp`.
+* New in-app MCP Inspector page.
+
+*Public API*
+[square]
+* New endpoints for applications, tests, services, application objects, labels, data libraries, and for robots, capabilities and executors (create and delete). Execution search by string.
+* OAuth2 Bearer tokens are accepted on `/api/public/**`, and a `GET /api/public/oauth-config` discovery endpoint is available.
+
+*Execution engine and robots*
+[square]
+* Service calls can go through the relay of the Cerberus Robot Proxy. The robot is kept on SRV executions queued through the API and MCP, and the execution is no longer refused when the relay is unreachable.
+* Robot executors now have an `ExecutorExtensionHost`, decoupled from the Selenium host.
+* `remoteUrl` and `remoteControlUrl` can be updated during an execution in order to display mobile executions.
+* Image recognition now supports verify element visible / not visible.
+* Elements starting with `((//` are considered as xpath.
+* Better execution logs: sort and id of every step, action and control, conditions, and logs of HTTP calls.
+* All TCF EU v2 attributes are supported by the consent string test (IABGPP tool).
+* New debug feature to retrieve the elements of a page.
+* Better handling of the timeout of the Cerberus robot extension.
+
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Breaking change on notification emails: the body of the emails is no longer configurable from parameters. The parameters `cerberus_notification_accountcreation_body`, `cerberus_notification_forgotpassword_body`, `cerberus_notification_newbuildrevision_body`, `cerberus_notification_disableenvironment_body`, `cerberus_notification_newchain_body`, `cerberus_notification_tagexecutionstart_body`, `cerberus_notification_tagexecutionend_body`, `cerberus_notification_executionstart_body` and `cerberus_notification_executionend_body` are deleted during the upgrade. Any customization of these bodies is lost: save them before upgrading if needed. Subject, from, to and cc parameters are kept.
 * The email bodies defined on environments (new build/revision, environment disabled, new chain) are no longer used.
+* If Cerberus runs behind a reverse proxy, check that it sends the `X-Forwarded-*` headers, as they are now handled by the Tomcat RemoteIpValve.
+* The application now requires Java 17 and Tomcat 11 (Jakarta EE). Custom Tomcat deployments must be upgraded accordingly.
