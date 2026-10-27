@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.bidi.BiDi;
 
 /**
  *
@@ -47,6 +48,7 @@ public class Session {
 
     private WebDriver driver;
     private AppiumDriver appiumDriver;
+    private BiDi biDi;
     private String browserProcess;
 
     private Integer cerberus_selenium_implicitlyWait;
@@ -380,7 +382,32 @@ public class Session {
         this.cerberus_selenium_autoscroll = cerberus_selenium_autoscroll;
     }
 
+    public BiDi getBiDi() {
+        return biDi;
+    }
+
+    public void setBiDi(BiDi biDi) {
+        this.biDi = biDi;
+    }
+
+    /**
+     * Close the BiDi websocket (if any) properly, so that the browser does not
+     * reset the connection when the driver quits.
+     */
+    public void closeBiDi() {
+        if (biDi != null) {
+            try {
+                biDi.close();
+            } catch (Exception ex) {
+                // Nothing to do, the session is ending.
+            } finally {
+                biDi = null;
+            }
+        }
+    }
+
     public void quit() {
+        closeBiDi();
         if (driver != null) {
             driver.quit();
         }

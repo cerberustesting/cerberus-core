@@ -719,6 +719,7 @@ public class RobotServerService implements IRobotServerService {
                                 String preloadJs = "() => {" + execution.getRobotObj().getPreloadScript() + "}";
 
                                 BiDiUtils.addPreloadScript(biDiSession, preloadJs);
+                                execution.getSession().setBiDi(biDiSession);
 
                                 execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Set browser preload Script : " + execution.getRobotObj().getPreloadScript());
 
@@ -1875,6 +1876,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.info("Stop execution robot session");
             switch (tce.getRobotProvider()) {
                 case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                    session.closeBiDi();
                     if (session.getAppiumDriver() != null) {
                         session.getAppiumDriver().close();
                     }
@@ -1883,6 +1885,7 @@ public class RobotServerService implements IRobotServerService {
                     }
                     break;
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                    session.closeBiDi();
                     if (session.getDriver() != null) {
                         session.getDriver().quit();
                     }
