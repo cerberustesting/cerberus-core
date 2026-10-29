@@ -17,6 +17,8 @@
 * End of campaign email now displays a "Report by status" similar to the one of the campaign report page (tiles, donut and legend).
 * Added a public API endpoint to check the rendering of every notification email with real data: `POST /api/public/notifications/test`. The email is always sent to the email address of the user owning the API key.
 * Added a public API endpoint to send the end of campaign email on demand: `POST /api/public/campaignexecutions/{tag}/notify`.
+* End of campaign Slack message redesigned (Block Kit, in English): campaign name with its verdict and CI score, date, duration, environment, country and browser, the number of executions with the OK / Non OK / flaky counts, up to 3 anomalies (with the expected and actual values when available) linked to their executions, and a button to the report. The bar on the left is green or red like the verdict.
+* Added a public API endpoint to send the end of campaign Slack message on demand: `POST /api/public/campaignexecutions/{tag}/notify-slack?webhook=`. Only Slack webhooks are accepted.
 
 *Technical upgrades*
 [square]

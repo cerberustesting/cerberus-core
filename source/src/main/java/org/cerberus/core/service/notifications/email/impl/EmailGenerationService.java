@@ -22,9 +22,7 @@ package org.cerberus.core.service.notifications.email.impl;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +44,8 @@ import org.cerberus.core.service.notifications.email.IEmailFactory;
 import org.cerberus.core.service.notifications.email.IEmailGenerationService;
 import org.cerberus.core.service.notifications.email.IEmailRenderer;
 import org.cerberus.core.service.notifications.email.ISmtpConfigService;
+import org.cerberus.core.service.notifications.common.CampaignEndFigures;
+import org.cerberus.core.service.notifications.common.ExecutionSort;
 import org.cerberus.core.service.notifications.email.entity.Email;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
@@ -260,35 +260,24 @@ public class EmailGenerationService implements IEmailGenerationService {
         String robots = StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ",");
 
         // Report by status : same figures as the campaign report page.
-        Map<String, Integer> counts = new LinkedHashMap<>();
-        counts.put("OK", tag.getNbOK());
-        counts.put("KO", tag.getNbKO());
-        counts.put("FA", tag.getNbFA());
-        counts.put("NA", tag.getNbNA());
-        counts.put("NE", tag.getNbNE());
-        counts.put("WE", tag.getNbWE());
-        counts.put("PE", tag.getNbPE());
-        counts.put("QU", tag.getNbQU());
-        counts.put("QE", tag.getNbQE());
-        counts.put("PA", tag.getNbPA());
-        counts.put("CA", tag.getNbCA());
-        int total = tag.getNbExeUsefull();
+        CampaignEndFigures figures = new CampaignEndFigures(tag);
+        int total = figures.total();
         List<StatusRow> statusRows = new ArrayList<>();
         List<DonutChartRenderer.Slice> slices = new ArrayList<>();
         for (String status : EmailStatusPalette.ORDER) {
-            int nb = counts.get(status);
+            int nb = figures.count(status);
             if (nb > 0) {
                 statusRows.add(new StatusRow(status, EmailStatusPalette.label(status), EmailStatusPalette.color(status), nb, percent(nb, total)));
                 slices.add(new DonutChartRenderer.Slice(EmailStatusPalette.color(status), nb));
             }
         }
-        int okPct = percent(counts.get("OK"), total);
-        int notOk = counts.get("KO") + counts.get("FA") + counts.get("NA") + counts.get("CA");
-        int pending = counts.get("QU") + counts.get("QE") + counts.get("PA") + counts.get("PE") + counts.get("WE") + counts.get("NE");
+        int okPct = figures.okPercent();
+        int notOk = figures.notOk();
+        int pending = figures.pending();
 
         List<StatusTile> tiles = new ArrayList<>();
         tiles.add(tile("blue", String.valueOf(total), "Total", ""));
-        tiles.add(tile("green", String.valueOf(counts.get("OK")), "OK", okPct + "%"));
+        tiles.add(tile("green", String.valueOf(figures.count("OK")), "OK", okPct + "%"));
         tiles.add(tile("red", String.valueOf(notOk), "Not OK", percent(notOk, total) + "%"));
         if (pending > 0) {
             tiles.add(tile("orange", String.valueOf(pending), "Pending", percent(pending, total) + "%"));
@@ -302,7 +291,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
 
         List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
-        Collections.sort(testCaseExecutions, new SortExecution());
+        Collections.sort(testCaseExecutions, new ExecutionSort());
         int maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
         List<ExecutionRow> executionRows = new ArrayList<>();
         int notOkTotal = 0;
@@ -323,7 +312,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         // The donut is a picture : if it cannot be drawn the mail is sent without it, tiles and legend carry the figures.
         byte[] donut = null;
         try {
-            donut = DonutChartRenderer.render(slices, okPct + "%", "OK RATE", rateColor(okPct));
+            donut = DonutChartRenderer.render(slices, okPct + "%", "OK RATE", CampaignEndFigures.rateColor(okPct));
         } catch (Exception | LinkageError e) {
             LOG.warn("Could not draw the donut of the end of campaign email : " + e);
         }
@@ -364,12 +353,6 @@ public class EmailGenerationService implements IEmailGenerationService {
         return email;
     }
 
-    // Color of the OK rate at the center of the donut, like on the campaign report page : green when everything is OK,
-    // orange from 50%, red below. Medium tones (tailwind -600) : the image is readable on a light and on a dark background.
-    private static String rateColor(int okPct) {
-        return okPct >= 100 ? "#16a34a" : okPct >= 50 ? "#d97706" : "#dc2626";
-    }
-
     private static String shorten(String text, int maxLength) {
         if (text == null) {
             return "";
@@ -379,7 +362,7 @@ public class EmailGenerationService implements IEmailGenerationService {
     }
 
     private static int percent(int part, int total) {
-        return total > 0 ? Math.round(part * 100f / total) : 0;
+        return CampaignEndFigures.percent(part, total);
     }
 
     // Tile colors : the tailwind -50 background, -200 border and -600/700 value of the tone.
@@ -397,49 +380,6 @@ public class EmailGenerationService implements IEmailGenerationService {
                 return new StatusTile(value, label, sub, "#fffbeb", "#fde68a", "#b45309");
             default:
                 return new StatusTile(value, label, sub, "#f8fafc", "#e2e8f0", "#475569");
-        }
-    }
-
-    class SortExecution implements Comparator<TestCaseExecution> {
-        // Used for sorting in ascending order of 
-        // Label name. 
-
-        @Override
-        public int compare(TestCaseExecution a, TestCaseExecution b) {
-            if (a != null && b != null) {
-                int aPrio = a.getTestCasePriority();
-                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
-                    aPrio = 999 + a.getTestCasePriority();
-                }
-                int bPrio = b.getTestCasePriority();
-                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
-                    bPrio = 999 + b.getTestCasePriority();
-                }
-
-                if (aPrio == bPrio) {
-                    if (a.getTest().equals(b.getTest())) {
-                        if (a.getTestCase().equals(b.getTestCase())) {
-                            if (a.getEnvironment().equals(b.getEnvironment())) {
-                                if (a.getCountry().equals(b.getCountry())) {
-                                    return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
-                                } else {
-                                    return a.getCountry().compareToIgnoreCase(b.getCountry());
-                                }
-                            } else {
-                                return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
-                            }
-                        } else {
-                            return a.getTestCase().compareToIgnoreCase(b.getTestCase());
-                        }
-                    } else {
-                        return a.getTest().compareToIgnoreCase(b.getTest());
-                    }
-                } else {
-                    return aPrio - bPrio;
-                }
-            } else {
-                return 1;
-            }
         }
     }
 

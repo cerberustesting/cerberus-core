@@ -20,13 +20,16 @@
 package org.cerberus.core.service.notifications.slack.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.List;
 
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.service.notifications.common.ExecutionSort;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     @Autowired
     private IParameterService parameterService;
     @Autowired
-    private ITagService tagService;
+    private ITestCaseExecutionService testCaseExecutionService;
 
     @Override
     public JSONObject generateNotifyStartTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
@@ -68,59 +71,13 @@ public class SlackGenerationService implements ISlackGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
-        String jsonMessage = "{\n"
-                + "	\"attachments\": [\n"
-                + "		{\n"
-                + "			\"color\": \"%COLOR%\",\n"
-                + "			\"fallback\": \"%MESSAGE%\",\n"
-                + "            \n"
-                + "			\"blocks\": [\n"
-                + "				{\n"
-                + "					\"type\": \"section\",\n"
-                + "					\"fields\": [\n"
-                + "						{\n"
-                + "							\"type\": \"mrkdwn\",\n"
-                + "							\"text\": \"%MESSAGE%\\n*Campaign %STATUS-MESSAGE%. CI Score = %CISCORE% vs %CITHRESHOLD%*\\n%TAG-SUMMARY%\"\n"
-                + "						}\n"
-                + "					]\n"
-                + "				}\n"
-                + "			]\n"
-                + "		}\n"
-                + "	],\n"
-                + "	\"username\": \"Cerberus\",\n"
-                + "	\"channel\": \"%CHANNEL%\"\n"
-                + "}";
+        String cerberusUrl = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringCerberusURLByKey(), "/");
+        List<TestCaseExecution> executions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+        Collections.sort(executions, new ExecutionSort());
 
-        String cerberusUrl = parameterService.getParameterStringCerberusURLByKey();
-        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeURL(tag.getTag());
-
-        JSONObject slackMessage = new JSONObject();
-        JSONObject attachementObj = new JSONObject();
-
-        String message = "Execution Tag '" + tag.getTag() + "' Ended. <" + cerberusUrl + "|Click here> for details.";
-
-        String slackStatus = "";
-        String color = "";
-        if ("OK".equalsIgnoreCase(tag.getCiResult())) {
-            color = TestCaseExecution.CONTROLSTATUS_OK_COL_EXT;
-            slackStatus = "successfully executed";
-        } else {
-            color = TestCaseExecution.CONTROLSTATUS_KO_COL_EXT;
-            slackStatus = "failed";
-        }
-
-        jsonMessage = jsonMessage
-                .replace("%COLOR%", color)
-                .replace("%MESSAGE%", message)
-                .replace("%CHANNEL%", channel)
-                .replace("%CISCORE%", String.valueOf(tag.getCiScore()))
-                .replace("%CITHRESHOLD%", String.valueOf(tag.getCiScoreThreshold()))
-                .replace("%STATUS-MESSAGE%", slackStatus)
-                .replace("%TAG-SUMMARY%", tagService.formatResult(tag));
-
-        LOG.debug(jsonMessage);
-        return new JSONObject(jsonMessage);
+        JSONObject slackMessage = CampaignEndSlackMessage.build(tag, executions, cerberusUrl, channel);
+        LOG.debug(slackMessage.toString(1));
+        return slackMessage;
 
     }
 

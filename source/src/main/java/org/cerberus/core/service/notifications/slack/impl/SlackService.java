@@ -69,7 +69,7 @@ public class SlackService implements ISlackService {
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     @Override
-    public void sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception {
+    public int sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception {
 
         CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
@@ -137,6 +137,7 @@ public class SlackService implements ISlackService {
             LOG.warn("Message sent to " + webHook + ":");
             LOG.warn(cerberusMessage.toString(1));
         }
+        return rc;
 
     }
 

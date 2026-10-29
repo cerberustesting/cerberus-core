@@ -67,6 +67,8 @@ import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.service.notifications.email.IEmailGenerationService;
 import org.cerberus.core.service.notifications.email.IEmailService;
 import org.cerberus.core.service.notifications.email.entity.Email;
+import org.cerberus.core.service.notifications.slack.ISlackGenerationService;
+import org.cerberus.core.service.notifications.slack.ISlackService;
 import org.cerberus.core.util.StringUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,6 +104,8 @@ public class CampaignExecutionController {
     private final ITagService tagService;
     private final IEmailGenerationService emailGenerationService;
     private final IEmailService emailService;
+    private final ISlackGenerationService slackGenerationService;
+    private final ISlackService slackService;
 
     private static final String EXECUTIONS_CAMPAIGN_CI_PATH = "/campaignexecutions/ci";
     private static final String EXECUTIONS_CAMPAIGN_CI_SVG_PATH = "/campaignexecutions/ci/svg";
@@ -166,6 +170,46 @@ public class CampaignExecutionController {
         } catch (Exception ex) {
             LOG.error("Could not send the campaign report email", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Could not send the email: " + ex.getMessage()));
+        }
+    }
+
+    @PostMapping(path = "/{campaignExecutionId}/notify-slack", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Send the end of campaign Slack message of a campaign execution (tag) to the given Slack webhook",
+            description = "Send the end of campaign Slack message (same content as the CAMPAIGN_END event hooks) on demand. Only Slack webhooks (https://hooks.slack.com/...) are accepted.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Message sent.", content = { @Content(mediaType = "application/json")})
+            }
+    )
+    public ResponseEntity<Map<String, String>> notifyCampaignExecutionBySlack(
+            @Parameter(description = "Campaign Execution ID (tag)") @PathVariable("campaignExecutionId") String campaignExecutionId,
+            @Parameter(description = "Slack incoming webhook URL") @RequestParam("webhook") String webhook,
+            @Parameter(description = "Slack channel (ignored by the webhooks tied to a channel)") @RequestParam(name = "channel", required = false) String channel,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest request,
+            @Parameter(hidden = true) Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        // The webhook URL is not logged : it is a secret.
+        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-POST", LogEvent.STATUS_INFO, "API /campaignexecutions/notify-slack called for tag " + campaignExecutionId, request, login);
+
+        // Only Slack webhooks : the endpoint must not become a way to call any URL from the Cerberus server.
+        if (webhook == null || !(webhook.startsWith("https://hooks.slack.com/") || webhook.startsWith("https://hooks.slack-gov.com/"))) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Please provide a Slack incoming webhook URL (https://hooks.slack.com/...)."));
+        }
+        try {
+            Tag tag = tagService.convert(tagService.readByKey(campaignExecutionId));
+            if (tag == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Campaign execution '" + campaignExecutionId + "' does not exist."));
+            }
+            int rc = slackService.sendSlackMessage(slackGenerationService.generateNotifyEndTagExecution(tag, channel), webhook);
+            if (rc < 200 || rc >= 300) {
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(Map.of("message", "Slack refused the message (http " + rc + ")."));
+            }
+            return ResponseEntity.ok(Map.of("message", "Campaign report sent to Slack."));
+        } catch (Exception ex) {
+            LOG.error("Could not send the campaign report Slack message", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Could not send the Slack message: " + ex.getMessage()));
         }
     }
 

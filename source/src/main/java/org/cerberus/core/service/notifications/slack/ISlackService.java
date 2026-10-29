@@ -27,6 +27,9 @@ import org.json.JSONObject;
  */
 public interface ISlackService {
 
-    public void sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception;
+    /**
+     * @return the http return code of the webhook
+     */
+    public int sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception;
 
 }
