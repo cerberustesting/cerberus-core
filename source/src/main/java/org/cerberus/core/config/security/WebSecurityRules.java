@@ -20,7 +20,11 @@
 package org.cerberus.core.config.security;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class WebSecurityRules {
 
@@ -34,6 +38,16 @@ public class WebSecurityRules {
     }
 
     public static void applyRules(HttpSecurity http) throws Exception {
+
+        // Spring Security defaults to X-Frame-Options: DENY, which breaks the same-origin iframe used by
+        // the /dummy pages (e.g. index1.jsp embedding index2.jsp). Relax it to SAMEORIGIN for /dummy/** only.
+        RequestMatcher dummy = m("/dummy/**");
+        http.headers(headers -> headers
+                .frameOptions(frame -> frame.disable())
+                .addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(dummy,
+                        new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+                .addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(new NegatedRequestMatcher(dummy),
+                        new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.DENY))));
 
         http.authorizeHttpRequests(auth -> auth
                 // Under the "keycloak" profile this is superseded by publicApiSecurityFilterChain
