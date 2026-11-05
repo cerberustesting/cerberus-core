@@ -70,7 +70,8 @@ include::include/{lang}/{file-to-include}[]
 :file-to-include: installation_externaltools_cloud_browserstack_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
-=== Lambdatest
+[[_lambdatest]]
+=== TestMu AI (Formerly LambdaTest)
 :file-to-include: installation_externaltools_cloud_lambdatest_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
