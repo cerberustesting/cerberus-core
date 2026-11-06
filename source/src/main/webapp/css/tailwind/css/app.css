@@ -37,6 +37,9 @@ src/main/webapp/css/
 @import "tailwindcss" source("./../../../../webapp");
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Classes built dynamically (card-with-tabs: 'bg-' + color + '-500') */
+@source inline("bg-{blue,green,purple,orange,pink,cyan,amber,red}-500");
+
 /* To remove after bootstrap removal */
 @import "./migration.css";
 
