@@ -296,10 +296,9 @@ public class SmokeBootstrapService {
             if (!StringUtil.isEmptyOrNull(existing.getApiKey())) {
                 return existing.getApiKey();
             }
-            existing.setApiKey(UUID.randomUUID().toString());
-            check(userService.update(existing), "API key of user " + smokeLogin);
+            String generated = storeApiKey(smokeLogin, UUID.randomUUID().toString());
             actions.add("user " + smokeLogin + " already exists, API key generated");
-            return existing.getApiKey();
+            return generated;
         }
 
         String apiKey = UUID.randomUUID().toString();
@@ -307,6 +306,8 @@ public class SmokeBootstrapService {
         User user = factoryUser.create(0, smokeLogin, request.getTestPassword(), "", "N", smokeLogin, "", "en", "", "", "", "",
                 "", "", "", request.getSystem(), "", "", "", "", "", "", "", "Smoke test user", apiKey, login, null, login, null);
         check(userService.create(user), "user " + smokeLogin);
+        // The insert of a user does not save the API key : it is set afterwards, on the user read back.
+        storeApiKey(smokeLogin, apiKey);
 
         List<UserRole> roles = new ArrayList<>();
         SMOKE_USER_ROLES.forEach(role -> roles.add(factoryUserRole.create(smokeLogin, role)));
@@ -315,6 +316,25 @@ public class SmokeBootstrapService {
         check(userSystemService.updateSystemsByUser(user, systems), "systems of user " + smokeLogin);
 
         actions.add("user " + smokeLogin + " created with an API key");
+        return apiKey;
+    }
+
+    /**
+     * Saves the API key on the user and checks it is the one stored, as the tests would be refused (401) otherwise.
+     *
+     * @return the API key stored
+     */
+    private String storeApiKey(String smokeLogin, String apiKey) {
+        User user = userService.readByKey(smokeLogin).getItem();
+        if (user == null || StringUtil.isEmptyOrNull(user.getLogin())) {
+            throw new IllegalStateException("User " + smokeLogin + " cannot be read to set its API key");
+        }
+        user.setApiKey(apiKey);
+        check(userService.update(user), "API key of user " + smokeLogin);
+        User stored = userService.readByKey(smokeLogin).getItem();
+        if (stored == null || !apiKey.equals(stored.getApiKey())) {
+            throw new IllegalStateException("The API key of user " + smokeLogin + " was not saved");
+        }
         return apiKey;
     }
 
