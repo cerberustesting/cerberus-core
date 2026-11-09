@@ -620,6 +620,7 @@
                     <include>prompts/**</include>
                     <include>mcpdelta/**</include>
                     <include>emails/**</include>
+                    <include>bootstrap/**</include>
                 </includes>
                 <filtering>false</filtering>
             </resource>

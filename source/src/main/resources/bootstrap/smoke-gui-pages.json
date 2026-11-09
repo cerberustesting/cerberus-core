@@ -1,0 +1,84 @@
+{
+  "steps": [
+    {
+      "description": "Automate",
+      "pages": [
+        {"path": "/QuickStart.jsp", "label": "Quick Start", "title": "Quick Start"}
+      ]
+    },
+    {
+      "description": "Maintain",
+      "pages": [
+        {"path": "/TestCaseList.jsp", "label": "Test Case", "title": "Test Case"},
+        {"path": "/TestDataLibList.jsp", "label": "Data Library", "title": "Data Library"},
+        {"path": "/ApplicationObjectList.jsp", "label": "Application Object", "title": "Application Object"},
+        {"path": "/AppServiceList.jsp", "label": "Service Library", "title": "Service Library"},
+        {"path": "/Label.jsp", "label": "Label & Tag", "title": "Label & Tag"},
+        {"path": "/ImpactAnalysis.jsp", "label": "Impact Analysis", "title": "Impact Analysis"}
+      ]
+    },
+    {
+      "description": "Execute",
+      "pages": [
+        {"path": "/RunTests.jsp", "label": "Run Test Case", "title": "Run Tests"},
+        {"path": "/ScheduledRuns.jsp", "label": "Scheduled Runs", "title": "Scheduled Runs"},
+        {"path": "/RobotList.jsp", "label": "Robot Management", "title": "Robot Management"},
+        {"path": "/CampaignList.jsp", "label": "Campaign Management", "title": "Test Campaign"},
+        {"path": "/TestCaseExecutionQueueList.jsp", "label": "Executions Queue", "title": "Executions Queue"}
+      ]
+    },
+    {
+      "description": "Monitor",
+      "pages": [
+        {"path": "/MyMonitor.jsp", "label": "My Monitor", "title": "My Monitor"},
+        {"path": "/ReportingMonitor.jsp", "label": "Real-Time Monitor", "title": "Real-Time Monitor"},
+        {"path": "/ReportingMonitorWeb.jsp", "label": "Web Monitor", "title": "Web Monitor"},
+        {"path": "/ReportingMonitorApi.jsp", "label": "API Monitor", "title": "API Monitor"}
+      ]
+    },
+    {
+      "description": "Insights",
+      "pages": [
+        {"path": "/TestCaseExecutionList.jsp", "label": "Execution History", "title": "Execution History"},
+        {"path": "/ReportingExecutionOverTime.jsp", "label": "Execution Trends", "title": "Execution Trends"},
+        {"path": "/ReportingExecutionByTagV2.jsp", "label": "Campaign Report", "title": "Campaign Report"},
+        {"path": "/ReportingCampaignOverTime.jsp", "label": "Campaign Trends", "title": "Campaign Trends"},
+        {"path": "/ReportingCampaignStatistics.jsp", "label": "Campaign Statistics", "title": "Campaign Statistics"}
+      ]
+    },
+    {
+      "description": "Settings",
+      "pages": [
+        {"path": "/ApplicationList.jsp", "label": "Application", "title": "Application"},
+        {"path": "/Environment.jsp", "label": "Environment", "title": "Environment"}
+      ]
+    },
+    {
+      "description": "Administration",
+      "pages": [
+        {"path": "/UserManager.jsp", "label": "User Management", "title": "User Management"},
+        {"path": "/LogEvent.jsp", "label": "Log Viewer", "title": "Log Viewer"},
+        {"path": "/DatabaseMaintenance.jsp", "label": "Database Maintenance", "title": "Database Maintenance"},
+        {"path": "/ParameterList.jsp", "label": "Parameters", "title": "Parameters"},
+        {"path": "/InvariantList.jsp", "label": "Invariants", "title": "Invariant"},
+        {"path": "/CerberusInformation.jsp", "label": "Cerberus Monitoring", "title": "Cerberus Monitoring"}
+      ]
+    },
+    {
+      "description": "Developer",
+      "pages": [
+        {"path": "/SwaggerUI.jsp", "label": "Swagger API", "title": "Swagger API"},
+        {"path": "/McpInspector.jsp", "label": "MCP Inspector", "title": "MCP Inspector"},
+        {"path": "/EventHookList.jsp", "label": "Event Hooks", "title": "Event Hooks"}
+      ]
+    },
+    {
+      "description": "Help",
+      "pages": [
+        {"path": "/documentation/D1/documentation_en.html", "label": "User Documentation", "title": "Introduction to Cerberus", "exactTitle": true},
+        {"path": "/documentation/D2/documentation_en.html", "label": "Administrator Documentation", "title": "Installation", "exactTitle": true},
+        {"path": "/documentation/D3/documentation_en.html", "label": "Usecase Documentation", "title": "Manage property on Testcase", "exactTitle": true}
+      ]
+    }
+  ]
+}
