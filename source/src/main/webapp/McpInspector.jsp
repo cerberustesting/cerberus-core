@@ -353,6 +353,65 @@
                                         </div>
                                     </dl>
                                 </div>
+
+                                <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-6 lg:col-span-2">
+                                    <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">Configuration par client</h3>
+                                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                        Claude.ai et ChatGPT n'exposent pas d'API pour enregistrer un serveur MCP :
+                                        l'ajout se fait à la main dans leur interface. Claude Code, Cursor et VS Code
+                                        peuvent être configurés en une commande ou un clic.
+                                    </p>
+                                    <p class="mt-1 text-sm text-amber-600 dark:text-amber-400" x-show="authMode !== 'oauth'">
+                                        Remplacez <span class="crb_code">&lt;votre clé API&gt;</span> par une clé API valide avant de lancer la commande ou le lien.
+                                    </p>
+
+                                    <div class="mt-4 grid gap-4 lg:grid-cols-2">
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Claude Code</h4>
+                                            <pre class="mt-2 overflow-auto rounded-xl bg-slate-900 dark:bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100 whitespace-pre-wrap break-all" x-text="claudeCodeCommand()"></pre>
+                                            <button @click="copyText(claudeCodeCommand())"
+                                                    class="inline-flex items-center gap-2 mt-2 rounded-md border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                <i data-lucide="copy" class="w-4 h-4"></i> Copier la commande
+                                            </button>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Cursor / VS Code</h4>
+                                            <div class="mt-2 flex flex-wrap gap-2">
+                                                <a :href="cursorDeepLink()"
+                                                   class="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                    <i data-lucide="external-link" class="w-4 h-4"></i> Ajouter à Cursor
+                                                </a>
+                                                <a :href="vscodeDeepLink()"
+                                                   class="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                    <i data-lucide="external-link" class="w-4 h-4"></i> Ajouter à VS Code
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Claude.ai / Claude Desktop</h4>
+                                            <ol class="mt-2 list-decimal pl-5 text-sm text-slate-500 dark:text-slate-400 space-y-1">
+                                                <li>Settings → Connectors → Add custom connector.</li>
+                                                <li>Nom : <span class="crb_code">Cerberus</span>, URL : <span class="crb_code" x-text="mcpEndpointUrl()"></span>
+                                                    <button @click="copyText(mcpEndpointUrl())" class="crb_table_iconbtn align-middle"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button></li>
+                                                <li x-show="authMode === 'oauth' && oauthConfig && oauthConfig.cerberusMcpClientId">
+                                                    Advanced settings → OAuth Client ID : <span class="crb_code" x-text="oauthConfig && oauthConfig.cerberusMcpClientId"></span></li>
+                                                <li x-show="authMode !== 'oauth'">Les connecteurs web ne permettent pas d'envoyer un header <span class="crb_code">X-API-KEY</span> : utilisez OAuth, ou Claude Code / Desktop en local.</li>
+                                            </ol>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">ChatGPT</h4>
+                                            <ol class="mt-2 list-decimal pl-5 text-sm text-slate-500 dark:text-slate-400 space-y-1">
+                                                <li>Settings → Apps &amp; Connectors → Advanced → activer le mode développeur.</li>
+                                                <li>Create : URL <span class="crb_code" x-text="mcpEndpointUrl()"></span>, authentification OAuth.</li>
+                                                <li x-show="authMode === 'oauth' && oauthConfig && oauthConfig.cerberusMcpClientId">
+                                                    Client ID : <span class="crb_code" x-text="oauthConfig && oauthConfig.cerberusMcpClientId"></span></li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </template>

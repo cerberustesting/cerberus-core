@@ -136,6 +136,35 @@ function mcpInspector() {
             return JSON.stringify({mcpServers: {cerberus: server}}, null, 2);
         },
 
+        /** Server definition shared by the per-client snippets below (same auth rules as connectionConfigPreview). */
+        connectionServerDef() {
+            const server = {type: 'http', url: this.mcpEndpointUrl()};
+            if (this.authMode !== 'oauth') {
+                server.headers = {'X-API-KEY': '<votre clé API>'};
+            } else if (this.oauthConfig && this.oauthConfig.cerberusMcpClientId) {
+                server.oauth = {clientId: this.oauthConfig.cerberusMcpClientId};
+            }
+            return server;
+        },
+
+        /** One-liner for Claude Code; add-json accepts the exact same definition as the config tab. */
+        claudeCodeCommand() {
+            return "claude mcp add-json cerberus '" + JSON.stringify(this.connectionServerDef()) + "'";
+        },
+
+        /** Cursor one-click install: config is the base64 of the server definition. */
+        cursorDeepLink() {
+            const def = this.connectionServerDef();
+            delete def.type;
+            return 'cursor://anysphere.cursor-deeplink/mcp/install?name=cerberus&config='
+                    + btoa(unescape(encodeURIComponent(JSON.stringify(def))));
+        },
+
+        /** VS Code one-click install: URL-encoded JSON including the server name. */
+        vscodeDeepLink() {
+            return 'vscode:mcp/install?' + encodeURIComponent(JSON.stringify({name: 'cerberus', ...this.connectionServerDef()}));
+        },
+
         /**
          * First line of a tool description, for the compact list row.
          *
