@@ -36,15 +36,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Builds the GUI smoke testcase: sign in through the Keycloak login form, then
- * open every page listed in {@code bootstrap/smoke-gui-pages.json} and check its
- * title and its HTTP status.
+ * Builds the GUI smoke testcases, one per menu section of {@code bootstrap/smoke-gui-pages.json}:
+ * sign in through the Keycloak login form, then open every page of the section and check
+ * its title and its HTTP status.
  */
 @Component
 public class SmokeGuiTestcaseFactory {
 
-    public static final String TEST_FOLDER = "Cerberus Smoke Tests";
-    public static final String TESTCASE_ID = "0001A";
+    public static final String TEST_FOLDER = "Cerberus Smoke Tests Web";
     public static final String USER_PROPERTY = "USER";
 
     private static final String PAGES_RESOURCE = "bootstrap/smoke-gui-pages.json";
@@ -53,27 +52,36 @@ public class SmokeGuiTestcaseFactory {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public TestCase build(String system, String application, String country, String dataLibName, String login) {
-        JsonNode pages = readPages();
+    /**
+     * @return one testcase per menu section, numbered from 0001A, each one signing in first
+     */
+    public List<TestCase> build(String system, String application, String country, String dataLibName, String login) {
+        List<TestCase> testCases = new ArrayList<>();
+        int number = 0;
+        for (JsonNode section : readPages().get("steps")) {
+            testCases.add(buildSection(section, String.format("%04dA", ++number), system, application, country, dataLibName, login));
+        }
+        return testCases;
+    }
 
+    private TestCase buildSection(JsonNode section, String testcaseId, String system, String application, String country,
+            String dataLibName, String login) {
+        String sectionName = section.get("description").asText();
         List<TestCaseStep> steps = new ArrayList<>();
         List<TestCaseCountryProperties> properties = new ArrayList<>();
         steps.add(signInStep(login));
 
-        int stepId = 10;
-        for (JsonNode stepNode : pages.get("steps")) {
-            stepId += 10;
-            List<TestCaseStepAction> actions = new ArrayList<>();
-            int actionId = 0;
-            for (JsonNode page : stepNode.get("pages")) {
-                actionId += 10;
-                String key = propertyKey(page.get("path").asText());
-                properties.add(property(country, "NAV_" + key + "_HTTP", HTTP_JS, login));
-                properties.add(property(country, "NAV_" + key + "_TITLE", TITLE_JS, login));
-                actions.add(pageAction(page, key, stepId, actionId, login));
-            }
-            steps.add(step(stepId, stepNode.get("description").asText(), actions, login));
+        int stepId = 20;
+        List<TestCaseStepAction> actions = new ArrayList<>();
+        int actionId = 0;
+        for (JsonNode page : section.get("pages")) {
+            actionId += 10;
+            String key = propertyKey(page.get("path").asText());
+            properties.add(property(country, "NAV_" + key + "_HTTP", HTTP_JS, login));
+            properties.add(property(country, "NAV_" + key + "_TITLE", TITLE_JS, login));
+            actions.add(pageAction(page, key, stepId, actionId, login));
         }
+        steps.add(step(stepId, sectionName, actions, login));
         properties.add(TestCaseCountryProperties.builder()
                 .country(country).property(USER_PROPERTY).type("getFromDataLib").value1(dataLibName)
                 .nature("STATIC").length("0").rowLimit(1).description("Smoke login data definition.")
@@ -83,8 +91,8 @@ public class SmokeGuiTestcaseFactory {
                 .country(country).testCaseCountryProperty(properties).usrCreated(login).build();
 
         return TestCase.builder()
-                .test(TEST_FOLDER).testcase(TESTCASE_ID).application(application).system(system)
-                .description("Smoke - sign in, then open every menu page and verify its title and HTTP 200")
+                .test(TEST_FOLDER).testcase(testcaseId).application(application).system(system)
+                .description("Smoke web - " + sectionName + " menu: sign in, open every page and verify its title and HTTP 200")
                 .detailedDescription("Created by the instance bootstrap. Requires an administrator account.")
                 .type("AUTOMATED").status("WORKING").priority(1)
                 .isActive(true).isActiveQA(true).isActiveUAT(true).isActivePROD(true)

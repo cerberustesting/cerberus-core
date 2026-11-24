@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Sets up the smoke campaign on a freshly created instance. Administrator only.
+ * Sets up the smoke campaigns (one call for the web one, one for the API one) on a freshly created instance. Administrator only.
  */
 @AllArgsConstructor
 @Tag(name = "Bootstrap", description = "Endpoints to set up the content of a new instance")
@@ -55,36 +55,55 @@ public class BootstrapController {
 
     private static final String API_KEY = "X-API-KEY";
     private static final String ROLE_ADMINISTRATOR = "Administrator";
+    private static final String SMOKE_DESCRIPTION = "Creates, or updates when they already exist, the shared content (system, applications, "
+            + "environment, login data, smoke user) and the test folder, testcases, label, campaign and end of campaign email of this smoke. "
+            + "The web and the API smokes are set up by two separate calls. Idempotent: call it again to change the recipient, "
+            + "the URL, the credentials or the robot. Set launch=true to queue the campaign and get its tag. "
+            + "Requires the Administrator role.";
 
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ILogEventService logEventService;
     private final IUserRoleService userRoleService;
     private final SmokeBootstrapService smokeBootstrapService;
 
-    @PostMapping(path = "/smoke", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/smoke/web", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Create or update the smoke campaign of the instance",
-            description = "Creates, or updates when they already exist, the system, application, environment, test folder, "
-            + "testcase, login data, campaign and end of campaign email. Idempotent: call it again to change the recipient, "
-            + "the URL, the credentials or the robot. Set launch=true to queue the campaign and get its tag. "
-            + "Requires the Administrator role."
+            summary = "Create or update the web smoke campaign (CERBERUS_SMOKE_TESTS_WEB) of the instance",
+            description = SMOKE_DESCRIPTION
     )
-    public ResponseEntity<Map<String, Object>> smoke(
+    public ResponseEntity<Map<String, Object>> smokeWeb(
             @RequestBody SmokeBootstrapRequestDTO request,
             @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
             @Parameter(hidden = true) HttpServletRequest httpRequest,
             @Parameter(hidden = true) Principal principal) {
+        return smoke("web", true, request, apiKey, httpRequest, principal);
+    }
 
+    @PostMapping(path = "/smoke/api", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Create or update the API smoke campaign (CERBERUS_SMOKE_TESTS_API) of the instance",
+            description = SMOKE_DESCRIPTION
+    )
+    public ResponseEntity<Map<String, Object>> smokeApi(
+            @RequestBody SmokeBootstrapRequestDTO request,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest httpRequest,
+            @Parameter(hidden = true) Principal principal) {
+        return smoke("api", false, request, apiKey, httpRequest, principal);
+    }
+
+    private ResponseEntity<Map<String, Object>> smoke(String kind, boolean web, SmokeBootstrapRequestDTO request, String apiKey,
+            HttpServletRequest httpRequest, Principal principal) {
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
-        logEventService.createForPublicCalls("/public/bootstrap/smoke", "CALL-POST",
-                LogEvent.STATUS_INFO, "API /bootstrap/smoke called", httpRequest, login);
+        logEventService.createForPublicCalls("/public/bootstrap/smoke/" + kind, "CALL-POST",
+                LogEvent.STATUS_INFO, "API /bootstrap/smoke/" + kind + " called", httpRequest, login);
 
         if (!isAdministrator(principal, login)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", "The Administrator role is required"));
         }
         try {
-            return ResponseEntity.ok(smokeBootstrapService.setup(request, login));
+            return ResponseEntity.ok(smokeBootstrapService.setup(request, login, web));
         } catch (IllegalStateException ex) {
             // Without this the error is turned into a redirect to the login page.
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", String.valueOf(ex.getMessage())));

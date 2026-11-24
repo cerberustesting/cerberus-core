@@ -94,8 +94,12 @@ public class SmokeBootstrapService {
 
     public static final String APPLICATION_GUI = "Cerberus";
     public static final String APPLICATION_API = "CerberusAPI";
-    public static final String CAMPAIGN = "CERBERUS_SMOKE_TESTS";
-    public static final String LABEL = "CERBERUS_SMOKE_TESTS";
+    public static final String FOLDER_WEB = SmokeGuiTestcaseFactory.TEST_FOLDER;
+    public static final String FOLDER_API = "Cerberus Smoke Tests API";
+    public static final String CAMPAIGN_API = "CERBERUS_SMOKE_TESTS_API";
+    public static final String CAMPAIGN_WEB = "CERBERUS_SMOKE_TESTS_WEB";
+    public static final String LABEL_API = "CERBERUS_SMOKE_TESTS_API";
+    public static final String LABEL_WEB = "CERBERUS_SMOKE_TESTS_WEB";
     public static final String DATALIB = "CERBERUS_SMOKE_USER";
     /** Roles of the smoke user : it opens every page and calls the API, the same way an administrator does. */
     private static final List<String> SMOKE_USER_ROLES = List.of("Administrator", "Test", "TestRO", "TestAdmin",
@@ -127,7 +131,11 @@ public class SmokeBootstrapService {
     private final SmokeGuiTestcaseFactory testcaseFactory;
     private final SmokeApiTestcaseFactory apiTestcaseFactory;
 
-    public Map<String, Object> setup(SmokeBootstrapRequestDTO request, String login) {
+    /**
+     * Sets up the shared content (system, applications, environment, user, login data), then the folder, testcases,
+     * label and campaign of one kind of smoke. The web and the API smokes are set up by two separate calls.
+     */
+    public Map<String, Object> setup(SmokeBootstrapRequestDTO request, String login, boolean web) {
         validate(request);
         request.setCountry(request.getCountry().trim().toUpperCase(Locale.ROOT));
         List<String> actions = new ArrayList<>();
@@ -136,22 +144,24 @@ public class SmokeBootstrapService {
         ensureApplication(APPLICATION_GUI, Application.TYPE_GUI, "Cerberus instance under smoke test", 10, request, login, actions);
         ensureApplication(APPLICATION_API, Application.TYPE_SRV, "Public API of the Cerberus instance under smoke test", 20, request, login, actions);
         ensureEnvironment(request, login, actions);
-        resetTestFolder(login, actions);
+        String folder = web ? FOLDER_WEB : FOLDER_API;
+        String campaign = web ? CAMPAIGN_WEB : CAMPAIGN_API;
+        String label = web ? LABEL_WEB : LABEL_API;
+        resetTestFolder(folder, login, actions);
         String apiKey = ensureSmokeUser(request, login, actions);
         ensureDataLib(request, apiKey, login, actions);
-        ensureTestCase(request, login, actions);
-        List<String> testcaseIds = new ArrayList<>(List.of(SmokeGuiTestcaseFactory.TESTCASE_ID));
-        testcaseIds.addAll(ensureApiTestCases(request, login, actions));
-        Integer labelId = ensureLabel(request, testcaseIds, login, actions);
-        ensureCampaign(request, labelId, login, actions);
+        List<String> testcaseIds = web ? ensureWebTestCases(request, login, actions) : ensureApiTestCases(request, login, actions);
+        Integer labelId = ensureLabel(request, label, (web ? "Smoke web" : "Smoke API") + " tests created by the instance bootstrap",
+                web ? "#2c7be5" : "#00a389", folder, testcaseIds, login, actions);
+        ensureCampaign(campaign, (web ? "Smoke web" : "Smoke API") + " campaign created by the instance bootstrap", request, labelId, login, actions);
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("campaign", CAMPAIGN);
+        result.put("campaign", campaign);
         result.put("actions", actions);
         if (request.isLaunch()) {
             QueuedExecution queuedExecution = QueuedExecution.builder().testcases(new ArrayList<>()).build();
             Principal principal = () -> login;
-            QueuedExecutionResult queued = queuedExecutionService.addCampaignToExecutionQueue(CAMPAIGN, queuedExecution, principal);
+            QueuedExecutionResult queued = queuedExecutionService.addCampaignToExecutionQueue(campaign, queuedExecution, principal);
             result.put("tag", queued.getTag());
             result.put("nbExecutions", queued.getNbExecutions());
             result.put("messages", queued.getMessages());
@@ -262,11 +272,10 @@ public class SmokeBootstrapService {
     }
 
     /**
-     * The test folder is dedicated to the smoke tests : it is deleted, with all its testcases, and created again.
+     * The test folder is dedicated to one kind of smoke tests : it is deleted, with all its testcases, and created again.
      * The folder is deleted directly : the testcases go with it, without an event (mail, hook) for each of them.
      */
-    private void resetTestFolder(String login, List<String> actions) {
-        String folder = SmokeGuiTestcaseFactory.TEST_FOLDER;
+    private void resetTestFolder(String folder, String login, List<String> actions) {
         boolean replaced = testService.exist(folder);
         if (replaced) {
             Test existing = new Test();
@@ -382,12 +391,18 @@ public class SmokeBootstrapService {
         return data;
     }
 
-    private void ensureTestCase(SmokeBootstrapRequestDTO request, String login, List<String> actions) {
-        if (testCaseService.readByKey(SmokeGuiTestcaseFactory.TEST_FOLDER, SmokeGuiTestcaseFactory.TESTCASE_ID).getItem() != null) {
-            return;
+    /**
+     * @return the ids of the web testcases, one per menu section
+     */
+    private List<String> ensureWebTestCases(SmokeBootstrapRequestDTO request, String login, List<String> actions) {
+        // The test folder has just been emptied : the web testcases are 0001A, 0002A...
+        List<String> testcaseIds = new ArrayList<>();
+        for (TestCase testCase : testcaseFactory.build(request.getSystem(), APPLICATION_GUI, request.getCountry(), DATALIB, login)) {
+            createTestCase(testCase);
+            testcaseIds.add(testCase.getTestcase());
         }
-        createTestCase(testcaseFactory.build(request.getSystem(), APPLICATION_GUI, request.getCountry(), DATALIB, login));
-        actions.add("testcase " + SmokeGuiTestcaseFactory.TEST_FOLDER + " / " + SmokeGuiTestcaseFactory.TESTCASE_ID + " created");
+        actions.add(testcaseIds.size() + " web testcases created in " + FOLDER_WEB + " (one per menu section)");
+        return testcaseIds;
     }
 
     /**
@@ -401,8 +416,8 @@ public class SmokeBootstrapService {
                 Map.entry("country", request.getCountry()),
                 Map.entry("environment", request.getEnvironment()),
                 Map.entry("robot", request.getRobot()),
-                Map.entry("testFolderId", SmokeGuiTestcaseFactory.TEST_FOLDER),
-                Map.entry("testcaseId", SmokeGuiTestcaseFactory.TESTCASE_ID),
+                Map.entry("testFolderId", FOLDER_API),
+                Map.entry("testcaseId", "0001A"),
                 Map.entry("idName", "COUNTRY"),
                 Map.entry("value", request.getCountry()),
                 Map.entry("stepId", "10"),
@@ -423,25 +438,17 @@ public class SmokeBootstrapService {
             check(appServiceHeaderService.createList(service.getHeaderList()), "headers of " + service.getService());
         }
 
-        // The test folder has just been emptied : the web testcase is 0001A, the API ones follow (0002A, 0003A...).
+        // The test folder has just been emptied : the API testcases are 0001A, 0002A...
         List<String> testcaseIds = new ArrayList<>();
-        int lastNumber = sequenceNumber(SmokeGuiTestcaseFactory.TESTCASE_ID);
+        int lastNumber = 0;
         for (SmokeApiTestcaseFactory.Endpoint endpoint : endpoints) {
             String testcaseId = String.format("%04dA", ++lastNumber);
             testcaseIds.add(testcaseId);
-            createTestCase(apiTestcaseFactory.testCase(endpoint, testcaseId, SmokeGuiTestcaseFactory.TEST_FOLDER,
+            createTestCase(apiTestcaseFactory.testCase(endpoint, testcaseId, FOLDER_API,
                     request.getSystem(), APPLICATION_API, request.getCountry(), DATALIB, login));
         }
         actions.add(deletedServices + " API services replaced by " + endpoints.size() + " services and " + endpoints.size() + " testcases (one per endpoint)");
         return testcaseIds;
-    }
-
-    /** "0012A" gives 12, an id that does not follow the sequence gives 0. */
-    private int sequenceNumber(String testcaseId) {
-        if (testcaseId != null && testcaseId.matches("\\d{4}[A-Z]")) {
-            return Integer.parseInt(testcaseId.substring(0, 4));
-        }
-        return 0;
     }
 
     private void createTestCase(TestCase testCase) {
@@ -455,24 +462,25 @@ public class SmokeBootstrapService {
     }
 
     /**
-     * Label put on all the smoke testcases and on the campaign.
+     * Label put on the smoke testcases of one kind (web or API), and on the campaign that runs them.
      *
      * @return the id of the label
      */
-    private Integer ensureLabel(SmokeBootstrapRequestDTO request, List<String> testcaseIds, String login, List<String> actions) {
-        Integer labelId = findLabelId(request.getSystem());
+    private Integer ensureLabel(SmokeBootstrapRequestDTO request, String name, String description, String color,
+            String folder, List<String> testcaseIds, String login, List<String> actions) {
+        Integer labelId = findLabelId(request.getSystem(), name);
         if (labelId == null) {
             Label label = new Label();
             label.setSystem(request.getSystem());
-            label.setLabel(LABEL);
+            label.setLabel(name);
             label.setType(Label.TYPE_BATTERY);
-            label.setColor("#2c7be5");
+            label.setColor(color);
             label.setFontColor("#ffffff");
             label.setParentLabelID(0);
             label.setRequirementType("");
             label.setRequirementStatus("");
             label.setRequirementCriticity("");
-            label.setDescription("Smoke tests created by the instance bootstrap");
+            label.setDescription(description);
             label.setLongDescription("");
             label.setUsrCreated(login);
             label.setUsrModif(login);
@@ -480,17 +488,17 @@ public class SmokeBootstrapService {
             Timestamp now = new Timestamp(System.currentTimeMillis());
             label.setDateCreated(now);
             label.setDateModif(now);
-            check(labelService.create(label), "label " + LABEL);
-            labelId = findLabelId(request.getSystem());
+            check(labelService.create(label), "label " + name);
+            labelId = findLabelId(request.getSystem(), name);
             if (labelId == null) {
-                throw new IllegalStateException("Label " + LABEL + " was created but cannot be found");
+                throw new IllegalStateException("Label " + name + " was created but cannot be found");
             }
-            actions.add("label " + LABEL + " created");
+            actions.add("label " + name + " created");
         }
         for (String testcase : testcaseIds) {
-            if (testCaseLabelService.readByKey(SmokeGuiTestcaseFactory.TEST_FOLDER, testcase, labelId).getItem() == null) {
+            if (testCaseLabelService.readByKey(folder, testcase, labelId).getItem() == null) {
                 TestCaseLabel testCaseLabel = new TestCaseLabel();
-                testCaseLabel.setTest(SmokeGuiTestcaseFactory.TEST_FOLDER);
+                testCaseLabel.setTest(folder);
                 testCaseLabel.setTestcase(testcase);
                 testCaseLabel.setLabelId(labelId);
                 testCaseLabel.setUsrCreated(login);
@@ -500,26 +508,26 @@ public class SmokeBootstrapService {
         return labelId;
     }
 
-    private Integer findLabelId(String system) {
+    private Integer findLabelId(String system, String name) {
         for (Label label : labelService.readByVariousAPI(List.of(system), List.of(Label.TYPE_BATTERY))) {
-            if (LABEL.equalsIgnoreCase(label.getLabel()) && system.equalsIgnoreCase(label.getSystem())) {
+            if (name.equalsIgnoreCase(label.getLabel()) && system.equalsIgnoreCase(label.getSystem())) {
                 return label.getId();
             }
         }
         return null;
     }
 
-    private void ensureCampaign(SmokeBootstrapRequestDTO request, Integer labelId, String login, List<String> actions) {
-        Campaign existing = campaignService.readByKey(CAMPAIGN).getItem();
+    private void ensureCampaign(String name, String description, SmokeBootstrapRequestDTO request, Integer labelId, String login, List<String> actions) {
+        Campaign existing = campaignService.readByKey(name).getItem();
         boolean exist = existing != null;
         Campaign campaign = new Campaign();
-        campaign.setCampaign(CAMPAIGN);
+        campaign.setCampaign(name);
         if (exist) {
             campaign.setCampaignID(existing.getCampaignID());
         }
-        campaign.setDescription("Smoke campaign created by the instance bootstrap");
+        campaign.setDescription(description);
         campaign.setLongDescription("");
-        campaign.setTag(CAMPAIGN + ".%TIMESTAMP%");
+        campaign.setTag(name + ".%TIMESTAMP%");
         campaign.setManualExecution("N");
         campaign.setUsrCreated(login);
         campaign.setUsrModif(login);
@@ -537,29 +545,28 @@ public class SmokeBootstrapService {
         campaign.setGroup2("");
         campaign.setGroup3("");
         if (exist) {
-            check(campaignService.update(CAMPAIGN, campaign), "campaign " + CAMPAIGN);
+            check(campaignService.update(name, campaign), "campaign " + name);
         } else {
-            check(campaignService.create(campaign), "campaign " + CAMPAIGN);
+            check(campaignService.create(campaign), "campaign " + name);
         }
 
         List<CampaignParameter> parameters = new ArrayList<>();
-        parameters.add(parameter(CampaignParameter.COUNTRY_PARAMETER, request.getCountry()));
-        parameters.add(parameter(CampaignParameter.ENVIRONMENT_PARAMETER, request.getEnvironment()));
-        parameters.add(parameter(CampaignParameter.ROBOT_PARAMETER, request.getRobot()));
-        parameters.add(parameter(CampaignParameter.TYPE_TESTFOLDER, SmokeGuiTestcaseFactory.TEST_FOLDER));
-        check(campaignParameterService.compareListAndUpdateInsertDeleteElements(CAMPAIGN, parameters), "campaign parameters");
+        parameters.add(parameter(name, CampaignParameter.COUNTRY_PARAMETER, request.getCountry()));
+        parameters.add(parameter(name, CampaignParameter.ENVIRONMENT_PARAMETER, request.getEnvironment()));
+        parameters.add(parameter(name, CampaignParameter.ROBOT_PARAMETER, request.getRobot()));
+        check(campaignParameterService.compareListAndUpdateInsertDeleteElements(name, parameters), "campaign parameters");
 
-        if (campaignLabelService.readByKey(CAMPAIGN, labelId).getItem() == null) {
+        if (campaignLabelService.readByKey(name, labelId).getItem() == null) {
             CampaignLabel campaignLabel = new CampaignLabel();
-            campaignLabel.setCampaign(CAMPAIGN);
+            campaignLabel.setCampaign(name);
             campaignLabel.setLabelId(labelId);
             campaignLabel.setUsrCreated(login);
-            check(campaignLabelService.create(campaignLabel), "label of campaign " + CAMPAIGN);
+            check(campaignLabelService.create(campaignLabel), "label of campaign " + name);
         }
 
         EventHook hook = new EventHook();
         hook.setEventReference(EventHook.EVENTREFERENCE_CAMPAIGN_END);
-        hook.setObjectKey1(CAMPAIGN);
+        hook.setObjectKey1(name);
         hook.setObjectKey2("");
         hook.setActive(true);
         hook.setHookConnector(EventHook.HOOKCONNECTOR_EMAIL);
@@ -567,14 +574,14 @@ public class SmokeBootstrapService {
         hook.setHookChannel("");
         hook.setDescription("Smoke campaign result");
         hook.setUsrCreated(login);
-        check(eventHookService.compareListAndUpdateInsertDeleteElements(CAMPAIGN, List.of(hook)), "campaign end email");
+        check(eventHookService.compareListAndUpdateInsertDeleteElements(name, List.of(hook)), "campaign end email");
 
-        actions.add("campaign " + CAMPAIGN + (exist ? " updated" : " created") + ", result mailed to " + request.getRecipientEmail());
+        actions.add("campaign " + name + (exist ? " updated" : " created") + ", result mailed to " + request.getRecipientEmail());
     }
 
-    private CampaignParameter parameter(String name, String value) {
+    private CampaignParameter parameter(String campaign, String name, String value) {
         CampaignParameter parameter = new CampaignParameter();
-        parameter.setCampaign(CAMPAIGN);
+        parameter.setCampaign(campaign);
         parameter.setParameter(name);
         parameter.setValue(value);
         return parameter;
