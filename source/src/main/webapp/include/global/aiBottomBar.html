@@ -341,15 +341,15 @@
                                         Bonjour 👋
                                     </div>
                                     <div class="text-xs text-slate-500 dark:text-slate-400">
-                                        Que veux-tu faire dans Cerberus aujourd’hui ?
+                                        Je suis ton assistant IA Cerberus. Par quoi veux-tu commencer ?
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Suggestions compactes -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
-                                <template x-for="(item, index) in flatSuggestions.slice(0, 6)" :key="item.id">
-                                    <button @click="useSuggestion(item)"
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <template x-for="(item, index) in welcomeChoices" :key="item.id">
+                                    <button @click="chooseWelcome(item)"
                                             class="group flex items-start gap-3 crb_card">
 
                                         <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition"
@@ -363,16 +363,16 @@
                              }">
 
                                             <template x-if="index === 0">
-                                                <i data-lucide="app-window" class="h-4 w-4"></i>
+                                                <i data-lucide="rocket" class="h-4 w-4"></i>
                                             </template>
                                             <template x-if="index === 1">
-                                                <i data-lucide="clipboard-check" class="h-4 w-4"></i>
+                                                <i data-lucide="plug" class="h-4 w-4"></i>
                                             </template>
                                             <template x-if="index === 2">
-                                                <i data-lucide="target" class="h-4 w-4"></i>
+                                                <i data-lucide="book-open" class="h-4 w-4"></i>
                                             </template>
                                             <template x-if="index === 3">
-                                                <i data-lucide="square-pen" class="h-4 w-4"></i>
+                                                <i data-lucide="compass" class="h-4 w-4"></i>
                                             </template>
                                             <template x-if="index === 4">
                                                 <i data-lucide="list" class="h-4 w-4"></i>
@@ -504,6 +504,36 @@
             messagesCache: {},
 
             showWelcomeSuggestions: false,
+
+            // Welcome panel of every new chat (also the first-time welcome, see
+            // startOnboardingIfFirstTime) : scripted so it needs no LLM call. The prompt of a
+            // choice is sent as the user's first message when it is clicked.
+            welcomeChoices: [
+                {
+                    id: "welcome_first_test",
+                    label: "Créer mon premier test",
+                    description: "Donne-moi une URL et le scénario attendu, je construis le test avec toi.",
+                    prompt: "Je voudrais créer mon premier test automatiquement. Demande-moi l'URL à tester et le scénario attendu, puis propose-moi le test avant de le créer."
+                },
+                {
+                    id: "welcome_install_mcp",
+                    label: "Installer le MCP Cerberus dans une IA",
+                    description: "Brancher le serveur MCP Cerberus dans Claude ou ChatGPT.",
+                    prompt: "Je voudrais installer le serveur MCP de Cerberus dans une IA externe (Claude, ChatGPT...). Demande-moi laquelle j'utilise, puis guide-moi pas à pas pour l'installer et la configurer."
+                },
+                {
+                    id: "welcome_discover",
+                    label: "Découvrir Cerberus",
+                    description: "Une présentation rapide des concepts et de l'interface.",
+                    prompt: "Présente-moi rapidement Cerberus : les concepts principaux (applications, tests, campagnes, exécutions) et par où commencer."
+                },
+                {
+                    id: "welcome_explore",
+                    label: "Explorer par moi-même",
+                    description: "Je te solliciterai quand j'en aurai besoin.",
+                    prompt: null
+                }
+            ],
 
             contextMenu: {
                 open: false,
@@ -872,7 +902,67 @@
                     }
                 });
 
-                this.restoreSession();
+                this.restoreSession().then(() => this.startOnboardingIfFirstTime());
+            },
+
+            /**
+             * Asks the server whether this is the user's first time (MCP activated, no AI session yet).
+             * The server creates the welcome session itself, so the answer is "yes" only once
+             * whatever the browser. Checked once per browser session to avoid a call per page.
+             */
+            async startOnboardingIfFirstTime() {
+                if (sessionStorage.getItem("aiAssistant.onboardingChecked") === "1") {
+                    return;
+                }
+                // No guard on this.sessionID : a stale id restored from localStorage (a "new chat"
+                // never used, so never persisted) would make us skip the welcome. The server only
+                // answers "yes" when the user has no persisted AI session at all.
+                try {
+                    const response = await fetch(`${this.getHttpBaseUrl()}api/ai/onboarding`, {
+                        method: "POST",
+                        headers: {"Accept": "application/json"}
+                    });
+                    if (!response.ok) {
+                        return;
+                    }
+                    const data = await response.json();
+                    sessionStorage.setItem("aiAssistant.onboardingChecked", "1");
+
+                    if (!data.onboarding || !data.sessionID) {
+                        return;
+                    }
+
+                    this.resetUsage();
+                    this.sessionID = data.sessionID;
+                    this.currentSessionTitle = "Bienvenue";
+                    this.showWelcomeSuggestions = true;
+                    this.open = true;
+                    await this.subscribeChat();
+
+                    this.$nextTick(() => {
+                        if (window.lucide) {
+                            lucide.createIcons();
+                        }
+                    });
+                } catch (e) {
+                    // The welcome is a nicety : never let it break the page.
+                    console.warn("AI onboarding check failed", e);
+                }
+            },
+
+            /**
+             * A welcome choice was clicked : send its prompt as the first user message, or just
+             * close the panel for "explore by myself".
+             */
+            chooseWelcome(item) {
+                if (!item.prompt) {
+                    this.showWelcomeSuggestions = false;
+                    return;
+                }
+                const input = this.$refs.aiInput;
+                if (!input) return;
+                input.value = item.prompt;
+                this.sendUserMessage();
             },
 
             restoreSidebarState() {

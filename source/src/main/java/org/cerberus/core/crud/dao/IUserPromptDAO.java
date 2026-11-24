@@ -37,6 +37,12 @@ public interface IUserPromptDAO {
 
     AnswerList<UserPrompt> readByUser(String login);
 
+    /**
+     * @param login login of the user
+     * @return the number of AI sessions (userprompt) of the user, -1 if it could not be read
+     */
+    int countByUser(String login);
+
     AnswerItem<UserPrompt> readByUserSessionID(String login, String sessionID);
 
     AnswerList<UserPrompt> readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);

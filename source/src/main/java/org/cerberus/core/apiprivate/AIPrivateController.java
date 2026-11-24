@@ -67,6 +67,33 @@ public class AIPrivateController {
         }
     }
 
+    /**
+     * Called by the AI bottom bar on page load. When the MCP is activated and the user never had an AI session,
+     * creates the welcome session and returns its ID so the UI can open itself and greet the user.
+     */
+    @Operation(hidden=true)
+    @PreAuthorize("hasRole('Integrator')")
+    @PostMapping("/onboarding")
+    public String startOnboarding(HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+            String sessionID = aISessionManager.startOnboardingIfFirstTime(request.getRemoteUser());
+            jsonResponse.put("onboarding", sessionID != null);
+            if (sessionID != null) {
+                jsonResponse.put("sessionID", sessionID);
+            }
+            return jsonResponse.toString();
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return "error " + ex.getMessage();
+        }
+    }
+
     @Operation(hidden=true)
     @GetMapping("/messagesFromPrompt/{sessionID}")
     public String getAllRequests(@PathVariable("sessionID") String sessionID, HttpServletRequest request) {

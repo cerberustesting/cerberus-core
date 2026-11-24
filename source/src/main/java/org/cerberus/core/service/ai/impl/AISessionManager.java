@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AISessionManager {
@@ -64,6 +65,36 @@ public class AISessionManager {
             iUserPromptDAO.create(userPrompt);
         }
         return userPrompt;
+    }
+
+    public static final String SESSION_TYPE_ONBOARDING = "onboarding";
+
+    /**
+     * Starts the welcome conversation of the AI assistant for a user who never used it.
+     * <p>
+     * Only when the MCP is activated (cerberus_ai_use_mcp + cerberus_ai_mcp_host). "First login" is defined as "no AI session yet" : the session created here is
+     * what makes the next call return null, so the welcome is proposed once, whatever the
+     * browser. The session is created empty on purpose : the welcome text is displayed by the
+     * UI, and no assistant message is stored so the history later sent to the model still
+     * starts with a user message.
+     *
+     * @param login login of the user
+     * @return the sessionID of the new onboarding session, or null when there is nothing to start
+     */
+    public String startOnboardingIfFirstTime(String login) {
+        // The welcome paths (first test, external AI) rely on the MCP tools : same condition as AIService.
+        if (login == null || !aiConfig.useMcp() || aiConfig.mcpHost() == null || aiConfig.mcpHost().isBlank()) {
+            return null;
+        }
+        // -1 (read error) must not be mistaken for "no session" : we would greet the user again.
+        if (iUserPromptDAO.countByUser(login) != 0) {
+            return null;
+        }
+        String sessionID = UUID.randomUUID().toString();
+        initSession(login, sessionID, SESSION_TYPE_ONBOARDING);
+        updateTitle(login, sessionID, "Bienvenue");
+        LOG.info("AI onboarding started - login : {} - session : {}", login, sessionID);
+        return sessionID;
     }
 
     /**

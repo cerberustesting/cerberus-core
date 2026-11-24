@@ -129,6 +129,25 @@ public class UserPromptDAO implements IUserPromptDAO {
     }
 
     @Override
+    public int countByUser(String login) {
+        final String sql = "SELECT COUNT(*) FROM " + TABLE + " WHERE login = ?";
+
+        LOG.debug("SQL: {}", sql);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
+            preStat.setString(1, login);
+            try (ResultSet rs = preStat.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to count the AI sessions of user {} : {}", login, e.toString());
+        }
+        return -1;
+    }
+
+    @Override
     public AnswerList<UserPrompt> readByUser(String login) {
         AnswerList<UserPrompt> ans = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
