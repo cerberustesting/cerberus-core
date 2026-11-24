@@ -316,7 +316,8 @@
                                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400" x-show="authMode === 'oauth'">
                                         Ajoutez cette configuration dans Claude Desktop, Claude Code ou un autre client MCP.
                                         Aucun token à fournir : un client MCP compatible découvre automatiquement le serveur
-                                        d'autorisation et ouvre son propre flow OAuth. Les tools s'exécutent avec les droits
+                                        d'autorisation et ouvre son propre flow OAuth, avec le client id imposé
+                                        par cette instance (champ <span class="crb_code">oauth.clientId</span>). Les tools s'exécutent avec les droits
                                         de l'utilisateur connecté, restreints à son contexte système actif
                                         (voir <span class="crb_code">cerberus_context_system_list</span>).
                                     </p>

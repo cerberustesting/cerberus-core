@@ -2,7 +2,7 @@
 # Tomcat setenv.sh - Keycloak authentication (image cerberus-as-tomcat-keycloak).
 # Every value can be overridden with an environment variable (docker run -e ...).
 
-CATALINA_OPTS="-Dspring.profiles.active=keycloak -Dorg.cerberus.environment=prd -Xmx${CERBERUS_XMX:-1024m} -Dorg.cerberus.authentification=keycloak"
+CATALINA_OPTS="-Dspring.profiles.active=keycloak -Dorg.cerberus.environment=prd -Dorg.cerberus.saas=${CERBERUS_SAAS:-false} -Xmx${CERBERUS_XMX:-1024m} -Dorg.cerberus.authentification=keycloak"
 CATALINA_OPTS="$CATALINA_OPTS -Dorg.cerberus.keycloak.realm=${KEYCLOAK_REALM:-R-preprod} -Dorg.cerberus.keycloak.client=${KEYCLOAK_CLIENT:-Cerberus}"
 CATALINA_OPTS="$CATALINA_OPTS -Dorg.cerberus.keycloak.localrunnerclient=${KEYCLOAK_LOCALRUNNER_CLIENT:-cerberus-local-runner} -Dorg.cerberus.keycloak.mcpclient=${KEYCLOAK_MCP_CLIENT:-Cerberus-mcp}"
 CATALINA_OPTS="$CATALINA_OPTS -Dorg.cerberus.keycloak.url=${KEYCLOAK_URL:-https://authent.cerberus-testing.org/auth/}"

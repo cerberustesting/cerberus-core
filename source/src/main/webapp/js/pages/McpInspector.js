@@ -128,6 +128,10 @@ function mcpInspector() {
             const server = {type: 'http', url: this.mcpEndpointUrl()};
             if (this.authMode !== 'oauth') {
                 server.headers = {'X-API-KEY': '<votre clé API>'};
+            } else if (this.oauthConfig && this.oauthConfig.cerberusMcpClientId) {
+                // Client id imposed by this instance (no dynamic client registration):
+                // the MCP client must be told which one to use.
+                server.oauth = {clientId: this.oauthConfig.cerberusMcpClientId};
             }
             return JSON.stringify({mcpServers: {cerberus: server}}, null, 2);
         },
