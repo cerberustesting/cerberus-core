@@ -38,10 +38,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -90,6 +92,32 @@ public class BootstrapController {
             @Parameter(hidden = true) HttpServletRequest httpRequest,
             @Parameter(hidden = true) Principal principal) {
         return smoke("api", false, request, apiKey, httpRequest, principal);
+    }
+
+    @DeleteMapping(path = "/smoke", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Delete the smoke content of the instance",
+            description = "Deletes the web and API smoke campaigns (and the former single one), their end of campaign emails, labels, "
+            + "test folders with their testcases, and the API services. The system, applications, environment, smoke user and "
+            + "login data are kept. Requires the Administrator role."
+    )
+    public ResponseEntity<Map<String, Object>> deleteSmoke(
+            @Parameter(description = "System of the labels to delete") @RequestParam(name = "system", defaultValue = "CERBERUS") String system,
+            @Parameter(description = "X-API-KEY for authentication") @RequestHeader(name = API_KEY, required = false) String apiKey,
+            @Parameter(hidden = true) HttpServletRequest httpRequest,
+            @Parameter(hidden = true) Principal principal) {
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/bootstrap/smoke", "CALL-DELETE",
+                LogEvent.STATUS_INFO, "API /bootstrap/smoke deletion called", httpRequest, login);
+        if (!isAdministrator(principal, login)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "The Administrator role is required"));
+        }
+        try {
+            return ResponseEntity.ok(smokeBootstrapService.teardown(system));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", String.valueOf(ex.getMessage())));
+        }
     }
 
     private ResponseEntity<Map<String, Object>> smoke(String kind, boolean web, SmokeBootstrapRequestDTO request, String apiKey,

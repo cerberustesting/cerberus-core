@@ -94,6 +94,8 @@ public class SmokeBootstrapService {
 
     public static final String APPLICATION_GUI = "Cerberus";
     public static final String APPLICATION_API = "CerberusAPI";
+    /** Name of the campaign and label of the former single smoke, deleted as well. */
+    private static final String LEGACY_NAME = "CERBERUS_SMOKE_TESTS";
     public static final String FOLDER_WEB = SmokeGuiTestcaseFactory.TEST_FOLDER;
     public static final String FOLDER_API = "Cerberus Smoke Tests API";
     public static final String CAMPAIGN_API = "CERBERUS_SMOKE_TESTS_API";
@@ -166,6 +168,53 @@ public class SmokeBootstrapService {
             result.put("nbExecutions", queued.getNbExecutions());
             result.put("messages", queued.getMessages());
         }
+        return result;
+    }
+
+    /**
+     * Deletes the smoke content : campaigns (web, API and the former single one), their end of campaign hooks and
+     * labels, test folders with their testcases, and the API services. The shared content (system, applications,
+     * environment, smoke user, login data) is kept, it may be used by something else.
+     */
+    public Map<String, Object> teardown(String system) {
+        List<String> actions = new ArrayList<>();
+        for (String campaign : List.of(CAMPAIGN_WEB, CAMPAIGN_API, LEGACY_NAME)) {
+            if (campaignService.readByKey(campaign).getItem() != null) {
+                check(eventHookService.deleteBycampaign(campaign), "hooks of campaign " + campaign);
+                Campaign existing = campaignService.readByKey(campaign).getItem();
+                check(campaignService.delete(existing), "campaign " + campaign);
+                actions.add("campaign " + campaign + " deleted");
+            }
+        }
+        for (String label : List.of(LABEL_WEB, LABEL_API, LEGACY_NAME)) {
+            Integer labelId = findLabelId(system, label);
+            if (labelId != null) {
+                Label existing = new Label();
+                existing.setId(labelId);
+                existing.setSystem(system);
+                existing.setLabel(label);
+                check(labelService.delete(existing), "label " + label);
+                actions.add("label " + label + " deleted");
+            }
+        }
+        for (String folder : List.of(FOLDER_WEB, FOLDER_API, "Cerberus Smoke Tests")) {
+            if (testService.exist(folder)) {
+                Test existing = new Test();
+                existing.setTest(folder);
+                check(testService.delete(existing), "test folder " + folder);
+                actions.add("test folder " + folder + " deleted");
+            }
+        }
+        int services = 0;
+        for (AppService existing : appServiceService.readByLikeName(SmokeApiTestcaseFactory.SERVICE_PREFIX, 10000).getDataList()) {
+            if (existing.getService().startsWith(SmokeApiTestcaseFactory.SERVICE_PREFIX)) {
+                check(appServiceService.delete(existing), "deletion of service " + existing.getService());
+                services++;
+            }
+        }
+        actions.add(services + " API services deleted");
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("actions", actions);
         return result;
     }
 
